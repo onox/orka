@@ -22,28 +22,6 @@ package GL.API.Singles is
    
    use GL.Types.Singles;
    
-   procedure Get_Light_Position (Name   : Enums.Light_Name;
-                                 Pname  : Enums.Light_Param;
-                                 Target : in out Vector4);
-   pragma Import (Convention => StdCall, Entity => Get_Light_Position,
-                  External_Name => "glGetLightfv");
-   
-   procedure Get_Light_Direction (Name   : Enums.Light_Name;
-                                  Pname  : Enums.Light_Param;
-                                  Target : in out Vector3);
-   pragma Import (Convention => StdCall, Entity => Get_Light_Direction,
-                  External_Name => "glGetLightfv");
-   
-   procedure Light_Position (Name  : Enums.Light_Name; Pname : Enums.Light_Param;
-                             Param : Vector4);
-   pragma Import (Convention => StdCall, Entity => Light_Position,
-                  External_Name => "glLightfv");
-   
-   procedure Light_Direction (Name  : Enums.Light_Name; Pname : Enums.Light_Param;
-                              Param : Vector3);
-   pragma Import (Convention => StdCall, Entity => Light_Direction,
-                  External_Name => "glLightfv");
-   
    procedure Uniform1 is new Loader.Procedure_With_2_Params
      ("glUniform1f", Uniforms.Uniform, Single);
    

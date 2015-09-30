@@ -94,8 +94,6 @@ package GL.Buffers is
    procedure Set_Stencil_Clear_Value (Value : Stencil_Index);
    function Stencil_Clear_Value return Stencil_Index;
    
-   -- dropped in OpenGL 3
-   procedure Set_Accum_Clear_Value (Value : Colors.Color);
    function Accum_Clear_Value return Colors.Color;
    
    -- The following procedures are available since OpenGL 3.0

@@ -87,13 +87,6 @@ package body GL.Buffers is
       return Value;
    end Stencil_Clear_Value;
 
-   procedure Set_Accum_Clear_Value (Value : Colors.Color) is
-   begin
-      API.Clear_Accum (Value (Colors.R), Value (Colors.G), Value (Colors.B),
-                       Value (Colors.A));
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Accum_Clear_Value;
-
    function Accum_Clear_Value return Colors.Color is
       Value : Colors.Color;
    begin

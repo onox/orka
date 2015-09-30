@@ -21,17 +21,6 @@ package GL.API.Ints is
    
    use GL.Types.Ints;
    
-   procedure Get_Light_Position (Name   : Enums.Light_Name;
-                                 Pname  : Enums.Light_Param;
-                                 Target : in out Vector4);
-   pragma Import (Convention => StdCall, Entity => Get_Light_Position,
-                  External_Name => "glGetLightiv");
-   
-   procedure Light_Position (Name  : Enums.Light_Name; Pname : Enums.Light_Param;
-                             Param : Vector4);
-   pragma Import (Convention => StdCall, Entity => Light_Position,
-                  External_Name => "glLightiv");
-   
    procedure Uniform1 is new Loader.Procedure_With_2_Params
      ("glUniform1i", Uniforms.Uniform, Int);
    

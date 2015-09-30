@@ -19,54 +19,6 @@ package GL.API.Doubles is
    
    use GL.Types.Doubles;
    
-   procedure Load_Matrix (Value : Matrix4);
-   pragma Import (Convention => StdCall, Entity => Load_Matrix,
-                  External_Name => "glLoadMatrixd");
-
-   procedure Mult_Matrix (Factor : Matrix4);
-   pragma Import (Convention => StdCall, Entity => Mult_Matrix,
-                  External_Name => "glMultMatrixd");
-   
-   procedure Vertex4 (Value : Vector4);
-   pragma Import (Convention => StdCall, Entity => Vertex4,
-                  External_Name => "glVertex4dv");
-
-   procedure Vertex3 (Value : Vector3);
-   pragma Import (Convention => StdCall, Entity => Vertex3,
-                  External_Name => "glVertex3dv");
-
-   procedure Vertex2 (Value : Vector2);
-   pragma Import (Convention => StdCall, Entity => Vertex2,
-                  External_Name => "glVertex2dv");
-   
-   procedure Normal (Value : Vector3);
-   pragma Import (Convention => StdCall, Entity => Normal,
-                  External_Name => "glNormal3dv");
-   
-   procedure Tex_Coord4 (Value : Vector4);
-   pragma Import (Convention => StdCall, Entity => Tex_Coord4,
-                  External_Name => "glTexCoord4dv");
-
-   procedure Tex_Coord3 (Value : Vector3);
-   pragma Import (Convention => StdCall, Entity => Tex_Coord3,
-                  External_Name => "glTexCoord3dv");
-
-   procedure Tex_Coord2 (Value : Vector2);
-   pragma Import (Convention => StdCall, Entity => Tex_Coord2,
-                  External_Name => "glTexCoord2dv");
-   
-   procedure Raster_Pos4 (Value : Vector4);
-   pragma Import (Convention => StdCall, Entity => Raster_Pos4,
-                  External_Name => "glRasterPos4dv");
-   
-   procedure Raster_Pos3 (Value : Vector3);
-   pragma Import (Convention => StdCall, Entity => Raster_Pos3,
-                  External_Name => "glRasterPos3dv");
-   
-   procedure Raster_Pos2 (Value : Vector2);
-   pragma Import (Convention => StdCall, Entity => Raster_Pos2,
-                  External_Name => "glRasterPos2dv");
-   
    procedure Vertex_Attrib1 is new Loader.Procedure_With_2_Params
      ("glVertexAttribL1d", Attributes.Attribute, Double);
    
