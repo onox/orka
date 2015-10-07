@@ -55,11 +55,10 @@ package body GL.Matrices is
       for I in Index_Type loop
          for J in Index_Type loop
             for X in Index_Type loop
-               if I = Index_Type'First and J = Index_Type'First
-                 and X = Index_Type'First then
-                  Element := Left (I, X) * Right (X, J);
+               if X = Index_Type'First then
+                  Element := Left (X, J) * Right (I, X);
                else
-                  Element := Element + Left (I, X) * Right (X, J);
+                  Element := Element + Left (X, J) * Right (I, X);
                end if;
             end loop;
             Return_Matrix (I, J) := Element;

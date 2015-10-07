@@ -77,7 +77,8 @@ package GL.Algebra is
    type Matrix3 is new Matrices3.Matrix;
    type Matrix4 is new Matrices4.Matrix;
    
-   Identity2 : constant Matrix2 := ((One_Value, Null_Value), (Null_Value, One_Value));
+   Identity2 : constant Matrix2 := ((One_Value, Null_Value),
+                                    (Null_Value, One_Value));
    Identity3 : constant Matrix3 := ((One_Value, Null_Value, Null_Value),
                                     (Null_Value, One_Value, Null_Value),
                                     (Null_Value, Null_Value, One_Value));
