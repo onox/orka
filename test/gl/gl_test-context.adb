@@ -95,7 +95,7 @@ begin
      ("Getting information without request for OpenGL version.");
    
    -- create a window so we have a context
-   Display_Backend.Open_Window (Width  => 500, Height => 500);
+   Display_Backend.Open_Window (Width => 500, Height => 500);
  
    Display_Context_Information;
    Ada.Text_IO.New_Line;
@@ -107,7 +107,7 @@ begin
 
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 2, Minor => 1);
 
-   Display_Backend.Open_Window (Width  => 500, Height => 500);
+   Display_Backend.Open_Window (Width => 500, Height => 500);
 
    Display_Context_Information;
 
@@ -118,7 +118,7 @@ begin
 
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
 
-   Display_Backend.Open_Window (Width  => 500, Height => 500);
+   Display_Backend.Open_Window (Width => 500, Height => 500);
 
    Display_Context_Information;
 

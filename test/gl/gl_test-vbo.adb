@@ -24,64 +24,44 @@ with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
 with GL.Objects.Shaders.Lists;
-with GL.Types.Colors;
+with GL.Types;
 
 with GL_Test.Display_Backend;
 
-procedure GL_Test.OpenGL3 is
+procedure GL_Test.VBO is
    use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
-   
+
    procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
-     (Singles.Vector3_Pointers);
-   
-   procedure Load_Colors is new GL.Objects.Buffers.Load_To_Buffer
-     (Colors.Basic_Color_Pointers);
-   
-   procedure Load_Data (Array1, Array2            : Vertex_Array_Object;
-                        Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
-                        Program                   : GL.Objects.Programs.Program) is
+     (Single_Pointers);
+
+   procedure Load_Data (Array1  : Vertex_Array_Object;
+                        Buffer1 : GL.Objects.Buffers.Buffer;
+                        Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-   
-      Triangle1 : constant Singles.Vector3_Array
-        := ((-0.3,  0.5, -1.0),
-            (-0.8, -0.5, -1.0),
-            ( 0.2, -0.5, -1.0));
-      Triangle2 : constant Singles.Vector3_Array
-        := ((-0.2,  0.5, -1.0),
-            ( 0.3, -0.5, -1.0),
-            ( 0.8,  0.5, -1.0));
-      Color_Array : constant Colors.Basic_Color_Array
-        := ((1.0, 0.0, 0.0),
-            (0.0, 1.0, 0.0),
-            (0.0, 0.0, 1.0));
+
+      Vertices : constant Single_Array
+        := (-0.8, -0.5,     1.0, 0.0, 0.0,
+             0.2, -0.5,     0.0, 1.0, 0.0,
+            -0.3,  0.5,     0.0, 0.0, 1.0);
 
      Attrib_Pos : constant GL.Attributes.Attribute :=
        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
      Attrib_Color : constant GL.Attributes.Attribute :=
        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
    begin
-      -- First vertex array object: Colored vertices
       Array1.Bind;
       Array_Buffer.Bind (Buffer1);
-      Load_Vectors (Array_Buffer, Triangle1, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 0, 0);
+      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+
+      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 2, Single_Type, 5, 0);
       GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
-      
-      Array_Buffer.Bind (Buffer2);
-      Load_Colors (Array_Buffer, Color_Array, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Color, 3, Single_Type, 0, 0);
+
+      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Color, 3, Single_Type, 5, 2);
       GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Color);
-      
-      -- Second vertex array object: Only vertices
-      Array2.Bind;
-      Array_Buffer.Bind (Buffer3);
-      Load_Vectors (Array_Buffer, Triangle2, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 0, 0);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
    end Load_Data;
-   
+
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;
                            Program : GL.Objects.Programs.Program) is
    begin
@@ -138,48 +118,41 @@ procedure GL_Test.OpenGL3 is
       end;
    end Load_Shaders;
 
-
    Vertex_Shader   : GL.Objects.Shaders.Shader
      (Kind => GL.Objects.Shaders.Vertex_Shader);
    Fragment_Shader : GL.Objects.Shaders.Shader
      (Kind => GL.Objects.Shaders.Fragment_Shader);
    Program         : GL.Objects.Programs.Program;
-   
-   Vector_Buffer1, Vector_Buffer2, Color_Buffer : GL.Objects.Buffers.Buffer;
-   Array1, Array2 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+
+   Vector_Buffer1 : GL.Objects.Buffers.Buffer;
+   Array1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
    Display_Backend.Init;
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
-   
+
    Vertex_Shader.Initialize_Id;
    Fragment_Shader.Initialize_Id;
    Program.Initialize_Id;
+
    Vector_Buffer1.Initialize_Id;
-   Vector_Buffer2.Initialize_Id;
-   Color_Buffer.Initialize_Id;
    Array1.Initialize_Id;
-   Array2.Initialize_Id;
-   
+
    Ada.Text_IO.Put_Line ("Initialized objects");
-   
+
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
-   
+
    Ada.Text_IO.Put_Line ("Loaded shaders");
-   
-   Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2, Program);
+
+   Load_Data (Array1, Vector_Buffer1, Program);
 
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
       Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
-      
+
       Array1.Bind;
-      GL.Objects.Vertex_Arrays.Draw_Arrays(Triangles, 0, 3);
-      
-      Array2.Bind;
-      GL.Attributes.Set_Single (1, 1.0, 0.0, 0.0);
       GL.Objects.Vertex_Arrays.Draw_Arrays(Triangles, 0, 3);
 
       GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
@@ -191,4 +164,4 @@ begin
    end loop;
 
    Display_Backend.Shutdown;
-end GL_Test.OpenGL3;
+end GL_Test.VBO;
