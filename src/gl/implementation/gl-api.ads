@@ -58,8 +58,6 @@ private package GL.API is
    -- will not be statically bound, as they may be omitted by implementors
    -- when they choose to only implement the OpenGL Core Profile.
    
-
-
    subtype Zero is Int range 0 .. 0;
 
    function Get_Error return Errors.Error_Code;
@@ -88,7 +86,6 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Get_Double,
                   External_Name => "glGetDoublev");
 
-   
    procedure Get_Double_Vec2 (Name   : Enums.Getter.Parameter;
                               Target : in out Doubles.Vector2);
    pragma Import (Convention => StdCall, Entity => Get_Double_Vec2,

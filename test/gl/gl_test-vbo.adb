@@ -46,10 +46,10 @@ procedure GL_Test.VBO is
              0.2, -0.5,     0.0, 1.0, 0.0,
             -0.3,  0.5,     0.0, 0.0, 1.0);
 
-     Attrib_Pos : constant GL.Attributes.Attribute :=
-       GL.Objects.Programs.Attrib_Location (Program, "in_Position");
-     Attrib_Color : constant GL.Attributes.Attribute :=
-       GL.Objects.Programs.Attrib_Location (Program, "in_Color");
+      Attrib_Pos : constant GL.Attributes.Attribute :=
+        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
+      Attrib_Color : constant GL.Attributes.Attribute :=
+        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
    begin
       Array1.Bind;
       Array_Buffer.Bind (Buffer1);
@@ -110,8 +110,8 @@ procedure GL_Test.VBO is
                Shader : constant GL.Objects.Shaders.Shader
                  := GL.Objects.Shaders.Lists.Element (Cursor);
             begin
-               Ada.Text_IO.Put_Line ("  Kind: " & Shader.Kind'Img);
-               Ada.Text_IO.Put_Line ("  Status: " & Shader.Compile_Status'Img);
+               Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));
+               Ada.Text_IO.Put_Line ("  Status: " & Boolean'Image (Shader.Compile_Status));
             end;
             Cursor := GL.Objects.Shaders.Lists.Next (Cursor);
          end loop;
@@ -153,7 +153,7 @@ begin
       Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
       Array1.Bind;
-      GL.Objects.Vertex_Arrays.Draw_Arrays(Triangles, 0, 3);
+      GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
 
       GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
 

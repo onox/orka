@@ -87,8 +87,8 @@ package body GL.Objects.Textures is
                        return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type;
    begin
-        API.Get_Tex_Level_Parameter_Type (Object.Kind, Level,
-                                          Enums.Textures.Blue_Type, Ret);
+      API.Get_Tex_Level_Parameter_Type (Object.Kind, Level,
+                                        Enums.Textures.Blue_Type, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blue_Type;
@@ -213,7 +213,7 @@ package body GL.Objects.Textures is
    begin
       if Cursor = Texture_Maps.No_Element or else
         Texture_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
-        then
+      then
          API.Bind_Texture (Target.Kind, Object.Reference.GL_Id);
          Raise_Exception_On_OpenGL_Error;
          if Cursor = Texture_Maps.No_Element then
@@ -231,12 +231,13 @@ package body GL.Objects.Textures is
       if Cursor /= Texture_Maps.No_Element then
          return Texture_Maps.Element (Cursor);
       else
-         raise No_Object_Bound_Exception with Target.Kind'Img;
+         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Texture_Kind'Image (Target.Kind);
       end if;
    end Current_Texture;
 
+   overriding
    procedure Initialize_Id (Object : in out Texture) is
-      New_Id : Low_Level.UInt_Array (1..2) := (1 => 0, 2 => 0);
+      New_Id : Low_Level.UInt_Array (1 .. 2) := (1 => 0, 2 => 0);
    begin
       API.Gen_Textures (1, New_Id (1)'Access);
       Raise_Exception_On_OpenGL_Error;
@@ -244,6 +245,7 @@ package body GL.Objects.Textures is
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   overriding
    procedure Delete_Id (Object : in out Texture) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin

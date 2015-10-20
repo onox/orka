@@ -71,6 +71,8 @@ private
       Effect : Effects := 0;
    end record;
 
+   type Test_Window_Access is not null access Test_Window;
+
    overriding
    procedure Close_Requested (Object : not null access Test_Window);
 

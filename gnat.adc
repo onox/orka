@@ -1,0 +1,16 @@
+pragma Assertion_Policy (Pre => Check);
+pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
+
+pragma Restrictions (No_Obsolescent_Features);
+pragma Restrictions (No_Recursion);
+pragma Restrictions (No_Anonymous_Allocators);
+
+pragma Restrictions (No_Abort_Statements);
+pragma Restrictions (No_Dependence => Ada.Asynchronous_Task_Control);
+pragma Restrictions (No_Reentrancy);
+pragma Restrictions (No_Relative_Delay);
+
+pragma Restrictions (No_Implementation_Aspect_Specifications);
+--  pragma Restrictions (No_Implementation_Attributes);
+pragma Restrictions (No_Implementation_Identifiers);
+--  pragma Restrictions (No_Implementation_Pragmas);

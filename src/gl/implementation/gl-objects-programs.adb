@@ -20,7 +20,7 @@ with GL.Enums;
 with Interfaces.C.Strings;
 
 package body GL.Objects.Programs is
-   procedure Attach(Subject : Program; Shader : Shaders.Shader) is
+   procedure Attach (Subject : Program; Shader : Shaders.Shader) is
    begin
       API.Attach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
       Raise_Exception_On_OpenGL_Error;
@@ -127,7 +127,8 @@ package body GL.Objects.Programs is
         := Interfaces.C.To_C (Name);
    begin
       return Index : constant Subroutine_Index_Type := API.Get_Subroutine_Index
-        (Object.Reference.GL_Id, Shader, C_String) do
+        (Object.Reference.GL_Id, Shader, C_String)
+      do
          Raise_Exception_On_OpenGL_Error;
       end return;
    end Subroutine_Index;
@@ -141,7 +142,8 @@ package body GL.Objects.Programs is
    begin
       return Index : constant Uniform_Location_Type
         := API.Get_Subroutine_Uniform_Location
-        (Object.Reference.GL_Id, Shader, C_String) do
+        (Object.Reference.GL_Id, Shader, C_String)
+      do
          Raise_Exception_On_OpenGL_Error;
       end return;
    end Subroutine_Uniform_Locations;
@@ -152,12 +154,14 @@ package body GL.Objects.Programs is
       Raise_Exception_On_OpenGL_Error;
    end Use_Program;
 
+   overriding
    procedure Initialize_Id (Object : in out Program) is
    begin
       Object.Reference.GL_Id := API.Create_Program;
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   overriding
    procedure Delete_Id (Object : in out Program) is
    begin
       API.Delete_Program (Object.Reference.GL_Id);
@@ -202,7 +206,8 @@ package body GL.Objects.Programs is
       
       return List : constant Shaders.Lists.List := Shaders.Lists.Create
         (API.Get_Attached_Shaders (Object.Reference.GL_Id,
-                                   Size (Shader_Count))) do
+                                   Size (Shader_Count)))
+      do
          Raise_Exception_On_OpenGL_Error;
       end return;
    end Attached_Shaders;

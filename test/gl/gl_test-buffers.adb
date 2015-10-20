@@ -243,7 +243,7 @@ procedure GL_Test.Buffers is
    FB : GL.Objects.Framebuffers.Framebuffer;
    RB : GL.Objects.Renderbuffers.Renderbuffer;
 
-   Uni_Model, Uni_View, Uni_Proj, Uni_Color, Uni_Effect : Gl.Uniforms.Uniform;
+   Uni_Model, Uni_View, Uni_Proj, Uni_Color, Uni_Effect : GL.Uniforms.Uniform;
 
    Scene_Vertex_Source    : constant String := "../test/gl/shaders/buffers_scene.vert";
    Scene_Fragment_Source  : constant String := "../test/gl/shaders/buffers_scene.frag";
@@ -370,7 +370,7 @@ begin
          GL.Objects.Textures.Set_Active_Unit (0);
          GL.Objects.Textures.Targets.Texture_2D.Bind (Scene_Texture);
 
-         GL.Window.Set_Viewport (GL.Types.Int'(0), GL.Types.Int'(0), GL.Types.Int(Width), GL.Types.Int(Height));
+         GL.Window.Set_Viewport (GL.Types.Int'(0), GL.Types.Int'(0), GL.Types.Int (Width), GL.Types.Int (Height));
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
          -- Set uniforms
@@ -407,7 +407,7 @@ begin
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
          -- End drawing reflection cube
 
-         GL.Uniforms.Set_Single(Uni_Color, 1.0, 1.0, 1.0);
+         GL.Uniforms.Set_Single (Uni_Color, 1.0, 1.0, 1.0);
 
          ---------------------------------------------------------------
 

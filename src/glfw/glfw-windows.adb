@@ -119,13 +119,11 @@ package body Glfw.Windows is
       API.Get_Window_User_Pointer (Raw).Mouse_Position_Changed (X, Y);
    end Raw_Mouse_Position_Callback;
 
-
    procedure Raw_Mouse_Scroll_Callback (Raw  : System.Address;
                                         X, Y : Input.Mouse.Scroll_Offset) is
    begin
       API.Get_Window_User_Pointer (Raw).Mouse_Scrolled (X, Y);
    end Raw_Mouse_Scroll_Callback;
-
 
    procedure Raw_Mouse_Enter_Callback (Raw  : System.Address;
                                        Action : Input.Mouse.Enter_Action) is
@@ -150,11 +148,11 @@ package body Glfw.Windows is
       API.Get_Window_User_Pointer (Raw).Character_Entered (Convert (Char));
    end Raw_Character_Callback;
 
-   procedure Init(Object        : not null access Window;
-                  Width, Height : Size;
-                  Title         : String;
-                  Monitor       : Monitors.Monitor := Monitors.No_Monitor;
-                  Share_Resources_With : access Window'Class := null) is
+   procedure Init (Object        : not null access Window;
+                   Width, Height : Size;
+                   Title         : String;
+                   Monitor       : Monitors.Monitor := Monitors.No_Monitor;
+                   Share_Resources_With : access Window'Class := null) is
       use type System.Address;
       C_Title : constant Interfaces.C.char_array := Interfaces.C.To_C (Title);
       Share : System.Address;

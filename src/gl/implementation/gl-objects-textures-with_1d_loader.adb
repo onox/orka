@@ -18,8 +18,7 @@ with GL.API;
 
 package body GL.Objects.Textures.With_1D_Loader is
 
-
-   procedure Load_Empty_Texture (Object: Target;
+   procedure Load_Empty_Texture (Object : Target;
                                  Level : Mipmap_Level;
                                  Internal_Format : Pixels.Internal_Format;
                                  Width : Types.Size) is

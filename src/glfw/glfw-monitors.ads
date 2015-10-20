@@ -68,5 +68,4 @@ private
                   Disconnected => 16#00040002#);
    for Event'Size use Interfaces.C.int'Size;
 
-
 end Glfw.Monitors;

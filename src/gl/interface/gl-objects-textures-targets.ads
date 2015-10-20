@@ -49,7 +49,6 @@ package GL.Objects.Textures.Targets is
    --                      Texture Target Instances                           --
    -----------------------------------------------------------------------------
 
-
    Texture_1D       : aliased constant Texture_1D_Target.Fillable_Target;
    Texture_2D       : aliased constant Texture_2D_Target.Fillable_Target;
    Texture_3D       : aliased constant Texture_3D_Target.Fillable_Target;
@@ -151,6 +150,5 @@ private
      := Texture_Buffer_Target'
        (Texture_Target'(Kind => Low_Level.Enums.Texture_Buffer)
         with null record);
-
 
 end GL.Objects.Textures.Targets;

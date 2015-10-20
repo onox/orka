@@ -40,18 +40,29 @@ project OpenGL_Shared is
       end case;
    end Builder;
 
+   Common_Compiler_Switches := (
+      "-O2", "-march=native",
+      "-gnat2012",
+      "-gnatf",         --  Full errors
+      "-gnato",         --  Numeric overflow checking
+      "-fstack-check",  --  Stack overflow checking
+      "-gnatVa",
+      "-gnatwa",        --  All warnings
+      "-gnatw.il.l.n.s",
+      "-gnaty",
+      "-gnatyAdOSux-msbc",
+      "-gnatwF"
+   );
+
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("ada") use ("-gnat2012", "-gnatwa",
-                                              "-g",
-                                              "-fstack-check");
+            for Default_Switches ("ada") use Common_Compiler_Switches & ("-g");
          when "release" =>
-            for Default_Switches ("ada") use ("-gnat2012", "-gnatwa",
-                                              "-O2",
-                                              "-gnatn2",
-                                              "-fstack-check");
+            for Default_Switches ("ada") use Common_Compiler_Switches & ("-gnatn2");
       end case;
+
+      for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
 end OpenGL_Shared;

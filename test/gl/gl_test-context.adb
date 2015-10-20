@@ -18,6 +18,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with GL.Context;
+with GL.Types;
 
 with GL_Test.Display_Backend;
 
@@ -28,8 +29,8 @@ procedure GL_Test.Context is
       use Ada.Text_IO;
    begin
       begin
-         Put_Line ("Major version: " & GL.Context.Major_Version'Img);
-         Put_Line ("Minor version: " & GL.Context.Minor_Version'Img);
+         Put_Line ("Major version: " & GL.Types.Int'Image (GL.Context.Major_Version));
+         Put_Line ("Minor version: " & GL.Types.Int'Image (GL.Context.Minor_Version));
       exception
          when others =>
             Put_Line ("OpenGL version too old for querying major and minor");

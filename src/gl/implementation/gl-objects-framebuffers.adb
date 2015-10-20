@@ -21,7 +21,6 @@ with GL.API;
 with GL.Enums.Getter;
 
 package body GL.Objects.Framebuffers is
-   ------------
 
    function Status (Target : Framebuffer_Target) return Framebuffer_Status is
    begin
@@ -199,6 +198,7 @@ package body GL.Objects.Framebuffers is
       return Boolean (Ret);
    end Default_Fixed_Sample_Locations;
 
+   overriding
    procedure Initialize_Id (Object : in out Framebuffer) is
       New_Id : UInt := 0;
    begin
@@ -208,6 +208,7 @@ package body GL.Objects.Framebuffers is
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   overriding
    procedure Delete_Id (Object : in out Framebuffer) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
@@ -244,7 +245,7 @@ package body GL.Objects.Framebuffers is
          when Low_Level.Enums.Read => return (1 => Low_Level.Enums.Read);
          when Low_Level.Enums.Draw => return (1 => Low_Level.Enums.Draw);
          when Low_Level.Enums.Read_Draw =>
-            return (1 =>Low_Level.Enums.Draw, 2 => Low_Level.Enums.Read);
+            return (1 => Low_Level.Enums.Draw, 2 => Low_Level.Enums.Read);
       end case;
    end Backend_Framebuffer_Targets;
    pragma Inline (Backend_Framebuffer_Targets);
@@ -283,7 +284,7 @@ package body GL.Objects.Framebuffers is
         := Current_Framebuffers.Find (Targets (1));
    begin
       if Cursor = Framebuffer_Maps.No_Element then
-         raise No_Object_Bound_Exception with Target.Kind'Img;
+         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Framebuffer_Kind'Image (Target.Kind);
       else
          return Framebuffer_Maps.Element (Cursor);
       end if;

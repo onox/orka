@@ -49,11 +49,13 @@ package body GL_Test.Display_Backend is
    function Clamp_Zoom is new Clamp (Float, Mouse_Zoom);
    function Normalize_Mouse is new Normalize_Periodic (Float, Mouse_Pos);
 
+   overriding
    procedure Close_Requested (Object : not null access Test_Window) is
    begin
       Object.Destroy;
    end Close_Requested;
 
+   overriding
    procedure Key_Changed (Object   : not null access Test_Window;
                           Key      : Glfw.Input.Keys.Key;
                           Scancode : Glfw.Input.Keys.Scancode;
@@ -68,6 +70,7 @@ package body GL_Test.Display_Backend is
       end if;
    end Key_Changed;
 
+   overriding
    procedure Mouse_Position_Changed (Object : not null access Test_Window;
                                      X, Y   : Glfw.Input.Mouse.Coordinate) is
    begin
@@ -80,12 +83,14 @@ package body GL_Test.Display_Backend is
       end if;
    end Mouse_Position_Changed;
 
+   overriding
    procedure Mouse_Scrolled (Object : not null access Test_Window;
                              X, Y   : Glfw.Input.Mouse.Scroll_Offset) is
    begin
       Object.Zoom_Distance := Clamp_Zoom (Object.Zoom_Distance - Float (Y) / 2.0);
    end Mouse_Scrolled;
 
+   overriding
    procedure Mouse_Button_Changed (Object  : not null access Test_Window;
                                    Button  : Glfw.Input.Mouse.Button;
                                    State   : Glfw.Input.Button_State;
@@ -105,11 +110,11 @@ package body GL_Test.Display_Backend is
       end if;
    end Mouse_Button_Changed;
 
-   Main_Window : constant not null access Test_Window := new Test_Window;
+   Main_Window : constant Test_Window_Access := new Test_Window;
 
    procedure Print_Error (Code : Glfw.Errors.Kind; Description : String) is
    begin
-      Ada.Text_IO.Put_Line ("Error occured (" & Code'Img & "): " & Description);
+      Ada.Text_IO.Put_Line ("Error occured (" & Glfw.Errors.Kind'Image (Code) & "): " & Description);
    end Print_Error;
 
    procedure Enable_Print_Errors is

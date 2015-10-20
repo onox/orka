@@ -24,14 +24,16 @@ package GL.Objects.Textures.With_1D_Loader is
    type Target is new Base with null record;
 
    procedure Load_Empty_Texture
-     (Object: Target; Level : Mipmap_Level;
+     (Object : Target;
+      Level : Mipmap_Level;
       Internal_Format : Pixels.Internal_Format;
       Width : Types.Size);
 
    type Fillable_Target is new With_1D_Loader.Target with null record;
 
    procedure Load_From_Data
-     (Object : Fillable_Target; Level : Mipmap_Level;
+     (Object : Fillable_Target;
+      Level : Mipmap_Level;
       Internal_Format : Pixels.Internal_Format;
       Width : Types.Size;
       Source_Format : Pixels.Format;

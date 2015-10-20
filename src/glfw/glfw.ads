@@ -34,11 +34,9 @@ package Glfw is
 
    function Version_String return String;
 
-
    function Time return Seconds;
 
    procedure Set_Time (Value : Seconds);
-
 
    function Extension_Supported (Name : String) return Boolean;
 

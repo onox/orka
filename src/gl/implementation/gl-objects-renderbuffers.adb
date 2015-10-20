@@ -139,7 +139,7 @@ package body GL.Objects.Renderbuffers is
       if Cursor = Renderbuffer_Maps.No_Element or else
         Renderbuffer_Maps.Element
           (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
-        then
+      then
          API.Bind_Renderbuffer (Target.Kind, Object.Reference.GL_Id);
          Raise_Exception_On_OpenGL_Error;
          if Cursor = Renderbuffer_Maps.No_Element then
@@ -155,12 +155,13 @@ package body GL.Objects.Renderbuffers is
         := Current_Renderbuffers.Find (Target.Kind);
    begin
       if Cursor = Renderbuffer_Maps.No_Element then
-         raise No_Object_Bound_Exception with Target.Kind'Img;
+         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Renderbuffer_Kind'Image (Target.Kind);
       else
          return Renderbuffer_Maps.Element (Cursor);
       end if;
    end Current;
 
+   overriding
    procedure Initialize_Id (Object : in out Renderbuffer) is
       New_Id : UInt := 0;
    begin
@@ -170,6 +171,7 @@ package body GL.Objects.Renderbuffers is
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   overriding
    procedure Delete_Id (Object : in out Renderbuffer) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin

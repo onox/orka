@@ -29,7 +29,6 @@ package GL.Low_Level is
    -- However, they might be used by other APIs that use OpenGL and thus are
    -- exposed publicly here.
 
-
    -- Boolean with the representation used by the OpenGL API (unsigned char).
    -- Is converted to a standard Boolean by the wrapper.
    type Bool is new Boolean;

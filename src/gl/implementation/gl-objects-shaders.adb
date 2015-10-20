@@ -82,25 +82,27 @@ package body GL.Objects.Shaders is
            := C.Strings.New_String (Info_Log);
          Actual_Length : Size;
       begin
-         API.Get_Shader_Info_Log (Subject.Reference.GL_Id,Log_Length + 1,
-                           Actual_Length, C_Info_Log);
-         if (Int (Actual_Length) /= Log_Length) then
+         API.Get_Shader_Info_Log (Subject.Reference.GL_Id, Log_Length + 1,
+           Actual_Length, C_Info_Log);
+         if Int (Actual_Length) /= Log_Length then
             raise Constraint_Error with "Expected info log length of" &
-                                        Log_Length'Img & ", actually got" &
-                                        Actual_Length'Img & ".";
+                                        Size'Image (Log_Length) & ", actually got" &
+                                        Size'Image (Actual_Length) & ".";
          end if;
          Info_Log := C.Strings.Value (C_Info_Log, C.size_t (Actual_Length));
          C.Strings.Free (C_Info_Log);
          return Info_Log;
       end;
    end Info_Log;
-   
+
+   overriding
    procedure Initialize_Id (Object : in out Shader) is
    begin
       Object.Reference.GL_Id := API.Create_Shader (Object.Kind);
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   overriding
    procedure Delete_Id (Object : in out Shader) is
    begin
       API.Delete_Shader (Object.Reference.GL_Id);

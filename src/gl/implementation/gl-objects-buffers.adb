@@ -42,14 +42,13 @@ package body GL.Objects.Buffers is
 
    Current_Buffers : Buffer_Maps.Map;
 
-
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class) is
       Cursor : constant Buffer_Maps.Cursor
         := Current_Buffers.Find (Target.Kind);
    begin
       if Cursor = Buffer_Maps.No_Element or else
         Buffer_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
-        then
+      then
          API.Bind_Buffer (Target.Kind, Object.Reference.GL_Id);
          Raise_Exception_On_OpenGL_Error;
          if Cursor = Buffer_Maps.No_Element then
@@ -67,7 +66,7 @@ package body GL.Objects.Buffers is
       if Cursor /= Buffer_Maps.No_Element then
          return Buffer_Maps.Element (Cursor);
       else
-         raise No_Object_Bound_Exception with Target.Kind'Img;
+         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Buffer_Kind'Image (Target.Kind);
       end if;
    end Current_Object;
 
@@ -82,7 +81,7 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
    end Load_To_Buffer;
 
-   procedure Allocate (Target : Buffer_Target; Number_Of_Bytes: Long;
+   procedure Allocate (Target : Buffer_Target; Number_Of_Bytes : Long;
       Usage  : Buffer_Usage) is
    begin
       API.Buffer_Data (Target.Kind, Low_Level.SizeIPtr (Number_Of_Bytes),

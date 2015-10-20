@@ -82,7 +82,8 @@ package body GL.Context is
             end if;
 
             return List : String_List
-              (1 .. Ada.Strings.Fixed.Count (Raw, " ") + 1) do
+              (1 .. Ada.Strings.Fixed.Count (Raw, " ") + 1)
+            do
                for I in List'Range loop
                   Next_Space := Ada.Strings.Fixed.Index (Raw, " ", Cur_Pos);
                   if Next_Space = 0 then
@@ -98,7 +99,6 @@ package body GL.Context is
       end if;
    end Extensions;
 
-
    function Has_Extension (Name : String) return Boolean is
       use type Errors.Error_Code;
       Count : aliased Int;
@@ -106,7 +106,7 @@ package body GL.Context is
       API.Get_Integer (Enums.Getter.Num_Extensions, Count'Access);
       if API.Get_Error = Errors.No_Error then
          -- we are on OpenGL 3
-         for i in 1 .. Count loop
+         for I in 1 .. Count loop
             declare
                Extension : constant String := C.Strings.Value
                  (API.Get_String_I (Enums.Getter.Extensions, UInt (I - 1)));

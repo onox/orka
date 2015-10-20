@@ -57,10 +57,10 @@ procedure GL_Test.OpenGL3 is
             (0.0, 1.0, 0.0),
             (0.0, 0.0, 1.0));
 
-     Attrib_Pos : constant GL.Attributes.Attribute :=
-       GL.Objects.Programs.Attrib_Location (Program, "in_Position");
-     Attrib_Color : constant GL.Attributes.Attribute :=
-       GL.Objects.Programs.Attrib_Location (Program, "in_Color");
+      Attrib_Pos : constant GL.Attributes.Attribute :=
+        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
+      Attrib_Color : constant GL.Attributes.Attribute :=
+        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
    begin
       -- First vertex array object: Colored vertices
       Array1.Bind;
@@ -130,14 +130,13 @@ procedure GL_Test.OpenGL3 is
                Shader : constant GL.Objects.Shaders.Shader
                  := GL.Objects.Shaders.Lists.Element (Cursor);
             begin
-               Ada.Text_IO.Put_Line ("  Kind: " & Shader.Kind'Img);
-               Ada.Text_IO.Put_Line ("  Status: " & Shader.Compile_Status'Img);
+               Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));
+               Ada.Text_IO.Put_Line ("  Status: " & Boolean'Image (Shader.Compile_Status));
             end;
             Cursor := GL.Objects.Shaders.Lists.Next (Cursor);
          end loop;
       end;
    end Load_Shaders;
-
 
    Vertex_Shader   : GL.Objects.Shaders.Shader
      (Kind => GL.Objects.Shaders.Vertex_Shader);
@@ -176,11 +175,11 @@ begin
       Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
       
       Array1.Bind;
-      GL.Objects.Vertex_Arrays.Draw_Arrays(Triangles, 0, 3);
+      GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
       
       Array2.Bind;
       GL.Attributes.Set_Single (1, 1.0, 0.0, 0.0);
-      GL.Objects.Vertex_Arrays.Draw_Arrays(Triangles, 0, 3);
+      GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
 
       GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
 

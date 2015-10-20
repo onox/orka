@@ -62,6 +62,7 @@ package body GL.Objects is
       Object.Reference.GL_Id := Id;
    end Set_Raw_Id;
 
+   overriding
    function "=" (Left, Right : GL_Object) return Boolean is
    begin
       return Left.Reference = Right.Reference;

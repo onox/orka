@@ -72,7 +72,7 @@ package body GL.Objects.Textures.Targets is
               GL.Low_Level.Enums.Texture_2D_Array |
               GL.Low_Level.Enums.Proxy_Texture_1D_Array |
               GL.Low_Level.Enums.Proxy_Texture_2D_Array =>
-            raise Not_Implemented_Exception with Kind'Img;
+            raise Not_Implemented_Exception with GL.Low_Level.Enums.Texture_Kind'Image (Kind);
          when GL.Low_Level.Enums.Texture_Buffer =>
             return Texture_Buffer'Access;
       end case;

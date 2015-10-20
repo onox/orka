@@ -57,6 +57,7 @@ package GL.Objects is
    -- Setter for low-level access
    procedure Set_Raw_Id (Object : GL_Object; Id : UInt);
 
+   overriding
    function "=" (Left, Right : GL_Object) return Boolean;
 
    No_Object_Bound_Exception : exception;

@@ -39,6 +39,7 @@ package body GL.Objects.Vertex_Arrays is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
+   overriding
    procedure Initialize_Id (Object : in out Vertex_Array_Object) is
       New_Id : UInt := 0;
    begin
@@ -53,6 +54,7 @@ package body GL.Objects.Vertex_Arrays is
       return Current_Object;
    end Current_Array_Object;
 
+   overriding
    procedure Delete_Id (Object : in out Vertex_Array_Object) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin

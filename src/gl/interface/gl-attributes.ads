@@ -26,8 +26,12 @@ package GL.Attributes is
    procedure Set_Vertex_Attrib_Pointer (Index  : Attribute;
                                         Count  : Component_Count;
                                         Kind   : Numeric_Type;
-                                        Stride, Offset : Size);
-   
+                                        Stride, Offset : Size)
+     with Pre => Offset <= Stride and
+                 (if Stride > 0 then
+                    Count  <= Stride and
+                    Count  <= Stride - Offset);
+
    procedure Enable_Vertex_Attrib_Array  (Index : Attribute);
    procedure Disable_Vertex_Attrib_Array (Index : Attribute);
    

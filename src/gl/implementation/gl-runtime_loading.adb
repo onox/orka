@@ -94,19 +94,19 @@ package body GL.Runtime_Loading is
    function Function_With_2_Params (Param1 : Param1_Type;
                                     Param2 : Param2_Type)
                                    return Return_Type is
-     type Function_Reference is
-       access function (Param1 : Param1_Type; Param2 : Param2_Type)
-       return Return_Type;
-     pragma Convention (StdCall, Function_Reference);
+      type Function_Reference is
+        access function (Param1 : Param1_Type; Param2 : Param2_Type)
+        return Return_Type;
+      pragma Convention (StdCall, Function_Reference);
 
-     function Load_Function is new Load (Function_Reference);
-     Reference : constant Function_Reference := Load_Function (Function_Name);
+      function Load_Function is new Load (Function_Reference);
+      Reference : constant Function_Reference := Load_Function (Function_Name);
    begin
-     if Reference = null then
-        raise Feature_Not_Supported_Exception with Function_Name;
-     else
-        return Reference (Param1, Param2);
-     end if;
+      if Reference = null then
+         raise Feature_Not_Supported_Exception with Function_Name;
+      else
+         return Reference (Param1, Param2);
+      end if;
    end Function_With_2_Params;
    
    function Function_With_3_Params (Param1 : Param1_Type;
@@ -158,7 +158,6 @@ package body GL.Runtime_Loading is
          return Ret;
       end if;
    end Array_Getter_With_4_Params;
-      
 
    procedure Procedure_Without_Params is
       type Procedure_Reference is
@@ -203,9 +202,9 @@ package body GL.Runtime_Loading is
         := Load_Procedure (Procedure_Name);
    begin
       if Reference = null then
-        raise Feature_Not_Supported_Exception with Procedure_Name;
+         raise Feature_Not_Supported_Exception with Procedure_Name;
       else
-        Reference (Param1, Param2);
+         Reference (Param1, Param2);
       end if;
    end Procedure_With_2_Params;
 
@@ -222,9 +221,9 @@ package body GL.Runtime_Loading is
         := Load_Procedure (Procedure_Name);
    begin
       if Reference = null then
-        raise Feature_Not_Supported_Exception with Procedure_Name;
+         raise Feature_Not_Supported_Exception with Procedure_Name;
       else
-        Reference (Param1, Param2, Param3);
+         Reference (Param1, Param2, Param3);
       end if;
    end Procedure_With_3_Params;
 
@@ -242,9 +241,9 @@ package body GL.Runtime_Loading is
         := Load_Procedure (Procedure_Name);
    begin
       if Reference = null then
-        raise Feature_Not_Supported_Exception with Procedure_Name;
+         raise Feature_Not_Supported_Exception with Procedure_Name;
       else
-        Reference (Param1, Param2, Param3, Param4);
+         Reference (Param1, Param2, Param3, Param4);
       end if;
    end Procedure_With_4_Params;
    
@@ -443,9 +442,9 @@ package body GL.Runtime_Loading is
         := Load_Procedure (Procedure_Name);
    begin
       if Reference = null then
-        raise Feature_Not_Supported_Exception with Procedure_Name;
+         raise Feature_Not_Supported_Exception with Procedure_Name;
       else
-        Reference (Param1, Param2, Value);
+         Reference (Param1, Param2, Value);
       end if;
    end Getter_With_3_Params;
    
@@ -476,7 +475,7 @@ package body GL.Runtime_Loading is
       type Procedure_Reference is
         access procedure (Param1 : Param1_Type; Buffer_Size : Size_Type;
                           Length : out Size_Type;
-						  Value : Interfaces.C.Strings.chars_ptr);
+                          Value : Interfaces.C.Strings.chars_ptr);
       pragma Convention (StdCall, Procedure_Reference);
       
       function Load_Procedure is new Load (Procedure_Reference);
