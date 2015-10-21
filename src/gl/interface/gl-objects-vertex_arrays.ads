@@ -19,9 +19,10 @@ package GL.Objects.Vertex_Arrays is
    type Vertex_Array_Object is new GL_Object with private;
    
    procedure Bind (Object : Vertex_Array_Object);
-   
+
    procedure Draw_Arrays (Mode : Connection_Mode; First, Count : Size);
-   
+   procedure Draw_Arrays (Mode : Connection_Mode; First, Count, Instances : Size);
+
    function Current_Array_Object return Vertex_Array_Object;
    
    overriding

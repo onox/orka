@@ -34,7 +34,9 @@ package GL.Attributes is
 
    procedure Enable_Vertex_Attrib_Array  (Index : Attribute);
    procedure Disable_Vertex_Attrib_Array (Index : Attribute);
-   
+
+   procedure Set_Vertex_Attrib_Divisor (Index : Attribute; Divisor : UInt);
+
    procedure Set_Short (Index : Attribute; Value          : Short);
    procedure Set_Short (Index : Attribute; V1, V2         : Short);
    procedure Set_Short (Index : Attribute; Value          : Shorts.Vector2);

@@ -246,12 +246,18 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Draw_Arrays,
                   External_Name => "glDrawArrays");
 
+   procedure Draw_Arrays_Instanced is new Loader.Procedure_With_4_Params
+     ("glDrawArraysInstanced", Connection_Mode, Int, Size, Size);
+
    procedure Draw_Elements (Mode       : Connection_Mode;
                             Count      : Size;
                             Index_Type : Unsigned_Numeric_Type;
                             Indices    : Zero);
    pragma Import (Convention => StdCall, Entity => Draw_Elements,
                   External_Name => "glDrawElements");
+
+   procedure Draw_Elements_Instanced is new Loader.Procedure_With_5_Params
+     ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type, Zero, Size);
 
    -----------------------------------------------------------------------------
    --                               Blending                                  --
@@ -843,7 +849,10 @@ private package GL.API is
    
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);
-   
+
+   procedure Vertex_Attrib_Divisor is new Loader.Procedure_With_2_Params
+     ("glVertexAttribDivisor", Attributes.Attribute, UInt);
+
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------

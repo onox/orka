@@ -63,10 +63,13 @@ package GL.Objects.Buffers is
    function Mapped      (Target : Buffer_Target) return Boolean;
    function Size        (Target : Buffer_Target) return Size;
    function Usage       (Target : Buffer_Target) return Buffer_Usage;
-   
+
    procedure Draw_Elements (Mode : Connection_Mode; Count : Types.Size;
                             Index_Type : Unsigned_Numeric_Type);
-   
+   procedure Draw_Elements (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Instances  : Types.Size);
+
    overriding
    procedure Initialize_Id (Object : in out Buffer);
    

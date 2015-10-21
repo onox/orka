@@ -68,9 +68,12 @@ package body GL.Attributes is
 
    procedure Enable_Vertex_Attrib_Array  (Index : Attribute) renames
      API.Enable_Vertex_Attrib_Array;
-   
+
    procedure Disable_Vertex_Attrib_Array (Index : Attribute) renames
      API.Disable_Vertex_Attrib_Array;
+
+   procedure Set_Vertex_Attrib_Divisor (Index : Attribute; Divisor : UInt) renames
+     API.Vertex_Attrib_Divisor;
 
    procedure Set_Short (Index : Attribute; Value          : Short) renames
      API.Shorts.Vertex_Attrib1;

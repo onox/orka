@@ -95,7 +95,15 @@ package body GL.Objects.Buffers is
       API.Draw_Elements (Mode, Count, Index_Type, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Elements;
-   
+
+   procedure Draw_Elements (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Instances  : Types.Size) is
+   begin
+      API.Draw_Elements_Instanced (Mode, Count, Index_Type, 0, Instances);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Elements;
+
    procedure Map (Target : in out Buffer_Target; Access_Type : Access_Kind;
                   Pointer : out Pointers.Pointer) is
       function Map_Buffer is new API.Loader.Function_With_2_Params
