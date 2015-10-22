@@ -147,12 +147,27 @@ package body GL.Objects.Programs is
          Raise_Exception_On_OpenGL_Error;
       end return;
    end Subroutine_Uniform_Locations;
-      
+
    procedure Use_Program (Subject : Program) is
    begin
       API.Use_Program (Subject.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
    end Use_Program;
+
+   procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean) is
+   begin
+      API.Program_Parameter_Bool (Subject.Reference.GL_Id,
+                                  Enums.Program_Binary_Retrievable_Hint,
+                                  Low_Level.Bool (Retrievable));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Binary_Retrievable;
+
+   procedure Set_Separable (Subject : Program; Separable : Boolean) is
+   begin
+      API.Program_Parameter_Bool (Subject.Reference.GL_Id, Enums.Program_Separable,
+                                  Low_Level.Bool (Separable));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Separable;
 
    overriding
    procedure Initialize_Id (Object : in out Program) is

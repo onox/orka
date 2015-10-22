@@ -60,7 +60,10 @@ package GL.Objects.Programs is
                                           return Uniform_Location_Type;
    
    procedure Use_Program (Subject : Program);
-   
+
+   procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean);
+   procedure Set_Separable (Subject : Program; Separable : Boolean);
+
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform;
    

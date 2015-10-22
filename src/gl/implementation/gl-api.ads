@@ -792,6 +792,9 @@ private package GL.API is
    procedure Get_Program_Param is new Loader.Getter_With_3_Params
      ("glGetProgramiv", UInt, Enums.Program_Param, Int);
 
+   procedure Program_Parameter_Bool is new Loader.Procedure_With_3_Params
+     ("glProgramParameteri", UInt, Enums.Program_Set_Param, Low_Level.Bool);
+
    procedure Attach_Shader is new Loader.Procedure_With_2_Params
      ("glAttachShader", UInt, UInt);
 
@@ -819,7 +822,7 @@ private package GL.API is
 
    procedure Validate_Program is new Loader.Procedure_With_1_Param
      ("glValidateProgram", UInt);
-   
+
    function Get_Uniform_Location is new Loader.Function_With_2_Params
      ("glGetUniformLocation", UInt, C.char_array, Uniforms.Uniform);
 

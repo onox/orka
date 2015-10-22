@@ -65,18 +65,22 @@ private package GL.Enums is
    type Shader_Param is (Shader_Type, Delete_Status, Compile_Status,
                          Info_Log_Length, Shader_Source_Length);
    
-   type Program_Param is (Program_Binary_Length, Geometry_Vertices_Out,
+   type Program_Param is (Compute_Work_Group_Size, Program_Binary_Length,
+                          Geometry_Vertices_Out,
                           Geometry_Input_Type, Geometry_Output_Type,
                           Active_Uniform_Block_Max_Name_Length,
                           Active_Uniform_Blocks, Delete_Status,
                           Link_Status, Validate_Status, Info_Log_Length,
-                          Attached_Shaders, Active_Uniforms,
-                          Active_Uniform_Max_Length, Active_Attributes, 
-                          Active_Attribute_Max_Length,
+                          Attached_Shaders,
+                          Active_Uniforms, Active_Uniform_Max_Length,
+                          Active_Attributes, Active_Attribute_Max_Length,
                           Transform_Feedback_Varying_Max_Length,
                           Transform_Feedback_Buffer_Mode,
-                          Transform_Feedback_Varyings);
-   
+                          Transform_Feedback_Varyings,
+                          Active_Atomic_Counter_Buffers);
+
+   type Program_Set_Param is (Program_Binary_Retrievable_Hint, Program_Separable);
+
    type Program_Stage_Param is (Active_Subroutines, Active_Subroutine_Uniforms,
                                 Active_Subroutine_Uniform_Locations,
                                 Active_Subroutine_Max_Length,
@@ -152,7 +156,8 @@ private
                          Shader_Source_Length => 16#8B88#);
    for Shader_Param'Size use Low_Level.Enum'Size;
    
-   for Program_Param use (Program_Binary_Length       => 16#8741#,
+   for Program_Param use (Compute_Work_Group_Size     => 16#8267#,
+                          Program_Binary_Length       => 16#8741#,
                           Geometry_Vertices_Out       => 16#8916#,
                           Geometry_Input_Type         => 16#8917#,
                           Geometry_Output_Type        => 16#8918#,
@@ -169,9 +174,14 @@ private
                           Active_Attribute_Max_Length => 16#8B8A#,
                           Transform_Feedback_Varying_Max_Length => 16#8C76#,
                           Transform_Feedback_Buffer_Mode        => 16#8C7F#,
-                          Transform_Feedback_Varyings           => 16#8C83#);
+                          Transform_Feedback_Varyings           => 16#8C83#,
+                          Active_Atomic_Counter_Buffers         => 16#92D9#);
    for Program_Param'Size use Low_Level.Enum'Size;
-                                
+
+   for Program_Set_Param use (Program_Binary_Retrievable_Hint => 16#8257#,
+                              Program_Separable               => 16#8258#);
+   for Program_Set_Param'Size use Low_Level.Enum'Size;
+
    for Program_Stage_Param use (Active_Subroutines => 16#8DE5#,
                                 Active_Subroutine_Uniforms => 16#8DE6#,
                                 Active_Subroutine_Uniform_Locations => 16#8E47#,
