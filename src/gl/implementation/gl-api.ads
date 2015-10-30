@@ -857,6 +857,34 @@ private package GL.API is
      ("glVertexAttribDivisor", Attributes.Attribute, UInt);
 
    -----------------------------------------------------------------------------
+   --                                Pipelines                                --
+   -----------------------------------------------------------------------------
+
+   procedure Use_Program_Stages is new Loader.Procedure_With_3_Params
+     ("glUseProgramStages", UInt, Objects.Shaders.Shader_Type, UInt);
+
+   procedure Gen_Program_Pipelines is new Loader.Getter_With_2_Params
+      ("glGenProgramPipelines", Size, UInt);
+
+   procedure Delete_Program_Pipelines is new Loader.Array_Proc_With_2_Params
+      ("glDeleteProgramPipelines", Size, UInt, Low_Level.UInt_Array);
+
+   procedure Bind_Program_Pipeline is new Loader.Procedure_With_1_Param
+      ("glBindProgramPipeline", UInt);
+
+   procedure Active_Shader_Program is new Loader.Procedure_With_2_Params
+      ("glActiveShaderProgram", UInt, UInt);
+
+   procedure Get_Program_Pipeline_Param is new Loader.Getter_With_3_Params
+     ("glGetProgramPipelineiv", UInt, Enums.Program_Pipeline_Param, Int);
+
+   procedure Get_Program_Pipeline_Info_Log is new Loader.String_Getter_With_4_Params
+     ("glGetProgramPipelineInfoLog", Size, UInt);
+
+   procedure Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
+     ("glValidateProgramPipeline", UInt);
+
+   -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
    

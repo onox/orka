@@ -86,6 +86,12 @@ private package GL.Enums is
                                 Active_Subroutine_Max_Length,
                                 Active_Subroutine_Uniform_Max_Length);
 
+   type Program_Pipeline_Param is (Active_Program,
+                                   Fragment_Shader, Vertex_Shader,
+                                   Validate_Status, Info_Log_Length,
+                                   Geometry_Shader,
+                                   Tess_Evaluation_Shader, Tess_Control_Shader);
+
    type Clamp_Color_Param is (Clamp_Read_Color);
    
    type Pixel_Store_Param is (Unpack_Swap_Bytes, Unpack_LSB_First,
@@ -188,7 +194,17 @@ private
                                 Active_Subroutine_Max_Length => 16#8E48#,
                                 Active_Subroutine_Uniform_Max_Length => 16#8E49#);
    for Program_Stage_Param'Size use Low_Level.Enum'Size;
-   
+
+   for Program_Pipeline_Param use (Active_Program         => 16#8259#,
+                                   Fragment_Shader        => 16#8B30#,
+                                   Vertex_Shader          => 16#8B31#,
+                                   Validate_Status        => 16#8B83#,
+                                   Info_Log_Length        => 16#8B84#,
+                                   Geometry_Shader        => 16#8DD9#,
+                                   Tess_Evaluation_Shader => 16#8E87#,
+                                   Tess_Control_Shader    => 16#8E88#);
+   for Program_Pipeline_Param'Size use Low_Level.Enum'Size;
+
    for Clamp_Color_Param use (Clamp_Read_Color => 16#891C#);
    for Clamp_Color_Param'Size use Low_Level.Enum'Size;
    
