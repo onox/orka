@@ -7,29 +7,9 @@ library project OpenGL.Glfw is
    for Library_Name use "GlfwAda";
    for Library_Kind use OpenGL_Shared'Library_Kind;
 
-   
-   type GLFW_Version_Type is ("2", "3");
-   GLFW_Version : GLFW_Version_Type := external ("GLFW_Version");
-   
-   GLFW_Sources := ("src/glfw");
-   
-   -- Most tests need a GLFW window. An abstraction layer is provided
-   -- so that the test work with GLFW 2 and 3. Test project can reference
-   -- this variable in order to include the appropriate sources for
-   -- the defined GLFW version.
+   GLFW_Sources := ("src/glfw", "src/glfw");
    Shared_Test_Sources := ("tests/shared");
-   
-   GLFW_Lib := "";
-   case GLFW_Version is
-      when "2" =>
-         GLFW_Sources := GLFW_Sources & "src/glfw/v2";
-         Shared_Test_Sources := Shared_Test_Sources & "tests/shared/glfw2_backend";
-         GLFW_Lib := "-lglfw";
-      when "3" =>
-         GLFW_Sources := GLFW_Sources & "src/glfw/v3";
-         Shared_Test_Sources := Shared_Test_Sources & "tests/shared/glfw3_backend";
-         GLFW_Lib := "-lglfw3";
-   end case;
+   GLFW_Lib := "-lglfw";
    
    for Source_Dirs use GLFW_Sources;
    for Object_Dir use "obj";
