@@ -22,7 +22,7 @@ package body GL.API is
         := Interfaces.C.Strings.New_String (Function_Name);
 
       Result : constant System.Address
-        := GL.WGL.wglGetProcAddress (GL_Function_Name_C);
+        := GL.WGL.Get_Proc_Address (GL_Function_Name_C);
    begin
       Interfaces.C.Strings.Free (GL_Function_Name_C);
       return Result;
