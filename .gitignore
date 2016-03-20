@@ -1,5 +1,6 @@
-lib
-obj
-bin
+/lib/
+/obj/
+/bin/
+*.swp
 .DS_Store
 .#*#
