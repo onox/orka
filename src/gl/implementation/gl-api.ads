@@ -29,6 +29,7 @@ with GL.Objects.Textures;
 with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
 with GL.Objects.Programs;
+with GL.Objects.Queries;
 with GL.Objects.Shaders;
 with GL.Pixels;
 with GL.Rasterization;
@@ -105,6 +106,11 @@ private package GL.API is
                         Target : in out Colors.Color);
    pragma Import (Convention => StdCall, Entity => Get_Color,
                   External_Name => "glGetFloatv");
+
+   procedure Get_Long (Name : Enums.Getter.Parameter;
+                       Target : access Long);
+   pragma Import (Convention => StdCall, Entity => Get_Long,
+                  External_Name => "glGetInteger64v");
 
    procedure Get_Integer (Name   : Enums.Getter.Parameter;
                           Target : access Int);
@@ -864,16 +870,16 @@ private package GL.API is
      ("glUseProgramStages", UInt, Objects.Shaders.Shader_Type, UInt);
 
    procedure Gen_Program_Pipelines is new Loader.Getter_With_2_Params
-      ("glGenProgramPipelines", Size, UInt);
+     ("glGenProgramPipelines", Size, UInt);
 
    procedure Delete_Program_Pipelines is new Loader.Array_Proc_With_2_Params
-      ("glDeleteProgramPipelines", Size, UInt, Low_Level.UInt_Array);
+     ("glDeleteProgramPipelines", Size, UInt, Low_Level.UInt_Array);
 
    procedure Bind_Program_Pipeline is new Loader.Procedure_With_1_Param
-      ("glBindProgramPipeline", UInt);
+     ("glBindProgramPipeline", UInt);
 
    procedure Active_Shader_Program is new Loader.Procedure_With_2_Params
-      ("glActiveShaderProgram", UInt, UInt);
+     ("glActiveShaderProgram", UInt, UInt);
 
    procedure Get_Program_Pipeline_Param is new Loader.Getter_With_3_Params
      ("glGetProgramPipelineiv", UInt, Enums.Program_Pipeline_Param, Int);
@@ -883,6 +889,40 @@ private package GL.API is
 
    procedure Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glValidateProgramPipeline", UInt);
+
+   -----------------------------------------------------------------------------
+   --                                 Queries                                 --
+   -----------------------------------------------------------------------------
+
+   procedure Gen_Queries is new Loader.Getter_With_2_Params
+     ("glGenQueries", Size, UInt);
+
+   procedure Delete_Queries is new Loader.Array_Proc_With_2_Params
+     ("glDeleteQueries", Size, UInt, Low_Level.UInt_Array);
+
+   procedure Begin_Query_Indexed is new Loader.Procedure_With_3_Params
+     ("glBeginQueryIndexed", Objects.Queries.Async_Query_Type, UInt, UInt);
+
+   procedure End_Query_Indexed is new Loader.Procedure_With_2_Params
+     ("glEndQueryIndexed", Objects.Queries.Async_Query_Type, UInt);
+
+   procedure Begin_Conditional_Render is new Loader.Procedure_With_2_Params
+     ("glBeginConditionalRender", UInt, Objects.Queries.Query_Mode);
+
+   procedure End_Conditional_Render is new Loader.Procedure_Without_Params
+     ("glEndConditionalRender");
+
+   procedure Query_Counter is new Loader.Procedure_With_2_Params
+     ("glQueryCounter", UInt, Objects.Queries.Timestamp_Query_Type);
+
+   procedure Get_Query_Indexed_Param is new Loader.Getter_With_4_Params
+     ("glGetQueryIndexed", Objects.Queries.Query_Type, UInt, Objects.Queries.Target_Param, Int);
+
+   procedure Get_Query_Object_Int is new Loader.Getter_With_3_Params
+     ("glGetQueryObjectiv", UInt, Objects.Queries.Query_Param, Int);
+
+   procedure Get_Query_Object_UInt is new Loader.Getter_With_3_Params
+     ("glGetQueryObjectuiv", UInt, Objects.Queries.Query_Param, UInt);
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
