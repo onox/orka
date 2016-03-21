@@ -2,23 +2,24 @@ with "opengl_shared";
 with "opengl";
 
 library project OpenGL.Glfw is
+
    for Languages use ("ada");
-   
+
    for Library_Name use "GlfwAda";
    for Library_Kind use OpenGL_Shared'Library_Kind;
 
-   GLFW_Sources := ("src/glfw", "src/glfw");
+   GLFW_Sources := ("src/glfw");
    Shared_Test_Sources := ("test/shared");
-   GLFW_Lib := "-lglfw";
-   
-   for Source_Dirs use GLFW_Sources;
+   GLFW_Lib := external ("GLFW_LIB", "-lglfw");
+
+   for Source_Dirs use ("src/glfw");
    for Object_Dir use "obj";
    for Library_Dir use "lib";
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
    package Compiler renames OpenGL_Shared.Compiler;
-   
+
    package Linker is
       case OpenGL_Shared.Windowing_System is
          when "quartz" =>
@@ -30,4 +31,5 @@ library project OpenGL.Glfw is
             for Linker_Options use (GLFW_Lib);
       end case;
    end Linker;
+
 end OpenGL.Glfw;

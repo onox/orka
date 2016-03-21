@@ -1,7 +1,3 @@
-GNATFLAGS ?=
-GLFW_VERSION ?=3
-GPRBUILD = gprbuild ${GNATFLAGS} -p
-
 WINDOWING_BACKEND := windows
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
@@ -12,22 +8,31 @@ ifeq ($(UNAME), Linux)
 endif
 
 WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
-GLFW_VERSION := -XGLFW_Version=${GLFW_VERSION}
 LIBRARY_TYPE ?= static
 
-all: compile
+GNAT_FLAGS ?=
+GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM}
+GPRCLEAN = gprclean -q ${WINDOWING_SYSTEM}
 
-compile:
-	mkdir -p lib
-	mkdir -p obj
-	${GPRBUILD} -P opengl-glfw.gpr ${WINDOWING_SYSTEM} ${GLFW_VERSION}
+build_src:
+	$(GPRBUILD) -P opengl-glfw.gpr
 
-clean:
-	rm -rf ./obj ./bin ./lib
+build_tests:
+	$(GPRBUILD) -P opengl_test.gpr
+	$(GPRBUILD) -P glfw_test.gpr
 
-tests:
-	mkdir -p bin
-	${GPRBUILD} -P glfw_test.gpr ${WINDOWING_SYSTEM} ${GLFW_VERSION}
-	${GPRBUILD} -P opengl_test.gpr ${WINDOWING_SYSTEM} ${GLFW_VERSION}
+clean_src:
+	$(GPRCLEAN) -r -P opengl-glfw.gpr
+	rmdir bin lib obj
 
-.PHONY: tests
+clean_tests:
+	$(GPRCLEAN) -P glfw_test.gpr
+	$(GPRCLEAN) -P opengl_test.gpr
+
+all: build
+
+build: build_src
+
+test: build_tests
+
+clean: clean_tests clean_src
