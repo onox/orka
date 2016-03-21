@@ -23,6 +23,7 @@ with GL.Objects.Buffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
+with GL.Objects.Shaders.Lists;
 with GL.Types.Colors;
 
 with GL_Test.Display_Backend;
@@ -39,7 +40,8 @@ procedure GL_Test.OpenGL3 is
      (Colors.Basic_Color_Pointers);
    
    procedure Load_Data (Array1, Array2            : Vertex_Array_Object;
-                        Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer) is
+                        Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
+                        Program                   : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
    
       Triangle1 : constant Singles.Vector3_Array
@@ -54,25 +56,30 @@ procedure GL_Test.OpenGL3 is
         := ((1.0, 0.0, 0.0),
             (0.0, 1.0, 0.0),
             (0.0, 0.0, 1.0));
+
+     Attrib_Pos : constant GL.Attributes.Attribute :=
+       GL.Objects.Programs.Attrib_Location (Program, "in_Position");
+     Attrib_Color : constant GL.Attributes.Attribute :=
+       GL.Objects.Programs.Attrib_Location (Program, "in_Color");
    begin
       -- First vertex array object: Colored vertices
       Array1.Bind;
       Array_Buffer.Bind (Buffer1);
       Load_Vectors (Array_Buffer, Triangle1, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (0, 3, Single_Type, 0, 0);
-      GL.Attributes.Enable_Vertex_Attrib_Array (0);
+      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 0, 0);
+      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
       
       Array_Buffer.Bind (Buffer2);
       Load_Colors (Array_Buffer, Color_Array, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (1, 3, Single_Type, 0, 0);
-      GL.Attributes.Enable_Vertex_Attrib_Array (1);
+      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Color, 3, Single_Type, 0, 0);
+      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Color);
       
       -- Second vertex array object: Only vertices
       Array2.Bind;
       Array_Buffer.Bind (Buffer3);
       Load_Vectors (Array_Buffer, Triangle2, Static_Draw);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (0, 3, Single_Type, 0, 0);
-      GL.Attributes.Enable_Vertex_Attrib_Array (0);
+      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 0, 0);
+      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
    end Load_Data;
    
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;
@@ -80,9 +87,9 @@ procedure GL_Test.OpenGL3 is
    begin
       -- load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (Vertex_Shader, "../test/gl/gl_test-opengl3-vertex.glsl");
+        (Vertex_Shader, "../test/gl/gl_test-opengl3.vert");
       GL.Files.Load_Shader_Source_From_File
-        (Fragment_Shader, "../test/gl/gl_test-opengl3-fragment.glsl");
+        (Fragment_Shader, "../test/gl/gl_test-opengl3.frag");
       
       Vertex_Shader.Compile;
       Fragment_Shader.Compile;
@@ -108,6 +115,27 @@ procedure GL_Test.OpenGL3 is
          return;
       end if;
       Program.Use_Program;
+
+      -- test iteration over program shaders
+      Ada.Text_IO.Put_Line ("Listing shaders attached to program...");
+      declare
+         use type GL.Objects.Shaders.Lists.Cursor;
+
+         List : constant GL.Objects.Shaders.Lists.List
+           := Program.Attached_Shaders;
+         Cursor : GL.Objects.Shaders.Lists.Cursor := List.First;
+      begin
+         while Cursor /= GL.Objects.Shaders.Lists.No_Element loop
+            declare
+               Shader : constant GL.Objects.Shaders.Shader
+                 := GL.Objects.Shaders.Lists.Element (Cursor);
+            begin
+               Ada.Text_IO.Put_Line ("  Kind: " & Shader.Kind'Img);
+               Ada.Text_IO.Put_Line ("  Status: " & Shader.Compile_Status'Img);
+            end;
+            Cursor := GL.Objects.Shaders.Lists.Next (Cursor);
+         end loop;
+      end;
    end Load_Shaders;
 
 
@@ -140,7 +168,7 @@ begin
    
    Ada.Text_IO.Put_Line ("Loaded shaders");
    
-   Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2);
+   Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2, Program);
 
    Ada.Text_IO.Put_Line ("Loaded data");
 

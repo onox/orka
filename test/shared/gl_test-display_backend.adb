@@ -22,6 +22,7 @@ with Glfw.Input.Keys;
 with Glfw.Errors;
 
 package body GL_Test.Display_Backend is
+
    type Test_Window is new Glfw.Windows.Window with null record;
 
    overriding

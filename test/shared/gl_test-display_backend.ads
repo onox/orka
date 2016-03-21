@@ -15,9 +15,9 @@
 --------------------------------------------------------------------------------
 
 package GL_Test.Display_Backend is
-   -- abstraction layer for tests so they can run on both GLFW 2 and 3.
-   -- only exposes most basic functionality, not intended for usage outside
-   -- tests.
+
+   -- Only exposes most basic functionality, not intended for usage
+   -- outside tests.
 
    procedure Init;
 
