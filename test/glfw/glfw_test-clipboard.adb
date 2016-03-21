@@ -33,12 +33,13 @@ procedure Glfw_Test.Clipboard is
    procedure Focus_Changed (Object : not null access My_Window;
                             Focused : Boolean);
 
+   overriding
    procedure Init (Object : not null access My_Window;
                    Width, Height : Glfw.Size;
                    Title   : String;
                    Monitor : Glfw.Monitors.Monitor := Glfw.Monitors.No_Monitor;
                    Share   : access Glfw.Windows.Window'Class := null) is
-      Upcast : Glfw.Windows.Window_Reference
+      Upcast : constant Glfw.Windows.Window_Reference
         := Glfw.Windows.Window (Object.all)'Access;
    begin
       Upcast.Init (Width, Height, Title, Monitor, Share);
@@ -47,6 +48,7 @@ procedure Glfw_Test.Clipboard is
       Object.Enable_Callback (Glfw.Windows.Callbacks.Focus);
    end Init;
 
+   overriding
    procedure Focus_Changed (Object : not null access My_Window;
                             Focused : Boolean) is
    begin

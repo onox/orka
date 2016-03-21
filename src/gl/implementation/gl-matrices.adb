@@ -52,14 +52,12 @@ package body GL.Matrices is
       Element : Element_Type;
       Return_Matrix : Matrix;
    begin
+      --  I is the column index and J is the row index
       for I in Index_Type loop
          for J in Index_Type loop
+            Element := Null_Value;
             for X in Index_Type loop
-               if X = Index_Type'First then
-                  Element := Left (X, J) * Right (I, X);
-               else
-                  Element := Element + Left (X, J) * Right (I, X);
-               end if;
+               Element := Element + Left (X, J) * Right (I, X);
             end loop;
             Return_Matrix (I, J) := Element;
          end loop;
@@ -68,17 +66,16 @@ package body GL.Matrices is
    end "*";
    
    function "*" (Left : Matrix; Right : Vector_Type) return Vector_Type is
+      Element : Element_Type;
       Return_Vector : Vector_Type;
    begin
-      for I in Index_Type loop
-         for J in Index_Type loop
-            if J = Index_Type'First then
-               Return_Vector (I) := Left (I, J) * Right (J);
-            else
-               Return_Vector (I)
-                 := Return_Vector (I) + Left (I, J) * Right (J);
-            end if;
+      --  J is the row index
+      for J in Index_Type loop
+         Element := Null_Value;
+         for X in Index_Type loop
+            Element := Element + Left (X, J) * Right (X);
          end loop;
+         Return_Vector (J) := Element;
       end loop;
       return Return_Vector;
    end "*";

@@ -65,13 +65,16 @@ package GL.Algebra is
    
    package Matrices2 is new Matrices (Index_Type   => Index_2D,
                                       Element_Type => Element_Type,
-                                      Vector_Type  => Vector2);
+                                      Vector_Type  => Vector2,
+                                      Null_Value   => Null_Value);
    package Matrices3 is new Matrices (Index_Type   => Index_3D,
                                       Element_Type => Element_Type,
-                                      Vector_Type  => Vector3);
+                                      Vector_Type  => Vector3,
+                                      Null_Value   => Null_Value);
    package Matrices4 is new Matrices (Index_Type   => Index_Homogeneous,
                                       Element_Type => Element_Type,
-                                      Vector_Type  => Vector4);
+                                      Vector_Type  => Vector4,
+                                      Null_Value   => Null_Value);
    
    type Matrix2 is new Matrices2.Matrix;
    type Matrix3 is new Matrices3.Matrix;

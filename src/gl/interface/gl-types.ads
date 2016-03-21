@@ -114,7 +114,7 @@ package GL.Types is
    
    package Doubles is new GL.Algebra (Element_Type => Double,
                                       Index_Type   => Size,
-                                      Null_Value => 0.0,
+                                      Null_Value   => 0.0,
                                       One_Value    => 1.0);
    
    -- pointer types (for use with data transfer functions

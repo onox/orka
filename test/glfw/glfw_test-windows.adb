@@ -36,18 +36,20 @@ procedure Glfw_Test.Windows is
                           Action   : Glfw.Input.Keys.Action;
                           Mods     : Glfw.Input.Keys.Modifiers);
 
+   overriding
    procedure Init (Object : not null access My_Window;
                    Width, Height : Glfw.Size;
                    Title   : String;
                    Monitor : Glfw.Monitors.Monitor := Glfw.Monitors.No_Monitor;
                    Share   : access Glfw.Windows.Window'Class := null) is
-      Upcast : Glfw.Windows.Window_Reference
+      Upcast : constant Glfw.Windows.Window_Reference
         := Glfw.Windows.Window (Object.all)'Access;
    begin
       Upcast.Init (Width, Height, Title, Monitor, Share);
       Object.Enable_Callback (Glfw.Windows.Callbacks.Key);
    end Init;
 
+   overriding
    procedure Key_Changed (Object   : not null access My_Window;
                           Key      : Glfw.Input.Keys.Key;
                           Scancode : Glfw.Input.Keys.Scancode;
@@ -55,11 +57,10 @@ procedure Glfw_Test.Windows is
                           Mods     : Glfw.Input.Keys.Modifiers) is
       use type Glfw.Input.Keys.Key;
    begin
-      If Key = Glfw.Input.Keys.Escape then
+      if Key = Glfw.Input.Keys.Escape then
          Object.Set_Should_Close (True);
       end if;
    end Key_Changed;
-
 
    W1 : aliased Glfw.Windows.Window;
    W2 : aliased My_Window;

@@ -176,7 +176,8 @@ package body GL.Context is
       for I in 1 .. Count loop
          if C.Strings.Value
            (API.Get_String_I (Enums.Getter.Shading_Language_Version,
-                              UInt (I))) = Name then
+                              UInt (I))) = Name
+         then
             return True;
          end if;
       end loop;

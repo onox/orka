@@ -265,8 +265,7 @@ package body GL.Objects.Framebuffers is
          Cursor := Current_Framebuffers.Find (Targets (Index));
          if Cursor = Framebuffer_Maps.No_Element then
             Current_Framebuffers.Insert (Targets (Index), Object);
-         elsif Framebuffer_Maps.Element (Cursor).Reference.GL_Id
-           /= Object.Reference.GL_Id then
+         elsif Framebuffer_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id then
             Current_Framebuffers.Replace_Element (Cursor, Object);
          end if;
       end loop;

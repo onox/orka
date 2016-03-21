@@ -1,4 +1,4 @@
-project OpenGL_Shared is
+abstract project OpenGL_Shared is
 
    for Source_Files use ();
 
@@ -12,7 +12,7 @@ project OpenGL_Shared is
    type Windowing_System_Type is
       ("windows", "x11", "quartz");
    Windowing_System : Windowing_System_Type
-     := external ("Windowing_System");
+      := external ("Windowing_System");
 
    type Mode_Type is ("debug", "release");
    Mode : Mode_Type := external ("Mode", "release");
@@ -41,17 +41,18 @@ project OpenGL_Shared is
    end Builder;
 
    Common_Compiler_Switches := (
-      "-O2", "-march=native",
-      "-gnat2012",
-      "-gnatf",         --  Full errors
-      "-gnato",         --  Numeric overflow checking
       "-fstack-check",  --  Stack overflow checking
-      "-gnatVa",
-      "-gnatwa",        --  All warnings
-      "-gnatw.il.l.n.s",
-      "-gnaty",
+      "-gnato13",       --  Numeric overflow checking
+      "-gnata",         --  Enable assertions
+      "-gnatf",         --  Full errors
+      "-gnatVa",        --  All validity checks
+      "-gnatwa",        --  All optional warnings
+      "-gnatwFl.l.n.s",
+      "-gnaty",         --  Default style checks
       "-gnatyAdOSux-msbc",
-      "-gnatwF"
+      "-gnat2012",
+      "-Wall",
+      "-O2", "-march=native"
    );
 
    package Compiler is
