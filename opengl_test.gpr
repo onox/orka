@@ -8,7 +8,7 @@ project OpenGL_Test is
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
    
-   for Source_Dirs use OpenGL.Glfw.Shared_Test_Sources & "tests/gl";
+   for Source_Dirs use OpenGL.Glfw.Shared_Test_Sources & "test/gl";
    
    for Main use ("gl_test-opengl3", "gl_test-context");
    

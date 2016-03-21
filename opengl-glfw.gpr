@@ -8,7 +8,7 @@ library project OpenGL.Glfw is
    for Library_Kind use OpenGL_Shared'Library_Kind;
 
    GLFW_Sources := ("src/glfw", "src/glfw");
-   Shared_Test_Sources := ("tests/shared");
+   Shared_Test_Sources := ("test/shared");
    GLFW_Lib := "-lglfw";
    
    for Source_Dirs use GLFW_Sources;

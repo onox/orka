@@ -80,9 +80,9 @@ procedure GL_Test.OpenGL3 is
    begin
       -- load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (Vertex_Shader, "../tests/gl/gl_test-opengl3-vertex.glsl");
+        (Vertex_Shader, "../test/gl/gl_test-opengl3-vertex.glsl");
       GL.Files.Load_Shader_Source_From_File
-        (Fragment_Shader, "../tests/gl/gl_test-opengl3-fragment.glsl");
+        (Fragment_Shader, "../test/gl/gl_test-opengl3-fragment.glsl");
       
       Vertex_Shader.Compile;
       Fragment_Shader.Compile;
