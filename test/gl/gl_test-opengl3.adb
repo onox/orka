@@ -23,7 +23,6 @@ with GL.Objects.Buffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
-with GL.Objects.Shaders.Lists;
 with GL.Types.Colors;
 
 with GL_Test.Display_Backend;
@@ -118,24 +117,10 @@ procedure GL_Test.OpenGL3 is
 
       -- test iteration over program shaders
       Ada.Text_IO.Put_Line ("Listing shaders attached to program...");
-      declare
-         use type GL.Objects.Shaders.Lists.Cursor;
-
-         List : constant GL.Objects.Shaders.Lists.List
-           := Program.Attached_Shaders;
-         Cursor : GL.Objects.Shaders.Lists.Cursor := List.First;
-      begin
-         while Cursor /= GL.Objects.Shaders.Lists.No_Element loop
-            declare
-               Shader : constant GL.Objects.Shaders.Shader
-                 := GL.Objects.Shaders.Lists.Element (Cursor);
-            begin
-               Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));
-               Ada.Text_IO.Put_Line ("  Status: " & Boolean'Image (Shader.Compile_Status));
-            end;
-            Cursor := GL.Objects.Shaders.Lists.Next (Cursor);
-         end loop;
-      end;
+      for Shader of Program.Attached_Shaders loop
+         Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));
+         Ada.Text_IO.Put_Line ("  Status: " & Boolean'Image (Shader.Compile_Status));
+      end loop;
    end Load_Shaders;
 
    Vertex_Shader   : GL.Objects.Shaders.Shader

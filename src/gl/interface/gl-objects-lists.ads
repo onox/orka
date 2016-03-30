@@ -14,13 +14,20 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
+with Ada.Iterator_Interfaces;
+
+private with Ada.Finalization;
+
 generic
    type Object_Type (<>) is new GL_Object with private;
    with function Generate_From_Id (Id : UInt) return Object_Type;
 package GL.Objects.Lists is
    pragma Preelaborate;
 
-   type List (<>) is tagged private;
+   type List (<>) is tagged private
+      with Default_Iterator  => Iterate,
+           Iterator_Element  => Object_Type,
+           Constant_Indexing => Element_Value;
 
    type Cursor is private;
 
@@ -28,16 +35,17 @@ package GL.Objects.Lists is
 
    function Create (Raw : UInt_Array) return List;
 
-   function First (Object : List) return Cursor;
-   function Last  (Object : List) return Cursor;
+   function Element (Position : Cursor) return Object_Type;
+   function Element_Value (Container : aliased List; Position : Cursor) return Object_Type;
 
-   function Next     (Current : Cursor) return Cursor;
-   function Previous (Current : Cursor) return Cursor;
+   function Has_Element (Position : Cursor) return Boolean is
+     (Position /= No_Element);
 
-   function Has_Next     (Current : Cursor) return Boolean;
-   function Has_Previous (Current : Cursor) return Boolean;
+   package List_Iterator_Interfaces is
+     new Ada.Iterator_Interfaces (Cursor, Has_Element);
 
-   function Element (Current : Cursor) return Object_Type;
+   function Iterate (Container : List)
+     return List_Iterator_Interfaces.Reversible_Iterator'Class;
 
 private
    type List (Count : Size) is tagged record
@@ -52,5 +60,24 @@ private
    end record;
 
    No_Element : constant Cursor := Cursor'(null, 0);
+
+   use Ada.Finalization;
+
+   type Iterator is new Limited_Controlled and
+     List_Iterator_Interfaces.Reversible_Iterator with
+   record
+      Container : List_Access;
+   end record;
+
+   overriding function First (Object : Iterator) return Cursor;
+   overriding function Last  (Object : Iterator) return Cursor;
+
+   overriding function Next
+     (Object   : Iterator;
+      Position : Cursor) return Cursor;
+
+   overriding function Previous
+     (Object   : Iterator;
+      Position : Cursor) return Cursor;
 
 end GL.Objects.Lists;

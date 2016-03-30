@@ -21,65 +21,75 @@ package body GL.Objects.Lists is
       return List'(Count => Raw'Length, Contents => Raw);
    end Create;
 
-   function First (Object : List) return Cursor is
+   overriding function First (Object : Iterator) return Cursor is
    begin
-      if Object.Count = 0 then
+      if Object.Container.all.Count = 0 then
          return No_Element;
       else
-         return Cursor'(Object => Object'Unchecked_Access, Index => 1);
+         return Cursor'(Object => Object.Container, Index => 1);
       end if;
    end First;
 
-   function Last (Object : List) return Cursor is
+   overriding function Last  (Object : Iterator) return Cursor is
    begin
-      if Object.Count = 0 then
+      if Object.Container.all.Count = 0 then
          return No_Element;
       else
-         return Cursor'(Object => Object'Unchecked_Access,
-                        Index  => Object.Contents'Length);
+         return Cursor'(Object => Object.Container,
+                        Index  => Object.Container.all.Contents'Length);
       end if;
    end Last;
 
-   function Next (Current : Cursor) return Cursor is
+   overriding function Next
+     (Object   : Iterator;
+      Position : Cursor) return Cursor is
    begin
-      if Current = No_Element then
+      if Position = No_Element then
          raise Constraint_Error;
-      elsif Current.Index = Current.Object.Contents'Length then
+      elsif Position.Index = Position.Object.Contents'Length then
          return No_Element;
       else
-         return Cursor'(Current.Object, Current.Index + 1);
+         return Cursor'(Position.Object, Position.Index + 1);
       end if;
    end Next;
 
-   function Previous (Current : Cursor) return Cursor is
+   overriding function Previous
+     (Object   : Iterator;
+      Position : Cursor) return Cursor is
    begin
-      if Current = No_Element then
+      if Position = No_Element then
          raise Constraint_Error;
-      elsif Current.Index = 1 then
+      elsif Position.Index = 1 then
          return No_Element;
       else
-         return Cursor'(Current.Object, Current.Index - 1);
+         return Cursor'(Position.Object, Position.Index - 1);
       end if;
    end Previous;
 
-   function Has_Next (Current : Cursor) return Boolean is
+   function Element (Position : Cursor) return Object_Type is
    begin
-      return Current /= No_Element and then
-        Current.Index /= Current.Object.Contents'Length;
-   end Has_Next;
-
-   function Has_Previous (Current : Cursor) return Boolean is
-   begin
-      return Current /= No_Element and then Current.Index /= 1;
-   end Has_Previous;
-
-   function Element (Current : Cursor) return Object_Type is
-   begin
-      if Current = No_Element then
+      if Position = No_Element then
          raise Constraint_Error;
       else
-         return Generate_From_Id (Current.Object.Contents (Current.Index));
+         return Element_Value (Position.Object.all, Position);
       end if;
    end Element;
+
+   function Element_Value (Container : aliased List; Position : Cursor) return Object_Type is
+   begin
+      if Position = No_Element then
+         raise Constraint_Error;
+      elsif Position.Object /= Container'Access then
+         raise Program_Error;
+      else
+         return Generate_From_Id (Container.Contents (Position.Index));
+      end if;
+   end Element_Value;
+
+   function Iterate (Container : List)
+     return List_Iterator_Interfaces.Reversible_Iterator'Class is
+   begin
+      return Iterator'(Limited_Controlled with Container => Container'Unrestricted_Access);
+   end Iterate;
 
 end GL.Objects.Lists;
