@@ -22,13 +22,18 @@ package GL.Transforms is
    use GL.Types;
    use Singles;
 
-   procedure Translate (Matrix : in out Matrix4; Vector : Vector3);
+   procedure Translate (Matrix : in out Matrix4; Offset : Vector3);
 
    procedure Rotate_X (Matrix : in out Matrix4; Angle : Single);
    procedure Rotate_Y (Matrix : in out Matrix4; Angle : Single);
    procedure Rotate_Z (Matrix : in out Matrix4; Angle : Single);
 
-   procedure Scale (Matrix : in out Matrix4; Vector : Vector3);
+   procedure Rotate (Matrix    : in out Matrix4;
+                     Direction : in     Vector3;
+                     Angle     : in     Single);
+
+   procedure Scale (Matrix : in out Matrix4; Factors : Vector3);
+   procedure Scale (Matrix : in out Matrix4; Factor : Single);
 
    function Perspective (FOV, Aspect, Z_Near, Z_Far : Single) return Matrix4;
 
