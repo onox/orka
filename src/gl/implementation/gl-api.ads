@@ -925,6 +925,61 @@ private package GL.API is
      ("glGetQueryObjectuiv", UInt, Objects.Queries.Query_Param, UInt);
 
    -----------------------------------------------------------------------------
+   --                                Samplers                                 --
+   -----------------------------------------------------------------------------
+
+   procedure Gen_Samplers is new Loader.Getter_With_2_Params
+     ("glGenSamplers", Size, UInt);
+
+   procedure Delete_Samplers is new Loader.Array_Proc_With_2_Params
+     ("glDeleteSamplers", Size, UInt, Low_Level.UInt_Array);
+
+   procedure Bind_Sampler is new Loader.Procedure_With_2_Params
+     ("glBindSampler", UInt, UInt);
+
+   procedure Bind_Samplers is new Loader.Array_Proc_With_3_Params
+     ("glBindSamplers", UInt, Size, UInt, Low_Level.UInt_Array);
+
+   procedure Sampler_Parameter_Float is new Loader.Procedure_With_3_Params
+     ("glSamplerParameterf", UInt, Enums.Textures.Parameter, Single);
+
+   procedure Sampler_Parameter_Floats is new Loader.Procedure_With_3_Params
+     ("glSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
+
+   procedure Get_Sampler_Parameter_Floats is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
+
+   procedure Sampler_Parameter_Minifying_Function is new Loader.Procedure_With_3_Params
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
+
+   procedure Sampler_Parameter_Magnifying_Function is new Loader.Procedure_With_3_Params
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
+
+   procedure Sampler_Parameter_Wrapping_Mode is new Loader.Procedure_With_3_Params
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
+
+   procedure Sampler_Parameter_Compare_Kind is new Loader.Procedure_With_3_Params
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
+
+   procedure Sampler_Parameter_Compare_Function is new Loader.Procedure_With_3_Params
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Compare_Function);
+
+   procedure Get_Sampler_Parameter_Minifying_Function is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
+
+   procedure Get_Sampler_Parameter_Magnifying_Function is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
+
+   procedure Get_Sampler_Parameter_Wrapping_Mode is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
+
+   procedure Get_Sampler_Parameter_Compare_Kind is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
+
+   procedure Get_Sampler_Parameter_Compare_Function is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
+
+   -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
    

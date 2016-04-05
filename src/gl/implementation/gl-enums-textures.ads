@@ -25,7 +25,7 @@ package GL.Enums.Textures is
    type Parameter is (Border_Color, Border, Mag_Filter, Min_Filter, Wrap_S,
                       Wrap_T, Priority, Resident, Wrap_R,
                       Min_LoD, Max_LoD, Base_Level, Max_Level, Generate_Mipmap,
-                      Depth, Compare_Mode, Compare_Func);
+                      LoD_Bias, Depth, Compare_Mode, Compare_Func);
 
    -- needs to be declared here because of subtypes
    for Parameter use (Border_Color    => 16#1003#,
@@ -42,6 +42,7 @@ package GL.Enums.Textures is
                       Base_Level      => 16#813C#,
                       Max_Level       => 16#813D#,
                       Generate_Mipmap => 16#8191#,
+                      LoD_Bias        => 16#8501#,
                       Depth           => 16#884B#,
                       Compare_Mode    => 16#884C#,
                       Compare_Func    => 16#884D#);
@@ -67,23 +68,14 @@ package GL.Enums.Textures is
    
    Texture_Unit_Start_Rep : constant := 16#84C0#;
    
-   -- oh god why
-   --type Texture_Unit is (Texture0,  Texture1,  Texture2,  Texture3,  Texture4,
-   --                      Texture5,  Texture6,  Texture7,  Texture8,  Texture9,
-   --                      Texture10, Texture11, Texture12, Texture13, Texture14,
-   --                      Texture15, Texture16, Texture17, Texture18, Texture19,
-   --                      Texture20, Texture21, Texture22, Texture23, Texture24,
-   --                      Texture25, Texture26, Texture27, Texture28, Texture29,
-   --                      Texture30, Texture31);
-
 private
 
    for Compare_Kind use (None => 0, Compare_R_To_Texture => 16#884E#);
    for Compare_Kind'Size use Low_Level.Enum'Size;
 
    for Env_Target use (Texture_Env    => 16#2300#,
-                               Filter_Control => 16#8500#,
-                               Point_Sprite   => 16#8861#);
+                       Filter_Control => 16#8500#,
+                       Point_Sprite   => 16#8861#);
    for Env_Target'Size use Low_Level.Enum'Size;
 
    for Env_Parameter use (Alpha_Scale    => 16#0D1C#,
@@ -129,38 +121,4 @@ private
                             Buffer_Size     => 16#919E#);
    for Level_Parameter'Size use Low_Level.Enum'Size;
    
-   --for Texture_Unit use (Texture0  => 16#84C0#,
-   --                      Texture1  => 16#84C1#,
-   --                      Texture2  => 16#84C2#,
-   --                      Texture3  => 16#84C3#,
-   --                      Texture4  => 16#84C4#,
-   --                      Texture5  => 16#84C5#,
-   --                      Texture6  => 16#84C6#,
-   --                      Texture7  => 16#84C7#,
-   --                      Texture8  => 16#84C8#,
-   --                      Texture9  => 16#84C9#,
-   --                      Texture10 => 16#84CA#,
-   --                      Texture11 => 16#84CB#,
-   --                      Texture12 => 16#84CC#,
-   --                      Texture13 => 16#84CD#,
-   --                      Texture14 => 16#84CE#,
-   --                      Texture15 => 16#84CF#,
-   --                      Texture16 => 16#84D0#,
-   --                      Texture17 => 16#84D1#,
-   --                      Texture18 => 16#84D2#,
-   --                      Texture19 => 16#84D3#,
-   --                      Texture20 => 16#84D4#,
-   --                      Texture21 => 16#84D5#,
-   --                      Texture22 => 16#84D6#,
-   --                      Texture23 => 16#84D7#,
-   --                      Texture24 => 16#84D8#,
-   --                      Texture25 => 16#84D9#,
-   --                      Texture26 => 16#84DA#,
-   --                      Texture27 => 16#84DB#,
-   --                      Texture28 => 16#84DC#,
-   --                      Texture29 => 16#84DD#,
-   --                      Texture30 => 16#84DE#,
-   --                      Texture31 => 16#84DF#);
-   --for Texture_Unit'Size use Low_Level.Enum'Size;
-
 end GL.Enums.Textures;

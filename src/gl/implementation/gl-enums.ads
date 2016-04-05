@@ -109,6 +109,7 @@ private package GL.Enums is
    
    type Framebuffer_Param is (Default_Width, Default_Height, Default_Layers,
                               Default_Samples, Default_Fixed_Sample_Locations);
+
 private
 
    for Attribute_Mask use record
@@ -241,4 +242,5 @@ private
                               Default_Samples                => 16#9313#,
                               Default_Fixed_Sample_Locations => 16#9314#);
    for Framebuffer_Param'Size use Low_Level.Enum'Size;
+
 end GL.Enums;
