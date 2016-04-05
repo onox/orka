@@ -74,36 +74,81 @@ package GL.Objects.Queries is
                                    Target : in     Primitive_Query_Type;
                                    Index  : in     Natural := 0)
      return Active_Query'Class;
+   --  Start a primitive query. The value returned is of a controlled
+   --  type, meaning you must assign it to some local variable, so that
+   --  the query will be automatically ended when the variable goes out
+   --  of scope.
+   --
+   --  Primitive queries support multiple query operations; one for each
+   --  index. The index represents the vertex output stream used in a
+   --  Geometry Shader. If the target type is
+   --  Transform_Feedback_Primitives_Written, then the query should be
+   --  issued while within a transform feedback scope.
 
    function Begin_Occlusion_Query (Object : in out Query;
                                    Target : in     Occlusion_Query_Type)
      return Active_Query'Class;
+   --  Start an occlusion query. The value returned is of a controlled
+   --  type, meaning you must assign it to some local variable, so that
+   --  the query will be automatically ended when the variable goes out
+   --  of scope.
 
    function Begin_Timer_Query (Object : in out Query;
                                Target : in     Time_Query_Type)
      return Active_Query'Class;
+   --  Start a timer query. The value returned is of a controlled
+   --  type, meaning you must assign it to some local variable, so that
+   --  the query will be automatically ended when the variable goes out
+   --  of scope.
+   --
+   --  This function is used only for queries of type Time_Elapsed.
+   --  Queries of type Timestamp are not used within a scope. For such
+   --  a query you can record the time into the query object by calling
+   --  Record_Current_Time.
 
    function Begin_Conditional_Render (Object : in out Query;
                                       Mode   : in     Query_Mode)
      return Conditional_Render'Class;
+   --  Start a conditional rendering. The value returned is of a controlled
+   --  type, meaning you must assign it to some local variable, so that
+   --  the rendering will be automatically ended when the variable goes
+   --  out of scope.
 
    function Result_Available (Object : in out Query) return Boolean;
+   --  Return true if a result is available, false otherwise. This function
+   --  can be used to avoid calling Result (and thereby stalling the CPU)
+   --  when the result is not yet available.
 
    function Result_If_Available (Object : in out Query; Default_Value : Boolean)
      return Boolean;
+   --  Return the result if available, otherwise return the default value
 
    function Result_If_Available (Object : in out Query; Default_Value : Natural)
      return Natural;
+   --  Return the result if available, otherwise return the default value
 
    function Result (Object : in out Query) return Boolean;
+   --  Return the result. If the result is not yet available, then the
+   --  CPU will stall until the result becomes available. This means
+   --  that if you do not call Result_Available, then this function call
+   --  will make the query synchronous.
 
    function Result (Object : in out Query) return Natural;
+   --  Return the result. If the result is not yet available, then the
+   --  CPU will stall until the result becomes available. This means
+   --  that if you do not call Result_Available, then this function call
+   --  will make the query synchronous.
 
    function Result_Bits (Target : in Query_Type) return Natural;
 
    procedure Record_Current_Time (Object : in out Query);
+   --  Record the time when the GPU has completed all previous commands
+   --  in a query object. The result must be retrieved asynchronously using
+   --  one of the Result functions.
 
    function Get_Current_Time return Long;
+   --  Return the time when the GPU has received (but not necessarily
+   --  completed) all previous commands. Calling this function stalls the CPU.
 
 private
 
