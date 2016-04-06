@@ -144,6 +144,23 @@ package body GL.Objects.Samplers is
       return Double (Ret (1));
    end LoD_Bias;
 
+   procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double) is
+   begin
+      API.Sampler_Parameter_Float (Object.Reference.GL_Id,
+                                   Enums.Textures.Max_Anisotropy,
+                                   Single (Degree));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Max_Anisotropy;
+
+   function Max_Anisotropy (Object : Sampler) return Double is
+      Ret : Low_Level.Single_Array (1 .. 1);
+   begin
+      API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
+                                        Enums.Textures.Max_Anisotropy, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Double (Ret (1));
+   end Max_Anisotropy;
+
    procedure Set_X_Wrapping (Object : Sampler; Mode : Wrapping_Mode) is
    begin
       API.Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,

@@ -23,8 +23,8 @@ package GL.Enums.Textures is
    -- OpenCLAda
 
    type Parameter is (Border_Color, Border, Mag_Filter, Min_Filter, Wrap_S,
-                      Wrap_T, Priority, Resident, Wrap_R,
-                      Min_LoD, Max_LoD, Base_Level, Max_Level, Generate_Mipmap,
+                      Wrap_T, Priority, Resident, Wrap_R, Min_LoD, Max_LoD,
+                      Base_Level, Max_Level, Generate_Mipmap, Max_Anisotropy,
                       LoD_Bias, Depth, Compare_Mode, Compare_Func);
 
    -- needs to be declared here because of subtypes
@@ -42,6 +42,7 @@ package GL.Enums.Textures is
                       Base_Level      => 16#813C#,
                       Max_Level       => 16#813D#,
                       Generate_Mipmap => 16#8191#,
+                      Max_Anisotropy  => 16#84FE#,
                       LoD_Bias        => 16#8501#,
                       Depth           => 16#884B#,
                       Compare_Mode    => 16#884C#,

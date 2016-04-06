@@ -73,6 +73,23 @@ package GL.Objects.Samplers is
    --  Return the LOD bias for the selection of a mipmap.
    --  By default this is 0.0.
 
+   procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double)
+     with Pre => Degree >= 1.0;
+   --  Set the maximum amount of anisotropy filtering to reduce the blurring
+   --  of textures (caused by mipmap filtering) that are viewed at an
+   --  oblique angle.
+   --
+   --  For best results, combine the use of anisotropy filtering with
+   --  a Linear_Mipmap_Linear minification filter and a Linear maxification
+   --  filter.
+   --
+   --  Note: this procedure requires the EXT_texture_filter_anisotropic
+   --  extension. This extension is not part of core OpenGL, but is basically
+   --  available anywhere.
+
+   function Max_Anisotropy (Object : Sampler) return Double
+     with Post => Max_Anisotropy'Result >= 1.0;
+
    procedure Set_X_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
 
    function X_Wrapping (Object : Sampler) return Wrapping_Mode;

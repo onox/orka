@@ -377,6 +377,22 @@ package body GL.Objects.Textures is
       return Ret;
    end Highest_Mipmap_Level;
 
+   procedure Set_Max_Anisotropy (Target : Texture_Target; Degree : Double) is
+   begin
+      API.Tex_Parameter_Float (Target.Kind, Enums.Textures.Max_Anisotropy,
+                               Single (Degree));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Max_Anisotropy;
+
+   function Max_Anisotropy (Target : Texture_Target) return Double is
+      Ret : Single;
+   begin
+      API.Get_Tex_Parameter_Float (Target.Kind, Enums.Textures.Max_Anisotropy,
+                                   Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Double (Ret);
+   end Max_Anisotropy;
+
    procedure Set_X_Wrapping (Target : Texture_Target; Mode : Wrapping_Mode) is
    begin
       API.Tex_Parameter_Wrap_Mode (Target.Kind, Enums.Textures.Wrap_S,
@@ -576,5 +592,13 @@ package body GL.Objects.Textures is
                        Count'Access);
       return Natural (Count);
    end Texture_Unit_Count;
+
+   function Maximum_Anisotropy return Single is
+      Ret : aliased Single;
+   begin
+      API.Get_Single (Enums.Getter.Max_Texture_Max_Anisotropy, Ret'Access);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Maximum_Anisotropy;
 
 end GL.Objects.Textures;

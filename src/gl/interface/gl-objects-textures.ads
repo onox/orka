@@ -21,6 +21,9 @@ with GL.Types.Colors;
 package GL.Objects.Textures is
    pragma Preelaborate;
 
+   function Maximum_Anisotropy return Single
+     with Post => Maximum_Anisotropy'Result >= 2.0;
+
    -----------------------------------------------------------------------------
    --                            Basic Types                                  --
    -----------------------------------------------------------------------------
@@ -138,6 +141,23 @@ package GL.Objects.Textures is
    procedure Set_Highest_Mipmap_Level (Target : Texture_Target;
                                        Level : Mipmap_Level);
    function Highest_Mipmap_Level (Target : Texture_Target) return Mipmap_Level;
+
+   procedure Set_Max_Anisotropy (Target : Texture_Target; Degree : Double)
+     with Pre => Degree >= 1.0;
+   --  Set the maximum amount of anisotropy filtering to reduce the blurring
+   --  of textures (caused by mipmap filtering) that are viewed at an
+   --  oblique angle.
+   --
+   --  For best results, combine the use of anisotropy filtering with
+   --  a Linear_Mipmap_Linear minification filter and a Linear maxification
+   --  filter.
+   --
+   --  Note: this procedure requires the EXT_texture_filter_anisotropic
+   --  extension. This extension is not part of core OpenGL, but is basically
+   --  available anywhere.
+
+   function Max_Anisotropy (Target : Texture_Target) return Double
+     with Post => Max_Anisotropy'Result >= 1.0;
 
    procedure Set_X_Wrapping (Target : Texture_Target; Mode : Wrapping_Mode);
    function X_Wrapping (Target : Texture_Target) return Wrapping_Mode;
