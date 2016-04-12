@@ -15,7 +15,6 @@
 --------------------------------------------------------------------------------
 
 with GL.Low_Level;
-with GL.Objects;
 
 package GL.Objects.Queries is
    pragma Preelaborate;
@@ -66,9 +65,9 @@ package GL.Objects.Queries is
    overriding
    procedure Delete_Id (Object : in out Query);
 
-   type Active_Query is tagged limited private;
+   type Active_Query is limited new Ada.Finalization.Limited_Controlled with private;
 
-   type Conditional_Render is tagged limited private;
+   type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with private;
 
    function Begin_Primitive_Query (Object : in out Query;
                                    Target : in     Primitive_Query_Type;
@@ -170,24 +169,17 @@ private
    type Query is new GL_Object with null record;
 
    type Active_Query is limited new Ada.Finalization.Limited_Controlled with record
-     Query_Object : Query;
      Target : Query_Type;
      Index  : Natural;
+     Finalized : Boolean := True;
    end record;
-
-   overriding
-   procedure Initialize (Object : in out Active_Query);
 
    overriding
    procedure Finalize (Object : in out Active_Query);
 
    type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with record
-     Query_Object : Query;
-     Mode : Query_Mode;
+     Finalized : Boolean := True;
    end record;
-
-   overriding
-   procedure Initialize (Object : in out Conditional_Render);
 
    overriding
    procedure Finalize (Object : in out Conditional_Render);

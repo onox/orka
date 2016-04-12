@@ -44,36 +44,19 @@ package body GL.Objects.Queries is
                          Target : in     Async_Query_Type;
                          Index  : in     Natural) return Active_Query'Class is
    begin
-      return Active_Query'(Ada.Finalization.Limited_Controlled
-        with Query_Object => Object, Target => Target, Index => Index);
-   end Begin_Query;
-
-   overriding
-   procedure Initialize (Object : in out Active_Query) is
-   begin
-      API.Begin_Query_Indexed (Object.Target, UInt (Object.Index), Object.Query_Object.Reference.GL_Id);
+      API.Begin_Query_Indexed (Target, UInt (Index), Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
-   end Initialize;
+      return Active_Query'(Ada.Finalization.Limited_Controlled
+        with Target => Target, Index => Index, Finalized => False);
+   end Begin_Query;
 
    overriding
    procedure Finalize (Object : in out Active_Query) is
    begin
-      API.End_Query_Indexed (Object.Target, UInt (Object.Index));
-      Raise_Exception_On_OpenGL_Error;
-   end Finalize;
-
-   overriding
-   procedure Initialize (Object : in out Conditional_Render) is
-   begin
-      API.Begin_Conditional_Render (Object.Query_Object.Reference.GL_Id, Object.Mode);
-      Raise_Exception_On_OpenGL_Error;
-   end Initialize;
-
-   overriding
-   procedure Finalize (Object : in out Conditional_Render) is
-   begin
-      API.End_Conditional_Render;
-      Raise_Exception_On_OpenGL_Error;
+      if not Object.Finalized then
+         API.End_Query_Indexed (Object.Target, UInt (Object.Index));
+         Object.Finalized := True;
+      end if;
    end Finalize;
 
    function Begin_Primitive_Query (Object : in out Query;
@@ -102,9 +85,20 @@ package body GL.Objects.Queries is
                                       Mode   : in     Query_Mode)
      return Conditional_Render'Class is
    begin
+      API.Begin_Conditional_Render (Object.Reference.GL_Id, Mode);
+      Raise_Exception_On_OpenGL_Error;
       return Conditional_Render'(Ada.Finalization.Limited_Controlled
-        with Query_Object => Object, Mode => Mode);
+        with Finalized => False);
    end Begin_Conditional_Render;
+
+   overriding
+   procedure Finalize (Object : in out Conditional_Render) is
+   begin
+      if not Object.Finalized then
+         API.End_Conditional_Render;
+         Object.Finalized := True;
+      end if;
+   end Finalize;
 
    function Result_Available (Object : in out Query) return Boolean is
       Available : UInt := 0;
