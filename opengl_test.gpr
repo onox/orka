@@ -10,7 +10,12 @@ project OpenGL_Test is
 
    for Source_Dirs use OpenGL.Glfw.Shared_Test_Sources & "test/gl";
 
-   for Main use ("gl_test-context", "gl_test-opengl3", "gl_test-vbo", "gl_test-buffers", "gl_test-geometry");
+   for Main use ("gl_test-context",
+                 "gl_test-opengl3",
+                 "gl_test-vbo",
+                 "gl_test-buffers",
+                 "gl_test-geometry",
+                 "gl_test-transform_feedback");
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;

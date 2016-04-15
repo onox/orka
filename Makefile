@@ -17,7 +17,7 @@ GPRCLEAN = gprclean -q ${WINDOWING_SYSTEM}
 build_src:
 	$(GPRBUILD) -P opengl-glfw.gpr
 
-build_tests:
+build_test:
 	$(GPRBUILD) -P opengl_test.gpr
 	$(GPRBUILD) -P glfw_test.gpr
 
@@ -25,7 +25,7 @@ clean_src:
 	$(GPRCLEAN) -r -P opengl-glfw.gpr
 	rmdir bin lib obj
 
-clean_tests:
+clean_test:
 	$(GPRCLEAN) -P glfw_test.gpr
 	$(GPRCLEAN) -P opengl_test.gpr
 
@@ -33,6 +33,6 @@ all: build
 
 build: build_src
 
-test: build_tests
+test: build_test
 
-clean: clean_tests clean_src
+clean: clean_test clean_src
