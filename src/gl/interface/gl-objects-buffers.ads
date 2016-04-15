@@ -30,7 +30,19 @@ package GL.Objects.Buffers is
    type Buffer is new GL_Object with private;
    
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
-   
+   --  Bind the buffer object to the target
+
+   procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural);
+   --  Bind the buffer object to the index of the target as well as to
+   --  the target itself.
+   --
+   --  Target must be one of the following:
+   --
+   --    * Atomic_Counter_Buffer
+   --    * Transform_Feedback_Buffer
+   --    * Uniform_Buffer
+   --    * Shader_Storage_Buffer
+
    function Current_Object (Target : Buffer_Target) return Buffer'Class;
    
    generic
@@ -38,11 +50,11 @@ package GL.Objects.Buffers is
    procedure Load_To_Buffer (Target : Buffer_Target;
                              Data   : Pointers.Element_Array;
                              Usage  : Buffer_Usage);
-   
+
+   procedure Allocate (Target : Buffer_Target; Number_Of_Elements : Long;
+                       Kind : Numeric_Type; Usage : Buffer_Usage);
    -- Use this instead of Load_To_Buffer when you don't want to copy any data
-   procedure Allocate (Target : Buffer_Target; Number_Of_Bytes : Long;
-                       Usage  : Buffer_Usage);
-   
+
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
    procedure Map (Target : in out Buffer_Target; Access_Type : Access_Kind;
@@ -52,13 +64,19 @@ package GL.Objects.Buffers is
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
    function Pointer (Target : Buffer_Target) return Pointers.Pointer;
-   
+
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Get_Sub_Data (Target : in out Buffer_Target;
+   procedure Set_Sub_Data (Target : Buffer_Target;
                            Offset : Types.Size;
                            Data   : in out Pointers.Element_Array);
-   
+
+   generic
+      with package Pointers is new Interfaces.C.Pointers (<>);
+   procedure Get_Sub_Data (Target : Buffer_Target;
+                           Offset : Types.Size;
+                           Data   : out Pointers.Element_Array);
+
    function Access_Type (Target : Buffer_Target) return Access_Kind;
    function Mapped      (Target : Buffer_Target) return Boolean;
    function Size        (Target : Buffer_Target) return Size;
@@ -90,8 +108,11 @@ package GL.Objects.Buffers is
    Copy_Read_Buffer          : constant Buffer_Target;
    Copy_Write_Buffer         : constant Buffer_Target;
    Draw_Indirect_Buffer      : constant Buffer_Target;
+   Shader_Storage_Buffer     : constant Buffer_Target;
+   Dispatch_Indirect_Buffer  : constant Buffer_Target;
+   Query_Buffer              : constant Buffer_Target;
    Atomic_Counter_Buffer     : constant Buffer_Target;
-   
+
 private
    for Buffer_Usage use (Stream_Draw  => 16#88E0#,
                          Stream_Read  => 16#88E1#,
@@ -129,6 +150,12 @@ private
      := Buffer_Target'(Kind => Low_Level.Enums.Copy_Write_Buffer);
    Draw_Indirect_Buffer      : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Draw_Indirect_Buffer);
+   Shader_Storage_Buffer     : constant Buffer_Target
+     := Buffer_Target'(Kind => Low_Level.Enums.Shader_Storage_Buffer);
+   Dispatch_Indirect_Buffer  : constant Buffer_Target
+     := Buffer_Target'(Kind => Low_Level.Enums.Dispatch_Indirect_Buffer);
+   Query_Buffer              : constant Buffer_Target
+     := Buffer_Target'(Kind => Low_Level.Enums.Query_Buffer);
    Atomic_Counter_Buffer     : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Atomic_Counter_Buffer);
 end GL.Objects.Buffers;

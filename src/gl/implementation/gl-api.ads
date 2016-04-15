@@ -25,12 +25,13 @@ with GL.Enums.Textures;
 with GL.Errors;
 with GL.Framebuffer;
 with GL.Low_Level.Enums;
-with GL.Objects.Textures;
 with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
 with GL.Objects.Programs;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;
+with GL.Objects.Textures;
+with GL.Objects.Transform_Feedbacks;
 with GL.Pixels;
 with GL.Rasterization;
 with GL.Toggles;
@@ -603,6 +604,9 @@ private package GL.API is
    procedure Bind_Buffer is new Loader.Procedure_With_2_Params
       ("glBindBuffer", Low_Level.Enums.Buffer_Kind, UInt);
 
+   procedure Bind_Buffer_Base is new Loader.Procedure_With_3_Params
+      ("glBindBufferBase", Low_Level.Enums.Buffer_Kind, UInt, UInt);
+
    procedure Buffer_Data is new Loader.Procedure_With_4_Params
       ("glBufferData", Low_Level.Enums.Buffer_Kind, Low_Level.SizeIPtr,
        System.Address, Objects.Buffers.Buffer_Usage);
@@ -978,6 +982,47 @@ private package GL.API is
 
    procedure Get_Sampler_Parameter_Compare_Function is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
+
+   -----------------------------------------------------------------------------
+   --                           Transform feedback                            --
+   -----------------------------------------------------------------------------
+
+   procedure Transform_Feedback_Varyings is new Loader.Procedure_With_4_Params
+     ("glTransformFeedbackVaryings", UInt, Size, Low_Level.CharPtr_Array,
+      Objects.Transform_Feedbacks.Outputs_Format);
+
+   procedure Gen_Transform_Feedbacks is new Loader.Getter_With_2_Params
+     ("glGenTransformFeedbacks", Size, UInt);
+
+   procedure Delete_Transform_Feedbacks is new Loader.Array_Proc_With_2_Params
+     ("glDeleteTransformFeedbacks", Size, UInt, Low_Level.UInt_Array);
+
+   procedure Begin_Transform_Feedback is new Loader.Procedure_With_1_Param
+     ("glBeginTransformFeedback", Connection_Mode);
+
+   procedure End_Transform_Feedback is new Loader.Procedure_Without_Params
+     ("glEndTransformFeedback");
+
+   procedure Pause_Transform_Feedback is new Loader.Procedure_Without_Params
+     ("glPauseTransformFeedback");
+
+   procedure Resume_Transform_Feedback is new Loader.Procedure_Without_Params
+     ("glResumeTransformFeedback");
+
+   procedure Bind_Transform_Feedback is new Loader.Procedure_With_2_Params
+     ("glBindTransformFeedback", Low_Level.Enums.Transform_Feedback_Kind, UInt);
+
+   procedure Draw_Transform_Feedback is new Loader.Procedure_With_2_Params
+     ("glDrawTransformFeedback", Connection_Mode, UInt);
+
+   procedure Draw_Transform_Feedback_Instanced is new Loader.Procedure_With_3_Params
+     ("glDrawTransformFeedbackInstanced", Connection_Mode, UInt, Size);
+
+   procedure Draw_Transform_Feedback_Stream is new Loader.Procedure_With_3_Params
+     ("glDrawTransformFeedbackStream", Connection_Mode, UInt, UInt);
+
+   procedure Draw_Transform_Feedback_Stream_Instanced is new Loader.Procedure_With_4_Params
+     ("glDrawTransformFeedbackStreamInstanced", Connection_Mode, UInt, UInt, Size);
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --

@@ -63,8 +63,9 @@ package GL.Types is
    
    -- doesn't really fit here, but there's no other place it fits better
    type Connection_Mode is (Points, Lines, Line_Loop, Line_Strip, Triangles,
-                            Triangle_Strip, Triangle_Fan, Quads, Quad_Strip,
-                            Polygon);
+                            Triangle_Strip, Triangle_Fan, Lines_Adjacency,
+                            Line_Strip_Adjacency, Triangles_Adjacency,
+                            Triangle_Strip_Adjacency, Patches);
    
    type Compare_Function is (Never, Less, Equal, LEqual, Greater, Not_Equal,
                              GEqual, Always);
@@ -126,7 +127,11 @@ package GL.Types is
    
    package Single_Pointers is new Interfaces.C.Pointers
      (Size, Single, Single_Array, 0.0);
-   
+
+   type String_Access is not null access constant String;
+
+   type String_Array is array (Positive range <>) of String_Access;
+
 private
    for Numeric_Type use (Byte_Type   => 16#1400#,
                          UByte_Type  => 16#1401#,
@@ -150,16 +155,18 @@ private
                                   UInt_Type   => 16#1405#);
    for Unsigned_Numeric_Type'Size use UInt'Size;
    
-   for Connection_Mode use (Points         => 16#0000#,
-                            Lines          => 16#0001#,
-                            Line_Loop      => 16#0002#,
-                            Line_Strip     => 16#0003#,
-                            Triangles      => 16#0004#,
-                            Triangle_Strip => 16#0005#,
-                            Triangle_Fan   => 16#0006#,
-                            Quads          => 16#0007#,
-                            Quad_Strip     => 16#0008#,
-                            Polygon        => 16#0009#);
+   for Connection_Mode use (Points                   => 16#0000#,
+                            Lines                    => 16#0001#,
+                            Line_Loop                => 16#0002#,
+                            Line_Strip               => 16#0003#,
+                            Triangles                => 16#0004#,
+                            Triangle_Strip           => 16#0005#,
+                            Triangle_Fan             => 16#0006#,
+                            Lines_Adjacency          => 16#000A#,
+                            Line_Strip_Adjacency     => 16#000B#,
+                            Triangles_Adjacency      => 16#000C#,
+                            Triangle_Strip_Adjacency => 16#000D#,
+                            Patches                  => 16#000E#);
    for Connection_Mode'Size use UInt'Size;
 
    for Compare_Function use (Never     => 16#0200#,

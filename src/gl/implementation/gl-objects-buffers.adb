@@ -59,6 +59,23 @@ package body GL.Objects.Buffers is
       end if;
    end Bind;
 
+   procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural) is
+      Cursor : constant Buffer_Maps.Cursor
+        := Current_Buffers.Find (Target.Kind);
+   begin
+      if Cursor = Buffer_Maps.No_Element or else
+        Buffer_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
+      then
+         API.Bind_Buffer_Base (Target.Kind, UInt (Index), Object.Reference.GL_Id);
+         Raise_Exception_On_OpenGL_Error;
+         if Cursor = Buffer_Maps.No_Element then
+            Current_Buffers.Insert (Target.Kind, Object);
+         else
+            Current_Buffers.Replace_Element (Cursor, Object);
+         end if;
+      end if;
+   end Bind_Base;
+
    function Current_Object (Target : Buffer_Target) return Buffer'Class is
       Cursor : constant Buffer_Maps.Cursor
         := Current_Buffers.Find (Target.Kind);
@@ -81,14 +98,33 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
    end Load_To_Buffer;
 
-   procedure Allocate (Target : Buffer_Target; Number_Of_Bytes : Long;
-      Usage  : Buffer_Usage) is
+   procedure Allocate (Target : Buffer_Target; Number_Of_Elements : Long;
+                       Kind : Numeric_Type; Usage  : Buffer_Usage) is
+      Bytes : Long;
    begin
-      API.Buffer_Data (Target.Kind, Low_Level.SizeIPtr (Number_Of_Bytes),
+      case Kind is
+         when Single_Type =>
+            Bytes := Number_Of_Elements * Single'Size / System.Storage_Unit;
+         when Double_Type =>
+            Bytes := Number_Of_Elements * Double'Size / System.Storage_Unit;
+         when UInt_Type =>
+            Bytes := Number_Of_Elements * UInt'Size / System.Storage_Unit;
+         when UByte_Type =>
+            Bytes := Number_Of_Elements * UByte'Size / System.Storage_Unit;
+         when UShort_Type =>
+            Bytes := Number_Of_Elements * UShort'Size / System.Storage_Unit;
+         when Int_Type =>
+            Bytes := Number_Of_Elements * Int'Size / System.Storage_Unit;
+         when Byte_Type =>
+            Bytes := Number_Of_Elements * Byte'Size / System.Storage_Unit;
+         when Short_Type =>
+            Bytes := Number_Of_Elements * Short'Size / System.Storage_Unit;
+      end case;
+      API.Buffer_Data (Target.Kind, Low_Level.SizeIPtr (Bytes),
                        System.Null_Address, Usage);
       Raise_Exception_On_OpenGL_Error;
    end Allocate;
-   
+
    procedure Draw_Elements (Mode : Connection_Mode; Count : Types.Size;
                             Index_Type : Unsigned_Numeric_Type) is
    begin
@@ -130,19 +166,35 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Pointer;
-   
-   procedure Get_Sub_Data (Target : in out Buffer_Target;
+
+   procedure Set_Sub_Data (Target : Buffer_Target;
                            Offset : Types.Size;
                            Data   : in out Pointers.Element_Array) is
       procedure Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
         ("glBufferSubData", Low_Level.Enums.Buffer_Kind, Low_Level.IntPtr,
          Low_Level.SizeIPtr, Pointers.Element_Array);
+
+      Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
    begin
       Buffer_Sub_Data (Target.Kind, Low_Level.IntPtr (Offset),
-                       Low_Level.SizeIPtr (Data'Length), Data);
+                       Low_Level.SizeIPtr (Number_Of_Bytes), Data);
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Sub_Data;
+
+   procedure Get_Sub_Data (Target : Buffer_Target;
+                           Offset : Types.Size;
+                           Data   : out Pointers.Element_Array) is
+      procedure Get_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
+        ("glGetBufferSubData", Low_Level.Enums.Buffer_Kind, Low_Level.IntPtr,
+         Low_Level.SizeIPtr, Pointers.Element_Array);
+
+      Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
+   begin
+      Get_Buffer_Sub_Data (Target.Kind, Low_Level.IntPtr (Offset),
+                           Low_Level.SizeIPtr (Number_Of_Bytes), Data);
       Raise_Exception_On_OpenGL_Error;
    end Get_Sub_Data;
-   
+
    function Access_Type (Target : Buffer_Target) return Access_Kind is
       Ret : Access_Kind := Access_Kind'First;
    begin

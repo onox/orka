@@ -42,7 +42,8 @@ package GL.Toggles is
                    Sample_Alpha_To_Coverage, Sample_Alpha_To_One,
                    Sample_Coverage, Color_Table, Post_Convolution_Color_Table,
                    Post_Color_Matrix_Color_Table, Color_Sum, Texture_Cube_Map,
-                   Vertex_Program_Point_Size, Vertex_Program_Two_Side, Point_Sprite);
+                   Vertex_Program_Point_Size, Vertex_Program_Two_Side, Point_Sprite,
+                   Rasterizer_Discard);
    
    procedure Enable (Subject : Toggle);
    procedure Disable (Subject : Toggle);
@@ -127,7 +128,8 @@ private
                    Texture_Cube_Map         => 16#8513#,
                    Vertex_Program_Point_Size => 16#8642#,
                    Vertex_Program_Two_Side  => 16#8643#,
-                   Point_Sprite             => 16#8861#);
+                   Point_Sprite             => 16#8861#,
+                   Rasterizer_Discard       => 16#8C89#);
    for Toggle'Size use Low_Level.Enum'Size;
    
 end GL.Toggles;

@@ -16,6 +16,7 @@
 
 with GL.Attributes;
 with GL.Objects.Shaders.Lists;
+with GL.Objects.Transform_Feedbacks;
 with GL.Uniforms;
 
 package GL.Objects.Programs is
@@ -23,7 +24,7 @@ package GL.Objects.Programs is
    
    subtype Subroutine_Index_Type is UInt;
    subtype Uniform_Location_Type is Int range -1 .. Int'Last;
-   
+
    Invalid_Index : constant Subroutine_Index_Type;
    
    type Program is new GL_Object with private;
@@ -64,6 +65,9 @@ package GL.Objects.Programs is
    procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean);
    procedure Set_Separable (Subject : Program; Separable : Boolean);
 
+   procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
+                                   Format : Transform_Feedbacks.Outputs_Format);
+
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform;
    
@@ -74,7 +78,7 @@ package GL.Objects.Programs is
      return Attributes.Attribute;
    
    function Attached_Shaders (Object : Program) return Shaders.Lists.List;
-   
+
    overriding
    procedure Initialize_Id (Object : in out Program);
    

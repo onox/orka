@@ -36,13 +36,16 @@ package GL.Low_Level.Enums is
    type Renderbuffer_Kind is (Renderbuffer);
    
    type Framebuffer_Kind is (Read, Draw, Read_Draw);
-   
+
+   type Transform_Feedback_Kind is (Transform_Feedback);
+
    type Buffer_Kind is (Array_Buffer, Element_Array_Buffer, Pixel_Pack_Buffer,
                         Pixel_Unpack_Buffer, Uniform_Buffer, Texture_Buffer,
                         Transform_Feedback_Buffer, Copy_Read_Buffer,
                         Copy_Write_Buffer, Draw_Indirect_Buffer,
-                        Atomic_Counter_Buffer);
-   
+                        Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
+                        Query_Buffer, Atomic_Counter_Buffer);
+
    type Draw_Buffer_Index is (DB0, DB1, DB2, DB3, DB4, DB5, DB6, DB7,
       DB8, DB9, DB10, DB11, DB12, DB13, DB14, DB15);
    
@@ -79,7 +82,10 @@ private
                              Draw      => 16#8CA9#,
                              Read_Draw => 16#8D40#);
    for Framebuffer_Kind'Size use Enum'Size;
-   
+
+   for Transform_Feedback_Kind use (Transform_Feedback => 16#8E22#);
+   for Transform_Feedback_Kind'Size use Enum'Size;
+
    for Buffer_Kind use (Array_Buffer              => 16#8892#,
                         Element_Array_Buffer      => 16#8893#,
                         Pixel_Pack_Buffer         => 16#88EB#,
@@ -90,6 +96,9 @@ private
                         Copy_Read_Buffer          => 16#8F36#,
                         Copy_Write_Buffer         => 16#8F37#,
                         Draw_Indirect_Buffer      => 16#8F3F#,
+                        Shader_Storage_Buffer     => 16#90D2#,
+                        Dispatch_Indirect_Buffer  => 16#90EE#,
+                        Query_Buffer              => 16#9192#,
                         Atomic_Counter_Buffer     => 16#92C0#);
    for Buffer_Kind'Size use Enum'Size;
    

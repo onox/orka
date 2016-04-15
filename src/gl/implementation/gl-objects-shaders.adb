@@ -22,12 +22,14 @@ with GL.Enums;
 package body GL.Objects.Shaders is
    
    procedure Set_Source (Subject : Shader; Source : String) is
+      C_Shader_Source : C.Strings.chars_ptr := C.Strings.New_String (Source);
       C_Source : constant Low_Level.CharPtr_Array
-        := (1 => C.Strings.New_String (Source));
+        := (1 => C_Shader_Source);
       Lengths : constant Low_Level.Int_Array
         := (1 => Source'Length);
    begin
       API.Shader_Source (Subject.Reference.GL_Id, 1, C_Source, Lengths);
+      C.Strings.Free (C_Shader_Source);
       Raise_Exception_On_OpenGL_Error;
    end Set_Source;
    
