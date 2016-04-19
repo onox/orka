@@ -20,7 +20,7 @@ with GL.API;
 with GL.Enums;
 
 package body GL.Objects.Shaders is
-   
+
    procedure Set_Source (Subject : Shader; Source : String) is
       C_Shader_Source : C.Strings.chars_ptr := C.Strings.New_String (Source);
       C_Source : constant Low_Level.CharPtr_Array

@@ -159,6 +159,46 @@ package body GL.Runtime_Loading is
       end if;
    end Array_Getter_With_4_Params;
 
+   function Array_Getter_With_8_Params (Param1 : Param1_Type;
+                                        Param2 : Param2_Type;
+                                        Param3 : Param3_Type;
+                                        Param4 : Param4_Type;
+                                        Param5 : Param5_Type;
+                                        Max_Size : Types.Size)
+                                        return Array_Type is
+      use type Types.Size;
+
+      type Procedure_Reference is
+        access procedure (Param1 : Param1_Type;
+                          Param2 : Param2_Type;
+                          Param3 : Param3_Type;
+                          Param4 : Param4_Type;
+                          Param5 : Param5_Type;
+                          Max : Types.Size;
+                          Returned_Size : in out Types.Size;
+                          Values : in out Array_Type);
+      pragma Convention (StdCall, Procedure_Reference);
+
+      function Load_Function is new Load (Procedure_Reference);
+      Reference : constant Procedure_Reference
+        := Load_Function (Procedure_Name);
+
+      Actual_Size : Types.Size := 0;
+
+      Ret : Array_Type (1 .. Max_Size);
+   begin
+      if Reference = null then
+         raise Feature_Not_Supported_Exception with Procedure_Name;
+      end if;
+
+      Reference.all (Param1, Param2, Param3, Param4, Param5, Max_Size, Actual_Size, Ret);
+      if Actual_Size /= Max_Size then
+         return Ret (1 .. Actual_Size);
+      else
+         return Ret;
+      end if;
+   end Array_Getter_With_8_Params;
+
    procedure Procedure_Without_Params is
       type Procedure_Reference is
         access procedure;
@@ -477,7 +517,7 @@ package body GL.Runtime_Loading is
                           Length : out Size_Type;
                           Value : Interfaces.C.Strings.chars_ptr);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -488,5 +528,31 @@ package body GL.Runtime_Loading is
          Reference (Param1, Buffer_Size, Length, Value);
       end if;
    end String_Getter_With_4_Params;
+
+   procedure String_Getter_With_6_Params (Param1      : Param1_Type;
+                                          Param2      : Param2_Type;
+                                          Param3      : Param3_Type;
+                                          Buffer_Size : Size_Type;
+                                          Length      : out Size_Type;
+                                          Value       : Interfaces.C.Strings.chars_ptr) is
+      type Procedure_Reference is
+        access procedure (Param1 : Param1_Type;
+                          Param2 : Param2_Type;
+                          Param3 : Param3_Type;
+                          Buffer_Size : Size_Type;
+                          Length : out Size_Type;
+                          Value : Interfaces.C.Strings.chars_ptr);
+      pragma Convention (StdCall, Procedure_Reference);
+
+      function Load_Procedure is new Load (Procedure_Reference);
+      Reference : constant Procedure_Reference
+        := Load_Procedure (Procedure_Name);
+   begin
+      if Reference = null then
+         raise Feature_Not_Supported_Exception with Procedure_Name;
+      else
+         Reference (Param1, Param2, Param3, Buffer_Size, Length, Value);
+      end if;
+   end String_Getter_With_6_Params;
 
 end GL.Runtime_Loading;

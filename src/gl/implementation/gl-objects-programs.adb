@@ -20,6 +20,7 @@ with GL.Enums;
 with Interfaces.C.Strings;
 
 package body GL.Objects.Programs is
+
    procedure Attach (Subject : Program; Shader : Shaders.Shader) is
    begin
       API.Attach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
@@ -65,88 +66,6 @@ package body GL.Objects.Programs is
          return Info_Log;
       end;
    end Info_Log;
-   
-   function Active_Subroutines (Object : Program; Shader : Shaders.Shader_Type)
-                                return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutines, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Active_Subroutines;
-   
-   function Active_Subroutine_Uniforms (Object : Program;
-                                        Shader : Shaders.Shader_Type) 
-                                        return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Uniforms, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Active_Subroutine_Uniforms;
-   
-   function Active_Subroutine_Uniform_Locations (Object : Program;
-                                                 Shader : Shaders.Shader_Type)
-                                                 return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Uniform_Locations, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Active_Subroutine_Uniform_Locations;
-      
-   function Active_Subroutine_Uniform_Max_Length (Object : Program;
-                                                  Shader : Shaders.Shader_Type)
-                                                  return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Uniform_Max_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Active_Subroutine_Uniform_Max_Length;
-   
-   function Active_Subroutine_Max_Length (Object : Program;
-                                          Shader : Shaders.Shader_Type)
-                                          return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Max_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Active_Subroutine_Max_Length;
-   
-   function Subroutine_Index (Object : Program; Shader : Shaders.Shader_Type;
-                              Name   : String)
-                              return Subroutine_Index_Type is
-      C_String : constant Interfaces.C.char_array
-        := Interfaces.C.To_C (Name);
-   begin
-      return Index : constant Subroutine_Index_Type := API.Get_Subroutine_Index
-        (Object.Reference.GL_Id, Shader, C_String)
-      do
-         Raise_Exception_On_OpenGL_Error;
-      end return;
-   end Subroutine_Index;
-   
-   function Subroutine_Uniform_Locations (Object : Program;
-                                          Shader : Shaders.Shader_Type;
-                                          Name   : String) 
-                                          return Uniform_Location_Type is
-      C_String : constant Interfaces.C.char_array
-        := Interfaces.C.To_C (Name);
-   begin
-      return Index : constant Uniform_Location_Type
-        := API.Get_Subroutine_Uniform_Location
-        (Object.Reference.GL_Id, Shader, C_String)
-      do
-         Raise_Exception_On_OpenGL_Error;
-      end return;
-   end Subroutine_Uniform_Locations;
 
    procedure Use_Program (Subject : Program) is
    begin
@@ -198,7 +117,7 @@ package body GL.Objects.Programs is
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
-   
+
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform is
       Result : constant Uniforms.Uniform := API.Get_Uniform_Location
@@ -216,7 +135,7 @@ package body GL.Objects.Programs is
                                Interfaces.C.To_C (Name));
       Raise_Exception_On_OpenGL_Error;
    end Bind_Attrib_Location;
-      
+
    function Attrib_Location (Subject : Program; Name : String)
      return Attributes.Attribute is
       Location : constant Attributes.Attribute := API.Get_Attrib_Location
@@ -225,14 +144,14 @@ package body GL.Objects.Programs is
       Raise_Exception_On_OpenGL_Error;
       return Location;
    end Attrib_Location;
-   
+
    function Attached_Shaders (Object : Program) return Shaders.Lists.List is
       Shader_Count : aliased Int := 0;
    begin
       API.Get_Program_Param (Object.Reference.GL_Id, Enums.Attached_Shaders,
                              Shader_Count);
       Raise_Exception_On_OpenGL_Error;
-      
+
       return List : constant Shaders.Lists.List := Shaders.Lists.Create
         (API.Get_Attached_Shaders (Object.Reference.GL_Id,
                                    Size (Shader_Count)))
@@ -240,5 +159,202 @@ package body GL.Objects.Programs is
          Raise_Exception_On_OpenGL_Error;
       end return;
    end Attached_Shaders;
+
+   -----------------------------------------------------------------------------
+   --                               Subroutines                               --
+   -----------------------------------------------------------------------------
+
+   function Subroutine_Interface (Shader : Shaders.Shader_Type)
+     return Enums.Program_Interface with Inline is
+   begin
+      case Shader is
+         when Shaders.Vertex_Shader =>
+            return Enums.Vertex_Subroutine;
+         when Shaders.Geometry_Shader =>
+            return Enums.Geometry_Subroutine;
+         when Shaders.Fragment_Shader =>
+            return Enums.Fragment_Subroutine;
+         when Shaders.Tess_Control_Shader =>
+            return Enums.Tess_Control_Subroutine;
+         when Shaders.Tess_Evaluation_Shader =>
+            return Enums.Tess_Evaluation_Subroutine;
+         when Shaders.Compute_Shader =>
+            return Enums.Compute_Subroutine;
+      end case;
+   end Subroutine_Interface;
+
+   function Subroutine_Uniform_Interface (Shader : Shaders.Shader_Type)
+     return Enums.Program_Interface with Inline is
+   begin
+      case Shader is
+         when Shaders.Vertex_Shader =>
+            return Enums.Vertex_Subroutine_Uniform;
+         when Shaders.Geometry_Shader =>
+            return Enums.Geometry_Subroutine_Uniform;
+         when Shaders.Fragment_Shader =>
+            return Enums.Fragment_Subroutine_Uniform;
+         when Shaders.Tess_Control_Shader =>
+            return Enums.Tess_Control_Subroutine_Uniform;
+         when Shaders.Tess_Evaluation_Shader =>
+            return Enums.Tess_Evaluation_Subroutine_Uniform;
+         when Shaders.Compute_Shader =>
+            return Enums.Compute_Subroutine_Uniform;
+      end case;
+   end Subroutine_Uniform_Interface;
+
+   function Active_Subroutines (Object : Program; Shader : Shaders.Shader_Type)
+                                return Size is
+      Ret : Size := 0;
+   begin
+      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
+                             Enums.Active_Subroutines, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Active_Subroutines;
+
+   function Active_Subroutine_Uniforms (Object : Program;
+                                        Shader : Shaders.Shader_Type)
+                                        return Size is
+      Ret : Size := 0;
+   begin
+      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
+                             Enums.Active_Subroutine_Uniforms, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Active_Subroutine_Uniforms;
+
+   function Active_Subroutine_Uniform_Locations (Object : Program;
+                                                 Shader : Shaders.Shader_Type)
+                                                 return Size is
+      Ret : Size := 0;
+   begin
+      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
+                             Enums.Active_Subroutine_Uniform_Locations, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Active_Subroutine_Uniform_Locations;
       
+   function Active_Subroutine_Uniform_Max_Length (Object : Program;
+                                                  Shader : Shaders.Shader_Type)
+                                                  return Size is
+      Ret : Size := 0;
+   begin
+      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
+                             Enums.Active_Subroutine_Uniform_Max_Length, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      --  Received length includes null termination character
+      return Ret - 1;
+   end Active_Subroutine_Uniform_Max_Length;
+
+   function Active_Subroutine_Max_Length (Object : Program;
+                                          Shader : Shaders.Shader_Type)
+                                          return Size is
+      Ret : Size := 0;
+   begin
+      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
+                             Enums.Active_Subroutine_Max_Length, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      --  Received length includes null termination character
+      return Ret - 1;
+   end Active_Subroutine_Max_Length;
+
+   function Subroutine_Index (Object : Program; Shader : Shaders.Shader_Type;
+                              Name   : String)
+                              return Subroutine_Index_Type is
+      C_String : constant Interfaces.C.char_array
+        := Interfaces.C.To_C (Name);
+   begin
+      return Index : constant Subroutine_Index_Type := Subroutine_Index_Type
+        (API.Get_Program_Resource_Index (Object.Reference.GL_Id,
+                                         Subroutine_Interface (Shader), C_String))
+      do
+         Raise_Exception_On_OpenGL_Error;
+      end return;
+   end Subroutine_Index;
+
+   function Subroutine_Uniform_Location (Object : Program;
+                                         Shader : Shaders.Shader_Type;
+                                         Name   : String)
+                                         return Uniform_Location_Type is
+      C_String : constant Interfaces.C.char_array
+        := Interfaces.C.To_C (Name);
+   begin
+      return Index : constant Uniform_Location_Type
+        := Uniform_Location_Type (API.Get_Program_Resource_Location
+             (Object.Reference.GL_Id,
+              Subroutine_Uniform_Interface (Shader),
+              C_String))
+      do
+         Raise_Exception_On_OpenGL_Error;
+      end return;
+   end Subroutine_Uniform_Location;
+
+   function Subroutine_Name (Object : Program; Shader : Shaders.Shader_Type;
+                             Index  : Subroutine_Index_Type)
+     return String is
+      Values : constant Int_Array := API.Get_Program_Resource
+        (Object.Reference.GL_Id,
+         Subroutine_Interface (Shader), Index,
+         1, (1 => Enums.Name_Length), 1);
+      --  Received length includes null termination character
+      Max_Length : constant Size := Size (Values (1) - 1);
+   begin
+      Raise_Exception_On_OpenGL_Error;
+      declare
+         Name : String (1 .. Integer (Max_Length));
+         pragma Warnings (Off, Name);
+         C_Name : C.Strings.chars_ptr := C.Strings.New_String (Name);
+         Actual_Length : Size := 0;
+      begin
+         API.Get_Program_Resource_Name (Object.Reference.GL_Id,
+                                        Subroutine_Interface (Shader), Index,
+                                        Max_Length + 1, Actual_Length, C_Name);
+         Raise_Exception_On_OpenGL_Error;
+         Name := C.Strings.Value (C_Name, C.size_t (Actual_Length));
+         C.Strings.Free (C_Name);
+         return Name;
+      end;
+   end Subroutine_Name;
+
+   function Subroutine_Uniform_Name (Object : Program; Shader : Shaders.Shader_Type;
+                                     Index  : Subroutine_Index_Type)
+     return String is
+      Values : constant Int_Array := API.Get_Program_Resource
+        (Object.Reference.GL_Id,
+         Subroutine_Uniform_Interface (Shader), Index,
+         1, (1 => Enums.Name_Length), 1);
+      --  Received length includes null termination character
+      Max_Length : constant Size := Size (Values (1) - 1);
+   begin
+      declare
+         Name : String (1 .. Integer (Max_Length));
+         pragma Warnings (Off, Name);
+         C_Name : C.Strings.chars_ptr := C.Strings.New_String (Name);
+         Actual_Length : Size := 0;
+      begin
+         API.Get_Program_Resource_Name (Object.Reference.GL_Id,
+                                        Subroutine_Uniform_Interface (Shader),
+                                        Index, Max_Length + 1, Actual_Length, C_Name);
+         Raise_Exception_On_OpenGL_Error;
+         Name := C.Strings.Value (C_Name, C.size_t (Actual_Length));
+         C.Strings.Free (C_Name);
+         return Name;
+      end;
+   end Subroutine_Uniform_Name;
+
+   procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array) is
+   begin
+      API.Uniform_Subroutines (Shader, Indices'Length, Indices);
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Uniform_Subroutines;
+
+   function Uniform_Subroutine (Shader : Shaders.Shader_Type; Location : Uniform_Location_Type)
+     return Subroutine_Index_Type is
+      Value : Subroutine_Index_Type := Invalid_Index;
+   begin
+      API.Get_Uniform_Subroutine (Shader, Location, Value);
+      Raise_Exception_On_OpenGL_Error;
+      return Value;
+   end Uniform_Subroutine;
+
 end GL.Objects.Programs;

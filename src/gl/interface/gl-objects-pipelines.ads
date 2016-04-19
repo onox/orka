@@ -24,10 +24,20 @@ package GL.Objects.Pipelines is
 
    procedure Use_Program_Stages (Object : Pipeline; Shader : Shaders.Shader_Type;
                                  Program : Programs.Program);
+   --  Use the specified shader from the given program in the pipeline
+   --
+   --  If you have subroutines in in some of its shaders, you must
+   --  subsequently call Set_Uniform_Subroutines, because the subroutine
+   --  state is completely lost after having called Use_Program_Stages.
 
    procedure Set_Active_Program (Object : Pipeline; Program : Programs.Program);
 
    procedure Bind (Object : Pipeline);
+   --  Bind the pipeline to the current context
+   --
+   --  If you have subroutines in in some of its shaders, you must
+   --  subsequently call Set_Uniform_Subroutines, because the subroutine
+   --  state is completely lost after having called Bind.
 
    function Validate (Object : Pipeline) return Boolean;
 

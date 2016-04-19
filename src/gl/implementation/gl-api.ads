@@ -819,14 +819,13 @@ private package GL.API is
      ("glGetProgramStageiv", UInt, Objects.Shaders.Shader_Type,
       Enums.Program_Stage_Param, Size);
    
-   function Get_Subroutine_Index is new Loader.Function_With_3_Params
-     ("glGetSubroutineIndex", UInt, Objects.Shaders.Shader_Type,
-      Interfaces.C.char_array, Objects.Programs.Subroutine_Index_Type);
-   
-   function Get_Subroutine_Uniform_Location is new Loader.Function_With_3_Params
-     ("glGetSubroutineUniformLocation", UInt, Objects.Shaders.Shader_Type,
-      Interfaces.C.char_array, Objects.Programs.Uniform_Location_Type);
-   
+   procedure Uniform_Subroutines is new Loader.Procedure_With_3_Params
+     ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
+
+   procedure Get_Uniform_Subroutine is new Loader.Getter_With_3_Params
+     ("glGetUniformSubroutineuiv", Objects.Shaders.Shader_Type,
+      Objects.Programs.Uniform_Location_Type, Objects.Programs.Subroutine_Index_Type);
+
    procedure Use_Program is new Loader.Procedure_With_1_Param
      ("glUseProgram", UInt);
 
@@ -865,6 +864,33 @@ private package GL.API is
 
    procedure Vertex_Attrib_Divisor is new Loader.Procedure_With_2_Params
      ("glVertexAttribDivisor", Attributes.Attribute, UInt);
+
+   -----------------------------------------------------------------------------
+   --                    Program Interfaces And Resources                     --
+   -----------------------------------------------------------------------------
+
+   procedure Get_Program_Interface is new Loader.Getter_With_4_Params
+     ("glGetProgramInterfaceiv", UInt, Enums.Program_Interface,
+      Enums.Program_Interface_Param, Low_Level.Int_Array);
+
+   function Get_Program_Resource_Index is new Loader.Function_With_3_Params
+     ("glGetProgramResourceIndex", UInt, Enums.Program_Interface,
+      C.char_array, UInt);
+
+   procedure Get_Program_Resource_Name is new Loader.String_Getter_With_6_Params
+     ("glGetProgramResourceName", Size, UInt, Enums.Program_Interface, UInt);
+
+   function Get_Program_Resource is new Loader.Array_Getter_With_8_Params
+     ("glGetProgramResourceiv", UInt, Enums.Program_Interface,
+      UInt, Size, Enums.Program_Resource_Array, Int, Int_Array);
+
+   function Get_Program_Resource_Location is new Loader.Function_With_3_Params
+     ("glGetProgramResourceLocation", UInt, Enums.Program_Interface,
+      C.char_array, Int);
+
+   function Get_Program_Resource_Location_Index is new Loader.Function_With_3_Params
+     ("glGetProgramResourceLocationIndex", UInt, Enums.Program_Interface,
+      C.char_array, Int);
 
    -----------------------------------------------------------------------------
    --                                Pipelines                                --

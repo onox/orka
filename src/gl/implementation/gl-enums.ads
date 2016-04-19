@@ -92,6 +92,51 @@ private package GL.Enums is
                                    Geometry_Shader,
                                    Tess_Evaluation_Shader, Tess_Control_Shader);
 
+   type Program_Interface is (Atomic_Counter_Buffer,
+                              Uniform,
+                              Uniform_Block,
+                              Program_Input,
+                              Program_Output,
+                              Buffer_Variable,
+                              Shader_Storage_Block,
+                              Vertex_Subroutine,
+                              Tess_Control_Subroutine,
+                              Tess_Evaluation_Subroutine,
+                              Geometry_Subroutine,
+                              Fragment_Subroutine,
+                              Compute_Subroutine,
+                              Vertex_Subroutine_Uniform,
+                              Tess_Control_Subroutine_Uniform,
+                              Tess_Evaluation_Subroutine_Uniform,
+                              Geometry_Subroutine_Uniform,
+                              Fragment_Subroutine_Uniform,
+                              Compute_Subroutine_Uniform,
+                              Transform_Feedback_Varyings);
+
+   type Program_Interface_Param is (Active_Resources, Max_Name_Length,
+                                    Max_Num_Active_Variables, Max_Num_Compatible_Subroutines);
+
+   type Program_Resource_Param is (Num_Compatible_Subroutines,
+                                   Compatible_Subroutines,
+                                   Is_Per_Patch,
+                                   Name_Length, Resource_Type,
+                                   Array_Size, Offset, Block_Index,
+                                   Array_Stride, Matrix_Stride, Is_Row_Major,
+                                   Atomic_Counter_Buffer_Index,
+                                   Buffer_Binding, Buffer_Data_Size,
+                                   Num_Active_Variables, Active_Variables,
+                                   Referenced_By_Vertex_Shader,
+                                   Referenced_By_Tess_Control_Shader,
+                                   Referenced_By_Tess_Evaluation_Shader,
+                                   Referenced_By_Geometry_Shader,
+                                   Referenced_By_Fragment_Shader,
+                                   Referenced_By_Compute_Shader,
+                                   Top_Level_Array_Size,
+                                   Top_Level_Array_Stride,
+                                   Location, Location_Index);
+
+   type Program_Resource_Array is array (Positive range <>) of Program_Resource_Param;
+
    type Clamp_Color_Param is (Clamp_Read_Color);
    
    type Pixel_Store_Param is (Unpack_Swap_Bytes, Unpack_LSB_First,
@@ -205,6 +250,62 @@ private
                                    Tess_Evaluation_Shader => 16#8E87#,
                                    Tess_Control_Shader    => 16#8E88#);
    for Program_Pipeline_Param'Size use Low_Level.Enum'Size;
+
+   for Program_Interface use (Atomic_Counter_Buffer              => 16#92C0#,
+                              Uniform                            => 16#92E1#,
+                              Uniform_Block                      => 16#92E2#,
+                              Program_Input                      => 16#92E3#,
+                              Program_Output                     => 16#92E4#,
+                              Buffer_Variable                    => 16#92E5#,
+                              Shader_Storage_Block               => 16#92E6#,
+                              Vertex_Subroutine                  => 16#92E8#,
+                              Tess_Control_Subroutine            => 16#92E9#,
+                              Tess_Evaluation_Subroutine         => 16#92EA#,
+                              Geometry_Subroutine                => 16#92EB#,
+                              Fragment_Subroutine                => 16#92EC#,
+                              Compute_Subroutine                 => 16#92ED#,
+                              Vertex_Subroutine_Uniform          => 16#92EE#,
+                              Tess_Control_Subroutine_Uniform    => 16#92EF#,
+                              Tess_Evaluation_Subroutine_Uniform => 16#92F0#,
+                              Geometry_Subroutine_Uniform        => 16#92F1#,
+                              Fragment_Subroutine_Uniform        => 16#92F2#,
+                              Compute_Subroutine_Uniform         => 16#92F3#,
+                              Transform_Feedback_Varyings        => 16#92F4#);
+   for Program_Interface'Size use Low_Level.Enum'Size;
+
+   for Program_Interface_Param use (Active_Resources               => 16#92F5#,
+                                    Max_Name_Length                => 16#92F6#,
+                                    Max_Num_Active_Variables       => 16#92F7#,
+                                    Max_Num_Compatible_Subroutines => 16#92F8#);
+   for Program_Interface_Param'Size use Low_Level.Enum'Size;
+
+   for Program_Resource_Param use (Num_Compatible_Subroutines           => 16#8E4A#,
+                                   Compatible_Subroutines               => 16#8E4B#,
+                                   Is_Per_Patch                         => 16#92E7#,
+                                   Name_Length                          => 16#92F9#,
+                                   Resource_Type                        => 16#92FA#,
+                                   Array_Size                           => 16#92FB#,
+                                   Offset                               => 16#92FC#,
+                                   Block_Index                          => 16#92FD#,
+                                   Array_Stride                         => 16#92FE#,
+                                   Matrix_Stride                        => 16#92FF#,
+                                   Is_Row_Major                         => 16#9300#,
+                                   Atomic_Counter_Buffer_Index          => 16#9301#,
+                                   Buffer_Binding                       => 16#9302#,
+                                   Buffer_Data_Size                     => 16#9303#,
+                                   Num_Active_Variables                 => 16#9304#,
+                                   Active_Variables                     => 16#9305#,
+                                   Referenced_By_Vertex_Shader          => 16#9306#,
+                                   Referenced_By_Tess_Control_Shader    => 16#9307#,
+                                   Referenced_By_Tess_Evaluation_Shader => 16#9308#,
+                                   Referenced_By_Geometry_Shader        => 16#9309#,
+                                   Referenced_By_Fragment_Shader        => 16#930A#,
+                                   Referenced_By_Compute_Shader         => 16#930B#,
+                                   Top_Level_Array_Size                 => 16#930C#,
+                                   Top_Level_Array_Stride               => 16#930D#,
+                                   Location                             => 16#930E#,
+                                   Location_Index                       => 16#930F#);
+   for Program_Resource_Param'Size use Low_Level.Enum'Size;
 
    for Clamp_Color_Param use (Clamp_Read_Color => 16#891C#);
    for Clamp_Color_Param'Size use Low_Level.Enum'Size;

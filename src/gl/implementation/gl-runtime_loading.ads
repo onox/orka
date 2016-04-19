@@ -77,7 +77,24 @@ package GL.Runtime_Loading is
    function Array_Getter_With_4_Params (Param1   : Param1_Type;
                                         Max_Size : Types.Size)
                                         return Array_Type;
-   
+
+   generic
+      Procedure_Name : String;
+      type Param1_Type (<>) is private;
+      type Param2_Type (<>) is private;
+      type Param3_Type (<>) is private;
+      type Param4_Type (<>) is private;
+      type Param5_Type (<>) is private;
+      type Element_Type is private;
+      type Array_Type is array (Types.Size range <>) of Element_Type;
+   function Array_Getter_With_8_Params (Param1   : Param1_Type;
+                                        Param2   : Param2_Type;
+                                        Param3   : Param3_Type;
+                                        Param4   : Param4_Type;
+                                        Param5   : Param5_Type;
+                                        Max_Size : Types.Size)
+                                        return Array_Type;
+
    generic
       Procedure_Name : String;
    procedure Procedure_Without_Params;
@@ -269,6 +286,20 @@ package GL.Runtime_Loading is
                                           Length      : out Size_Type;
                                           Value       : Interfaces.C.Strings.chars_ptr);
    pragma Inline (String_Getter_With_4_Params);
+
+   generic
+      Procedure_Name : String;
+      type Size_Type is (<>);
+      type Param1_Type is private;
+      type Param2_Type is private;
+      type Param3_Type is private;
+   procedure String_Getter_With_6_Params (Param1      : Param1_Type;
+                                          Param2      : Param2_Type;
+                                          Param3      : Param3_Type;
+                                          Buffer_Size : Size_Type;
+                                          Length      : out Size_Type;
+                                          Value       : Interfaces.C.Strings.chars_ptr);
+   pragma Inline (String_Getter_With_6_Params);
 
 private
    generic
