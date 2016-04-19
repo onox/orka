@@ -1051,6 +1051,19 @@ private package GL.API is
      ("glDrawTransformFeedbackStreamInstanced", Connection_Mode, UInt, UInt, Size);
 
    -----------------------------------------------------------------------------
+   --                                Barriers                                 --
+   -----------------------------------------------------------------------------
+
+   procedure Texture_Barrier is new Loader.Procedure_Without_Params
+     ("glTextureBarrier");
+
+   procedure Memory_Barrier is new Loader.Procedure_With_1_Param
+     ("glMemoryBarrier", Low_Level.Bitfield);
+
+   procedure Memory_Barrier_By_Region is new Loader.Procedure_With_1_Param
+     ("glMemoryBarrierByRegion", Low_Level.Bitfield);
+
+   -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
    
