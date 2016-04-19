@@ -41,9 +41,9 @@ procedure GL_Test.VBO is
       use GL.Objects.Buffers;
 
       Vertices : constant Single_Array
-        := (-0.8, -0.5,     1.0, 0.0, 0.0,
-             0.2, -0.5,     0.0, 1.0, 0.0,
-            -0.3,  0.5,     0.0, 0.0, 1.0);
+        := (-0.5, -0.5,     1.0, 0.0, 0.0,
+             0.5, -0.5,     0.0, 1.0, 0.0,
+             0.0,  0.5,     0.0, 0.0, 1.0);
 
       Attrib_Pos : constant GL.Attributes.Attribute :=
         GL.Objects.Programs.Attrib_Location (Program, "in_Position");
@@ -114,6 +114,7 @@ procedure GL_Test.VBO is
 begin
    Display_Backend.Init;
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
+   Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
 

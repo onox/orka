@@ -421,7 +421,7 @@ begin
          Screen_Program.Use_Program;
 
          -- Set uniforms
-         GL.Uniforms.Set_Int (Uni_Effect, Int (Display_Backend.Get_Effect));
+         GL.Uniforms.Set_Int (Uni_Effect, Int (Display_Backend.Get_Effect (5)));
 
          GL.Objects.Textures.Set_Active_Unit (0);
          GL.Objects.Textures.Targets.Texture_2D.Bind (Color_Texture);

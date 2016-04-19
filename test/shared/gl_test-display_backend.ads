@@ -50,7 +50,7 @@ package GL_Test.Display_Backend is
 
    function Get_Zoom_Distance return Float;
 
-   function Get_Effect return Integer;
+   function Get_Effect (Maximum : Positive) return Integer;
 
 private
 
@@ -58,7 +58,7 @@ private
 
    subtype Mouse_Pos is Float range -180.0 .. 180.0;
 
-   type Effects is mod 5;
+   type Effects is new Integer;
 
    type Test_Window is new Glfw.Windows.Window with record
       Zoom_Distance : Mouse_Zoom := 2.0;

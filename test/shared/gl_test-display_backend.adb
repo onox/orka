@@ -203,9 +203,9 @@ package body GL_Test.Display_Backend is
       return Float (Main_Window.Zoom_Distance);
    end Get_Zoom_Distance;
 
-   function Get_Effect return Integer is
+   function Get_Effect (Maximum : Positive) return Integer is
    begin
-      return Integer (Main_Window.Effect);
+      return Integer (Main_Window.Effect) mod Maximum;
    end Get_Effect;
 
 end GL_Test.Display_Backend;

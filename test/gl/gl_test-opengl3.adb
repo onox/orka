@@ -134,6 +134,7 @@ procedure GL_Test.OpenGL3 is
 begin
    Display_Backend.Init;
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
+   Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
    

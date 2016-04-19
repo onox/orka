@@ -15,7 +15,8 @@ project OpenGL_Test is
                  "gl_test-vbo",
                  "gl_test-buffers",
                  "gl_test-geometry",
-                 "gl_test-transform_feedback");
+                 "gl_test-transform_feedback",
+                 "gl_test-subroutines");
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
