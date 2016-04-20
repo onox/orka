@@ -65,7 +65,8 @@ private package GL.Enums is
    type Shader_Param is (Shader_Type, Delete_Status, Compile_Status,
                          Info_Log_Length, Shader_Source_Length);
    
-   type Program_Param is (Compute_Work_Group_Size, Program_Binary_Length,
+   type Program_Param is (Program_Binary_Retrievable_Hint, Program_Separable,
+                          Compute_Work_Group_Size, Program_Binary_Length,
                           Geometry_Vertices_Out,
                           Geometry_Input_Type, Geometry_Output_Type,
                           Active_Uniform_Block_Max_Name_Length,
@@ -208,22 +209,24 @@ private
                          Shader_Source_Length => 16#8B88#);
    for Shader_Param'Size use Low_Level.Enum'Size;
    
-   for Program_Param use (Compute_Work_Group_Size     => 16#8267#,
-                          Program_Binary_Length       => 16#8741#,
-                          Geometry_Vertices_Out       => 16#8916#,
-                          Geometry_Input_Type         => 16#8917#,
-                          Geometry_Output_Type        => 16#8918#,
+   for Program_Param use (Program_Binary_Retrievable_Hint       => 16#8257#,
+                          Program_Separable                     => 16#8258#,
+                          Compute_Work_Group_Size               => 16#8267#,
+                          Program_Binary_Length                 => 16#8741#,
+                          Geometry_Vertices_Out                 => 16#8916#,
+                          Geometry_Input_Type                   => 16#8917#,
+                          Geometry_Output_Type                  => 16#8918#,
                           Active_Uniform_Block_Max_Name_Length  => 16#8A35#,
                           Active_Uniform_Blocks                 => 16#8A36#,
-                          Delete_Status               => 16#8B4F#,
-                          Link_Status                 => 16#8B82#,
-                          Validate_Status             => 16#8B83#,
-                          Info_Log_Length             => 16#8B84#,
-                          Attached_Shaders            => 16#8B85#,
-                          Active_Uniforms             => 16#8B86#,
-                          Active_Uniform_Max_Length   => 16#8B87#,
-                          Active_Attributes           => 16#8B89#,
-                          Active_Attribute_Max_Length => 16#8B8A#,
+                          Delete_Status                         => 16#8B4F#,
+                          Link_Status                           => 16#8B82#,
+                          Validate_Status                       => 16#8B83#,
+                          Info_Log_Length                       => 16#8B84#,
+                          Attached_Shaders                      => 16#8B85#,
+                          Active_Uniforms                       => 16#8B86#,
+                          Active_Uniform_Max_Length             => 16#8B87#,
+                          Active_Attributes                     => 16#8B89#,
+                          Active_Attribute_Max_Length           => 16#8B8A#,
                           Transform_Feedback_Varying_Max_Length => 16#8C76#,
                           Transform_Feedback_Buffer_Mode        => 16#8C7F#,
                           Transform_Feedback_Varyings           => 16#8C83#,
@@ -234,10 +237,10 @@ private
                               Program_Separable               => 16#8258#);
    for Program_Set_Param'Size use Low_Level.Enum'Size;
 
-   for Program_Stage_Param use (Active_Subroutines => 16#8DE5#,
-                                Active_Subroutine_Uniforms => 16#8DE6#,
-                                Active_Subroutine_Uniform_Locations => 16#8E47#,
-                                Active_Subroutine_Max_Length => 16#8E48#,
+   for Program_Stage_Param use (Active_Subroutines                   => 16#8DE5#,
+                                Active_Subroutine_Uniforms           => 16#8DE6#,
+                                Active_Subroutine_Uniform_Locations  => 16#8E47#,
+                                Active_Subroutine_Max_Length         => 16#8E48#,
                                 Active_Subroutine_Uniform_Max_Length => 16#8E49#);
    for Program_Stage_Param'Size use Low_Level.Enum'Size;
 

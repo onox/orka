@@ -17,7 +17,7 @@
 with GL.Attributes;
 with GL.Objects.Shaders.Lists;
 with GL.Objects.Transform_Feedbacks;
-with GL.Uniforms;
+limited with GL.Objects.Programs.Uniforms;
 
 package GL.Objects.Programs is
    pragma Preelaborate;
@@ -40,13 +40,16 @@ package GL.Objects.Programs is
    --  state is completely lost after having called Use_Program.
 
    procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean);
+   function Binary_Retrievable (Subject : Program) return Boolean;
+
    procedure Set_Separable (Subject : Program; Separable : Boolean);
+   function Separable (Subject : Program) return Boolean;
 
    procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
                                    Format : Transform_Feedbacks.Outputs_Format);
 
    function Uniform_Location (Subject : Program; Name : String)
-     return Uniforms.Uniform;
+     return GL.Objects.Programs.Uniforms.Uniform;
 
    procedure Bind_Attrib_Location (Subject : Program;
                                    Index : Attributes.Attribute;
@@ -59,6 +62,8 @@ package GL.Objects.Programs is
 
    overriding
    procedure Initialize_Id (Object : in out Program);
+
+   procedure Initialize_Id (Object : in out Program; Kind : Shaders.Shader_Type; Source : String);
 
    overriding
    procedure Delete_Id (Object : in out Program);

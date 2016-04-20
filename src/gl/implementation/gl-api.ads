@@ -36,7 +36,6 @@ with GL.Pixels;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types.Colors;
-with GL.Uniforms;
 
 with Interfaces.C.Strings;
 
@@ -833,7 +832,7 @@ private package GL.API is
      ("glValidateProgram", UInt);
 
    function Get_Uniform_Location is new Loader.Function_With_2_Params
-     ("glGetUniformLocation", UInt, C.char_array, Uniforms.Uniform);
+     ("glGetUniformLocation", UInt, C.char_array, Int);
 
    procedure Bind_Attrib_Location is new Loader.Procedure_With_3_Params
      ("glBindAttribLocation", UInt, Attributes.Attribute, C.char_array);
@@ -919,6 +918,10 @@ private package GL.API is
 
    procedure Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glValidateProgramPipeline", UInt);
+
+   function Create_Shader_Program is new Loader.Function_With_3_Params
+     ("glCreateShaderProgramv", Objects.Shaders.Shader_Type, Size,
+      Low_Level.CharPtr_Array, UInt);
 
    -----------------------------------------------------------------------------
    --                                 Queries                                 --

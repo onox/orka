@@ -16,6 +16,7 @@
 
 with GL.API;
 with GL.Enums;
+with GL.Objects.Programs.Uniforms;
 
 with Interfaces.C.Strings;
 
@@ -81,12 +82,31 @@ package body GL.Objects.Programs is
       Raise_Exception_On_OpenGL_Error;
    end Set_Binary_Retrievable;
 
+   function Binary_Retrievable (Subject : Program) return Boolean is
+      Retrievable_Value : Int := 0;
+   begin
+      API.Get_Program_Param (Subject.Reference.GL_Id,
+                             Enums.Program_Binary_Retrievable_Hint,
+                             Retrievable_Value);
+      Raise_Exception_On_OpenGL_Error;
+      return Retrievable_Value /= 0;
+   end Binary_Retrievable;
+
    procedure Set_Separable (Subject : Program; Separable : Boolean) is
    begin
       API.Program_Parameter_Bool (Subject.Reference.GL_Id, Enums.Program_Separable,
                                   Low_Level.Bool (Separable));
       Raise_Exception_On_OpenGL_Error;
    end Set_Separable;
+
+   function Separable (Subject : Program) return Boolean is
+      Separable_Value : Int := 0;
+   begin
+      API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Program_Separable,
+                             Separable_Value);
+      Raise_Exception_On_OpenGL_Error;
+      return Separable_Value /= 0;
+   end Separable;
 
    procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
                                    Format : Transform_Feedbacks.Outputs_Format) is
@@ -109,6 +129,17 @@ package body GL.Objects.Programs is
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   procedure Initialize_Id (Object : in out Program; Kind : Shaders.Shader_Type; Source : String) is
+      C_Shader_Source : C.Strings.chars_ptr := C.Strings.New_String (Source);
+      C_Source : constant Low_Level.CharPtr_Array
+        := (1 => C_Shader_Source);
+   begin
+      Object.Reference.GL_Id := API.Create_Shader_Program (Kind, 1, C_Source);
+      C.Strings.Free (C_Shader_Source);
+      Raise_Exception_On_OpenGL_Error;
+      Object.Reference.Initialized := True;
+   end Initialize_Id;
+
    overriding
    procedure Delete_Id (Object : in out Program) is
    begin
@@ -120,11 +151,11 @@ package body GL.Objects.Programs is
 
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform is
-      Result : constant Uniforms.Uniform := API.Get_Uniform_Location
+      Result : constant Int := API.Get_Uniform_Location
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
-      return Result;
+      return Uniforms.Uniform'(Program => Subject, Location => Result);
    end Uniform_Location;
    
    procedure Bind_Attrib_Location (Subject : Program;
