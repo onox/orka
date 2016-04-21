@@ -51,7 +51,9 @@ package GL.Objects.Queries is
    subtype Time_Query_Type is Query_Type
      with Static_Predicate => Time_Query_Type = Time_Elapsed;
 
-   type Query_Mode is (Wait, No_Wait, By_Region_Wait, By_Region_No_Wait);
+   type Query_Mode is (Wait, No_Wait, By_Region_Wait, By_Region_No_Wait,
+                       Wait_Inverted, No_Wait_Inverted, By_Region_Wait_Inverted,
+                       By_Region_No_Wait_Inverted);
 
    type Query_Param is (Result, Result_Available, Result_No_Wait);
 
@@ -112,6 +114,17 @@ package GL.Objects.Queries is
    --  type, meaning you must assign it to some local variable, so that
    --  the rendering will be automatically ended when the variable goes
    --  out of scope.
+   --
+   --  If Mode is (By_Region_)Wait, then OpenGL will wait until the result
+   --  becomes available and uses the value of the result to determine
+   --  whether to execute or discard rendering commands.
+   --
+   --  If Mode is *_Inverted, then the condition is inverted, meaning it
+   --  will execute rendering commands if the query result is zero/false.
+   --
+   --  If Mode is (By_Region_)No_Wait(_Inverted), then OpenGL may choose
+   --  to execute rendering commands while the result of the query is not
+   --  available.
 
    function Result_Available (Object : in out Query) return Boolean;
    --  Return true if a result is available, false otherwise. This function
@@ -151,10 +164,14 @@ package GL.Objects.Queries is
 
 private
 
-   for Query_Mode use (Wait              => 16#8E13#,
-                       No_Wait           => 16#8E14#,
-                       By_Region_Wait    => 16#8E15#,
-                       By_Region_No_Wait => 16#8E16#);
+   for Query_Mode use (Wait                       => 16#8E13#,
+                       No_Wait                    => 16#8E14#,
+                       By_Region_Wait             => 16#8E15#,
+                       By_Region_No_Wait          => 16#8E16#,
+                       Wait_Inverted              => 16#8E17#,
+                       No_Wait_Inverted           => 16#8E18#,
+                       By_Region_Wait_Inverted    => 16#8E19#,
+                       By_Region_No_Wait_Inverted => 16#8E1A#);
    for Query_Mode'Size use Low_Level.Enum'Size;
 
    for Target_Param use (Counter_Bits  => 16#8864#,
