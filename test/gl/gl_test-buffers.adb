@@ -345,6 +345,10 @@ begin
 
          Mouse_X := Single (Display_Backend.Get_Mouse_X);
          Mouse_Y := Single (Display_Backend.Get_Mouse_Y);
+
+         if Display_Backend.Get_Zoom_Distance > 10.0 then
+            Display_Backend.Set_Zoom_Distance (10.0);
+         end if;
          Mouse_Z := Single (Display_Backend.Get_Zoom_Distance);
 
          -- Model matrix
@@ -358,7 +362,7 @@ begin
          Rotate_Z (Matrix_View, Mouse_X);
 
          -- Projection matrix
-         Matrix_Proj := Perspective (45.0, 1.0, 0.1, 10.0);
+         Matrix_Proj := Perspective (45.0, 1.0, 0.1, 20.0);
 
          -- Bind frame buffer and draw 3D scene
          GL.Objects.Framebuffers.Draw_Target.Bind (FB);

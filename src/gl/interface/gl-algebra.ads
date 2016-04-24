@@ -121,4 +121,11 @@ package GL.Algebra is
      (Index_Type, Vector3, Vector3_Array, Vector3'(others => <>));
    package Vector4_Pointers is new Interfaces.C.Pointers
      (Index_Type, Vector4, Vector4_Array, Vector4'(others => <>));
+
+   package Matrix2_Pointers is new Interfaces.C.Pointers
+     (Index_Type, Matrix2, Matrix2_Array, Matrix2'(others => (others => <>)));
+   package Matrix3_Pointers is new Interfaces.C.Pointers
+     (Index_Type, Matrix3, Matrix3_Array, Matrix3'(others => (others => <>)));
+   package Matrix4_Pointers is new Interfaces.C.Pointers
+     (Index_Type, Matrix4, Matrix4_Array, Matrix4'(others => (others => <>)));
 end GL.Algebra;

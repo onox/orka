@@ -13,6 +13,7 @@ project OpenGL_Test is
    for Main use ("gl_test-context",
                  "gl_test-opengl3",
                  "gl_test-vbo",
+                 "gl_test-instancing",
                  "gl_test-buffers",
                  "gl_test-geometry",
                  "gl_test-transform_feedback",

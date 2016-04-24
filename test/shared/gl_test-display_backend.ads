@@ -50,11 +50,13 @@ package GL_Test.Display_Backend is
 
    function Get_Zoom_Distance return Float;
 
+   procedure Set_Zoom_Distance (Distance : Float);
+
    function Get_Effect (Maximum : Positive) return Integer;
 
 private
 
-   subtype Mouse_Zoom is Float range 2.0 .. 10.0;
+   subtype Mouse_Zoom is Float range 2.0 .. 100.0;
 
    subtype Mouse_Pos is Float range -180.0 .. 180.0;
 

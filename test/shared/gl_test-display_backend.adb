@@ -203,6 +203,11 @@ package body GL_Test.Display_Backend is
       return Float (Main_Window.Zoom_Distance);
    end Get_Zoom_Distance;
 
+   procedure Set_Zoom_Distance (Distance : Float) is
+   begin
+      Main_Window.Zoom_Distance := Distance;
+   end Set_Zoom_Distance;
+
    function Get_Effect (Maximum : Positive) return Integer is
    begin
       return Integer (Main_Window.Effect) mod Maximum;
