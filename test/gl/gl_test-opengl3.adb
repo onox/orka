@@ -42,6 +42,7 @@ procedure GL_Test.OpenGL3 is
                         Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
                         Program                   : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
+      use GL.Attributes;
    
       Triangle1 : constant Singles.Vector3_Array
         := ((-0.3,  0.5, -1.0),
@@ -56,10 +57,8 @@ procedure GL_Test.OpenGL3 is
             (0.0, 1.0, 0.0),
             (0.0, 0.0, 1.0));
 
-      Attrib_Pos : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
-      Attrib_Color : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
+      Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
+      Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       -- First vertex array object: Colored vertices
       Array1.Bind;

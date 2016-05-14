@@ -39,16 +39,15 @@ procedure GL_Test.VBO is
                         Buffer1 : GL.Objects.Buffers.Buffer;
                         Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
+      use GL.Attributes;
 
       Vertices : constant Single_Array
         := (-0.5, -0.5,     1.0, 0.0, 0.0,
              0.5, -0.5,     0.0, 1.0, 0.0,
              0.0,  0.5,     0.0, 0.0, 1.0);
 
-      Attrib_Pos : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
-      Attrib_Color : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
+      Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
+      Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       Array1.Bind;
       Array_Buffer.Bind (Buffer1);
@@ -64,7 +63,7 @@ procedure GL_Test.VBO is
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;
                            Program : GL.Objects.Programs.Program) is
    begin
-      -- load shader sources and compile shaders
+      --  Load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
         (Vertex_Shader, "../test/gl/shaders/opengl3.vert");
       GL.Files.Load_Shader_Source_From_File
@@ -82,7 +81,7 @@ procedure GL_Test.VBO is
          Ada.Text_IO.Put_Line (Fragment_Shader.Info_Log);
       end if;
       
-      -- set up program
+      --  Set up program
       Program.Attach (Vertex_Shader);
       Program.Attach (Fragment_Shader);
       Program.Bind_Attrib_Location (0, "in_Position");
@@ -95,7 +94,7 @@ procedure GL_Test.VBO is
       end if;
       Program.Use_Program;
 
-      -- test iteration over program shaders
+      --  Test iteration over program shaders
       Ada.Text_IO.Put_Line ("Listing shaders attached to program...");
       for Shader of Program.Attached_Shaders loop
          Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));

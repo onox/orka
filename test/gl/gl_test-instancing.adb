@@ -65,6 +65,7 @@ procedure GL_Test.Instancing is
                         Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
                         Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
+      use GL.Attributes;
 
       Vertices : constant Single_Array
         := (-0.5,  0.5, -0.5, 0.0, 0.0, 1.0,
@@ -77,14 +78,9 @@ procedure GL_Test.Instancing is
              0.5, -0.5,  0.5, 0.0, 0.0, 1.0,
             -0.5, -0.5,  0.5, 1.0, 1.0, 1.0);
 
-      Attrib_Pos : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Position");
-      Attrib_Color : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Color");
-      Attrib_Model : constant GL.Attributes.Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "in_Model");
-
-      use type GL.Attributes.Attribute;
+      Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
+      Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
+      Attrib_Model : constant Attribute := Program.Attrib_Location ("in_Model");
    begin
       Array1.Bind;
 

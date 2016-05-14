@@ -99,12 +99,9 @@ procedure GL_Test.Buffers is
             -1.0,  1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0,
             -1.0, -1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0);
 
-      Attrib_Pos : constant Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "position");
-      Attrib_Col : constant Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "color");
-      Attrib_Tex : constant Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "texcoord");
+      Attrib_Pos : constant Attribute := Program.Attrib_Location ("position");
+      Attrib_Col : constant Attribute := Program.Attrib_Location ("color");
+      Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       Array_Cube.Bind;
       Array_Buffer.Bind (Buffer_Cube);
@@ -135,10 +132,8 @@ procedure GL_Test.Buffers is
             -1.0, -1.0, 0.0, 0.0,
             -1.0,  1.0, 0.0, 1.0);
 
-      Attrib_Pos : constant Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "position");
-      Attrib_Tex : constant Attribute :=
-        GL.Objects.Programs.Attrib_Location (Program, "texcoord");
+      Attrib_Pos : constant Attribute := Program.Attrib_Location ("position");
+      Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       Array_Quad.Bind;
       Array_Buffer.Bind (Buffer_Quad);

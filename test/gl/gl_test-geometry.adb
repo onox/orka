@@ -80,7 +80,6 @@ procedure GL_Test.Geometry is
                         Program       : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
       use GL.Attributes;
-      use GL.Objects.Programs;
 
       Vertices : constant Single_Array
         --  Position        Color           Sides
@@ -89,9 +88,9 @@ procedure GL_Test.Geometry is
              0.45, -0.45,   0.0, 0.0, 1.0,  16.0,
             -0.45, -0.45,   1.0, 1.0, 0.0,  32.0);
 
-      Attrib_Pos : constant Attribute := Attrib_Location (Program, "position");
-      Attrib_Col : constant Attribute := Attrib_Location (Program, "color");
-      Attrib_Sid : constant Attribute := Attrib_Location (Program, "sides");
+      Attrib_Pos : constant Attribute := Program.Attrib_Location ("position");
+      Attrib_Col : constant Attribute := Program.Attrib_Location ("color");
+      Attrib_Sid : constant Attribute := Program.Attrib_Location ("sides");
 
       procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
         (Single_Pointers);
