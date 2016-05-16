@@ -268,8 +268,19 @@ private package GL.API is
    procedure Draw_Elements_Instanced is new Loader.Procedure_With_5_Params
      ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type, Zero, Size);
 
+   procedure Draw_Elements_Instanced_Base_Vertex is new Loader.Procedure_With_6_Params
+     ("glDrawElementsInstancedBaseVertex", Connection_Mode, Size,
+      Unsigned_Numeric_Type, Int, Size, Int);
+
+   procedure Draw_Elements_Base_Vertex is new Loader.Procedure_With_5_Params
+     ("glDrawElementsBaseVertex", Connection_Mode, Size, Unsigned_Numeric_Type, Int, Int);
+
    procedure Multi_Draw_Elements is new Loader.Procedure_With_5_Params
      ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type, Zero, Size);
+
+   procedure Multi_Draw_Elements_Base_Vertex is new Loader.Procedure_With_6_Params
+     ("glMultiDrawElementsBaseVertex", Connection_Mode, Size_Array,
+      Unsigned_Numeric_Type, Int_Array, Size, Int_Array);
 
    -----------------------------------------------------------------------------
    --                               Blending                                  --

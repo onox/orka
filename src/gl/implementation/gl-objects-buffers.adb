@@ -140,12 +140,37 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Elements;
 
+   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Vertex_Offset, Index_Offset : Int) is
+   begin
+      API.Draw_Elements_Base_Vertex (Mode, Count, Index_Type, Index_Offset, Vertex_Offset);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Elements_Base_Vertex;
+
+   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Instances  : Types.Size;
+                            Vertex_Offset, Index_Offset : Int) is
+   begin
+      API.Draw_Elements_Instanced_Base_Vertex (Mode, Count, Index_Type, Index_Offset, Instances, Vertex_Offset);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Elements_Base_Vertex;
+
    procedure Draw_Multiple_Elements (Mode : Connection_Mode; Count : Size_Array;
                                      Index_Type : Unsigned_Numeric_Type) is
    begin
       API.Multi_Draw_Elements (Mode, Count, Index_Type, 0, Count'Length);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements;
+
+   procedure Draw_Multiple_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size_Array;
+                                     Index_Type : Unsigned_Numeric_Type;
+                                     Vertex_Offsets, Index_Offsets : Int_Array) is
+   begin
+      API.Multi_Draw_Elements_Base_Vertex (Mode, Count, Index_Type, Index_Offsets, Count'Length, Vertex_Offsets);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Multiple_Elements_Base_Vertex;
 
    procedure Map (Target : in out Buffer_Target; Access_Type : Access_Kind;
                   Pointer : out Pointers.Pointer) is

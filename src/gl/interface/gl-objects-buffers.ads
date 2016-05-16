@@ -88,8 +88,22 @@ package GL.Objects.Buffers is
                             Index_Type : Unsigned_Numeric_Type;
                             Instances  : Types.Size);
 
+   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Vertex_Offset, Index_Offset : Int);
+   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Types.Size;
+                            Index_Type : Unsigned_Numeric_Type;
+                            Instances  : Types.Size;
+                            Vertex_Offset, Index_Offset : Int);
+
    procedure Draw_Multiple_Elements (Mode : Connection_Mode; Count : Size_Array;
                                      Index_Type : Unsigned_Numeric_Type);
+
+   procedure Draw_Multiple_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size_Array;
+                                     Index_Type : Unsigned_Numeric_Type;
+                                     Vertex_Offsets, Index_Offsets : Int_Array)
+     with Pre => Count'Length = Vertex_Offsets'Length and
+                 Count'Length = Index_Offsets'Length;
 
    overriding
    procedure Initialize_Id (Object : in out Buffer);
