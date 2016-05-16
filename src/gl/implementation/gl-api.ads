@@ -255,6 +255,9 @@ private package GL.API is
    procedure Draw_Arrays_Instanced is new Loader.Procedure_With_4_Params
      ("glDrawArraysInstanced", Connection_Mode, Int, Size, Size);
 
+   procedure Multi_Draw_Arrays is new Loader.Procedure_With_4_Params
+     ("glMultiDrawArrays", Connection_Mode, Size_Array, Size_Array, Size);
+
    procedure Draw_Elements (Mode       : Connection_Mode;
                             Count      : Size;
                             Index_Type : Unsigned_Numeric_Type;
@@ -264,6 +267,9 @@ private package GL.API is
 
    procedure Draw_Elements_Instanced is new Loader.Procedure_With_5_Params
      ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type, Zero, Size);
+
+   procedure Multi_Draw_Elements is new Loader.Procedure_With_5_Params
+     ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type, Zero, Size);
 
    -----------------------------------------------------------------------------
    --                               Blending                                  --

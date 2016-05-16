@@ -45,6 +45,13 @@ package body GL.Objects.Vertex_Arrays is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
+   procedure Draw_Multiple_Arrays (Mode : Connection_Mode;
+                                   First, Count : Size_Array) is
+   begin
+      API.Multi_Draw_Arrays (Mode, First, Count, Count'Length);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Multiple_Arrays;
+
    overriding
    procedure Initialize_Id (Object : in out Vertex_Array_Object) is
       New_Id : UInt := 0;

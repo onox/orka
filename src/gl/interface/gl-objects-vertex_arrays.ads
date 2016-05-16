@@ -23,6 +23,9 @@ package GL.Objects.Vertex_Arrays is
    procedure Draw_Arrays (Mode : Connection_Mode; First, Count : Size);
    procedure Draw_Arrays (Mode : Connection_Mode; First, Count, Instances : Size);
 
+   procedure Draw_Multiple_Arrays (Mode : Connection_Mode; First, Count : Size_Array)
+     with Pre => First'Length = Count'Length;
+
    function Current_Array_Object return Vertex_Array_Object;
    
    overriding

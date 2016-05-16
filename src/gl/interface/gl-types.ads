@@ -54,6 +54,9 @@ package GL.Types is
    pragma Convention (C, UInt_Array);
    pragma Convention (C, Single_Array);
 
+   type Size_Array is array (Size range <>) of aliased Size
+     with Convention => C;
+
    -- type descriptors
    type Numeric_Type is (Byte_Type, UByte_Type, Short_Type,
                          UShort_Type, Int_Type, UInt_Type,

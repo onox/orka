@@ -126,8 +126,8 @@ package GL.Runtime_Loading is
    
    generic
       Procedure_Name : String;
-      type Param1_Type is private;
-      type Param2_Type is private;
+      type Param1_Type (<>) is private;
+      type Param2_Type (<>) is private;
       type Param3_Type (<>) is private;
       type Param4_Type (<>) is private;
    procedure Procedure_With_4_Params (Param1 : Param1_Type;

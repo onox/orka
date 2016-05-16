@@ -88,6 +88,9 @@ package GL.Objects.Buffers is
                             Index_Type : Unsigned_Numeric_Type;
                             Instances  : Types.Size);
 
+   procedure Draw_Multiple_Elements (Mode : Connection_Mode; Count : Size_Array;
+                                     Index_Type : Unsigned_Numeric_Type);
+
    overriding
    procedure Initialize_Id (Object : in out Buffer);
    
