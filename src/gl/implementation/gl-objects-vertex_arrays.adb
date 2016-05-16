@@ -33,22 +33,22 @@ package body GL.Objects.Vertex_Arrays is
       Raise_Exception_On_OpenGL_Error;
    end Bind;
 
-   procedure Draw_Arrays (Mode : Connection_Mode; First, Count : Size) is
+   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size) is
    begin
-      API.Draw_Arrays (Mode, First, Count);
+      API.Draw_Arrays (Mode, Offset, Count);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
-   procedure Draw_Arrays (Mode : Connection_Mode; First, Count, Instances : Size) is
+   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count, Instances : Size) is
    begin
-      API.Draw_Arrays_Instanced (Mode, First, Count, Instances);
+      API.Draw_Arrays_Instanced (Mode, Offset, Count, Instances);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
    procedure Draw_Multiple_Arrays (Mode : Connection_Mode;
-                                   First, Count : Size_Array) is
+                                   Offsets, Counts : Size_Array) is
    begin
-      API.Multi_Draw_Arrays (Mode, First, Count, Count'Length);
+      API.Multi_Draw_Arrays (Mode, Offsets, Counts, Counts'Length);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays;
 

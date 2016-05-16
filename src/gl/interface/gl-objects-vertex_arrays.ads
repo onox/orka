@@ -20,11 +20,11 @@ package GL.Objects.Vertex_Arrays is
    
    procedure Bind (Object : Vertex_Array_Object);
 
-   procedure Draw_Arrays (Mode : Connection_Mode; First, Count : Size);
-   procedure Draw_Arrays (Mode : Connection_Mode; First, Count, Instances : Size);
+   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size);
+   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count, Instances : Size);
 
-   procedure Draw_Multiple_Arrays (Mode : Connection_Mode; First, Count : Size_Array)
-     with Pre => First'Length = Count'Length;
+   procedure Draw_Multiple_Arrays (Mode : Connection_Mode; Offsets, Counts : Size_Array)
+     with Pre => Offsets'Length = Counts'Length;
 
    function Current_Array_Object return Vertex_Array_Object;
    
