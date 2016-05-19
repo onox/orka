@@ -32,6 +32,7 @@ with GL.Objects.Queries;
 with GL.Objects.Shaders;
 with GL.Objects.Textures;
 with GL.Objects.Transform_Feedbacks;
+with GL.Objects.Vertex_Arrays;
 with GL.Pixels;
 with GL.Rasterization;
 with GL.Toggles;
@@ -667,7 +668,34 @@ private package GL.API is
 
    procedure Bind_Vertex_Array is new Loader.Procedure_With_1_Param
      ("glBindVertexArray", UInt);
-   
+
+   procedure Vertex_Array_Attrib_Format is new Loader.Procedure_With_6_Params
+     ("glVertexArrayAttribFormat", UInt, Attributes.Attribute, Component_Count,
+      Numeric_Type, Low_Level.Bool, UInt);
+
+   procedure Vertex_Array_AttribI_Format is new Loader.Procedure_With_5_Params
+     ("glVertexArrayAttribIFormat", UInt, Attributes.Attribute, Component_Count,
+      Numeric_Type, UInt);
+
+   procedure Vertex_Array_AttribL_Format is new Loader.Procedure_With_5_Params
+     ("glVertexArrayAttribLFormat", UInt, Attributes.Attribute, Component_Count,
+      Numeric_Type, UInt);
+
+   procedure Vertex_Array_Attrib_Binding is new Loader.Procedure_With_3_Params
+     ("glVertexArrayAttribBinding", UInt, Attributes.Attribute, Objects.Vertex_Arrays.Binding);
+
+   procedure Vertex_Array_Binding_Divisor is new Loader.Procedure_With_3_Params
+     ("glVertexArrayBindingDivisor", UInt, Objects.Vertex_Arrays.Binding, UInt);
+
+   procedure Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
+     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding, UInt, Int, Size);
+
+   procedure Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
+     ("glEnableVertexArrayAttrib", UInt, Attributes.Attribute);
+
+   procedure Disable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
+     ("glDisableVertexArrayAttrib", UInt, Attributes.Attribute);
+
    -----------------------------------------------------------------------------
    --                        Renderbuffer objects                             --
    -----------------------------------------------------------------------------
@@ -857,29 +885,8 @@ private package GL.API is
    function Get_Attrib_Location is new Loader.Function_With_2_Params
      ("glGetAttribLocation", UInt, C.char_array, Attributes.Attribute);
 
-   procedure Vertex_Attrib_Pointer is new Loader.Procedure_With_6_Params
-     ("glVertexAttribPointer", Attributes.Attribute, Component_Count, Numeric_Type,
-      Low_Level.Bool, Size, Int);
-
-   procedure Vertex_AttribI_Pointer is new Loader.Procedure_With_5_Params
-     ("glVertexAttribIPointer", Attributes.Attribute, Component_Count, Numeric_Type,
-      Size, Int);
-
-   procedure Vertex_AttribL_Pointer is new Loader.Procedure_With_5_Params
-     ("glVertexAttribLPointer", Attributes.Attribute, Component_Count, Numeric_Type,
-      Size, Int);
-
-   procedure Enable_Vertex_Attrib_Array is new Loader.Procedure_With_1_Param
-     ("glEnableVertexAttribArray", Attributes.Attribute);
-
-   procedure Disable_Vertex_Attrib_Array is new Loader.Procedure_With_1_Param
-     ("glDisableVertexAttribArray", Attributes.Attribute);
-   
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);
-
-   procedure Vertex_Attrib_Divisor is new Loader.Procedure_With_2_Params
-     ("glVertexAttribDivisor", Attributes.Attribute, UInt);
 
    -----------------------------------------------------------------------------
    --                    Program Interfaces And Resources                     --

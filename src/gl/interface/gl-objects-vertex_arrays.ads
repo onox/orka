@@ -14,11 +14,40 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
+with GL.Attributes;
+with GL.Objects.Buffers;
+
 package GL.Objects.Vertex_Arrays is
-   
+   pragma Preelaborate;
+
+   type Binding is new UInt;
+
    type Vertex_Array_Object is new GL_Object with private;
-   
+
    procedure Bind (Object : Vertex_Array_Object);
+
+   procedure Enable_Attribute  (Object : Vertex_Array_Object; Index : Attributes.Attribute);
+   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attributes.Attribute);
+
+   procedure Set_Attribute_Format (Object : Vertex_Array_Object;
+                                   Index  : Attributes.Attribute;
+                                   Count  : Component_Count;
+                                   Kind   : Numeric_Type;
+                                   Offset : UInt);
+
+   procedure Set_Attribute_Binding (Object : Vertex_Array_Object;
+                                    Index  : Attributes.Attribute;
+                                    Binding_Index : Binding);
+
+   procedure Bind_Vertex_Buffer (Object : Vertex_Array_Object;
+                                 Binding_Index : Binding;
+                                 Buffer : Objects.Buffers.Buffer;
+                                 Kind   : Numeric_Type;
+                                 Offset, Stride : Size);
+
+   procedure Set_Attribute_Binding_Divisor (Object : Vertex_Array_Object;
+                                            Binding_Index : Binding;
+                                            Divisor : UInt);
 
    procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size);
    procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count, Instances : Size);
