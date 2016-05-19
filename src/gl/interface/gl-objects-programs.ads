@@ -49,7 +49,7 @@ package GL.Objects.Programs is
                                    Format : Transform_Feedbacks.Outputs_Format);
 
    function Uniform_Location (Subject : Program; Name : String)
-     return GL.Objects.Programs.Uniforms.Uniform;
+     return Programs.Uniforms.Uniform;
 
    procedure Bind_Attrib_Location (Subject : Program;
                                    Index : Attributes.Attribute;

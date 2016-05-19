@@ -22,6 +22,11 @@ with GL.Low_Level;
 
 package body GL.Objects.Programs.Uniforms is
 
+   function Create_Uniform (Object : Program; Location : Int) return Uniform is
+   begin
+      return Uniform'(Program => Object, Location => Location);
+   end Create_Uniform;
+
    -----------------------------------------------------------------------------
    --                                 Singles                                 --
    -----------------------------------------------------------------------------

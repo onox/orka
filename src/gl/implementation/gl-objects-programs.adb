@@ -155,7 +155,7 @@ package body GL.Objects.Programs is
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
-      return Uniforms.Uniform'(Program => Subject, Location => Result);
+      return Uniforms.Create_Uniform (Subject, Result);
    end Uniform_Location;
    
    procedure Bind_Attrib_Location (Subject : Program;

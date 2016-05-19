@@ -17,10 +17,10 @@
 package GL.Objects.Programs.Uniforms is
    pragma Preelaborate;
 
-   type Uniform is record
-      Program  : Programs.Program;
-      Location : Int;
-   end record;
+   type Uniform is tagged private;
+
+   function Create_Uniform (Object : Program; Location : Int) return Uniform
+     with Inline;
 
    -----------------------------------------------------------------------------
    --                                 Singles                                 --
@@ -105,5 +105,12 @@ package GL.Objects.Programs.Uniforms is
    procedure Set_UInt (Location : Uniform; Value : UInts.Vector2_Array);
    procedure Set_UInt (Location : Uniform; Value : UInts.Vector3_Array);
    procedure Set_UInt (Location : Uniform; Value : UInts.Vector4_Array);
+
+private
+
+   type Uniform is tagged record
+      Program  : Programs.Program;
+      Location : Int;
+   end record;
 
 end GL.Objects.Programs.Uniforms;
