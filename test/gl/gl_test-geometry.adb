@@ -102,13 +102,20 @@ procedure GL_Test.Geometry is
       Array_Buffer.Bind (Buffer_Points);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      --  Set attributes
-      Set_Vertex_Attrib_Pointer (Attrib_Pos, 2, Single_Type, 6, 0);
-      Enable_Vertex_Attrib_Array (Attrib_Pos);
-      Set_Vertex_Attrib_Pointer (Attrib_Col, 3, Single_Type, 6, 2);
-      Enable_Vertex_Attrib_Array (Attrib_Col);
-      Set_Vertex_Attrib_Pointer (Attrib_Sid, 1, Single_Type, 6, 5);
-      Enable_Vertex_Attrib_Array (Attrib_Sid);
+      --  Enable and set attributes for Array_Points VAO
+      Array_Points.Enable_Attribute (Attrib_Pos);
+      Array_Points.Enable_Attribute (Attrib_Col);
+      Array_Points.Enable_Attribute (Attrib_Sid);
+
+      Array_Points.Set_Attribute_Format (Attrib_Pos, 2, Single_Type, 0);
+      Array_Points.Set_Attribute_Format (Attrib_Col, 3, Single_Type, 2);
+      Array_Points.Set_Attribute_Format (Attrib_Sid, 1, Single_Type, 5);
+
+      Array_Points.Set_Attribute_Binding (Attrib_Pos, 0);
+      Array_Points.Set_Attribute_Binding (Attrib_Col, 0);
+      Array_Points.Set_Attribute_Binding (Attrib_Sid, 0);
+
+      Array_Points.Bind_Vertex_Buffer (0, Buffer_Points, Single_Type, 0, 6);
    end Load_Data;
 
    Vertex_Shader   : GL.Objects.Shaders.Shader

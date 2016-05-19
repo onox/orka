@@ -104,17 +104,25 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       Array_Cube.Bind;
+
+      --  Upload Vertices data to Buffer_Cube
       Array_Buffer.Bind (Buffer_Cube);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 8, 0);
-      Enable_Vertex_Attrib_Array (Attrib_Pos);
-      
-      Set_Vertex_Attrib_Pointer (Attrib_Col, 3, Single_Type, 8, 3);
-      Enable_Vertex_Attrib_Array (Attrib_Col);
+      --  Enable and set attributes for Array_Cube VAO
+      Array_Cube.Enable_Attribute (Attrib_Pos);
+      Array_Cube.Enable_Attribute (Attrib_Col);
+      Array_Cube.Enable_Attribute (Attrib_Tex);
 
-      Set_Vertex_Attrib_Pointer (Attrib_Tex, 2, Single_Type, 8, 6);
-      Enable_Vertex_Attrib_Array (Attrib_Tex);
+      Array_Cube.Set_Attribute_Format (Attrib_Pos, 3, Single_Type, 0);
+      Array_Cube.Set_Attribute_Format (Attrib_Col, 3, Single_Type, 3);
+      Array_Cube.Set_Attribute_Format (Attrib_Tex, 2, Single_Type, 6);
+
+      Array_Cube.Set_Attribute_Binding (Attrib_Pos, 0);
+      Array_Cube.Set_Attribute_Binding (Attrib_Col, 0);
+      Array_Cube.Set_Attribute_Binding (Attrib_Tex, 0);
+
+      Array_Cube.Bind_Vertex_Buffer (0, Buffer_Cube, Single_Type, 0, 8);
    end Load_Scene_Data;
 
    procedure Load_Screen_Data (Array_Quad  : Vertex_Array_Object;
@@ -136,14 +144,22 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       Array_Quad.Bind;
+
+      --  Upload Vertices data to Buffer_Quad
       Array_Buffer.Bind (Buffer_Quad);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      Set_Vertex_Attrib_Pointer (Attrib_Pos, 2, Single_Type, 4, 0);
-      Enable_Vertex_Attrib_Array (Attrib_Pos);
+      --  Enable and set attributes for Array_Quad VAO
+      Array_Quad.Enable_Attribute (Attrib_Pos);
+      Array_Quad.Enable_Attribute (Attrib_Tex);
 
-      Set_Vertex_Attrib_Pointer (Attrib_Tex, 2, Single_Type, 4, 2);
-      Enable_Vertex_Attrib_Array (Attrib_Tex);
+      Array_Quad.Set_Attribute_Format (Attrib_Pos, 2, Single_Type, 0);
+      Array_Quad.Set_Attribute_Format (Attrib_Tex, 2, Single_Type, 2);
+
+      Array_Quad.Set_Attribute_Binding (Attrib_Pos, 0);
+      Array_Quad.Set_Attribute_Binding (Attrib_Tex, 0);
+
+      Array_Quad.Bind_Vertex_Buffer (0, Buffer_Quad, Single_Type, 0, 4);
    end Load_Screen_Data;
 
    procedure Load_Shaders (Vertex_Source, Fragment_Source : String;

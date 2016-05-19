@@ -26,7 +26,7 @@ package GL_Test.Display_Backend is
 
    procedure Init;
 
-   procedure Open_Window (Width, Height : Natural; Depth_Bits : Natural := 0);
+   procedure Open_Window (Width, Height : Natural; Visible : Boolean := True; Depth_Bits : Natural := 0);
 
    function Get_Window return Glfw.Windows.Window_Reference;
 

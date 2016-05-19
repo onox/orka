@@ -51,14 +51,22 @@ procedure GL_Test.Subroutines is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       VAO.Bind;
+
+      --  Upload Vertices data to VBO
       Array_Buffer.Bind (VBO);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 2, Single_Type, 5, 0);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
+      --  Enable and set attributes for VAO VAO
+      VAO.Enable_Attribute (Attrib_Pos);
+      VAO.Enable_Attribute (Attrib_Color);
 
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Color, 3, Single_Type, 5, 2);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Color);
+      VAO.Set_Attribute_Format (Attrib_Pos, 2, Single_Type, 0);
+      VAO.Set_Attribute_Format (Attrib_Color, 3, Single_Type, 2);
+
+      VAO.Set_Attribute_Binding (Attrib_Pos, 0);
+      VAO.Set_Attribute_Binding (Attrib_Color, 0);
+
+      VAO.Bind_Vertex_Buffer (0, VBO, Single_Type, 0, 5);
    end Load_Data;
 
    procedure Load_Shaders (VS, FS : Shader;

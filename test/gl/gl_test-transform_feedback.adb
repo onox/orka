@@ -52,12 +52,20 @@ procedure GL_Test.Transform_Feedback is
         GL.Objects.Programs.Attrib_Location (Program, "in_value");
    begin
       Array_Input.Bind;
+
+      --  Upload Vertices data to Buffer_Input
       Array_Buffer.Bind (Buffer_Input);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      Enable_Vertex_Attrib_Array (Attrib_Pos);
-      Set_Vertex_Attrib_Pointer (Attrib_Pos, 1, Single_Type, 0, 0);
+      -- Enable and set attributes for Array_Input VAO
+      Array_Input.Enable_Attribute (Attrib_Pos);
 
+      Array_Input.Set_Attribute_Format (Attrib_Pos, 1, Single_Type, 0);
+      Array_Input.Set_Attribute_Binding (Attrib_Pos, 0);
+
+      Array_Input.Bind_Vertex_Buffer (0, Buffer_Input, Single_Type, 0, 1);
+
+      --  Allocate data for Buffer_Output
       Array_Buffer.Bind (Buffer_Output);
       GL.Objects.Buffers.Allocate (Array_Buffer, 3 * Vertices'Length, Single_Type, Static_Read);
    end Load_Data;
@@ -119,7 +127,7 @@ begin
    Display_Backend.Init;
    Display_Backend.Configure_Minimum_OpenGL_Version (Major => 4, Minor => 0);
    Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500);
+   Display_Backend.Open_Window (Width => 500, Height => 500, Visible => False);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
 
    -- Generate shaders and program

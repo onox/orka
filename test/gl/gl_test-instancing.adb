@@ -84,15 +84,23 @@ procedure GL_Test.Instancing is
    begin
       Array1.Bind;
 
+      --  Upload Vertices data to Buffer1
       Array_Buffer.Bind (Buffer1);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
 
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Pos);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Color);
+      --  Enable and set attributes for Array1 VAO
+      Array1.Enable_Attribute (Attrib_Pos);
+      Array1.Enable_Attribute (Attrib_Color);
 
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Pos, 3, Single_Type, 6, 0);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Color, 3, Single_Type, 6, 3);
+      Array1.Set_Attribute_Format (Attrib_Pos, 3, Single_Type, 0);
+      Array1.Set_Attribute_Format (Attrib_Color, 3, Single_Type, 3);
 
+      Array1.Set_Attribute_Binding (Attrib_Pos, 0);
+      Array1.Set_Attribute_Binding (Attrib_Color, 0);
+
+      Array1.Bind_Vertex_Buffer (0, Buffer1, Single_Type, 0, 6);
+
+      --  Upload Indices data to Buffer2
       Element_Array_Buffer.Bind (Buffer2);
       Load_Indices (Element_Array_Buffer, Indices, Static_Draw);
 
@@ -120,20 +128,25 @@ procedure GL_Test.Instancing is
       end;
       Load_Matrices (Array_Buffer, Matrices, Static_Draw);
 
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Model);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Model + 1);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Model + 2);
-      GL.Attributes.Enable_Vertex_Attrib_Array (Attrib_Model + 3);
+      --  Enable and set attributes for Array1 VAO
+      Array1.Enable_Attribute (Attrib_Model);
+      Array1.Enable_Attribute (Attrib_Model + 1);
+      Array1.Enable_Attribute (Attrib_Model + 2);
+      Array1.Enable_Attribute (Attrib_Model + 3);
 
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Model, 4, Single_Type, 16, 0);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Model + 1, 4, Single_Type, 16, 4);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Model + 2, 4, Single_Type, 16, 8);
-      GL.Attributes.Set_Vertex_Attrib_Pointer (Attrib_Model + 3, 4, Single_Type, 16, 12);
+      Array1.Set_Attribute_Format (Attrib_Model, 4, Single_Type, 0);
+      Array1.Set_Attribute_Format (Attrib_Model + 1, 4, Single_Type, 4);
+      Array1.Set_Attribute_Format (Attrib_Model + 2, 4, Single_Type, 8);
+      Array1.Set_Attribute_Format (Attrib_Model + 3, 4, Single_Type, 12);
 
-      GL.Attributes.Set_Vertex_Attrib_Divisor (Attrib_Model, 1);
-      GL.Attributes.Set_Vertex_Attrib_Divisor (Attrib_Model + 1, 1);
-      GL.Attributes.Set_Vertex_Attrib_Divisor (Attrib_Model + 2, 1);
-      GL.Attributes.Set_Vertex_Attrib_Divisor (Attrib_Model + 3, 1);
+      Array1.Set_Attribute_Binding (Attrib_Model, 1);
+      Array1.Set_Attribute_Binding (Attrib_Model + 1, 1);
+      Array1.Set_Attribute_Binding (Attrib_Model + 2, 1);
+      Array1.Set_Attribute_Binding (Attrib_Model + 3, 1);
+
+      Array1.Set_Attribute_Binding_Divisor (1, 1);
+
+      Array1.Bind_Vertex_Buffer (1, Buffer3, Single_Type, 0, 16);
    end Load_Data;
 
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;

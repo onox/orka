@@ -128,13 +128,18 @@ package body GL_Test.Display_Backend is
       Glfw.Init;
    end Init;
 
-   procedure Open_Window (Width, Height : Natural; Depth_Bits : Natural := 0) is
+   procedure Open_Window (Width, Height : Natural; Visible : Boolean := True; Depth_Bits : Natural := 0) is
    begin
       if not Main_Window.Initialized then
+         if not Visible then
+            Glfw.Windows.Hints.Set_Visible (False);
+         end if;
          Glfw.Windows.Hints.Set_Depth_Bits (Depth_Bits);
-         Main_Window.Init (Glfw.Size (Width), Glfw.Size (Height), "Test Window");
+         Main_Window.Init (Glfw.Size (Width), Glfw.Size (Height), "");
       end if;
-      Main_Window.Show;
+      if Visible then
+         Main_Window.Show;
+      end if;
 
       -- Callbacks
       Main_Window.Enable_Callback (Glfw.Windows.Callbacks.Close);
