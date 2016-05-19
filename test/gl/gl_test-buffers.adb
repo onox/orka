@@ -312,7 +312,7 @@ begin
 
    -- Use post-processing program
    Screen_Program.Use_Program;
-   GL.Objects.Programs.Uniforms.Set_Int (Screen_Program.Uniform_Location ("texFrameBuffer"), 0);
+   Screen_Program.Uniform_Location ("texFrameBuffer").Set_Int (0);
 
    -- Create frame buffer
    GL.Objects.Framebuffers.Draw_Target.Bind (FB);
@@ -388,9 +388,9 @@ begin
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
          -- Set uniforms
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_Model, Matrix_Model);
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_View, Matrix_View);
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_Proj, Matrix_Proj);
+         Uni_Model.Set_Single_Matrix (Matrix_Model);
+         Uni_View.Set_Single_Matrix (Matrix_View);
+         Uni_Proj.Set_Single_Matrix (Matrix_Proj);
 
          -- Draw cube
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
@@ -416,12 +416,12 @@ begin
          Translate (Matrix_Model, (0.0, 0.0, -1.0));
          Scale (Matrix_Model, (1.0, 1.0, -1.0));
 
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_Model, Matrix_Model);
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_Color, 0.3, 0.3, 0.3);
+         Uni_Model.Set_Single_Matrix (Matrix_Model);
+         Uni_Color.Set_Singles (0.3, 0.3, 0.3);
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
          -- End drawing reflection cube
 
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_Color, 1.0, 1.0, 1.0);
+         Uni_Color.Set_Singles (1.0, 1.0, 1.0);
 
          ---------------------------------------------------------------
 
@@ -435,7 +435,7 @@ begin
          Screen_Program.Use_Program;
 
          -- Set uniforms
-         GL.Objects.Programs.Uniforms.Set_Int (Uni_Effect, Int (Display_Backend.Get_Effect (5)));
+         Uni_Effect.Set_Int (Int (Display_Backend.Get_Effect (5)));
 
          GL.Objects.Textures.Set_Active_Unit (0);
          GL.Objects.Textures.Targets.Texture_2D.Bind (Color_Texture);

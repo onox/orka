@@ -237,7 +237,7 @@ begin
 
       --  Projection matrix
       Matrix_Proj := Perspective (45.0, 1.0, 10.0, 200.0);
-      GL.Objects.Programs.Uniforms.Set_Single (Uni_Proj, Matrix_Proj);
+      Uni_Proj.Set_Single_Matrix (Matrix_Proj);
 
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
@@ -271,7 +271,7 @@ begin
          Translate (Matrix_View, (-Distance_Center, -Distance_Center, -Distance_Center));
 
          --  Set uniform
-         GL.Objects.Programs.Uniforms.Set_Single (Uni_View, Matrix_View);
+         Uni_View.Set_Single_Matrix (Matrix_View);
 
          GL.Objects.Buffers.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length);
 
