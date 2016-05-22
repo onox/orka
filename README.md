@@ -1,189 +1,123 @@
-# OpenGLAda - Yet Another OpenGL binding for Ada
+Orka
+====
 
-## Overview
+Orka is the OpenGL Rendering Kernel in Ada. It is written in Ada 2012
+and provides an object-oriented API for modern OpenGL.
 
-**OpenGLAda** is a thick OpenGL binding for the Ada 2005 programming language.
-Unlike other, thin, bindings (see the [project's homepage][4] for a list),
-OpenGLAda enriches the original API with concepts and features provided by
-Ada, like object orientation, type safety and generics.
+Orka builds upon and provides thick bindings for OpenGL 4.5. These bindings
+are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
+the fixed function functionality have been removed and bindings for various
+extensions of OpenGL 4.x have been added.
 
-Besides standard OpenGL functionality, OpenGLAda optionally provides
-bindings to the following OpenGL-related libraries:
+Additionally, it provides bindings for [GLFW 3.x][url-glfw]. This is a library
+for creating windows with an OpenGL context on them. It also provides
+functionality for capturing user input on keyboard, mouse and joystick.
+Having a window with an OpenGL context is the prerequisite for using any
+OpenGL functionality.
 
- * [GLFW][3]: This is a library for creating windows with an OpenGL context
-   on them. It also provides functionality for capturing user input on
-   keyboard, mouse and joystick. Having a window with an OpenGL context
-   is the prerequisite for using any OpenGL functionality. The GLFW binding
-   comes in two flavors: One for GLFW 2.x and one for GLFW 3+. There are
-   significant differences between these two, the most prominent being that
-   GLFW 3 can handle multiple windows. You can set the desired GLFW version
-   for the binding at compile time.
- * [SOIL][10]: The *Simple OpenGL Image Library*. This is a very tiny library
-   for loading image files into OpenGL textures. It is public domain. Because
-   it's so tiny, it is linked directly into OpenGLAda. Its source is included
-   in the OpenGLAda sources.
- * [FTGL][11]: A library built on top of FreeType that provides an API to
-   load TrueType fonts and render text with OpenGL. The Ada wrapper only
-   provides basic functionality to load fonts and render text. As it does not
-   include a wrapper to FreeType, the more low-level functionality has been
-   excluded, it may be available as part of a more complete wrapper included
-   in [Lumen][12] in the future.
-   
-OpenGLAda supports MacOSX, Windows and X11-based systems.
+Dependencies
+------------
 
-## Prerequisites
+In order to build Orka or the OpenGL bindings, you need to have:
 
-In order to build OpenGLAda, you need to have:
-
- * A GNAT compiler (a GPL'd version is available on [AdaCore's Libre Site][1],
-   or you can use the [version provided by the FSF with GCC][5])
- * [GPRBuild][2] (is bundled with AdaCore's GNAT distribution). Minimum
-   supported version is the one that comes with GNAT GPL 2012 (20120509). Do
+ * A GNAT compiler that supports Ada 2012 (a GPL'd version is available
+   on [AdaCore's Libre Site][url-adacore], or you can use the
+   [version provided by the FSF with GCC][url-fsf])
+ * [GPRBuild][url-gprbuild] (is bundled with AdaCore's GNAT distribution).
+   Minimum supported version is the one that comes with GNAT GPL 2012. Do
    not use `gnatmake` to build the project files, it won't work.
- * An OpenGL implementation (usually comes bundled with your graphics driver)
- * Optionally [GLFW][3]
- * Optionally [FTGL][11]
+ * An OpenGL implementation that supports the core profile of OpenGL (3.2 or higher)
+   and the following extensions:
 
-_Note_: You may also be able to build OpenGLAda with another Ada compiler and/or
-without using the *.gpr files. You just have to import the sources to your
-project and whichever build system you are using. I never used other Ada
+    - ARB\_separate\_shader\_objects (OpenGL 4.1)
+    - ARB\_vertex\_attrib\_binding (OpenGL 4.3)
+    - ARB\_direct\_state\_access (OpenGL 4.5)
+ * Optionally [GLFW][url-glfw]
+
+Note: You may also be able to build the project with another Ada compiler and/or
+without using the \*.gpr files. You just have to import the sources to your
 compiler apart from GNAT, so if I accidentally used some GNAT-specific features
 in the code, please drop me a message.
 
-## Compilation
+Compilation
+-----------
 
-A Makefile is provided mainly for building the tests:
+A Makefile is provided to build the source code and tests. Use `make` to build
+the source code:
 
-    $ make tests
+    $ make
 
-If you're on Windows and do not have the `make` utility available, you can build
-the test by executing
+Use `make test` to build the test programs:
 
-    $ gprbuild -P glfw_test.gpr   -XWindowing_System=windows
-    $ gprbuild -P opengl_test.gpr -XWindowing_System=windows
+    $ make test
 
-The tests require GLFW, because they need to create windows. By default, they
-try to link against GLFW 3+. You can instead build the tests against GLFW 2.x
-by executing:
+Using Orka in your project
+--------------------------
 
-    $ gprbuild -P opengl_test.gpr -XWindowing_System=windows -XGLFW_Version=2
-    $ gprbuild -P glfw_test.gpr   -XWindowing_System=windows -XGLFW_Version=2
+Specify the dependency in your \*.gpr project file:
 
-(Substitute `windows` with `x11` or `quartz` if needed.)
+    with "orka";
 
-## Using OpenGLAda in your project
-
-### With GPRBuild
-
-The easiest way to use OpenGLAda in your project is to just copy the sources
-in some dependency folder within your project folder, e.g.:
-
-    YourProject
-     |
-     |-dependencies
-     |  |
-     |  +-OpenGLAda
-     |
-     |-your
-     |-project
-     |-files
-     +-...
-
-If you're using the GPRBuild system, you can then just declare using OpenGLAda
-in your *.gpr file:
-
-    with "dependencies/OpenGLAda/opengl";
-
-Alternatively, you can specify the path to the OpenGL project file in as
-environment variable:
-
-    export ADA_PROJECT_PATH=dependencies/OpenGLAda
-
-... and then specify the dependency without the path:
-
-    with "opengl";
-
-If you want to use GLFW, you also need to refer to the project `opengl-glfw.gpr`
-instead (it automatically adds a dependency to the `opengl` project).
+If you want to use GLFW or just the OpenGL bindings, refer to `opengl-glfw`
+or `opengl` instead.
 
 The project files `opengl.gpr` and `opengl-glfw.gpr` take the following
 scenario parameters:
 
  * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
                        for system-dependent parts of the API (GLX, WGL, CGL):
-    
+
     - `x11`: X Windowing System (Linux, BSD, etc)
     - `windows`: Microsoft Windows
     - `quartz`: Quartz Compositor (OS X)
-    
+
  * `mode`: May take one of the following values:
- 
-    - `debug` (default): Compile the project with debugging symbols and without
-               optimization.
-    - `release`: Compile the project for a release environment.
-    
- * `GLFW_Version` (GLFW only): Sets the version of the GLFW library to link
-                               against. See [here][6] for a detailed comparison
-                               of the two API versions.
-    
-    - `2`: GLFW 2.x. Only one window.
-    - `3`: GLFW 3+. Multiple windows, multiple monitor support, etc.
+
+    - `debug`: Compile the project with debugging symbols and without
+      optimization.
+    - `release` (default): Compile the project for a release environment.
 
  * `Auto_Exceptions`: Configures exception handling:
 
-    - `enabled` (default): After each call to OpenGL, OpenGLAda checks whether
-      OpenGL has set an error flag and if it had, raises the corresponding
-      exception.
-    - `disabled`: The user has to query the error flag on his own.
+   - `enabled` (default): After each call to OpenGL, the code checks whether
+     OpenGL has set an error flag and if it had, raises the corresponding
+     exception.
+   - `disabled`: The user has to query the error flag on his own.
 
-### With other build systems
+ * `GLFW_LIB`: Linker flags for GLFW. The default is `-lglfw`.
 
-You can add the OpenGLAda sources to your code, then use whatever build system
-you want. Just make sure that you link properly against your OpenGL
-implementation:
+If you choose not to use GPRBuild, you need to add the sources to your
+project and then use whatever build system you want.
+Just make sure that you link properly against your OpenGL implementation:
 
  * OS X: `-framework OpenGL -framework CoreFoundation`
  * Windows: `-lOpenGL32 -lGdi32`
  * X11-based (Linux, BSD, etc): `-lGL -lX11`
 
-If you're using GLFW, add `-lglfw` for GLFW 2 or `-lglfw3` for GLFW 3. If you're
-on Windows and link against GLFW as dynamic library, you also need to add
-`-lwinmm`. If you're using FTGL, add `-lftgl`.
+If you're using GLFW, add `-lglfw3` or `-lglfw`. If you're
+on Windows and link against GLFW as a dynamic library, you also need to add
+`-lwinmm`.
 
-## Installation
+Tests
+-----
 
-OpenGLAda is not designed to be installed as a standalone library. The reasoning
-behind this is that OpenGLAda is a wrapper library that doesn't provide much
-functionality on its own. Therefore, maintaining a library installing routine
-does not seem worth the effort - even less as it would be expected to support
-multiple platforms.
-
-## Tests
-
-As mentioned, OpenGLAda contains some tests. You can also see them as examples
+The project contains some tests. You can also see them as examples
 that demonstrate the basic usage of the API. After building them as described
 above, you can execute them in the `bin` directory. Some tests load shader
 files from the source directory by using relative paths, so they only work with
 `bin` as working directory.
 
-For additional information and documentation, see the
-[project's homepage][4].
+License
+-------
 
-## License
+The OpenGL and GLFW bindings (`src/gl`, `src/glfw`, and `test/gl`) are
+distributed under the terms of the [ISC License][url-isc].
+Orka (`src/orka`) is licensed under the [Apache License 2.0][url-apache].
 
-OpenGLAda is distributed under the terms of the [ISC License][7]. The Ada 2012
-logo that is used in the SOIL tests is distributed under the terms of the
-[CC BY-ND 3.0][8] license, the original author is [AdaCore][9].
-
- [1]: http://libre.adacore.com/
- [2]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
- [3]: http://www.glfw.org/
- [4]: http://flyx.github.io/OpenGLAda/
- [5]: http://gcc.gnu.org/wiki/GNAT
- [6]: http://www.glfw.org/docs/3.0/moving.html
- [7]: http://opensource.org/licenses/ISC
- [8]: http://creativecommons.org/licenses/by-nd/3.0/deed.en_GB
- [9]: http://www.ada2012.org/#the_logo
- [10]: http://www.lonesock.net/soil.html
- [11]: https://sourceforge.net/projects/ftgl/
- [12]: https://github.com/karakalo/lumen
+  [url-openglada]: https://github.com/flyx/OpenGLAda
+  [url-glfw]: http://www.glfw.org/
+  [url-adacore]: http://libre.adacore.com/
+  [url-fsf]: https://gcc.gnu.org/wiki/GNAT
+  [url-gprbuild]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
+  [url-isc]: https://opensource.org/licenses/ISC
+  [url-apache]: https://opensource.org/licenses/Apache-2.0
