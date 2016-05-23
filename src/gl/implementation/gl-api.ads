@@ -660,8 +660,8 @@ private package GL.API is
    --                           Vertex Array Objects                          --
    -----------------------------------------------------------------------------
 
-   procedure Gen_Vertex_Arrays is new Loader.Getter_With_2_Params
-     ("glGenVertexArrays", Size, UInt);
+   procedure Create_Vertex_Arrays is new Loader.Getter_With_2_Params
+     ("glCreateVertexArrays", Size, UInt);
 
    procedure Delete_Vertex_Arrays is new Loader.Array_Proc_With_2_Params
      ("glDeleteVertexArrays", Size, UInt, Low_Level.UInt_Array);
@@ -689,6 +689,9 @@ private package GL.API is
 
    procedure Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
      ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding, UInt, Int, Size);
+
+   procedure Vertex_Array_Element_Buffer is new Loader.Procedure_With_2_Params
+     ("glVertexArrayElementBuffer", UInt, UInt);
 
    procedure Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
      ("glEnableVertexArrayAttrib", UInt, Attributes.Attribute);

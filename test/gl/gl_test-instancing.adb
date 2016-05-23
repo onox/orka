@@ -82,8 +82,6 @@ procedure GL_Test.Instancing is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
       Attrib_Model : constant Attribute := Program.Attrib_Location ("in_Model");
    begin
-      Array1.Bind;
-
       --  Upload Vertices data to Buffer1
       Array_Buffer.Bind (Buffer1);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -104,8 +102,7 @@ procedure GL_Test.Instancing is
       Element_Array_Buffer.Bind (Buffer2);
       Load_Indices (Element_Array_Buffer, Indices, Static_Draw);
 
-      --  Load matrices for all the instances
-      Array_Buffer.Bind (Buffer3);
+      Array1.Bind_Element_Buffer (Buffer2);
 
       declare
          Index : Int := 1;
@@ -126,6 +123,8 @@ procedure GL_Test.Instancing is
             end loop;
          end loop;
       end;
+      --  Load matrices for all the instances
+      Array_Buffer.Bind (Buffer3);
       Load_Matrices (Array_Buffer, Matrices, Static_Draw);
 
       --  Enable and set attributes for Array1 VAO
@@ -273,8 +272,10 @@ begin
          --  Set uniform
          Uni_View.Set_Single_Matrix (Matrix_View);
 
+         Array1.Bind;
          GL.Objects.Buffers.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length);
 
+         -- Swap front and back buffers and process events
          Display_Backend.Swap_Buffers;
          Display_Backend.Poll_Events;
       end loop;

@@ -45,6 +45,9 @@ package GL.Objects.Vertex_Arrays is
                                  Kind   : Numeric_Type;
                                  Offset, Stride : Size);
 
+   procedure Bind_Element_Buffer (Object : Vertex_Array_Object;
+                                  Buffer : Objects.Buffers.Buffer);
+
    procedure Set_Attribute_Binding_Divisor (Object : Vertex_Array_Object;
                                             Binding_Index : Binding;
                                             Divisor : UInt);

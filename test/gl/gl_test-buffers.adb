@@ -103,8 +103,6 @@ procedure GL_Test.Buffers is
       Attrib_Col : constant Attribute := Program.Attrib_Location ("color");
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
-      Array_Cube.Bind;
-
       --  Upload Vertices data to Buffer_Cube
       Array_Buffer.Bind (Buffer_Cube);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -143,8 +141,6 @@ procedure GL_Test.Buffers is
       Attrib_Pos : constant Attribute := Program.Attrib_Location ("position");
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
-      Array_Quad.Bind;
-
       --  Upload Vertices data to Buffer_Quad
       Array_Buffer.Bind (Buffer_Quad);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -442,11 +438,8 @@ begin
 
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 6);
 
-         -- Swap front and back buffers
-         GL.Flush;
+         -- Swap front and back buffers and process events
          Display_Backend.Swap_Buffers;
-
-         -- Poll for and process events
          Display_Backend.Poll_Events;
       end loop;
    end;

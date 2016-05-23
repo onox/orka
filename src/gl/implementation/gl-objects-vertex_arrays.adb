@@ -137,6 +137,13 @@ package body GL.Objects.Vertex_Arrays is
       Raise_Exception_On_OpenGL_Error;
    end Bind_Vertex_Buffer;
 
+   procedure Bind_Element_Buffer (Object : Vertex_Array_Object;
+                                  Buffer : Objects.Buffers.Buffer) is
+   begin
+      API.Vertex_Array_Element_Buffer (Object.Reference.GL_Id, Buffer.Raw_Id);
+      Raise_Exception_On_OpenGL_Error;
+   end Bind_Element_Buffer;
+
    procedure Set_Attribute_Binding_Divisor (Object : Vertex_Array_Object;
                                             Binding_Index : Binding;
                                             Divisor : UInt) is
@@ -168,7 +175,7 @@ package body GL.Objects.Vertex_Arrays is
    procedure Initialize_Id (Object : in out Vertex_Array_Object) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Vertex_Arrays (1, New_Id);
+      API.Create_Vertex_Arrays (1, New_Id);
       Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;

@@ -51,8 +51,6 @@ procedure GL_Test.Transform_Feedback is
       Attrib_Pos : constant Attribute :=
         GL.Objects.Programs.Attrib_Location (Program, "in_value");
    begin
-      Array_Input.Bind;
-
       --  Upload Vertices data to Buffer_Input
       Array_Buffer.Bind (Buffer_Input);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -164,6 +162,7 @@ begin
    --  Bind the Vertex_Buffer_Output to index 0 of the transform feedback target
    GL.Objects.Buffers.Transform_Feedback_Buffer.Bind_Base (Vertex_Buffer_Output, 0);
 
+   Array_Input.Bind;
    declare
       Q : Active_Query'Class := Query.Begin_Primitive_Query (Transform_Feedback_Primitives_Written);
       pragma Warnings (Off, Q);

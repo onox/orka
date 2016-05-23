@@ -50,8 +50,6 @@ procedure GL_Test.Subroutines is
       Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
-      VAO.Bind;
-
       --  Upload Vertices data to VBO
       Array_Buffer.Bind (VBO);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -177,6 +175,7 @@ begin
          Triangle_VAO.Bind;
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
 
+         -- Swap front and back buffers and process events
          Display_Backend.Swap_Buffers;
          Display_Backend.Poll_Events;
       end loop;

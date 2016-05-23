@@ -60,9 +60,6 @@ procedure GL_Test.OpenGL3 is
       Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
-      -- First vertex array object: Colored vertices
-      Array1.Bind;
-
       --  Upload Triangle1 data to Buffer1
       Array_Buffer.Bind (Buffer1);
       Load_Vectors (Array_Buffer, Triangle1, Static_Draw);
@@ -83,9 +80,6 @@ procedure GL_Test.OpenGL3 is
 
       Array1.Bind_Vertex_Buffer (0, Buffer1, Single_Type, 0, 3);
       Array1.Bind_Vertex_Buffer (1, Buffer2, Single_Type, 0, 3);
-
-      --  Second vertex array object: Only vertices
-      Array2.Bind;
 
       --  Upload Triangle2 data to Buffer3
       Array_Buffer.Bind (Buffer3);
@@ -186,11 +180,8 @@ begin
       GL.Attributes.Set_Single (1, 1.0, 0.0, 0.0);
       GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
 
-      GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
-
-      GL.Flush;
+      -- Swap front and back buffers and process events
       Display_Backend.Swap_Buffers;
-
       Display_Backend.Poll_Events;
    end loop;
 

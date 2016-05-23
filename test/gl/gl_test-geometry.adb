@@ -95,9 +95,6 @@ procedure GL_Test.Geometry is
       procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
         (Single_Pointers);
    begin
-      --  Bind VAO
-      Array_Points.Bind;
-
       --  Bind VBO and upload vertices to GPU
       Array_Buffer.Bind (Buffer_Points);
       Load_Vectors (Array_Buffer, Vertices, Static_Draw);
@@ -166,13 +163,11 @@ begin
       Set_Color_Clear_Value (Color'(0.0, 0.0, 0.0, 1.0));
       Clear (Buffer_Bits'(Color => True, others => False));
 
+      Array_Points.Bind;
       GL.Objects.Vertex_Arrays.Draw_Arrays (Points, 0, 4);
 
-      -- Swap front and back buffers
-      GL.Flush;
+      -- Swap front and back buffers and process events
       Display_Backend.Swap_Buffers;
-
-      -- Poll for and process events
       Display_Backend.Poll_Events;
    end loop;
 
