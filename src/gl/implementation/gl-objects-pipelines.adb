@@ -80,7 +80,7 @@ package body GL.Objects.Pipelines is
    procedure Initialize_Id (Object : in out Pipeline) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Program_Pipelines (1, New_Id);
+      API.Create_Program_Pipelines (1, New_Id);
       Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;

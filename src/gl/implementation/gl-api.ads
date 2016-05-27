@@ -612,8 +612,8 @@ private package GL.API is
    --                             Buffer Objects                              --
    -----------------------------------------------------------------------------
 
-   procedure Gen_Buffers is new Loader.Getter_With_2_Params
-      ("glGenBuffers", Size, UInt);
+   procedure Create_Buffers is new Loader.Getter_With_2_Params
+      ("glCreateBuffers", Size, UInt);
 
    procedure Delete_Buffers is new Loader.Array_Proc_With_2_Params
       ("glDeleteBuffers", Size, UInt, Low_Level.UInt_Array);
@@ -624,38 +624,57 @@ private package GL.API is
    procedure Bind_Buffer_Base is new Loader.Procedure_With_3_Params
       ("glBindBufferBase", Low_Level.Enums.Buffer_Kind, UInt, UInt);
 
-   procedure Buffer_Data is new Loader.Procedure_With_4_Params
-      ("glBufferData", Low_Level.Enums.Buffer_Kind, Low_Level.SizeIPtr,
+   procedure Named_Buffer_Data is new Loader.Procedure_With_4_Params
+      ("glNamedBufferData", UInt, Low_Level.SizeIPtr,
        System.Address, Objects.Buffers.Buffer_Usage);
-   
-   -- glMapBuffer: returns instance of generic Interfaces.C.Pointers.Pointer,
+
+   procedure Named_Buffer_Sub_Data is new Loader.Procedure_With_4_Params
+      ("glNamedBufferSubData", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
+       System.Address);
+
+   procedure Named_Buffer_Storage is new Loader.Procedure_With_4_Params
+      ("glNamedBufferStorage", UInt, Low_Level.SizeIPtr,
+       System.Address, Low_Level.Bitfield);
+
+   -- glMapNamedBuffer[Range] returns an instance of generic Interfaces.C.Pointers.Pointer,
    -- therefore declared in GL.Objects.Buffers
-   
-   procedure Unmap_Buffer is new Loader.Procedure_With_1_Param
-     ("glUnmapBuffer", Low_Level.Enums.Buffer_Kind);
-   
-   procedure Get_Buffer_Parameter_Access_Kind is new Loader.Getter_With_3_Params
-     ("glGetBufferParameteriv", Low_Level.Enums.Buffer_Kind, Enums.Buffer_Param,
-      Objects.Access_Kind);
-   
-   procedure Get_Buffer_Parameter_Bool is new Loader.Getter_With_3_Params
-     ("glGetBufferParameteriv", Low_Level.Enums.Buffer_Kind, Enums.Buffer_Param,
+
+   procedure Unmap_Named_Buffer is new Loader.Procedure_With_1_Param
+     ("glUnmapNamedBuffer", UInt);
+
+   procedure Get_Named_Buffer_Parameter_Access_Kind is new Loader.Getter_With_3_Params
+     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
+      Objects.Buffers.Access_Kind);
+
+   procedure Get_Named_Buffer_Parameter_Bool is new Loader.Getter_With_3_Params
+     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
       Low_Level.Bool);
-   
-   procedure Get_Buffer_Parameter_Size is new Loader.Getter_With_3_Params
-     ("glGetBufferParameteriv", Low_Level.Enums.Buffer_Kind, Enums.Buffer_Param,
+
+   procedure Get_Named_Buffer_Parameter_Bitfield is new Loader.Getter_With_3_Params
+     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
+      Low_Level.Bitfield);
+
+   procedure Get_Named_Buffer_Parameter_Size is new Loader.Getter_With_3_Params
+     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
       Size);
-   
-   procedure Get_Buffer_Parameter_Usage is new Loader.Getter_With_3_Params
-     ("glGetBufferParameteriv", Low_Level.Enums.Buffer_Kind, Enums.Buffer_Param,
+
+   procedure Get_Named_Buffer_Parameter_Usage is new Loader.Getter_With_3_Params
+     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
       Objects.Buffers.Buffer_Usage);
-   
+
    procedure Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
      ("glInvalidateBufferData", UInt);
-   
+
    procedure Invalidate_Buffer_Sub_Data is new Loader.Procedure_With_3_Params
      ("glInvalidateBufferSubData", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr);
-   
+
+   procedure Flush_Mapped_Named_Buffer_Range is new Loader.Procedure_With_3_Params
+     ("glFlushMappedNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr);
+
+   procedure Copy_Named_Buffer_Sub_Data is new Loader.Procedure_With_5_Params
+     ("glCopyNamedBufferSubData", UInt, UInt, Low_Level.IntPtr, Low_Level.IntPtr,
+      Low_Level.SizeIPtr);
+
    -----------------------------------------------------------------------------
    --                           Vertex Array Objects                          --
    -----------------------------------------------------------------------------
@@ -702,35 +721,33 @@ private package GL.API is
    -----------------------------------------------------------------------------
    --                        Renderbuffer objects                             --
    -----------------------------------------------------------------------------
-   
-   procedure Gen_Renderbuffers is new Loader.Getter_With_2_Params
-     ("glGenRenderbuffers", Size, UInt);
-   
+
+   procedure Create_Renderbuffers is new Loader.Getter_With_2_Params
+     ("glCreateRenderbuffers", Size, UInt);
+
    procedure Delete_Renderbuffers is new Loader.Array_Proc_With_2_Params
      ("glDeleteBuffers", Size, UInt, Low_Level.UInt_Array);
-   
-   procedure Renderbuffer_Storage is new Loader.Procedure_With_4_Params
-     ("glRenderbufferStorage", Low_Level.Enums.Renderbuffer_Kind,
+
+   procedure Named_Renderbuffer_Storage is new Loader.Procedure_With_4_Params
+     ("glNamedRenderbufferStorage", UInt,
       Pixels.Internal_Format, Size, Size);
-   
-   procedure Renderbuffer_Storage_Multisample is new
-     Loader.Procedure_With_5_Params ("glRenderbufferStorageMultisample",
-                                     Low_Level.Enums.Renderbuffer_Kind, Size,
-                                     Pixels.Internal_Format, Size, Size);
-   
+
+   procedure Named_Renderbuffer_Storage_Multisample is new Loader.Procedure_With_5_Params
+     ("glNamedRenderbufferStorageMultisample", UInt, Size,
+      Pixels.Internal_Format, Size, Size);
+
    procedure Bind_Renderbuffer is new Loader.Procedure_With_2_Params
      ("glBindRenderbuffer", Low_Level.Enums.Renderbuffer_Kind, UInt);
-   
-   procedure Get_Renderbuffer_Parameter_Int is new Loader.Getter_With_3_Params
-     ("glGetRenderbufferParameteriv", Low_Level.Enums.Renderbuffer_Kind,
+
+   procedure Get_Named_Renderbuffer_Parameter_Int is new Loader.Getter_With_3_Params
+     ("glGetNamedRenderbufferParameteriv", UInt,
       Enums.Getter.Renderbuffer_Parameter, Int);
-   
-   procedure Get_Renderbuffer_Parameter_Internal_Format is new
-     Loader.Getter_With_3_Params ("glGetRenderbufferParameteriv",
-                                  Low_Level.Enums.Renderbuffer_Kind,
-                                  Enums.Getter.Renderbuffer_Parameter,
+
+   procedure Get_Named_Renderbuffer_Parameter_Internal_Format is new
+     Loader.Getter_With_3_Params ("glGetNamedRenderbufferParameteriv",
+                                  UInt, Enums.Getter.Renderbuffer_Parameter,
                                   Pixels.Internal_Format);
-   
+
    -----------------------------------------------------------------------------
    --                  Framebuffer objects and handling                       --
    -----------------------------------------------------------------------------
@@ -925,8 +942,8 @@ private package GL.API is
    procedure Use_Program_Stages is new Loader.Procedure_With_3_Params
      ("glUseProgramStages", UInt, Objects.Shaders.Shader_Type, UInt);
 
-   procedure Gen_Program_Pipelines is new Loader.Getter_With_2_Params
-     ("glGenProgramPipelines", Size, UInt);
+   procedure Create_Program_Pipelines is new Loader.Getter_With_2_Params
+     ("glCreateProgramPipelines", Size, UInt);
 
    procedure Delete_Program_Pipelines is new Loader.Array_Proc_With_2_Params
      ("glDeleteProgramPipelines", Size, UInt, Low_Level.UInt_Array);
@@ -956,6 +973,9 @@ private package GL.API is
 
    procedure Gen_Queries is new Loader.Getter_With_2_Params
      ("glGenQueries", Size, UInt);
+
+   procedure Create_Queries is new Loader.Getter_With_3_Params
+     ("glCreateQueries", Objects.Queries.Async_Query_Type, Size, UInt);
 
    procedure Delete_Queries is new Loader.Array_Proc_With_2_Params
      ("glDeleteQueries", Size, UInt, Low_Level.UInt_Array);
@@ -988,8 +1008,8 @@ private package GL.API is
    --                                Samplers                                 --
    -----------------------------------------------------------------------------
 
-   procedure Gen_Samplers is new Loader.Getter_With_2_Params
-     ("glGenSamplers", Size, UInt);
+   procedure Create_Samplers is new Loader.Getter_With_2_Params
+     ("glCreateSamplers", Size, UInt);
 
    procedure Delete_Samplers is new Loader.Array_Proc_With_2_Params
      ("glDeleteSamplers", Size, UInt, Low_Level.UInt_Array);
@@ -1047,8 +1067,8 @@ private package GL.API is
      ("glTransformFeedbackVaryings", UInt, Size, Low_Level.CharPtr_Array,
       Objects.Transform_Feedbacks.Outputs_Format);
 
-   procedure Gen_Transform_Feedbacks is new Loader.Getter_With_2_Params
-     ("glGenTransformFeedbacks", Size, UInt);
+   procedure Create_Transform_Feedbacks is new Loader.Getter_With_2_Params
+     ("glCreateTransformFeedbacks", Size, UInt);
 
    procedure Delete_Transform_Feedbacks is new Loader.Array_Proc_With_2_Params
      ("glDeleteTransformFeedbacks", Size, UInt, Low_Level.UInt_Array);
@@ -1067,6 +1087,9 @@ private package GL.API is
 
    procedure Bind_Transform_Feedback is new Loader.Procedure_With_2_Params
      ("glBindTransformFeedback", Low_Level.Enums.Transform_Feedback_Kind, UInt);
+
+   procedure Transform_Feedback_Buffer_Base is new Loader.Procedure_With_3_Params
+      ("glTransformFeedbackBufferBase", UInt, UInt, UInt);
 
    procedure Draw_Transform_Feedback is new Loader.Procedure_With_2_Params
      ("glDrawTransformFeedback", Connection_Mode, UInt);

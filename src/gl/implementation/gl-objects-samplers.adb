@@ -43,7 +43,7 @@ package body GL.Objects.Samplers is
    procedure Initialize_Id (Object : in out Sampler) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Samplers (1, New_Id);
+      API.Create_Samplers (1, New_Id);
       Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;

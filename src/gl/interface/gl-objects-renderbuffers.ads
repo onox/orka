@@ -23,22 +23,6 @@ package GL.Objects.Renderbuffers is
 
    type Renderbuffer_Target (<>) is tagged limited private;
 
-   procedure Allocate (Object : Renderbuffer_Target;
-                       Format : Pixels.Internal_Format;
-                       Width, Height : Size;
-                       Samples : Size := 0);
-
-   function Width  (Object : Renderbuffer_Target) return Size;
-   function Height (Object : Renderbuffer_Target) return Size;
-   function Internal_Format (Object : Renderbuffer_Target)
-                             return Pixels.Internal_Format;
-   function Red_Size     (Object : Renderbuffer_Target) return Size;
-   function Green_Size   (Object : Renderbuffer_Target) return Size;
-   function Blue_Size    (Object : Renderbuffer_Target) return Size;
-   function Alpha_Size   (Object : Renderbuffer_Target) return Size;
-   function Depth_Size   (Object : Renderbuffer_Target) return Size;
-   function Stencil_Size (Object : Renderbuffer_Target) return Size;
-
    function Raw_Kind (Object : Renderbuffer_Target)
                       return Low_Level.Enums.Renderbuffer_Kind;
 
@@ -49,6 +33,22 @@ package GL.Objects.Renderbuffers is
    procedure Bind (Target : Renderbuffer_Target; Object : Renderbuffer'Class);
 
    function Current (Target : Renderbuffer_Target) return Renderbuffer'Class;
+
+   procedure Allocate (Object : Renderbuffer;
+                       Format : Pixels.Internal_Format;
+                       Width, Height : Size;
+                       Samples : Size := 0);
+
+   function Width  (Object : Renderbuffer) return Size;
+   function Height (Object : Renderbuffer) return Size;
+   function Internal_Format (Object : Renderbuffer)
+                             return Pixels.Internal_Format;
+   function Red_Size     (Object : Renderbuffer) return Size;
+   function Green_Size   (Object : Renderbuffer) return Size;
+   function Blue_Size    (Object : Renderbuffer) return Size;
+   function Alpha_Size   (Object : Renderbuffer) return Size;
+   function Depth_Size   (Object : Renderbuffer) return Size;
+   function Stencil_Size (Object : Renderbuffer) return Size;
 
    overriding
    procedure Initialize_Id (Object : in out Renderbuffer);

@@ -104,8 +104,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Cube
-      Array_Buffer.Bind (Buffer_Cube);
-      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+      Load_Vectors (Buffer_Cube, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Cube VAO
       Array_Cube.Enable_Attribute (Attrib_Pos);
@@ -142,8 +141,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Quad
-      Array_Buffer.Bind (Buffer_Quad);
-      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+      Load_Vectors (Buffer_Quad, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Quad VAO
       Array_Quad.Enable_Attribute (Attrib_Pos);
@@ -318,8 +316,7 @@ begin
    GL.Objects.Framebuffers.Draw_Target.Attach_Texture (GL.Objects.Framebuffers.Color_Attachment_0, Color_Texture, 0);
 
    -- Create render buffer object for depth and stencil buffers
-   GL.Objects.Renderbuffers.Active_Renderbuffer.Bind (RB);
-   GL.Objects.Renderbuffers.Active_Renderbuffer.Allocate (GL.Pixels.Depth24_Stencil8, 500, 500);
+   RB.Allocate (GL.Pixels.Depth24_Stencil8, 500, 500);
    GL.Objects.Framebuffers.Draw_Target.Attach_Renderbuffer (GL.Objects.Framebuffers.Depth_Stencil_Attachment, RB);
 
    Ada.Text_IO.Put_Line ("Loaded textures and buffers");

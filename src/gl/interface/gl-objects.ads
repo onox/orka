@@ -18,14 +18,10 @@ with Ada.Finalization;
 
 with GL.Types;
 
-private with GL.Low_Level;
-
 package GL.Objects is
    pragma Preelaborate;
 
    use GL.Types;
-
-   type Access_Kind is (Read_Only, Write_Only, Read_Write);
 
    type GL_Object is abstract new Ada.Finalization.Controlled with private;
 
@@ -62,11 +58,6 @@ package GL.Objects is
 
    No_Object_Bound_Exception : exception;
 private
-
-   for Access_Kind use (Read_Only  => 16#88B8#,
-                        Write_Only => 16#88B9#,
-                        Read_Write => 16#88BA#);
-   for Access_Kind'Size use Low_Level.Enum'Size;
 
    type GL_Object_Reference is record
       GL_Id           : UInt;

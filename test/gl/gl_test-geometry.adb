@@ -96,8 +96,7 @@ procedure GL_Test.Geometry is
         (Single_Pointers);
    begin
       --  Bind VBO and upload vertices to GPU
-      Array_Buffer.Bind (Buffer_Points);
-      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+      Load_Vectors (Buffer_Points, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Points VAO
       Array_Points.Enable_Attribute (Attrib_Pos);

@@ -59,6 +59,14 @@ package body GL.Objects.Transform_Feedbacks is
       end if;
    end Bind;
 
+   procedure Bind_Base (Object : Feedback_Object;
+                        Buffer : Objects.Buffers.Buffer'Class;
+                        Index  : Natural) is
+   begin
+      API.Transform_Feedback_Buffer_Base (Object.Reference.GL_Id, UInt (Index), Buffer.Raw_Id);
+      Raise_Exception_On_OpenGL_Error;
+   end Bind_Base;
+
    function Current (Target : Feedback_Target) return Feedback_Object'Class is
       Cursor : constant Feedback_Object_Maps.Cursor
         := Current_Feedback_Objects.Find (Target.Kind);
@@ -103,7 +111,7 @@ package body GL.Objects.Transform_Feedbacks is
    procedure Initialize_Id (Object : in out Feedback_Object) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Transform_Feedbacks (1, New_Id);
+      API.Create_Transform_Feedbacks (1, New_Id);
       Raise_Exception_On_OpenGL_Error;
 
       Object.Reference.GL_Id := New_Id;

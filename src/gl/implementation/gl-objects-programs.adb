@@ -17,6 +17,7 @@
 with GL.API;
 with GL.Enums;
 with GL.Objects.Programs.Uniforms;
+with GL.Low_Level;
 
 with Interfaces.C.Strings;
 

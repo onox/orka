@@ -50,8 +50,7 @@ procedure GL_Test.VBO is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       --  Upload Vertices data to Buffer1
-      Array_Buffer.Bind (Buffer1);
-      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+      Load_Vectors (Buffer1, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Pos);

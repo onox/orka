@@ -61,12 +61,10 @@ procedure GL_Test.OpenGL3 is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       --  Upload Triangle1 data to Buffer1
-      Array_Buffer.Bind (Buffer1);
-      Load_Vectors (Array_Buffer, Triangle1, Static_Draw);
+      Load_Vectors (Buffer1, Triangle1, Static_Draw);
 
       --  Upload Color_Array data to Buffer2
-      Array_Buffer.Bind (Buffer2);
-      Load_Colors (Array_Buffer, Color_Array, Static_Draw);
+      Load_Colors (Buffer2, Color_Array, Static_Draw);
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Pos);
@@ -82,8 +80,7 @@ procedure GL_Test.OpenGL3 is
       Array1.Bind_Vertex_Buffer (1, Buffer2, Single_Type, 0, 3);
 
       --  Upload Triangle2 data to Buffer3
-      Array_Buffer.Bind (Buffer3);
-      Load_Vectors (Array_Buffer, Triangle2, Static_Draw);
+      Load_Vectors (Buffer3, Triangle2, Static_Draw);
 
       --  Enable and set attributes for Array2 VAO
       Array2.Enable_Attribute (Attrib_Pos);

@@ -30,6 +30,16 @@ package body GL.Objects.Queries is
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
+   procedure Initialize_Id (Object : in out Query; Target : Query_Type) is
+      New_Id : UInt := 0;
+   begin
+      API.Create_Queries (Target, 1, New_Id);
+      Raise_Exception_On_OpenGL_Error;
+
+      Object.Reference.GL_Id := New_Id;
+      Object.Reference.Initialized := True;
+   end Initialize_Id;
+
    overriding
    procedure Delete_Id (Object : in out Query) is
    begin

@@ -38,91 +38,91 @@ package body GL.Objects.Renderbuffers is
 
    Current_Renderbuffers : Renderbuffer_Maps.Map;
 
-   procedure Allocate (Object : Renderbuffer_Target;
+   procedure Allocate (Object : Renderbuffer;
                        Format : Pixels.Internal_Format;
                        Width, Height : Size;
                        Samples : Size := 0) is
    begin
       if Samples = 0 then
-         API.Renderbuffer_Storage (Object.Kind, Format, Width, Height);
-         Raise_Exception_On_OpenGL_Error;
+         API.Named_Renderbuffer_Storage
+           (Object.Reference.GL_Id, Format, Width, Height);
       else
-         API.Renderbuffer_Storage_Multisample (Object.Kind, Samples, Format,
-                                               Width, Height);
+         API.Named_Renderbuffer_Storage_Multisample
+           (Object.Reference.GL_Id, Samples, Format, Width, Height);
       end if;
+      Raise_Exception_On_OpenGL_Error;
    end Allocate;
 
-   function Width  (Object : Renderbuffer_Target) return Size is
+   function Width (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Width, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Width, Value);
       return Value;
    end Width;
 
-   function Height (Object : Renderbuffer_Target) return Size is
+   function Height (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Height, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Height, Value);
       return Value;
    end Height;
 
-   function Internal_Format (Object : Renderbuffer_Target)
+   function Internal_Format (Object : Renderbuffer)
                              return Pixels.Internal_Format is
       Value : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
-      API.Get_Renderbuffer_Parameter_Internal_Format
-        (Object.Kind, Enums.Getter.Internal_Format, Value);
+      API.Get_Named_Renderbuffer_Parameter_Internal_Format
+        (Object.Reference.GL_Id, Enums.Getter.Internal_Format, Value);
       return Value;
    end Internal_Format;
 
-   function Red_Size (Object : Renderbuffer_Target) return Size is
+   function Red_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Green_Size, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Green_Size, Value);
       return Value;
    end Red_Size;
 
-   function Green_Size (Object : Renderbuffer_Target) return Size is
+   function Green_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Green_Size, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Green_Size, Value);
       return Value;
    end Green_Size;
 
-   function Blue_Size (Object : Renderbuffer_Target) return Size is
+   function Blue_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Blue_Size, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Blue_Size, Value);
       return Value;
    end Blue_Size;
 
-   function Alpha_Size (Object : Renderbuffer_Target) return Size is
+   function Alpha_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Alpha_Size, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Alpha_Size, Value);
       return Value;
    end Alpha_Size;
 
-   function Depth_Size (Object : Renderbuffer_Target) return Size is
+   function Depth_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int
-        (Object.Kind, Enums.Getter.Depth_Size, Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Depth_Size, Value);
       return Value;
    end Depth_Size;
 
-   function Stencil_Size (Object : Renderbuffer_Target) return Size is
+   function Stencil_Size (Object : Renderbuffer) return Size is
       Value : Int := 0;
    begin
-      API.Get_Renderbuffer_Parameter_Int (Object.Kind,
-                                          Enums.Getter.Stencil_Size,
-                                          Value);
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Stencil_Size, Value);
       return Value;
    end Stencil_Size;
 
@@ -165,7 +165,7 @@ package body GL.Objects.Renderbuffers is
    procedure Initialize_Id (Object : in out Renderbuffer) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Renderbuffers (1, New_Id);
+      API.Create_Renderbuffers (1, New_Id);
       Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;

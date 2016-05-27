@@ -148,7 +148,8 @@ private package GL.Enums is
                               Pack_Alignment, Pack_Skip_Images, Pack_Image_Height,
                               Unpack_Skip_Images, Unpack_Image_Height);
    
-   type Buffer_Param is (Buffer_Access, Buffer_Mapped,
+   type Buffer_Param is (Buffer_Immutable_Storage, Buffer_Storage_Flags,
+                         Buffer_Access, Buffer_Mapped,
                          Buffer_Size, Buffer_Usage);
    
    type Buffer_Pointer_Param is (Buffer_Map_Pointer);
@@ -331,10 +332,12 @@ private
                               Unpack_Image_Height => 16#806E#);
    for Pixel_Store_Param'Size use Low_Level.Enum'Size;
    
-   for Buffer_Param use (Buffer_Access => 16#88BB#,
-                         Buffer_Mapped => 16#88BC#,
-                         Buffer_Size   => 16#88BD#,
-                         Buffer_Usage  => 16#88BE#);
+   for Buffer_Param use (Buffer_Immutable_Storage => 16#821F#,
+                         Buffer_Storage_Flags     => 16#8220#,
+                         Buffer_Access            => 16#88BB#,
+                         Buffer_Mapped            => 16#88BC#,
+                         Buffer_Size              => 16#88BD#,
+                         Buffer_Usage             => 16#88BE#);
    for Buffer_Param'Size use Low_Level.Enum'Size;
    
    for Buffer_Pointer_Param use (Buffer_Map_Pointer => 16#88BD#);

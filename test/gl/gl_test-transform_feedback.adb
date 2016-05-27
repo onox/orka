@@ -52,8 +52,7 @@ procedure GL_Test.Transform_Feedback is
         GL.Objects.Programs.Attrib_Location (Program, "in_value");
    begin
       --  Upload Vertices data to Buffer_Input
-      Array_Buffer.Bind (Buffer_Input);
-      Load_Vectors (Array_Buffer, Vertices, Static_Draw);
+      Load_Vectors (Buffer_Input, Vertices, Static_Draw);
 
       -- Enable and set attributes for Array_Input VAO
       Array_Input.Enable_Attribute (Attrib_Pos);
@@ -64,8 +63,7 @@ procedure GL_Test.Transform_Feedback is
       Array_Input.Bind_Vertex_Buffer (0, Buffer_Input, Single_Type, 0, 1);
 
       --  Allocate data for Buffer_Output
-      Array_Buffer.Bind (Buffer_Output);
-      GL.Objects.Buffers.Allocate (Array_Buffer, 3 * Vertices'Length, Single_Type, Static_Read);
+      Buffer_Output.Allocate (3 * Vertices'Length, Single_Type, Static_Read);
    end Load_Data;
 
    procedure Load_Shaders (Vertex_Source, Geometry_Source : String;
@@ -141,7 +139,7 @@ begin
    Array_Input.Initialize_Id;
 
    -- Generate queries
-   Query.Initialize_Id;
+   Query.Initialize_Id (Transform_Feedback_Primitives_Written);
    Feedback.Initialize_Id;
 
    Ada.Text_IO.Put_Line ("Initialized objects");
@@ -160,7 +158,9 @@ begin
    GL.Toggles.Enable (GL.Toggles.Rasterizer_Discard);
 
    --  Bind the Vertex_Buffer_Output to index 0 of the transform feedback target
-   GL.Objects.Buffers.Transform_Feedback_Buffer.Bind_Base (Vertex_Buffer_Output, 0);
+   GL.Objects.Transform_Feedbacks.Active_Transform_Feedback.Bind (Feedback);
+   GL.Objects.Buffers.Transform_Feedback_Buffer.Bind (Vertex_Buffer_Output);
+   Feedback.Bind_Base (Vertex_Buffer_Output, 0);
 
    Array_Input.Bind;
    declare
@@ -184,7 +184,7 @@ begin
    declare
       Data : Single_Array (1 .. 15) := (others => 0.0);
    begin
-      Get_Sub_Data (GL.Objects.Buffers.Transform_Feedback_Buffer, 0, Data);
+      Get_Sub_Data (Vertex_Buffer_Output, 0, Data);
       for Element of Data loop
          Ada.Text_IO.Put_Line (Single'Image (Element));
       end loop;

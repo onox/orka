@@ -64,6 +64,8 @@ package GL.Objects.Queries is
    overriding
    procedure Initialize_Id (Object : in out Query);
 
+   procedure Initialize_Id (Object : in out Query; Target : Query_Type);
+
    overriding
    procedure Delete_Id (Object : in out Query);
 
@@ -186,16 +188,16 @@ private
    type Query is new GL_Object with null record;
 
    type Active_Query is limited new Ada.Finalization.Limited_Controlled with record
-     Target : Query_Type;
-     Index  : Natural;
-     Finalized : Boolean := True;
+      Target : Query_Type;
+      Index  : Natural;
+      Finalized : Boolean := True;
    end record;
 
    overriding
    procedure Finalize (Object : in out Active_Query);
 
    type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with record
-     Finalized : Boolean := True;
+      Finalized : Boolean := True;
    end record;
 
    overriding

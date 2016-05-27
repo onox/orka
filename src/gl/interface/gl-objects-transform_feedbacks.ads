@@ -14,6 +14,8 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
+with GL.Objects.Buffers;
+
 private with GL.Low_Level.Enums;
 
 package GL.Objects.Transform_Feedbacks is
@@ -28,6 +30,10 @@ package GL.Objects.Transform_Feedbacks is
    type Feedback_Object is new GL_Object with private;
 
    procedure Bind (Target : Feedback_Target; Object : Feedback_Object'Class);
+
+   procedure Bind_Base (Object : Feedback_Object;
+                        Buffer : Objects.Buffers.Buffer'Class;
+                        Index  : Natural);
 
    function Current (Target : Feedback_Target) return Feedback_Object'Class;
 
@@ -112,17 +118,18 @@ private
    No_Feedback_Object : constant Feedback_Object :=
      Feedback_Object'(GL_Object with null record);
 
-   type Active_Feedback (Mode : Feedback_Connection_Mode) is limited new Ada.Finalization.Limited_Controlled with record
-     Feedback  : Feedback_Object;
-     Finalized : Boolean := True;
+   type Active_Feedback (Mode : Feedback_Connection_Mode) is
+     limited new Ada.Finalization.Limited_Controlled with record
+      Feedback  : Feedback_Object;
+      Finalized : Boolean := True;
    end record;
 
    overriding
    procedure Finalize (Object : in out Active_Feedback);
 
    type Paused_Feedback is limited new Ada.Finalization.Limited_Controlled with record
-     Feedback  : Feedback_Object;
-     Finalized : Boolean := True;
+      Feedback  : Feedback_Object;
+      Finalized : Boolean := True;
    end record;
 
    overriding
