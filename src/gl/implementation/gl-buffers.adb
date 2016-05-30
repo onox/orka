@@ -18,7 +18,6 @@ with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Enums.Getter;
-with GL.Low_Level.Enums;
 
 package body GL.Buffers is
 
@@ -34,18 +33,6 @@ package body GL.Buffers is
       API.Clear (Raw_Bits);
       Raise_Exception_On_OpenGL_Error;
    end Clear;
-
-   procedure Set_Active_Buffer (Selector : Explicit_Color_Buffer_Selector) is
-   begin
-      API.Draw_Buffer (Selector);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Active_Buffer;
-
-   procedure Set_Active_Buffers (List : Explicit_Color_Buffer_List) is
-   begin
-      API.Draw_Buffers (List'Length, List);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Active_Buffers;
 
    procedure Set_Color_Clear_Value (Value : Colors.Color) is
    begin
@@ -257,41 +244,4 @@ package body GL.Buffers is
       return Value;
    end Stencil_Mask;
 
-   procedure Clear_Color_Buffers (Selector : Base_Color_Buffer_Selector;
-                                  Value    : Colors.Color) is
-   begin
-      API.Clear_Buffer (Selector, 0, Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Color_Buffers;
-
-   procedure Clear_Draw_Buffer (Index : Draw_Buffer_Index;
-                                Value : Colors.Color) is
-   begin
-      API.Clear_Draw_Buffer (Low_Level.Enums.Color, Index, Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Draw_Buffer;
-
-   procedure Clear_Depth_Buffer (Value : Depth) is
-      Aliased_Value : aliased constant Depth := Value;
-   begin
-      API.Clear_Buffer_Depth (Low_Level.Enums.Depth_Buffer, 0,
-                              Aliased_Value'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Depth_Buffer;
-
-   procedure Clear_Stencil_Buffer (Value : Stencil_Index) is
-      Aliased_Value : aliased constant Stencil_Index := Value;
-   begin
-      API.Clear_Buffer_Stencil (Low_Level.Enums.Stencil, 0,
-                                Aliased_Value'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Stencil_Buffer;
-
-   procedure Clear_Depth_And_Stencil_Buffer (Depth_Value   : Depth;
-                                             Stencil_Value : Stencil_Index) is
-   begin
-      API.Clear_Buffer_Depth_Stencil (Low_Level.Enums.Depth_Stencil, 0,
-                                      Depth_Value, Stencil_Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Depth_And_Stencil_Buffer;
 end GL.Buffers;

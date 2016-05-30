@@ -47,18 +47,18 @@ private package GL.API is
 
    use GL.Types;
 
-   -- implementation is platform-specific. Therefore, gl-api.adb is in the
-   -- platform-specific source folders.
    function GL_Subprogram_Reference (Function_Name : String) return System.Address;
-   
+   --  Implementation is platform-specific. Therefore, gl-api.adb is in the
+   --  platform-specific source folders.
+
    package Loader is new Runtime_Loading (GL_Subprogram_Reference);
 
-   -- Everything newer than OpenGL 1.1 will not be statically bound,
-   -- but loaded with GL.Low_Level.Loader at runtime.
+   --  Everything newer than OpenGL 1.1 will not be statically bound,
+   --  but loaded with GL.Low_Level.Loader at runtime.
    --
-   -- Also, all functions that have been deprecated with OpenGL 3.0
-   -- will not be statically bound, as they may be omitted by implementors
-   -- when they choose to only implement the OpenGL Core Profile.
+   --  Also, all functions that have been deprecated with OpenGL 3.0
+   --  will not be statically bound, as they may be omitted by implementors
+   --  when they choose to only implement the OpenGL Core Profile.
    
    subtype Zero is Int range 0 .. 0;
 
@@ -75,7 +75,7 @@ private package GL.API is
                   External_Name => "glFinish");
 
    -----------------------------------------------------------------------------
-   --                           Parameter Getters                             --
+   --                            Parameter getters                            --
    -----------------------------------------------------------------------------
 
    procedure Get_Boolean (Name   : Enums.Getter.Parameter;
@@ -180,7 +180,7 @@ private package GL.API is
 
    procedure Get_Read_Buffer_Selector
      (Name   : Enums.Getter.Parameter;
-      Target : access Framebuffer.Read_Buffer_Selector);
+      Target : access Buffers.Color_Buffer_Selector);
    pragma Import (Convention => StdCall, Entity => Get_Read_Buffer_Selector,
                   External_Name => "glGetIntegerv");
    
@@ -221,7 +221,7 @@ private package GL.API is
                   External_Name => "glFrontFace");
    
    -----------------------------------------------------------------------------
-   --                               Pixel Stuff                               --
+   --                               Pixel stuff                               --
    -----------------------------------------------------------------------------
    
    procedure Pixel_Store (Param : Enums.Pixel_Store_Param;
@@ -234,15 +234,11 @@ private package GL.API is
                   External_Name => "glPixelStorei");
    
    -----------------------------------------------------------------------------
-   --                         Framebuffer Operations                          --
+   --                         Framebuffer operations                          --
    -----------------------------------------------------------------------------
    
    procedure Clamp_Color is new Loader.Procedure_With_2_Params
      ("glClampColor", Enums.Clamp_Color_Param, Low_Level.Bool);
-   
-   procedure Read_Buffer (Value : Framebuffer.Read_Buffer_Selector);
-   pragma Import (Convention => StdCall, Entity => Read_Buffer,
-                  External_Name => "glReadBuffer");
    
    -----------------------------------------------------------------------------
    --                                 Drawing                                 --
@@ -284,7 +280,7 @@ private package GL.API is
       Unsigned_Numeric_Type, Int_Array, Size, Int_Array);
 
    -----------------------------------------------------------------------------
-   --                               Blending                                  --
+   --                                Blending                                 --
    -----------------------------------------------------------------------------
 
    procedure Blend_Func (Src_Factor, Dst_Factor : Blending.Blend_Factor);
@@ -322,7 +318,7 @@ private package GL.API is
       Blending.Equation);
    
    -----------------------------------------------------------------------------
-   --                             Rasterization                               --
+   --                              Rasterization                              --
    -----------------------------------------------------------------------------
    
    procedure Line_Width (Value : Single);
@@ -335,19 +331,12 @@ private package GL.API is
                   External_Name => "glPolygonMode");
    
    -----------------------------------------------------------------------------
-   --                                Buffers                                  --
+   --                                 Buffers                                 --
    -----------------------------------------------------------------------------
 
    procedure Clear (Bits : Low_Level.Bitfield);
    pragma Import (Convention => StdCall, Entity => Clear,
                   External_Name => "glClear");
-
-   procedure Draw_Buffer (Mode : Buffers.Explicit_Color_Buffer_Selector);
-   pragma Import (Convention => StdCall, Entity => Draw_Buffer,
-                  External_Name => "glDrawBuffer");
-   
-   procedure Draw_Buffers is new Loader.Procedure_With_2_Params
-     ("glDrawBuffers", UInt, Buffers.Explicit_Color_Buffer_List);
 
    procedure Clear_Color (Red, Green, Blue, Alpha : Colors.Component);
    pragma Import (Convention => StdCall, Entity => Clear_Color,
@@ -361,29 +350,8 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Clear_Stencil,
                   External_Name => "glClearStencil");
 
-   procedure Clear_Buffer is new Loader.Procedure_With_3_Params
-     ("glClearBufferfv", Buffers.Color_Buffer_Selector, Zero, Colors.Color);
-
-   procedure Clear_Draw_Buffer is new Loader.Procedure_With_3_Params
-     ("glClearBufferfv", Low_Level.Enums.Only_Color_Buffer,
-      Buffers.Draw_Buffer_Index, Colors.Color);
-   
-   type Depth_Pointer is access constant Buffers.Depth;
-   procedure Clear_Buffer_Depth is new Loader.Procedure_With_3_Params
-     ("glClearBufferfv", Low_Level.Enums.Only_Depth_Buffer, Zero,
-      Depth_Pointer);
-
-   type Stencil_Pointer is access constant Buffers.Stencil_Index;
-   procedure Clear_Buffer_Stencil is new Loader.Procedure_With_3_Params
-     ("glClearBufferiv", Low_Level.Enums.Only_Stencil_Buffer, Zero,
-      Stencil_Pointer);
-
-   procedure Clear_Buffer_Depth_Stencil is new Loader.Procedure_With_4_Params
-     ("glClearBufferfi", Low_Level.Enums.Only_Depth_Stencil_Buffer, Zero,
-      Buffers.Depth, Buffers.Stencil_Index);
-
    -----------------------------------------------------------------------------
-   --                        Depth And Stencil Buffers                        --
+   --                        Depth and stencil buffers                        --
    -----------------------------------------------------------------------------
 
    procedure Depth_Mask (Value : Low_Level.Bool);
@@ -609,7 +577,7 @@ private package GL.API is
       Int, Int, Int, Size, Size, Size);
 
    -----------------------------------------------------------------------------
-   --                             Buffer Objects                              --
+   --                             Buffer objects                              --
    -----------------------------------------------------------------------------
 
    procedure Create_Buffers is new Loader.Getter_With_2_Params
@@ -719,7 +687,7 @@ private package GL.API is
      ("glDisableVertexArrayAttrib", UInt, Attributes.Attribute);
 
    -----------------------------------------------------------------------------
-   --                        Renderbuffer objects                             --
+   --                           Renderbuffer objects                          --
    -----------------------------------------------------------------------------
 
    procedure Create_Renderbuffers is new Loader.Getter_With_2_Params
@@ -749,7 +717,7 @@ private package GL.API is
                                   Pixels.Internal_Format);
 
    -----------------------------------------------------------------------------
-   --                  Framebuffer objects and handling                       --
+   --                    Framebuffer objects and handling                     --
    -----------------------------------------------------------------------------
 
    procedure Read_Pixels (X, Y : Int; Width, Height : Size;
@@ -757,72 +725,88 @@ private package GL.API is
                           Data : System.Address);
    pragma Import (Convention => StdCall, Entity => Read_Pixels,
                   External_Name => "glReadPixels");
-   
+
    procedure Logic_Op (Value : Framebuffer.Logic_Op);
    pragma Import (Convention => StdCall, Entity => Logic_Op,
                   External_Name => "glLogicOp");
-   
-   procedure Gen_Framebuffers is new Loader.Getter_With_2_Params
-     ("glGenFramebuffers", Size, UInt);
-   
+
+   procedure Create_Framebuffers is new Loader.Getter_With_2_Params
+     ("glCreateFramebuffers", Size, UInt);
+
    procedure Delete_Framebuffers is new Loader.Array_Proc_With_2_Params
      ("glDeleteFramebuffers", Size, UInt, Low_Level.UInt_Array);
-   
+
    procedure Bind_Framebuffer is new Loader.Procedure_With_2_Params
      ("glBindFramebuffer", Low_Level.Enums.Framebuffer_Kind, UInt);
-   
-   function Check_Framebuffer_Status is new Loader.Function_With_1_Param
-     ("glCheckFramebufferStatus", Low_Level.Enums.Framebuffer_Kind,
+
+   procedure Named_Framebuffer_Draw_Buffer is new Loader.Procedure_With_2_Params
+     ("glNamedFramebufferDrawBuffer", UInt, Buffers.Color_Buffer_Selector);
+
+   procedure Named_Framebuffer_Draw_Buffers is new Loader.Procedure_With_3_Params
+     ("glNamedFramebufferDrawBuffers", UInt, Size, Buffers.Color_Buffer_List);
+
+   procedure Named_Framebuffer_Read_Buffer is new Loader.Procedure_With_2_Params
+     ("glNamedFramebufferReadBuffer", UInt, Buffers.Color_Buffer_Selector);
+
+   function Check_Named_Framebuffer_Status is new Loader.Function_With_1_Param
+     ("glCheckNamedFramebufferStatus", UInt,
       Objects.Framebuffers.Framebuffer_Status);
-   
-   procedure Framebuffer_Renderbuffer is new Loader.Procedure_With_4_Params
-     ("glFramebufferRenderbuffer", Low_Level.Enums.Framebuffer_Kind,
-      Objects.Framebuffers.Attachment_Point,
+
+   procedure Named_Framebuffer_Renderbuffer is new Loader.Procedure_With_4_Params
+     ("glNamedFramebufferRenderbuffer", UInt, Objects.Framebuffers.Attachment_Point,
       Low_Level.Enums.Renderbuffer_Kind, UInt);
-   
-   procedure Framebuffer_Texture is new Loader.Procedure_With_4_Params
-     ("glFramebufferTexture", Low_Level.Enums.Framebuffer_Kind,
-      Objects.Framebuffers.Attachment_Point, UInt,
-      Objects.Textures.Mipmap_Level);
-   
-   procedure Framebuffer_Texture_Layer is new Loader.Procedure_With_5_Params
-     ("glFramebufferTextureLayer", Low_Level.Enums.Framebuffer_Kind,
-      Objects.Framebuffers.Attachment_Point, UInt,
-      Objects.Textures.Mipmap_Level, Int);
-   
-   procedure Blit_Framebuffer is new Loader.Procedure_With_10_Params
-     ("glBlitFramebuffer", Int, Int, Int, Int, Int, Int, Int, Int,
+
+   procedure Named_Framebuffer_Texture is new Loader.Procedure_With_4_Params
+     ("glNamedFramebufferTexture", UInt, Objects.Framebuffers.Attachment_Point,
+      UInt, Objects.Textures.Mipmap_Level);
+
+   procedure Named_Framebuffer_Texture_Layer is new Loader.Procedure_With_5_Params
+     ("glNamedFramebufferTextureLayer", UInt, Objects.Framebuffers.Attachment_Point,
+      UInt, Objects.Textures.Mipmap_Level, Int);
+
+   procedure Blit_Named_Framebuffer is new Loader.Procedure_With_12_Params
+     ("glBlitNamedFramebuffer", UInt, UInt, Int, Int, Int, Int, Int, Int, Int, Int,
       Low_Level.Bitfield, Objects.Textures.Magnifying_Function);
-   
-   procedure Invalidate_Framebuffer is new Loader.Array_Proc_With_3_Params
-     ("glInvalidateFramebuffer", Low_Level.Enums.Framebuffer_Kind, Size,
+
+   procedure Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
+     ("glInvalidateNamedFramebufferData", UInt, Size,
       Objects.Framebuffers.Attachment_Point,
       Objects.Framebuffers.Attachment_List);
-   
-   procedure Invalidate_Sub_Framebuffer is new Loader.Procedure_With_7_Params
-     ("glInvalidateSubFramebuffer", Low_Level.Enums.Framebuffer_Kind, Size,
+
+   procedure Invalidate_Named_Framebuffer_Sub_Data is new Loader.Procedure_With_7_Params
+     ("glInvalidateNamedFramebufferSubData", UInt, Size,
       Objects.Framebuffers.Attachment_List, Int, Int, Size, Size);
-   
-   procedure Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
-     ("glFramebufferParameteri", Low_Level.Enums.Framebuffer_Kind,
-      Enums.Framebuffer_Param, Size);
-   
-   procedure Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
-     ("glFramebufferParameteri", Low_Level.Enums.Framebuffer_Kind,
-      Enums.Framebuffer_Param, Low_Level.Bool);
-   
-   procedure Get_Framebuffer_Parameter_Size is new
-     Loader.Procedure_With_3_Params ("glGetFramebufferParameteriv",
-                                     Low_Level.Enums.Framebuffer_Kind,
-                                     Enums.Framebuffer_Param,
-                                     Low_Level.Size_Access);
-   
-   procedure Get_Framebuffer_Parameter_Bool is new
-     Loader.Procedure_With_3_Params ("glGetFramebufferParameteriv",
-                                     Low_Level.Enums.Framebuffer_Kind,
-                                     Enums.Framebuffer_Param,
-                                     Low_Level.Bool_Access);
-   
+
+   procedure Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
+     ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Size);
+
+   procedure Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
+     ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Low_Level.Bool);
+
+   procedure Get_Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
+     ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Size_Access);
+
+   procedure Get_Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
+     ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Bool_Access);
+
+   procedure Clear_Named_Framebuffer_Color is new Loader.Procedure_With_4_Params
+     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Color_Buffer,
+      Buffers.Draw_Buffer_Index, Colors.Color);
+
+   type Depth_Pointer is access constant Buffers.Depth;
+   procedure Clear_Named_Framebuffer_Depth is new Loader.Procedure_With_4_Params
+     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Depth_Buffer,
+      Zero, Depth_Pointer);
+
+   type Stencil_Pointer is access constant Buffers.Stencil_Index;
+   procedure Clear_Named_Framebuffer_Stencil is new Loader.Procedure_With_4_Params
+     ("glClearNamedFramebufferiv", UInt, Low_Level.Enums.Only_Stencil_Buffer,
+      Zero, Stencil_Pointer);
+
+   procedure Clear_Named_Framebuffer_Depth_Stencil is new Loader.Procedure_With_5_Params
+     ("glClearNamedFramebufferfi", UInt, Low_Level.Enums.Only_Depth_Stencil_Buffer,
+      Zero, Buffers.Depth, Buffers.Stencil_Index);
+
    -----------------------------------------------------------------------------
    --                                 Shaders                                 --
    -----------------------------------------------------------------------------
@@ -909,7 +893,7 @@ private package GL.API is
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);
 
    -----------------------------------------------------------------------------
-   --                    Program Interfaces And Resources                     --
+   --                    Program interfaces and resources                     --
    -----------------------------------------------------------------------------
 
    procedure Get_Program_Interface is new Loader.Getter_With_4_Params

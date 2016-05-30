@@ -241,7 +241,35 @@ package GL.Runtime_Loading is
                                        Param9 : Param9_Type;
                                        Param10 : Param10_Type);
    pragma Inline (Procedure_With_10_Params);
-   
+
+   generic
+      Procedure_Name : String;
+      type Param1_Type (<>) is private;
+      type Param2_Type (<>) is private;
+      type Param3_Type (<>) is private;
+      type Param4_Type (<>) is private;
+      type Param5_Type (<>) is private;
+      type Param6_Type (<>) is private;
+      type Param7_Type (<>) is private;
+      type Param8_Type (<>) is private;
+      type Param9_Type (<>) is private;
+      type Param10_Type (<>) is private;
+      type Param11_Type (<>) is private;
+      type Param12_Type (<>) is private;
+   procedure Procedure_With_12_Params (Param1 : Param1_Type;
+                                       Param2 : Param2_Type;
+                                       Param3 : Param3_Type;
+                                       Param4 : Param4_Type;
+                                       Param5 : Param5_Type;
+                                       Param6 : Param6_Type;
+                                       Param7 : Param7_Type;
+                                       Param8 : Param8_Type;
+                                       Param9 : Param9_Type;
+                                       Param10 : Param10_Type;
+                                       Param11 : Param11_Type;
+                                       Param12 : Param12_Type);
+   pragma Inline (Procedure_With_12_Params);
+
    generic
       Procedure_Name : String;
       type Param1_Type is private;

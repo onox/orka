@@ -29,17 +29,13 @@ package GL.Framebuffer is
                      Xor_Op, Or_Op, Nor, Equiv, Invert, Or_Reverse,
                      Copy_Inverted, Or_Inverted, Nand, Set);
 
-   subtype Read_Buffer_Selector is Buffers.Color_Buffer_Selector range
-     Buffers.Front_Left .. Buffers.Right;
-
    -- this package provides functionality the works implicitly on the current
    -- framebuffer. for working with framebuffer objects,
    -- see GL.Objects.Framebuffers.
 
    procedure Set_Clamp_Read_Color (Enabled : Boolean);
 
-   procedure Set_Read_Buffer (Value : Read_Buffer_Selector);
-   function Read_Buffer return Read_Buffer_Selector;
+   function Read_Buffer return Buffers.Color_Buffer_Selector;
 
    generic
       type Element_Type is private;

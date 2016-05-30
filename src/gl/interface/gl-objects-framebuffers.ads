@@ -17,6 +17,7 @@
 with GL.Buffers;
 with GL.Objects.Renderbuffers;
 with GL.Objects.Textures;
+with GL.Types.Colors;
 
 private with GL.Low_Level.Enums;
 
@@ -42,59 +43,6 @@ package GL.Objects.Framebuffers is
 
    type Attachment_List is array (Positive range <>) of Attachment_Point;
 
-   type Framebuffer_Target (<>) is tagged limited private;
-
-   function Status (Target : Framebuffer_Target) return Framebuffer_Status;
-
-   procedure Attach_Renderbuffer (Target : Framebuffer_Target;
-                                  Attachment : Attachment_Point;
-                                  Object : Renderbuffers.Renderbuffer'Class);
-
-   procedure Attach_Texture (Target :  Framebuffer_Target;
-                             Attachment : Attachment_Point;
-                             Object : Textures.Texture'Class;
-                             Level  : Textures.Mipmap_Level);
-
-   procedure Invalidate (Target : in out Framebuffer_Target;
-                         Attachments : Attachment_List);
-
-   procedure Invalidate_Sub (Target        : in out Framebuffer_Target;
-                             Attachments   : Attachment_List;
-                             X, Y          : Int;
-                             Width, Height : Size);
-
-   procedure Set_Default_Width (Target : in out Framebuffer_Target;
-                                Value  : Size);
-   function Default_Width (Target : Framebuffer_Target) return Size;
-   function Max_Framebuffer_Width return Size;
-
-   procedure Set_Default_Height (Target : in out Framebuffer_Target;
-                                 Value  : Size);
-   function Default_Height      (Target : Framebuffer_Target) return Size;
-   function Max_Framebuffer_Height return Size;
-
-   procedure Set_Default_Layers (Target : in out Framebuffer_Target;
-                                 Value  : Size);
-   function Default_Layers      (Target : Framebuffer_Target) return Size;
-   function Max_Framebuffer_Layers return Size;
-
-   procedure Set_Default_Samples (Target : in out Framebuffer_Target;
-                                  Value  : Size);
-   function Default_Samples
-     (Target : Framebuffer_Target) return Size;
-   function Max_Framebuffer_Samples return Size;
-
-   procedure Set_Default_Fixed_Sample_Locactions
-     (Target : in out Framebuffer_Target; Value : Boolean);
-   function Default_Fixed_Sample_Locations (Target : Framebuffer_Target)
-                                            return Boolean;
-
-   -- copy from current Read to current Draw framebuffer
-   procedure Blit (Src_X0, Src_Y0, Src_X1, Src_Y1,
-                   Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;
-                   Mask : Buffers.Buffer_Bits;
-                   Filter : Textures.Magnifying_Function);
-
    type Framebuffer is new GL_Object with private;
 
    overriding
@@ -103,13 +51,96 @@ package GL.Objects.Framebuffers is
    overriding
    procedure Delete_Id (Object : in out Framebuffer);
 
+   procedure Set_Active_Buffer (Object   : Framebuffer;
+                                Selector : Buffers.Color_Buffer_Selector)
+     with Pre => (if Object = Default_Framebuffer then
+                    Selector in Buffers.Default_Color_Buffer_Selector
+                  else
+                    Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
+
+   procedure Set_Active_Buffers (Object : Framebuffer;
+                                 List   : Buffers.Color_Buffer_List)
+     with Pre => (if Object = Default_Framebuffer then
+                    (for all S of List => S in Buffers.Default_Color_Buffer_Selector)
+                  else
+                    (for all S of List => S in Buffers.Explicit_Color_Buffer_Selector | Buffers.None));
+
+   procedure Set_Read_Buffer (Object : Framebuffer; Selector : Buffers.Color_Buffer_Selector)
+     with Pre => (if Object = Default_Framebuffer then
+                    Selector in Buffers.Default_Color_Buffer_Selector
+                  else
+                    Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
+
+   function Status (Object : Framebuffer) return Framebuffer_Status;
+
+   procedure Attach_Renderbuffer (Object : Framebuffer; Attachment : Attachment_Point;
+                                  Render_Object : Renderbuffers.Renderbuffer'Class);
+
+   procedure Attach_Texture (Object : Framebuffer;
+                             Attachment : Attachment_Point;
+                             Texture_Object : Textures.Texture'Class;
+                             Level : Textures.Mipmap_Level);
+
+   procedure Attach_Texture_Layer (Object : Framebuffer;
+                             Attachment : Attachment_Point;
+                             Texture_Object : Textures.Texture'Class;
+                             Level : Textures.Mipmap_Level;
+                             Layer : Natural);
+
+   procedure Invalidate_Data (Object : Framebuffer;
+                              Attachments : Attachment_List);
+
+   procedure Invalidate_Sub_Data (Object        : Framebuffer;
+                                  Attachments   : Attachment_List;
+                                  X, Y          : Int;
+                                  Width, Height : Size);
+
+   procedure Set_Default_Width   (Object : Framebuffer; Value : Size);
+   procedure Set_Default_Height  (Object : Framebuffer; Value : Size);
+   procedure Set_Default_Layers  (Object : Framebuffer; Value : Size);
+   procedure Set_Default_Samples (Object : Framebuffer; Value : Size);
+
+   function Default_Width   (Object : Framebuffer) return Size;
+   function Default_Height  (Object : Framebuffer) return Size;
+   function Default_Layers  (Object : Framebuffer) return Size;
+   function Default_Samples (Object : Framebuffer) return Size;
+
+   function Max_Framebuffer_Width   return Size;
+   function Max_Framebuffer_Height  return Size;
+   function Max_Framebuffer_Layers  return Size;
+   function Max_Framebuffer_Samples return Size;
+
+   procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
+   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;
+
+   procedure Blit (Read_Object, Draw_Object : Framebuffer;
+                   Src_X0, Src_Y0, Src_X1, Src_Y1,
+                   Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;
+                   Mask : Buffers.Buffer_Bits;
+                   Filter : Textures.Magnifying_Function);
+   --  Copy a rectangle of pixels in Read_Object framebuffer to a region
+   --  in Draw_Object framebuffer
+
+   procedure Clear_Color_Buffer (Object : Framebuffer;
+                                 Index  : Buffers.Draw_Buffer_Index;
+                                 Value  : Colors.Color);
+
+   procedure Clear_Depth_Buffer   (Object : Framebuffer; Value : Buffers.Depth);
+   procedure Clear_Stencil_Buffer (Object : Framebuffer; Value : Buffers.Stencil_Index);
+
+   procedure Clear_Depth_And_Stencil_Buffer (Object : Framebuffer;
+                                             Depth_Value   : Buffers.Depth;
+                                             Stencil_Value : Buffers.Stencil_Index);
+
+   type Framebuffer_Target (<>) is tagged limited private;
+
    procedure Bind (Target : Framebuffer_Target;
                    Object : Framebuffer'Class);
 
    function Current (Target : Framebuffer_Target) return Framebuffer'Class;
 
    Read_Target  : constant Framebuffer_Target;
-   Draw_Target : constant Framebuffer_Target;
+   Draw_Target  : constant Framebuffer_Target;
    Read_And_Draw_Target : constant Framebuffer_Target;
 
    Default_Framebuffer : constant Framebuffer;

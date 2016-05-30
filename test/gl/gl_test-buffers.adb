@@ -313,11 +313,11 @@ begin
 
    -- Attach color texture to frame buffer
    Load_Color_Texture (Color_Texture);
-   GL.Objects.Framebuffers.Draw_Target.Attach_Texture (GL.Objects.Framebuffers.Color_Attachment_0, Color_Texture, 0);
+   FB.Attach_Texture (GL.Objects.Framebuffers.Color_Attachment_0, Color_Texture, 0);
 
    -- Create render buffer object for depth and stencil buffers
    RB.Allocate (GL.Pixels.Depth24_Stencil8, 500, 500);
-   GL.Objects.Framebuffers.Draw_Target.Attach_Renderbuffer (GL.Objects.Framebuffers.Depth_Stencil_Attachment, RB);
+   FB.Attach_Renderbuffer (GL.Objects.Framebuffers.Depth_Stencil_Attachment, RB);
 
    Ada.Text_IO.Put_Line ("Loaded textures and buffers");
 
