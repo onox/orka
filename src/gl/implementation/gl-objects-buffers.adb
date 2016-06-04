@@ -353,9 +353,11 @@ package body GL.Objects.Buffers is
    end Initialize_Id;
 
    overriding procedure Delete_Id (Object : in out Buffer) is
+      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
-      API.Delete_Buffers (1, (1 => Object.Reference.GL_Id));
+      API.Delete_Buffers (1, Arr);
       Raise_Exception_On_OpenGL_Error;
+      Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
    

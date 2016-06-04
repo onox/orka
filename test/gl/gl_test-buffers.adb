@@ -21,18 +21,19 @@ with Ada.Text_IO;
 with GL.Attributes;
 with GL.Buffers;
 with GL.Files;
+with GL.Low_Level.Enums;
 with GL.Pixels;
 with GL.Objects.Buffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Vertex_Arrays;
-with GL.Objects.Textures.Targets;
+with GL.Objects.Textures;
 with GL.Objects.Framebuffers;
 with GL.Objects.Renderbuffers;
 with GL.Types;
 with GL.Toggles;
-with GL.Window;
 with GL.Transforms;
+with GL.Window;
 
 with GL_Test.Display_Backend;
 
@@ -190,10 +191,8 @@ procedure GL_Test.Buffers is
       end if;
    end Load_Shaders;
 
-   procedure Load_Texture (Texture : GL.Objects.Textures.Texture) is
+   procedure Load_Texture (Texture : GL.Objects.Textures.Texture_2D) is
       use GL.Objects.Textures;
-      use GL.Objects.Textures.Targets;
-      use GL.Pixels;
 
       Pixels : constant Single_Array
         := (0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
@@ -201,31 +200,29 @@ procedure GL_Test.Buffers is
             0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1);
    begin
-      Texture_2D.Bind (Texture);
+      Texture.Bind_Texture_Unit (0);
 
-      Texture_2D.Set_X_Wrapping (Clamp_To_Edge);
-      Texture_2D.Set_Y_Wrapping (Clamp_To_Edge);
+      Texture.Set_X_Wrapping (Clamp_To_Edge);
+      Texture.Set_Y_Wrapping (Clamp_To_Edge);
 
-      Texture_2D.Set_Minifying_Filter (Nearest);
-      Texture_2D.Set_Magnifying_Filter (Nearest);
+      Texture.Set_Minifying_Filter (Nearest);
+      Texture.Set_Magnifying_Filter (Nearest);
 
-      -- Load texture data
-      Texture_2D_Target.Load_From_Data
-        (Texture_2D, 0, GL.Pixels.Internal_Format'(GL.Pixels.RGB),
-         4, 4, GL.Pixels.Format'(GL.Pixels.RGB), GL.Pixels.Float, Pixels'Address);
+      --  Load texture data
+      Texture.Allocate_Storage (1, GL.Pixels.RGB32F, 4, 4);
+      Texture.Load_From_Data (0, 0, 0, 4, 4, GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   procedure Load_Color_Texture (Texture : GL.Objects.Textures.Texture) is
+   procedure Load_Color_Texture (Texture : GL.Objects.Textures.Texture_2D) is
       use GL.Objects.Textures;
-      use GL.Objects.Textures.Targets;
-      use GL.Pixels;
    begin
-      Texture_2D.Bind (Texture);
+      Texture.Bind_Texture_Unit (0);
 
-      Texture_2D.Set_Minifying_Filter (Nearest);
-      Texture_2D.Set_Magnifying_Filter (Nearest);
+      Texture.Set_Minifying_Filter (Nearest);
+      Texture.Set_Magnifying_Filter (Nearest);
 
-      Texture_2D.Load_Empty_Texture (0, GL.Pixels.RGB, 500, 500);
+      Texture.Allocate_Storage (1, GL.Pixels.RGB8, 500, 500);
+      Texture.Load_Empty_Texture (0, 0, 0, 500, 500);
    end Load_Color_Texture;
 
    Scene_Vertex_Shader   : GL.Objects.Shaders.Shader
@@ -243,7 +240,7 @@ procedure GL_Test.Buffers is
    Vector_Buffer_Cube, Vector_Buffer_Quad : GL.Objects.Buffers.Buffer;
    Array_Cube, Array_Quad : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 
-   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture;
+   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture_2D;
    FB : GL.Objects.Framebuffers.Framebuffer;
    RB : GL.Objects.Renderbuffers.Renderbuffer;
 
@@ -260,33 +257,33 @@ begin
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
 
-   -- Generate shaders and program for scene
+   --  Generate shaders and program for scene
    Scene_Vertex_Shader.Initialize_Id;
    Scene_Fragment_Shader.Initialize_Id;
    Scene_Program.Initialize_Id;
 
-   -- Generate shaders and program for post-processing
+   --  Generate shaders and program for post-processing
    Screen_Vertex_Shader.Initialize_Id;
    Screen_Fragment_Shader.Initialize_Id;
    Screen_Program.Initialize_Id;
 
-   -- Generate Vertex Buffer Objects
+   --  Generate Vertex Buffer Objects
    Vector_Buffer_Cube.Initialize_Id;
    Vector_Buffer_Quad.Initialize_Id;
 
-   -- Generate Vertex Array Objects
+   --  Generate Vertex Array Objects
    Array_Cube.Initialize_Id;
    Array_Quad.Initialize_Id;
 
-   -- Generate texture and frame/render buffers
-   Scene_Texture.Initialize_Id;
-   Color_Texture.Initialize_Id;
+   --  Generate texture and frame/render buffers
+   Scene_Texture.Initialize_Id (GL.Low_Level.Enums.Texture_2D);
+   Color_Texture.Initialize_Id (GL.Low_Level.Enums.Texture_2D);
    FB.Initialize_Id;
    RB.Initialize_Id;
 
    Ada.Text_IO.Put_Line ("Initialized objects");
 
-   -- Compile shaders and attach them to the programs
+   --  Compile shaders and attach them to the programs
    Load_Shaders (Scene_Vertex_Source, Scene_Fragment_Source,
                  Scene_Vertex_Shader, Scene_Fragment_Shader, Scene_Program);
    Load_Shaders (Screen_Vertex_Source, Screen_Fragment_Source,
@@ -294,25 +291,20 @@ begin
 
    Ada.Text_IO.Put_Line ("Loaded shaders");
 
-   -- Upload vertices to GPU
+   --  Upload vertices to GPU
    Load_Scene_Data (Array_Cube, Vector_Buffer_Cube, Scene_Program);
    Load_Screen_Data (Array_Quad, Vector_Buffer_Quad, Screen_Program);
 
    Ada.Text_IO.Put_Line ("Loaded data");
 
-   -- Load checkerboard texture
-   GL.Objects.Textures.Set_Active_Unit (0);
+   --  Load checkerboard texture
    Load_Texture (Scene_Texture);
+   Load_Color_Texture (Color_Texture);
 
-   -- Use post-processing program
-   Screen_Program.Use_Program;
+   --  Use post-processing program
    Screen_Program.Uniform_Location ("texFrameBuffer").Set_Int (0);
 
-   -- Create frame buffer
-   GL.Objects.Framebuffers.Draw_Target.Bind (FB);
-
    -- Attach color texture to frame buffer
-   Load_Color_Texture (Color_Texture);
    FB.Attach_Texture (GL.Objects.Framebuffers.Color_Attachment_0, Color_Texture, 0);
 
    -- Create render buffer object for depth and stencil buffers
@@ -325,8 +317,7 @@ begin
    Uni_View  := Scene_Program.Uniform_Location ("view");
    Uni_Proj  := Scene_Program.Uniform_Location ("proj");
 
-   Uni_Color := Scene_Program.Uniform_Location ("overrideColor");
-
+   Uni_Color  := Scene_Program.Uniform_Location ("overrideColor");
    Uni_Effect := Screen_Program.Uniform_Location ("effect");
 
    Ada.Text_IO.Put_Line ("Loaded uniforms");
@@ -355,43 +346,43 @@ begin
          end if;
          Mouse_Z := Single (Display_Backend.Get_Zoom_Distance);
 
-         -- Model matrix
+         --  Model matrix
          Matrix_Model := Singles.Identity4;
 
-         -- View matrix
+         --  View matrix
          Matrix_View := Singles.Identity4;
 
          Translate (Matrix_View, (0.0, 0.0, -Mouse_Z));
          Rotate_X (Matrix_View, Mouse_Y);
          Rotate_Z (Matrix_View, Mouse_X);
 
-         -- Projection matrix
+         --  Projection matrix
          Matrix_Proj := Perspective (45.0, 1.0, 0.1, 20.0);
 
-         -- Bind frame buffer and draw 3D scene
+         --  Set uniforms
+         Uni_Model.Set_Single_Matrix (Matrix_Model);
+         Uni_View.Set_Single_Matrix (Matrix_View);
+         Uni_Proj.Set_Single_Matrix (Matrix_Proj);
+         Uni_Effect.Set_Int (Int (Display_Backend.Get_Effect (5)));
+
+         --  Bind frame buffer and draw 3D scene
          GL.Objects.Framebuffers.Draw_Target.Bind (FB);
          Array_Cube.Bind;
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
-         Scene_Program.Use_Program;
 
-         GL.Objects.Textures.Set_Active_Unit (0);
-         GL.Objects.Textures.Targets.Texture_2D.Bind (Scene_Texture);
+         Scene_Program.Use_Program;
+         Scene_Texture.Bind_Texture_Unit (0);
 
          GL.Window.Set_Viewport (GL.Types.Int'(0), GL.Types.Int'(0), GL.Types.Int (Width), GL.Types.Int (Height));
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
-         -- Set uniforms
-         Uni_Model.Set_Single_Matrix (Matrix_Model);
-         Uni_View.Set_Single_Matrix (Matrix_View);
-         Uni_Proj.Set_Single_Matrix (Matrix_Proj);
-
-         -- Draw cube
+         --  Draw cube
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
 
-         -- Draw floor
-         GL.Toggles.Enable (GL.Toggles.Stencil_Test);
-
          ---------------------------------------------------------------
+
+         --  Draw floor
+         GL.Toggles.Enable (GL.Toggles.Stencil_Test);
 
          Set_Stencil_Function (Always, 1, 16#FF#);  -- Set any stencil to 1
          Set_Stencil_Operation (Keep, Keep, Replace);
@@ -405,37 +396,33 @@ begin
          Set_Stencil_Mask (16#00#);  -- Don't write anything to stencil buffer
          Depth_Mask (True);
 
-         -- Start drawing reflection cube
+         --  Start drawing reflection cube
          Translate (Matrix_Model, (0.0, 0.0, -1.0));
          Scale (Matrix_Model, (1.0, 1.0, -1.0));
 
          Uni_Model.Set_Single_Matrix (Matrix_Model);
          Uni_Color.Set_Singles (0.3, 0.3, 0.3);
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
-         -- End drawing reflection cube
+         --  End drawing reflection cube
 
          Uni_Color.Set_Singles (1.0, 1.0, 1.0);
 
-         ---------------------------------------------------------------
-
          GL.Toggles.Disable (GL.Toggles.Stencil_Test);
 
-         -- Bind default frame buffer
+         ---------------------------------------------------------------
+
+         --  Bind default frame buffer
          GL.Objects.Framebuffers.Draw_Target.Bind (GL.Objects.Framebuffers.Default_Framebuffer);
 
          Array_Quad.Bind;
          GL.Toggles.Disable (GL.Toggles.Depth_Test);
+
          Screen_Program.Use_Program;
-
-         -- Set uniforms
-         Uni_Effect.Set_Int (Int (Display_Backend.Get_Effect (5)));
-
-         GL.Objects.Textures.Set_Active_Unit (0);
-         GL.Objects.Textures.Targets.Texture_2D.Bind (Color_Texture);
+         Color_Texture.Bind_Texture_Unit (0);
 
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 6);
 
-         -- Swap front and back buffers and process events
+         --  Swap front and back buffers and process events
          Display_Backend.Swap_Buffers;
          Display_Backend.Poll_Events;
       end loop;

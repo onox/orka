@@ -22,6 +22,7 @@ package GL.Low_Level.Enums is
    
    type Texture_Kind is (Texture_1D, Texture_2D, Proxy_Texture_1D,
                          Proxy_Texture_2D, Texture_3D, Proxy_Texture_3D,
+                         Texture_Rectangle, Proxy_Texture_Rectangle,
                          Texture_Cube_Map, Texture_Cube_Map_Positive_X,
                          Texture_Cube_Map_Negative_X,
                          Texture_Cube_Map_Positive_Y,
@@ -31,8 +32,18 @@ package GL.Low_Level.Enums is
                          Proxy_Texture_Cube_Map,
                          Texture_1D_Array,
                          Proxy_Texture_1D_Array, Texture_2D_Array,
-                         Proxy_Texture_2D_Array, Texture_Buffer);
-   
+                         Proxy_Texture_2D_Array, Texture_Buffer,
+                         Texture_2D_Multisample,
+                         Proxy_Texture_2D_Multisample,
+                         Texture_2D_Multisample_Array,
+                         Proxy_Texture_2D_Multisample_Array);
+
+   type Non_Proxy_Texture_Kind is (Texture_1D, Texture_2D, Texture_3D,
+                                   Texture_Rectangle, Texture_Cube_Map,
+                                   Texture_1D_Array, Texture_2D_Array,
+                                   Texture_Buffer, Texture_Cube_Map_Array,
+                                   Texture_2D_Multisample, Texture_2D_Multisample_Array);
+
    type Renderbuffer_Kind is (Renderbuffer);
    
    type Framebuffer_Kind is (Read, Draw, Read_Draw);
@@ -60,6 +71,8 @@ private
                          Proxy_Texture_2D => 16#8064#,
                          Texture_3D       => 16#806F#,
                          Proxy_Texture_3D => 16#8070#,
+                         Texture_Rectangle       => 16#84F5#,
+                         Proxy_Texture_Rectangle => 16#84F7#,
                          Texture_Cube_Map => 16#8513#,
                          Texture_Cube_Map_Positive_X => 16#8515#,
                          Texture_Cube_Map_Negative_X => 16#8516#,
@@ -72,9 +85,26 @@ private
                          Proxy_Texture_1D_Array => 16#8C19#,
                          Texture_2D_Array       => 16#8C1A#,
                          Proxy_Texture_2D_Array => 16#8C1B#,
-                         Texture_Buffer         => 16#8C2A#);
+                         Texture_Buffer         => 16#8C2A#,
+                         Texture_2D_Multisample => 16#9100#,
+                         Proxy_Texture_2D_Multisample => 16#9101#,
+                         Texture_2D_Multisample_Array => 16#9102#,
+                         Proxy_Texture_2D_Multisample_Array => 16#9103#);
    for Texture_Kind'Size use Enum'Size;
-   
+
+   for Non_Proxy_Texture_Kind use (Texture_1D                   => 16#0DE0#,
+                                   Texture_2D                   => 16#0DE1#,
+                                   Texture_3D                   => 16#806F#,
+                                   Texture_Rectangle            => 16#84F5#,
+                                   Texture_Cube_Map             => 16#8513#,
+                                   Texture_1D_Array             => 16#8C18#,
+                                   Texture_2D_Array             => 16#8C1A#,
+                                   Texture_Buffer               => 16#8C2A#,
+                                   Texture_Cube_Map_Array       => 16#9009#,
+                                   Texture_2D_Multisample       => 16#9100#,
+                                   Texture_2D_Multisample_Array => 16#9102#);
+   for Non_Proxy_Texture_Kind'Size use Enum'Size;
+
    for Renderbuffer_Kind use (Renderbuffer => 16#8D41#);
    for Renderbuffer_Kind'Size use Enum'Size;
    
