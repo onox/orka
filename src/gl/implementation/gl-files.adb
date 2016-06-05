@@ -14,8 +14,7 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
-with Ada.Directories;
-with Ada.Direct_IO;
+with Ada.Streams.Stream_IO;
 
 with Interfaces.C.Strings;
 
@@ -25,30 +24,38 @@ with GL.Types;
 
 package body GL.Files is
    use GL.Types;
-   
+
    procedure Read_Whole_File (File_Name : String;
                               File_Size : out Int;
                               Contents  : out C.Strings.chars_ptr) is
+      File   : Ada.Streams.Stream_IO.File_Type;
+      Stream : Ada.Streams.Stream_IO.Stream_Access;
    begin
-      File_Size := Int (Ada.Directories.Size (File_Name));
+      Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, File_Name);
+      File_Size := Int (Ada.Streams.Stream_IO.Size (File));
+
       declare
-         -- File string *without* null termination
          subtype File_String is C.char_array (1 .. C.size_t (File_Size));
-         
-         package File_String_IO is new Ada.Direct_IO (File_String);
-         
-         File         : File_String_IO.File_Type;
-         Raw_Contents : constant C.Strings.char_array_access
-           := new C.char_array (1 .. C.size_t (File_Size + 1));
+
+         C_File_Size : constant C.size_t := C.size_t (File_Size);
+         use type Interfaces.C.size_t;
+
+         --  Increase size by 1 for Nul character at the end
+         Raw_Contents : C.char_array (1 .. C_File_Size + 1);
       begin
-         File_String_IO.Open (File, Mode => File_String_IO.In_File,
-                                    Name => File_Name);
-         File_String_IO.Read (File,
-                              Item => Raw_Contents.all (1 .. C.size_t (File_Size)));
-         File_String_IO.Close (File);
-         
-         Raw_Contents.all (C.size_t (File_Size + 1)) := C.nul;
-         Contents := C.Strings.To_Chars_Ptr (Raw_Contents, False);
+         --  Read the file and write to Raw_Contents (excluding the Nul
+         --  character at the end of the array)
+         Stream := Ada.Streams.Stream_IO.Stream (File);
+         File_String'Read (Stream, Raw_Contents (1 .. C_File_Size));
+
+         Raw_Contents (C_File_Size + 1) := C.nul;
+         Contents := C.Strings.New_Char_Array (Raw_Contents);
+
+         Ada.Streams.Stream_IO.Close (File);
+      exception
+         when others =>
+            Ada.Streams.Stream_IO.Close (File);
+            raise;
       end;
    end Read_Whole_File;
 
@@ -56,10 +63,10 @@ package body GL.Files is
                                            File_Name : String) is
       Sources : Low_Level.CharPtr_Array (1 .. 1);
       Sizes   : Low_Level.Int_Array (1 .. 1);
-     
    begin
       Read_Whole_File (File_Name, Sizes (1), Sources (1));
       API.Shader_Source (Object.Raw_Id, 1, Sources, Sizes);
+      C.Strings.Free (Sources (1));
       Raise_Exception_On_OpenGL_Error;
    end Load_Shader_Source_From_File;
 

@@ -19,8 +19,9 @@ with GL.Objects.Shaders;
 -- This package is an addition to the original OpenGL API and simplifies
 -- the handling of ressources located in files, like shader sources.
 package GL.Files is
-   
+   pragma Preelaborate;
+
    procedure Load_Shader_Source_From_File (Object : Objects.Shaders.Shader;
                                            File_Name : String);
-   
+
 end GL.Files;
