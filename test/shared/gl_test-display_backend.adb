@@ -122,12 +122,6 @@ package body GL_Test.Display_Backend is
       Glfw.Errors.Set_Callback (Print_Error'Access);
    end Enable_Print_Errors;
 
-   procedure Init is
-   begin
-      Enable_Print_Errors;
-      Glfw.Init;
-   end Init;
-
    procedure Open_Window (Width, Height : Natural; Visible : Boolean := True; Depth_Bits : Natural := 0) is
    begin
       if not Main_Window.Initialized then
@@ -156,15 +150,11 @@ package body GL_Test.Display_Backend is
       return Glfw.Windows.Window (Main_Window.all)'Access;
    end Get_Window;
 
-   procedure Swap_Buffers is
+   procedure Swap_Buffers_And_Poll_Events is
    begin
       Glfw.Windows.Context.Swap_Buffers (Main_Window);
-   end Swap_Buffers;
-
-   procedure Poll_Events is
-   begin
       Glfw.Input.Poll_Events;
-   end Poll_Events;
+   end Swap_Buffers_And_Poll_Events;
 
    procedure Set_Window_Title (Value : String) is
    begin
@@ -178,15 +168,15 @@ package body GL_Test.Display_Backend is
 
    procedure Shutdown renames Glfw.Shutdown;
 
-   procedure Configure_Minimum_OpenGL_Version (Major, Minor : Natural) is
+   procedure Init (Major, Minor : Natural) is
    begin
+      Enable_Print_Errors;
+      Glfw.Init;
+
       Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
-      -- needed for OSX
-      if Major >= 3 then
-         Glfw.Windows.Hints.Set_Forward_Compat (True);
-         Glfw.Windows.Hints.Set_Profile (Glfw.Windows.Context.Core_Profile);
-      end if;
-   end Configure_Minimum_OpenGL_Version;
+      Glfw.Windows.Hints.Set_Forward_Compat (True);
+      Glfw.Windows.Hints.Set_Profile (Glfw.Windows.Context.Core_Profile);
+   end Init;
 
    procedure Set_Not_Resizable is
    begin

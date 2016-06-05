@@ -251,8 +251,7 @@ procedure GL_Test.Buffers is
    Screen_Vertex_Source   : constant String := "../test/gl/shaders/buffers_screen.vert";
    Screen_Fragment_Source : constant String := "../test/gl/shaders/buffers_screen.frag";
 begin
-   Display_Backend.Init;
-   Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
+   Display_Backend.Init (Major => 3, Minor => 2);
    Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
@@ -423,8 +422,7 @@ begin
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 6);
 
          --  Swap front and back buffers and process events
-         Display_Backend.Swap_Buffers;
-         Display_Backend.Poll_Events;
+         Display_Backend.Swap_Buffers_And_Poll_Events;
       end loop;
    end;
 

@@ -120,8 +120,7 @@ procedure GL_Test.Transform_Feedback is
    Feedback_Output : aliased String := "out_value";
    Feedback_Outputs : constant String_Array := (1 => Feedback_Output'Unchecked_Access);
 begin
-   Display_Backend.Init;
-   Display_Backend.Configure_Minimum_OpenGL_Version (Major => 4, Minor => 0);
+   Display_Backend.Init (Major => 4, Minor => 0);
    Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500, Visible => False);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");

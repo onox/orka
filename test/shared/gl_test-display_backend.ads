@@ -21,18 +21,14 @@ private with Glfw.Input.Mouse;
 
 package GL_Test.Display_Backend is
 
-   -- Only exposes most basic functionality, not intended for usage
-   -- outside tests.
-
-   procedure Init;
+   --  Only exposes most basic functionality, not intended for usage
+   --  outside tests.
 
    procedure Open_Window (Width, Height : Natural; Visible : Boolean := True; Depth_Bits : Natural := 0);
 
    function Get_Window return Glfw.Windows.Window_Reference;
 
-   procedure Swap_Buffers;
-
-   procedure Poll_Events;
+   procedure Swap_Buffers_And_Poll_Events;
 
    procedure Set_Window_Title (Value : String);
 
@@ -40,7 +36,8 @@ package GL_Test.Display_Backend is
 
    procedure Shutdown;
 
-   procedure Configure_Minimum_OpenGL_Version (Major, Minor : Natural);
+   procedure Init (Major, Minor : Natural)
+     with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
    procedure Set_Not_Resizable;
 

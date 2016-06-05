@@ -129,8 +129,7 @@ procedure GL_Test.Geometry is
    Geometry_Source  : constant String := "../test/gl/shaders/geometry.geom";
    Fragment_Source  : constant String := "../test/gl/shaders/geometry.frag";
 begin
-   Display_Backend.Init;
-   Display_Backend.Configure_Minimum_OpenGL_Version (Major => 3, Minor => 2);
+   Display_Backend.Init (Major => 3, Minor => 2);
    Display_Backend.Set_Not_Resizable;
 
    Display_Backend.Open_Window (Width => 500, Height => 500);
@@ -166,8 +165,7 @@ begin
       GL.Objects.Vertex_Arrays.Draw_Arrays (Points, 0, 4);
 
       -- Swap front and back buffers and process events
-      Display_Backend.Swap_Buffers;
-      Display_Backend.Poll_Events;
+      Display_Backend.Swap_Buffers_And_Poll_Events;
    end loop;
 
    Display_Backend.Shutdown;

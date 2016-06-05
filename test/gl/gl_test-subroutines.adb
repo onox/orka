@@ -113,8 +113,7 @@ procedure GL_Test.Subroutines is
    Triangle_VBO : GL.Objects.Buffers.Buffer;
    Triangle_VAO : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
-   Display_Backend.Init;
-   Display_Backend.Configure_Minimum_OpenGL_Version (Major => 4, Minor => 0);
+   Display_Backend.Init (Major => 4, Minor => 0);
    Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
@@ -175,8 +174,7 @@ begin
          GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
 
          -- Swap front and back buffers and process events
-         Display_Backend.Swap_Buffers;
-         Display_Backend.Poll_Events;
+         Display_Backend.Swap_Buffers_And_Poll_Events;
       end loop;
    end;
 
