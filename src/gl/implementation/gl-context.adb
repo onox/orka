@@ -14,7 +14,6 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
-with Ada.Strings.Fixed;
 with Interfaces.C.Strings;
 
 with GL.API;
@@ -60,43 +59,18 @@ package body GL.Context is
       Count : aliased Int;
    begin
       API.Get_Integer (Enums.Getter.Num_Extensions, Count'Access);
-      if API.Get_Error = Errors.No_Error then
-         -- we are on OpenGL 3
-         return List : String_List (1 .. Positive (Count)) do
-            for I in List'Range loop
-               List (I) := To_Unbounded_String
-                 (C.Strings.Value (API.Get_String_I
-                                   (Enums.Getter.Extensions, UInt (I - 1))));
-            end loop;
-         end return;
-      else
-         -- OpenGL 2 fallback
-         declare
-            Raw : constant String := C.Strings.Value
-              (API.Get_String (Enums.Getter.Extensions));
-            Cur_Pos : Positive := Raw'First;
-            Next_Space : Natural;
-         begin
-            if Raw'Length = 0 then
-               return Null_String_List;
-            end if;
+      Raise_Exception_On_OpenGL_Error;
 
-            return List : String_List
-              (1 .. Ada.Strings.Fixed.Count (Raw, " ") + 1)
-            do
-               for I in List'Range loop
-                  Next_Space := Ada.Strings.Fixed.Index (Raw, " ", Cur_Pos);
-                  if Next_Space = 0 then
-                     -- this is the last token, there is no space behind it.
-                     Next_Space := Raw'Last + 1;
-                  end if;
-                  List (I) := To_Unbounded_String
-                    (Raw (Cur_Pos .. Next_Space - 1));
-                  Cur_Pos := Next_Space + 1;
-               end loop;
-            end return;
-         end;
-      end if;
+      pragma Assert (API.Get_Error = Errors.No_Error);
+      --  We are on OpenGL 3
+
+      return List : String_List (1 .. Positive (Count)) do
+         for I in List'Range loop
+            List (I) := To_Unbounded_String
+              (C.Strings.Value (API.Get_String_I
+                                (Enums.Getter.Extensions, UInt (I - 1))));
+         end loop;
+      end return;
    end Extensions;
 
    function Has_Extension (Name : String) return Boolean is
@@ -104,41 +78,21 @@ package body GL.Context is
       Count : aliased Int;
    begin
       API.Get_Integer (Enums.Getter.Num_Extensions, Count'Access);
-      if API.Get_Error = Errors.No_Error then
-         -- we are on OpenGL 3
-         for I in 1 .. Count loop
-            declare
-               Extension : constant String := C.Strings.Value
-                 (API.Get_String_I (Enums.Getter.Extensions, UInt (I - 1)));
-            begin
-               if Extension = Name then
-                  return True;
-               end if;
-            end;
-         end loop;
-      else
-         -- OpenGL 2 fallback
+      Raise_Exception_On_OpenGL_Error;
+
+      pragma Assert (API.Get_Error = Errors.No_Error);
+      --  We are on OpenGL 3
+
+      for I in 1 .. Count loop
          declare
-            Raw : constant String := C.Strings.Value
-              (API.Get_String (Enums.Getter.Extensions));
-            Cur_Pos : Positive := Raw'First;
-            Next_Space : Natural;
+            Extension : constant String := C.Strings.Value
+              (API.Get_String_I (Enums.Getter.Extensions, UInt (I - 1)));
          begin
-            if Raw'Length = 0 then
-               return False;
+            if Extension = Name then
+               return True;
             end if;
-            for I in 1 .. Ada.Strings.Fixed.Count (Raw, " ") + 1 loop
-               Next_Space := Ada.Strings.Fixed.Index (Raw, " ", Cur_Pos);
-               if Next_Space = 0 then
-                  Next_Space := Raw'Last + 1;
-               end if;
-               if Raw (Cur_Pos .. Next_Space - 1) = Name then
-                  return True;
-               end if;
-               Cur_Pos := Next_Space + 1;
-            end loop;
          end;
-      end if;
+      end loop;
       return False;
    end Has_Extension;
 

@@ -28,24 +28,23 @@ package GL.Context is
 
    Null_String_List : constant String_List := (2 .. 1 => <>);
 
-   -- these two require OpenGL 3:
    function Major_Version return Int;
    function Minor_Version return Int;
+   --  These two require OpenGL 3
 
-   -- legacy (deprecated in OpenGL 3)
    function Version_String return String;
+   --  Legacy (deprecated in OpenGL 3)
 
    function Vendor return String;
-
    function Renderer return String;
 
-   -- uses OpenGL 3 interface if available, otherwise old interface
    function Extensions return String_List;
    function Has_Extension (Name : String) return Boolean;
+   --  Uses OpenGL 3 interface if available, otherwise old interface
 
    function Primary_Shading_Language_Version return String;
 
-   -- available since OpenGL 4.3:
    function Supported_Shading_Language_Versions return String_List;
    function Supports_Shading_Language_Version (Name : String) return Boolean;
+   --  Available since OpenGL 4.3
 end GL.Context;
