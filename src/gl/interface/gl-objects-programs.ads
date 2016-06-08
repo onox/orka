@@ -68,6 +68,8 @@ package GL.Objects.Programs is
    overriding
    procedure Delete_Id (Object : in out Program);
 
+   Attribute_Inactive_Error : exception;
+
    -----------------------------------------------------------------------------
    --                               Subroutines                               --
    -----------------------------------------------------------------------------

@@ -822,7 +822,7 @@ private package GL.API is
      ("glBindAttribLocation", UInt, Attributes.Attribute, C.char_array);
 
    function Get_Attrib_Location is new Loader.Function_With_2_Params
-     ("glGetAttribLocation", UInt, C.char_array, Attributes.Attribute);
+     ("glGetAttribLocation", UInt, C.char_array, Int);
 
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);

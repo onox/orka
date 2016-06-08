@@ -58,6 +58,7 @@ package body GL.Objects.Shaders is
    procedure Compile (Subject : Shader) is
    begin
       API.Compile_Shader (Subject.Reference.GL_Id);
+      Raise_Exception_On_OpenGL_Error;
    end Compile;
 
    procedure Release_Shader_Compiler renames API.Release_Shader_Compiler;

@@ -170,11 +170,14 @@ package body GL.Objects.Programs is
 
    function Attrib_Location (Subject : Program; Name : String)
      return Attributes.Attribute is
-      Location : constant Attributes.Attribute := API.Get_Attrib_Location
+      Location : constant Int := API.Get_Attrib_Location
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
-      return Location;
+      if Location = -1 then
+         raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
+      end if;
+      return Attributes.Attribute (Location);
    end Attrib_Location;
 
    function Attached_Shaders (Object : Program) return Shaders.Lists.List is
