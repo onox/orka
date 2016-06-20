@@ -20,6 +20,7 @@ with Ada.Text_IO;
 
 with GL.Attributes;
 with GL.Buffers;
+with GL.Drawing;
 with GL.Files;
 with GL.Low_Level.Enums;
 with GL.Pixels;
@@ -376,7 +377,7 @@ begin
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
          --  Draw cube
-         GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
+         GL.Drawing.Draw_Arrays (Triangles, 0, 30);
 
          ---------------------------------------------------------------
 
@@ -389,7 +390,7 @@ begin
 
          Depth_Mask (False);
          Clear (Buffer_Bits'(Stencil => True, others => False));
-         GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 30, 6);
+         GL.Drawing.Draw_Arrays (Triangles, 30, 6);
 
          Set_Stencil_Function (Equal, 1, 16#FF#);  -- Pass test if stencil value is 1
          Set_Stencil_Mask (16#00#);  -- Don't write anything to stencil buffer
@@ -401,7 +402,7 @@ begin
 
          Uni_Model.Set_Single_Matrix (Matrix_Model);
          Uni_Color.Set_Singles (0.3, 0.3, 0.3);
-         GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 30);
+         GL.Drawing.Draw_Arrays (Triangles, 0, 30);
          --  End drawing reflection cube
 
          Uni_Color.Set_Singles (1.0, 1.0, 1.0);
@@ -419,7 +420,7 @@ begin
          Screen_Program.Use_Program;
          Color_Texture.Bind_Texture_Unit (0);
 
-         GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 6);
+         GL.Drawing.Draw_Arrays (Triangles, 0, 6);
 
          --  Swap front and back buffers and process events
          Display_Backend.Swap_Buffers_And_Poll_Events;

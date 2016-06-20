@@ -1,4 +1,6 @@
-#version 400 core
+#version 330 core
+
+#extension GL_ARB_shader_subroutine : require
 
 in  vec3 in_Position;
 in  vec3 in_Color;

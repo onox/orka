@@ -17,6 +17,7 @@
 with Ada.Text_IO;
 
 with GL.Attributes;
+with GL.Drawing;
 with GL.Files;
 with GL.Objects.Buffers;
 with GL.Objects.Shaders;
@@ -120,7 +121,7 @@ procedure GL_Test.Transform_Feedback is
    Feedback_Output : aliased String := "out_value";
    Feedback_Outputs : constant String_Array := (1 => Feedback_Output'Unchecked_Access);
 begin
-   Display_Backend.Init (Major => 4, Minor => 0);
+   Display_Backend.Init (Major => 3, Minor => 2);
    Display_Backend.Set_Not_Resizable;
    Display_Backend.Open_Window (Width => 500, Height => 500, Visible => False);
    Ada.Text_IO.Put_Line ("Initialized GLFW window");
@@ -169,7 +170,7 @@ begin
       F : Active_Feedback'Class := Feedback.Begin_Feedback (Triangles);
       pragma Warnings (Off, F);
    begin
-      GL.Objects.Vertex_Arrays.Draw_Arrays (Points, 0, 5);
+      GL.Drawing.Draw_Arrays (Points, 0, 5);
    end;
 
    GL.Toggles.Disable (GL.Toggles.Rasterizer_Discard);

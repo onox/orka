@@ -17,6 +17,7 @@
 with Ada.Text_IO;
 
 with GL.Attributes;
+with GL.Drawing;
 with GL.Files;
 with GL.Buffers;
 with GL.Objects.Shaders;
@@ -162,7 +163,7 @@ begin
       Clear (Buffer_Bits'(Color => True, others => False));
 
       Array_Points.Bind;
-      GL.Objects.Vertex_Arrays.Draw_Arrays (Points, 0, 4);
+      GL.Drawing.Draw_Arrays (Points, 0, 4);
 
       -- Swap front and back buffers and process events
       Display_Backend.Swap_Buffers_And_Poll_Events;

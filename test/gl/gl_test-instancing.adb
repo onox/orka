@@ -18,6 +18,7 @@ with Ada.Text_IO;
 
 with GL.Attributes;
 with GL.Buffers;
+with GL.Drawing;
 with GL.Files;
 with GL.Objects.Buffers;
 with GL.Objects.Shaders;
@@ -269,7 +270,7 @@ begin
          Uni_View.Set_Single_Matrix (Matrix_View);
 
          Array1.Bind;
-         GL.Objects.Buffers.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length);
+         GL.Drawing.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length);
 
          -- Swap front and back buffers and process events
          Display_Backend.Swap_Buffers_And_Poll_Events;

@@ -18,6 +18,7 @@ with Ada.Text_IO;
 
 with GL.Attributes;
 with GL.Buffers;
+with GL.Drawing;
 with GL.Files;
 with GL.Objects.Buffers;
 with GL.Objects.Shaders;
@@ -142,7 +143,7 @@ begin
       Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
       Array1.Bind;
-      GL.Objects.Vertex_Arrays.Draw_Arrays (Triangles, 0, 3);
+      GL.Drawing.Draw_Arrays (Triangles, 0, 3);
       GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
 
       Display_Backend.Swap_Buffers_And_Poll_Events;
