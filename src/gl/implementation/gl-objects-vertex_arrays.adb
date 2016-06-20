@@ -132,7 +132,7 @@ package body GL.Objects.Vertex_Arrays is
       end case;
       API.Vertex_Array_Vertex_Buffer (Object.Reference.GL_Id, Binding_Index,
         Buffer.Raw_Id,
-        Offset * Bytes,
+        Low_Level.IntPtr (Offset * Bytes),
         Stride * Bytes);
       Raise_Exception_On_OpenGL_Error;
    end Bind_Vertex_Buffer;
@@ -151,25 +151,6 @@ package body GL.Objects.Vertex_Arrays is
       API.Vertex_Array_Binding_Divisor (Object.Reference.GL_Id, Binding_Index, Divisor);
       Raise_Exception_On_OpenGL_Error;
    end Set_Attribute_Binding_Divisor;
-
-   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size) is
-   begin
-      API.Draw_Arrays (Mode, Offset, Count);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Arrays;
-
-   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count, Instances : Size) is
-   begin
-      API.Draw_Arrays_Instanced (Mode, Offset, Count, Instances);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Arrays;
-
-   procedure Draw_Multiple_Arrays (Mode : Connection_Mode;
-                                   Offsets, Counts : Size_Array) is
-   begin
-      API.Multi_Draw_Arrays (Mode, Offsets, Counts, Counts'Length);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Multiple_Arrays;
 
    overriding
    procedure Initialize_Id (Object : in out Vertex_Array_Object) is

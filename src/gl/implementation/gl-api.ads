@@ -252,8 +252,14 @@ private package GL.API is
    procedure Draw_Arrays_Instanced is new Loader.Procedure_With_4_Params
      ("glDrawArraysInstanced", Connection_Mode, Int, Size, Size);
 
+   procedure Draw_Arrays_Instanced_Base_Instance is new Loader.Procedure_With_5_Params
+     ("glDrawArraysInstancedBaseInstance", Connection_Mode, Int, Size, Size, UInt);
+
    procedure Multi_Draw_Arrays is new Loader.Procedure_With_4_Params
      ("glMultiDrawArrays", Connection_Mode, Size_Array, Size_Array, Size);
+
+   procedure Multi_Draw_Arrays_Indirect is new Loader.Procedure_With_4_Params
+     ("glMultiDrawArraysIndirect", Connection_Mode, Int, Size, Size);
 
    procedure Draw_Elements (Mode       : Connection_Mode;
                             Count      : Size;
@@ -262,22 +268,34 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Draw_Elements,
                   External_Name => "glDrawElements");
 
+   procedure Draw_Elements_Base_Vertex is new Loader.Procedure_With_5_Params
+     ("glDrawElementsBaseVertex", Connection_Mode, Size, Unsigned_Numeric_Type, Int, Int);
+
    procedure Draw_Elements_Instanced is new Loader.Procedure_With_5_Params
      ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type, Zero, Size);
+
+   procedure Draw_Elements_Instanced_Base_Instance is new Loader.Procedure_With_6_Params
+     ("glDrawElementsInstancedBaseInstance", Connection_Mode, Size,
+      Unsigned_Numeric_Type, Int, Size, UInt);
 
    procedure Draw_Elements_Instanced_Base_Vertex is new Loader.Procedure_With_6_Params
      ("glDrawElementsInstancedBaseVertex", Connection_Mode, Size,
       Unsigned_Numeric_Type, Int, Size, Int);
 
-   procedure Draw_Elements_Base_Vertex is new Loader.Procedure_With_5_Params
-     ("glDrawElementsBaseVertex", Connection_Mode, Size, Unsigned_Numeric_Type, Int, Int);
+   procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance is new Loader.Procedure_With_7_Params
+     ("glDrawElementsInstancedBaseVertexBaseInstance", Connection_Mode, Size,
+      Unsigned_Numeric_Type, Int, Size, Int, UInt);
 
    procedure Multi_Draw_Elements is new Loader.Procedure_With_5_Params
-     ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type, Zero, Size);
+     ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type, Size_Array, Size);
 
    procedure Multi_Draw_Elements_Base_Vertex is new Loader.Procedure_With_6_Params
      ("glMultiDrawElementsBaseVertex", Connection_Mode, Size_Array,
-      Unsigned_Numeric_Type, Int_Array, Size, Int_Array);
+      Unsigned_Numeric_Type, Size_Array, Size, Size_Array);
+
+   procedure Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
+     ("glMultiDrawElementsIndirect", Connection_Mode, Unsigned_Numeric_Type,
+      Int, Size, Size);
 
    -----------------------------------------------------------------------------
    --                                Blending                                 --
@@ -610,7 +628,7 @@ private package GL.API is
      ("glVertexArrayBindingDivisor", UInt, Objects.Vertex_Arrays.Binding, UInt);
 
    procedure Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
-     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding, UInt, Int, Size);
+     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding, UInt, Low_Level.IntPtr, Size);
 
    procedure Vertex_Array_Element_Buffer is new Loader.Procedure_With_2_Params
      ("glVertexArrayElementBuffer", UInt, UInt);
