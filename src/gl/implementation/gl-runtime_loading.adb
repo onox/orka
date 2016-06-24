@@ -41,24 +41,17 @@ package body GL.Runtime_Loading is
    end Available;
 
    function Load (Function_Name : String) return Function_Reference is
-      function As_Function_Reference is new Ada.Unchecked_Conversion (
-        Source => System.Address, Target => Function_Reference
-      );
+      function As_Function_Reference is new Ada.Unchecked_Conversion
+        (Source => System.Address, Target => Function_Reference);
 
       Position : Function_Maps.Cursor := Loaded.Find (Function_Name);
    begin
       if Position = Function_Maps.No_Element then
          Load_Function_To_Map (Function_Name, Position);
-         if Position = Function_Maps.No_Element then
-            Load_Function_To_Map (Function_Name & "ARB", Position);
-            if Position = Function_Maps.No_Element then
-               Load_Function_To_Map (Function_Name & "EXT", Position);
-            end if;
-         end if;
       end if;
       return As_Function_Reference (Function_Maps.Element (Position));
    end Load;
-   
+
    function Function_Without_Params return Return_Type is
       type Function_Reference is
         access function return Return_Type;

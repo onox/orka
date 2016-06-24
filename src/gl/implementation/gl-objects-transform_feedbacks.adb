@@ -14,7 +14,7 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
-with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Containers.Indefinite_Holders;
 with Ada.Unchecked_Conversion;
 
 with GL.API;
@@ -23,39 +23,22 @@ package body GL.Objects.Transform_Feedbacks is
 
    Error_Checking_Suspended : Boolean := False;
 
-   function Hash (Key : Low_Level.Enums.Transform_Feedback_Kind)
-     return Ada.Containers.Hash_Type is
-      function Value is new Ada.Unchecked_Conversion
-        (Source => Low_Level.Enums.Transform_Feedback_Kind, Target => Low_Level.Enum);
-   begin
-      return Ada.Containers.Hash_Type (Value (Key));
-   end Hash;
+   package Feedback_Object_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => Feedback_Object'Class);
 
-   package Feedback_Object_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-      (Key_Type     => Low_Level.Enums.Transform_Feedback_Kind,
-       Element_Type => Feedback_Object'Class,
-       Hash         => Hash,
-       Equivalent_Keys => Low_Level.Enums."=");
-   use type Feedback_Object_Maps.Cursor;
-
-   Current_Feedback_Objects : Feedback_Object_Maps.Map;
+   type Feedback_Object_Target_Array is array (Low_Level.Enums.Transform_Feedback_Kind)
+     of Feedback_Object_Holder.Holder;
+   Current_Feedback_Objects : Feedback_Object_Target_Array;
 
    procedure Bind (Target : Feedback_Target; Object : Feedback_Object'Class) is
-      Cursor : constant Feedback_Object_Maps.Cursor
-        := Current_Feedback_Objects.Find (Target.Kind);
+      Holder : Feedback_Object_Holder.Holder := Current_Feedback_Objects (Target.Kind);
    begin
-      if Cursor = Feedback_Object_Maps.No_Element or else
-        Feedback_Object_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
-      then
+      if Holder.Is_Empty or else Object /= Holder.Element then
          API.Bind_Transform_Feedback (Target.Kind, Object.Reference.GL_Id);
          if not Error_Checking_Suspended then
             Raise_Exception_On_OpenGL_Error;
          end if;
-         if Cursor = Feedback_Object_Maps.No_Element then
-            Current_Feedback_Objects.Insert (Target.Kind, Object);
-         else
-            Current_Feedback_Objects.Replace_Element (Cursor, Object);
-         end if;
+         Holder.Replace_Element (Object);
       end if;
    end Bind;
 
@@ -68,13 +51,12 @@ package body GL.Objects.Transform_Feedbacks is
    end Bind_Base;
 
    function Current (Target : Feedback_Target) return Feedback_Object'Class is
-      Cursor : constant Feedback_Object_Maps.Cursor
-        := Current_Feedback_Objects.Find (Target.Kind);
+      Holder : constant Feedback_Object_Holder.Holder := Current_Feedback_Objects (Target.Kind);
    begin
-      if Cursor = Feedback_Object_Maps.No_Element then
+      if Holder.Is_Empty then
          raise No_Object_Bound_Exception with GL.Low_Level.Enums.Transform_Feedback_Kind'Image (Target.Kind);
       else
-         return Feedback_Object_Maps.Element (Cursor);
+         return Holder.Element;
       end if;
    end Current;
 

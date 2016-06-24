@@ -141,10 +141,11 @@ package GL.Objects.Framebuffers is
 
    Read_Target  : constant Framebuffer_Target;
    Draw_Target  : constant Framebuffer_Target;
-   Read_And_Draw_Target : constant Framebuffer_Target;
 
    Default_Framebuffer : constant Framebuffer;
+
 private
+
    for Framebuffer_Status use (Undefined                     => 16#8219#,
                                Complete                      => 16#8CD5#,
                                Incomplete_Attachment         => 16#8CD6#,
@@ -188,9 +189,8 @@ private
      Framebuffer_Target'(Kind => Low_Level.Enums.Read);
    Draw_Target : constant Framebuffer_Target :=
      Framebuffer_Target'(Kind => Low_Level.Enums.Draw);
-   Read_And_Draw_Target : constant Framebuffer_Target :=
-     Framebuffer_Target'(Kind => Low_Level.Enums.Read_Draw);
 
    Default_Framebuffer : constant Framebuffer :=
      Framebuffer'(GL_Object with null record);
+
 end GL.Objects.Framebuffers;

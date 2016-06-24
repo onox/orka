@@ -14,7 +14,7 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
-with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Containers.Indefinite_Holders;
 with Ada.Unchecked_Conversion;
 
 with GL.API;
@@ -250,74 +250,30 @@ package body GL.Objects.Framebuffers is
       Object.Reference.Initialized := False;
    end Delete_Id;
 
-   function Hash (Key : Low_Level.Enums.Framebuffer_Kind)
-     return Ada.Containers.Hash_Type is
-      function Value is new Ada.Unchecked_Conversion
-        (Source => Low_Level.Enums.Framebuffer_Kind, Target => Low_Level.Enum);
-   begin
-      return Ada.Containers.Hash_Type (Value (Key));
-   end Hash;
+   package Framebuffer_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => Framebuffer'Class);
 
-   package Framebuffer_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-      (Key_Type     => Low_Level.Enums.Framebuffer_Kind,
-       Element_Type => Framebuffer'Class,
-       Hash         => Hash,
-       Equivalent_Keys => Low_Level.Enums."=");
-   use type Framebuffer_Maps.Cursor;
-
-   Current_Framebuffers : Framebuffer_Maps.Map;
-
-   type Framebuffer_Kind_Array is array (Positive range <>) of
-     Low_Level.Enums.Framebuffer_Kind;
-
-   function Backend_Framebuffer_Targets
-     (Kind : Low_Level.Enums.Framebuffer_Kind) return Framebuffer_Kind_Array is
-   begin
-      case Kind is
-         when Low_Level.Enums.Read => return (1 => Low_Level.Enums.Read);
-         when Low_Level.Enums.Draw => return (1 => Low_Level.Enums.Draw);
-         when Low_Level.Enums.Read_Draw =>
-            return (1 => Low_Level.Enums.Draw, 2 => Low_Level.Enums.Read);
-      end case;
-   end Backend_Framebuffer_Targets;
-   pragma Inline (Backend_Framebuffer_Targets);
+   type Framebuffer_Target_Array is array (Low_Level.Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
+   Current_Framebuffers : Framebuffer_Target_Array;
 
    procedure Bind (Target : Framebuffer_Target;
                    Object : Framebuffer'Class) is
-      -- Read_Draw bind to both read and draw framebuffer, we need to set
-      -- the current framebuffer objects accordingly.
-      Targets : constant Framebuffer_Kind_Array
-        := Backend_Framebuffer_Targets (Target.Kind);
-
-      Cursor : Framebuffer_Maps.Cursor;
+      Holder : Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
    begin
-      API.Bind_Framebuffer (Target.Kind, Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
-      for Index in Targets'Range loop
-         Cursor := Current_Framebuffers.Find (Targets (Index));
-         if Cursor = Framebuffer_Maps.No_Element then
-            Current_Framebuffers.Insert (Targets (Index), Object);
-         elsif Framebuffer_Maps.Element (Cursor).Reference.GL_Id /= Object.Reference.GL_Id then
-            Current_Framebuffers.Replace_Element (Cursor, Object);
-         end if;
-      end loop;
+      if Holder.Is_Empty or else Object /= Holder.Element then
+         API.Bind_Framebuffer (Target.Kind, Object.Reference.GL_Id);
+         Raise_Exception_On_OpenGL_Error;
+         Holder.Replace_Element (Object);
+      end if;
    end Bind;
 
    function Current (Target : Framebuffer_Target) return Framebuffer'Class is
-      Targets : constant Framebuffer_Kind_Array
-        := Backend_Framebuffer_Targets (Target.Kind);
-
-      -- If target is Read_Draw, return the draw framebuffer
-      -- (Note: this is necessary because distinct read/draw framebuffers
-      -- were added later to the API and therefore might not be available
-      -- in the context. So everything needs to work with just Read_Draw).
-      Cursor : constant Framebuffer_Maps.Cursor
-        := Current_Framebuffers.Find (Targets (1));
+      Holder : constant Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
    begin
-      if Cursor = Framebuffer_Maps.No_Element then
+      if Holder.Is_Empty then
          raise No_Object_Bound_Exception with GL.Low_Level.Enums.Framebuffer_Kind'Image (Target.Kind);
       else
-         return Framebuffer_Maps.Element (Cursor);
+         return Holder.Element;
       end if;
    end Current;
 

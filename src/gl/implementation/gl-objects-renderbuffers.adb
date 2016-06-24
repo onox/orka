@@ -14,29 +14,20 @@
 -- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 --------------------------------------------------------------------------------
 
-with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Containers.Indefinite_Holders;
 with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Enums.Getter;
 
 package body GL.Objects.Renderbuffers is
-   function Hash (Key : Low_Level.Enums.Renderbuffer_Kind)
-     return Ada.Containers.Hash_Type is
-      function Value is new Ada.Unchecked_Conversion
-        (Source => Low_Level.Enums.Renderbuffer_Kind, Target => Low_Level.Enum);
-   begin
-      return Ada.Containers.Hash_Type (Value (Key));
-   end Hash;
 
-   package Renderbuffer_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-      (Key_Type     => Low_Level.Enums.Renderbuffer_Kind,
-       Element_Type => Renderbuffer'Class,
-       Hash         => Hash,
-       Equivalent_Keys => Low_Level.Enums."=");
-   use type Renderbuffer_Maps.Cursor;
+   package Renderbuffer_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => Renderbuffer'Class);
 
-   Current_Renderbuffers : Renderbuffer_Maps.Map;
+   type Renderbuffer_Target_Array is array (Low_Level.Enums.Renderbuffer_Kind)
+     of Renderbuffer_Holder.Holder;
+   Current_Renderbuffers : Renderbuffer_Target_Array;
 
    procedure Allocate (Object : Renderbuffer;
                        Format : Pixels.Internal_Format;
@@ -133,31 +124,22 @@ package body GL.Objects.Renderbuffers is
    end Raw_Kind;
 
    procedure Bind (Target : Renderbuffer_Target; Object : Renderbuffer'Class) is
-      Cursor : constant Renderbuffer_Maps.Cursor
-        := Current_Renderbuffers.Find (Target.Kind);
+      Holder : Renderbuffer_Holder.Holder := Current_Renderbuffers (Target.Kind);
    begin
-      if Cursor = Renderbuffer_Maps.No_Element or else
-        Renderbuffer_Maps.Element
-          (Cursor).Reference.GL_Id /= Object.Reference.GL_Id
-      then
+      if Holder.Is_Empty or else Object /= Holder.Element then
          API.Bind_Renderbuffer (Target.Kind, Object.Reference.GL_Id);
          Raise_Exception_On_OpenGL_Error;
-         if Cursor = Renderbuffer_Maps.No_Element then
-            Current_Renderbuffers.Insert (Target.Kind, Object);
-         else
-            Current_Renderbuffers.Replace_Element (Cursor, Object);
-         end if;
+         Holder.Replace_Element (Object);
       end if;
    end Bind;
 
    function Current (Target : Renderbuffer_Target) return Renderbuffer'Class is
-      Cursor : constant Renderbuffer_Maps.Cursor
-        := Current_Renderbuffers.Find (Target.Kind);
+      Holder : constant Renderbuffer_Holder.Holder := Current_Renderbuffers (Target.Kind);
    begin
-      if Cursor = Renderbuffer_Maps.No_Element then
+      if Holder.Is_Empty then
          raise No_Object_Bound_Exception with GL.Low_Level.Enums.Renderbuffer_Kind'Image (Target.Kind);
       else
-         return Renderbuffer_Maps.Element (Cursor);
+         return Holder.Element;
       end if;
    end Current;
 

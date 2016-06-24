@@ -46,7 +46,7 @@ package GL.Low_Level.Enums is
 
    type Renderbuffer_Kind is (Renderbuffer);
    
-   type Framebuffer_Kind is (Read, Draw, Read_Draw);
+   type Framebuffer_Kind is (Read, Draw);
 
    type Transform_Feedback_Kind is (Transform_Feedback);
 
@@ -107,10 +107,9 @@ private
 
    for Renderbuffer_Kind use (Renderbuffer => 16#8D41#);
    for Renderbuffer_Kind'Size use Enum'Size;
-   
+
    for Framebuffer_Kind use (Read      => 16#8CA8#,
-                             Draw      => 16#8CA9#,
-                             Read_Draw => 16#8D40#);
+                             Draw      => 16#8CA9#);
    for Framebuffer_Kind'Size use Enum'Size;
 
    for Transform_Feedback_Kind use (Transform_Feedback => 16#8E22#);
