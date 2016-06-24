@@ -28,7 +28,7 @@ package body GL.Buffers is
       function Convert is new Ada.Unchecked_Conversion
         (Source => Buffer_Bits, Target => Low_Level.Bitfield);
       Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Bits) and 2#0100011100000000#;
+        Convert (Bits) and 2#0100010100000000#;
    begin
       API.Clear (Raw_Bits);
       Raise_Exception_On_OpenGL_Error;
@@ -76,14 +76,6 @@ package body GL.Buffers is
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Clear_Value;
-
-   function Accum_Clear_Value return Colors.Color is
-      Value : Colors.Color;
-   begin
-      API.Get_Color (Enums.Getter.Accum_Clear_Value, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Value;
-   end Accum_Clear_Value;
 
    procedure Set_Depth_Function (Func : Compare_Function) is
    begin

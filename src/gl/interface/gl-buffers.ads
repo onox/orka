@@ -25,7 +25,6 @@ package GL.Buffers is
    
    type Buffer_Bits is record
       Depth   : Boolean := False;
-      Accum   : Boolean := False;
       Stencil : Boolean := False;
       Color   : Boolean := False;
    end record;
@@ -111,8 +110,6 @@ package GL.Buffers is
    procedure Set_Stencil_Clear_Value (Value : Stencil_Index);
    function Stencil_Clear_Value return Stencil_Index;
    
-   function Accum_Clear_Value return Colors.Color;
-
    procedure Set_Depth_Function (Func : Compare_Function);
    function Depth_Function return Compare_Function;
 
@@ -155,7 +152,6 @@ package GL.Buffers is
 private
    for Buffer_Bits use record
       Depth   at 0 range 8 .. 8;
-      Accum   at 0 range 9 .. 9;
       Stencil at 0 range 10 .. 10;
       Color   at 0 range 14 .. 14;
    end record;
