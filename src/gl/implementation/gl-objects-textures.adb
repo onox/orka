@@ -25,7 +25,7 @@ with GL.Enums.Textures;
 package body GL.Objects.Textures is
    use type Low_Level.Enums.Texture_Kind;
 
-   function Width (Object : Texture; Level : Mipmap_Level) return Size is
+   function Width (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -34,7 +34,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Width;
 
-   function Height (Object : Texture; Level : Mipmap_Level) return Size is
+   function Height (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -43,7 +43,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Height;
 
-   function Depth (Object : Texture; Level : Mipmap_Level) return Size is
+   function Depth (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -52,7 +52,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth;
 
-   function Format (Object : Texture; Level : Mipmap_Level)
+   function Format (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Internal_Format is
       Ret : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
@@ -62,7 +62,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Format;
 
-   function Red_Type (Object : Texture; Level : Mipmap_Level)
+   function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -72,7 +72,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Red_Type;
 
-   function Green_Type (Object : Texture; Level : Mipmap_Level)
+   function Green_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -82,7 +82,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Green_Type;
 
-   function Blue_Type (Object : Texture; Level : Mipmap_Level)
+   function Blue_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -92,7 +92,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Blue_Type;
 
-   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
+   function Alpha_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -102,7 +102,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Alpha_Type;
 
-   function Depth_Type (Object : Texture; Level : Mipmap_Level)
+   function Depth_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -112,7 +112,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth_Type;
 
-   function Red_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Red_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -121,7 +121,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Red_Size;
 
-   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Green_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -130,7 +130,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Green_Size;
 
-   function Blue_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Blue_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -139,7 +139,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Blue_Size;
 
-   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Alpha_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -148,7 +148,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Alpha_Size;
 
-   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Depth_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -157,7 +157,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth_Size;
 
-   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean is
+   function Compressed (Object : Texture_Base; Level : Mipmap_Level) return Boolean is
       Ret : Low_Level.Bool := Low_Level.Bool'First;
    begin
       API.Get_Texture_Level_Parameter_Bool (Object.Reference.GL_Id, Level,
@@ -166,7 +166,7 @@ package body GL.Objects.Textures is
       return Boolean (Ret);
    end Compressed;
 
-   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size is
+   function Compressed_Image_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -176,7 +176,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Compressed_Image_Size;
 
-   function Buffer_Offset (Object : Texture;
+   function Buffer_Offset (Object : Texture_Base;
                            Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
@@ -186,7 +186,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Buffer_Offset;
 
-   function Buffer_Size (Object : Texture;
+   function Buffer_Size (Object : Texture_Base;
                          Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
@@ -243,7 +243,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Image;
 
-   procedure Set_Minifying_Filter (Object : Texture;
+   procedure Set_Minifying_Filter (Object : Texture_Base;
                                    Filter : Minifying_Function) is
    begin
       API.Texture_Parameter_Min_Filter (Object.Reference.GL_Id,
@@ -251,7 +251,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Minifying_Filter;
 
-   function Minifying_Filter (Object : Texture)
+   function Minifying_Filter (Object : Texture_Base)
                               return Minifying_Function is
       Ret : Minifying_Function := Minifying_Function'First;
    begin
@@ -261,7 +261,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Minifying_Filter;
 
-   procedure Set_Magnifying_Filter (Object : Texture;
+   procedure Set_Magnifying_Filter (Object : Texture_Base;
                                     Filter : Magnifying_Function) is
    begin
       API.Texture_Parameter_Mag_Filter (Object.Reference.GL_Id,
@@ -269,7 +269,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Magnifying_Filter;
 
-   function Magnifying_Filter (Object : Texture)
+   function Magnifying_Filter (Object : Texture_Base)
                                return Magnifying_Function is
       Ret : Magnifying_Function := Magnifying_Function'First;
    begin
@@ -279,14 +279,14 @@ package body GL.Objects.Textures is
       return Ret;
    end Magnifying_Filter;
 
-   procedure Set_Minimum_LoD (Object : Texture; Level : Double) is
+   procedure Set_Minimum_LoD (Object : Texture_Base; Level : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Min_LoD, Single (Level));
       Raise_Exception_On_OpenGL_Error;
    end Set_Minimum_LoD;
 
-   function Minimum_LoD (Object : Texture) return Double is
+   function Minimum_LoD (Object : Texture_Base) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -295,14 +295,14 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Minimum_LoD;
 
-   procedure Set_Maximum_LoD (Object : Texture; Level : Double) is
+   procedure Set_Maximum_LoD (Object : Texture_Base; Level : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_LoD, Single (Level));
       Raise_Exception_On_OpenGL_Error;
    end Set_Maximum_LoD;
 
-   function Maximum_LoD (Object : Texture) return Double is
+   function Maximum_LoD (Object : Texture_Base) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -311,14 +311,14 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Maximum_LoD;
 
-   procedure Set_Lowest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
+   procedure Set_Lowest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Base_Level, Level);
       Raise_Exception_On_OpenGL_Error;
    end Set_Lowest_Mipmap_Level;
 
-   function Lowest_Mipmap_Level (Object : Texture) return Mipmap_Level is
+   function Lowest_Mipmap_Level (Object : Texture_Base) return Mipmap_Level is
       Ret : Mipmap_Level := Mipmap_Level'First;
    begin
       API.Get_Texture_Parameter_Int (Object.Reference.GL_Id,
@@ -327,14 +327,14 @@ package body GL.Objects.Textures is
       return Ret;
    end Lowest_Mipmap_Level;
 
-   procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
+   procedure Set_Highest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Max_Level, Level);
       Raise_Exception_On_OpenGL_Error;
    end Set_Highest_Mipmap_Level;
 
-   function Highest_Mipmap_Level (Object : Texture)
+   function Highest_Mipmap_Level (Object : Texture_Base)
                                   return Mipmap_Level is
       Ret : Mipmap_Level := Mipmap_Level'First;
    begin
@@ -344,7 +344,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Highest_Mipmap_Level;
 
-   procedure Set_Max_Anisotropy (Object : Texture; Degree : Double) is
+   procedure Set_Max_Anisotropy (Object : Texture_Base; Degree : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_Anisotropy,
@@ -352,7 +352,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Max_Anisotropy;
 
-   function Max_Anisotropy (Object : Texture) return Double is
+   function Max_Anisotropy (Object : Texture_Base) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -361,7 +361,7 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Max_Anisotropy;
 
-   procedure Set_X_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
+   procedure Set_X_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_S,
@@ -369,7 +369,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_X_Wrapping;
 
-   function X_Wrapping (Object : Texture) return Wrapping_Mode is
+   function X_Wrapping (Object : Texture_Base) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -378,7 +378,7 @@ package body GL.Objects.Textures is
       return Ret;
    end X_Wrapping;
 
-   procedure Set_Y_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
+   procedure Set_Y_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_T,
@@ -386,7 +386,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Y_Wrapping;
 
-   function Y_Wrapping (Object : Texture) return Wrapping_Mode is
+   function Y_Wrapping (Object : Texture_Base) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -395,7 +395,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Y_Wrapping;
 
-   procedure Set_Z_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
+   procedure Set_Z_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_R,
@@ -403,7 +403,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Z_Wrapping;
 
-   function Z_Wrapping (Object : Texture) return Wrapping_Mode is
+   function Z_Wrapping (Object : Texture_Base) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -412,7 +412,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Z_Wrapping;
 
-   procedure Set_Border_Color (Object : Texture; Color : Colors.Color) is
+   procedure Set_Border_Color (Object : Texture_Base; Color : Colors.Color) is
 
       Raw : constant Low_Level.Single_Array := Helpers.Float_Array (Color);
    begin
@@ -422,7 +422,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Border_Color;
 
-   function Border_Color (Object : Texture) return Colors.Color is
+   function Border_Color (Object : Texture_Base) return Colors.Color is
       Raw : Low_Level.Single_Array (1 .. 4);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -431,7 +431,7 @@ package body GL.Objects.Textures is
       return Helpers.Color (Raw);
    end Border_Color;
 
-   procedure Set_Texture_Priority (Object : Texture;
+   procedure Set_Texture_Priority (Object : Texture_Base;
                                    Value : Priority) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
@@ -440,7 +440,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Texture_Priority;
 
-   function Texture_Priority (Object : Texture) return Priority is
+   function Texture_Priority (Object : Texture_Base) return Priority is
       Ret : Low_Level.Single_Array (1 .. 4);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -449,7 +449,7 @@ package body GL.Objects.Textures is
       return Priority (Ret (1));
    end Texture_Priority;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture;
+   procedure Toggle_Compare_X_To_Texture (Object : Texture_Base;
                                           Enabled : Boolean) is
       Value : Enums.Textures.Compare_Kind;
    begin
@@ -464,7 +464,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Toggle_Compare_X_To_Texture;
 
-   function Compare_X_To_Texture_Enabled (Object : Texture)
+   function Compare_X_To_Texture_Enabled (Object : Texture_Base)
                                           return Boolean is
       use type Enums.Textures.Compare_Kind;
 
@@ -476,7 +476,7 @@ package body GL.Objects.Textures is
       return Value = Enums.Textures.Compare_R_To_Texture;
    end Compare_X_To_Texture_Enabled;
 
-   procedure Set_Compare_Function (Object : Texture;
+   procedure Set_Compare_Function (Object : Texture_Base;
                                    Func   : Compare_Function) is
    begin
       API.Texture_Parameter_Compare_Func (Object.Reference.GL_Id,
@@ -485,7 +485,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Compare_Function;
 
-   function Current_Compare_Function (Object : Texture)
+   function Current_Compare_Function (Object : Texture_Base)
                                      return Compare_Function is
       Value : Compare_Function := Compare_Function'First;
    begin
@@ -496,7 +496,7 @@ package body GL.Objects.Textures is
       return Value;
    end Current_Compare_Function;
 
-   procedure Set_Depth_Texture_Mode (Object : Texture;
+   procedure Set_Depth_Texture_Mode (Object : Texture_Base;
                                      Mode : Depth_Mode) is
    begin
       API.Texture_Parameter_Depth_Mode (Object.Reference.GL_Id,
@@ -504,7 +504,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Depth_Texture_Mode;
 
-   function Depth_Texture_Mode (Object : Texture) return Depth_Mode is
+   function Depth_Texture_Mode (Object : Texture_Base) return Depth_Mode is
       Value : Depth_Mode := Depth_Mode'First;
    begin
       API.Get_Texture_Parameter_Depth_Mode (Object.Reference.GL_Id,
@@ -513,7 +513,7 @@ package body GL.Objects.Textures is
       return Value;
    end Depth_Texture_Mode;
 
-   procedure Toggle_Mipmap_Autoupdate (Object : Texture;
+   procedure Toggle_Mipmap_Autoupdate (Object : Texture_Base;
                                        Enabled : Boolean) is
    begin
       API.Texture_Parameter_Bool (Object.Reference.GL_Id,
@@ -522,7 +522,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Toggle_Mipmap_Autoupdate;
 
-   function Mipmap_Autoupdate_Enabled (Object : Texture)
+   function Mipmap_Autoupdate_Enabled (Object : Texture_Base)
                                        return Boolean is
       Value : Low_Level.Bool := Low_Level.Bool'First;
    begin
@@ -532,7 +532,7 @@ package body GL.Objects.Textures is
       return Boolean (Value);
    end Mipmap_Autoupdate_Enabled;
    
-   procedure Generate_Mipmap (Object : Texture) is
+   procedure Generate_Mipmap (Object : Texture_Base) is
    begin
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
@@ -564,6 +564,28 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Maximum_Anisotropy;
+
+   -----------------------------------------------------------------------------
+   --                        Buffer Texture Loading                           --
+   -----------------------------------------------------------------------------
+
+   procedure Attach_Buffer (Object : Buffer_Texture;
+                            Internal_Format : Pixels.Internal_Format_Buffer_Texture;
+                            Buffer : Objects.Buffers.Buffer) is
+   begin
+      API.Texture_Buffer (Object.Reference.GL_Id, Internal_Format, Buffer.Raw_Id);
+      Raise_Exception_On_OpenGL_Error;
+   end Attach_Buffer;
+
+   procedure Attach_Buffer (Object : Buffer_Texture;
+                            Internal_Format : Pixels.Internal_Format_Buffer_Texture;
+                            Buffer : Objects.Buffers.Buffer;
+                            Offset, Size : Types.Size) is
+   begin
+      API.Texture_Buffer_Range (Object.Reference.GL_Id, Internal_Format, Buffer.Raw_Id,
+                                Low_Level.IntPtr (Offset), Size);
+      Raise_Exception_On_OpenGL_Error;
+   end Attach_Buffer;
 
    -----------------------------------------------------------------------------
    --                          Texture 1D Loading                             --

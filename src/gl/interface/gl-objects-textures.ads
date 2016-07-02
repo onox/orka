@@ -17,6 +17,7 @@
 with System;
 
 with GL.Low_Level.Enums;
+with GL.Objects.Buffers;
 with GL.Pixels;
 with GL.Types.Colors;
 
@@ -82,27 +83,29 @@ package GL.Objects.Textures is
 
    procedure Bind_Texture_Unit (Object : Texture; Unit : Texture_Unit);
 
-   procedure Generate_Mipmap (Object : Texture);
+   type Texture_Base is abstract new Texture with private;
+
+   procedure Generate_Mipmap (Object : Texture_Base);
 
    -----------------------------------------------------------------------------
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 
-   procedure Set_Minifying_Filter     (Object : Texture; Filter : Minifying_Function);
-   procedure Set_Magnifying_Filter    (Object : Texture; Filter : Magnifying_Function);
-   procedure Set_Minimum_LoD          (Object : Texture; Level : Double);
-   procedure Set_Maximum_LoD          (Object : Texture; Level : Double);
-   procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
-   procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
+   procedure Set_Minifying_Filter     (Object : Texture_Base; Filter : Minifying_Function);
+   procedure Set_Magnifying_Filter    (Object : Texture_Base; Filter : Magnifying_Function);
+   procedure Set_Minimum_LoD          (Object : Texture_Base; Level : Double);
+   procedure Set_Maximum_LoD          (Object : Texture_Base; Level : Double);
+   procedure Set_Lowest_Mipmap_Level  (Object : Texture_Base; Level : Mipmap_Level);
+   procedure Set_Highest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level);
 
-   function Minifying_Filter     (Object : Texture) return Minifying_Function;
-   function Magnifying_Filter    (Object : Texture) return Magnifying_Function;
-   function Minimum_LoD          (Object : Texture) return Double;
-   function Maximum_LoD          (Object : Texture) return Double;
-   function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
-   function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
+   function Minifying_Filter     (Object : Texture_Base) return Minifying_Function;
+   function Magnifying_Filter    (Object : Texture_Base) return Magnifying_Function;
+   function Minimum_LoD          (Object : Texture_Base) return Double;
+   function Maximum_LoD          (Object : Texture_Base) return Double;
+   function Lowest_Mipmap_Level  (Object : Texture_Base) return Mipmap_Level;
+   function Highest_Mipmap_Level (Object : Texture_Base) return Mipmap_Level;
 
-   procedure Set_Max_Anisotropy (Object : Texture; Degree : Double)
+   procedure Set_Max_Anisotropy (Object : Texture_Base; Degree : Double)
      with Pre => Degree >= 1.0;
    --  Set the maximum amount of anisotropy filtering to reduce the blurring
    --  of textures (caused by mipmap filtering) that are viewed at an
@@ -116,66 +119,66 @@ package GL.Objects.Textures is
    --  extension. This extension is not part of core OpenGL, but is basically
    --  available anywhere.
 
-   function Max_Anisotropy (Object : Texture) return Double
+   function Max_Anisotropy (Object : Texture_Base) return Double
      with Post => Max_Anisotropy'Result >= 1.0;
 
-   procedure Set_X_Wrapping (Object : Texture; Mode : Wrapping_Mode);
-   procedure Set_Y_Wrapping (Object : Texture; Mode : Wrapping_Mode);
-   procedure Set_Z_Wrapping (Object : Texture; Mode : Wrapping_Mode);
+   procedure Set_X_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
+   procedure Set_Y_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
+   procedure Set_Z_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
 
-   function X_Wrapping (Object : Texture) return Wrapping_Mode;
-   function Y_Wrapping (Object : Texture) return Wrapping_Mode;
-   function Z_Wrapping (Object : Texture) return Wrapping_Mode;
+   function X_Wrapping (Object : Texture_Base) return Wrapping_Mode;
+   function Y_Wrapping (Object : Texture_Base) return Wrapping_Mode;
+   function Z_Wrapping (Object : Texture_Base) return Wrapping_Mode;
 
-   procedure Set_Border_Color         (Object : Texture; Color : Colors.Color);
-   procedure Set_Texture_Priority     (Object : Texture; Value : Priority);
-   procedure Set_Depth_Texture_Mode   (Object : Texture; Mode  : Depth_Mode);
-   procedure Toggle_Mipmap_Autoupdate (Object : Texture; Enabled : Boolean);
+   procedure Set_Border_Color         (Object : Texture_Base; Color : Colors.Color);
+   procedure Set_Texture_Priority     (Object : Texture_Base; Value : Priority);
+   procedure Set_Depth_Texture_Mode   (Object : Texture_Base; Mode  : Depth_Mode);
+   procedure Toggle_Mipmap_Autoupdate (Object : Texture_Base; Enabled : Boolean);
 
-   function Border_Color              (Object : Texture) return Colors.Color;
-   function Texture_Priority          (Object : Texture) return Priority;
-   function Depth_Texture_Mode        (Object : Texture) return Depth_Mode;
-   function Mipmap_Autoupdate_Enabled (Object : Texture) return Boolean;
+   function Border_Color              (Object : Texture_Base) return Colors.Color;
+   function Texture_Priority          (Object : Texture_Base) return Priority;
+   function Depth_Texture_Mode        (Object : Texture_Base) return Depth_Mode;
+   function Mipmap_Autoupdate_Enabled (Object : Texture_Base) return Boolean;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
-   procedure Set_Compare_Function        (Object : Texture; Func : Compare_Function);
+   procedure Toggle_Compare_X_To_Texture (Object : Texture_Base; Enabled : Boolean);
+   procedure Set_Compare_Function        (Object : Texture_Base; Func : Compare_Function);
 
-   function Compare_X_To_Texture_Enabled (Object : Texture) return Boolean;
-   function Current_Compare_Function     (Object : Texture) return Compare_Function;
+   function Compare_X_To_Texture_Enabled (Object : Texture_Base) return Boolean;
+   function Current_Compare_Function     (Object : Texture_Base) return Compare_Function;
 
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --
    -----------------------------------------------------------------------------
 
-   function Width  (Object : Texture; Level : Mipmap_Level) return Size;
-   function Height (Object : Texture; Level : Mipmap_Level) return Size;
-   function Depth  (Object : Texture; Level : Mipmap_Level) return Size;
+   function Width  (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Height (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Depth  (Object : Texture_Base; Level : Mipmap_Level) return Size;
 
-   function Format (Object : Texture; Level : Mipmap_Level)
+   function Format (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Internal_Format;
 
-   function Red_Type (Object : Texture; Level : Mipmap_Level)
+   function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Green_Type (Object : Texture; Level : Mipmap_Level)
+   function Green_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Blue_Type (Object : Texture; Level : Mipmap_Level)
+   function Blue_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
+   function Alpha_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Depth_Type (Object : Texture; Level : Mipmap_Level)
+   function Depth_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
 
-   function Red_Size   (Object : Texture; Level : Mipmap_Level) return Size;
-   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   function Blue_Size  (Object : Texture; Level : Mipmap_Level) return Size;
-   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size;
+   function Red_Size   (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Green_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Blue_Size  (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Alpha_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Depth_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
 
-   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean;
-   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size;
+   function Compressed (Object : Texture_Base; Level : Mipmap_Level) return Boolean;
+   function Compressed_Image_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
 
-   function Buffer_Offset (Object : Texture; Level : Mipmap_Level) return Size;
-   function Buffer_Size   (Object : Texture; Level : Mipmap_Level) return Size;
+   function Buffer_Offset (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Buffer_Size   (Object : Texture_Base; Level : Mipmap_Level) return Size;
 
    -----------------------------------------------------------------------------
    --                            Texture Units                                --
@@ -186,10 +189,25 @@ package GL.Objects.Textures is
    function Texture_Unit_Count return Natural;
 
    -----------------------------------------------------------------------------
+   --                        Buffer Texture Loading                           --
+   -----------------------------------------------------------------------------
+
+   type Buffer_Texture is new Texture with private;
+
+   procedure Attach_Buffer (Object : Buffer_Texture;
+                            Internal_Format : Pixels.Internal_Format_Buffer_Texture;
+                            Buffer : Objects.Buffers.Buffer);
+
+   procedure Attach_Buffer (Object : Buffer_Texture;
+                            Internal_Format : Pixels.Internal_Format_Buffer_Texture;
+                            Buffer : Objects.Buffers.Buffer;
+                            Offset, Size : Types.Size);
+
+   -----------------------------------------------------------------------------
    --                          Texture 1D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_1D is new Texture with private;
+   type Texture_1D is new Texture_Base with private;
 
    procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
                                Internal_Format : Pixels.Internal_Format;
@@ -222,7 +240,7 @@ package GL.Objects.Textures is
    --                          Texture 2D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_2D is new Texture with private;
+   type Texture_2D is new Texture_Base with private;
 
    procedure Allocate_Storage (Object : Texture_2D; Levels : Types.Size;
                                Internal_Format : Pixels.Internal_Format;
@@ -260,7 +278,7 @@ package GL.Objects.Textures is
    --                          Texture 3D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_3D is new Texture with private;
+   type Texture_3D is new Texture_Base with private;
 
    procedure Allocate_Storage (Object : Texture_3D; Levels : Types.Size;
                                Internal_Format      : Pixels.Internal_Format;
@@ -309,9 +327,12 @@ private
    for Depth_Mode'Size use Int'Size;
 
    type Texture is new GL_Object with null record;
+   type Texture_Base is new Texture with null record;
 
-   type Texture_1D is new Texture with null record;
-   type Texture_2D is new Texture with null record;
-   type Texture_3D is new Texture with null record;
+   type Buffer_Texture is new Texture with null record;
+
+   type Texture_1D is new Texture_Base with null record;
+   type Texture_2D is new Texture_Base with null record;
+   type Texture_3D is new Texture_Base with null record;
 
 end GL.Objects.Textures;

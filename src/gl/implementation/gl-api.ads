@@ -454,6 +454,13 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Delete_Textures,
                   External_Name => "glDeleteTextures");
 
+   procedure Texture_Buffer is new Loader.Procedure_With_3_Params
+     ("glTextureBuffer", UInt, Pixels.Internal_Format_Buffer_Texture, UInt);
+
+   procedure Texture_Buffer_Range is new Loader.Procedure_With_5_Params
+     ("glTextureBufferRange", UInt, Pixels.Internal_Format_Buffer_Texture, UInt,
+      Low_Level.IntPtr, Size);
+
    procedure Texture_Storage_1D is new Loader.Procedure_With_4_Params
      ("glTextureStorage1D", UInt, Size, Pixels.Internal_Format, Size);
 

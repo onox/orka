@@ -23,6 +23,14 @@ package GL.Pixels is
 
    use GL.Types;
 
+   type Internal_Format_Buffer_Texture is (RGBA8, RGBA16, R8, R16, RG8, RG16, R16F,
+                                           R32F, RG16F, RG32F,
+                                           R8I, R8UI, R16I, R16UI, R32I, R32UI,
+                                           RG8I, RG8UI, RG16I, RG16UI, RG32I, RG32UI,
+                                           RGBA32F, RGB32F, RGBA16F, RGB16F,
+                                           RGBA32UI, RGB32UI, RGBA16UI, RGBA8UI,
+                                           RGBA32I, RGB32I, RGBA16I, RGBA8I);
+
    type Internal_Format is (R3_G3_B2, RGB4, RGB5, RGB8, RGB10, RGB12,
                             RGBA2, RGBA4, RGB5_A1, RGBA8, RGB10_A2, RGBA12, RGBA16,
                             Depth_Component16, Depth_Component24,
@@ -108,6 +116,46 @@ package GL.Pixels is
    function Unpack_Alignment    return Alignment;
 
 private
+
+   for Internal_Format_Buffer_Texture use (RGBA8    => 16#8058#,
+                                           RGBA16   => 16#805B#,
+
+                                           R8     => 16#8229#,
+                                           R16    => 16#822A#,
+                                           RG8    => 16#822B#,
+                                           RG16   => 16#822C#,
+                                           R16F   => 16#822D#,
+                                           R32F   => 16#822E#,
+                                           RG16F  => 16#822F#,
+                                           RG32F  => 16#8230#,
+                                           R8I    => 16#8231#,
+                                           R8UI   => 16#8232#,
+                                           R16I   => 16#8233#,
+                                           R16UI  => 16#8234#,
+                                           R32I   => 16#8235#,
+                                           R32UI  => 16#8236#,
+                                           RG8I   => 16#8237#,
+                                           RG8UI  => 16#8238#,
+                                           RG16I  => 16#8239#,
+                                           RG16UI => 16#823A#,
+                                           RG32I  => 16#823B#,
+                                           RG32UI => 16#823C#,
+
+                                           RGBA32F  => 16#8814#,
+                                           RGB32F   => 16#8815#,
+                                           RGBA16F  => 16#881A#,
+                                           RGB16F   => 16#881B#,
+
+                                           RGBA32UI => 16#8D70#,
+                                           RGB32UI  => 16#8D71#,
+                                           RGBA16UI => 16#8D76#,
+                                           RGBA8UI  => 16#8D7C#,
+                                           RGBA32I  => 16#8D82#,
+                                           RGB32I   => 16#8D83#,
+                                           RGBA16I  => 16#8D88#,
+                                           RGBA8I   => 16#8D8E#);
+   for Internal_Format_Buffer_Texture'Size use GL.Types.Int'Size;
+
    for Internal_Format use (R3_G3_B2 => 16#2A10#,
 
                             RGB4     => 16#804F#,
