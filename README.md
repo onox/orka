@@ -1,6 +1,8 @@
 Orka
 ====
 
+[![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
+
 Orka is the OpenGL Rendering Kernel in Ada. It is written in Ada 2012
 and provides an object-oriented API for modern OpenGL.
 

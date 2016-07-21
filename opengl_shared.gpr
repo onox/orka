@@ -9,10 +9,8 @@ abstract project OpenGL_Shared is
    --  * windows : Microsoft Windows
    --  * x11     : X Window System
    --  * quartz  : Quartz Compositor (OS X)
-   type Windowing_System_Type is
-      ("windows", "x11", "quartz");
-   Windowing_System : Windowing_System_Type
-      := external ("Windowing_System");
+   type Windowing_System_Type is ("windows", "x11", "quartz");
+   Windowing_System : Windowing_System_Type := external ("Windowing_System");
 
    type Mode_Type is ("debug", "release");
    Mode : Mode_Type := external ("Mode", "release");
@@ -20,10 +18,24 @@ abstract project OpenGL_Shared is
    type Toggle_Type is ("enabled", "disabled");
    Auto_Exceptions : Toggle_Type := external ("Auto_Exceptions", "enabled");
 
-   type Library_Kinds is ("static", "relocatable");
-   Library_Kind : Library_Kinds := external ("LIBRARY_TYPE", "static");
+   type Library_Type is ("static", "relocatable");
+   Library_Kind : Library_Type := external ("Library_Type", "static");
 
-   for Library_Kind use Library_Kind;
+   Common_Compiler_Switches := (
+      "-fstack-check",  --  Stack overflow checking
+      "-gnato13",       --  Numeric overflow checking
+      "-gnateE",        --  Extra information in exceptions
+      "-gnata",         --  Enable assertions
+      "-gnatf",         --  Full errors
+      "-gnatVa",        --  All validity checks
+      "-gnatwa",        --  All optional warnings
+      "-gnatwFl.l.n.s",
+      "-gnaty",         --  Default style checks
+      "-gnatyAdOSux-msbc",
+      "-gnat2012",      --  Use Ada 2012
+      "-Wall",          --  All GCC warnings
+      "-O2", "-march=native"
+   );
 
    package Ide is
       for Vcs_Kind use "Git";
@@ -40,21 +52,6 @@ abstract project OpenGL_Shared is
       end case;
    end Builder;
 
-   Common_Compiler_Switches := (
-      "-fstack-check",  --  Stack overflow checking
-      "-gnato13",       --  Numeric overflow checking
-      "-gnata",         --  Enable assertions
-      "-gnatf",         --  Full errors
-      "-gnatVa",        --  All validity checks
-      "-gnatwa",        --  All optional warnings
-      "-gnatwFl.l.n.s",
-      "-gnaty",         --  Default style checks
-      "-gnatyAdOSux-msbc",
-      "-gnat2012",
-      "-Wall",
-      "-O2", "-march=native"
-   );
-
    package Compiler is
       case Mode is
          when "debug" =>
@@ -65,5 +62,14 @@ abstract project OpenGL_Shared is
 
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
+
+   package Binder is
+      case Mode is
+         when "debug" =>
+            for Default_Switches ("ada") use ("-E");
+         when "release" =>
+            null;
+      end case;
+   end Binder;
 
 end OpenGL_Shared;

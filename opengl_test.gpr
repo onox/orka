@@ -23,5 +23,6 @@ project OpenGL_Test is
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
    package Compiler renames OpenGL_Shared.Compiler;
+   package Binder renames OpenGL_Shared.Binder;
 
 end OpenGL_Test;

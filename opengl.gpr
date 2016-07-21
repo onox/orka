@@ -5,6 +5,8 @@ library project OpenGL is
    for Languages use ("ada");
 
    for Library_Name use "OpenGLAda";
+   for Library_Dir  use "lib";
+   for Library_Kind use OpenGL_Shared'Library_Kind;
 
    OpenGL_Sources := ("src/gl/interface",
                       "src/gl/implementation");
@@ -23,12 +25,11 @@ library project OpenGL is
 
    for Source_Dirs use OpenGL_Sources;
    for Object_Dir use "obj";
-   for Library_Dir use "lib";
-   for Library_Kind use OpenGL_Shared'Library_Kind;
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
    package Compiler renames OpenGL_Shared.Compiler;
+   package Binder renames OpenGL_Shared.Binder;
 
    package Linker is
       case OpenGL_Shared.Windowing_System is

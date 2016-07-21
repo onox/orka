@@ -1,22 +1,24 @@
 with "opengl_shared";
 with "opengl-glfw";
+with "orka";
 
-project Glfw_Test is
+project Orka_Test is
 
    for Languages use ("ada");
 
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
 
-   for Source_Dirs use ("test/glfw");
+   for Source_Dirs use OpenGL.Glfw.Shared_Test_Sources & "test/orka";
 
-   for Main use ("glfw_test-monitors.adb",
-                 "glfw_test-windows.adb",
-                 "glfw_test-clipboard.adb");
+   for Main use ("orka_test-test_1_triangle",
+                 "orka_test-test_2_two_triangles",
+                 "orka_test-test_3_module_array",
+                 "orka_test-test_4_mdi");
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
    package Compiler renames OpenGL_Shared.Compiler;
    package Binder renames OpenGL_Shared.Binder;
 
-end Glfw_Test;
+end Orka_Test;

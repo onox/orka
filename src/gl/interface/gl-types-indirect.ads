@@ -19,6 +19,9 @@ with Interfaces.C.Pointers;
 package GL.Types.Indirect is
    pragma Preelaborate;
 
+   type Single_Array_Access is access constant Single_Array;
+   type UInt_Array_Access   is access constant UInt_Array;
+
    type Arrays_Indirect_Command is record
       Count, Instances, First_Vertex, Base_Instance : UInt;
    end record;

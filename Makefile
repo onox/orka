@@ -16,16 +16,20 @@ GPRCLEAN = gprclean -q ${WINDOWING_SYSTEM}
 
 build_src:
 	$(GPRBUILD) -P opengl-glfw.gpr
+	$(GPRBUILD) -P orka.gpr
 
 build_test:
 	$(GPRBUILD) -P opengl_test.gpr
 	$(GPRBUILD) -P glfw_test.gpr
+	$(GPRBUILD) -P orka_test.gpr
 
 clean_src:
 	$(GPRCLEAN) -r -P opengl-glfw.gpr
+	$(GPRCLEAN) -r -P orka.gpr
 	rmdir bin lib obj
 
 clean_test:
+	$(GPRCLEAN) -P orka_test.gpr
 	$(GPRCLEAN) -P glfw_test.gpr
 	$(GPRCLEAN) -P opengl_test.gpr
 

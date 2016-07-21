@@ -74,18 +74,21 @@ package GL.Objects.Framebuffers is
    function Status (Object : Framebuffer) return Framebuffer_Status;
 
    procedure Attach_Renderbuffer (Object : Framebuffer; Attachment : Attachment_Point;
-                                  Render_Object : Renderbuffers.Renderbuffer'Class);
+                                  Render_Object : Renderbuffers.Renderbuffer'Class)
+     with Pre => Object /= Default_Framebuffer;
 
    procedure Attach_Texture (Object : Framebuffer;
                              Attachment : Attachment_Point;
                              Texture_Object : Textures.Texture'Class;
-                             Level : Textures.Mipmap_Level);
+                             Level : Textures.Mipmap_Level)
+     with Pre => Object /= Default_Framebuffer;
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
-                             Attachment : Attachment_Point;
-                             Texture_Object : Textures.Texture'Class;
-                             Level : Textures.Mipmap_Level;
-                             Layer : Natural);
+                                   Attachment : Attachment_Point;
+                                   Texture_Object : Textures.Texture'Class;
+                                   Level : Textures.Mipmap_Level;
+                                   Layer : Natural)
+     with Pre => Object /= Default_Framebuffer;
 
    procedure Invalidate_Data (Object : Framebuffer;
                               Attachments : Attachment_List);
