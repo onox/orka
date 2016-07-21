@@ -65,6 +65,20 @@ package GL.Objects.Buffers is
    --    * Uniform_Buffer
    --    * Shader_Storage_Buffer
 
+   generic
+      with package Pointers is new Interfaces.C.Pointers (<>);
+   procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
+                         Offset, Length : Types.Size);
+   --  Bind a part of the buffer object to the index of the target as
+   --  well as to the target itself.
+   --
+   --  Target must be one of the following:
+   --
+   --    * Atomic_Counter_Buffer
+   --    * Transform_Feedback_Buffer
+   --    * Uniform_Buffer
+   --    * Shader_Storage_Buffer
+
    function Current_Object (Target : Buffer_Target) return Buffer'Class;
    
    generic

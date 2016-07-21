@@ -552,6 +552,10 @@ private package GL.API is
    procedure Bind_Buffer_Base is new Loader.Procedure_With_3_Params
       ("glBindBufferBase", Low_Level.Enums.Buffer_Kind, UInt, UInt);
 
+   procedure Bind_Buffer_Range is new Loader.Procedure_With_5_Params
+      ("glBindBufferRange", Low_Level.Enums.Buffer_Kind, UInt, UInt,
+       Low_Level.IntPtr, Low_Level.SizeIPtr);
+
    procedure Named_Buffer_Data is new Loader.Procedure_With_4_Params
       ("glNamedBufferData", UInt, Low_Level.SizeIPtr,
        System.Address, Objects.Buffers.Buffer_Usage);

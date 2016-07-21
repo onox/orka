@@ -51,6 +51,22 @@ package body GL.Objects.Buffers is
       end if;
    end Bind_Base;
 
+   procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
+                         Offset, Length : Types.Size) is
+      Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
+
+      Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+   begin
+      if Holder.Is_Empty or else Object /= Holder.Element then
+         API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
+                                Low_Level.IntPtr (Offset_In_Bytes),
+                                Low_Level.SizeIPtr (Number_Of_Bytes));
+         Raise_Exception_On_OpenGL_Error;
+         Holder.Replace_Element (Object);
+      end if;
+   end Bind_Range;
+
    function Current_Object (Target : Buffer_Target) return Buffer'Class is
       Holder : constant Buffer_Holder.Holder := Current_Buffers (Target.Kind);
    begin
@@ -73,7 +89,7 @@ package body GL.Objects.Buffers is
    end Load_To_Buffer;
 
    procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
-                       Kind : Numeric_Type; Usage  : Buffer_Usage) is
+                       Kind : Numeric_Type; Usage : Buffer_Usage) is
       Bytes : Long;
    begin
       case Kind is
