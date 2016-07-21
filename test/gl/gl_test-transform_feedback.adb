@@ -36,9 +36,7 @@ procedure GL_Test.Transform_Feedback is
    use GL.Objects.Transform_Feedbacks;
    use GL.Objects.Vertex_Arrays;
 
-   procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
-     (Single_Pointers);
-   procedure Get_Sub_Data is new GL.Objects.Buffers.Get_Sub_Data
+   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Single_Pointers);
 
    procedure Load_Data (Array_Input  : Vertex_Array_Object;
@@ -53,7 +51,7 @@ procedure GL_Test.Transform_Feedback is
         GL.Objects.Programs.Attrib_Location (Program, "in_value");
    begin
       --  Upload Vertices data to Buffer_Input
-      Load_Vectors (Buffer_Input, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer_Input, Vertices, Static_Draw);
 
       -- Enable and set attributes for Array_Input VAO
       Array_Input.Enable_Attribute (Attrib_Pos);
@@ -184,7 +182,7 @@ begin
    declare
       Data : Single_Array (1 .. 15) := (others => 0.0);
    begin
-      Get_Sub_Data (Vertex_Buffer_Output, 0, Data);
+      Single_Pointers.Get_Sub_Data (Vertex_Buffer_Output, 0, Data);
       for Element of Data loop
          Ada.Text_IO.Put_Line (Single'Image (Element));
       end loop;

@@ -36,11 +36,11 @@ procedure GL_Test.Instancing is
    use GL.Types;
    use GL.Transforms;
 
-   procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
+   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Single_Pointers);
-   procedure Load_Indices is new GL.Objects.Buffers.Load_To_Buffer
+   package UInt_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (UInt_Pointers);
-   procedure Load_Matrices is new GL.Objects.Buffers.Load_To_Buffer
+   package Matrix4_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Singles.Matrix4_Pointers);
 
    Instances_Dimension : constant := 40;
@@ -84,7 +84,7 @@ procedure GL_Test.Instancing is
       Attrib_Model : constant Attribute := Program.Attrib_Location ("in_Model");
    begin
       --  Upload Vertices data to Buffer1
-      Load_Vectors (Buffer1, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer1, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Pos);
@@ -99,7 +99,7 @@ procedure GL_Test.Instancing is
       Array1.Bind_Vertex_Buffer (0, Buffer1, Single_Type, 0, 6);
 
       --  Upload Indices data to Buffer2
-      Load_Indices (Buffer2, Indices, Static_Draw);
+      UInt_Pointers.Load_To_Buffer (Buffer2, Indices, Static_Draw);
 
       Array1.Bind_Element_Buffer (Buffer2);
 
@@ -123,7 +123,7 @@ procedure GL_Test.Instancing is
          end loop;
       end;
       --  Load matrices for all the instances
-      Load_Matrices (Buffer3, Matrices, Static_Draw);
+      Matrix4_Pointers.Load_To_Buffer (Buffer3, Matrices, Static_Draw);
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Model);

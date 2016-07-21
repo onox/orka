@@ -65,76 +65,11 @@ package GL.Objects.Buffers is
    --    * Uniform_Buffer
    --    * Shader_Storage_Buffer
 
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
-                         Offset, Length : Types.Size);
-   --  Bind a part of the buffer object to the index of the target as
-   --  well as to the target itself.
-   --
-   --  Target must be one of the following:
-   --
-   --    * Atomic_Counter_Buffer
-   --    * Transform_Feedback_Buffer
-   --    * Uniform_Buffer
-   --    * Shader_Storage_Buffer
-
-   function Current_Object (Target : Buffer_Target) return Buffer'Class;
-   
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Load_To_Buffer (Object : Buffer;
-                             Data   : Pointers.Element_Array;
-                             Usage  : Buffer_Usage);
-
    procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
                        Kind : Numeric_Type; Usage : Buffer_Usage);
-   -- Use this instead of Load_To_Buffer when you don't want to copy any data
+   --  Use this instead of Load_To_Buffer when you don't want to copy any data
 
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Load_To_Immutable_Buffer (Object : Buffer;
-                                       Data   : Pointers.Element_Array;
-                                       Storage_Flags : Storage_Bits);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
-                  Pointer : out Pointers.Pointer);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
-                        Offset, Length : Types.Size;
-                        Pointer : out Pointers.Pointer);
-
-   procedure Unmap (Object : in out Buffer);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Flush_Buffer_Range (Object : in out Buffer;
-                                 Offset, Length : Types.Size);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
-                            Read_Offset, Write_Offset, Length : Types.Size);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   function Pointer (Object : Buffer) return Pointers.Pointer;
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Set_Sub_Data (Object : Buffer;
-                           Offset : Types.Size;
-                           Data   : in out Pointers.Element_Array);
-
-   generic
-      with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Get_Sub_Data (Object : Buffer;
-                           Offset : Types.Size;
-                           Data   : out Pointers.Element_Array);
+   function Current_Object (Target : Buffer_Target) return Buffer'Class;
 
    function Access_Type   (Object : Buffer) return Access_Kind;
    function Immutable     (Object : Buffer) return Boolean;
@@ -145,16 +80,65 @@ package GL.Objects.Buffers is
 
    overriding
    procedure Initialize_Id (Object : in out Buffer);
-   
+
    overriding
    procedure Delete_Id (Object : in out Buffer);
 
-   procedure Invalidate_Data (Object : in out Buffer);   
+   procedure Unmap (Object : in out Buffer);
+
+   procedure Invalidate_Data (Object : in out Buffer);
 
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
-   procedure Invalidate_Sub_Data (Object : in out Buffer;
-                                  Offset, Length : Types.Size);
+   package Buffer_Pointers is
+
+      procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
+                            Offset, Length : Types.Size);
+      --  Bind a part of the buffer object to the index of the target as
+      --  well as to the target itself.
+      --
+      --  Target must be one of the following:
+      --
+      --    * Atomic_Counter_Buffer
+      --    * Transform_Feedback_Buffer
+      --    * Uniform_Buffer
+      --    * Shader_Storage_Buffer
+
+      procedure Load_To_Buffer (Object : Buffer;
+                                Data   : Pointers.Element_Array;
+                                Usage  : Buffer_Usage);
+
+      procedure Load_To_Immutable_Buffer (Object : Buffer;
+                                          Data   : Pointers.Element_Array;
+                                          Storage_Flags : Storage_Bits);
+
+      procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
+                     Pointer : out Pointers.Pointer);
+
+      procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
+                           Offset, Length : Types.Size;
+                           Pointer : out Pointers.Pointer);
+
+      procedure Flush_Buffer_Range (Object : in out Buffer;
+                                    Offset, Length : Types.Size);
+
+      function Pointer (Object : Buffer) return Pointers.Pointer;
+
+      procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
+                               Read_Offset, Write_Offset, Length : Types.Size);
+
+      procedure Set_Sub_Data (Object : Buffer;
+                              Offset : Types.Size;
+                              Data   : in out Pointers.Element_Array);
+
+      procedure Get_Sub_Data (Object : Buffer;
+                              Offset : Types.Size;
+                              Data   : out Pointers.Element_Array);
+
+      procedure Invalidate_Sub_Data (Object : in out Buffer;
+                                     Offset, Length : Types.Size);
+
+   end Buffer_Pointers;
 
    Array_Buffer              : constant Buffer_Target;
    Element_Array_Buffer      : constant Buffer_Target;

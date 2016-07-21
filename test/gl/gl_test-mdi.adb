@@ -41,13 +41,13 @@ procedure GL_Test.MDI is
       use GL.Objects.Buffers;
       use GL.Attributes;
 
-      procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
+      package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
         (Single_Pointers);
 
-      procedure Load_Indices is new GL.Objects.Buffers.Load_To_Buffer
+      package UInt_Pointers is new GL.Objects.Buffers.Buffer_Pointers
         (UInt_Pointers);
 
-      procedure Load_Commands is new GL.Objects.Buffers.Load_To_Buffer
+      package Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
         (Indirect.Elements_Indirect_Command_Pointers);
 
       Vertices : constant Single_Array
@@ -69,19 +69,19 @@ procedure GL_Test.MDI is
       Attrib_Instance : constant Attribute := Program.Attrib_Location ("in_InstanceID");
    begin
       --  Upload vertices to Buffer1
-      Load_Vectors (Buffer1, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer1, Vertices, Static_Draw);
 
       --  Upload indices to Buffer2
-      Load_Indices (Buffer2, Indices, Static_Draw);
+      UInt_Pointers.Load_To_Buffer (Buffer2, Indices, Static_Draw);
       VAO.Bind_Element_Buffer (Buffer2);
 
       --  Upload commands to Buffer3
       Commands (1) := (Count => 3, Instances => 1, First_Index => 0, Base_Vertex => 0, Base_Instance => 0);
       Commands (2) := (Count => 3, Instances => 1, First_Index => 3, Base_Vertex => 3, Base_Instance => 1);
-      Load_Commands (Buffer3, Commands, Static_Draw);
+      Command_Pointers.Load_To_Buffer (Buffer3, Commands, Static_Draw);
 
       --  Upload instance ID's to Buffer4
-      Load_Indices (Buffer4, Instances_IDs, Static_Draw);
+      UInt_Pointers.Load_To_Buffer (Buffer4, Instances_IDs, Static_Draw);
 
       --  Enable and set attributes for the VAO
       VAO.Enable_Attribute (Attrib_Pos);

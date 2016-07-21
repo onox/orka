@@ -51,22 +51,6 @@ package body GL.Objects.Buffers is
       end if;
    end Bind_Base;
 
-   procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
-                         Offset, Length : Types.Size) is
-      Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
-
-      Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
-      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      if Holder.Is_Empty or else Object /= Holder.Element then
-         API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
-                                Low_Level.IntPtr (Offset_In_Bytes),
-                                Low_Level.SizeIPtr (Number_Of_Bytes));
-         Raise_Exception_On_OpenGL_Error;
-         Holder.Replace_Element (Object);
-      end if;
-   end Bind_Range;
-
    function Current_Object (Target : Buffer_Target) return Buffer'Class is
       Holder : constant Buffer_Holder.Holder := Current_Buffers (Target.Kind);
    begin
@@ -76,17 +60,6 @@ package body GL.Objects.Buffers is
          return Holder.Element;
       end if;
    end Current_Object;
-
-   procedure Load_To_Buffer (Object : Buffer;
-                             Data   : Pointers.Element_Array;
-                             Usage  : Buffer_Usage) is
-      use type C.long;
-   begin
-      API.Named_Buffer_Data (Object.Reference.GL_Id,
-        Pointers.Element'Size * Data'Length / System.Storage_Unit,
-        Data (Data'First)'Address, Usage);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_To_Buffer;
 
    procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
                        Kind : Numeric_Type; Usage : Buffer_Usage) is
@@ -115,121 +88,6 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
    end Allocate;
 
-   procedure Load_To_Immutable_Buffer (Object : Buffer;
-                                       Data   : Pointers.Element_Array;
-                                       Storage_Flags : Storage_Bits) is
-      use type Low_Level.Bitfield;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Storage_Bits, Target => Low_Level.Bitfield);
-      Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Storage_Flags) and 2#0000001111000011#;
-
-      Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
-                                Data (Data'First)'Address, Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_To_Immutable_Buffer;
-
-   procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
-                  Pointer : out Pointers.Pointer) is
-      function Map_Named_Buffer is new API.Loader.Function_With_2_Params
-        ("glMapNamedBuffer", UInt, Access_Kind,
-         Pointers.Pointer);
-   begin
-      Pointer := Map_Named_Buffer (Object.Reference.GL_Id, Access_Type);
-      Raise_Exception_On_OpenGL_Error;
-   end Map;
-
-   procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
-                  Offset, Length : Types.Size;
-                  Pointer : out Pointers.Pointer) is
-      use type Low_Level.Bitfield;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Access_Bits, Target => Low_Level.Bitfield);
-      Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Access_Flags) and 2#0000000011111111#;
-
-      function Map_Named_Buffer_Range is new API.Loader.Function_With_4_Params
-        ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr, Low_Level.Bitfield,
-         Pointers.Pointer);
-
-      Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
-      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      Pointer := Map_Named_Buffer_Range (Object.Reference.GL_Id,
-        Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
-        Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
-   end Map_Range;
-
-   procedure Unmap (Object : in out Buffer) is
-   begin
-      API.Unmap_Named_Buffer (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
-   end Unmap;
-
-   procedure Flush_Buffer_Range (Object : in out Buffer;
-                                 Offset, Length : Types.Size) is
-      Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
-      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      API.Flush_Mapped_Named_Buffer_Range (Object.Reference.GL_Id,
-                                           Low_Level.IntPtr (Offset_In_Bytes),
-                                           Low_Level.SizeIPtr (Number_Of_Bytes));
-      Raise_Exception_On_OpenGL_Error;
-   end Flush_Buffer_Range;
-
-   procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
-                            Read_Offset, Write_Offset, Length : Types.Size) is
-      Read_Offset_In_Bytes  : constant Int := Read_Offset  * Pointers.Element'Size / System.Storage_Unit;
-      Write_Offset_In_Bytes : constant Int := Write_Offset * Pointers.Element'Size / System.Storage_Unit;
-      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      API.Copy_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Target_Object.Reference.GL_Id,
-                                      Low_Level.IntPtr (Read_Offset_In_Bytes),
-                                      Low_Level.IntPtr (Write_Offset_In_Bytes),
-                                      Low_Level.SizeIPtr (Number_Of_Bytes));
-      Raise_Exception_On_OpenGL_Error;
-   end Copy_Sub_Data;
-
-   function Pointer (Object : Buffer) return Pointers.Pointer is
-      procedure Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
-        ("glGetNamedBufferPointerv", UInt,
-         Enums.Buffer_Pointer_Param, Pointers.Pointer);
-      Ret : Pointers.Pointer := null;
-   begin
-      Named_Buffer_Pointer (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Pointer;
-
-   procedure Set_Sub_Data (Object : Buffer;
-                           Offset : Types.Size;
-                           Data   : in out Pointers.Element_Array) is
-      Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      API.Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
-                       Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Sub_Data;
-
-   procedure Get_Sub_Data (Object : Buffer;
-                           Offset : Types.Size;
-                           Data   : out Pointers.Element_Array) is
-      procedure Get_Named_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
-        ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
-         Low_Level.SizeIPtr, Pointers.Element_Array);
-
-      Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
-                           Low_Level.SizeIPtr (Number_Of_Bytes), Data);
-      Raise_Exception_On_OpenGL_Error;
-   end Get_Sub_Data;
-
    function Access_Type (Object : Buffer) return Access_Kind is
       Ret : Access_Kind := Access_Kind'First;
    begin
@@ -254,7 +112,7 @@ package body GL.Objects.Buffers is
       Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Mapped;
-   
+
    function Size (Object : Buffer) return Types.Size is
       Ret : Types.Size := 0;
    begin
@@ -303,22 +161,168 @@ package body GL.Objects.Buffers is
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
-   
+
+   procedure Unmap (Object : in out Buffer) is
+   begin
+      API.Unmap_Named_Buffer (Object.Reference.GL_Id);
+      Raise_Exception_On_OpenGL_Error;
+   end Unmap;
+
    procedure Invalidate_Data (Object : in out Buffer) is
-   begin 
+   begin
       API.Invalidate_Buffer_Data (Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
-   
-   procedure Invalidate_Sub_Data (Object : in out Buffer;
-                                  Offset, Length : Types.Size) is
-      Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
-      Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-   begin
-      API.Invalidate_Buffer_Sub_Data (Object.Reference.GL_Id,
-                                      Low_Level.IntPtr (Offset_In_Bytes),
-                                      Low_Level.SizeIPtr (Number_Of_Bytes));
-      Raise_Exception_On_OpenGL_Error;
-   end Invalidate_Sub_Data;
+
+   package body Buffer_Pointers is
+
+      procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
+                            Offset, Length : Types.Size) is
+         Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
+
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+         Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         if Holder.Is_Empty or else Object /= Holder.Element then
+            API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
+                                   Low_Level.IntPtr (Offset_In_Bytes),
+                                   Low_Level.SizeIPtr (Number_Of_Bytes));
+            Raise_Exception_On_OpenGL_Error;
+            Holder.Replace_Element (Object);
+         end if;
+      end Bind_Range;
+
+      procedure Load_To_Buffer (Object : Buffer;
+                                Data   : Pointers.Element_Array;
+                                Usage  : Buffer_Usage) is
+         use type C.long;
+      begin
+         API.Named_Buffer_Data (Object.Reference.GL_Id,
+           Pointers.Element'Size * Data'Length / System.Storage_Unit,
+           Data (Data'First)'Address, Usage);
+         Raise_Exception_On_OpenGL_Error;
+      end Load_To_Buffer;
+
+      procedure Load_To_Immutable_Buffer (Object : Buffer;
+                                          Data   : Pointers.Element_Array;
+                                          Storage_Flags : Storage_Bits) is
+         use type Low_Level.Bitfield;
+
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Storage_Bits, Target => Low_Level.Bitfield);
+         Raw_Bits : constant Low_Level.Bitfield :=
+           Convert (Storage_Flags) and 2#0000001111000011#;
+
+         Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
+                                   Data (Data'First)'Address, Raw_Bits);
+         Raise_Exception_On_OpenGL_Error;
+      end Load_To_Immutable_Buffer;
+
+      procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
+                     Pointer : out Pointers.Pointer) is
+         function Map_Named_Buffer is new API.Loader.Function_With_2_Params
+           ("glMapNamedBuffer", UInt, Access_Kind,
+            Pointers.Pointer);
+      begin
+         Pointer := Map_Named_Buffer (Object.Reference.GL_Id, Access_Type);
+         Raise_Exception_On_OpenGL_Error;
+      end Map;
+
+      procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
+                     Offset, Length : Types.Size;
+                     Pointer : out Pointers.Pointer) is
+         use type Low_Level.Bitfield;
+
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Access_Bits, Target => Low_Level.Bitfield);
+         Raw_Bits : constant Low_Level.Bitfield :=
+           Convert (Access_Flags) and 2#0000000011111111#;
+
+         function Map_Named_Buffer_Range is new API.Loader.Function_With_4_Params
+           ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr, Low_Level.Bitfield,
+            Pointers.Pointer);
+
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+         Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         Pointer := Map_Named_Buffer_Range (Object.Reference.GL_Id,
+           Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
+           Raw_Bits);
+         Raise_Exception_On_OpenGL_Error;
+      end Map_Range;
+
+      procedure Flush_Buffer_Range (Object : in out Buffer;
+                                    Offset, Length : Types.Size) is
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+         Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         API.Flush_Mapped_Named_Buffer_Range (Object.Reference.GL_Id,
+                                              Low_Level.IntPtr (Offset_In_Bytes),
+                                              Low_Level.SizeIPtr (Number_Of_Bytes));
+         Raise_Exception_On_OpenGL_Error;
+      end Flush_Buffer_Range;
+
+      procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
+                               Read_Offset, Write_Offset, Length : Types.Size) is
+         Read_Offset_In_Bytes  : constant Int := Read_Offset  * Pointers.Element'Size / System.Storage_Unit;
+         Write_Offset_In_Bytes : constant Int := Write_Offset * Pointers.Element'Size / System.Storage_Unit;
+         Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         API.Copy_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Target_Object.Reference.GL_Id,
+                                         Low_Level.IntPtr (Read_Offset_In_Bytes),
+                                         Low_Level.IntPtr (Write_Offset_In_Bytes),
+                                         Low_Level.SizeIPtr (Number_Of_Bytes));
+         Raise_Exception_On_OpenGL_Error;
+      end Copy_Sub_Data;
+
+      function Pointer (Object : Buffer) return Pointers.Pointer is
+         procedure Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
+           ("glGetNamedBufferPointerv", UInt,
+            Enums.Buffer_Pointer_Param, Pointers.Pointer);
+         Ret : Pointers.Pointer := null;
+      begin
+         Named_Buffer_Pointer (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
+         Raise_Exception_On_OpenGL_Error;
+         return Ret;
+      end Pointer;
+
+      procedure Set_Sub_Data (Object : Buffer;
+                              Offset : Types.Size;
+                              Data   : in out Pointers.Element_Array) is
+         Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         API.Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
+                          Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
+         Raise_Exception_On_OpenGL_Error;
+      end Set_Sub_Data;
+
+      procedure Get_Sub_Data (Object : Buffer;
+                              Offset : Types.Size;
+                              Data   : out Pointers.Element_Array) is
+         procedure Get_Named_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
+           ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
+            Low_Level.SizeIPtr, Pointers.Element_Array);
+
+         Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
+                              Low_Level.SizeIPtr (Number_Of_Bytes), Data);
+         Raise_Exception_On_OpenGL_Error;
+      end Get_Sub_Data;
+
+      procedure Invalidate_Sub_Data (Object : in out Buffer;
+                                     Offset, Length : Types.Size) is
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+         Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
+      begin
+         API.Invalidate_Buffer_Sub_Data (Object.Reference.GL_Id,
+                                         Low_Level.IntPtr (Offset_In_Bytes),
+                                         Low_Level.SizeIPtr (Number_Of_Bytes));
+         Raise_Exception_On_OpenGL_Error;
+      end Invalidate_Sub_Data;
+
+   end Buffer_Pointers;
 
 end GL.Objects.Buffers;

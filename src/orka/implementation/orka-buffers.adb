@@ -14,6 +14,21 @@
 
 package body Orka.Buffers is
 
+   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+     (GL.Types.Single_Pointers);
+
+   package UInt_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+     (GL.Types.UInt_Pointers);
+
+   package Color_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+      (GL.Types.Colors.Basic_Color_Pointers);
+
+   package Arrays_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+      (GL.Types.Indirect.Arrays_Indirect_Command_Pointers);
+
+   package Elements_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+      (GL.Types.Indirect.Elements_Indirect_Command_Pointers);
+
    function Create_Buffer (Usage : GL.Objects.Buffers.Buffer_Usage) return Buffer is
    begin
       return Result : Buffer do
@@ -30,42 +45,32 @@ package body Orka.Buffers is
      is (Object.Length);
 
    procedure Set_Data (Object : in out Buffer; Data : Single_Array) is
-      procedure Load is new GL.Objects.Buffers.Load_To_Buffer
-        (GL.Types.Single_Pointers);
    begin
-      Load (Object.Buffer, Data, Object.Usage);
+      Single_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 
    procedure Set_Data (Object : in out Buffer; Data : UInt_Array) is
-      procedure Load is new GL.Objects.Buffers.Load_To_Buffer
-        (GL.Types.UInt_Pointers);
    begin
-      Load (Object.Buffer, Data, Object.Usage);
+      UInt_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 
    procedure Set_Data (Object : in out Buffer; Data : Colors.Basic_Color_Array) is
-      procedure Load is new GL.Objects.Buffers.Load_To_Buffer
-        (GL.Types.Colors.Basic_Color_Pointers);
    begin
-      Load (Object.Buffer, Data, Object.Usage);
+      Color_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 
    procedure Set_Data (Object : in out Buffer; Data : Indirect.Arrays_Indirect_Command_Array) is
-      procedure Load is new GL.Objects.Buffers.Load_To_Buffer
-        (GL.Types.Indirect.Arrays_Indirect_Command_Pointers);
    begin
-      Load (Object.Buffer, Data, Object.Usage);
+      Arrays_Command_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 
    procedure Set_Data (Object : in out Buffer; Data : Indirect.Elements_Indirect_Command_Array) is
-      procedure Load is new GL.Objects.Buffers.Load_To_Buffer
-        (GL.Types.Indirect.Elements_Indirect_Command_Pointers);
    begin
-      Load (Object.Buffer, Data, Object.Usage);
+      Elements_Command_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 

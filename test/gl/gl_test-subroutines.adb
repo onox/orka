@@ -34,7 +34,7 @@ procedure GL_Test.Subroutines is
    use GL.Objects.Vertex_Arrays;
    use GL.Objects.Shaders;
 
-   procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
+   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Single_Pointers);
 
    procedure Load_Data (VAO  : Vertex_Array_Object;
@@ -52,7 +52,7 @@ procedure GL_Test.Subroutines is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       --  Upload Vertices data to VBO
-      Load_Vectors (VBO, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (VBO, Vertices, Static_Draw);
 
       --  Enable and set attributes for VAO VAO
       VAO.Enable_Attribute (Attrib_Pos);

@@ -93,11 +93,11 @@ procedure GL_Test.Geometry is
       Attrib_Col : constant Attribute := Program.Attrib_Location ("color");
       Attrib_Sid : constant Attribute := Program.Attrib_Location ("sides");
 
-      procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
+      package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
         (Single_Pointers);
    begin
       --  Bind VBO and upload vertices to GPU
-      Load_Vectors (Buffer_Points, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer_Points, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Points VAO
       Array_Points.Enable_Attribute (Attrib_Pos);

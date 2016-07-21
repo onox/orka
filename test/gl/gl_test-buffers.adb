@@ -43,7 +43,7 @@ procedure GL_Test.Buffers is
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
 
-   procedure Load_Vectors is new GL.Objects.Buffers.Load_To_Buffer
+   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Single_Pointers);
 
    procedure Load_Scene_Data (Array_Cube  : Vertex_Array_Object;
@@ -106,7 +106,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Cube
-      Load_Vectors (Buffer_Cube, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer_Cube, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Cube VAO
       Array_Cube.Enable_Attribute (Attrib_Pos);
@@ -143,7 +143,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Quad
-      Load_Vectors (Buffer_Quad, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Buffer (Buffer_Quad, Vertices, Static_Draw);
 
       --  Enable and set attributes for Array_Quad VAO
       Array_Quad.Enable_Attribute (Attrib_Pos);
