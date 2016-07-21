@@ -1,10 +1,11 @@
+[![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
+
 Orka
 ====
 
-[![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
-
 Orka is the OpenGL Rendering Kernel in Ada. It is written in Ada 2012
-and provides an object-oriented API for modern OpenGL.
+and provides an object-oriented API for modern OpenGL. Orka and the OpenGL
+bindings require and use OpenGL 4.5's Direct State Access (DSA) extension.
 
 Orka builds upon and provides thick bindings for OpenGL 4.5. These bindings
 are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
