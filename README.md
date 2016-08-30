@@ -113,14 +113,12 @@ files from the source directory by using relative paths, so they only work with
 License
 -------
 
-The OpenGL and GLFW bindings (`src/gl`, `src/glfw`, and `test/gl`) are
-distributed under the terms of the [ISC License][url-isc].
-Orka (`src/orka`) is licensed under the [Apache License 2.0][url-apache].
+The OpenGL and GLFW bindings and Orka are distributed under the terms
+of the [Apache License 2.0][url-apache].
 
   [url-openglada]: https://github.com/flyx/OpenGLAda
   [url-glfw]: http://www.glfw.org/
   [url-adacore]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-gprbuild]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
-  [url-isc]: https://opensource.org/licenses/ISC
   [url-apache]: https://opensource.org/licenses/Apache-2.0
