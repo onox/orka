@@ -91,8 +91,8 @@ begin
       MDI_Buffers : Orka.Buffers.MDI.MDI_Buffers;
 
       Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
-        (VS => "../test/orka/shaders/test-4-module-1.vert",
-         FS => "../test/orka/shaders/test-4-module-1.frag"));
+        (VS => "../examples/orka/shaders/test-4-module-1.vert",
+         FS => "../examples/orka/shaders/test-4-module-1.frag"));
 
       Mesh_1 : constant Mesh := Load_Mesh (Program_1, MDI_Buffers);
    begin

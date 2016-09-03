@@ -124,9 +124,9 @@ procedure GL_Test.Geometry is
    Vector_Buffer_Points : GL.Objects.Buffers.Buffer;
    Array_Points : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 
-   Vertex_Source    : constant String := "../test/gl/shaders/geometry.vert";
-   Geometry_Source  : constant String := "../test/gl/shaders/geometry.geom";
-   Fragment_Source  : constant String := "../test/gl/shaders/geometry.frag";
+   Vertex_Source    : constant String := "../examples/gl/shaders/geometry.vert";
+   Geometry_Source  : constant String := "../examples/gl/shaders/geometry.geom";
+   Fragment_Source  : constant String := "../examples/gl/shaders/geometry.frag";
 begin
    Display_Backend.Init (Major => 3, Minor => 2);
    Display_Backend.Set_Not_Resizable;

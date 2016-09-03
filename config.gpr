@@ -1,4 +1,4 @@
-abstract project OpenGL_Shared is
+abstract project Config is
 
    Version := "0.1";
 
@@ -12,11 +12,8 @@ abstract project OpenGL_Shared is
    type Windowing_System_Type is ("windows", "x11", "quartz");
    Windowing_System : Windowing_System_Type := external ("Windowing_System");
 
-   type Mode_Type is ("debug", "release");
+   type Mode_Type is ("debug", "development", "release");
    Mode : Mode_Type := external ("Mode", "release");
-
-   type Toggle_Type is ("enabled", "disabled");
-   Auto_Exceptions : Toggle_Type := external ("Auto_Exceptions", "enabled");
 
    type Library_Type is ("static", "relocatable");
    Library_Kind : Library_Type := external ("Library_Type", "relocatable");
@@ -25,9 +22,7 @@ abstract project OpenGL_Shared is
 
    Compiler_Switches := (
       "-fstack-check",  --  Stack overflow checking
-      "-gnato13",       --  Numeric overflow checking
       "-gnateE",        --  Extra information in exceptions
-      "-gnata",         --  Enable assertions
       "-gnatf",         --  Full errors
       "-gnatVa",        --  All validity checks
       "-gnatwa",        --  All optional warnings
@@ -38,6 +33,11 @@ abstract project OpenGL_Shared is
       "-Wall"           --  All GCC warnings
    ) & Compiler_Flags;
 
+   Dev_Switches := (
+      "-gnato13",       --  Numeric overflow checking
+      "-gnata"          --  Enable assertions
+   );
+
    package Ide is
       for Vcs_Kind use "Git";
    end Ide;
@@ -46,7 +46,7 @@ abstract project OpenGL_Shared is
       case Mode is
          when "debug" =>
             for Default_Switches ("ada") use ("-s", "-g");
-         when "release" =>
+         when others =>
             for Default_Switches ("ada") use ("-s");
       end case;
    end Builder;
@@ -54,9 +54,11 @@ abstract project OpenGL_Shared is
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("ada") use Compiler_Switches & ("-g");
+            for Default_Switches ("ada") use Compiler_Switches & Dev_Switches & ("-g");
+         when "development" =>
+            for Default_Switches ("ada") use Compiler_Switches & Dev_Switches & ("-gnatn2", "-fomit-frame-pointer", "-flto");
          when "release" =>
-            for Default_Switches ("ada") use Compiler_Switches & ("-gnatn2", "-fomit-frame-pointer", "-flto");
+            for Default_Switches ("ada") use Compiler_Switches & ("-gnatn2", "-fomit-frame-pointer", "-flto", "-gnato0");
       end case;
 
       for Local_Configuration_Pragmas use "gnat.adc";
@@ -64,12 +66,12 @@ abstract project OpenGL_Shared is
 
    package Binder is
       case Mode is
-         when "debug" =>
+         when "debug" | "development" =>
             --  Store tracebacks in exception occurrences
             for Default_Switches ("ada") use ("-E");
-         when "release" =>
+         when others =>
             null;
       end case;
    end Binder;
 
-end OpenGL_Shared;
+end Config;

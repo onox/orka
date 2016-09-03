@@ -1,0 +1,5 @@
+aggregate project Examples is
+
+   for Project_Files use ("opengl_test.gpr", "glfw_test.gpr", "orka_test.gpr");
+
+end Examples;

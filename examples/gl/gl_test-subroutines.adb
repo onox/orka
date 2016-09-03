@@ -70,9 +70,9 @@ procedure GL_Test.Subroutines is
    begin
       --  Load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (VS, "../test/gl/shaders/subroutines.vert");
+        (VS, "../examples/gl/shaders/subroutines.vert");
       GL.Files.Load_Shader_Source_From_File
-        (FS, "../test/gl/shaders/subroutines.frag");
+        (FS, "../examples/gl/shaders/subroutines.frag");
 
       VS.Compile;
       FS.Compile;

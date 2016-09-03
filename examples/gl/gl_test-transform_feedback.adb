@@ -111,8 +111,8 @@ procedure GL_Test.Transform_Feedback is
    Query : GL.Objects.Queries.Query;
    Feedback : GL.Objects.Transform_Feedbacks.Feedback_Object;
 
-   Vertex_Source   : constant String := "../test/gl/shaders/transform_feedback.vert";
-   Geometry_Source : constant String := "../test/gl/shaders/transform_feedback.geom";
+   Vertex_Source   : constant String := "../examples/gl/shaders/transform_feedback.vert";
+   Geometry_Source : constant String := "../examples/gl/shaders/transform_feedback.geom";
 
    Feedback_Output : aliased String := "out_value";
    Feedback_Outputs : constant String_Array := (1 => Feedback_Output'Unchecked_Access);

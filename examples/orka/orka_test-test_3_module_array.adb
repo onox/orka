@@ -22,7 +22,7 @@ with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
 
-procedure Orka_Test.Test_1_Triangle is
+procedure Orka_Test.Test_3_Module_Array is
    use Orka.Meshes;
    use Orka.Programs;
 
@@ -33,9 +33,9 @@ procedure Orka_Test.Test_1_Triangle is
       VBO : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
 
       Vertices : constant Single_Array
-        := (-0.5, -0.5,     1.0, 0.0, 0.0,
-             0.5, -0.5,     0.0, 1.0, 0.0,
-             0.0,  0.5,     0.0, 0.0, 1.0);
+        := (-0.5, -0.5,
+             0.5, -0.5,
+             0.0,  0.5);
    begin
       --  Upload Vertices data to VBO
       VBO.Set_Data (Vertices);
@@ -46,7 +46,6 @@ procedure Orka_Test.Test_1_Triangle is
             Attributes : Buffers.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
             Attributes.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
-            Attributes.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
             Attributes.Set_Buffer (VBO);
          end;
       end return;
@@ -59,9 +58,13 @@ begin
    declare
       use GL.Buffers;
 
-      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
-        (VS => "../test/gl/shaders/opengl3.vert",
-         FS => "../test/gl/shaders/opengl3.frag"));
+      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Module_Array'(
+        Modules.Create_Module
+          (FS => "../examples/orka/shaders/test-3-module-1.frag"),
+        Modules.Create_Module
+          (VS => "../examples/orka/shaders/test-3-module-2.vert",
+           FS => "../examples/orka/shaders/test-3-module-2.frag")
+      ));
 
       Triangle : constant Mesh := Load_Mesh (Program_1);
    begin
@@ -77,4 +80,4 @@ begin
    end;
 
    GL_Test.Display_Backend.Shutdown;
-end Orka_Test.Test_1_Triangle;
+end Orka_Test.Test_3_Module_Array;

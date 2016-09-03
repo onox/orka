@@ -9,40 +9,36 @@ endif
 
 WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
 LIBRARY_TYPE ?= relocatable
+MODE ?= release
 
 GNAT_FLAGS ?=
 CFLAGS  ?= -O2 -march=native
 LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 
-GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM} -XCompiler_Flags="${CFLAGS}"
+GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM} -XLibrary_Type=${LIBRARY_TYPE} -XCompiler_Flags="${CFLAGS}" -XMode=${MODE}
 GPRCLEAN = gprclean -q ${WINDOWING_SYSTEM}
 
 build_src:
-	$(GPRBUILD) -P opengl-glfw.gpr -largs ${LDFLAGS}
-	$(GPRBUILD) -P orka.gpr -largs ${LDFLAGS}
+	$(GPRBUILD) -P root.gpr -largs ${LDFLAGS}
 
-build_test:
-	$(GPRBUILD) -P opengl_test.gpr -largs ${LDFLAGS}
-	$(GPRBUILD) -P glfw_test.gpr -largs ${LDFLAGS}
-	$(GPRBUILD) -P orka_test.gpr -largs ${LDFLAGS}
+build_examples:
+	$(GPRBUILD) -P examples.gpr -largs ${LDFLAGS}
 
 clean_src:
-	$(GPRCLEAN) -r -P opengl-glfw.gpr
-	$(GPRCLEAN) -r -P orka.gpr
+	$(GPRCLEAN) -r -P root.gpr
 	rmdir lib/{glfw,orka,opengl}
+	rmdir lib
 	rmdir obj/{glfw,orka,opengl}
-	rmdir lib obj
+	rmdir obj
 
-clean_test:
-	$(GPRCLEAN) -P orka_test.gpr
-	$(GPRCLEAN) -P glfw_test.gpr
-	$(GPRCLEAN) -P opengl_test.gpr
+clean_examples:
+	$(GPRCLEAN) -P examples.gpr
 	rmdir bin
 
 all: build
 
 build: build_src
 
-test: build_test
+examples: build_examples
 
-clean: clean_test clean_src
+clean: clean_examples clean_src

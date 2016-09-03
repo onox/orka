@@ -92,8 +92,8 @@ begin
       use GL.Buffers;
 
       Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
-        (VS => "../test/gl/shaders/opengl3.vert",
-         FS => "../test/gl/shaders/opengl3.frag"));
+        (VS => "../examples/gl/shaders/opengl3.vert",
+         FS => "../examples/gl/shaders/opengl3.frag"));
 
       Triangle_1 : constant Mesh := Load_Mesh_1 (Program_1);
       Triangle_2 : constant Mesh := Load_Mesh_2 (Program_1);

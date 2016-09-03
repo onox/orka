@@ -37,22 +37,26 @@ In order to build Orka or the OpenGL bindings, you need to have:
     - ARB\_direct\_state\_access (OpenGL 4.5)
  * Optionally [GLFW][url-glfw]
 
-Note: You may also be able to build the project with another Ada compiler and/or
-without using the \*.gpr files. You just have to import the sources to your
-compiler apart from GNAT, so if I accidentally used some GNAT-specific features
-in the code, please drop me a message.
-
 Compilation
 -----------
 
-A Makefile is provided to build the source code and tests. Use `make` to build
+A Makefile is provided to build the source code and examples. Use `make` to build
 the source code:
 
     $ make
 
-Use `make test` to build the test programs:
+If you want to check after each call to OpenGL whether an error flag was set
+and raise a corresponding exception, then use the `development` mode:
 
-    $ make test
+    $ MODE=development make
+
+The default mode is `release`. Both `release` and `development` enable general
+optimizations. To enable OpenGL exceptions, disable optimizations, and include
+debugging symbols, use the `debug` mode.
+
+Use `make examples` to build the example programs:
+
+    $ make examples
 
 Using Orka in your project
 --------------------------
@@ -74,20 +78,16 @@ scenario parameters:
     - `windows`: Microsoft Windows
     - `quartz`: Quartz Compositor (OS X)
 
- * `mode`: May take one of the following values:
+ * `Mode`: May take one of the following values:
 
-    - `debug`: Compile the project with debugging symbols and without
-      optimization.
-    - `release` (default): Compile the project for a release environment.
+    - `debug`: Compile the project with debugging symbols and OpenGL
+      exceptions, and without optimizations.
+    - `development`: Compile the project with optimizations, but enable
+      OpenGL exceptions.
+    - `release` (default): Compile the project for a release environment;
+      OpenGL exceptions are disabled and optimizations are enabled.
 
- * `Auto_Exceptions`: Configures exception handling:
-
-   - `enabled` (default): After each call to OpenGL, the code checks whether
-     OpenGL has set an error flag and if it had, raises the corresponding
-     exception.
-   - `disabled`: The user has to query the error flag on his own.
-
- * `GLFW_LIB`: Linker flags for GLFW. The default is `-lglfw`.
+ * `GLFW_Lib`: Linker flags for GLFW. The default is `-lglfw`.
 
 If you choose not to use GPRBuild, you need to add the sources to your
 project and then use whatever build system you want.
@@ -101,13 +101,13 @@ If you're using GLFW, add `-lglfw3` or `-lglfw`. If you're
 on Windows and link against GLFW as a dynamic library, you also need to add
 `-lwinmm`.
 
-Tests
------
+Examples
+--------
 
-The project contains some tests. You can also see them as examples
-that demonstrate the basic usage of the API. After building them as described
-above, you can execute them in the `bin` directory. Some tests load shader
-files from the source directory by using relative paths, so they only work with
+The project contains some examples that demonstrate the basic usage of
+the library. After building them as described above, you can execute
+them in the `bin` directory. Some examples load shader files from the
+source directory by using relative paths, so they only work with
 `bin` as working directory.
 
 License

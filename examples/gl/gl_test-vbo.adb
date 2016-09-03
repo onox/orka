@@ -69,9 +69,9 @@ procedure GL_Test.VBO is
    begin
       --  Load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (Vertex_Shader, "../test/gl/shaders/opengl3.vert");
+        (Vertex_Shader, "../examples/gl/shaders/opengl3.vert");
       GL.Files.Load_Shader_Source_From_File
-        (Fragment_Shader, "../test/gl/shaders/opengl3.frag");
+        (Fragment_Shader, "../examples/gl/shaders/opengl3.frag");
       
       Vertex_Shader.Compile;
       Fragment_Shader.Compile;

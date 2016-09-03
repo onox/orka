@@ -1,40 +1,40 @@
-with "opengl_shared";
+with "config";
 
 library project OpenGL is
 
    for Languages use ("ada");
 
    for Library_Name use "openglada";
-   for Library_Version use "libopenglada.so." & OpenGL_Shared.Version;
+   for Library_Version use "libopenglada.so." & Config.Version;
    for Library_Dir  use "lib";
    for Library_ALI_Dir use "lib/opengl";
-   for Library_Kind use OpenGL_Shared.Library_Kind;
+   for Library_Kind use Config.Library_Kind;
 
    OpenGL_Sources := ("src/gl/interface",
                       "src/gl/implementation");
-   case OpenGL_Shared.Windowing_System is
+   case Config.Windowing_System is
       when "windows" => OpenGL_Sources := OpenGL_Sources & "src/gl/windows";
       when "x11"     => OpenGL_Sources := OpenGL_Sources & "src/gl/x11";
       when "quartz"  => OpenGL_Sources := OpenGL_Sources & "src/gl/mac";
    end case;
 
-   case OpenGL_Shared.Auto_Exceptions is
-      when "enabled" => OpenGL_Sources :=
-        OpenGL_Sources & "src/gl/implementation/auto_exceptions";
-      when "disabled" => OpenGL_Sources :=
+   case Config.Mode is
+      when "release" => OpenGL_Sources :=
         OpenGL_Sources & "src/gl/implementation/no_auto_exceptions";
+      when others => OpenGL_Sources :=
+        OpenGL_Sources & "src/gl/implementation/auto_exceptions";
    end case;
 
    for Source_Dirs use OpenGL_Sources;
    for Object_Dir use "obj/opengl";
 
-   package Ide renames OpenGL_Shared.Ide;
-   package Builder renames OpenGL_Shared.Builder;
-   package Compiler renames OpenGL_Shared.Compiler;
-   package Binder renames OpenGL_Shared.Binder;
+   package Ide renames Config.Ide;
+   package Builder renames Config.Builder;
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
 
    package Linker is
-      case OpenGL_Shared.Windowing_System is
+      case Config.Windowing_System is
          when "windows" =>
             for Linker_Options use ("-lOpenGL32", "-lGdi32");
          when "x11" =>

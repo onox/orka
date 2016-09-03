@@ -245,10 +245,10 @@ procedure GL_Test.Buffers is
 
    Uni_Model, Uni_View, Uni_Proj, Uni_Color, Uni_Effect : GL.Objects.Programs.Uniforms.Uniform;
 
-   Scene_Vertex_Source    : constant String := "../test/gl/shaders/buffers_scene.vert";
-   Scene_Fragment_Source  : constant String := "../test/gl/shaders/buffers_scene.frag";
-   Screen_Vertex_Source   : constant String := "../test/gl/shaders/buffers_screen.vert";
-   Screen_Fragment_Source : constant String := "../test/gl/shaders/buffers_screen.frag";
+   Scene_Vertex_Source    : constant String := "../examples/gl/shaders/buffers_scene.vert";
+   Scene_Fragment_Source  : constant String := "../examples/gl/shaders/buffers_scene.frag";
+   Screen_Vertex_Source   : constant String := "../examples/gl/shaders/buffers_screen.vert";
+   Screen_Fragment_Source : constant String := "../examples/gl/shaders/buffers_screen.frag";
 begin
    Display_Backend.Init (Major => 3, Minor => 2);
    Display_Backend.Set_Not_Resizable;

@@ -149,9 +149,9 @@ procedure GL_Test.Instancing is
    begin
       -- load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (Vertex_Shader, "../test/gl/shaders/instancing.vert");
+        (Vertex_Shader, "../examples/gl/shaders/instancing.vert");
       GL.Files.Load_Shader_Source_From_File
-        (Fragment_Shader, "../test/gl/shaders/instancing.frag");
+        (Fragment_Shader, "../examples/gl/shaders/instancing.frag");
       
       Vertex_Shader.Compile;
       Fragment_Shader.Compile;

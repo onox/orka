@@ -1,0 +1,5 @@
+aggregate project Root is
+
+   for Project_Files use ("orka.gpr", "opengl-glfw.gpr");
+
+end Root;

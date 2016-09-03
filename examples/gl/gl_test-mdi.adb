@@ -102,9 +102,9 @@ procedure GL_Test.MDI is
    begin
       --  Load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
-        (Vertex_Shader, "../test/gl/shaders/mdi.vert");
+        (Vertex_Shader, "../examples/gl/shaders/mdi.vert");
       GL.Files.Load_Shader_Source_From_File
-        (Fragment_Shader, "../test/gl/shaders/mdi.frag");
+        (Fragment_Shader, "../examples/gl/shaders/mdi.frag");
 
       Vertex_Shader.Compile;
       Fragment_Shader.Compile;
