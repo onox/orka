@@ -35,7 +35,7 @@ package body Glfw.Errors is
    procedure Set_Callback (Handler : Callback) is
       use type API.Error_Callback;
       Previous : API.Error_Callback;
-      pragma Warnings (Off, Previous);
+      pragma Unreferenced (Previous);
    begin
       Cur_Callback := Handler;
       if Handler = null then
