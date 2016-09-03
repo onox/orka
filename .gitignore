@@ -1,6 +1,7 @@
 /lib/
 /obj/
 /bin/
+/auto.cgpr
 *.swp
 .DS_Store
 .#*#

@@ -4,9 +4,11 @@ library project OpenGL is
 
    for Languages use ("ada");
 
-   for Library_Name use "OpenGLAda";
+   for Library_Name use "openglada";
+   for Library_Version use "libopenglada.so." & OpenGL_Shared.Version;
    for Library_Dir  use "lib";
-   for Library_Kind use OpenGL_Shared'Library_Kind;
+   for Library_ALI_Dir use "lib/opengl";
+   for Library_Kind use OpenGL_Shared.Library_Kind;
 
    OpenGL_Sources := ("src/gl/interface",
                       "src/gl/implementation");
@@ -24,7 +26,7 @@ library project OpenGL is
    end case;
 
    for Source_Dirs use OpenGL_Sources;
-   for Object_Dir use "obj";
+   for Object_Dir use "obj/opengl";
 
    package Ide renames OpenGL_Shared.Ide;
    package Builder renames OpenGL_Shared.Builder;
