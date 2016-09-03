@@ -13,10 +13,12 @@
 --  limitations under the License.
 
 package body GL.Vectors is      
+
    function "+" (Left, Right : Vector) return Vector is
       Ret : Vector;
    begin
       for I in Index_Type'Range loop
+         pragma Loop_Optimize (Unroll);
          Ret (I) := Left (I) + Right (I);
       end loop;
       return Ret;
@@ -26,6 +28,7 @@ package body GL.Vectors is
       Ret : Vector;
    begin
       for I in Index_Type'Range loop
+         pragma Loop_Optimize (Unroll);
          Ret (I) := Left (I) - Right (I);
       end loop;
       return Ret;
@@ -35,6 +38,7 @@ package body GL.Vectors is
       Ret : Vector;
    begin
       for I in Index_Type loop
+         pragma Loop_Optimize (Unroll);
          Ret (I) := -Left (I);
       end loop;
       return Ret;
@@ -44,6 +48,7 @@ package body GL.Vectors is
       Ret : Vector;
    begin
       for I in Index_Type'Range loop
+         pragma Loop_Optimize (Unroll);
          Ret (I) := Left (I) * Right;
       end loop;
       return Ret;
@@ -58,8 +63,10 @@ package body GL.Vectors is
       Ret : Vector;
    begin
       for I in Index_Type'Range loop
+         pragma Loop_Optimize (Unroll);
          Ret (I) := Left (I) / Right;
       end loop;
       return Ret;
    end "/";
+
 end GL.Vectors;
