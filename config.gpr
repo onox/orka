@@ -18,6 +18,9 @@ abstract project Config is
    type Library_Type is ("static", "relocatable");
    Library_Kind : Library_Type := external ("Library_Type", "relocatable");
 
+   type Compiler_Type is ("gnat");
+   Compiler_Name : Compiler_Type := external ("Compiler", "gnat");
+
    Compiler_Flags := external_as_list ("Compiler_Flags", " ");
 
    Compiler_Switches := (
