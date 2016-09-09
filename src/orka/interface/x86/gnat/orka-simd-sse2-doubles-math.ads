@@ -19,13 +19,13 @@ package Orka.SIMD.SSE2.Doubles.Math is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_minpd";
    --  Compare each 64-bit double in Left and Right and take the minimum values.
    --
-   --  Result (I) := Float'Min (Left (I), Right (I)) for I in 1 ..4
+   --  Result (I) := Double'Min (Left (I), Right (I)) for I in 1 ..4
 
    function Max (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_maxpd";
    --  Compare each 64-bit double in Left and Right and take the maximum values.
    --
-   --  Result (I) := Float'Max (Left (I), Right (I)) for I in 1 ..4
+   --  Result (I) := Double'Max (Left (I), Right (I)) for I in 1 ..4
 
    function Sqrt (Elements : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_sqrtpd";

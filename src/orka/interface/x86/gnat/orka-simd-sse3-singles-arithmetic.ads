@@ -34,7 +34,7 @@ package Orka.SIMD.SSE3.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_hsubps";
    --  Compute the differences of adjacent 32-bit floats in Left and Right.
    --  The two differences (four elements gives two pairs) of elements
-   --  from Left are stored in the two floats in the lower half, sums from
-   --  Right in the upper half.
+   --  from Left are stored in the two floats in the lower half, differences
+   --  from Right in the upper half.
 
 end Orka.SIMD.SSE3.Singles.Arithmetic;
