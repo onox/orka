@@ -10,9 +10,9 @@ project Glfw_Test is
 
    for Source_Dirs use ("examples/glfw");
 
-   for Main use ("glfw_test-monitors.adb",
-                 "glfw_test-windows.adb",
-                 "glfw_test-clipboard.adb");
+   for Main use ("glfw_test-monitors",
+                 "glfw_test-windows",
+                 "glfw_test-clipboard");
 
    package Ide renames Config.Ide;
    package Builder renames Config.Builder;

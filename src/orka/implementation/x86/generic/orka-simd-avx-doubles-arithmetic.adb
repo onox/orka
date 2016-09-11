@@ -14,8 +14,39 @@
 
 with Orka.SIMD.AVX.Doubles.Compare;
 with Orka.SIMD.AVX.Doubles.Logical;
+with Orka.SIMD.AVX.Doubles.Swizzle;
 
 package body Orka.SIMD.AVX.Doubles.Arithmetic is
+
+   Mask_0_0_0_0 : constant Unsigned_32 := 0 * 64 or 0 * 16 or 0 * 4 or 0;
+   Mask_1_1_1_1 : constant Unsigned_32 := 1 * 64 or 1 * 16 or 1 * 4 or 1;
+   Mask_2_2_2_2 : constant Unsigned_32 := 2 * 64 or 2 * 16 or 2 * 4 or 2;
+   Mask_3_3_3_3 : constant Unsigned_32 := 3 * 64 or 3 * 16 or 3 * 4 or 3;
+
+   function "*" (Left, Right : m256d_Array) return m256d_Array is
+      use SIMD.AVX.Doubles.Swizzle;
+
+      Result : m256d_Array;
+
+      XXXX, YYYY, ZZZZ, WWWW, M0, M1, M2, M3 : m256d;
+   begin
+      for I in Index_Homogeneous'Range loop
+         XXXX := Shuffle (Right (I), Right (I), Mask_0_0_0_0);
+         YYYY := Shuffle (Right (I), Right (I), Mask_1_1_1_1);
+         ZZZZ := Shuffle (Right (I), Right (I), Mask_2_2_2_2);
+         WWWW := Shuffle (Right (I), Right (I), Mask_3_3_3_3);
+
+         M0 := XXXX * Left (X);
+         M1 := YYYY * Left (Y);
+         M2 := ZZZZ * Left (Z);
+         M3 := WWWW * Left (W);
+
+         M0 := M0 + M1;
+         M2 := M2 + M3;
+         Result (I) := M0 + M2;
+      end loop;
+      return Result;
+   end "*";
 
    function Divide_Or_Zero (Left, Right : m256d) return m256d is
       use SIMD.AVX.Doubles.Compare;

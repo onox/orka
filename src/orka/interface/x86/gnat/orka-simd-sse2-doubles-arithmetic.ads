@@ -29,4 +29,7 @@ package Orka.SIMD.SSE2.Doubles.Arithmetic is
    function "-" (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subpd";
 
+   function "-" (Elements : m128d) return m128d is
+     ((0.0, 0.0) - Elements);
+
 end Orka.SIMD.SSE2.Doubles.Arithmetic;

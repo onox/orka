@@ -29,6 +29,9 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    function "-" (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subps256";
 
+   function "-" (Elements : m256) return m256 is
+     ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) - Elements);
+
    function Add_Subtract (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addsubps256";
    --  Subtract and add 32-bit floats from Left and Right

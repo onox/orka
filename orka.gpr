@@ -11,11 +11,14 @@ library project Orka is
    for Library_ALI_Dir use "lib/orka";
    for Library_Kind use Config.Library_Kind;
 
-   Orka_Sources := ("src/orka/interface", "src/orka/implementation");
+   Orka_Sources := ("src/orka/interface",
+                    "src/orka/implementation",
+                    "src/orka/interface/x86/generic",
+                    "src/orka/implementation/x86/generic");
 
    case Config.Compiler_Name is
       when "gnat" => Orka_Sources :=
-        Orka_Sources & ("src/orka/interface/x86/gnat", "src/orka/implementation/x86");
+        Orka_Sources & ("src/orka/interface/x86/gnat");
       when others =>
         null;
    end case;
