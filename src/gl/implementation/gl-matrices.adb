@@ -18,9 +18,7 @@ package body GL.Matrices is
       Return_Matrix : Matrix;
    begin
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Return_Matrix (I, J) := Left (I, J) + Right (I, J);
          end loop;
       end loop;
@@ -31,9 +29,7 @@ package body GL.Matrices is
       Return_Matrix : Matrix;
    begin
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Return_Matrix (I, J) := Left (I, J) - Right (I, J);
          end loop;
       end loop;
@@ -44,9 +40,7 @@ package body GL.Matrices is
       Ret : Matrix;
    begin
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Ret (I, J) := -Left (I, J);
          end loop;
       end loop;
@@ -56,15 +50,14 @@ package body GL.Matrices is
    function "*" (Left, Right : Matrix) return Matrix is
       Element : Element_Type;
       Return_Matrix : Matrix;
+
+      pragma Suppress (Range_Check);
    begin
       --  I is the column index and J is the row index
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Element := Null_Value;
             for X in Index_Type loop
-               pragma Loop_Optimize (Unroll);
                Element := Element + Left (X, J) * Right (I, X);
             end loop;
             Return_Matrix (I, J) := Element;
@@ -76,13 +69,13 @@ package body GL.Matrices is
    function "*" (Left : Matrix; Right : Vector_Type) return Vector_Type is
       Element : Element_Type;
       Return_Vector : Vector_Type;
+
+      pragma Suppress (Range_Check);
    begin
       --  J is the row index
       for J in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          Element := Null_Value;
          for X in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Element := Element + Left (X, J) * Right (X);
          end loop;
          Return_Vector (J) := Element;
@@ -92,11 +85,11 @@ package body GL.Matrices is
    
    function "*" (Left : Matrix; Right : Element_Type) return Matrix is
       Return_Matrix : Matrix;
+
+      pragma Suppress (Range_Check);
    begin
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Return_Matrix (I, J) := Left (I, J) * Right;
          end loop;
       end loop;
@@ -112,9 +105,7 @@ package body GL.Matrices is
       Ret : Matrix;
    begin
       for I in Index_Type loop
-         pragma Loop_Optimize (Unroll);
          for J in Index_Type loop
-            pragma Loop_Optimize (Unroll);
             Ret (I, J) := Subject (J, I);
          end loop;
       end loop;
