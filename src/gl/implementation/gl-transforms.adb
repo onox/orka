@@ -137,7 +137,7 @@ package body GL.Transforms is
    begin
       Matrix (X, X) := Matrix (X, X) * Factors (X);
       Matrix (X, Y) := Matrix (X, Y) * Factors (X);
-      Matrix (X, Z) := Matrix (X, Y) * Factors (X);
+      Matrix (X, Z) := Matrix (X, Z) * Factors (X);
       Matrix (X, W) := Matrix (X, W) * Factors (X);
 
       Matrix (Y, X) := Matrix (Y, X) * Factors (Y);
