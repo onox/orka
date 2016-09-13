@@ -4,8 +4,10 @@ Orka
 ====
 
 Orka is the OpenGL Rendering Kernel in Ada. It is written in Ada 2012
-and provides an object-oriented API for modern OpenGL. Orka and the OpenGL
-bindings require and use OpenGL 4.5's Direct State Access (DSA) extension.
+and provides an object-oriented API for modern OpenGL. Orka makes it easy
+to construct OpenGL programs and meshes and to use them in a scene tree.
+Orka and the OpenGL bindings require and use OpenGL 4.5's Direct State
+Access (DSA) extension.
 
 Orka builds upon and provides thick bindings for OpenGL 4.5. These bindings
 are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
@@ -17,6 +19,15 @@ for creating windows with an OpenGL context on them. It also provides
 functionality for capturing user input on keyboard, mouse and joystick.
 Having a window with an OpenGL context is the prerequisite for using any
 OpenGL functionality.
+
+Features
+--------
+
+ * Thick OpenGL 4.5 bindings
+ * Thick GLFW 3 bindings
+ * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1 and AVX
+ * Easy construction of OpenGL programs and meshes
+ * Transforms and scene tree (makes use of the x86 SIMD extensions)
 
 Dependencies
 ------------
@@ -66,10 +77,8 @@ Specify the dependency in your \*.gpr project file:
     with "orka";
 
 If you want to use GLFW or just the OpenGL bindings, refer to `opengl-glfw`
-or `opengl` instead.
-
-The project files `opengl.gpr` and `opengl-glfw.gpr` take the following
-scenario parameters:
+or `opengl` instead. The project files `opengl.gpr` and `opengl-glfw.gpr`
+take the following scenario parameters:
 
  * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
                        for system-dependent parts of the API (GLX, WGL, CGL):
@@ -88,18 +97,6 @@ scenario parameters:
       OpenGL exceptions are disabled and optimizations are enabled.
 
  * `GLFW_Lib`: Linker flags for GLFW. The default is `-lglfw`.
-
-If you choose not to use GPRBuild, you need to add the sources to your
-project and then use whatever build system you want.
-Just make sure that you link properly against your OpenGL implementation:
-
- * OS X: `-framework OpenGL -framework CoreFoundation`
- * Windows: `-lOpenGL32 -lGdi32`
- * X11-based (Linux, BSD, etc): `-lGL -lX11`
-
-If you're using GLFW, add `-lglfw3` or `-lglfw`. If you're
-on Windows and link against GLFW as a dynamic library, you also need to add
-`-lwinmm`.
 
 Examples
 --------
