@@ -40,9 +40,11 @@ package Orka.SIMD.AVX.Singles.Compare is
 
    function Not_Nan (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#17#));
+   --  True if neither of the elements in Left and Right are Nan, false otherwise
 
    function Nan (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#13#));
+   --  True if either or both elements in Left and Right are Nan, false otherwise
 
    --  Negated predicates used are unordered and signaling
 
@@ -57,5 +59,14 @@ package Orka.SIMD.AVX.Singles.Compare is
 
    function Not_Less_Than (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#05#));
+
+   function Is_True (Elements : m256; Position : Index_Double_Homogeneous) return Boolean;
+   --  Return true if an element at the given position is not zero, false otherwise.
+   --
+   --  A comparison using one of the operators above may result in elements
+   --  consisting of all 1's. Trying to directly read such an element by
+   --  using an index (like 'Elements (X)' for example) may result
+   --  in a Constraint_Error. Use this function to check if an element is
+   --  not zero after comparison using one of the operators above.
 
 end Orka.SIMD.AVX.Singles.Compare;

@@ -47,8 +47,19 @@ package Orka.SIMD.SSE2.Doubles.Compare is
 
    function Not_Nan (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmpordpd";
+   --  True if neither of the elements in Left and Right are Nan, false otherwise
 
    function Nan (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmpunordpd";
+   --  True if either or both elements in Left and Right are Nan, false otherwise
+
+   function Is_True (Elements : m128d; Position : Index_2D) return Boolean;
+   --  Return true if an element at the given position is not zero, false otherwise.
+   --
+   --  A comparison using one of the operators above may result in elements
+   --  consisting of all 1's. Trying to directly read such an element by
+   --  using an index (like 'Elements (X)' for example) may result
+   --  in a Constraint_Error. Use this function to check if an element is
+   --  not zero after comparison using one of the operators above.
 
 end Orka.SIMD.SSE2.Doubles.Compare;
