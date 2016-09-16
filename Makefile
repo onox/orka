@@ -24,6 +24,17 @@ build_src:
 build_examples:
 	$(GPRBUILD) -P examples.gpr -largs ${LDFLAGS}
 
+build_unit_tests:
+	$(GPRBUILD) -P test/unit/orka/unit_tests.gpr
+
+clean_unit_tests:
+	$(GPRCLEAN) -P test/unit/orka/unit_tests.gpr
+	rmdir test/unit/orka/obj
+	rmdir test/unit/orka/bin
+
+run_unit_tests:
+	./test/unit/orka/bin/run_unit_tests
+
 clean_src:
 	$(GPRCLEAN) -r -P root.gpr
 	rmdir lib/{glfw,orka,opengl}
@@ -41,4 +52,6 @@ build: build_src
 
 examples: build_examples
 
-clean: clean_examples clean_src
+test: build_unit_tests
+
+clean: clean_examples clean_unit_tests clean_src

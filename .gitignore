@@ -1,6 +1,8 @@
 /lib/
 /obj/
 /bin/
+/test/unit/orka/bin/
+/test/unit/orka/obj/
 /auto.cgpr
 *.swp
 .DS_Store

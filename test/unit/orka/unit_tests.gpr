@@ -1,0 +1,35 @@
+--  Copyright (c) 2016 onox <denkpadje@gmail.com>
+--
+--  Licensed under the Apache License, Version 2.0 (the "License");
+--  you may not use this file except in compliance with the License.
+--  You may obtain a copy of the License at
+--
+--      http://www.apache.org/licenses/LICENSE-2.0
+--
+--  Unless required by applicable law or agreed to in writing, software
+--  distributed under the License is distributed on an "AS IS" BASIS,
+--  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+--  See the License for the specific language governing permissions and
+--  limitations under the License.
+
+with "ahven";
+
+with "../../../config";
+with "../../../orka";
+
+project Unit_Tests is
+
+   for Languages use ("Ada");
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   for Main use ("run_unit_tests");
+
+   package Ide renames Config.Ide;
+   package Builder renames Config.Builder;
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
+
+end Unit_Tests;
