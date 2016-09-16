@@ -44,7 +44,7 @@ package body Test_SIMD_SSE_Swizzle is
       Mask_2_3_0_1 : constant Unsigned_32 := 2 * 64 or 3 * 16 or 0 * 4 or 1;
       Mask_1_0_3_2 : constant Unsigned_32 := 1 * 64 or 0 * 16 or 3 * 4 or 2;
 
-      Expected : array (Positive range <>) of m128
+      Expected : constant array (Positive range <>) of m128
         := ((1.0, 1.0, 1.0, 1.0),
             (3.0, 3.0, 3.0, 3.0),
             (2.0, 1.0, 4.0, 3.0),

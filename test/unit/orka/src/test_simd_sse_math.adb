@@ -40,7 +40,7 @@ package body Test_SIMD_SSE_Math is
       Right : constant m128 := (0.0, 0.0, 1.0, 2.0);
 
       Expected : constant m128 := (0.0, 1.0, 1.0, 2.0);
-      Result : m128 := Max (Left, Right);
+      Result   : constant m128 := Max (Left, Right);
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -52,7 +52,7 @@ package body Test_SIMD_SSE_Math is
       Right : constant m128 := (0.0, 0.0, 1.0, 2.0);
 
       Expected : constant m128 := (0.0, 0.0, -2.0, 1.0);
-      Result : m128 := Min (Left, Right);
+      Result   : constant m128 := Min (Left, Right);
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));

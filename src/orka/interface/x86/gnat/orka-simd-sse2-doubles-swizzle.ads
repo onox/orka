@@ -24,7 +24,7 @@ package Orka.SIMD.SSE2.Doubles.Swizzle is
    --  The compiler needs access to the Mask at compile-time, thus construct it
    --  as follows:
    --
-   --  Mask_b_a : constant Unsigned_32 := b * 2 or a;
+   --  Mask_a_b : constant Unsigned_32 := a or b * 2;
    --
    --  a selects the double to use from Left, b from Right.
 

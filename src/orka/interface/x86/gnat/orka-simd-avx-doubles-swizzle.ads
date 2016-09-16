@@ -21,9 +21,9 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
 
    function Shuffle (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd256";
-   --  Shuffle the 64-bit doubles in Left and Right using the given Mask.
-   --  The first and third doubles are retrieved from Left.
-   --  The second and fourth doubles are retrieved from Right:
+   --  Shuffle the 64-bit doubles in Left and Right per 128-bit lane
+   --  using the given Mask. The first and third doubles are retrieved
+   --  from Left. The second and fourth doubles are retrieved from Right:
    --
    --  Result (1) := if Mask (a) = 0 then  Left (1) else  Left (2)
    --  Result (2) := if Mask (b) = 0 then Right (1) else Right (2)
@@ -33,9 +33,13 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  The compiler needs access to the Mask at compile-time, thus construct it
    --  as follows:
    --
-   --  Mask_d_c_b_a : constant Unsigned_32 := d * 8 or c * 4 or b * 2 or a;
+   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 2 or c * 4 or d * 8;
    --
    --  a and c select the doubles to use from Left, b and d from Right.
+   --
+   --  Warning 1: a, b, c, and d must be either 0 or 1.
+   --  Warning 2: shuffling works per 128-bit lane. An element cannot be
+   --  shuffled to the other half.
 
    function Unpack_High (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_unpckhpd256";
@@ -109,7 +113,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  The compiler needs access to the Mask at compile-time, thus construct it
    --  as follows:
    --
-   --  Mask_zu_zl_u_l : constant Unsigned_32 := zu * 128 or zl * 8 or u * 16 or l;
+   --  Mask_l_u_zl_zu : constant Unsigned_32 := l or u * 16 or zl * 8 or zu * 128;
    --
    --  u and l are numbers between 0 and 3 (see above). zu and zl are either 0 or 1
    --  to zero a lane.

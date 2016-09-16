@@ -18,10 +18,10 @@ with Orka.SIMD.SSE.Singles.Swizzle;
 
 package body Orka.SIMD.SSE.Singles.Arithmetic is
 
-   Mask_0_0_0_0 : constant Unsigned_32 := 0 * 64 or 0 * 16 or 0 * 4 or 0;
-   Mask_1_1_1_1 : constant Unsigned_32 := 1 * 64 or 1 * 16 or 1 * 4 or 1;
-   Mask_2_2_2_2 : constant Unsigned_32 := 2 * 64 or 2 * 16 or 2 * 4 or 2;
-   Mask_3_3_3_3 : constant Unsigned_32 := 3 * 64 or 3 * 16 or 3 * 4 or 3;
+   Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 4 or 0 * 16 or 0 * 64;
+   Mask_1_1_1_1 : constant Unsigned_32 := 1 or 1 * 4 or 1 * 16 or 1 * 64;
+   Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 4 or 2 * 16 or 2 * 64;
+   Mask_3_3_3_3 : constant Unsigned_32 := 3 or 3 * 4 or 3 * 16 or 3 * 64;
 
    function "*" (Left, Right : m128_Array) return m128_Array is
       use SIMD.SSE.Singles.Swizzle;

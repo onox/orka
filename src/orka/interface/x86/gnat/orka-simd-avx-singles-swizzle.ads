@@ -28,7 +28,7 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    --  The compiler needs access to the Mask at compile-time, thus construct it
    --  as follows:
    --
-   --  Mask_d_c_b_a : constant Unsigned_32 := d * 64 or c * 16 or b * 4 or a;
+   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 4 or c * 16 or d * 64;
    --
    --  a and b select the floats to use from Left, c and d from Right.
 

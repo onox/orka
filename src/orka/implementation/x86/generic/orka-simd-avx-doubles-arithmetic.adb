@@ -18,10 +18,10 @@ with Orka.SIMD.AVX.Doubles.Swizzle;
 
 package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
-   Mask_0_0_0_0 : constant Unsigned_32 := 0 * 64 or 0 * 16 or 0 * 4 or 0;
-   Mask_1_1_1_1 : constant Unsigned_32 := 1 * 64 or 1 * 16 or 1 * 4 or 1;
-   Mask_2_2_2_2 : constant Unsigned_32 := 2 * 64 or 2 * 16 or 2 * 4 or 2;
-   Mask_3_3_3_3 : constant Unsigned_32 := 3 * 64 or 3 * 16 or 3 * 4 or 3;
+   Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 2 or 0 * 4 or 0 * 8;
+   Mask_1_1_1_1 : constant Unsigned_32 := 1 or 1 * 2 or 1 * 4 or 1 * 8;
+   Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 2 or 2 * 4 or 2 * 8;
+   Mask_3_3_3_3 : constant Unsigned_32 := 3 or 3 * 2 or 3 * 4 or 3 * 8;
 
    function "*" (Left, Right : m256d_Array) return m256d_Array is
       use SIMD.AVX.Doubles.Swizzle;

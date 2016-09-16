@@ -46,7 +46,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Right : constant m128 := (0.0, 1.0, 2.0, 3.0);
 
       Expected : constant m128 := (0.0, 2.0, 6.0, 12.0);
-      Result : m128 := Left * Right;
+      Result   : constant m128 := Left * Right;
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -58,7 +58,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Right : constant m128 := (1.0, 1.0, 2.0, 1.5);
 
       Expected : constant m128 := (0.0, 2.0, 2.0, 3.0);
-      Result : m128 := Left / Right;
+      Result   : constant m128 := Left / Right;
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -69,7 +69,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Left  : constant m128 := (0.0, 1.0, 2.0, 3.0);
       Right : constant m128 := (0.0, 0.0, 0.0, 0.0);
 
-      Result : m128 := Left / Right;
+      Result : constant m128 := Left / Right;
    begin
       declare
          Result_X : constant Single := Result (X);
@@ -93,7 +93,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Right : constant m128 := (0.0, 0.0, 0.0, 0.0);
 
       Expected : constant m128 := (0.0, 0.0, 0.0, 0.0);
-      Result : m128 := Divide_Or_Zero (Left, Right);
+      Result   : constant m128 := Divide_Or_Zero (Left, Right);
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -105,7 +105,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Right : constant m128 := (0.0, 0.0, 1.5, 2.0);
 
       Expected : constant m128 := (0.0, 1.0, 3.0, 4.0);
-      Result : m128 := Left + Right;
+      Result   : constant m128 := Left + Right;
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -117,7 +117,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Right : constant m128 := (0.0, 0.0, 1.5, 2.0);
 
       Expected : constant m128 := (0.0, 1.0, 0.0, -2.0);
-      Result : m128 := Left - Right;
+      Result   : constant m128 := Left - Right;
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -128,7 +128,7 @@ package body Test_SIMD_SSE_Arithmetic is
       Elements : constant m128 := (0.0, 1.0, 1.5, -2.0);
 
       Expected : constant m128 := (0.0, -1.0, -1.5, 2.0);
-      Result : m128 := -Elements;
+      Result   : constant m128 := -Elements;
    begin
       for I in Index_Homogeneous loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
@@ -152,7 +152,7 @@ package body Test_SIMD_SSE_Arithmetic is
                                          (13.0, 33.0, 53.0, 73.0),
                                          (14.0, 34.0, 54.0, 74.0));
 
-      Result : m128_Array := Left * Right;
+      Result : constant m128_Array := Left * Right;
    begin
       for I in Index_Homogeneous loop
          for J in Index_Homogeneous loop
