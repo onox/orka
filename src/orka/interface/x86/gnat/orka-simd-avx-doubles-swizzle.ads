@@ -19,7 +19,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
 
    use SIMD.SSE2.Doubles;
 
-   function Shuffle (Left, Right : m256d; Mask : Unsigned_32) return m256d
+   function Shuffle_Within_Lanes (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd256";
    --  Shuffle the 64-bit doubles in Left and Right per 128-bit lane
    --  using the given Mask. The first and third doubles are retrieved
@@ -35,10 +35,10 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --
    --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 2 or c * 4 or d * 8;
    --
+   --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
    --  a and c select the doubles to use from Left, b and d from Right.
    --
-   --  Warning 1: a, b, c, and d must be either 0 or 1.
-   --  Warning 2: shuffling works per 128-bit lane. An element cannot be
+   --  Warning: shuffling works per 128-bit lane. An element cannot be
    --  shuffled to the other half.
 
    function Unpack_High (Left, Right : m256d) return m256d
@@ -58,13 +58,28 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  Duplicate first and third element as follows:
    --  Elements (1), Elements (1), Elements (3), Elements (3)
 
-   procedure Transpose (Matrix : in out m256d_Array);
+   function Duplicate_LH (Elements : m256d) return m256d
+     with Inline;
 
-   function Transpose (Matrix : m256d_Array) return m256d_Array;
+   function Duplicate_HL (Elements : m256d) return m256d
+     with Inline;
+
+   procedure Transpose (Matrix : in out m256d_Array)
+     with Inline;
+
+   function Transpose (Matrix : m256d_Array) return m256d_Array
+     with Inline;
 
    function Blend (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendpd256";
-   --  Select elements from two sources (Left and Right) using a constant mask
+   --  Select elements from two sources (Left and Right) using a constant mask.
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  as follows:
+   --
+   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 2 or c * 4 or d * 8;
+   --
+   --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
 
    function Blend (Left, Right, Mask : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvpd256";
@@ -89,11 +104,25 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  The compiler needs access to the Mask at compile-time, thus construct it
    --  as follows:
    --
-   --  Mask_b_a : constant Unsigned_32 := b * 2 or a;
+   --  Mask_a_b : constant Unsigned_32 := a or b * 2;
+   --
+   --  or by simply writing 2#ba#. a and b must be either 0 or 1.
 
    function Permute (Elements : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd256";
-   --  Shuffle elements using just Elements. Similar to Shuffle (Elements, Elements, Mask)
+   --  Shuffle elements using just Elements. Similar to Shuffle (Elements, Elements, Mask):
+   --
+   --  Result (1) := if Mask (a) = 0 then Elements (1) else Elements (2)
+   --  Result (2) := if Mask (b) = 0 then Elements (1) else Elements (2)
+   --  Result (3) := if Mask (c) = 0 then Elements (3) else Elements (4)
+   --  Result (4) := if Mask (d) = 0 then Elements (3) else Elements (4)
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  as follows:
+   --
+   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 2 or c * 4 or d * 8;
+   --
+   --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
 
    function Permute_Lanes (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vperm2f128_pd256";

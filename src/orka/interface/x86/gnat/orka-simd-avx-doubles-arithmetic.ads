@@ -18,14 +18,16 @@ package Orka.SIMD.AVX.Doubles.Arithmetic is
    function "*" (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_mulpd256";
 
-   function "*" (Left, Right : m256d_Array) return m256d_Array;
+   function "*" (Left, Right : m256d_Array) return m256d_Array
+     with Inline;
    --  Multiplies the left matrix with the right matrix. Matrix multiplication
    --  is associative, but not commutative.
 
    function "/" (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divpd256";
 
-   function Divide_Or_Zero (Left, Right : m256d) return m256d;
+   function Divide_Or_Zero (Left, Right : m256d) return m256d
+     with Inline;
 
    function "+" (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addpd256";

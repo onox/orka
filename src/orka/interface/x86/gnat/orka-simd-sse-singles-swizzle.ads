@@ -48,8 +48,18 @@ package Orka.SIMD.SSE.Singles.Swizzle is
    --  Move the two upper floats from Right to the two lower floats of Left:
    --  Right (3), Right (4), Left (3), Left (4)
 
-   procedure Transpose (Matrix : in out m128_Array);
+   function Duplicate_LH (Elements : m128) return m128 is
+     (Move_LH (Elements, Elements))
+     with Inline;
 
-   function Transpose (Matrix : m128_Array) return m128_Array;
+   function Duplicate_HL (Elements : m128) return m128 is
+     (Move_HL (Elements, Elements))
+     with Inline;
+
+   procedure Transpose (Matrix : in out m128_Array)
+     with Inline;
+
+   function Transpose (Matrix : m128_Array) return m128_Array
+     with Inline;
 
 end Orka.SIMD.SSE.Singles.Swizzle;
