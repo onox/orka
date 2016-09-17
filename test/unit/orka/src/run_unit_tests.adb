@@ -15,6 +15,10 @@
 with Ahven.Framework; use Ahven.Framework;
 with Ahven.Text_Runner;
 
+with Test_SIMD_AVX_Arithmetic;
+with Test_SIMD_AVX_Compare;
+with Test_SIMD_AVX_Math;
+with Test_SIMD_AVX_Swizzle;
 with Test_SIMD_SSE_Arithmetic;
 with Test_SIMD_SSE_Compare;
 with Test_SIMD_SSE_Logical;
@@ -25,8 +29,9 @@ with Test_SIMD_SSE4_1_Math;
 procedure Run_Unit_Tests is
    Suite_SIMD : Test_Suite := Create_Suite ("SIMD");
 
-   Suite_SSE    : constant Test_Suite_Access := Create_Suite ("SSE");
-   Suite_SSE4_1 : constant Test_Suite_Access := Create_Suite ("SSE4.1");
+   Suite_SSE    : constant Test_Suite_Access := Create_Suite ("SSE (Singles)");
+   Suite_SSE4_1 : constant Test_Suite_Access := Create_Suite ("SSE4.1 (Singles)");
+   Suite_AVX    : constant Test_Suite_Access := Create_Suite ("AVX (Doubles)");
 begin
    Suite_SSE.Add_Test (new Test_SIMD_SSE_Arithmetic.Test);
    Suite_SSE.Add_Test (new Test_SIMD_SSE_Compare.Test);
@@ -37,6 +42,12 @@ begin
 
    Suite_SSE4_1.Add_Test (new Test_SIMD_SSE4_1_Math.Test);
    Suite_SIMD.Add_Test (Suite_SSE4_1);
+
+   Suite_AVX.Add_Test (new Test_SIMD_AVX_Arithmetic.Test);
+   Suite_AVX.Add_Test (new Test_SIMD_AVX_Compare.Test);
+   Suite_AVX.Add_Test (new Test_SIMD_AVX_Math.Test);
+   Suite_AVX.Add_Test (new Test_SIMD_AVX_Swizzle.Test);
+   Suite_SIMD.Add_Test (Suite_AVX);
 
    Ahven.Text_Runner.Run (Suite_SIMD);
 end Run_Unit_Tests;

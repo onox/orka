@@ -39,10 +39,10 @@ package body Test_SIMD_SSE_Swizzle is
    procedure Test_Shuffle is
       Elements : constant m128 := (1.0, 2.0, 3.0, 4.0);
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 * 64 or 0 * 16 or 0 * 4 or 0;
-      Mask_2_2_2_2 : constant Unsigned_32 := 2 * 64 or 2 * 16 or 2 * 4 or 2;
-      Mask_2_3_0_1 : constant Unsigned_32 := 2 * 64 or 3 * 16 or 0 * 4 or 1;
-      Mask_1_0_3_2 : constant Unsigned_32 := 1 * 64 or 0 * 16 or 3 * 4 or 2;
+      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 4 or 0 * 16 or 0 * 64;
+      Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 4 or 2 * 16 or 2 * 64;
+      Mask_1_0_3_2 : constant Unsigned_32 := 1 or 0 * 4 or 3 * 16 or 2 * 64;
+      Mask_2_3_0_1 : constant Unsigned_32 := 2 or 3 * 4 or 0 * 16 or 1 * 64;
 
       Expected : constant array (Positive range <>) of m128
         := ((1.0, 1.0, 1.0, 1.0),
@@ -54,8 +54,8 @@ package body Test_SIMD_SSE_Swizzle is
    begin
       Results (1) := Shuffle (Elements, Elements, Mask_0_0_0_0);
       Results (2) := Shuffle (Elements, Elements, Mask_2_2_2_2);
-      Results (3) := Shuffle (Elements, Elements, Mask_2_3_0_1);
-      Results (4) := Shuffle (Elements, Elements, Mask_1_0_3_2);
+      Results (3) := Shuffle (Elements, Elements, Mask_1_0_3_2);
+      Results (4) := Shuffle (Elements, Elements, Mask_2_3_0_1);
 
       for I in Expected'Range loop
          for J in Index_Homogeneous loop
