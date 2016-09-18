@@ -17,9 +17,9 @@ private with Ada.Strings.Unbounded;
 
 generic
    type Matrix_Type is private;
-   with function "*" (Left, Right : Matrix_Type) return Matrix_Type;
-   Identity_Value : Matrix_Type;
-package Orka.Scene_Tree is
+   with function "*" (Left, Right : Matrix_Type) return Matrix_Type is <>;
+   with function Identity_Value return Matrix_Type;
+package Orka.Scenes.Generic_Scene_Trees is
    pragma Preelaborate;
 
    type Tree is tagged limited private;
@@ -81,4 +81,4 @@ private
    function Width (Object : Tree; Level : Positive) return Natural is
      (Natural (Object.Levels (Level).Nodes.Length));
 
-end Orka.Scene_Tree;
+end Orka.Scenes.Generic_Scene_Trees;

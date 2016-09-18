@@ -28,11 +28,11 @@ package Orka.Transforms.SIMD_Matrices is
 
    subtype Vector4 is Vector_Type;
 
-   Identity_Value : constant Matrix_Type
-     := ((1.0, 0.0, 0.0, 0.0),
-         (0.0, 1.0, 0.0, 0.0),
-         (0.0, 0.0, 1.0, 0.0),
-         (0.0, 0.0, 0.0, 1.0));
+   function Identity_Value return Matrix_Type is
+     (((1.0, 0.0, 0.0, 0.0),
+       (0.0, 1.0, 0.0, 0.0),
+       (0.0, 0.0, 1.0, 0.0),
+       (0.0, 0.0, 0.0, 1.0)));
 
    function T (Offset : Vector_Type) return Matrix_Type;
 

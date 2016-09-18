@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Scene_Tree is
+package body Orka.Scenes.Generic_Scene_Trees is
 
    function To_Cursor (Object : Tree; Name : String) return Cursor is
       use type SU.Unbounded_String;
@@ -271,4 +271,4 @@ package body Orka.Scene_Tree is
       end if;
    end Remove_Node;
 
-end Orka.Scene_Tree;
+end Orka.Scenes.Generic_Scene_Trees;
