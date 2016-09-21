@@ -52,8 +52,14 @@ package Orka.Transforms.SIMD_Matrices is
    function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type;
    --  Add a scale transformation to the matrix
 
-   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
-   --  Add a rotation transformation to the matrix
+   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
+   --  Add a rotation transformation to the matrix with the center
+   --  of rotation at the origin to the matrix
+
+   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type;
+                     Angle  : Element_Type; Point : Vector_Type);
+   --  Add a rotation transformation to the matrix with the center
+   --  of rotation at the given point to the matrix
 
    procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type);
    --  Add a rotation transformation around the X axis with the center

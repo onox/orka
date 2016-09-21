@@ -26,13 +26,23 @@ with Test_SIMD_SSE_Math;
 with Test_SIMD_SSE_Swizzle;
 with Test_SIMD_SSE4_1_Math;
 
+with Test_Transforms_Singles_Matrices;
+with Test_Transforms_Doubles_Matrices;
+
 procedure Run_Unit_Tests is
-   Suite_SIMD : Test_Suite := Create_Suite ("SIMD");
+   Suite_All : Test_Suite := Create_Suite ("all");
+
+   Suite_SIMD       : constant Test_Suite_Access := Create_Suite ("SIMD");
+   Suite_Transforms : constant Test_Suite_Access := Create_Suite ("Transforms");
 
    Suite_SSE    : constant Test_Suite_Access := Create_Suite ("SSE (Singles)");
    Suite_SSE4_1 : constant Test_Suite_Access := Create_Suite ("SSE4.1 (Singles)");
    Suite_AVX    : constant Test_Suite_Access := Create_Suite ("AVX (Doubles)");
+
+   Suite_Transforms_Singles : constant Test_Suite_Access := Create_Suite ("Singles");
+   Suite_Transforms_Doubles : constant Test_Suite_Access := Create_Suite ("Doubles");
 begin
+   --  SIMD
    Suite_SSE.Add_Test (new Test_SIMD_SSE_Arithmetic.Test);
    Suite_SSE.Add_Test (new Test_SIMD_SSE_Compare.Test);
    Suite_SSE.Add_Test (new Test_SIMD_SSE_Logical.Test);
@@ -49,5 +59,16 @@ begin
    Suite_AVX.Add_Test (new Test_SIMD_AVX_Swizzle.Test);
    Suite_SIMD.Add_Test (Suite_AVX);
 
-   Ahven.Text_Runner.Run (Suite_SIMD);
+   Suite_All.Add_Test (Suite_SIMD);
+
+   --  Transforms
+   Suite_Transforms_Singles.Add_Test (new Test_Transforms_Singles_Matrices.Test);
+   Suite_Transforms.Add_Test (Suite_Transforms_Singles);
+
+   Suite_Transforms_Doubles.Add_Test (new Test_Transforms_Doubles_Matrices.Test);
+   Suite_Transforms.Add_Test (Suite_Transforms_Doubles);
+
+   Suite_All.Add_Test (Suite_Transforms);
+
+   Ahven.Text_Runner.Run (Suite_All);
 end Run_Unit_Tests;

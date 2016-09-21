@@ -22,9 +22,10 @@ package body Orka.Transforms.SIMD_Matrices is
 
    function T (Offset : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
+      Old_W  : constant Element_Type := Result (W) (W);
    begin
       Result (W) := Offset;
-      Result (W) (W) := 1.0;
+      Result (W) (W) := Old_W;
       return Result;
    end T;
 
@@ -110,9 +111,15 @@ package body Orka.Transforms.SIMD_Matrices is
       return S ((Factor, Factor, Factor, 1.0)) * Matrix;
    end "*";
 
-   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type) is
+   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type) is
    begin
       Matrix := R (Axis, Angle) * Matrix;
+   end Rotate_At_Origin;
+
+   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type;
+                     Angle  : Element_Type; Point : Vector_Type) is
+   begin
+      Matrix := T (Point) * R (Axis, Angle) * T (-Point) * Matrix;
    end Rotate;
 
    procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type) is
