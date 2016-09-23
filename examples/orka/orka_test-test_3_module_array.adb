@@ -17,7 +17,7 @@ with GL.Objects.Buffers;
 with GL.Types;
 
 with Orka.Buffers;
-with Orka.Meshes.Buffers;
+with Orka.Meshes.Attributes;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -43,10 +43,10 @@ procedure Orka_Test.Test_3_Module_Array is
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare
-            Attributes : Buffers.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
+            Attributes_All : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
-            Attributes.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
-            Attributes.Set_Buffer (VBO);
+            Attributes_All.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
+            Attributes_All.Set_Buffer (VBO);
          end;
       end return;
    end Load_Mesh;

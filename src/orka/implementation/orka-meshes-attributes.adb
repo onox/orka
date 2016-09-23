@@ -14,7 +14,7 @@
 
 with GL.Objects.Buffers;
 
-package body Orka.Meshes.Buffers is
+package body Orka.Meshes.Attributes is
 
    use GL.Types;
 
@@ -49,4 +49,4 @@ package body Orka.Meshes.Buffers is
       Object.Vertex_Array.Set_Attribute_Binding_Divisor (Object.Binding_Index, Divisor);
    end Set_Per_Instance;
 
-end Orka.Meshes.Buffers;
+end Orka.Meshes.Attributes;

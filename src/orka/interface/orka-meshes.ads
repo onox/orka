@@ -15,7 +15,7 @@
 with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
-limited with Orka.Meshes.Buffers;
+limited with Orka.Meshes.Attributes;
 with Orka.Buffers;
 
 package Orka.Meshes is
@@ -26,7 +26,7 @@ package Orka.Meshes is
    function Create_Mesh (Mode : GL.Types.Connection_Mode) return Mesh;
 
    function Add_Attribute_Buffer (Object : in out Mesh; Kind : GL.Types.Numeric_Type)
-     return Orka.Meshes.Buffers.Attribute_Buffer;
+     return Orka.Meshes.Attributes.Attribute_Buffer;
 
    procedure Set_Index_Buffer (Object : in out Mesh; Buffer : Orka.Buffers.Buffer);
 

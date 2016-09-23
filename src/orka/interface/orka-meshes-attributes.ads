@@ -16,7 +16,7 @@ with GL.Attributes;
 with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
-package Orka.Meshes.Buffers is
+package Orka.Meshes.Attributes is
    pragma Preelaborate;
 
    type Attribute_Buffer is tagged limited private;
@@ -42,4 +42,4 @@ private
       Binding_Index : GL.Objects.Vertex_Arrays.Binding;
    end record;
 
-end Orka.Meshes.Buffers;
+end Orka.Meshes.Attributes;

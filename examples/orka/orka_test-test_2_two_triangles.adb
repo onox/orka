@@ -18,7 +18,7 @@ with GL.Objects.Buffers;
 with GL.Types.Colors;
 
 with Orka.Buffers;
-with Orka.Meshes.Buffers;
+with Orka.Meshes.Attributes;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -50,8 +50,8 @@ procedure Orka_Test.Test_2_Two_Triangles is
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare
-            Attributes_Pos : Buffers.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
-            Attributes_Col : Buffers.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
+            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
+            Attributes_Col : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
             Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
             Attributes_Pos.Set_Buffer (VBO_1);
@@ -76,7 +76,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare
-            Attributes_Pos : Buffers.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
+            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
             Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
             Attributes_Pos.Set_Buffer (VBO_3);
