@@ -18,7 +18,6 @@ with Ahven; use Ahven;
 
 with GL.Types;
 
-with Orka.SIMD;
 with Orka.SIMD.AVX.Doubles.Arithmetic;
 with Orka.Transforms.Doubles.Matrices;
 

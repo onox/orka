@@ -22,6 +22,8 @@ generic
 package Orka.Scenes.Generic_Scene_Trees is
    pragma Preelaborate;
 
+   subtype Matrix4 is Matrix_Type;
+
    type Tree is tagged limited private;
 
    type Cursor (<>) is private;
@@ -46,6 +48,10 @@ package Orka.Scenes.Generic_Scene_Trees is
    procedure Remove_Node (Object : in out Tree; Name : String);
 
    Unknown_Node_Error : exception;
+   --  Exception raised if a given node does not exist
+
+   Root_Removal_Error : exception;
+   --  Exception raised if user tries to remove the root node
 
 private
 

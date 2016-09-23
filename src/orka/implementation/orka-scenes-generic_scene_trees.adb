@@ -159,6 +159,10 @@ package body Orka.Scenes.Generic_Scene_Trees is
 
       Empty_Level_Index : Positive := Object.Levels.Last_Index + 1;
    begin
+      if Node_Cursor.Level = Positive'First and Node_Cursor.Offset = Positive'First then
+         raise Root_Removal_Error with "Cannot remove root node";
+      end if;
+
       --  If the node that is the root of the subtree that is going to
       --  be removed, has a parent, then reduce the count of this parent.
       if Node_Cursor.Level > Object.Levels.First_Index then

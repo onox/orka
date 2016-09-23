@@ -29,6 +29,8 @@ with Test_SIMD_SSE4_1_Math;
 with Test_Transforms_Singles_Matrices;
 with Test_Transforms_Doubles_Matrices;
 
+with Test_Scene_Trees;
+
 procedure Run_Unit_Tests is
    Suite_All : Test_Suite := Create_Suite ("all");
 
@@ -69,6 +71,9 @@ begin
    Suite_Transforms.Add_Test (Suite_Transforms_Doubles);
 
    Suite_All.Add_Test (Suite_Transforms);
+
+   --  Scene tree
+   Suite_All.Add_Test (new Test_Scene_Trees.Test);
 
    Ahven.Text_Runner.Run (Suite_All);
 end Run_Unit_Tests;
