@@ -16,7 +16,5 @@ with Orka.Scenes.Generic_Scene_Trees;
 with Orka.Transforms.Singles.Matrices;
 
 package Orka.Scenes.Singles.Trees is new Orka.Scenes.Generic_Scene_Trees
-  (Orka.Transforms.Singles.Matrices.Matrix4,
-   Orka.Transforms.Singles.Matrices."*",
-   Orka.Transforms.Singles.Matrices.Identity_Value);
+  (Orka.Transforms.Singles.Matrices);
 pragma Preelaborate (Orka.Scenes.Singles.Trees);

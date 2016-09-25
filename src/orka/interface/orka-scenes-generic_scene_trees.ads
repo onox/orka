@@ -15,14 +15,14 @@
 private with Ada.Containers.Vectors;
 private with Ada.Strings.Unbounded;
 
+with Orka.Transforms.SIMD_Matrices;
+
 generic
-   type Matrix_Type is private;
-   with function "*" (Left, Right : Matrix_Type) return Matrix_Type is <>;
-   with function Identity_Value return Matrix_Type;
+   with package Transforms is new Orka.Transforms.SIMD_Matrices (<>);
 package Orka.Scenes.Generic_Scene_Trees is
    pragma Preelaborate;
 
-   subtype Matrix4 is Matrix_Type;
+   subtype Matrix4 is Transforms.Matrix4;
 
    type Tree is tagged limited private;
 
@@ -37,9 +37,9 @@ package Orka.Scenes.Generic_Scene_Trees is
 
    procedure Update_Transforms (Object : in out Tree);
 
-   procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Matrix_Type);
+   procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Transforms.Matrix4);
 
-   function World_Transform (Object : Tree; Node : Cursor) return Matrix_Type;
+   function World_Transform (Object : Tree; Node : Cursor) return Transforms.Matrix4;
 
    function Create_Tree (Name : String) return Tree;
 
@@ -65,7 +65,8 @@ private
 
    package Node_Vectors is new Ada.Containers.Vectors (Positive, Node);
 
-   package Matrix_Vectors is new Ada.Containers.Vectors (Positive, Matrix_Type);
+   use type Transforms.Matrix4;
+   package Matrix_Vectors is new Ada.Containers.Vectors (Positive, Transforms.Matrix4);
 
    type Level is record
       Nodes : Node_Vectors.Vector;

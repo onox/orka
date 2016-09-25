@@ -36,7 +36,7 @@ package body Orka.Scenes.Generic_Scene_Trees is
    end To_Cursor;
 
    procedure Update_Transforms (Object : in out Tree) is
-      Root_Local : constant Matrix_Type := Object.Levels (Object.Levels.First_Index).Local_Transforms.Element (1);
+      Root_Local : constant Transforms.Matrix4 := Object.Levels (Object.Levels.First_Index).Local_Transforms.Element (1);
    begin
       --  Copy Local_Transform to World_Transform of root node
       Object.Levels (Object.Levels.First_Index).World_Transforms.Replace_Element (1, Root_Local);
@@ -50,12 +50,13 @@ package body Orka.Scenes.Generic_Scene_Trees is
             begin
                for Parent_Index in Parent_Level_N.First_Index .. Parent_Level_N.Last_Index loop
                   declare
-                     Parent_Transform : Matrix_Type renames Parent_Level_W.Element (Parent_Index);
-                     Parent           : Node        renames Parent_Level_N.Element (Parent_Index);
+                     Parent_Transform : Transforms.Matrix4 renames Parent_Level_W.Element (Parent_Index);
+                     Parent           : Node               renames Parent_Level_N.Element (Parent_Index);
                   begin
                      for Node_Index in Parent.Offset .. Parent.Offset + Parent.Count - 1 loop
                         declare
-                           Local : Matrix_Type renames Child_Level.Local_Transforms.Element (Node_Index);
+                           Local : Transforms.Matrix4 renames Child_Level.Local_Transforms.Element (Node_Index);
+                           use Transforms;
                         begin
                            Child_Level.World_Transforms.Replace_Element (Node_Index, Parent_Transform * Local);
                         end;
@@ -69,13 +70,13 @@ package body Orka.Scenes.Generic_Scene_Trees is
       end loop;
    end Update_Transforms;
 
-   procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Matrix_Type) is
+   procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Transforms.Matrix4) is
       Node_Level : Level renames Object.Levels (Node.Level);
    begin
       Node_Level.Local_Transforms.Replace_Element (Node.Offset, Transform);
    end Set_Local_Transform;
 
-   function World_Transform (Object : Tree; Node : Cursor) return Matrix_Type is
+   function World_Transform (Object : Tree; Node : Cursor) return Transforms.Matrix4 is
       Node_Level : Level renames Object.Levels (Node.Level);
    begin
       return Node_Level.World_Transforms.Element (Node.Offset);
@@ -92,8 +93,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Root_Level.Nodes.Append (Node'(Name   => SU.To_Unbounded_String (Name),
                                            Offset => 1,
                                            Count  => 0));
-            Root_Level.Local_Transforms.Append (Identity_Value);
-            Root_Level.World_Transforms.Append (Identity_Value);
+            Root_Level.Local_Transforms.Append (Transforms.Identity_Value);
+            Root_Level.World_Transforms.Append (Transforms.Identity_Value);
          end;
       end return;
    end Create_Tree;
@@ -126,15 +127,15 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Child_Level.Nodes.Append (Node'(Name   => SU.To_Unbounded_String (Name),
                                             Offset => 1,
                                             Count  => 0));
-            Child_Level.Local_Transforms.Append (Identity_Value);
-            Child_Level.World_Transforms.Append (Identity_Value);
+            Child_Level.Local_Transforms.Append (Transforms.Identity_Value);
+            Child_Level.World_Transforms.Append (Transforms.Identity_Value);
          else
             --  Insert new node and its transforms
             Child_Level.Nodes.Insert (New_Node_Index, Node'(Name   => SU.To_Unbounded_String (Name),
                                                             Offset => 1,
                                                             Count  => 0));
-            Child_Level.Local_Transforms.Insert (New_Node_Index, Identity_Value);
-            Child_Level.World_Transforms.Insert (New_Node_Index, Identity_Value);
+            Child_Level.Local_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
+            Child_Level.World_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
 
             --  After inserting a new node (in level j), increment the offsets
             --  of all parents that come after the new node's parent (in level i)

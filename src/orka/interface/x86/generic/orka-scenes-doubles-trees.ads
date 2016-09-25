@@ -16,7 +16,5 @@ with Orka.Scenes.Generic_Scene_Trees;
 with Orka.Transforms.Doubles.Matrices;
 
 package Orka.Scenes.Doubles.Trees is new Orka.Scenes.Generic_Scene_Trees
-  (Orka.Transforms.Doubles.Matrices.Matrix4,
-   Orka.Transforms.Doubles.Matrices."*",
-   Orka.Transforms.Doubles.Matrices.Identity_Value);
+  (Orka.Transforms.Doubles.Matrices);
 pragma Preelaborate (Orka.Scenes.Doubles.Trees);
