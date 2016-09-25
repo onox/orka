@@ -17,7 +17,6 @@ project Orka_Test is
                  "orka_test-test_4_mdi");
 
    package Ide renames Config.Ide;
-   package Builder renames Config.Builder;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
 

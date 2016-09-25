@@ -15,7 +15,6 @@ project Glfw_Test is
                  "glfw_test-clipboard");
 
    package Ide renames Config.Ide;
-   package Builder renames Config.Builder;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
 

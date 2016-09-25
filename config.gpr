@@ -45,23 +45,16 @@ abstract project Config is
       for Vcs_Kind use "Git";
    end Ide;
 
-   package Builder is
-      case Mode is
-         when "debug" =>
-            for Default_Switches ("ada") use ("-s", "-g");
-         when others =>
-            for Default_Switches ("ada") use ("-s");
-      end case;
-   end Builder;
-
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("ada") use Compiler_Switches & Dev_Switches & ("-g");
+            for Switches ("ada") use Compiler_Switches & Dev_Switches & ("-g");
          when "development" =>
-            for Default_Switches ("ada") use Compiler_Switches & Dev_Switches & ("-gnatn2", "-fomit-frame-pointer", "-flto");
+            for Switches ("ada") use Compiler_Switches & Dev_Switches &
+              ("-gnatn2", "-fomit-frame-pointer", "-flto");
          when "release" =>
-            for Default_Switches ("ada") use Compiler_Switches & ("-gnatn2", "-fomit-frame-pointer", "-flto", "-gnato0");
+            for Switches ("ada") use Compiler_Switches &
+              ("-gnatn2", "-fomit-frame-pointer", "-flto", "-gnato0");
       end case;
 
       for Local_Configuration_Pragmas use "gnat.adc";
@@ -71,7 +64,7 @@ abstract project Config is
       case Mode is
          when "debug" | "development" =>
             --  Store tracebacks in exception occurrences
-            for Default_Switches ("ada") use ("-E");
+            for Switches ("ada") use ("-E");
          when others =>
             null;
       end case;

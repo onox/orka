@@ -11,8 +11,8 @@ WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
 LIBRARY_TYPE ?= relocatable
 MODE ?= release
 
-GNAT_FLAGS ?=
-CFLAGS  ?= -O2 -march=native
+GNAT_FLAGS ?= -dm
+CFLAGS  ?= -O3 -march=native
 LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 
 GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM} -XLibrary_Type=${LIBRARY_TYPE} -XCompiler_Flags="${CFLAGS}" -XMode=${MODE}

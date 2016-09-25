@@ -2,4 +2,8 @@ aggregate project Examples is
 
    for Project_Files use ("opengl_test.gpr", "glfw_test.gpr", "orka_test.gpr");
 
+   package Builder is
+      for Switches (others) use ("-j0", "-m");
+   end Builder;
+
 end Examples;

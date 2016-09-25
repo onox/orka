@@ -27,8 +27,11 @@ project Unit_Tests is
 
    for Main use ("run_unit_tests");
 
+   package Builder is
+      for Switches (others) use ("-j0", "-m");
+   end Builder;
+
    package Ide renames Config.Ide;
-   package Builder renames Config.Builder;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
 

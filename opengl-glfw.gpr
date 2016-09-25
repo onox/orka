@@ -18,7 +18,6 @@ library project OpenGL.Glfw is
    for Object_Dir use "obj/glfw";
 
    package Ide renames Config.Ide;
-   package Builder renames Config.Builder;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
 

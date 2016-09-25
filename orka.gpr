@@ -27,7 +27,6 @@ library project Orka is
    for Object_Dir use "obj/orka";
 
    package Ide renames OpenGL.Ide;
-   package Builder renames OpenGL.Builder;
    package Compiler renames OpenGL.Compiler;
    package Binder renames OpenGL.Binder;
 
