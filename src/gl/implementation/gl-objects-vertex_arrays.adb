@@ -15,7 +15,6 @@
 with System;
 
 with Ada.Containers.Indefinite_Holders;
-with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Low_Level;

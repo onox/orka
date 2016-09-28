@@ -12,8 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Objects.Buffers;
-
 package body Orka.Meshes.Attributes is
 
    use GL.Types;

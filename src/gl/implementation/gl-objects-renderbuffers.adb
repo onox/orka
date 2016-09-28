@@ -13,7 +13,6 @@
 --  limitations under the License.
 
 with Ada.Containers.Indefinite_Holders;
-with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Enums.Getter;
