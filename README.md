@@ -34,19 +34,24 @@ Dependencies
 
 In order to build Orka or the OpenGL bindings, you need to have:
 
- * A GNAT compiler that supports Ada 2012 (a GPL'd version is available
-   on [AdaCore's Libre Site][url-adacore], or you can use the
-   [version provided by the FSF with GCC][url-fsf])
- * [GPRBuild][url-gprbuild] (is bundled with AdaCore's GNAT distribution).
-   Minimum supported version is the one that comes with GNAT GPL 2012. Do
-   not use `gnatmake` to build the project files, it won't work.
- * An OpenGL implementation that supports the core profile of OpenGL (3.2 or higher)
-   and the following extensions:
+ * A GNAT compiler that supports Ada 2012 (Either GNAT GPL from [AdaCore's Libre Site][url-adacore],
+   or the GNAT [version provided by the FSF with GCC][url-fsf])
+
+ * [GPRBuild][url-gprbuild] (Is bundled with AdaCore's GNAT distribution)
+
+ * OpenGL 3.2 core profile and the following extensions:
 
     - ARB\_separate\_shader\_objects (OpenGL 4.1)
     - ARB\_vertex\_attrib\_binding (OpenGL 4.3)
     - ARB\_direct\_state\_access (OpenGL 4.5)
- * Optionally [GLFW][url-glfw]
+
+ * An x86-64 CPU with the AVX extension
+
+Optional dependencies:
+
+ * [Ahven 2][url-ahven] if you want to build and run the unit tests
+
+ * [GLFW 3][url-glfw] for the GLFW bindings
 
 Compilation
 -----------
@@ -65,9 +70,37 @@ The default mode is `release`. Both `release` and `development` enable general
 optimizations. To enable OpenGL exceptions, disable optimizations, and include
 debugging symbols, use the `debug` mode.
 
-Use `make examples` to build the example programs:
+Examples
+--------
+
+The project contains some examples that demonstrate the basic usage of
+the library. Build the example programs as follows:
 
     $ make examples
+
+You can execute them in the `bin` directory. Some examples load shader
+files from the source directory by using relative paths, so they only work
+with `bin` as the current directory.
+
+Tests
+-----
+
+The project contains a set of unit tests. Use `make test` to build the unit tests:
+
+    $ make test
+
+After having build the tests, run the unit tests:
+
+    $ make run_unit_tests
+
+Installation
+------------
+
+After having compiled the source code, the library can be installed by executing:
+
+    $ make PREFIX=/usr install
+
+Change `PREFIX` to the preferred destination folder.
 
 Using Orka in your project
 --------------------------
@@ -98,15 +131,6 @@ take the following scenario parameters:
 
  * `GLFW_Lib`: Linker flags for GLFW. The default is `-lglfw`.
 
-Examples
---------
-
-The project contains some examples that demonstrate the basic usage of
-the library. After building them as described above, you can execute
-them in the `bin` directory. Some examples load shader files from the
-source directory by using relative paths, so they only work with
-`bin` as working directory.
-
 License
 -------
 
@@ -118,4 +142,5 @@ of the [Apache License 2.0][url-apache].
   [url-adacore]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-gprbuild]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
+  [url-ahven]: http://ahven.stronglytyped.org
   [url-apache]: https://opensource.org/licenses/Apache-2.0
