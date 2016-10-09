@@ -37,6 +37,7 @@ package GL.Runtime_Loading is
       Function_Name : String;
       type Return_Type is private;
    function Function_Without_Params return Return_Type;
+   pragma Inline (Function_Without_Params);
    
    generic
       Function_Name : String;
@@ -79,7 +80,7 @@ package GL.Runtime_Loading is
                                     Param3 : Param3_Type;
                                     Param4 : Param4_Type)
                                    return Return_Type;
-   pragma Inline (Function_With_3_Params);
+   pragma Inline (Function_With_4_Params);
 
    generic
       Procedure_Name : String;
@@ -89,6 +90,7 @@ package GL.Runtime_Loading is
    function Array_Getter_With_4_Params (Param1   : Param1_Type;
                                         Max_Size : Types.Size)
                                         return Array_Type;
+   pragma Inline (Array_Getter_With_4_Params);
 
    generic
       Procedure_Name : String;
@@ -106,6 +108,7 @@ package GL.Runtime_Loading is
                                         Param5   : Param5_Type;
                                         Max_Size : Types.Size)
                                         return Array_Type;
+   pragma Inline (Array_Getter_With_8_Params);
 
    generic
       Procedure_Name : String;
@@ -364,6 +367,7 @@ package GL.Runtime_Loading is
    procedure Array_Proc_With_3_Params (Param1 : Param1_Type;
                                        Param2 : Size_Type;
                                        Param3 : Array_Type);
+   pragma Inline (Array_Proc_With_3_Params);
    
    generic
       Procedure_Name : String;

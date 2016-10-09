@@ -57,7 +57,7 @@ private package GL.API is
    --  Also, all functions that have been deprecated with OpenGL 3.0
    --  will not be statically bound, as they may be omitted by implementors
    --  when they choose to only implement the OpenGL Core Profile.
-   
+
    subtype Zero is Int range 0 .. 0;
 
    function Get_Error return Errors.Error_Code;
@@ -90,17 +90,17 @@ private package GL.API is
                               Target : in out Doubles.Vector2);
    pragma Import (Convention => StdCall, Entity => Get_Double_Vec2,
                   External_Name => "glGetDoublev");
-   
+
    procedure Get_Single (Name : Enums.Getter.Parameter;
                          Target : access Single);
    pragma Import (Convention => StdCall, Entity => Get_Single,
                   External_Name => "glGetFloatv");
-   
+
    procedure Get_Single_Vec2 (Name   : Enums.Getter.Parameter;
                               Target : in out Singles.Vector2);
    pragma Import (Convention => StdCall, Entity => Get_Single_Vec2,
                   External_Name => "glGetFloatv");
-   
+
    procedure Get_Color (Name : Enums.Getter.Parameter;
                         Target : in out Colors.Color);
    pragma Import (Convention => StdCall, Entity => Get_Color,
@@ -115,7 +115,7 @@ private package GL.API is
                           Target : access Int);
    pragma Import (Convention => StdCall, Entity => Get_Integer,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Int_Vec4 (Name   : Enums.Getter.Parameter;
                            Target : in out Ints.Vector4);
    pragma Import (Convention => StdCall, Entity => Get_Int_Vec4,
@@ -135,12 +135,12 @@ private package GL.API is
                                Target : access Blending.Blend_Factor);
    pragma Import (Convention => StdCall, Entity => Get_Blend_Factor,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Alignment (Name : Enums.Getter.Parameter;
                             Target : access Pixels.Alignment);
    pragma Import (Convention => StdCall, Entity => Get_Alignment,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Blend_Equation (Name : Enums.Getter.Parameter;
                                  Target : access Blending.Equation);
    pragma Import (Convention => StdCall, Entity => Get_Blend_Equation,
@@ -155,17 +155,17 @@ private package GL.API is
                               Target : access Culling.Orientation);
    pragma Import (Convention => StdCall, Entity => Get_Orientation,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Face_Selector (Name : Enums.Getter.Parameter;
                                 Target : access Culling.Face_Selector);
    pragma Import (Convention => StdCall, Entity => Get_Face_Selector,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Polygon_Mode (Name   : Enums.Getter.Parameter;
                                Target : access Rasterization.Polygon_Mode_Type);
    pragma Import (Convention => StdCall, Entity => Get_Polygon_Mode,
                   External_Name => "glGetIntegerv");
-   
+
    procedure Get_Logic_Op (Name : Enums.Getter.Parameter;
                            Target : access Framebuffer.Logic_Op);
    pragma Import (Convention => StdCall, Entity => Get_Logic_Op,
@@ -181,12 +181,12 @@ private package GL.API is
       Target : access Buffers.Color_Buffer_Selector);
    pragma Import (Convention => StdCall, Entity => Get_Read_Buffer_Selector,
                   External_Name => "glGetIntegerv");
-   
+
    function Get_String (Name : Enums.Getter.String_Parameter) 
                         return C.Strings.chars_ptr;  
    pragma Import (Convention => StdCall, Entity => Get_String,
                   External_Name => "glGetString");
-   
+
    function Get_String_I is new Loader.Function_With_2_Params
      ("glGetStringi", Enums.Getter.String_Parameter, UInt, C.Strings.chars_ptr);
 
@@ -205,23 +205,23 @@ private package GL.API is
    function Is_Enabled (Subject : Toggles.Toggle) return Low_Level.Bool;
    pragma Import (Convention => StdCall, Entity => Is_Enabled,
                   External_Name => "glIsEnabled");
-   
+
    -----------------------------------------------------------------------------
    --                                 Culling                                 --
    -----------------------------------------------------------------------------
-   
+
    procedure Cull_Face (Selector : Culling.Face_Selector);
    pragma Import (Convention => StdCall, Entity => Cull_Face,
                   External_Name => "glCullFace");
-   
+
    procedure Front_Face (Face : Culling.Orientation);
    pragma Import (Convention => StdCall, Entity => Front_Face,
                   External_Name => "glFrontFace");
-   
+
    -----------------------------------------------------------------------------
    --                               Pixel stuff                               --
    -----------------------------------------------------------------------------
-   
+
    procedure Pixel_Store (Param : Enums.Pixel_Store_Param;
                           Value : Low_Level.Bool);
    procedure Pixel_Store (Param : Enums.Pixel_Store_Param;
@@ -230,14 +230,14 @@ private package GL.API is
                           Value : Pixels.Alignment);
    pragma Import (Convention => StdCall, Entity => Pixel_Store,
                   External_Name => "glPixelStorei");
-   
+
    -----------------------------------------------------------------------------
    --                         Framebuffer operations                          --
    -----------------------------------------------------------------------------
-   
+
    procedure Clamp_Color is new Loader.Procedure_With_2_Params
      ("glClampColor", Enums.Clamp_Color_Param, Low_Level.Bool);
-   
+
    -----------------------------------------------------------------------------
    --                                 Drawing                                 --
    -----------------------------------------------------------------------------
@@ -302,49 +302,49 @@ private package GL.API is
    procedure Blend_Func (Src_Factor, Dst_Factor : Blending.Blend_Factor);
    pragma Import (Convention => StdCall, Entity => Blend_Func,
                   External_Name => "glBlendFunc");
-   
+
    procedure Blend_Func_I is new Loader.Procedure_With_3_Params
      ("glBlendFunci", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
       Blending.Blend_Factor);
-   
+
    procedure Blend_Func_Separate is new Loader.Procedure_With_4_Params
      ("glBlendFuncSeparate", Blending.Blend_Factor, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor);
-   
+
    procedure Blend_Func_Separate_I is new Loader.Procedure_With_5_Params
      ("glBlendFuncSeparate", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor, Blending.Blend_Factor);
-   
+
    procedure Blend_Color is new Loader.Procedure_With_4_Params
      ("glBlendColor", Colors.Component, Colors.Component, Colors.Component, 
       Colors.Component);
-   
+
    procedure Blend_Equation is new Loader.Procedure_With_1_Param
      ("glBlendEquation", Blending.Equation);
-   
+
    procedure Blend_Equation_I is new Loader.Procedure_With_2_Params
      ("glBlendEquationi", Buffers.Draw_Buffer_Index, Blending.Equation);
-   
+
    procedure Blend_Equation_Separate is new Loader.Procedure_With_2_Params
      ("glBlendEquationSeparate", Blending.Equation, Blending.Equation);
-   
+
    procedure Blend_Equation_Separate_I is new Loader.Procedure_With_3_Params
      ("glBlendEquationi", Buffers.Draw_Buffer_Index, Blending.Equation,
       Blending.Equation);
-   
+
    -----------------------------------------------------------------------------
    --                              Rasterization                              --
    -----------------------------------------------------------------------------
-   
+
    procedure Line_Width (Value : Single);
    pragma Import (Convention => StdCall, Entity => Line_Width,
                   External_Name => "glLineWidth");
-   
+
    procedure Polygon_Mode (Face : Culling.Face_Selector;
                            Value : Rasterization.Polygon_Mode_Type);
    pragma Import (Convention => StdCall, Entity => Polygon_Mode,
                   External_Name => "glPolygonMode");
-   
+
    -----------------------------------------------------------------------------
    --                                 Buffers                                 --
    -----------------------------------------------------------------------------
@@ -519,10 +519,10 @@ private package GL.API is
 
    procedure Generate_Texture_Mipmap is new Loader.Procedure_With_1_Param
      ("glGenerateTextureMipmap", UInt);
-   
+
    procedure Invalidate_Tex_Image is new Loader.Procedure_With_2_Params
      ("glInvalidateTexImage", UInt, Objects.Textures.Mipmap_Level);
-   
+
    procedure Invalidate_Tex_Sub_Image is new Loader.Procedure_With_8_Params
      ("glInvalidateTexSubImage", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size);
@@ -774,7 +774,7 @@ private package GL.API is
 
    procedure Get_Shader_Param is new Loader.Getter_With_3_Params
      ("glGetShaderiv", UInt, Enums.Shader_Param, Int);
-   
+
    procedure Get_Shader_Type is new Loader.Getter_With_3_Params
      ("glGetShaderiv", UInt, Enums.Shader_Param, Objects.Shaders.Shader_Type);
 
@@ -794,7 +794,7 @@ private package GL.API is
 
    procedure Compile_Shader is new Loader.Procedure_With_1_Param
      ("glCompileShader", UInt);
-   
+
    procedure Release_Shader_Compiler is new Loader.Procedure_Without_Params
      ("glReleaseShaderCompiler");
 
@@ -827,7 +827,7 @@ private package GL.API is
    procedure Get_Program_Stage is new Loader.Getter_With_4_Params
      ("glGetProgramStageiv", UInt, Objects.Shaders.Shader_Type,
       Enums.Program_Stage_Param, Size);
-   
+
    procedure Uniform_Subroutines is new Loader.Procedure_With_3_Params
      ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
 
@@ -1064,13 +1064,13 @@ private package GL.API is
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
-   
+
    procedure Depth_Range (Near, Far : Double);
    pragma Import (Convention => StdCall, Entity => Depth_Range,
                   External_Name => "glDepthRange");
-   
+
    procedure Viewport (X, Y : Int; Width, Height : Size);
    pragma Import (Convention => StdCall, Entity => Viewport,
                   External_Name => "glViewport");
-   
+
 end GL.API;
