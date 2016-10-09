@@ -25,27 +25,29 @@ private generic
    with function Raw_Subprogram_Reference (Name : String) return System.Address;
 package GL.Runtime_Loading is
    pragma Preelaborate;
-   
-   -- this package loads raw API functions at runtime
-   -- (meaning it requests the function pointer of the requested function
-   --  at runtime). when a function is not available, it raises a
-   -- Feature_Not_Supported_Exception
-   
-   function Available (Function_Name : String) return Boolean;
-   
+
+   -- This package loads raw API functions at runtime (meaning it requests
+   -- the function pointer of the requested function at runtime).
+   --
+   -- Since some implementations of GL may return a function pointer even
+   -- if it does not implement the actual feature, the functions in this
+   -- package will never raise Feature_Not_Supported_Exception.
+   -- Instead, the only reliable way on all platforms to find out whether
+   -- a feature is supported is by using the GL.Context package.
+
    generic
       Function_Name : String;
       type Return_Type is private;
    function Function_Without_Params return Return_Type;
    pragma Inline (Function_Without_Params);
-   
+
    generic
       Function_Name : String;
       type Param1_Type (<>) is private;
       type Return_Type is private;
    function Function_With_1_Param (Param1 : Param1_Type) return Return_Type;
    pragma Inline (Function_With_1_Param);
-   
+
    generic
       Function_Name : String;
       type Param1_Type (<>) is private;
@@ -55,7 +57,7 @@ package GL.Runtime_Loading is
                                     Param2 : Param2_Type)
                                    return Return_Type;
    pragma Inline (Function_With_2_Params);
-   
+
    generic
       Function_Name : String;
       type Param1_Type (<>) is private;
@@ -120,7 +122,7 @@ package GL.Runtime_Loading is
       type Param1_Type (<>) is private;
    procedure Procedure_With_1_Param (Param1 : Param1_Type);
    pragma Inline (Procedure_With_1_Param);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -128,7 +130,7 @@ package GL.Runtime_Loading is
    procedure Procedure_With_2_Params (Param1 : Param1_Type;
                                       Param2 : Param2_Type);
    pragma Inline (Procedure_With_2_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -138,7 +140,7 @@ package GL.Runtime_Loading is
                                       Param2 : Param2_Type;
                                       Param3 : Param3_Type);
    pragma Inline (Procedure_With_3_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -150,7 +152,7 @@ package GL.Runtime_Loading is
                                       Param3 : Param3_Type;
                                       Param4 : Param4_Type);
    pragma Inline (Procedure_With_4_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -164,7 +166,7 @@ package GL.Runtime_Loading is
                                       Param4 : Param4_Type;
                                       Param5 : Param5_Type);
    pragma Inline (Procedure_With_5_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -180,7 +182,7 @@ package GL.Runtime_Loading is
                                       Param5 : Param5_Type;
                                       Param6 : Param6_Type);
    pragma Inline (Procedure_With_6_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -198,7 +200,7 @@ package GL.Runtime_Loading is
                                       Param6 : Param6_Type;
                                       Param7 : Param7_Type);
    pragma Inline (Procedure_With_7_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -326,7 +328,7 @@ package GL.Runtime_Loading is
    procedure Getter_With_2_Params (Param1 : Param1_Type;
                                    Value  : in out Value_Type);
    pragma Inline (Getter_With_2_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type is private;
@@ -336,7 +338,7 @@ package GL.Runtime_Loading is
                                    Param2 : Param2_Type;
                                    Value  : in out Value_Type);
    pragma Inline (Getter_With_3_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type is private;
@@ -348,7 +350,7 @@ package GL.Runtime_Loading is
                                    Param3 : Param3_Type;
                                    Value  : in out Value_Type);
    pragma Inline (Getter_With_4_Params);
-   
+
    generic
       Procedure_Name : String;
       type Size_Type is (<>);
@@ -357,7 +359,7 @@ package GL.Runtime_Loading is
    procedure Array_Proc_With_2_Params (Param1 : Size_Type;
                                        Param2 : Array_Type);
    pragma Inline (Array_Proc_With_2_Params);
-   
+
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
@@ -368,7 +370,7 @@ package GL.Runtime_Loading is
                                        Param2 : Size_Type;
                                        Param3 : Array_Type);
    pragma Inline (Array_Proc_With_3_Params);
-   
+
    generic
       Procedure_Name : String;
       type Size_Type is (<>);
@@ -394,18 +396,19 @@ package GL.Runtime_Loading is
    pragma Inline (String_Getter_With_6_Params);
 
 private
+
    generic
       type Function_Reference is private;
    function Load (Function_Name : String) return Function_Reference;
    pragma Inline (Load);
-   
-   package Function_Maps is new Ada.Containers.Indefinite_Hashed_Maps (
-     Key_Type        => String,
-     Element_Type    => System.Address,
-     Hash            => Ada.Strings.Hash,
-     Equivalent_Keys => Standard."=",
-     "="             => System."="
-   );
-   
+
+   package Function_Maps is new Ada.Containers.Indefinite_Hashed_Maps
+     (Key_Type        => String,
+      Element_Type    => System.Address,
+      Hash            => Ada.Strings.Hash,
+      Equivalent_Keys => Standard."=",
+      "="             => System."=");
+
    Loaded : Function_Maps.Map;
+
 end GL.Runtime_Loading;

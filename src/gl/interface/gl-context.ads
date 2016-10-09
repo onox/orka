@@ -38,7 +38,7 @@ package GL.Context is
 
    function Extensions return String_List;
    function Has_Extension (Name : String) return Boolean;
-   --  Uses OpenGL 3 interface if available, otherwise old interface
+   --  Uses OpenGL 3 interface
 
    function Primary_Shading_Language_Version return String;
 
