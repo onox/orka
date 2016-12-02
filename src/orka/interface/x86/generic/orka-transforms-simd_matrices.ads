@@ -97,6 +97,10 @@ package Orka.Transforms.SIMD_Matrices is
    procedure Transpose (Matrix : in out Matrix_Type);
    --  Transpose the matrix
 
-   function Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type;
+   function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type;
+
+   function Infinite_Perspective (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type;
+
+   function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type;
 
 end Orka.Transforms.SIMD_Matrices;

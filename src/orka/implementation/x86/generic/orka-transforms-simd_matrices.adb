@@ -172,8 +172,8 @@ package body Orka.Transforms.SIMD_Matrices is
       Matrix := Transpose_Matrix (Matrix);
    end Transpose;
 
-   function Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type is
-      F : constant Element_Type := 1.0 / Elementary_Functions.Tan (FOV / 2.0, 360.0);
+   function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type is
+      F : constant Element_Type := 1.0 / Elementary_Functions.Tan (0.5 * FOV, 360.0);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) (X) := F / Aspect;
@@ -183,6 +183,30 @@ package body Orka.Transforms.SIMD_Matrices is
       Result (Z) (W) := Element_Type (-1.0);
       Result (W) (W) := Element_Type (0.0);
       return Result;
-   end Perspective;
+   end Finite_Perspective;
+
+   function Infinite_Perspective (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type is
+      F : constant Element_Type := 1.0 / Elementary_Functions.Tan (0.5 * FOV, 360.0);
+      Result : Matrix_Type := Identity_Value;
+   begin
+      Result (X) (X) := F / Aspect;
+      Result (Y) (Y) := F;
+      Result (Z) (Z) := Element_Type (-1.0);
+      Result (W) (Z) := -2.0 * Z_Near;
+      Result (Z) (W) := Element_Type (-1.0);
+      Result (W) (W) := Element_Type (0.0);
+      return Result;
+   end Infinite_Perspective;
+
+   function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type is
+      Result : Matrix_Type := Identity_Value;
+   begin
+      Result (X) (X) := 1.0 / X_Mag;
+      Result (Y) (Y) := 1.0 / Y_Mag;
+      Result (Z) (Z) := 2.0 / (Z_Near - Z_Far);
+      Result (W) (Z) := (Z_Near + Z_Far) / (Z_Near - Z_Far);
+      Result (W) (W) := Element_Type (1.0);
+      return Result;
+   end Orthographic;
 
 end Orka.Transforms.SIMD_Matrices;
