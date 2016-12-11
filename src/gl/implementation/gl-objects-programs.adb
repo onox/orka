@@ -154,6 +154,9 @@ package body GL.Objects.Programs is
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
+      if Result = -1 then
+         raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
+      end if;
       return Uniforms.Create_Uniform (Subject, Result);
    end Uniform_Location;
    

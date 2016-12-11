@@ -67,6 +67,7 @@ package GL.Objects.Programs is
    procedure Delete_Id (Object : in out Program);
 
    Attribute_Inactive_Error : exception;
+   Uniform_Inactive_Error   : exception;
 
    -----------------------------------------------------------------------------
    --                               Subroutines                               --
