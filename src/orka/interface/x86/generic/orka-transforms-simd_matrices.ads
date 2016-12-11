@@ -19,6 +19,7 @@ generic
    type Vector_Type is array (SIMD.Index_Homogeneous) of Element_Type;
    type Matrix_Type is array (SIMD.Index_Homogeneous) of Vector_Type;
    with function Multiply_Matrices (Left, Right : Matrix_Type) return Matrix_Type;
+   with function Multiply_Vector (Left : Matrix_Type; Right : Vector_Type) return Vector_Type;
    with function "-" (Elements : Vector_Type) return Vector_Type;
    with function Transpose_Matrix (Matrix : Matrix_Type) return Matrix_Type;
 package Orka.Transforms.SIMD_Matrices is
@@ -45,6 +46,8 @@ package Orka.Transforms.SIMD_Matrices is
    function S (Factors : Vector_Type) return Matrix_Type;
 
    function "*" (Left, Right : Matrix_Type) return Matrix_Type renames Multiply_Matrices;
+
+   function "*" (Left : Matrix_Type; Right : Vector_Type) return Vector_Type renames Multiply_Vector;
 
    function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type;
    --  Add a translation transformation to the matrix

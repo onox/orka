@@ -21,6 +21,6 @@ with Orka.SIMD.AVX.Doubles.Swizzle;
 
 package Orka.Transforms.Doubles.Matrices is new Orka.Transforms.SIMD_Matrices
   (GL.Types.Double, SIMD.AVX.Doubles.m256d, SIMD.AVX.Doubles.m256d_Array,
-   SIMD.AVX.Doubles.Arithmetic."*", SIMD.AVX.Doubles.Arithmetic."-",
-   SIMD.AVX.Doubles.Swizzle.Transpose);
+   SIMD.AVX.Doubles.Arithmetic."*", SIMD.AVX.Doubles.Arithmetic."*",
+   SIMD.AVX.Doubles.Arithmetic."-", SIMD.AVX.Doubles.Swizzle.Transpose);
 pragma Preelaborate (Orka.Transforms.Doubles.Matrices);

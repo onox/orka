@@ -19,40 +19,44 @@ with Orka.SIMD.AVX.Doubles.Swizzle;
 package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
    function "*" (Left, Right : m256d_Array) return m256d_Array is
+      Result : m256d_Array;
+   begin
+      for I in Index_Homogeneous'Range loop
+         Result (I) := Left * Right (I);
+      end loop;
+      return Result;
+   end "*";
+
+   function "*" (Left : m256d_Array; Right : m256d) return m256d is
       use SIMD.AVX.Doubles.Swizzle;
 
       Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 2 or 0 * 4 or 0 * 8;
       Mask_1_1_0_0 : constant Unsigned_32 := 1 or 1 * 2 or 0 * 4 or 0 * 8;
       Mask_0_0_1_1 : constant Unsigned_32 := 0 or 0 * 2 or 1 * 4 or 1 * 8;
 
-      Result : m256d_Array;
-
       XXXX, YYYY, ZZZZ, WWWW, M0, M1, M2, M3 : m256d;
    begin
-      for I in Index_Homogeneous'Range loop
-         --  Shuffling across 128-bit lanes requires AVX2. Thus we first
-         --  fill either the lower half or upper half, and then permute
-         --  lanes to duplicate one of the halves.
-         XXXX := Shuffle_Within_Lanes (Right (I), Right (I), Mask_0_0_0_0);  --  X X _ _
-         YYYY := Shuffle_Within_Lanes (Right (I), Right (I), Mask_1_1_0_0);  --  Y Y _ _
-         ZZZZ := Shuffle_Within_Lanes (Right (I), Right (I), Mask_0_0_0_0);  --  _ _ Z Z
-         WWWW := Shuffle_Within_Lanes (Right (I), Right (I), Mask_0_0_1_1);  --  _ _ W W
+      --  Shuffling across 128-bit lanes requires AVX2. Thus we first
+      --  fill either the lower half or upper half, and then permute
+      --  lanes to duplicate one of the halves.
+      XXXX := Shuffle_Within_Lanes (Right, Right, Mask_0_0_0_0);  --  X X _ _
+      YYYY := Shuffle_Within_Lanes (Right, Right, Mask_1_1_0_0);  --  Y Y _ _
+      ZZZZ := Shuffle_Within_Lanes (Right, Right, Mask_0_0_0_0);  --  _ _ Z Z
+      WWWW := Shuffle_Within_Lanes (Right, Right, Mask_0_0_1_1);  --  _ _ W W
 
-         XXXX := Duplicate_LH (XXXX);
-         YYYY := Duplicate_LH (YYYY);
-         ZZZZ := Duplicate_HL (ZZZZ);
-         WWWW := Duplicate_HL (WWWW);
+      XXXX := Duplicate_LH (XXXX);
+      YYYY := Duplicate_LH (YYYY);
+      ZZZZ := Duplicate_HL (ZZZZ);
+      WWWW := Duplicate_HL (WWWW);
 
-         M0 := XXXX * Left (X);
-         M1 := YYYY * Left (Y);
-         M2 := ZZZZ * Left (Z);
-         M3 := WWWW * Left (W);
+      M0 := XXXX * Left (X);
+      M1 := YYYY * Left (Y);
+      M2 := ZZZZ * Left (Z);
+      M3 := WWWW * Left (W);
 
-         M0 := M0 + M1;
-         M2 := M2 + M3;
-         Result (I) := M0 + M2;
-      end loop;
-      return Result;
+      M0 := M0 + M1;
+      M2 := M2 + M3;
+      return M0 + M2;
    end "*";
 
    function Divide_Or_Zero (Left, Right : m256d) return m256d is

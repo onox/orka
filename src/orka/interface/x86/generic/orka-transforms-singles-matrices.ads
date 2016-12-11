@@ -21,6 +21,6 @@ with Orka.SIMD.SSE.Singles.Swizzle;
 
 package Orka.Transforms.Singles.Matrices is new Orka.Transforms.SIMD_Matrices
   (GL.Types.Single, SIMD.SSE.Singles.m128, SIMD.SSE.Singles.m128_Array,
-   SIMD.SSE.Singles.Arithmetic."*", SIMD.SSE.Singles.Arithmetic."-",
-   SIMD.SSE.Singles.Swizzle.Transpose);
+   SIMD.SSE.Singles.Arithmetic."*", SIMD.SSE.Singles.Arithmetic."*",
+   SIMD.SSE.Singles.Arithmetic."-", SIMD.SSE.Singles.Swizzle.Transpose);
 pragma Preelaborate (Orka.Transforms.Singles.Matrices);

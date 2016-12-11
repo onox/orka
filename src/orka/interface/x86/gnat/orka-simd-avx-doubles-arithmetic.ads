@@ -23,6 +23,11 @@ package Orka.SIMD.AVX.Doubles.Arithmetic is
    --  Multiplies the left matrix with the right matrix. Matrix multiplication
    --  is associative, but not commutative.
 
+   function "*" (Left : m256d_Array; Right : m256d) return m256d
+     with Inline;
+   --  Multiplies the left matrix with the right vector. Matrix multiplication
+   --  is associative, but not commutative.
+
    function "/" (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divpd256";
 

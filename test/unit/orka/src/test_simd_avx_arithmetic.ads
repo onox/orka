@@ -30,6 +30,7 @@ private
    procedure Test_Add;
    procedure Test_Subtract;
    procedure Test_Minus;
+   procedure Test_Multiply_Vector;
    procedure Test_Multiply_Matrices;
 
 end Test_SIMD_AVX_Arithmetic;

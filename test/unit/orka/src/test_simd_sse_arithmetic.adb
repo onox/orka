@@ -38,6 +38,7 @@ package body Test_SIMD_SSE_Arithmetic is
       T.Add_Test_Routine (Test_Add'Access, "Test '+' operator");
       T.Add_Test_Routine (Test_Subtract'Access, "Test '-' operator");
       T.Add_Test_Routine (Test_Minus'Access, "Test unary '-' operator");
+      T.Add_Test_Routine (Test_Multiply_Vector'Access, "Test '*' operator on matrix and vector");
       T.Add_Test_Routine (Test_Multiply_Matrices'Access, "Test '*' operator on matrices");
    end Initialize;
 
@@ -134,6 +135,24 @@ package body Test_SIMD_SSE_Arithmetic is
          Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
       end loop;
    end Test_Minus;
+
+   procedure Test_Multiply_Vector is
+      --  Matrix is an array of columns
+      Left  : constant m128_Array := ((1.0, 5.0, 9.0, 13.0),
+                                      (2.0, 6.0, 10.0, 14.0),
+                                      (3.0, 7.0, 11.0, 15.0),
+                                      (4.0, 8.0, 12.0, 16.0));
+
+      Right : constant m128 := (2.0, 1.0, 1.0, 1.0);
+
+      Expected : constant m128 := (11.0, 31.0, 51.0, 71.0);
+
+      Result : constant m128 := Left * Right;
+   begin
+      for I in Index_Homogeneous loop
+         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
+      end loop;
+   end Test_Multiply_Vector;
 
    procedure Test_Multiply_Matrices is
       --  Each matrix is an array of columns

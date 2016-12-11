@@ -23,6 +23,11 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
    --  Multiplies the left matrix with the right matrix. Matrix multiplication
    --  is associative, but not commutative.
 
+   function "*" (Left : m128_Array; Right : m128) return m128
+     with Inline;
+   --  Multiplies the left matrix with the right vector. Matrix multiplication
+   --  is associative, but not commutative.
+
    function "/" (Left, Right : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divps";
 

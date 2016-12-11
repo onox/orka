@@ -19,6 +19,15 @@ with Orka.SIMD.SSE.Singles.Swizzle;
 package body Orka.SIMD.SSE.Singles.Arithmetic is
 
    function "*" (Left, Right : m128_Array) return m128_Array is
+      Result : m128_Array;
+   begin
+      for I in Index_Homogeneous'Range loop
+         Result (I) := Left * Right (I);
+      end loop;
+      return Result;
+   end "*";
+
+   function "*" (Left : m128_Array; Right : m128) return m128 is
       use SIMD.SSE.Singles.Swizzle;
 
       Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 4 or 0 * 16 or 0 * 64;
@@ -26,26 +35,21 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
       Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 4 or 2 * 16 or 2 * 64;
       Mask_3_3_3_3 : constant Unsigned_32 := 3 or 3 * 4 or 3 * 16 or 3 * 64;
 
-      Result : m128_Array;
-
       XXXX, YYYY, ZZZZ, WWWW, M0, M1, M2, M3 : m128;
    begin
-      for I in Index_Homogeneous'Range loop
-         XXXX := Shuffle (Right (I), Right (I), Mask_0_0_0_0);
-         YYYY := Shuffle (Right (I), Right (I), Mask_1_1_1_1);
-         ZZZZ := Shuffle (Right (I), Right (I), Mask_2_2_2_2);
-         WWWW := Shuffle (Right (I), Right (I), Mask_3_3_3_3);
+      XXXX := Shuffle (Right, Right, Mask_0_0_0_0);
+      YYYY := Shuffle (Right, Right, Mask_1_1_1_1);
+      ZZZZ := Shuffle (Right, Right, Mask_2_2_2_2);
+      WWWW := Shuffle (Right, Right, Mask_3_3_3_3);
 
-         M0 := XXXX * Left (X);
-         M1 := YYYY * Left (Y);
-         M2 := ZZZZ * Left (Z);
-         M3 := WWWW * Left (W);
+      M0 := XXXX * Left (X);
+      M1 := YYYY * Left (Y);
+      M2 := ZZZZ * Left (Z);
+      M3 := WWWW * Left (W);
 
-         M0 := M0 + M1;
-         M2 := M2 + M3;
-         Result (I) := M0 + M2;
-      end loop;
-      return Result;
+      M0 := M0 + M1;
+      M2 := M2 + M3;
+      return M0 + M2;
    end "*";
 
    function Divide_Or_Zero (Left, Right : m128) return m128 is
