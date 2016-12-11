@@ -24,7 +24,7 @@ package Orka.Scenes.Generic_Scene_Trees is
 
    subtype Matrix4 is Transforms.Matrix4;
 
-   type Tree is tagged limited private;
+   type Tree is tagged private;
 
    type Cursor (<>) is private;
 
@@ -76,7 +76,7 @@ private
 
    package Level_Vectors is new Ada.Containers.Vectors (Positive, Level);
 
-   type Tree is tagged limited record
+   type Tree is tagged record
       Levels : Level_Vectors.Vector;
    end record;
 

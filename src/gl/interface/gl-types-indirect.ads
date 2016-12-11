@@ -14,11 +14,18 @@
 
 with Interfaces.C.Pointers;
 
+with Ada.Unchecked_Deallocation;
+
 package GL.Types.Indirect is
    pragma Preelaborate;
 
-   type Single_Array_Access is access constant Single_Array;
-   type UInt_Array_Access   is access constant UInt_Array;
+   type Single_Array_Access is access Single_Array;
+   type UInt_Array_Access   is access UInt_Array;
+
+   procedure Free_Array is new Ada.Unchecked_Deallocation
+     (Object => Single_Array, Name => Single_Array_Access);
+   procedure Free_Array is new Ada.Unchecked_Deallocation
+     (Object => UInt_Array, Name => UInt_Array_Access);
 
    type Arrays_Indirect_Command is record
       Count, Instances, First_Vertex, Base_Instance : UInt;

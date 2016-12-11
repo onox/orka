@@ -1,5 +1,6 @@
 with "config";
 with "opengl";
+with "json_ada";
 
 library project Orka is
 

@@ -21,7 +21,7 @@ with Orka.Buffers;
 package Orka.Meshes is
    pragma Preelaborate;
 
-   type Mesh is tagged limited private;
+   type Mesh is tagged private;
 
    function Create_Mesh (Mode : GL.Types.Connection_Mode) return Mesh;
 
@@ -36,7 +36,7 @@ package Orka.Meshes is
 
 private
 
-   type Mesh is tagged limited record
+   type Mesh is tagged record
       Mode : GL.Types.Connection_Mode;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Attribute_Buffers_Count : Natural;

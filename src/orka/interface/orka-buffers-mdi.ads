@@ -12,44 +12,61 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Vectors;
+
 package Orka.Buffers.MDI is
    pragma Preelaborate;
 
    type MDI_Buffers is record
-      Vertex_Buffer, Index_Buffer, Command_Buffer : Buffer;
+      Vertex_Buffer, Index_Buffer, Command_Buffer, Instances_Buffer : Buffer;
    end record;
 
-   type MDI_Constructor (Max_Parts, Vertex_Length : Size) is tagged limited private;
+   type Batch (Vertex_Length : Positive) is tagged limited private;
 
-   procedure Add_Part (Object : in out MDI_Constructor;
-                       Vertices : not null Indirect.Single_Array_Access;
-                       Indices  : not null Indirect.UInt_Array_Access;
-                       Instance_Index : out Natural)
-     with Pre  => Size (Object.Parts) < Object.Max_Parts
-                    and Indices'Length > 0 and Vertices'Length > 0
-                    and (Vertices'Length mod Object.Vertex_Length) = 0,
-          Post => Size (Instance_Index) < Object.Max_Parts;
+   procedure Append (Object : in out Batch;
+                     Vertices : not null Indirect.Single_Array_Access;
+                     Indices  : not null Indirect.UInt_Array_Access;
+                     Instance_Index : out Natural)
+     with Pre  => Indices'Length > 0 and Vertices'Length > 0
+                    and (Vertices'Length mod Object.Vertex_Length) = 0;
+     -- TODO Vertex_Length is number of elements. This only works if
+     -- all elements have the same type. It should be number of bytes
+     -- TODO add Indices'Length mod 3 = 0?
 
-   function Parts (Object : MDI_Constructor) return Natural
+   procedure Clear (Object : in out Batch);
+   --  Deallocate and remove all arrays that have been added via the
+   --  Append procedure.
+
+   function Length (Object : Batch) return Natural
      with Inline;
 
-   function Create_Buffer (Object : MDI_Constructor;
+   function Create_Buffers (Object : Batch;
                            Usage   : GL.Objects.Buffers.Buffer_Usage;
                            Visible : Boolean := True) return MDI_Buffers
-     with Pre => Object.Parts > 0;
+     with Pre => Object.Length > 0;
+   --  Return a record containing a set of buffers containing the
+   --  vertices and indices of all parts (batched), and the commands
+   --  for drawing all these parts using just one draw call.
 
-   function Create_Constructor (Max_Parts, Vertex_Length : Size) return MDI_Constructor
-     with Pre => Max_Parts > 0 and Vertex_Length > 0;
+   function Create_Batch (Vertex_Length : Positive) return Batch;
+   --  Create an empty batch. Parts can be added to this batch by
+   --  calling Append. After having appended all parts to the batch,
+   --  the vertex buffer, index buffer, and command buffer can be
+   --  created by calling Create_Buffers.
 
 private
 
-   type Vertices_Array is array (Size range <>) of Indirect.Single_Array_Access;
-   type Indices_Array  is array (Size range <>) of Indirect.UInt_Array_Access;
+   use type Indirect.Single_Array_Access;
+   use type Indirect.UInt_Array_Access;
 
-   type MDI_Constructor (Max_Parts, Vertex_Length : Size) is tagged limited record
-      Count : Natural;
-      Parts_Vertices : Vertices_Array (Size range 1 .. Max_Parts);
-      Parts_Indices  : Indices_Array  (Size range 1 .. Max_Parts);
+   subtype Positive_Size is Size range 1 .. Size'Last;
+
+   package Single_Vectors is new Ada.Containers.Vectors (Positive_Size, Indirect.Single_Array_Access);
+   package UInt_Vectors   is new Ada.Containers.Vectors (Positive_Size, Indirect.UInt_Array_Access);
+
+   type Batch (Vertex_Length : Positive) is tagged limited record
+      Vertices : Single_Vectors.Vector;
+      Indices  : UInt_Vectors.Vector;
    end record;
 
 end Orka.Buffers.MDI;
