@@ -44,7 +44,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector2) is
    begin
       API.Uniforms.Singles.Uniform2v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 2, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Single_Vector;
 
    procedure Set_Singles (Location : Uniform; V1, V2, V3 : Single) is
@@ -56,7 +56,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector3) is
    begin
       API.Uniforms.Singles.Uniform3v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 3, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Single_Vector;
 
    procedure Set_Singles (Location : Uniform; V1, V2, V3, V4 : Single) is
@@ -68,7 +68,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector4) is
    begin
       API.Uniforms.Singles.Uniform4v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 4, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Single_Vector;
 
    procedure Set_Single_Array (Location : Uniform; Value : Single_Array) is
@@ -156,7 +156,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector2) is
    begin
       API.Uniforms.Doubles.Uniform2v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 2, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Double_Vector;
 
    procedure Set_Doubles (Location : Uniform; V1, V2, V3 : Double) is
@@ -168,7 +168,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector3) is
    begin
       API.Uniforms.Doubles.Uniform3v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 3, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Double_Vector;
 
    procedure Set_Doubles (Location : Uniform; V1, V2, V3, V4 : Double) is
@@ -180,7 +180,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector4) is
    begin
       API.Uniforms.Doubles.Uniform4v (Location.Program.Reference.GL_Id,
-                                      Location.Location, 4, (1 => Value));
+                                      Location.Location, 1, (1 => Value));
    end Set_Double_Vector;
 
    procedure Set_Double_Array (Location : Uniform; Value : Double_Array) is
@@ -268,7 +268,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector2) is
    begin
       API.Uniforms.Ints.Uniform2v (Location.Program.Reference.GL_Id,
-                                   Location.Location, 2, (1 => Value));
+                                   Location.Location, 1, (1 => Value));
    end Set_Int_Vector;
 
    procedure Set_Ints (Location : Uniform; V1, V2, V3 : Int) is
@@ -280,7 +280,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector3) is
    begin
       API.Uniforms.Ints.Uniform3v (Location.Program.Reference.GL_Id,
-                                   Location.Location, 3, (1 => Value));
+                                   Location.Location, 1, (1 => Value));
    end Set_Int_Vector;
 
    procedure Set_Ints (Location : Uniform; V1, V2, V3, V4 : Int) is
@@ -292,7 +292,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector4) is
    begin
       API.Uniforms.Ints.Uniform4v (Location.Program.Reference.GL_Id,
-                                   Location.Location, 4, (1 => Value));
+                                   Location.Location, 1, (1 => Value));
    end Set_Int_Vector;
 
    procedure Set_Int_Array (Location : Uniform; Value : Int_Array) is
@@ -338,7 +338,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector2) is
    begin
       API.Uniforms.UInts.Uniform2v (Location.Program.Reference.GL_Id,
-                                    Location.Location, 2, (1 => Value));
+                                    Location.Location, 1, (1 => Value));
    end Set_UInt_Vector;
 
    procedure Set_UInts (Location : Uniform; V1, V2, V3 : UInt) is
@@ -350,7 +350,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector3) is
    begin
       API.Uniforms.UInts.Uniform3v (Location.Program.Reference.GL_Id,
-                                    Location.Location, 3, (1 => Value));
+                                    Location.Location, 1, (1 => Value));
    end Set_UInt_Vector;
 
    procedure Set_UInts (Location : Uniform; V1, V2, V3, V4 : UInt) is
@@ -362,7 +362,7 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector4) is
    begin
       API.Uniforms.UInts.Uniform4v (Location.Program.Reference.GL_Id,
-                                    Location.Location, 4, (1 => Value));
+                                    Location.Location, 1, (1 => Value));
    end Set_UInt_Vector;
 
    procedure Set_UInt_Array (Location : Uniform; Value : UInt_Array) is
