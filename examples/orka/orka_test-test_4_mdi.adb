@@ -52,17 +52,17 @@ procedure Orka_Test.Test_4_MDI is
         := (2, 3);
 
       Instances_Buffer : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
-      MDI : Orka.Buffers.MDI.MDI_Constructor := Orka.Buffers.MDI.Create_Constructor (2, 3);
+      MDI : Orka.Buffers.MDI.Batch := Orka.Buffers.MDI.Create_Batch (3);
 
       Instance_ID : Natural;
    begin
       Instances_Buffer.Set_Data (Instances_IDs);
 
       --  Create one VBO, one IBO, and a buffer containing the draw commands
-      MDI.Add_Part (Vertices_1, Indices_1, Instance_ID);
-      MDI.Add_Part (Vertices_2, Indices_2, Instance_ID);
-      pragma Assert (MDI.Parts = 2);
-      MDI_Buffers := MDI.Create_Buffer (Static_Draw);
+      MDI.Append (Vertices_1, Indices_1, Instance_ID);
+      MDI.Append (Vertices_2, Indices_2, Instance_ID);
+      pragma Assert (MDI.Length = 2);
+      MDI_Buffers := MDI.Create_Buffers (Static_Draw);
 
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do

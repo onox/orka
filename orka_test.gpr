@@ -14,7 +14,9 @@ project Orka_Test is
    for Main use ("orka_test-test_1_triangle",
                  "orka_test-test_2_two_triangles",
                  "orka_test-test_3_module_array",
-                 "orka_test-test_4_mdi");
+                 "orka_test-test_4_mdi",
+                 "orka_test-test_5_scene_tree",
+                 "orka_test-test_6_gltf");
 
    package Ide renames Config.Ide;
    package Compiler renames Config.Compiler;
