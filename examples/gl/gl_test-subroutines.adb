@@ -82,11 +82,11 @@ procedure GL_Test.Subroutines is
       FS.Compile;
 
       if not VS.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. Log:");
          Ada.Text_IO.Put_Line (VS.Info_Log);
       end if;
       if not FS.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of fragment shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of fragment shader failed. Log:");
          Ada.Text_IO.Put_Line (FS.Info_Log);
       end if;
 

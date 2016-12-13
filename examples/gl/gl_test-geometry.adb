@@ -29,6 +29,7 @@ with GL_Test.Display_Backend;
 procedure GL_Test.Geometry is
    Initialized : constant Boolean := Display_Backend.Init
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
 
    use GL.Types;
    use GL.Buffers;
@@ -52,11 +53,11 @@ procedure GL_Test.Geometry is
       Fragment_Shader.Compile;
 
       if not Vertex_Shader.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. Log:");
          Ada.Text_IO.Put_Line (Vertex_Shader.Info_Log);
       end if;
       if not Geometry_Shader.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of geometry shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of geometry shader failed. Log:");
          Ada.Text_IO.Put_Line (Geometry_Shader.Info_Log);
       end if;
       if not Fragment_Shader.Compile_Status then

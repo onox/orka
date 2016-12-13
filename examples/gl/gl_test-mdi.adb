@@ -114,11 +114,11 @@ procedure GL_Test.MDI is
       Fragment_Shader.Compile;
 
       if not Vertex_Shader.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of vertex shader failed. Log:");
          Ada.Text_IO.Put_Line (Vertex_Shader.Info_Log);
       end if;
       if not Fragment_Shader.Compile_Status then
-         Ada.Text_IO.Put_Line ("Compilation of fragment shader failed. log:");
+         Ada.Text_IO.Put_Line ("Compilation of fragment shader failed. Log:");
          Ada.Text_IO.Put_Line (Fragment_Shader.Info_Log);
       end if;
 
