@@ -200,15 +200,9 @@ package body GL.Objects.Textures is
 
    overriding
    procedure Initialize_Id (Object : in out Texture) is
-   begin
-      raise Not_Implemented_Exception with "Parameter 'Kind' required";
-   end Initialize_Id;
-
-   procedure Initialize_Id (Object : in out Texture;
-                            Kind   :        Low_Level.Enums.Non_Proxy_Texture_Kind) is
       New_Id : UInt := 0;
    begin
-      API.Create_Textures (Kind, 1, New_Id);
+      API.Create_Textures (Object.Kind, 1, New_Id);
       Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;

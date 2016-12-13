@@ -27,6 +27,10 @@ with GL.Types.Colors;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.OpenGL3 is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
@@ -93,7 +97,7 @@ procedure GL_Test.OpenGL3 is
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;
                            Program : GL.Objects.Programs.Program) is
    begin
-      -- load shader sources and compile shaders
+      --  Load shader sources and compile shaders
       GL.Files.Load_Shader_Source_From_File
         (Vertex_Shader, "../examples/gl/shaders/opengl3.vert");
       GL.Files.Load_Shader_Source_From_File
@@ -111,7 +115,7 @@ procedure GL_Test.OpenGL3 is
          Ada.Text_IO.Put_Line (Fragment_Shader.Info_Log);
       end if;
       
-      -- set up program
+      --  Set up program
       Program.Attach (Vertex_Shader);
       Program.Attach (Fragment_Shader);
       Program.Bind_Attrib_Location (0, "in_Position");
@@ -124,7 +128,7 @@ procedure GL_Test.OpenGL3 is
       end if;
       Program.Use_Program;
 
-      -- test iteration over program shaders
+      --  Test iteration over program shaders
       Ada.Text_IO.Put_Line ("Listing shaders attached to program...");
       for Shader of Program.Attached_Shaders loop
          Ada.Text_IO.Put_Line ("  Kind: " & GL.Objects.Shaders.Shader_Type'Image (Shader.Kind));
@@ -141,28 +145,10 @@ procedure GL_Test.OpenGL3 is
    Vector_Buffer1, Vector_Buffer2, Color_Buffer : GL.Objects.Buffers.Buffer;
    Array1, Array2 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   Vertex_Shader.Initialize_Id;
-   Fragment_Shader.Initialize_Id;
-   Program.Initialize_Id;
-   Vector_Buffer1.Initialize_Id;
-   Vector_Buffer2.Initialize_Id;
-   Color_Buffer.Initialize_Id;
-   Array1.Initialize_Id;
-   Array2.Initialize_Id;
-
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
-
    Ada.Text_IO.Put_Line ("Loaded shaders");
 
    Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2, Program);
-
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
@@ -175,7 +161,7 @@ begin
       GL.Attributes.Set_Single (1, 1.0, 0.0, 0.0);
       GL.Drawing.Draw_Arrays (Triangles, 0, 3);
 
-      -- Swap front and back buffers and process events
+      --  Swap front and back buffers and process events
       Display_Backend.Swap_Buffers_And_Poll_Events;
    end loop;
 

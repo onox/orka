@@ -23,6 +23,10 @@ with Orka.Programs.Modules;
 with GL_Test.Display_Backend;
 
 procedure Orka_Test.Test_4_MDI is
+   Initialized : constant Boolean := GL_Test.Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use Orka.Meshes;
    use Orka.Programs;
    use GL.Objects.Buffers;
@@ -80,32 +84,26 @@ procedure Orka_Test.Test_4_MDI is
          Result.Set_Index_Buffer (MDI_Buffers.Index_Buffer);
       end return;
    end Load_Mesh;
+
+   use GL.Buffers;
+
+   MDI_Buffers : Orka.Buffers.MDI.MDI_Buffers;
+
+   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
+     (VS => "../examples/orka/shaders/test-4-module-1.vert",
+      FS => "../examples/orka/shaders/test-4-module-1.frag"));
+
+   Mesh_1 : constant Mesh := Load_Mesh (Program_1, MDI_Buffers);
 begin
-   GL_Test.Display_Backend.Init (Major => 3, Minor => 2);
-   GL_Test.Display_Backend.Set_Not_Resizable;
-   GL_Test.Display_Backend.Open_Window (Width => 500, Height => 500);
+   Program_1.Use_Program;
 
-   declare
-      use GL.Buffers;
+   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
+      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
-      MDI_Buffers : Orka.Buffers.MDI.MDI_Buffers;
+      Mesh_1.Draw_Indirect (MDI_Buffers.Command_Buffer);
 
-      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
-        (VS => "../examples/orka/shaders/test-4-module-1.vert",
-         FS => "../examples/orka/shaders/test-4-module-1.frag"));
-
-      Mesh_1 : constant Mesh := Load_Mesh (Program_1, MDI_Buffers);
-   begin
-      Program_1.Use_Program;
-
-      while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
-
-         Mesh_1.Draw_Indirect (MDI_Buffers.Command_Buffer);
-
-         GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
-      end loop;
-   end;
+      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+   end loop;
 
    GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_4_MDI;

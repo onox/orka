@@ -27,6 +27,10 @@ with GL.Types.Indirect;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.MDI is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
@@ -142,23 +146,6 @@ procedure GL_Test.MDI is
    Command_Buffer, Instance_Buffer : GL.Objects.Buffers.Buffer;
    Array1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   Vertex_Shader.Initialize_Id;
-   Fragment_Shader.Initialize_Id;
-   Program.Initialize_Id;
-
-   Vertex_Buffer.Initialize_Id;
-   Index_Buffer.Initialize_Id;
-   Command_Buffer.Initialize_Id;
-   Instance_Buffer.Initialize_Id;
-
-   Array1.Initialize_Id;
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
    Ada.Text_IO.Put_Line ("Loaded shaders");
 

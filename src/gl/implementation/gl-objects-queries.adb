@@ -21,17 +21,7 @@ package body GL.Objects.Queries is
    procedure Initialize_Id (Object : in out Query) is
       New_Id : UInt := 0;
    begin
-      API.Gen_Queries (1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
-
-      Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
-   end Initialize_Id;
-
-   procedure Initialize_Id (Object : in out Query; Target : Query_Type) is
-      New_Id : UInt := 0;
-   begin
-      API.Create_Queries (Target, 1, New_Id);
+      API.Create_Queries (Object.Target, 1, New_Id);
       Raise_Exception_On_OpenGL_Error;
 
       Object.Reference.GL_Id := New_Id;

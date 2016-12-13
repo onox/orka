@@ -20,8 +20,6 @@ package body Orka.Programs is
                             Separable : Boolean := False) return Program is
    begin
       return Result : Program do
-         Result.GL_Program.Initialize_Id;
-
          --  Attach all shaders to the program before linking
          Programs.Modules.Attach_Shaders (Modules, Result);
 

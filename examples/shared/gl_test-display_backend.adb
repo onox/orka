@@ -120,13 +120,26 @@ package body GL_Test.Display_Backend is
       Glfw.Errors.Set_Callback (Print_Error'Access);
    end Enable_Print_Errors;
 
-   procedure Open_Window (Width, Height : Natural; Visible : Boolean := True; Depth_Bits : Natural := 0) is
+   function Init
+     (Major, Minor : Natural;
+      Width, Height : Natural;
+      Visible, Resizable : Boolean := True;
+      Depth_Bits : Natural := 0) return Boolean is
    begin
+      --  Initialize Glfw
+      Enable_Print_Errors;
+      Glfw.Init;
+
+      --  Initialize OpenGL context
+      Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
+      Glfw.Windows.Hints.Set_Forward_Compat (True);
+      Glfw.Windows.Hints.Set_Profile (Glfw.Windows.Context.Core_Profile);
+
       if not Main_Window.Initialized then
-         if not Visible then
-            Glfw.Windows.Hints.Set_Visible (False);
-         end if;
+         Glfw.Windows.Hints.Set_Visible (Visible);
+         Glfw.Windows.Hints.Set_Resizable (Resizable);
          Glfw.Windows.Hints.Set_Depth_Bits (Depth_Bits);
+
          Main_Window.Init (Glfw.Size (Width), Glfw.Size (Height), "");
       end if;
       if Visible then
@@ -141,7 +154,8 @@ package body GL_Test.Display_Backend is
       Main_Window.Enable_Callback (Glfw.Windows.Callbacks.Key);
 
       Glfw.Windows.Context.Make_Current (Main_Window);
-   end Open_Window;
+      return Main_Window.Initialized;
+   end Init;
 
    function Get_Window return Glfw.Windows.Window_Reference is
    begin
@@ -165,21 +179,6 @@ package body GL_Test.Display_Backend is
    end Close_Window;
 
    procedure Shutdown renames Glfw.Shutdown;
-
-   procedure Init (Major, Minor : Natural) is
-   begin
-      Enable_Print_Errors;
-      Glfw.Init;
-
-      Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
-      Glfw.Windows.Hints.Set_Forward_Compat (True);
-      Glfw.Windows.Hints.Set_Profile (Glfw.Windows.Context.Core_Profile);
-   end Init;
-
-   procedure Set_Not_Resizable is
-   begin
-      Glfw.Windows.Hints.Set_Resizable (False);
-   end Set_Not_Resizable;
 
    function Get_Mouse_X return Float is
    begin

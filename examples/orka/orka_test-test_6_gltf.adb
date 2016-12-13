@@ -30,6 +30,10 @@ with Orka.Transforms.Singles.Matrices;
 with GL_Test.Display_Backend;
 
 procedure Orka_Test.Test_6_GLTF is
+   Initialized : constant Boolean := GL_Test.Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 1000, Height => 1000, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    package Models is new Orka.Resources.Models (Orka.Scenes.Singles.Trees);
    package glTF is new Models.glTF;
 begin
@@ -37,10 +41,6 @@ begin
       Ada.Text_IO.Put_Line ("Usage: <path to .gltf file>");
       return;
    end if;
-
-   GL_Test.Display_Backend.Init (Major => 3, Minor => 2);
-   GL_Test.Display_Backend.Set_Not_Resizable;
-   GL_Test.Display_Backend.Open_Window (Width => 1000, Height => 1000);
 
    declare
       use type Ada.Real_Time.Time;

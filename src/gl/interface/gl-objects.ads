@@ -23,38 +23,40 @@ package GL.Objects is
 
    type GL_Object is abstract new Ada.Finalization.Controlled with private;
 
-   -- creates the object in OpenGL memory.
    overriding procedure Initialize (Object : in out GL_Object);
+   --  Create the object in OpenGL memory.
 
-   -- Increases reference count.
    overriding procedure Adjust (Object : in out GL_Object);
+   --  Increase reference count.
 
-   -- Decreases reference count. Destroys texture when it reaches zero.
    overriding procedure Finalize (Object : in out GL_Object);
+   --  Decrease reference count. Destroys texture when it reaches zero.
 
-   -- Create an OpenGL ID for this object. This has to be done before
-   -- the object is used in any way. After calling this procedure,
-   -- Initialized will be true.
    procedure Initialize_Id (Object : in out GL_Object) is abstract;
+   --  Create an OpenGL ID for this object. This has to be done before
+   --  the object is used in any way. After calling this procedure,
+   --  Initialized will be true.
 
-   -- Deletes the ID of an object. After calling this procedure,
-   -- Initialized will be false.
    procedure Delete_Id (Object : in out GL_Object) is abstract;
+   --  Delete the ID of an object. After calling this procedure,
+   --  Initialized will be false.
 
-   -- Check whether the object is set up to be used with OpenGL
-   -- (i.e. whether Initialize_Id has been called on the object).
    function Initialized (Object : GL_Object) return Boolean;
+   --  Check whether the object is set up to be used with OpenGL
+   --  (i.e. whether Initialize_Id has been called on the object).
 
-   -- This getter is provided for low-level access. Its primary use is to
-   -- interact with other C interfaces (e.g. OpenCL)
    function Raw_Id (Object : GL_Object) return UInt;
-   -- Setter for low-level access
+   --  This getter is provided for low-level access. Its primary use is to
+   --  interact with other C interfaces (e.g. OpenCL)
+
    procedure Set_Raw_Id (Object : GL_Object; Id : UInt);
+   --  Setter for low-level access.
 
    overriding
    function "=" (Left, Right : GL_Object) return Boolean;
 
    No_Object_Bound_Exception : exception;
+
 private
 
    type GL_Object_Reference is record

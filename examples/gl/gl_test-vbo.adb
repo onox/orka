@@ -27,6 +27,10 @@ with GL.Types;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.VBO is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
@@ -115,26 +119,10 @@ procedure GL_Test.VBO is
    Vector_Buffer1 : GL.Objects.Buffers.Buffer;
    Array1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   Vertex_Shader.Initialize_Id;
-   Fragment_Shader.Initialize_Id;
-   Program.Initialize_Id;
-
-   Vector_Buffer1.Initialize_Id;
-   Array1.Initialize_Id;
-
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
-
    Ada.Text_IO.Put_Line ("Loaded shaders");
 
    Load_Data (Array1, Vector_Buffer1, Program);
-
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop

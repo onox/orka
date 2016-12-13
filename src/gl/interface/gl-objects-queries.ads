@@ -57,12 +57,10 @@ package GL.Objects.Queries is
 
    type Target_Param is (Counter_Bits, Current_Query);
 
-   type Query is new GL_Object with private;
+   type Query (Target : Query_Type) is new GL_Object with private;
 
    overriding
    procedure Initialize_Id (Object : in out Query);
-
-   procedure Initialize_Id (Object : in out Query; Target : Query_Type);
 
    overriding
    procedure Delete_Id (Object : in out Query);
@@ -183,7 +181,7 @@ private
                         Result_No_Wait   => 16#9194#);
    for Query_Param'Size use Low_Level.Enum'Size;
 
-   type Query is new GL_Object with null record;
+   type Query (Target : Query_Type) is new GL_Object with null record;
 
    type Active_Query is limited new Ada.Finalization.Limited_Controlled with record
       Target : Query_Type;

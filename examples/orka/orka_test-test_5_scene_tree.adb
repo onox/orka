@@ -19,7 +19,6 @@ with Orka.Scenes.Singles.Trees;
 --  with Orka.Scenes.Doubles.Trees;
 
 procedure Orka_Test.Test_5_Scene_Tree is
-
    use type Ada.Real_Time.Time;
 
    package Trees renames Orka.Scenes.Singles.Trees;

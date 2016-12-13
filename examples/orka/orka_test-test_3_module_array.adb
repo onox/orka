@@ -23,6 +23,10 @@ with Orka.Programs.Modules;
 with GL_Test.Display_Backend;
 
 procedure Orka_Test.Test_3_Module_Array is
+   Initialized : constant Boolean := GL_Test.Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use Orka.Meshes;
    use Orka.Programs;
 
@@ -50,34 +54,28 @@ procedure Orka_Test.Test_3_Module_Array is
          end;
       end return;
    end Load_Mesh;
+
+   use GL.Buffers;
+
+   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Module_Array'(
+     Modules.Create_Module
+       (FS => "../examples/orka/shaders/test-3-module-1.frag"),
+     Modules.Create_Module
+       (VS => "../examples/orka/shaders/test-3-module-2.vert",
+        FS => "../examples/orka/shaders/test-3-module-2.frag")
+   ));
+
+   Triangle : constant Mesh := Load_Mesh (Program_1);
 begin
-   GL_Test.Display_Backend.Init (Major => 3, Minor => 2);
-   GL_Test.Display_Backend.Set_Not_Resizable;
-   GL_Test.Display_Backend.Open_Window (Width => 500, Height => 500);
+   Program_1.Use_Program;
 
-   declare
-      use GL.Buffers;
+   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
+      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
-      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Module_Array'(
-        Modules.Create_Module
-          (FS => "../examples/orka/shaders/test-3-module-1.frag"),
-        Modules.Create_Module
-          (VS => "../examples/orka/shaders/test-3-module-2.vert",
-           FS => "../examples/orka/shaders/test-3-module-2.frag")
-      ));
+      Triangle.Draw (0, 3);
 
-      Triangle : constant Mesh := Load_Mesh (Program_1);
-   begin
-      Program_1.Use_Program;
-
-      while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
-
-         Triangle.Draw (0, 3);
-
-         GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
-      end loop;
-   end;
+      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+   end loop;
 
    GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_3_Module_Array;

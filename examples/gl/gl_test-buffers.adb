@@ -37,6 +37,9 @@ with GL.Window;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.Buffers is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+
    use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
@@ -239,7 +242,7 @@ procedure GL_Test.Buffers is
    Vector_Buffer_Cube, Vector_Buffer_Quad : GL.Objects.Buffers.Buffer;
    Array_Cube, Array_Quad : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 
-   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture_2D;
+   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture_2D (GL.Low_Level.Enums.Texture_2D);
    FB : GL.Objects.Framebuffers.Framebuffer;
    RB : GL.Objects.Renderbuffers.Renderbuffer;
 
@@ -250,37 +253,6 @@ procedure GL_Test.Buffers is
    Screen_Vertex_Source   : constant String := "../examples/gl/shaders/buffers_screen.vert";
    Screen_Fragment_Source : constant String := "../examples/gl/shaders/buffers_screen.frag";
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   --  Generate shaders and program for scene
-   Scene_Vertex_Shader.Initialize_Id;
-   Scene_Fragment_Shader.Initialize_Id;
-   Scene_Program.Initialize_Id;
-
-   --  Generate shaders and program for post-processing
-   Screen_Vertex_Shader.Initialize_Id;
-   Screen_Fragment_Shader.Initialize_Id;
-   Screen_Program.Initialize_Id;
-
-   --  Generate Vertex Buffer Objects
-   Vector_Buffer_Cube.Initialize_Id;
-   Vector_Buffer_Quad.Initialize_Id;
-
-   --  Generate Vertex Array Objects
-   Array_Cube.Initialize_Id;
-   Array_Quad.Initialize_Id;
-
-   --  Generate texture and frame/render buffers
-   Scene_Texture.Initialize_Id (GL.Low_Level.Enums.Texture_2D);
-   Color_Texture.Initialize_Id (GL.Low_Level.Enums.Texture_2D);
-   FB.Initialize_Id;
-   RB.Initialize_Id;
-
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    --  Compile shaders and attach them to the programs
    Load_Shaders (Scene_Vertex_Source, Scene_Fragment_Source,
                  Scene_Vertex_Shader, Scene_Fragment_Shader, Scene_Program);

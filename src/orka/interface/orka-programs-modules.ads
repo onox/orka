@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Indefinite_Holders;
+
 with GL.Objects.Shaders;
 
 package Orka.Programs.Modules is
@@ -30,17 +32,15 @@ package Orka.Programs.Modules is
 
 private
 
+   use type GL.Objects.Shaders.Shader;
+
+   package Shader_Holder is new Ada.Containers.Indefinite_Holders
+      (Element_Type => GL.Objects.Shaders.Shader);
+
+   type Shader_Array is array (GL.Objects.Shaders.Shader_Type) of Shader_Holder.Holder;
+
    type Module is tagged record
-      Vertex_Shader          : GL.Objects.Shaders.Shader
-        (Kind => GL.Objects.Shaders.Vertex_Shader);
-      Tess_Control_Shader    : GL.Objects.Shaders.Shader
-        (Kind => GL.Objects.Shaders.Tess_Control_Shader);
-      Tess_Evaluation_Shader : GL.Objects.Shaders.Shader
-        (Kind => GL.Objects.Shaders.Tess_Evaluation_Shader);
-      Geometry_Shader        : GL.Objects.Shaders.Shader
-        (Kind => GL.Objects.Shaders.Geometry_Shader);
-      Fragment_Shader        : GL.Objects.Shaders.Shader
-        (Kind => GL.Objects.Shaders.Fragment_Shader);
+      Shaders : Shader_Array;
    end record;
 
 end Orka.Programs.Modules;

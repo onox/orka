@@ -24,6 +24,10 @@ with Orka.Programs.Modules;
 with GL_Test.Display_Backend;
 
 procedure Orka_Test.Test_2_Two_Triangles is
+   Initialized : constant Boolean := GL_Test.Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use GL.Types;
    use GL.Objects.Buffers;
 
@@ -83,33 +87,27 @@ procedure Orka_Test.Test_2_Two_Triangles is
          end;
       end return;
    end Load_Mesh_2;
+
+   use GL.Buffers;
+
+   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
+     (VS => "../examples/gl/shaders/opengl3.vert",
+      FS => "../examples/gl/shaders/opengl3.frag"));
+
+   Triangle_1 : constant Mesh := Load_Mesh_1 (Program_1);
+   Triangle_2 : constant Mesh := Load_Mesh_2 (Program_1);
 begin
-   GL_Test.Display_Backend.Init (Major => 3, Minor => 2);
-   GL_Test.Display_Backend.Set_Not_Resizable;
-   GL_Test.Display_Backend.Open_Window (Width => 500, Height => 500);
+   Program_1.Use_Program;
 
-   declare
-      use GL.Buffers;
+   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
+      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
-      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
-        (VS => "../examples/gl/shaders/opengl3.vert",
-         FS => "../examples/gl/shaders/opengl3.frag"));
+      Triangle_1.Draw (0, 3);
+      GL.Attributes.Set_Single (Program_1.Attribute_Location ("in_Color"), 1.0, 0.0, 0.0);
+      Triangle_2.Draw (0, 3);
 
-      Triangle_1 : constant Mesh := Load_Mesh_1 (Program_1);
-      Triangle_2 : constant Mesh := Load_Mesh_2 (Program_1);
-   begin
-      Program_1.Use_Program;
-
-      while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
-
-         Triangle_1.Draw (0, 3);
-         GL.Attributes.Set_Single (Program_1.Attribute_Location ("in_Color"), 1.0, 0.0, 0.0);
-         Triangle_2.Draw (0, 3);
-
-         GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
-      end loop;
-   end;
+      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+   end loop;
 
    GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_2_Two_Triangles;

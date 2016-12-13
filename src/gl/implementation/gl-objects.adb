@@ -21,6 +21,7 @@ package body GL.Objects is
       Object.Reference := new GL_Object_Reference'(GL_Id          => 0,
                                                   Reference_Count => 1,
                                                   Initialized     => False);
+      GL_Object'Class (Object).Initialize_Id;
    end Initialize;
 
    overriding procedure Adjust (Object : in out GL_Object) is

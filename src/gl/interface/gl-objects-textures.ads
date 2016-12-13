@@ -63,13 +63,11 @@ package GL.Objects.Textures is
    --                          Texture Objects                                --
    -----------------------------------------------------------------------------
 
-   type Texture is abstract new GL_Object with private;
+   type Texture (Kind : Low_Level.Enums.Non_Proxy_Texture_Kind)
+     is abstract new GL_Object with private;
 
    overriding
    procedure Initialize_Id (Object : in out Texture);
-
-   procedure Initialize_Id (Object : in out Texture;
-                            Kind   :        Low_Level.Enums.Non_Proxy_Texture_Kind);
 
    overriding
    procedure Delete_Id (Object : in out Texture);
@@ -324,7 +322,8 @@ private
                        Intensity => 16#8049#);
    for Depth_Mode'Size use Int'Size;
 
-   type Texture is new GL_Object with null record;
+   type Texture (Kind : Low_Level.Enums.Non_Proxy_Texture_Kind)
+     is new GL_Object with null record;
    type Texture_Base is new Texture with null record;
 
    type Buffer_Texture is new Texture with null record;

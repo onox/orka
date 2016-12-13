@@ -29,6 +29,10 @@ with GL.Types;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.Transform_Feedback is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+   pragma Unreferenced (Initialized);
+
    use GL.Types;
    use GL.Objects.Queries;
    use GL.Objects.Transform_Feedbacks;
@@ -108,7 +112,7 @@ procedure GL_Test.Transform_Feedback is
    Vertex_Buffer_Input, Vertex_Buffer_Output : GL.Objects.Buffers.Buffer;
    Array_Input : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 
-   Query : GL.Objects.Queries.Query;
+   Query : GL.Objects.Queries.Query (Transform_Feedback_Primitives_Written);
    Feedback : GL.Objects.Transform_Feedbacks.Feedback_Object;
 
    Vertex_Source   : constant String := "../examples/gl/shaders/transform_feedback.vert";
@@ -117,29 +121,6 @@ procedure GL_Test.Transform_Feedback is
    Feedback_Output : aliased String := "out_value";
    Feedback_Outputs : constant String_Array := (1 => Feedback_Output'Unchecked_Access);
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-   Display_Backend.Open_Window (Width => 500, Height => 500, Visible => False);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   -- Generate shaders and program
-   Vertex_Shader.Initialize_Id;
-   Geometry_Shader.Initialize_Id;
-   Program.Initialize_Id;
-
-   -- Generate Vertex Buffer Objects
-   Vertex_Buffer_Input.Initialize_Id;
-   Vertex_Buffer_Output.Initialize_Id;
-
-   -- Generate Vertex Array Objects
-   Array_Input.Initialize_Id;
-
-   -- Generate queries
-   Query.Initialize_Id (Transform_Feedback_Primitives_Written);
-   Feedback.Initialize_Id;
-
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    -- Compile shaders and attach them to the programs
    Load_Shaders (Vertex_Source, Geometry_Source, Vertex_Shader, Geometry_Shader, Program, Feedback_Outputs);
    Program.Use_Program;

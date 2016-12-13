@@ -17,7 +17,7 @@ package body Orka.Framebuffers is
    function Create_Framebuffer return Framebuffer is
    begin
       return Result : Framebuffer do
-         Result.GL_Framebuffer.Initialize_Id;
+         null;
       end return;
    end Create_Framebuffer;
 

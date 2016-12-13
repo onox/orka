@@ -34,7 +34,6 @@ package body Orka.Buffers is
       return Result : Buffer do
          Result.Usage := Usage;
          Result.Length := 0;
-         Result.Buffer.Initialize_Id;
       end return;
    end Create_Buffer;
 

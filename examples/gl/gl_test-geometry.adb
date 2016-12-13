@@ -27,6 +27,9 @@ with GL.Types.Colors;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.Geometry is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
+
    use GL.Types;
    use GL.Buffers;
    use GL.Types.Colors;
@@ -128,24 +131,6 @@ procedure GL_Test.Geometry is
    Geometry_Source  : constant String := "../examples/gl/shaders/geometry.geom";
    Fragment_Source  : constant String := "../examples/gl/shaders/geometry.frag";
 begin
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Set_Not_Resizable;
-
-   Display_Backend.Open_Window (Width => 500, Height => 500);
-   Ada.Text_IO.Put_Line ("Initialized GLFW window");
-
-   -- Generate shaders and program
-   Vertex_Shader.Initialize_Id;
-   Geometry_Shader.Initialize_Id;
-   Fragment_Shader.Initialize_Id;
-   Program.Initialize_Id;
-
-   -- Generate VBO and VAO
-   Vector_Buffer_Points.Initialize_Id;
-   Array_Points.Initialize_Id;
-
-   Ada.Text_IO.Put_Line ("Initialized objects");
-
    -- Compile shaders and attach them to the programs
    Load_Shaders (Vertex_Source, Geometry_Source, Fragment_Source,
                  Vertex_Shader, Geometry_Shader, Fragment_Shader, Program);

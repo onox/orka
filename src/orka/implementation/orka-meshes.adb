@@ -23,7 +23,6 @@ package body Orka.Meshes is
    begin
       return Result : Mesh do
          Result.Mode := Mode;
-         Result.Vertex_Array.Initialize_Id;
          Result.Attribute_Buffers_Count := 0;
       end return;
    end Create_Mesh;

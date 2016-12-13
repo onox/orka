@@ -21,6 +21,9 @@ with GL.Types;
 with GL_Test.Display_Backend;
 
 procedure GL_Test.Context is
+   Initialized : constant Boolean := Display_Backend.Init
+     (Major => 3, Minor => 2, Width => 500, Height => 500, Visible => False);
+   pragma Unreferenced (Initialized);
 
    use Ada.Text_IO;
 
@@ -70,9 +73,7 @@ procedure GL_Test.Context is
 
 begin
    Put_Line ("Getting information with requested OpenGL version 3.2:");
-
-   Display_Backend.Init (Major => 3, Minor => 2);
-   Display_Backend.Open_Window (Width => 500, Height => 500, Visible => False);
    Display_Context_Information;
+
    Display_Backend.Shutdown;
 end GL_Test.Context;

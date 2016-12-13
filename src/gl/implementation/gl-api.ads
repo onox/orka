@@ -916,9 +916,6 @@ private package GL.API is
    --                                 Queries                                 --
    -----------------------------------------------------------------------------
 
-   procedure Gen_Queries is new Loader.Getter_With_2_Params
-     ("glGenQueries", Size, UInt);
-
    procedure Create_Queries is new Loader.Getter_With_3_Params
      ("glCreateQueries", Objects.Queries.Async_Query_Type, Size, UInt);
 
