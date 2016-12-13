@@ -30,7 +30,7 @@ package body GL.Objects.Shaders is
       C.Strings.Free (C_Shader_Source);
       Raise_Exception_On_OpenGL_Error;
    end Set_Source;
-   
+
    function Source (Subject : Shader) return String is
       Source_Length : Size := 0;
    begin
@@ -38,7 +38,7 @@ package body GL.Objects.Shaders is
                             Enums.Shader_Source_Length, Source_Length);
       declare
          Shader_Source : String (1 .. Integer (Source_Length));
-         -- do not care that we do not assign a value.
+         --  Do not care that we do not assign a value.
          pragma Warnings (Off, Shader_Source);
          C_Shader_Source : C.Strings.chars_ptr
            := C.Strings.New_String (Shader_Source);
@@ -60,7 +60,7 @@ package body GL.Objects.Shaders is
    end Compile;
 
    procedure Release_Shader_Compiler renames API.Release_Shader_Compiler;
-   
+
    function Compile_Status (Subject : Shader) return Boolean is
       Value : Int := 0;
    begin
@@ -74,7 +74,12 @@ package body GL.Objects.Shaders is
    begin
       API.Get_Shader_Param (Subject.Reference.GL_Id,
                             Enums.Info_Log_Length, Log_Length);
-      -- Returned length includes null termination character
+
+      if Log_Length = 0 then
+         return "";
+      end if;
+
+      --  Returned length includes null termination character
       Log_Length := Log_Length - 1;
       declare
          Info_Log : String (1 .. Integer (Log_Length));
@@ -110,7 +115,7 @@ package body GL.Objects.Shaders is
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
-   
+
    function Create_From_Id (Id : UInt) return Shader is
       Kind : Shader_Type := Shader_Type'First;
    begin
@@ -121,5 +126,5 @@ package body GL.Objects.Shaders is
          Object.Reference.Initialized := True;
       end return;
    end Create_From_Id;
-   
+
 end GL.Objects.Shaders;
