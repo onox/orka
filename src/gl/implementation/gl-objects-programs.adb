@@ -43,27 +43,23 @@ package body GL.Objects.Programs is
    end Link_Status;
 
    function Info_Log (Subject : Program) return String is
-      Log_Length : Int := 0;
+      Log_Length : Size := 0;
    begin
       API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Info_Log_Length,
                              Log_Length);
       Raise_Exception_On_OpenGL_Error;
-      -- Returned length includes null termination character
-      Log_Length := Log_Length - 1;
+
+      if Log_Length = 0 then
+         return "";
+      end if;
+
       declare
          Info_Log : String (1 .. Integer (Log_Length));
-         -- do not care that string does not get initialized
-         pragma Warnings (Off, Info_Log);
-         C_Info_Log : C.Strings.chars_ptr := C.Strings.New_String (Info_Log);
-         Actual_Length : Size := 0;
       begin
-         API.Get_Program_Info_Log (Subject.Reference.GL_Id,
-                                   Log_Length + 1,
-                                   Actual_Length, C_Info_Log);
+         API.Get_Program_Info_Log (Subject.Reference.GL_Id, Log_Length,
+                                   Log_Length, Info_Log);
          Raise_Exception_On_OpenGL_Error;
-         Info_Log := C.Strings.Value (C_Info_Log, C.size_t (Actual_Length));
-         C.Strings.Free (C_Info_Log);
-         return Info_Log;
+         return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
 
@@ -333,22 +329,17 @@ package body GL.Objects.Programs is
          Subroutine_Interface (Shader), Index,
          1, (1 => Enums.Name_Length), 1);
       --  Received length includes null termination character
-      Max_Length : constant Size := Size (Values (1) - 1);
+      Name_Length : Size := Size (Values (1));
    begin
       Raise_Exception_On_OpenGL_Error;
       declare
-         Name : String (1 .. Integer (Max_Length));
-         pragma Warnings (Off, Name);
-         C_Name : C.Strings.chars_ptr := C.Strings.New_String (Name);
-         Actual_Length : Size := 0;
+         Name : String (1 .. Integer (Name_Length));
       begin
          API.Get_Program_Resource_Name (Object.Reference.GL_Id,
                                         Subroutine_Interface (Shader), Index,
-                                        Max_Length + 1, Actual_Length, C_Name);
+                                        Name_Length, Name_Length, Name);
          Raise_Exception_On_OpenGL_Error;
-         Name := C.Strings.Value (C_Name, C.size_t (Actual_Length));
-         C.Strings.Free (C_Name);
-         return Name;
+         return Name (1 .. Integer (Name_Length));
       end;
    end Subroutine_Name;
 
@@ -360,21 +351,16 @@ package body GL.Objects.Programs is
          Subroutine_Uniform_Interface (Shader), Index,
          1, (1 => Enums.Name_Length), 1);
       --  Received length includes null termination character
-      Max_Length : constant Size := Size (Values (1) - 1);
+      Name_Length : Size := Size (Values (1));
    begin
       declare
-         Name : String (1 .. Integer (Max_Length));
-         pragma Warnings (Off, Name);
-         C_Name : C.Strings.chars_ptr := C.Strings.New_String (Name);
-         Actual_Length : Size := 0;
+         Name : String (1 .. Integer (Name_Length));
       begin
          API.Get_Program_Resource_Name (Object.Reference.GL_Id,
                                         Subroutine_Uniform_Interface (Shader),
-                                        Index, Max_Length + 1, Actual_Length, C_Name);
+                                        Index, Name_Length, Name_Length, Name);
          Raise_Exception_On_OpenGL_Error;
-         Name := C.Strings.Value (C_Name, C.size_t (Actual_Length));
-         C.Strings.Free (C_Name);
-         return Name;
+         return Name (1 .. Integer (Name_Length));
       end;
    end Subroutine_Uniform_Name;
 

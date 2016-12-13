@@ -36,20 +36,19 @@ package body GL.Objects.Shaders is
    begin
       API.Get_Shader_Param (Subject.Reference.GL_Id,
                             Enums.Shader_Source_Length, Source_Length);
+      Raise_Exception_On_OpenGL_Error;
+
+      if Source_Length = 0 then
+         return "";
+      end if;
+
       declare
          Shader_Source : String (1 .. Integer (Source_Length));
-         --  Do not care that we do not assign a value.
-         pragma Warnings (Off, Shader_Source);
-         C_Shader_Source : C.Strings.chars_ptr
-           := C.Strings.New_String (Shader_Source);
-         Actual_Length : Size;
       begin
          API.Get_Shader_Source (Subject.Reference.GL_Id, Source_Length,
-                                Actual_Length, C_Shader_Source);
-         Shader_Source
-           := C.Strings.Value (C_Shader_Source, C.size_t (Actual_Length));
-         C.Strings.Free (C_Shader_Source);
-         return Shader_Source;
+                                Source_Length, Shader_Source);
+         Raise_Exception_On_OpenGL_Error;
+         return Shader_Source (1 .. Integer (Source_Length));
       end;
    end Source;
 
@@ -74,30 +73,19 @@ package body GL.Objects.Shaders is
    begin
       API.Get_Shader_Param (Subject.Reference.GL_Id,
                             Enums.Info_Log_Length, Log_Length);
+      Raise_Exception_On_OpenGL_Error;
 
       if Log_Length = 0 then
          return "";
       end if;
 
-      --  Returned length includes null termination character
-      Log_Length := Log_Length - 1;
       declare
          Info_Log : String (1 .. Integer (Log_Length));
-         pragma Warnings (Off, Info_Log);
-         C_Info_Log : C.Strings.chars_ptr
-           := C.Strings.New_String (Info_Log);
-         Actual_Length : Size;
       begin
-         API.Get_Shader_Info_Log (Subject.Reference.GL_Id, Log_Length + 1,
-           Actual_Length, C_Info_Log);
-         if Int (Actual_Length) /= Log_Length then
-            raise Constraint_Error with "Expected info log length of" &
-                                        Size'Image (Log_Length) & ", actually got" &
-                                        Size'Image (Actual_Length) & ".";
-         end if;
-         Info_Log := C.Strings.Value (C_Info_Log, C.size_t (Actual_Length));
-         C.Strings.Free (C_Info_Log);
-         return Info_Log;
+         API.Get_Shader_Info_Log (Subject.Reference.GL_Id, Log_Length,
+                                  Log_Length, Info_Log);
+         Raise_Exception_On_OpenGL_Error;
+         return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
 

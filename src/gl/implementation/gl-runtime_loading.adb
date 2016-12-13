@@ -44,9 +44,9 @@ package body GL.Runtime_Loading is
       type Function_Reference is
         access function return Return_Type;
       pragma Convention (StdCall, Function_Reference);
-      
+
       function Load_Function is new Load (Function_Reference);
-      
+
       Reference : constant Function_Reference := Load_Function (Function_Name);
    begin
       return Reference.all;
@@ -77,7 +77,7 @@ package body GL.Runtime_Loading is
    begin
       return Reference (Param1, Param2);
    end Function_With_2_Params;
-   
+
    function Function_With_3_Params (Param1 : Param1_Type;
                                     Param2 : Param2_Type;
                                     Param3 : Param3_Type)
@@ -86,7 +86,7 @@ package body GL.Runtime_Loading is
         access function (Param1 : Param1_Type; Param2 : Param2_Type;
                          Param3 : Param3_Type) return Return_Type;
       pragma Convention (StdCall, Function_Reference);
-      
+
       function Load_Function is new Load (Function_Reference);
       Reference : constant Function_Reference := Load_Function (Function_Name);
    begin
@@ -121,13 +121,13 @@ package body GL.Runtime_Loading is
                           Returned_Size : in out Types.Size;
                           Values : in out Array_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Function is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Function (Procedure_Name);
-      
+
       Actual_Size : Types.Size := 0;
-   
+
       Ret : Array_Type (1 .. Max_Size);
    begin
       Reference (Param1, Max_Size, Actual_Size, Ret);
@@ -252,7 +252,7 @@ package body GL.Runtime_Loading is
                           Param3 : Param3_Type; Param4 : Param4_Type;
                           Param5 : Param5_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -278,7 +278,7 @@ package body GL.Runtime_Loading is
    begin
       Reference (Param1, Param2, Param3, Param4, Param5, Param6);
    end Procedure_With_6_Params;
-   
+
    procedure Procedure_With_7_Params (Param1 : Param1_Type;
                                       Param2 : Param2_Type;
                                       Param3 : Param3_Type;
@@ -292,14 +292,14 @@ package body GL.Runtime_Loading is
                           Param5 : Param5_Type; Param6 : Param6_Type;
                           Param7 : Param7_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
    begin
       Reference (Param1, Param2, Param3, Param4, Param5, Param6, Param7);
    end Procedure_With_7_Params;
-   
+
    procedure Procedure_With_8_Params (Param1 : Param1_Type;
                                       Param2 : Param2_Type;
                                       Param3 : Param3_Type;
@@ -314,7 +314,7 @@ package body GL.Runtime_Loading is
                           Param5 : Param5_Type; Param6 : Param6_Type;
                           Param7 : Param7_Type; Param8 : Param8_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -365,7 +365,7 @@ package body GL.Runtime_Loading is
                         Param7 : Param7_Type; Param8 : Param8_Type;
                         Param9 : Param9_Type; Param10 : Param10_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -437,14 +437,14 @@ package body GL.Runtime_Loading is
         access procedure (Param1 : Size_Type;
                           Param2 : Array_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
    begin
       Reference (Param1, Param2);
    end Array_Proc_With_2_Params;
-   
+
    procedure Array_Proc_With_3_Params (Param1 : Param1_Type;
                                        Param2 : Size_Type;
                                        Param3 : Array_Type) is
@@ -452,7 +452,7 @@ package body GL.Runtime_Loading is
         access procedure (Param1 : Param1_Type; Param2 : Size_Type;
                           Param3 : Array_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -466,7 +466,7 @@ package body GL.Runtime_Loading is
          access procedure (Param1 : Param1_Type;
                            Param2 : in out Value_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -488,7 +488,7 @@ package body GL.Runtime_Loading is
    begin
       Reference (Param1, Param2, Value);
    end Getter_With_3_Params;
-   
+
    procedure Getter_With_4_Params (Param1 : Param1_Type;
                                    Param2 : Param2_Type;
                                    Param3 : Param3_Type;
@@ -497,7 +497,7 @@ package body GL.Runtime_Loading is
         access procedure (Param1 : Param1_Type; Param2 : Param2_Type;
                           Param3 : Param3_Type; Param4 : in out Value_Type);
       pragma Convention (StdCall, Procedure_Reference);
-      
+
       function Load_Procedure is new Load (Procedure_Reference);
       Reference : constant Procedure_Reference
         := Load_Procedure (Procedure_Name);
@@ -508,11 +508,11 @@ package body GL.Runtime_Loading is
    procedure String_Getter_With_4_Params (Param1      : Param1_Type;
                                           Buffer_Size : Size_Type;
                                           Length      : out Size_Type;
-                                          Value       : Interfaces.C.Strings.chars_ptr) is
+                                          Value       : in out String) is
       type Procedure_Reference is
         access procedure (Param1 : Param1_Type; Buffer_Size : Size_Type;
                           Length : out Size_Type;
-                          Value : Interfaces.C.Strings.chars_ptr);
+                          Value : in out String);
       pragma Convention (StdCall, Procedure_Reference);
 
       function Load_Procedure is new Load (Procedure_Reference);
@@ -527,14 +527,14 @@ package body GL.Runtime_Loading is
                                           Param3      : Param3_Type;
                                           Buffer_Size : Size_Type;
                                           Length      : out Size_Type;
-                                          Value       : Interfaces.C.Strings.chars_ptr) is
+                                          Value       : in out String) is
       type Procedure_Reference is
         access procedure (Param1 : Param1_Type;
                           Param2 : Param2_Type;
                           Param3 : Param3_Type;
                           Buffer_Size : Size_Type;
                           Length : out Size_Type;
-                          Value : Interfaces.C.Strings.chars_ptr);
+                          Value : in out String);
       pragma Convention (StdCall, Procedure_Reference);
 
       function Load_Procedure is new Load (Procedure_Reference);

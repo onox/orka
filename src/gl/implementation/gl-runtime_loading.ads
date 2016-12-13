@@ -15,8 +15,6 @@
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 
-with Interfaces.C.Strings;
-
 with System;
 
 with GL.Types;
@@ -378,7 +376,7 @@ package GL.Runtime_Loading is
    procedure String_Getter_With_4_Params (Param1      : Param1_Type;
                                           Buffer_Size : Size_Type;
                                           Length      : out Size_Type;
-                                          Value       : Interfaces.C.Strings.chars_ptr);
+                                          Value       : in out String);
    pragma Inline (String_Getter_With_4_Params);
 
    generic
@@ -392,7 +390,7 @@ package GL.Runtime_Loading is
                                           Param3      : Param3_Type;
                                           Buffer_Size : Size_Type;
                                           Length      : out Size_Type;
-                                          Value       : Interfaces.C.Strings.chars_ptr);
+                                          Value       : in out String);
    pragma Inline (String_Getter_With_6_Params);
 
 private
