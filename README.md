@@ -28,6 +28,7 @@ Features
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1 and AVX
  * Easy construction of OpenGL programs and meshes
  * Transforms and scene tree (makes use of the x86 SIMD extensions)
+ * glTF loader (uses MDI)
 
 Dependencies
 ------------
@@ -44,6 +45,19 @@ In order to build Orka or the OpenGL bindings, you need to have:
     - ARB\_separate\_shader\_objects (OpenGL 4.1)
     - ARB\_vertex\_attrib\_binding (OpenGL 4.3)
     - ARB\_direct\_state\_access (OpenGL 4.5)
+
+   Program introspection (currently only used for subroutines) requires:
+
+    - ARB\_program\_interface\_query (OpenGL 4.3)
+
+   Textures require:
+
+    - ARB\_texture\_storage (OpenGL 4.2)
+    - ARB\_texture\_storage\_multisample (OpenGL 4.3)
+
+   Loading .gltf models requires:
+
+    - ARB\_multi\_draw\_indirect (OpenGL 4.5)
 
  * An x86-64 CPU with the AVX extension
 
