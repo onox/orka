@@ -13,7 +13,6 @@
 --  limitations under the License.
 
 with Ada.Text_IO;
-with Ada.Containers.Indefinite_Vectors;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Hash;
@@ -58,8 +57,6 @@ package body Orka.Resources.Models.glTF is
       Scene.Set_Local_Transform (Scene.To_Cursor (Node), Local_Transform);
    end Set_Matrix;
 
-   package String_Vectors is new Ada.Containers.Indefinite_Vectors (Positive, String);
-
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
       Element_Type    => String,
@@ -102,20 +99,19 @@ package body Orka.Resources.Models.glTF is
                            Scene.Add_Node (Child.Value, Parent);
                            Next_Parents.Append (Child.Value);
                         end loop;
-                        pragma Assert (Meshes.Length = 0);
+                     end if;
+
+                     --  Add meshes as MDI parts
+                     if Meshes.Length = 1 then
+                        --  If there is one mesh, map Parent (a node) to the mesh name,
+                        Parts.Insert (Parent, Meshes.Get (1).Value);
                      else
-                        --  Add meshes as MDI parts
-                        if Meshes.Length = 1 then
-                           --  If there is one mesh, map Parent (a node) to the mesh name,
-                           Parts.Insert (Parent, Meshes.Get (1).Value);
-                        else
-                           --  otherwise create a new node for each mesh name and then
-                           --  map those nodes to their corresponding mesh names
-                           for Mesh of Meshes loop
-                              Scene.Add_Node (Mesh.Value, Parent);
-                              Parts.Insert (Mesh.Value, Mesh.Value);
-                           end loop;
-                        end if;
+                        --  otherwise create a new node for each mesh name and then
+                        --  map those nodes to their corresponding mesh names
+                        for Mesh of Meshes loop
+                           Scene.Add_Node (Mesh.Value, Parent);
+                           Parts.Insert (Mesh.Value, Mesh.Value);
+                        end loop;
                      end if;
                   end;
                end;
@@ -168,6 +164,7 @@ package body Orka.Resources.Models.glTF is
      (Parts  : String_Maps.Map;
       Views  : Buffer_View_Maps.Map;
       Batch  : in out Buffers.MDI.Batch;
+      Shapes : in out String_Vectors.Vector;
       Meshes, Accessors : JSON_Value'Class)
    is
       Instance_ID : Natural;
@@ -179,9 +176,10 @@ package body Orka.Resources.Models.glTF is
          declare
             Node_Name : constant String := String_Maps.Key (Part);
             Mesh_Name : constant String := String_Maps.Element (Part);
+            pragma Assert (Meshes.Contains (Mesh_Name), "Mesh '" & Mesh_Name & "' not found");
 
             Primitives : constant JSON_Value'Class := Meshes.Get (Mesh_Name).Get_Array ("primitives");
-            pragma Assert (Primitives.Length = 1);
+            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh_Name & "' has more than one primitive");
             First_Primitive : constant JSON_Object_Value := Primitives.Get_Object (1);
 
             Accessor_Name : constant String := First_Primitive.Get ("attributes").Get ("POSITION").Value;
@@ -220,7 +218,8 @@ package body Orka.Resources.Models.glTF is
                new UInt_Array'(Convert_Indices (Indices_Bytes)),
                Instance_ID);
             Ada.Text_IO.Put_Line ("Instance ID: " & Integer'Image (Instance_ID));
-            --  TODO Map Node_Name to Instance_ID (or put it in an array? more efficient?)
+
+            Shapes.Append (Node_Name);
          end;
       end loop;
       pragma Assert (Batch.Length = Natural (Parts.Length));
@@ -254,6 +253,7 @@ package body Orka.Resources.Models.glTF is
                Accessors : constant JSON_Value'Class := Object.Get ("accessors");
 
                Parts : String_Maps.Map;
+               Shapes : String_Vectors.Vector;
 
                Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
                Mesh_Views : constant Buffer_View_Maps.Map :=
@@ -269,9 +269,10 @@ package body Orka.Resources.Models.glTF is
                   begin
                      return Object : Model := (Scene => Trees.Create_Tree (Root_Node), others => <>) do
                         Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-                        Add_Parts (Parts, Mesh_Views, Batch, Meshes, Accessors);
+                        Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
                         Create_Mesh (Object, Batch);
                         Batch.Clear;
+                        Object.Shapes := Shapes;
 
                         --  BEGIN Test code
                         for E in Parts.Iterate loop
@@ -294,9 +295,10 @@ package body Orka.Resources.Models.glTF is
                         Object.Scene.Add_Node (Node.Value, "root");
                      end loop;
                      Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-                     Add_Parts (Parts, Mesh_Views, Batch, Meshes, Accessors);
+                     Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
                      Create_Mesh (Object, Batch);
                      Batch.Clear;
+                     Object.Shapes := Shapes;
 
                      Ada.Streams.Stream_IO.Close (File);
                   end return;

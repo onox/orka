@@ -15,19 +15,22 @@
 package body Orka.Buffers is
 
    package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (GL.Types.Single_Pointers);
+     (Single_Pointers);
 
    package UInt_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (GL.Types.UInt_Pointers);
+     (UInt_Pointers);
 
    package Color_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-      (GL.Types.Colors.Basic_Color_Pointers);
+     (Colors.Basic_Color_Pointers);
+
+   package Matrix4_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+     (Singles.Matrix4_Pointers);
 
    package Arrays_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-      (GL.Types.Indirect.Arrays_Indirect_Command_Pointers);
+     (Indirect.Arrays_Indirect_Command_Pointers);
 
    package Elements_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-      (GL.Types.Indirect.Elements_Indirect_Command_Pointers);
+     (Indirect.Elements_Indirect_Command_Pointers);
 
    function Create_Buffer (Usage : GL.Objects.Buffers.Buffer_Usage) return Buffer is
    begin
@@ -58,6 +61,12 @@ package body Orka.Buffers is
    procedure Set_Data (Object : in out Buffer; Data : Colors.Basic_Color_Array) is
    begin
       Color_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
+      Object.Length := Data'Length;
+   end Set_Data;
+
+   procedure Set_Data (Object : in out Buffer; Data : Singles.Matrix4_Array) is
+   begin
+      Matrix4_Pointers.Load_To_Buffer (Object.Buffer, Data, Object.Usage);
       Object.Length := Data'Length;
    end Set_Data;
 

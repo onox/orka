@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Indefinite_Vectors;
+
 with Orka.Buffers.MDI;
 with Orka.Meshes;
 with Orka.Scenes.Generic_Scene_Trees;
@@ -21,9 +23,16 @@ generic
 package Orka.Resources.Models is
    pragma Preelaborate;
 
+   package String_Vectors is new Ada.Containers.Indefinite_Vectors (Positive, String);
+
    type Model is tagged limited private;
 
-   function Scene_Tree (Object : Model) return Trees.Tree
+   function Scene_Tree (Object : in out Model) return Trees.Tree
+     with Inline;
+
+   procedure Update_World_Transforms (Object : in out Model);
+
+   function Shapes (Object : Model) return String_Vectors.Vector
      with Inline;
 
    function Mesh (Object : Model) return Meshes.Mesh
@@ -36,6 +45,7 @@ private
 
    type Model is tagged limited record
       Scene   : Trees.Tree;
+      Shapes  : String_Vectors.Vector;
       Mesh    : Meshes.Mesh;
       Buffers : Orka.Buffers.MDI.MDI_Buffers;
    end record;

@@ -7,7 +7,7 @@ layout(location = 1) in vec3 in_Normal;
 layout(location = 2) in vec2 in_UV;
 layout(location = 3) in uint in_InstanceID;
 
-layout(location = 4) uniform mat4 model;
+layout(location = 4) uniform samplerBuffer matrixBuffer;
 layout(location = 5) uniform mat4 view;
 layout(location = 6) uniform mat4 proj;
 
@@ -16,9 +16,19 @@ out vec4 var_p;
 
 flat out uint var_InstanceID;
 
+mat4 get_matrix(samplerBuffer buffer, int index) {
+    int offset = index * 4;
+    vec4 v1 = texelFetch(buffer, offset + 0);
+    vec4 v2 = texelFetch(buffer, offset + 1);
+    vec4 v3 = texelFetch(buffer, offset + 2);
+    vec4 v4 = texelFetch(buffer, offset + 3);
+    return mat4(v1, v2, v3, v4);
+}
+
 void main(void) {
     // Ideally pre-compute modelView and normalMatrix on CPU
-    mat4 modelView = view * model;
+    mat4 world = get_matrix(matrixBuffer, int(in_InstanceID));
+    mat4 modelView = view * world;
     mat4 normalMatrix = transpose(inverse(modelView));
 
     // Compute position of vertex and light in camera space

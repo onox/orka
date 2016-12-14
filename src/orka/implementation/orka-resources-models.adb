@@ -43,8 +43,16 @@ package body Orka.Resources.Models is
       Object.Mesh.Set_Index_Buffer (Object.Buffers.Index_Buffer);
    end Create_Mesh;
 
-   function Scene_Tree (Object : Model) return Trees.Tree is
+   function Scene_Tree (Object : in out Model) return Trees.Tree is
      (Object.Scene);
+
+   procedure Update_World_Transforms (Object : in out Model) is
+   begin
+      Object.Scene.Update_Transforms;
+   end Update_World_Transforms;
+
+   function Shapes (Object : Model) return String_Vectors.Vector is
+     (Object.Shapes);
 
    function Mesh (Object : Model) return Meshes.Mesh is
      (Object.Mesh);

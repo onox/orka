@@ -33,8 +33,8 @@ package Orka.Buffers is
 
    procedure Set_Data (Object : in out Buffer; Data : Single_Array);
    procedure Set_Data (Object : in out Buffer; Data : UInt_Array);
-
    procedure Set_Data (Object : in out Buffer; Data : Colors.Basic_Color_Array);
+   procedure Set_Data (Object : in out Buffer; Data : Singles.Matrix4_Array);
 
    procedure Set_Data (Object : in out Buffer; Data : Indirect.Arrays_Indirect_Command_Array);
    procedure Set_Data (Object : in out Buffer; Data : Indirect.Elements_Indirect_Command_Array);
