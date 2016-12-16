@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Unchecked_Deallocation;
+
 package body Orka.Buffers.MDI is
 
    function Create_Batch (Vertex_Length : Positive) return Batch is
@@ -63,8 +65,19 @@ package body Orka.Buffers.MDI is
       end loop;
 
       declare
-         Vertices : Single_Array (0 .. VBO_Length - 1);
-         Indices  : UInt_Array   (0 .. IBO_Length - 1);
+         subtype Vertex_Array is Single_Array (0 .. VBO_Length - 1);
+         subtype Index_Array is UInt_Array   (0 .. IBO_Length - 1);
+
+         type Vertex_Array_Access is access Vertex_Array;
+         type Index_Array_Access is access Index_Array;
+
+         procedure Free_Vertex_Array is new Ada.Unchecked_Deallocation
+           (Object => Vertex_Array, Name => Vertex_Array_Access);
+         procedure Free_Index_Array is new Ada.Unchecked_Deallocation
+           (Object => Index_Array, Name => Index_Array_Access);
+
+         Vertices : Vertex_Array_Access := new Vertex_Array;
+         Indices  : Index_Array_Access := new Index_Array;
 
          Part_Vertex_Count, Part_Index_Count : Size;
          Vertex_Offset, Index_Offset : Size := 0;
@@ -105,11 +118,19 @@ package body Orka.Buffers.MDI is
          end loop;
 
          return Result : MDI_Buffers := (others => Orka.Buffers.Create_Buffer (Usage)) do
-            Result.Vertex_Buffer.Set_Data  (Vertices);
-            Result.Index_Buffer.Set_Data   (Indices);
+            Result.Vertex_Buffer.Set_Data  (Vertices.all);
+            Result.Index_Buffer.Set_Data   (Indices.all);
             Result.Command_Buffer.Set_Data (Commands);
             Result.Instances_Buffer.Set_Data (Instances_Array);
+
+            Free_Vertex_Array (Vertices);
+            Free_Index_Array (Indices);
          end return;
+      exception
+         when others =>
+            Free_Vertex_Array (Vertices);
+            Free_Index_Array (Indices);
+            raise;
       end;
    end Create_Buffers;
 
