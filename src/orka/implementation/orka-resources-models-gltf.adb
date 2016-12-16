@@ -17,6 +17,7 @@ with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Hash;
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
 
 with JSON.Parsers;
 with JSON.Streams;
@@ -230,86 +231,75 @@ package body Orka.Resources.Models.glTF is
       File_Stream : Ada.Streams.Stream_IO.Stream_Access;
 
       package Parsers is new JSON.Parsers (Types);
+
+      type String_Access is access String;
+
+      procedure Free_String is new Ada.Unchecked_Deallocation
+        (Object => String, Name => String_Access);
    begin
       Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Path);
-      File_Stream := Ada.Streams.Stream_IO.Stream (File);
 
+      declare
+         File_Size : constant Integer := Integer (Ada.Streams.Stream_IO.Size (File));
+         subtype File_String is String (1 .. File_Size);
+         Raw_Contents : String_Access := new File_String;
       begin
+         File_Stream := Ada.Streams.Stream_IO.Stream (File);
+         File_String'Read (File_Stream, Raw_Contents.all);
+
+         Ada.Streams.Stream_IO.Close (File);
+
          declare
-            Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (File_Stream);
+            Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Raw_Contents);
             Object : constant JSON_Value'Class := Parsers.Parse (Stream);
+
+            --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
+            --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
+            Scenes : constant JSON_Value'Class := Object.Get ("scenes");
+            Nodes  : constant JSON_Value'Class := Object.Get ("nodes");
+
+            Default_Scene : constant JSON_Value'Class := Scenes.Get (Object.Get ("scene").Value);
+            Scene_Nodes   : constant JSON_Array_Value := Default_Scene.Get_Array ("nodes");
+            pragma Assert (Scene_Nodes.Length >= 1);  --  "nodes" could be empty ([])
+
+            Meshes    : constant JSON_Value'Class := Object.Get ("meshes");
+            Accessors : constant JSON_Value'Class := Object.Get ("accessors");
+
+            Parts : String_Maps.Map;
+            Shapes : String_Vectors.Vector;
+
+            Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
+            Mesh_Views : constant Buffer_View_Maps.Map :=
+              Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
+
+            Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
          begin
-            declare
-               --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
-               --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
-               Scenes : constant JSON_Value'Class := Object.Get ("scenes");
-               Nodes  : constant JSON_Value'Class := Object.Get ("nodes");
+            Free_String (Raw_Contents);
 
-               Default_Scene : constant JSON_Value'Class := Scenes.Get (Object.Get ("scene").Value);
-               Scene_Nodes   : constant JSON_Array_Value := Default_Scene.Get_Array ("nodes");
-               pragma Assert (Scene_Nodes.Length > 0);  --  "nodes" could be empty ([])
+            return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
+               for Node of Scene_Nodes loop
+                  Object.Scene.Add_Node (Node.Value, "root");
+               end loop;
 
-               Meshes    : constant JSON_Value'Class := Object.Get ("meshes");
-               Accessors : constant JSON_Value'Class := Object.Get ("accessors");
+               Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
+               Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
 
-               Parts : String_Maps.Map;
-               Shapes : String_Vectors.Vector;
-
-               Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
-               Mesh_Views : constant Buffer_View_Maps.Map :=
-                 Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
-
-               Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
-            begin
-               pragma Assert (Scene_Nodes.Length >= 1);
-
-               if Scene_Nodes.Length = 1 then
-                  declare
-                     Root_Node : constant String := Scene_Nodes.Get (1).Value;
-                  begin
-                     return Object : Model := (Scene => Trees.Create_Tree (Root_Node), others => <>) do
-                        Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-                        Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
-                        Create_Mesh (Object, Batch);
-                        Batch.Clear;
-                        Object.Shapes := Shapes;
-
-                        --  BEGIN Test code
-                        for E in Parts.Iterate loop
-                           Ada.Text_IO.Put_Line ("Node " & String_Maps.Key (E) & " -> " & String_Maps.Element (E));
-                        end loop;
-                        for E in Mesh_Buffers.Iterate loop
-                           Ada.Text_IO.Put_Line ("Buffer " & Buffer_Maps.Key (E) & Natural'Image (Buffer_Maps.Element (E).Length));
-                        end loop;
-                        for E in Mesh_Views.Iterate loop
-                           Ada.Text_IO.Put_Line ("View " & Buffer_View_Maps.Key (E) & Natural'Image (Buffer_View_Maps.Element (E).Offset) & " " & Natural'Image (Buffer_View_Maps.Element (E).Length));
-                        end loop;
-                        --  END Test code
-
-                        Ada.Streams.Stream_IO.Close (File);
-                     end return;
-                  end;
-               else
-                  return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
-                     for Node of Scene_Nodes loop
-                        Object.Scene.Add_Node (Node.Value, "root");
-                     end loop;
-                     Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-                     Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
-                     Create_Mesh (Object, Batch);
-                     Batch.Clear;
-                     Object.Shapes := Shapes;
-
-                     Ada.Streams.Stream_IO.Close (File);
-                  end return;
-               end if;
-            end;
+               Create_Mesh (Object, Batch);
+               Batch.Clear;
+               Object.Shapes := Shapes;
+            end return;
          end;
       exception
          when others =>
-            Ada.Streams.Stream_IO.Close (File);
+            Free_String (Raw_Contents);
             raise;
       end;
+   exception
+      when others =>
+         if Ada.Streams.Stream_IO.Is_Open (File) then
+            Ada.Streams.Stream_IO.Close (File);
+         end if;
+         raise;
    end Load_Model;
 
 end Orka.Resources.Models.glTF;
