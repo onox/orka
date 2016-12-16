@@ -123,9 +123,8 @@ Specify the dependency in your \*.gpr project file:
 
     with "orka";
 
-If you want to use GLFW or just the OpenGL bindings, refer to `opengl-glfw`
-or `opengl` instead. The project files `opengl.gpr` and `opengl-glfw.gpr`
-take the following scenario parameters:
+If you want to use GLFW, refer to `orka-glfw` instead. The project files
+`orka.gpr` and `orka-glfw.gpr` take the following scenario parameters:
 
  * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
                        for system-dependent parts of the API (GLX, WGL, CGL):
