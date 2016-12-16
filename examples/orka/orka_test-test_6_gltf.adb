@@ -122,10 +122,6 @@ begin
       while not GL_Test.Display_Backend.Get_Window.Should_Close loop
          Mouse_X := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_X);
          Mouse_Y := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_Y);
-
-         if GL_Test.Display_Backend.Get_Zoom_Distance > 20.0 then
-            GL_Test.Display_Backend.Set_Zoom_Distance (20.0);
-         end if;
          Mouse_Z := GL.Types.Single (GL_Test.Display_Backend.Get_Zoom_Distance);
 
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
