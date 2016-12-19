@@ -54,7 +54,7 @@ procedure GL_Test.Subroutines is
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
    begin
       --  Upload Vertices data to VBO
-      Single_Pointers.Load_To_Buffer (VBO, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (VBO, Vertices, Storage_Bits'(others => False));
 
       --  Enable and set attributes for VAO VAO
       VAO.Enable_Attribute (Attrib_Pos);

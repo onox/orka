@@ -23,7 +23,34 @@ package Orka.Buffers is
 
    type Buffer is tagged private;
 
-   function Create_Buffer (Usage : GL.Objects.Buffers.Buffer_Usage) return Buffer;
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Kind   : Numeric_Type;
+      Length : Natural) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Single_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : UInt_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Colors.Basic_Color_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Singles.Matrix4_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Indirect.Elements_Indirect_Command_Array) return Buffer;
 
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
@@ -31,19 +58,46 @@ package Orka.Buffers is
    function Length (Object : Buffer) return Natural
      with Inline;
 
-   procedure Set_Data (Object : in out Buffer; Data : Single_Array);
-   procedure Set_Data (Object : in out Buffer; Data : UInt_Array);
-   procedure Set_Data (Object : in out Buffer; Data : Colors.Basic_Color_Array);
-   procedure Set_Data (Object : in out Buffer; Data : Singles.Matrix4_Array);
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Single_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
 
-   procedure Set_Data (Object : in out Buffer; Data : Indirect.Arrays_Indirect_Command_Array);
-   procedure Set_Data (Object : in out Buffer; Data : Indirect.Elements_Indirect_Command_Array);
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out UInt_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Colors.Basic_Color_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Indirect.Arrays_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
 
 private
 
    type Buffer is tagged record
       Buffer : GL.Objects.Buffers.Buffer;
-      Usage  : GL.Objects.Buffers.Buffer_Usage;
       Length : Natural;
    end record;
 

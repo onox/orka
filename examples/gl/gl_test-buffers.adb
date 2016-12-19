@@ -108,7 +108,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Cube
-      Single_Pointers.Load_To_Buffer (Buffer_Cube, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (Buffer_Cube, Vertices, Storage_Bits'(others => False));
 
       --  Enable and set attributes for Array_Cube VAO
       Array_Cube.Enable_Attribute (Attrib_Pos);
@@ -145,7 +145,7 @@ procedure GL_Test.Buffers is
       Attrib_Tex : constant Attribute := Program.Attrib_Location ("texcoord");
    begin
       --  Upload Vertices data to Buffer_Quad
-      Single_Pointers.Load_To_Buffer (Buffer_Quad, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (Buffer_Quad, Vertices, Storage_Bits'(others => False));
 
       --  Enable and set attributes for Array_Quad VAO
       Array_Quad.Enable_Attribute (Attrib_Pos);

@@ -44,6 +44,7 @@ In order to build Orka or the OpenGL bindings, you need to have:
 
     - ARB\_separate\_shader\_objects (OpenGL 4.1)
     - ARB\_vertex\_attrib\_binding (OpenGL 4.3)
+    - ARB\_buffer\_storage (OpenGL 4.4)
     - ARB\_direct\_state\_access (OpenGL 4.5)
 
    Program introspection (currently only used for subroutines) requires:

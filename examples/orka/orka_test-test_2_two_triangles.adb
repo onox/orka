@@ -35,8 +35,6 @@ procedure Orka_Test.Test_2_Two_Triangles is
    use Orka.Programs;
 
    function Load_Mesh_1 (Program : Orka.Programs.Program) return Mesh is
-      VBO_1, VBO_2 : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
-
       Vertices : constant Single_Array
         := (-0.3,  0.5, -1.0,
             -0.8, -0.5, -1.0,
@@ -46,11 +44,11 @@ procedure Orka_Test.Test_2_Two_Triangles is
         := ((1.0, 0.0, 0.0),
             (0.0, 1.0, 0.0),
             (0.0, 0.0, 1.0));
-   begin
-      --  Upload vertices and color data to VBO's
-      VBO_1.Set_Data (Vertices);
-      VBO_2.Set_Data (Color_Vertices);
 
+      --  Upload vertices and color data to VBO's
+      VBO_1 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+      VBO_2 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Color_Vertices);
+   begin
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare
@@ -67,16 +65,14 @@ procedure Orka_Test.Test_2_Two_Triangles is
    end Load_Mesh_1;
 
    function Load_Mesh_2 (Program : Orka.Programs.Program) return Mesh is
-      VBO_3 : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
-
       Vertices : constant Single_Array
         := (-0.2,  0.5, -1.0,
              0.3, -0.5, -1.0,
              0.8,  0.5, -1.0);
-   begin
-      --  Upload vertices data to VBO
-      VBO_3.Set_Data (Vertices);
 
+      --  Upload vertices data to VBO
+      VBO_3 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+   begin
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare

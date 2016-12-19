@@ -51,22 +51,14 @@ procedure Orka_Test.Test_4_MDI is
       Indices_2 : constant Indirect.UInt_Array_Access
         := new UInt_Array'(0, 1, 2);
 
-      --  A blue triangle on the left and a yellow triangle on the right
-      Instances_IDs : constant UInt_Array
-        := (2, 3);
-
-      Instances_Buffer : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
       MDI : Orka.Buffers.MDI.Batch := Orka.Buffers.MDI.Create_Batch (3);
-
       Instance_ID : Natural;
    begin
-      Instances_Buffer.Set_Data (Instances_IDs);
-
       --  Create one VBO, one IBO, and a buffer containing the draw commands
       MDI.Append (Vertices_1, Indices_1, Instance_ID);
       MDI.Append (Vertices_2, Indices_2, Instance_ID);
       pragma Assert (MDI.Length = 2);
-      MDI_Buffers := MDI.Create_Buffers (Static_Draw);
+      MDI_Buffers := MDI.Create_Buffers (Storage_Bits'(others => False));
 
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
@@ -79,7 +71,7 @@ procedure Orka_Test.Test_4_MDI is
 
             Attributes_Ins.Add_Attribute (Program.Attribute_Location ("in_InstanceID"), 1);
             Attributes_Ins.Set_Per_Instance (True);
-            Attributes_Ins.Set_Buffer (Instances_Buffer);
+            Attributes_Ins.Set_Buffer (MDI_Buffers.Instances_Buffer);
          end;
          Result.Set_Index_Buffer (MDI_Buffers.Index_Buffer);
       end return;

@@ -60,7 +60,14 @@ package body GL.Objects.Buffers is
    end Current_Object;
 
    procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
-                       Kind : Numeric_Type; Usage : Buffer_Usage) is
+                       Kind : Numeric_Type; Storage_Flags : Storage_Bits) is
+      use type Low_Level.Bitfield;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Storage_Bits, Target => Low_Level.Bitfield);
+      Raw_Bits : constant Low_Level.Bitfield :=
+        Convert (Storage_Flags) and 2#0000001111000011#;
+
       Bytes : Long;
    begin
       case Kind is
@@ -81,8 +88,8 @@ package body GL.Objects.Buffers is
          when Short_Type =>
             Bytes := Number_Of_Elements * Short'Size / System.Storage_Unit;
       end case;
-      API.Named_Buffer_Data (Object.Reference.GL_Id, Low_Level.SizeIPtr (Bytes),
-                             System.Null_Address, Usage);
+      API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Bytes),
+                                System.Null_Address, Raw_Bits);
       Raise_Exception_On_OpenGL_Error;
    end Allocate;
 
@@ -134,14 +141,6 @@ package body GL.Objects.Buffers is
       return Convert (Raw_Bits and 2#0000001111000011#);
    end Storage_Flags;
 
-   function Usage (Object : Buffer) return Buffer_Usage is
-      Ret : Buffer_Usage := Buffer_Usage'First;
-   begin
-      API.Get_Named_Buffer_Parameter_Usage (Object.Reference.GL_Id, Enums.Buffer_Usage, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Usage;
-
    overriding procedure Initialize_Id (Object : in out Buffer) is
       New_Id : UInt := 0;
    begin
@@ -189,17 +188,6 @@ package body GL.Objects.Buffers is
             Holder.Replace_Element (Object);
          end if;
       end Bind_Range;
-
-      procedure Load_To_Buffer (Object : Buffer;
-                                Data   : Pointers.Element_Array;
-                                Usage  : Buffer_Usage) is
-         use type C.long;
-      begin
-         API.Named_Buffer_Data (Object.Reference.GL_Id,
-           Pointers.Element'Size * Data'Length / System.Storage_Unit,
-           Data (Data'First)'Address, Usage);
-         Raise_Exception_On_OpenGL_Error;
-      end Load_To_Buffer;
 
       procedure Load_To_Immutable_Buffer (Object : Buffer;
                                           Data   : Pointers.Element_Array;
@@ -289,10 +277,12 @@ package body GL.Objects.Buffers is
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
                               Data   : in out Pointers.Element_Array) is
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
-                          Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
+         API.Named_Buffer_Sub_Data (Object.Reference.GL_Id,
+                                    Low_Level.IntPtr (Offset_In_Bytes),
+                                    Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
          Raise_Exception_On_OpenGL_Error;
       end Set_Sub_Data;
 
@@ -303,10 +293,12 @@ package body GL.Objects.Buffers is
            ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
             Low_Level.SizeIPtr, Pointers.Element_Array);
 
+         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Low_Level.IntPtr (Offset),
-                              Low_Level.SizeIPtr (Number_Of_Bytes), Data);
+         Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id,
+                                    Low_Level.IntPtr (Offset_In_Bytes),
+                                    Low_Level.SizeIPtr (Number_Of_Bytes), Data);
          Raise_Exception_On_OpenGL_Error;
       end Get_Sub_Data;
 

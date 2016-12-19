@@ -47,9 +47,10 @@ package body Orka.Buffers.MDI is
    function Length (Object : Batch) return Natural
      is (Natural (Object.Vertices.Length));
 
-   function Create_Buffers (Object : Batch;
-                            Usage   : GL.Objects.Buffers.Buffer_Usage;
-                            Visible : Boolean := True) return MDI_Buffers
+   function Create_Buffers
+     (Object  : Batch;
+      Flags   : GL.Objects.Buffers.Storage_Bits;
+      Visible : Boolean := True) return MDI_Buffers
    is
       Commands  : Indirect.Elements_Indirect_Command_Array (1 .. Int (Object.Length));
       Instances : constant UInt := (if Visible then 1 else 0);
@@ -117,11 +118,11 @@ package body Orka.Buffers.MDI is
             Instances_Array (I) := UInt (I);
          end loop;
 
-         return Result : MDI_Buffers := (others => Orka.Buffers.Create_Buffer (Usage)) do
-            Result.Vertex_Buffer.Set_Data  (Vertices.all);
-            Result.Index_Buffer.Set_Data   (Indices.all);
-            Result.Command_Buffer.Set_Data (Commands);
-            Result.Instances_Buffer.Set_Data (Instances_Array);
+         return Result : MDI_Buffers do
+            Result.Vertex_Buffer    := Orka.Buffers.Create_Buffer (Flags, Vertices.all);
+            Result.Index_Buffer     := Orka.Buffers.Create_Buffer (Flags, Indices.all);
+            Result.Command_Buffer   := Orka.Buffers.Create_Buffer (Flags, Commands);
+            Result.Instances_Buffer := Orka.Buffers.Create_Buffer (Flags, Instances_Array);
 
             Free_Vertex_Array (Vertices);
             Free_Index_Array (Indices);

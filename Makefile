@@ -37,9 +37,9 @@ run_unit_tests:
 
 clean_src:
 	$(GPRCLEAN) -r -P root.gpr
-	rmdir lib/{glfw,orka,opengl}
+	rmdir lib/{glfw,orka}
 	rmdir lib
-	rmdir obj/{glfw,orka,opengl}
+	rmdir obj/{glfw,orka}
 	rmdir obj
 
 clean_examples:

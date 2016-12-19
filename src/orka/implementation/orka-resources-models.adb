@@ -21,8 +21,9 @@ package body Orka.Resources.Models is
 
    procedure Create_Mesh (Object : in out Model; Batch : Buffers.MDI.Batch) is
       use GL.Types;
+      use GL.Objects.Buffers;
    begin
-      Object.Buffers := Batch.Create_Buffers (GL.Objects.Buffers.Static_Draw);
+      Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
       Object.Mesh := Orka.Meshes.Create_Mesh (Triangles);
 
       declare

@@ -41,10 +41,6 @@ package GL.Objects.Buffers is
       Client_Storage    : Boolean := False;
    end record;
 
-   type Buffer_Usage is (Stream_Draw, Stream_Read, Stream_Copy,
-                         Static_Draw, Static_Read, Static_Copy,
-                         Dynamic_Draw, Dynamic_Read, Dynamic_Copy);
-   
    type Buffer_Target (<>) is tagged limited private;
    
    type Buffer is new GL_Object with private;
@@ -64,8 +60,9 @@ package GL.Objects.Buffers is
    --    * Shader_Storage_Buffer
 
    procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
-                       Kind : Numeric_Type; Usage : Buffer_Usage);
-   --  Use this instead of Load_To_Buffer when you don't want to copy any data
+                       Kind : Numeric_Type; Storage_Flags : Storage_Bits);
+   --  Use this instead of Load_To_Immutable_Buffer when you don't want
+   --  to copy any data
 
    function Current_Object (Target : Buffer_Target) return Buffer'Class;
 
@@ -74,7 +71,6 @@ package GL.Objects.Buffers is
    function Mapped        (Object : Buffer) return Boolean;
    function Size          (Object : Buffer) return Size;
    function Storage_Flags (Object : Buffer) return Storage_Bits;
-   function Usage         (Object : Buffer) return Buffer_Usage;
 
    overriding
    procedure Initialize_Id (Object : in out Buffer);
@@ -101,10 +97,6 @@ package GL.Objects.Buffers is
       --    * Transform_Feedback_Buffer
       --    * Uniform_Buffer
       --    * Shader_Storage_Buffer
-
-      procedure Load_To_Buffer (Object : Buffer;
-                                Data   : Pointers.Element_Array;
-                                Usage  : Buffer_Usage);
 
       procedure Load_To_Immutable_Buffer (Object : Buffer;
                                           Data   : Pointers.Element_Array;
@@ -181,17 +173,6 @@ private
       Client_Storage    at 0 range 9 .. 9;
    end record;
    for Storage_Bits'Size use Low_Level.Bitfield'Size;
-
-   for Buffer_Usage use (Stream_Draw  => 16#88E0#,
-                         Stream_Read  => 16#88E1#,
-                         Stream_Copy  => 16#88E2#,
-                         Static_Draw  => 16#88E4#,
-                         Static_Read  => 16#88E5#,
-                         Static_Copy  => 16#88E6#,
-                         Dynamic_Draw => 16#88E8#,
-                         Dynamic_Read => 16#88E9#,
-                         Dynamic_Copy => 16#88EA#);
-   for Buffer_Usage'Size use Low_Level.Enum'Size;
 
    type Buffer_Target (Kind : Low_Level.Enums.Buffer_Kind) is
      tagged limited null record;

@@ -71,19 +71,19 @@ procedure GL_Test.MDI is
       Attrib_Instance : constant Attribute := Program.Attrib_Location ("in_InstanceID");
    begin
       --  Upload vertices to Buffer1
-      Single_Pointers.Load_To_Buffer (Buffer1, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (Buffer1, Vertices, Storage_Bits'(others => False));
 
       --  Upload indices to Buffer2
-      UInt_Pointers.Load_To_Buffer (Buffer2, Indices, Static_Draw);
+      UInt_Pointers.Load_To_Immutable_Buffer (Buffer2, Indices, Storage_Bits'(others => False));
       VAO.Bind_Element_Buffer (Buffer2);
 
       --  Upload commands to Buffer3
       Commands (1) := (Count => 3, Instances => 1, First_Index => 0, Base_Vertex => 0, Base_Instance => 0);
       Commands (2) := (Count => 3, Instances => 1, First_Index => 3, Base_Vertex => 3, Base_Instance => 1);
-      Command_Pointers.Load_To_Buffer (Buffer3, Commands, Static_Draw);
+      Command_Pointers.Load_To_Immutable_Buffer (Buffer3, Commands, Storage_Bits'(others => False));
 
       --  Upload instance ID's to Buffer4
-      UInt_Pointers.Load_To_Buffer (Buffer4, Instances_IDs, Static_Draw);
+      UInt_Pointers.Load_To_Immutable_Buffer (Buffer4, Instances_IDs, Storage_Bits'(others => False));
 
       --  Enable and set attributes for the VAO
       VAO.Enable_Attribute (Attrib_Pos);

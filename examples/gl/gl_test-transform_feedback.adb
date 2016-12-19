@@ -53,7 +53,7 @@ procedure GL_Test.Transform_Feedback is
         GL.Objects.Programs.Attrib_Location (Program, "in_value");
    begin
       --  Upload Vertices data to Buffer_Input
-      Single_Pointers.Load_To_Buffer (Buffer_Input, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (Buffer_Input, Vertices, Storage_Bits'(others => False));
 
       -- Enable and set attributes for Array_Input VAO
       Array_Input.Enable_Attribute (Attrib_Pos);
@@ -64,7 +64,7 @@ procedure GL_Test.Transform_Feedback is
       Array_Input.Bind_Vertex_Buffer (0, Buffer_Input, Single_Type, 0, 1);
 
       --  Allocate data for Buffer_Output
-      Buffer_Output.Allocate (3 * Vertices'Length, Single_Type, Static_Read);
+      Buffer_Output.Allocate (3 * Vertices'Length, Single_Type, Storage_Bits'(others => False));
    end Load_Data;
 
    procedure Load_Shaders (Vertex_Source, Geometry_Source : String;

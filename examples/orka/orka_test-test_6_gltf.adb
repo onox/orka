@@ -90,10 +90,11 @@ begin
       use GL.Buffers;
       use Orka.Buffers;
 
-      --  Set-up TBO for world transform matrices
-      TBO_1 : GL.Objects.Textures.Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
-      Buffer_1 : Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Static_Draw);
       World_Transforms : GL.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (M.Shapes.Length)) := (others => GL.Types.Singles.Identity4);
+
+      --  Set-up TBO for world transform matrices
+      Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), GL.Types.Single_Type, World_Transforms'Length * 16);
+      TBO_1 : GL.Objects.Textures.Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
       Ada.Text_IO.Put_Line ("Duration gltf: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
       Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));

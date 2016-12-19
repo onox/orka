@@ -34,16 +34,14 @@ procedure Orka_Test.Test_3_Module_Array is
       use GL.Types;
       use GL.Objects.Buffers;
 
-      VBO : Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Static_Draw);
-
       Vertices : constant Single_Array
         := (-0.5, -0.5,
              0.5, -0.5,
              0.0,  0.5);
-   begin
-      --  Upload Vertices data to VBO
-      VBO.Set_Data (Vertices);
 
+      --  Upload Vertices data to VBO
+      VBO : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+   begin
       --  Create mesh and its attributes
       return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
          declare

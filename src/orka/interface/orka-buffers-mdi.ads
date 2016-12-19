@@ -40,9 +40,10 @@ package Orka.Buffers.MDI is
    function Length (Object : Batch) return Natural
      with Inline;
 
-   function Create_Buffers (Object : Batch;
-                           Usage   : GL.Objects.Buffers.Buffer_Usage;
-                           Visible : Boolean := True) return MDI_Buffers
+   function Create_Buffers
+     (Object  : Batch;
+      Flags   : GL.Objects.Buffers.Storage_Bits;
+      Visible : Boolean := True) return MDI_Buffers
      with Pre => Object.Length > 0;
    --  Return a record containing a set of buffers containing the
    --  vertices and indices of all parts (batched), and the commands

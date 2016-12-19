@@ -553,10 +553,6 @@ private package GL.API is
       ("glBindBufferRange", Low_Level.Enums.Buffer_Kind, UInt, UInt,
        Low_Level.IntPtr, Low_Level.SizeIPtr);
 
-   procedure Named_Buffer_Data is new Loader.Procedure_With_4_Params
-      ("glNamedBufferData", UInt, Low_Level.SizeIPtr,
-       System.Address, Objects.Buffers.Buffer_Usage);
-
    procedure Named_Buffer_Sub_Data is new Loader.Procedure_With_4_Params
       ("glNamedBufferSubData", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
        System.Address);
@@ -586,10 +582,6 @@ private package GL.API is
    procedure Get_Named_Buffer_Parameter_Size is new Loader.Getter_With_3_Params
      ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
       Size);
-
-   procedure Get_Named_Buffer_Parameter_Usage is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
-      Objects.Buffers.Buffer_Usage);
 
    procedure Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
      ("glInvalidateBufferData", UInt);

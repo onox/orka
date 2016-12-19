@@ -86,7 +86,7 @@ procedure GL_Test.Instancing is
       Attrib_Model : constant Attribute := Program.Attrib_Location ("in_Model");
    begin
       --  Upload Vertices data to Buffer1
-      Single_Pointers.Load_To_Buffer (Buffer1, Vertices, Static_Draw);
+      Single_Pointers.Load_To_Immutable_Buffer (Buffer1, Vertices, Storage_Bits'(others => False));
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Pos);
@@ -101,7 +101,7 @@ procedure GL_Test.Instancing is
       Array1.Bind_Vertex_Buffer (0, Buffer1, Single_Type, 0, 6);
 
       --  Upload Indices data to Buffer2
-      UInt_Pointers.Load_To_Buffer (Buffer2, Indices, Static_Draw);
+      UInt_Pointers.Load_To_Immutable_Buffer (Buffer2, Indices, Storage_Bits'(others => False));
 
       Array1.Bind_Element_Buffer (Buffer2);
 
@@ -125,7 +125,7 @@ procedure GL_Test.Instancing is
          end loop;
       end;
       --  Load matrices for all the instances
-      Matrix4_Pointers.Load_To_Buffer (Buffer3, Matrices, Static_Draw);
+      Matrix4_Pointers.Load_To_Immutable_Buffer (Buffer3, Matrices, Storage_Bits'(others => False));
 
       --  Enable and set attributes for Array1 VAO
       Array1.Enable_Attribute (Attrib_Model);
