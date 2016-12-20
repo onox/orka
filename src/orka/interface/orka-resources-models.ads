@@ -41,6 +41,8 @@ package Orka.Resources.Models is
    function Command_Buffer (Object : Model) return Buffers.Buffer
      with Inline;
 
+   Model_Load_Error : exception;
+
 private
 
    type Model is tagged limited record

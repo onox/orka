@@ -189,6 +189,7 @@ package body Orka.Resources.Models.glTF is
             --  TODO Assumes "indices" exists
             Accessor_Indices_Name : constant String := First_Primitive.Get ("indices").Value;
             View_Indices_Name     : constant String := Accessors.Get (Accessor_Indices_Name).Get ("bufferView").Value;
+            pragma Assert (Accessors.Get (Accessor_Indices_Name).Get ("componentType").Value = 5125);
 
             Vertices_Bytes : constant Stream_Element_Array := Elements (Views.Element (View_Name));
             Indices_Bytes  : constant Stream_Element_Array := Elements (Views.Element (View_Indices_Name));
@@ -253,6 +254,9 @@ package body Orka.Resources.Models.glTF is
             Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Raw_Contents);
             Object : constant JSON_Value'Class := Parsers.Parse (Stream);
 
+            GL_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("glExtensionsUsed");
+            Required_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("extensionsRequired");
+
             --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
             --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
             Scenes : constant JSON_Value'Class := Object.Get ("scenes");
@@ -275,6 +279,16 @@ package body Orka.Resources.Models.glTF is
             Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
          begin
             Free_String (Raw_Contents);
+
+            --  Require indices to be of type UInt
+            if not (for some Extension of GL_Extensions => Extension.Value = "OES_element_index_uint") then
+               raise Model_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
+            end if;
+
+            --  Raise error if glTF asset requires (unsupported) KHR_binary_glTF extension
+            if (for some Extension of Required_Extensions => Extension.Value = "KHR_binary_glTF") then
+               raise Model_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
+            end if;
 
             return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
                for Node of Scene_Nodes loop
