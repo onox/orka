@@ -24,7 +24,7 @@ package body Orka.Resources.Models is
       use GL.Objects.Buffers;
    begin
       Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
-      Object.Mesh := Orka.Meshes.Create_Mesh (Triangles);
+      Object.Mesh := Orka.Meshes.Create_Vertex_Format (Triangles);
 
       declare
          Attributes : Meshes.Attributes.Attribute_Buffer := Object.Mesh.Add_Attribute_Buffer (Single_Type);
@@ -55,7 +55,7 @@ package body Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector is
      (Object.Shapes);
 
-   function Mesh (Object : Model) return Meshes.Mesh is
+   function Mesh (Object : Model) return Meshes.Vertex_Format is
      (Object.Mesh);
 
    function Command_Buffer (Object : Model) return Buffers.Buffer is

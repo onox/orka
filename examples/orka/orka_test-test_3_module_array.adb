@@ -30,7 +30,7 @@ procedure Orka_Test.Test_3_Module_Array is
    use Orka.Meshes;
    use Orka.Programs;
 
-   function Load_Mesh (Program : Orka.Programs.Program) return Mesh is
+   function Load_Mesh (Program : Orka.Programs.Program) return Vertex_Format is
       use GL.Types;
       use GL.Objects.Buffers;
 
@@ -43,7 +43,7 @@ procedure Orka_Test.Test_3_Module_Array is
       VBO : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
    begin
       --  Create mesh and its attributes
-      return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
+      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
          declare
             Attributes_All : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
@@ -63,7 +63,7 @@ procedure Orka_Test.Test_3_Module_Array is
         FS => "../examples/orka/shaders/test-3-module-2.frag")
    ));
 
-   Triangle : constant Mesh := Load_Mesh (Program_1);
+   Triangle : constant Vertex_Format := Load_Mesh (Program_1);
 begin
    Program_1.Use_Program;
 

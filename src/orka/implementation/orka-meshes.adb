@@ -19,15 +19,15 @@ with Orka.Meshes.Attributes;
 
 package body Orka.Meshes is
 
-   function Create_Mesh (Mode : GL.Types.Connection_Mode) return Mesh is
+   function Create_Vertex_Format (Mode : GL.Types.Connection_Mode) return Vertex_Format is
    begin
-      return Result : Mesh do
+      return Result : Vertex_Format do
          Result.Mode := Mode;
          Result.Attribute_Buffers_Count := 0;
       end return;
-   end Create_Mesh;
+   end Create_Vertex_Format;
 
-   function Add_Attribute_Buffer (Object : in out Mesh; Kind : GL.Types.Numeric_Type)
+   function Add_Attribute_Buffer (Object : in out Vertex_Format; Kind : GL.Types.Numeric_Type)
      return Orka.Meshes.Attributes.Attribute_Buffer is
       use GL.Objects.Vertex_Arrays;
       Binding_Index : constant Binding := Binding (Object.Attribute_Buffers_Count);
@@ -36,18 +36,18 @@ package body Orka.Meshes is
       return Orka.Meshes.Attributes.Create (Object.Vertex_Array, Kind, Binding_Index);
    end Add_Attribute_Buffer;
 
-   procedure Set_Index_Buffer (Object : in out Mesh; Buffer : Orka.Buffers.Buffer) is
+   procedure Set_Index_Buffer (Object : in out Vertex_Format; Buffer : Orka.Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind_Element_Buffer (Buffer.GL_Buffer);
    end Set_Index_Buffer;
 
-   procedure Draw (Object : Mesh; Offset, Count : GL.Types.Size) is
+   procedure Draw (Object : Vertex_Format; Offset, Count : GL.Types.Size) is
    begin
       Object.Vertex_Array.Bind;
       GL.Drawing.Draw_Arrays (Object.Mode, Offset, Count);
    end Draw;
 
-   procedure Draw_Indirect (Object : Mesh; Buffer : Orka.Buffers.Buffer) is
+   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Orka.Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind;
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);

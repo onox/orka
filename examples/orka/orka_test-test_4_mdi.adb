@@ -32,7 +32,7 @@ procedure Orka_Test.Test_4_MDI is
    use GL.Objects.Buffers;
 
    function Load_Mesh (Program : Orka.Programs.Program;
-                       MDI_Buffers : out Orka.Buffers.MDI.MDI_Buffers) return Mesh is
+                       MDI_Buffers : out Orka.Buffers.MDI.MDI_Buffers) return Vertex_Format is
       use GL.Types;
 
       Vertices_1 : constant Indirect.Single_Array_Access
@@ -61,7 +61,7 @@ procedure Orka_Test.Test_4_MDI is
       MDI_Buffers := MDI.Create_Buffers (Storage_Bits'(others => False));
 
       --  Create mesh and its attributes
-      return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
+      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
          declare
             Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
             Attributes_Ins : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (UInt_Type);
@@ -85,7 +85,7 @@ procedure Orka_Test.Test_4_MDI is
      (VS => "../examples/orka/shaders/test-4-module-1.vert",
       FS => "../examples/orka/shaders/test-4-module-1.frag"));
 
-   Mesh_1 : constant Mesh := Load_Mesh (Program_1, MDI_Buffers);
+   Mesh_1 : constant Vertex_Format := Load_Mesh (Program_1, MDI_Buffers);
 begin
    Program_1.Use_Program;
 

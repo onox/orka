@@ -34,7 +34,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
    use Orka.Meshes;
    use Orka.Programs;
 
-   function Load_Mesh_1 (Program : Orka.Programs.Program) return Mesh is
+   function Load_Mesh_1 (Program : Orka.Programs.Program) return Vertex_Format is
       Vertices : constant Single_Array
         := (-0.3,  0.5, -1.0,
             -0.8, -0.5, -1.0,
@@ -50,7 +50,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       VBO_2 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Color_Vertices);
    begin
       --  Create mesh and its attributes
-      return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
+      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
          declare
             Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
             Attributes_Col : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
@@ -64,7 +64,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       end return;
    end Load_Mesh_1;
 
-   function Load_Mesh_2 (Program : Orka.Programs.Program) return Mesh is
+   function Load_Mesh_2 (Program : Orka.Programs.Program) return Vertex_Format is
       Vertices : constant Single_Array
         := (-0.2,  0.5, -1.0,
              0.3, -0.5, -1.0,
@@ -74,7 +74,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       VBO_3 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
    begin
       --  Create mesh and its attributes
-      return Result : Mesh := Orka.Meshes.Create_Mesh (Triangles) do
+      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
          declare
             Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
          begin
@@ -90,8 +90,8 @@ procedure Orka_Test.Test_2_Two_Triangles is
      (VS => "../examples/gl/shaders/opengl3.vert",
       FS => "../examples/gl/shaders/opengl3.frag"));
 
-   Triangle_1 : constant Mesh := Load_Mesh_1 (Program_1);
-   Triangle_2 : constant Mesh := Load_Mesh_2 (Program_1);
+   Triangle_1 : constant Vertex_Format := Load_Mesh_1 (Program_1);
+   Triangle_2 : constant Vertex_Format := Load_Mesh_2 (Program_1);
 begin
    Program_1.Use_Program;
 

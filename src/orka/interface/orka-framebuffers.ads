@@ -33,10 +33,10 @@ package Orka.Framebuffers is
      with Inline;
 
    procedure Draw (Object : Framebuffer; Program : Orka.Programs.Program;
-                   Mesh : Orka.Meshes.Mesh; Offset, Count : GL.Types.Size);
+                   Mesh : Orka.Meshes.Vertex_Format; Offset, Count : GL.Types.Size);
 
    procedure Draw_Indirect (Object : Framebuffer; Program : Orka.Programs.Program;
-                            Mesh : Orka.Meshes.Mesh; Buffer : Orka.Buffers.Buffer);
+                            Mesh : Orka.Meshes.Vertex_Format; Buffer : Orka.Buffers.Buffer);
 
    Framebuffer_Incomplete_Error : exception;
 

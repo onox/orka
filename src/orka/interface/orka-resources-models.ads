@@ -35,7 +35,7 @@ package Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector
      with Inline;
 
-   function Mesh (Object : Model) return Meshes.Mesh
+   function Mesh (Object : Model) return Meshes.Vertex_Format
      with Inline;
 
    function Command_Buffer (Object : Model) return Buffers.Buffer
@@ -48,7 +48,7 @@ private
    type Model is tagged limited record
       Scene   : Trees.Tree;
       Shapes  : String_Vectors.Vector;
-      Mesh    : Meshes.Mesh;
+      Mesh    : Meshes.Vertex_Format;
       Buffers : Orka.Buffers.MDI.MDI_Buffers;
    end record;
 
