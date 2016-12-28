@@ -35,19 +35,23 @@ package Orka.SIMD.AVX.Doubles.Math is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_roundpd256";
 
    function Round_Nearest_Integer (Elements : m256d) return m256d is
-     (Round (Elements, 0));
+     (Round (Elements, 0))
+     with Inline;
    --  Round each element to the nearest integer
 
    function Floor (Elements : m256d) return m256d is
-     (Round (Elements, 1));
+     (Round (Elements, 1))
+     with Inline;
    --  Round each element down to an integer value
 
    function Ceil (Elements : m256d) return m256d is
-     (Round (Elements, 2));
+     (Round (Elements, 2))
+     with Inline;
    --  Round each element up to an integer value
 
    function Round_Truncate (Elements : m256d) return m256d is
-     (Round (Elements, 3));
+     (Round (Elements, 3))
+     with Inline;
    --  Round each element to zero
 
 end Orka.SIMD.AVX.Doubles.Math;
