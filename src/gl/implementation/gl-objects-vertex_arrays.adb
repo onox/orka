@@ -58,6 +58,10 @@ package body GL.Objects.Vertex_Arrays is
                                    Offset : UInt) is
    begin
       case Kind is
+         when Half_Type =>
+            API.Vertex_Array_Attrib_Format
+              (Object.Reference.GL_Id, Index, Count, Kind, Low_Level.False,
+               Offset * Half'Size / System.Storage_Unit);
          when Single_Type =>
             API.Vertex_Array_Attrib_Format
               (Object.Reference.GL_Id, Index, Count, Kind, Low_Level.False,
@@ -110,6 +114,8 @@ package body GL.Objects.Vertex_Arrays is
       Bytes : Size;
    begin
       case Kind is
+         when Half_Type =>
+            Bytes := Half'Size / System.Storage_Unit;
          when Single_Type =>
             Bytes := Single'Size / System.Storage_Unit;
          when Double_Type =>

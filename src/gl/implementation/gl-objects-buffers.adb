@@ -71,6 +71,8 @@ package body GL.Objects.Buffers is
       Bytes : Long;
    begin
       case Kind is
+         when Half_Type =>
+            Bytes := Number_Of_Elements * Half'Size / System.Storage_Unit;
          when Single_Type =>
             Bytes := Number_Of_Elements * Single'Size / System.Storage_Unit;
          when Double_Type =>
