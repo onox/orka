@@ -14,13 +14,10 @@
 
 with GL.Types;
 
-package Orka.SIMD.AVX.Singles is
+package Orka.Types is
    pragma Preelaborate;
 
-   type Index_Double_Homogeneous is range 1 .. 8;
+   function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array;
+   function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array;
 
-   type m256 is array (Index_Double_Homogeneous) of GL.Types.Single
-     with Alignment => 32;
-   pragma Machine_Attribute (m256, "vector_type");
-
-end Orka.SIMD.AVX.Singles;
+end Orka.Types;

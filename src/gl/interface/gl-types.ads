@@ -40,7 +40,7 @@ package GL.Types is
    type UInt   is new C.unsigned;
 
    --  Floating point types ("Single" is used to avoid conflicts with Float)
-   type Half   is new Short;  --  F16C extension can be used to convert from/to Single
+   subtype Half is Short;  --  F16C extension can be used to convert from/to Single
    type Single is new C.C_float;
    type Double is new C.double;
 
