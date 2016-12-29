@@ -33,7 +33,7 @@ package body Orka.Programs is
    function Create_Program (Module    : Programs.Modules.Module;
                             Separable : Boolean := False) return Program is
    begin
-      return Create_Program ((1 => Module));
+      return Create_Program (Modules.Module_Array'(1 => Module));
    end Create_Program;
 
    function GL_Program (Object : Program) return GL.Objects.Programs.Program
