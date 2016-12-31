@@ -25,10 +25,18 @@ Features
 
  * Thick OpenGL 4.5 bindings
  * Thick GLFW 3 bindings
- * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1 and AVX
+ * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
  * Easy construction of OpenGL programs and meshes
  * Transforms and scene tree (makes use of the x86 SIMD extensions)
  * glTF loader (uses MDI)
+
+Build status
+------------
+
+|                    | Linux   | Windows     |
+|--------------------|---------|-------------|
+| **GNAT GPL 2015**  | passing | unknown     |
+| **GNAT GPL 2016**  | link failure | unknown     |
 
 Dependencies
 ------------
@@ -60,7 +68,7 @@ In order to build Orka or the OpenGL bindings, you need to have:
 
     - ARB\_multi\_draw\_indirect (OpenGL 4.5)
 
- * An x86-64 CPU with the AVX extension
+ * An x86-64 CPU with the AVX and F16C extensions
 
 Optional dependencies:
 
