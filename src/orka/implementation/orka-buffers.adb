@@ -14,6 +14,9 @@
 
 package body Orka.Buffers is
 
+   package Half_Pointers is new GL.Objects.Buffers.Buffer_Pointers
+     (Half_Pointers);
+
    package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
      (Single_Pointers);
 
@@ -40,6 +43,16 @@ package body Orka.Buffers is
       return Result : Buffer do
          Result.Buffer.Allocate (Long (Length), Kind, Flags);
          Result.Length := Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Half_Array) return Buffer is
+   begin
+      return Result : Buffer do
+         Half_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
       end return;
    end Create_Buffer;
 
@@ -108,6 +121,14 @@ package body Orka.Buffers is
 
    function Length (Object : Buffer) return Natural
      is (Object.Length);
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Half_Array;
+      Offset : Natural := 0) is
+   begin
+      Half_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
 
    procedure Set_Data
      (Object : Buffer;

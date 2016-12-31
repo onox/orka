@@ -132,6 +132,9 @@ package GL.Types is
    package UInt_Pointers is new Interfaces.C.Pointers
      (Size, UInt, UInt_Array, UInt'Last);
 
+   package Half_Pointers is new Interfaces.C.Pointers
+     (Size, Half, Half_Array, 0);
+
    package Single_Pointers is new Interfaces.C.Pointers
      (Size, Single, Single_Array, 0.0);
 

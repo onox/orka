@@ -30,6 +30,10 @@ package Orka.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Half_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Single_Array) return Buffer;
 
    function Create_Buffer
@@ -57,6 +61,12 @@ package Orka.Buffers is
 
    function Length (Object : Buffer) return Natural
      with Inline;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Half_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
