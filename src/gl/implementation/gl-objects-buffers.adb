@@ -120,8 +120,8 @@ package body GL.Objects.Buffers is
       return Boolean (Ret);
    end Mapped;
 
-   function Size (Object : Buffer) return Types.Size is
-      Ret : Types.Size := 0;
+   function Size (Object : Buffer) return Types.Long_Size is
+      Ret : Types.Long_Size := 0;
    begin
       API.Get_Named_Buffer_Parameter_Size (Object.Reference.GL_Id, Enums.Buffer_Size, Ret);
       Raise_Exception_On_OpenGL_Error;

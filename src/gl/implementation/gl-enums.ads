@@ -33,36 +33,11 @@ private package GL.Enums is
 
    type Front_Face_Direction is (CW, CCW);
 
-   type Matrix_Mode is (Modelview, Projection, Texture, Color);
-   
-   type Light_Model_Parameter is (Local_Viewer, Two_Side,
-                                  Ambient, Color_Control);
-   
-   for Light_Model_Parameter use (Local_Viewer  => 16#0B51#,
-                                  Two_Side      => 16#0B52#,
-                                  Ambient       => 16#0B53#,
-                                  Color_Control => 16#81F8#);
-   for Light_Model_Parameter'Size use Low_Level.Enum'Size;                               
-   
-   subtype Light_Model_Ambient_Parameter is Light_Model_Parameter range
-     Ambient .. Ambient;
-   
-   subtype Light_Model_CC_Parameter is Light_Model_Parameter range
-     Color_Control .. Color_Control;
-   
-   subtype Light_Model_Toggle_Parameter is Light_Model_Parameter range
-     Local_Viewer .. Two_Side;
-   
-   type Light_Param is (Ambient, Diffuse, Specular, Position,
-                        Spot_Direction, Spot_Exponent, Spot_Cutoff,
-                        Constant_Attenduation, Linear_Attenduation,
-                        Quadratic_Attenduation);
-   
-   subtype Light_Name is Toggles.Toggle range Toggles.Light0 .. Toggles.Light7;
-   
+   type Matrix_Mode is (Texture, Color);
+
    type Shader_Param is (Shader_Type, Delete_Status, Compile_Status,
                          Info_Log_Length, Shader_Source_Length);
-   
+
    type Program_Param is (Program_Binary_Retrievable_Hint, Program_Separable,
                           Compute_Work_Group_Size, Program_Binary_Length,
                           Geometry_Vertices_Out,
@@ -147,8 +122,9 @@ private package GL.Enums is
                               Unpack_Skip_Images, Unpack_Image_Height);
    
    type Buffer_Param is (Buffer_Immutable_Storage, Buffer_Storage_Flags,
-                         Buffer_Access, Buffer_Mapped,
-                         Buffer_Size, Buffer_Usage);
+                         Buffer_Size, Buffer_Access, Buffer_Mapped,
+                         Buffer_Access_Flags, Buffer_Map_Length,
+                         Buffer_Map_Offset);
    
    type Buffer_Pointer_Param is (Buffer_Map_Pointer);
    
@@ -183,31 +159,17 @@ private
                                  CCW => 16#0901#);
    for Front_Face_Direction'Size use Low_Level.Enum'Size;
 
-   for Matrix_Mode use (Modelview  => 16#1700#,
-                        Projection => 16#1701#,
-                        Texture    => 16#1702#,
+   for Matrix_Mode use (Texture    => 16#1702#,
                         Color      => 16#1800#);
    for Matrix_Mode'Size use Low_Level.Enum'Size;
-   
-   for Light_Param use (Ambient        => 16#1200#,
-                        Diffuse        => 16#1201#,
-                        Specular       => 16#1202#,
-                        Position       => 16#1203#,
-                        Spot_Direction => 16#1204#,
-                        Spot_Exponent  => 16#1205#,
-                        Spot_Cutoff    => 16#1206#,
-                        Constant_Attenduation  => 16#1207#,
-                        Linear_Attenduation    => 16#1208#,
-                        Quadratic_Attenduation => 16#1209#);
-   for Light_Param'Size use Low_Level.Enum'Size;
-   
+
    for Shader_Param use (Shader_Type          => 16#8B4F#,
                          Delete_Status        => 16#8B80#,
                          Compile_Status       => 16#8B81#,
                          Info_Log_Length      => 16#8B84#,
                          Shader_Source_Length => 16#8B88#);
    for Shader_Param'Size use Low_Level.Enum'Size;
-   
+
    for Program_Param use (Program_Binary_Retrievable_Hint       => 16#8257#,
                           Program_Separable                     => 16#8258#,
                           Compute_Work_Group_Size               => 16#8267#,
@@ -311,7 +273,7 @@ private
 
    for Clamp_Color_Param use (Clamp_Read_Color => 16#891C#);
    for Clamp_Color_Param'Size use Low_Level.Enum'Size;
-   
+
    for Pixel_Store_Param use (Unpack_Swap_Bytes   => 16#0CF0#,
                               Unpack_LSB_First    => 16#0CF1#,
                               Unpack_Row_Length   => 16#0CF2#,
@@ -329,18 +291,20 @@ private
                               Unpack_Skip_Images  => 16#806D#,
                               Unpack_Image_Height => 16#806E#);
    for Pixel_Store_Param'Size use Low_Level.Enum'Size;
-   
+
    for Buffer_Param use (Buffer_Immutable_Storage => 16#821F#,
                          Buffer_Storage_Flags     => 16#8220#,
+                         Buffer_Size              => 16#8764#,
                          Buffer_Access            => 16#88BB#,
                          Buffer_Mapped            => 16#88BC#,
-                         Buffer_Size              => 16#88BD#,
-                         Buffer_Usage             => 16#88BE#);
+                         Buffer_Access_Flags      => 16#911F#,
+                         Buffer_Map_Length        => 16#9120#,
+                         Buffer_Map_Offset        => 16#9121#);
    for Buffer_Param'Size use Low_Level.Enum'Size;
-   
+
    for Buffer_Pointer_Param use (Buffer_Map_Pointer => 16#88BD#);
    for Buffer_Pointer_Param'Size use Low_Level.Enum'Size;
-   
+
    for Framebuffer_Param use (Default_Width                  => 16#9310#,
                               Default_Height                 => 16#9311#,
                               Default_Layers                 => 16#9312#,

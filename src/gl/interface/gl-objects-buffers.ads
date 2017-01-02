@@ -69,7 +69,7 @@ package GL.Objects.Buffers is
    function Access_Type   (Object : Buffer) return Access_Kind;
    function Immutable     (Object : Buffer) return Boolean;
    function Mapped        (Object : Buffer) return Boolean;
-   function Size          (Object : Buffer) return Size;
+   function Size          (Object : Buffer) return Long_Size;
    function Storage_Flags (Object : Buffer) return Storage_Bits;
 
    overriding

@@ -580,8 +580,8 @@ private package GL.API is
       Low_Level.Bitfield);
 
    procedure Get_Named_Buffer_Parameter_Size is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
-      Size);
+     ("glGetNamedBufferParameteri64v", UInt, Enums.Buffer_Param,
+      Long_Size);
 
    procedure Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
      ("glInvalidateBufferData", UInt);
