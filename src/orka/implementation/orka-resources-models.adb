@@ -27,7 +27,7 @@ package body Orka.Resources.Models is
       Object.Mesh := Orka.Meshes.Create_Vertex_Format (Triangles);
 
       declare
-         Attributes : Meshes.Attributes.Attribute_Buffer := Object.Mesh.Add_Attribute_Buffer (Single_Type);
+         Attributes : Meshes.Attributes.Attribute_Buffer := Object.Mesh.Add_Attribute_Buffer (Half_Type);
          Instances  : Meshes.Attributes.Attribute_Buffer := Object.Mesh.Add_Attribute_Buffer (UInt_Type);
       begin
          --  TODO Always assuming that attributes are VEC3, VEC3, VEC2 (each component = Single)

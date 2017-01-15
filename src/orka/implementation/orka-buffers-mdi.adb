@@ -14,6 +14,8 @@
 
 with Ada.Unchecked_Deallocation;
 
+with Orka.Types;
+
 package body Orka.Buffers.MDI is
 
    function Create_Batch (Vertex_Length : Positive) return Batch is
@@ -66,7 +68,7 @@ package body Orka.Buffers.MDI is
       end loop;
 
       declare
-         subtype Vertex_Array is Single_Array (0 .. VBO_Length - 1);
+         subtype Vertex_Array is Half_Array (0 .. VBO_Length - 1);
          subtype Index_Array is UInt_Array   (0 .. IBO_Length - 1);
 
          type Vertex_Array_Access is access Vertex_Array;
@@ -78,7 +80,7 @@ package body Orka.Buffers.MDI is
            (Object => Index_Array, Name => Index_Array_Access);
 
          Vertices : Vertex_Array_Access := new Vertex_Array;
-         Indices  : Index_Array_Access := new Index_Array;
+         Indices  : Index_Array_Access  := new Index_Array;
 
          Part_Vertex_Count, Part_Index_Count : Size;
          Vertex_Offset, Index_Offset : Size := 0;
@@ -97,7 +99,7 @@ package body Orka.Buffers.MDI is
             IA_Last  := IA_First + Part_Index_Count - 1;
 
             --  Copy part data to a slice of the vertices and indices arrays
-            Vertices (VA_First .. VA_Last) := Object.Vertices (I).all;
+            Vertices (VA_First .. VA_Last) := Orka.Types.Convert (Object.Vertices (I).all);
             Indices  (IA_First .. IA_Last) := Object.Indices (I).all;
 
             --  Create draw command
