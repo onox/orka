@@ -7,9 +7,12 @@ flat in uint var_InstanceID;
 
 in vec4 var_n;
 in vec4 var_p;
+in vec2 var_uv;
 
 layout(location = 5) uniform mat4 view;
 layout(location = 7) uniform vec4 lightPosition;
+
+layout(location = 8) uniform sampler2DArray diffuseTexture;
 
 out vec4 out_Color;
 
@@ -23,7 +26,7 @@ struct Light {
 
 struct Material {
     vec4 ambient;
-    vec4 diffuse;
+    vec4 emission;
     vec4 specular;
     float shininess;
 };
@@ -35,14 +38,17 @@ const Light light = {
 };
 
 const Material material = {
-    vec4(0.0, 0.0, 1.0, 1.0),
-    vec4(0.0, 0.0, 1.0, 1.0),
+    vec4(1.0, 1.0, 1.0, 1.0),
+    vec4(0.0, 0.0, 0.0, 1.0),
     vec4(1.0, 1.0, 1.0, 1.0),
     20.0,
 };
 
 void main(void) {
-    vec4 color = light.ambient * material.ambient;
+    vec4 color = material.emission;
+    vec4 tex_color = texture(diffuseTexture, vec3(var_uv, var_InstanceID));
+
+    color += light.ambient * material.ambient * tex_color;
     vec3 normal = normalize(var_n.xyz);
 
     vec3 light_dir = normalize(lightPosition.xyz - var_p.xyz);
@@ -57,7 +63,7 @@ void main(void) {
     vec3 half_vector = normalize(view_dir + light_dir);
     float cosTh = max(dot(normal, half_vector), 0.0); // n.h factor
 
-    vec4 Kd = light.diffuse * material.diffuse;
+    vec4 Kd = light.diffuse * tex_color;
     vec4 Ks = light.specular * material.specular;
 
     Kd /= pi;

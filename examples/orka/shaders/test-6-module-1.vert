@@ -13,6 +13,7 @@ layout(location = 6) uniform mat4 proj;
 
 out vec4 var_n;
 out vec4 var_p;
+out vec2 var_uv;
 
 flat out uint var_InstanceID;
 
@@ -39,5 +40,8 @@ void main(void) {
     var_n = normalize(normalMatrix * vec4(in_Normal, 1.0));
     var_p = p;
 
-    var_InstanceID = in_InstanceID;
+    var_uv = in_UV;
+
+    // Modulo number of textures
+    var_InstanceID = uint(mod(in_InstanceID, 7.0));
 }

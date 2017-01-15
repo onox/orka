@@ -43,6 +43,63 @@ procedure Orka_Test.Test_6_GLTF is
 
    package Models is new Orka.Resources.Models (Orka.Scenes.Singles.Trees);
    package glTF is new Models.glTF;
+
+   use GL.Objects.Textures;
+
+   procedure Load_Texture (Texture : Texture_3D) is
+      Pixels : constant GL.Types.Single_Array
+            --  White
+        := (0.0, 0.0, 0.0,   1.0, 1.0, 1.0,   0.0, 0.0, 0.0,   1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0,   0.0, 0.0, 0.0,   1.0, 1.0, 1.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   1.0, 1.0, 1.0,   0.0, 0.0, 0.0,   1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0,   0.0, 0.0, 0.0,   1.0, 1.0, 1.0,   0.0, 0.0, 0.0,
+
+            --  Red
+            0.0, 0.0, 0.0,   1.0, 0.0, 0.0,   0.0, 0.0, 0.0,   1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,   0.0, 0.0, 0.0,   1.0, 0.0, 0.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   1.0, 0.0, 0.0,   0.0, 0.0, 0.0,   1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,   0.0, 0.0, 0.0,   1.0, 0.0, 0.0,   0.0, 0.0, 0.0,
+
+            --  Green
+            0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 0.0, 0.0,   0.0, 1.0, 0.0,
+            0.0, 1.0, 0.0,   0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 0.0, 0.0,   0.0, 1.0, 0.0,
+            0.0, 1.0, 0.0,   0.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.0, 0.0, 0.0,
+
+            --  Blue
+            0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, 0.0,   0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0,   0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, 0.0,   0.0, 0.0, 1.0,
+            0.0, 0.0, 1.0,   0.0, 0.0, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0, 0.0,
+
+            --  Cyan
+            0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 0.0,   0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0,   0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 0.0,   0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0,   0.0, 0.0, 0.0,   0.0, 1.0, 1.0,   0.0, 0.0, 0.0,
+
+            --  Yellow
+            0.0, 0.0, 0.0,   1.0, 1.0, 0.0,   0.0, 0.0, 0.0,   1.0, 1.0, 0.0,
+            1.0, 1.0, 0.0,   0.0, 0.0, 0.0,   1.0, 1.0, 0.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   1.0, 1.0, 0.0,   0.0, 0.0, 0.0,   1.0, 1.0, 0.0,
+            1.0, 1.0, 0.0,   0.0, 0.0, 0.0,   1.0, 1.0, 0.0,   0.0, 0.0, 0.0,
+
+            --  Magenta
+            0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   0.0, 0.0, 0.0,   1.0, 0.0, 1.0,
+            1.0, 0.0, 1.0,   0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   0.0, 0.0, 0.0,   1.0, 0.0, 1.0,
+            1.0, 0.0, 1.0,   0.0, 0.0, 0.0,   1.0, 0.0, 1.0,   0.0, 0.0, 0.0);
+   begin
+      Texture.Set_X_Wrapping (Clamp_To_Edge);
+      Texture.Set_Y_Wrapping (Clamp_To_Edge);
+
+      Texture.Set_Minifying_Filter (Nearest);
+      Texture.Set_Magnifying_Filter (Nearest);
+
+      --  Load texture data
+      Texture.Allocate_Storage (1, GL.Pixels.RGB32F, 4, 4, 7);
+      Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 7, GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
+   end Load_Texture;
 begin
    if Ada.Command_Line.Argument_Count /= 1 then
       Ada.Text_IO.Put_Line ("Usage: <path to .gltf file>");
@@ -67,6 +124,9 @@ begin
       Uni_Proj  : constant Uniform := Program_1.GL_Program.Uniform_Location ("proj");
       Uni_Light : constant Uniform := Program_1.GL_Program.Uniform_Location ("lightPosition");
 
+      Uni_WT      : constant Uniform := Program_1.GL_Program.Uniform_Location ("matrixBuffer");
+      Uni_Texture : constant Uniform := Program_1.GL_Program.Uniform_Location ("diffuseTexture");
+
       Mouse_X, Mouse_Y, Mouse_Z : GL.Types.Single;
       use Orka.Transforms.Singles.Matrices;
       use type GL.Types.Single;
@@ -75,12 +135,14 @@ begin
       Matrix_View : Matrix4;
       Vector_View : Vector4;
 
+      Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
+
       --  An offset that can be used to change the point at which the
       --  camera looks. Useful if the center of a 3D model is not at the
       --  origin.
-      View_Offset : constant Vector4 := (0.0, 0.0, 0.0, 0.0);
+      View_Offset : constant Vector4 := (-0.5, 0.0, 0.0, 0.0);
 
-      Light_Position : constant Vector4 := (-3.0, 0.0, 2.0, 1.0);
+      Light_Position : constant Vector4 := (0.0, 0.0, 0.0, 1.0);
 
       function Convert_Matrix is new Ada.Unchecked_Conversion
         (Source => Orka.Transforms.Singles.Matrices.Matrix4, Target => GL.Types.Singles.Matrix4);
@@ -94,7 +156,7 @@ begin
 
       --  Set-up TBO for world transform matrices
       Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), GL.Types.Single_Type, World_Transforms'Length * 16);
-      TBO_1 : GL.Objects.Textures.Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      TBO_1 : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
       Ada.Text_IO.Put_Line ("Duration gltf: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
       Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));
@@ -111,9 +173,15 @@ begin
       end loop;
 
       --  In a loop we should use a persistent mapped buffer instead of Set_Data
+      Uni_WT.Set_Int (0);
       Buffer_1.Set_Data (World_Transforms);
       TBO_1.Attach_Buffer (GL.Pixels.RGBA32F, Buffer_1.GL_Buffer);
       TBO_1.Bind_Texture_Unit (0);
+
+      --  Load checkerboard texture
+      Uni_Texture.Set_Int (1);
+      Load_Texture (Texture_1);
+      Texture_1.Bind_Texture_Unit (1);
 
       Uni_Proj.Set_Single_Matrix (Convert_Matrix (Matrix_Proj));
 
@@ -124,6 +192,12 @@ begin
          Mouse_X := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_X);
          Mouse_Y := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_Y);
          Mouse_Z := GL.Types.Single (GL_Test.Display_Backend.Get_Zoom_Distance);
+
+         if GL_Test.Display_Backend.Get_Effect (2) = 0 then
+            GL.Toggles.Enable (GL.Toggles.Cull_Face);
+         else
+            GL.Toggles.Disable (GL.Toggles.Cull_Face);
+         end if;
 
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 

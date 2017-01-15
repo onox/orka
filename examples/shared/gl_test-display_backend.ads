@@ -51,7 +51,7 @@ package GL_Test.Display_Backend is
 
 private
 
-   subtype Mouse_Zoom is Float range 1.0 .. 200.0;
+   subtype Mouse_Zoom is Float range 0.5 .. 200.0;
 
    subtype Mouse_Pos is Float range -180.0 .. 180.0;
 
