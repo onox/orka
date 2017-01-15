@@ -12,6 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Real_Time;
 with Ada.Text_IO;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Streams.Stream_IO;
@@ -133,8 +134,9 @@ package body Orka.Resources.Models.glTF is
          declare
             Buffer : constant JSON_Value'Class := Buffers.Get (Name);
          begin
+            Ada.Text_IO.Put_Line ("Buffer length: " & Long_Integer'Image (Long_Integer'(Buffer.Get ("byteLength").Value)));
             Result.Insert (Name, Create_Buffer
-              (URI    => String'(Buffer.Get ("uri").Value),
+              (URI    => Buffer.Get ("uri").Value,
                Length => Natural (Long_Integer'(Buffer.Get ("byteLength").Value))));
          end;
       end loop;
@@ -152,7 +154,7 @@ package body Orka.Resources.Models.glTF is
             View : constant JSON_Value'Class := Views.Get (Name);
          begin
             Result.Insert (Name, Create_Buffer_View
-              (Buffer => Buffers.Find (String'(View.Get ("buffer").Value)),
+              (Buffer => Buffers.Element (String'(View.Get ("buffer").Value)).Data,
                Offset => Natural (Long_Integer'(View.Get ("byteOffset").Value)),
                Length => Natural (Long_Integer'(View.Get ("byteLength").Value)),
                Kind   => Target_Kinds (Integer (Long_Integer'(View.Get ("target").Value)))));
@@ -191,8 +193,8 @@ package body Orka.Resources.Models.glTF is
             View_Indices_Name     : constant String := Accessors.Get (Accessor_Indices_Name).Get ("bufferView").Value;
             pragma Assert (Accessors.Get (Accessor_Indices_Name).Get ("componentType").Value = 5125);
 
-            Vertices_Bytes : constant Stream_Element_Array := Elements (Views.Element (View_Name));
-            Indices_Bytes  : constant Stream_Element_Array := Elements (Views.Element (View_Indices_Name));
+            Vertices_Bytes : Stream_Element_Array_Access := Elements (Views.Element (View_Name));
+            Indices_Bytes  : Stream_Element_Array_Access := Elements (Views.Element (View_Indices_Name));
 
             subtype Vertices_Array is Single_Array (1 .. Int (Vertices_Bytes'Length / 4));
             subtype Indices_Array is UInt_Array (1 .. Int (Indices_Bytes'Length / 4));
@@ -206,20 +208,22 @@ package body Orka.Resources.Models.glTF is
             function Convert_Indices is new Ada.Unchecked_Conversion
               (Source => Stream_Element_Array, Target => Indices_Array);
          begin
-            Ada.Text_IO.Put_Line ("Mesh " & Mesh_Name & " has POSITION accessor " & Accessor_Name);
-            Ada.Text_IO.Put_Line (Integer'Image (Elements (Views.Element (View_Name))'Length));
+--            Ada.Text_IO.Put_Line ("Mesh " & Mesh_Name & " has POSITION accessor " & Accessor_Name);
+--            Ada.Text_IO.Put_Line (Integer'Image (Vertices_Bytes'Length));
             --  TODO Making lots of assumptions here:
             --          - all accessors (POSITION, NORMAL, TEXCOORD_0) have same bufferView
             --          - attributes are interleaved and are VEC3, VEC3, VEC2
             --          - indices are unsigned int?
 
-            Ada.Text_IO.Put_Line ("Node: " & Node_Name);
+--            Ada.Text_IO.Put_Line ("Node: " & Node_Name);
 
             Batch.Append
-              (new Single_Array'(Convert_Vertices (Vertices_Bytes)),
-               new UInt_Array'(Convert_Indices (Indices_Bytes)),
+              (new Single_Array'(Convert_Vertices (Vertices_Bytes.all)),
+               new UInt_Array'(Convert_Indices (Indices_Bytes.all)),
                Instance_ID);
-            Ada.Text_IO.Put_Line ("Instance ID: " & Integer'Image (Instance_ID));
+--            Ada.Text_IO.Put_Line ("Instance ID: " & Integer'Image (Instance_ID));
+            Free_Stream_Array (Vertices_Bytes);
+            Free_Stream_Array (Indices_Bytes);
 
             Shapes.Append (Node_Name);
          end;
@@ -237,9 +241,13 @@ package body Orka.Resources.Models.glTF is
 
       procedure Free_String is new Ada.Unchecked_Deallocation
         (Object => String, Name => String_Access);
+
+      A, B : Ada.Real_Time.Time;
+      use type Ada.Real_Time.Time;
    begin
       Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Path);
 
+      A := Ada.Real_Time.Clock;
       declare
          File_Size : constant Integer := Integer (Ada.Streams.Stream_IO.Size (File));
          subtype File_String is String (1 .. File_Size);
@@ -249,10 +257,14 @@ package body Orka.Resources.Models.glTF is
          File_String'Read (File_Stream, Raw_Contents.all);
 
          Ada.Streams.Stream_IO.Close (File);
+         B := Ada.Real_Time.Clock;
+         Ada.Text_IO.Put_Line ("Loading: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
 
          declare
+            A2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
             Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Raw_Contents);
             Object : constant JSON_Value'Class := Parsers.Parse (Stream);
+            B2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
             GL_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("glExtensionsUsed");
             Required_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("extensionsRequired");
@@ -277,7 +289,10 @@ package body Orka.Resources.Models.glTF is
               Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
 
             Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
+            C2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
          begin
+            Ada.Text_IO.Put_Line ("Parsing: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B2 - A2)));
+            Ada.Text_IO.Put_Line ("JSON stuff: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (C2 - B2)));
             Free_String (Raw_Contents);
 
             --  Require indices to be of type UInt
@@ -295,12 +310,21 @@ package body Orka.Resources.Models.glTF is
                   Object.Scene.Add_Node (Node.Value, "root");
                end loop;
 
+               A := Ada.Real_Time.Clock;
                Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
+               B := Ada.Real_Time.Clock;
+               Ada.Text_IO.Put_Line ("Nodes: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
+
+               A := Ada.Real_Time.Clock;
                Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
+               B := Ada.Real_Time.Clock;
+               Ada.Text_IO.Put_Line ("Parts: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
 
                Create_Mesh (Object, Batch);
                Batch.Clear;
                Object.Shapes := Shapes;
+
+               --  TODO deallocate buffers in Mesh_Buffers
             end return;
          end;
       exception

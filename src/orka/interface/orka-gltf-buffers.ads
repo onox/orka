@@ -12,10 +12,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.Streams;
+with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
 
@@ -24,6 +24,11 @@ package Orka.glTF.Buffers is
 
    use Ada.Streams;
 
+   type Stream_Element_Array_Access is access Stream_Element_Array;
+
+   procedure Free_Stream_Array is new Ada.Unchecked_Deallocation
+     (Object => Stream_Element_Array, Name => Stream_Element_Array_Access);
+
    type Buffer_Kind is new GL.Low_Level.Enums.Buffer_Kind
      range GL.Low_Level.Enums.Array_Buffer .. GL.Low_Level.Enums.Element_Array_Buffer;
 
@@ -31,13 +36,9 @@ package Orka.glTF.Buffers is
      (34962 => Buffer_Kind (GL.Low_Level.Enums.Array_Buffer),
       34963 => Buffer_Kind (GL.Low_Level.Enums.Element_Array_Buffer));
 
-   package Data_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => Stream_Element_Array);
-
    type Buffer is record
-      Data   : Data_Holder.Holder;
-      Length : Natural;  --  length in bytes
-      Kind   : Buffer_Kind;
+      Data   : Stream_Element_Array_Access;
+      Kind   : Buffer_Kind;   --  TODO Do we really need Kind?
    end record;
 
    package Buffer_Maps is new Ada.Containers.Indefinite_Hashed_Maps
@@ -47,9 +48,9 @@ package Orka.glTF.Buffers is
       Equivalent_Keys => "=");
 
    type Buffer_View is record
-      Buffer : Buffer_Maps.Cursor;
-      Offset : Natural;  --  offset in bytes
-      Length : Natural;  --  length in bytes
+      Buffer : Stream_Element_Array_Access;
+      Offset : Natural;  --  Offset in bytes
+      Length : Natural;  --  Length in bytes
       Target : Buffer_Kind;
    end record;
 
@@ -60,18 +61,16 @@ package Orka.glTF.Buffers is
       Equivalent_Keys => "=");
 
    function Create_Buffer (URI : String; Length : Natural) return Buffer
-     with Post => Create_Buffer'Result.Data.Element'Length = Length;
+     with Post => Create_Buffer'Result.Data'Length = Length;
 
    use type Buffer_Maps.Cursor;
 
    function Create_Buffer_View
-     (Buffer         : Buffer_Maps.Cursor;
+     (Buffer         : not null Stream_Element_Array_Access;
       Offset, Length : Natural;
       Kind           : Buffer_Kind) return Buffer_View
-     with Pre => Buffer /= Buffer_Maps.No_Element
-                   and Offset + Length <= Buffer_Maps.Element (Buffer).Length;
+     with Pre => Offset + Length <= Buffer.all'Length;
 
-   function Elements (View : Buffer_View) return Stream_Element_Array
-     with Inline;
+   function Elements (View : Buffer_View) return Stream_Element_Array_Access;
 
 end Orka.glTF.Buffers;
