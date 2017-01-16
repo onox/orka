@@ -56,10 +56,13 @@ package GL.Pixels is
                             Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
                             Compressed_RGBA8_ETC2_EAC, Compressed_SRGB8_Alpha8_ETC2_EAC);
 
-   type Format is (Stencil_Index, Depth_Component, Red, RGB, RGBA, BGR, RG);
+   type Format is (Stencil_Index, Depth_Component, Red, Green, Blue,
+                   RGB, RGBA, BGR, BGRA, RG, RG_Integer, Depth_Stencil,
+                   Red_Integer, Green_Integer, Blue_Integer,
+                   RGB_Integer, RGBA_Integer, BGR_Integer, BGRA_Integer);
 
    type Data_Type is (Byte, Unsigned_Byte, Short, Unsigned_Short, Int,
-                      Unsigned_Int, Float, Unsigned_Byte_3_3_2,
+                      Unsigned_Int, Float, Half_Float, Unsigned_Byte_3_3_2,
                       Unsigned_Short_4_4_4_4,
                       Unsigned_Short_5_5_5_1,
                       Unsigned_Int_8_8_8_8,
@@ -70,7 +73,11 @@ package GL.Pixels is
                       Unsigned_Short_4_4_4_4_Rev,
                       Unsigned_Short_1_5_5_5_Rev,
                       Unsigned_Int_8_8_8_8_Rev,
-                      Unsigned_Int_2_10_10_10_Rev);
+                      Unsigned_Int_2_10_10_10_Rev,
+                      Unsigned_Int_24_8,
+                      Unsigned_Int_10F_11F_11F_Rev,
+                      Unsigned_Int_5_9_9_9_Rev,
+                      Float_32_Unsigned_Int_24_8_Rev);
 
    type Channel_Data_Type is (None, Int_Type, Unsigned_Int_Type, Float_Type,
                               Unsigned_Normalized, Signed_Normalized);
@@ -258,10 +265,22 @@ private
    for Format use (Stencil_Index   => 16#1901#,
                    Depth_Component => 16#1902#,
                    Red             => 16#1903#,
+                   Green           => 16#1904#,
+                   Blue            => 16#1905#,
                    RGB             => 16#1907#,
                    RGBA            => 16#1908#,
                    BGR             => 16#80E0#,
-                   RG              => 16#8227#);
+                   BGRA            => 16#80E1#,
+                   RG              => 16#8227#,
+                   RG_Integer      => 16#8228#,
+                   Depth_Stencil   => 16#84F9#,
+                   Red_Integer     => 16#8D94#,
+                   Green_Integer   => 16#8D95#,
+                   Blue_Integer    => 16#8D96#,
+                   RGB_Integer     => 16#8D98#,
+                   RGBA_Integer    => 16#8D99#,
+                   BGR_Integer     => 16#8D9A#,
+                   BGRA_Integer    => 16#8D9B#);
    for Format'Size use Low_Level.Enum'Size;
 
    for Data_Type use (Byte           => 16#1400#,
@@ -271,6 +290,7 @@ private
                       Int            => 16#1404#,
                       Unsigned_Int   => 16#1405#,
                       Float          => 16#1406#,
+                      Half_Float     => 16#140B#,
                       Unsigned_Byte_3_3_2         => 16#8032#,
                       Unsigned_Short_4_4_4_4      => 16#8033#,
                       Unsigned_Short_5_5_5_1      => 16#8034#,
@@ -282,7 +302,11 @@ private
                       Unsigned_Short_4_4_4_4_Rev  => 16#8365#,
                       Unsigned_Short_1_5_5_5_Rev  => 16#8366#,
                       Unsigned_Int_8_8_8_8_Rev    => 16#8367#,
-                      Unsigned_Int_2_10_10_10_Rev => 16#8368#);
+                      Unsigned_Int_2_10_10_10_Rev => 16#8368#,
+                      Unsigned_Int_24_8           => 16#84FA#,
+                      Unsigned_Int_10F_11F_11F_Rev   => 16#8C3B#,
+                      Unsigned_Int_5_9_9_9_Rev       => 16#8C3E#,
+                      Float_32_Unsigned_Int_24_8_Rev => 16#8DAD#);
    for Data_Type'Size use Low_Level.Enum'Size;
 
    for Channel_Data_Type use (None                => 0,
