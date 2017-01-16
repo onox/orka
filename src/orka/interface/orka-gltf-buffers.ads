@@ -14,20 +14,15 @@
 
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
-with Ada.Streams;
-with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
+
+with Orka.Resources;
 
 package Orka.glTF.Buffers is
    pragma Preelaborate;
 
-   use Ada.Streams;
-
-   type Stream_Element_Array_Access is access Stream_Element_Array;
-
-   procedure Free_Stream_Array is new Ada.Unchecked_Deallocation
-     (Object => Stream_Element_Array, Name => Stream_Element_Array_Access);
+   use Orka.Resources;
 
    type Buffer_Kind is new GL.Low_Level.Enums.Buffer_Kind
      range GL.Low_Level.Enums.Array_Buffer .. GL.Low_Level.Enums.Element_Array_Buffer;
@@ -37,7 +32,7 @@ package Orka.glTF.Buffers is
       34963 => Buffer_Kind (GL.Low_Level.Enums.Element_Array_Buffer));
 
    type Buffer is record
-      Data   : Stream_Element_Array_Access;
+      Data   : Byte_Array_Access;
       Kind   : Buffer_Kind;   --  TODO Do we really need Kind?
    end record;
 
@@ -48,7 +43,7 @@ package Orka.glTF.Buffers is
       Equivalent_Keys => "=");
 
    type Buffer_View is record
-      Buffer : Stream_Element_Array_Access;
+      Buffer : Byte_Array_Access;
       Offset : Natural;  --  Offset in bytes
       Length : Natural;  --  Length in bytes
       Target : Buffer_Kind;
@@ -63,14 +58,12 @@ package Orka.glTF.Buffers is
    function Create_Buffer (URI : String; Length : Natural) return Buffer
      with Post => Create_Buffer'Result.Data'Length = Length;
 
-   use type Buffer_Maps.Cursor;
-
    function Create_Buffer_View
-     (Buffer         : not null Stream_Element_Array_Access;
+     (Buffer         : not null Byte_Array_Access;
       Offset, Length : Natural;
       Kind           : Buffer_Kind) return Buffer_View
      with Pre => Offset + Length <= Buffer.all'Length;
 
-   function Elements (View : Buffer_View) return Stream_Element_Array_Access;
+   function Elements (View : Buffer_View) return Byte_Array_Access;
 
 end Orka.glTF.Buffers;

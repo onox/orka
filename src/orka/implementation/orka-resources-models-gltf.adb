@@ -171,7 +171,6 @@ package body Orka.Resources.Models.glTF is
    is
       Instance_ID : Natural;
 
-      use Ada.Streams;
       use GL.Types;
    begin
       for Part in Parts.Iterate loop
@@ -192,8 +191,8 @@ package body Orka.Resources.Models.glTF is
             View_Indices_Name     : constant String := Accessors.Get (Accessor_Indices_Name).Get ("bufferView").Value;
             pragma Assert (Accessors.Get (Accessor_Indices_Name).Get ("componentType").Value = 5125);
 
-            Vertices_Bytes : Stream_Element_Array_Access := Elements (Views.Element (View_Name));
-            Indices_Bytes  : Stream_Element_Array_Access := Elements (Views.Element (View_Indices_Name));
+            Vertices_Bytes : Byte_Array_Access := Elements (Views.Element (View_Name));
+            Indices_Bytes  : Byte_Array_Access := Elements (Views.Element (View_Indices_Name));
 
             subtype Vertices_Array is Single_Array (1 .. Int (Vertices_Bytes'Length / 4));
             subtype Indices_Array is UInt_Array (1 .. Int (Indices_Bytes'Length / 4));
@@ -203,9 +202,9 @@ package body Orka.Resources.Models.glTF is
             --       and "byteStride" = byte size of "componentType"
 
             function Convert_Vertices is new Ada.Unchecked_Conversion
-              (Source => Stream_Element_Array, Target => Vertices_Array);
+              (Source => Byte_Array, Target => Vertices_Array);
             function Convert_Indices is new Ada.Unchecked_Conversion
-              (Source => Stream_Element_Array, Target => Indices_Array);
+              (Source => Byte_Array, Target => Indices_Array);
          begin
 --            Ada.Text_IO.Put_Line ("Mesh " & Mesh_Name & " has POSITION accessor " & Accessor_Name);
 --            Ada.Text_IO.Put_Line (Integer'Image (Vertices_Bytes'Length));
@@ -221,8 +220,8 @@ package body Orka.Resources.Models.glTF is
                new UInt_Array'(Convert_Indices (Indices_Bytes.all)),
                Instance_ID);
 --            Ada.Text_IO.Put_Line ("Instance ID: " & Integer'Image (Instance_ID));
-            Free_Stream_Array (Vertices_Bytes);
-            Free_Stream_Array (Indices_Bytes);
+            Free_Byte_Array (Vertices_Bytes);
+            Free_Byte_Array (Indices_Bytes);
 
             Shapes.Append (Node_Name);
          end;

@@ -12,47 +12,23 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Streams.Stream_IO;
+with Ada.Streams;
 
 with Orka.Base64;
 
 package body Orka.glTF.Buffers is
 
-   function Load_Data_From_File (File_Name : String) return Stream_Element_Array_Access is
-      File        : Stream_IO.File_Type;
-      File_Stream : Stream_IO.Stream_Access;
-   begin
-      Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, File_Name);
+   function Load_Data_From_File (File_Name : String) return Byte_Array_Access is
+      File : Byte_Array_File'Class := Open_File (File_Name);
       --  TODO Handle relative and absolute paths
-
-      declare
-         File_Size : constant Integer := Integer (Stream_IO.Size (File));
-         subtype File_Stream_Array is Stream_Element_Array (1 .. Stream_Element_Offset (File_Size));
-         Raw_Contents : Stream_Element_Array_Access := new File_Stream_Array;
-      begin
-         File_Stream := Stream_IO.Stream (File);
-         File_Stream_Array'Read (File_Stream, Raw_Contents.all);
-
-         Stream_IO.Close (File);
-
-         return Raw_Contents;
-      exception
-         when others =>
-            Free_Stream_Array (Raw_Contents);
-            raise;
-      end;
-   exception
-      when others =>
-         if Stream_IO.Is_Open (File) then
-            Stream_IO.Close (File);
-         end if;
-         raise;
+   begin
+      return File.Read_File;
    end Load_Data_From_File;
 
-   function Load_Data (URI : String) return Stream_Element_Array_Access is
+   function Load_Data (URI : String) return Byte_Array_Access is
    begin
       if Base64.Base64_Encoded (URI) then
-         return new Stream_Element_Array'(Base64.Decode (URI (Base64.Data_Prefix'Last + 1 .. URI'Last)));
+         return new Byte_Array'(Base64.Decode (URI (Base64.Data_Prefix'Last + 1 .. URI'Last)));
       else
          return Load_Data_From_File (URI);
       end if;
@@ -67,7 +43,7 @@ package body Orka.glTF.Buffers is
    end Create_Buffer;
 
    function Create_Buffer_View
-     (Buffer         : not null Stream_Element_Array_Access;
+     (Buffer         : not null Byte_Array_Access;
       Offset, Length : Natural;
       Kind           : Buffer_Kind) return Buffer_View is
    begin
@@ -79,11 +55,13 @@ package body Orka.glTF.Buffers is
       end return;
    end Create_Buffer_View;
 
-   function Elements (View : Buffer_View) return Stream_Element_Array_Access is
+   function Elements (View : Buffer_View) return Byte_Array_Access is
+      use Ada.Streams;
+
       Offset : constant Stream_Element_Offset := Stream_Element_Offset (View.Offset);
       Length : constant Stream_Element_Offset := Stream_Element_Offset (View.Length);
    begin
-      return new Stream_Element_Array'(View.Buffer (Offset + 1 .. Offset + Length));
+      return new Byte_Array'(View.Buffer (Offset + 1 .. Offset + Length));
    end Elements;
 
 end Orka.glTF.Buffers;
