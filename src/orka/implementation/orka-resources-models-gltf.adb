@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
 with Ada.Text_IO;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Streams.Stream_IO;
@@ -241,13 +240,9 @@ package body Orka.Resources.Models.glTF is
 
       procedure Free_String is new Ada.Unchecked_Deallocation
         (Object => String, Name => String_Access);
-
-      A, B : Ada.Real_Time.Time;
-      use type Ada.Real_Time.Time;
    begin
       Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Path);
 
-      A := Ada.Real_Time.Clock;
       declare
          File_Size : constant Integer := Integer (Ada.Streams.Stream_IO.Size (File));
          subtype File_String is String (1 .. File_Size);
@@ -257,75 +252,63 @@ package body Orka.Resources.Models.glTF is
          File_String'Read (File_Stream, Raw_Contents.all);
 
          Ada.Streams.Stream_IO.Close (File);
-         B := Ada.Real_Time.Clock;
-         Ada.Text_IO.Put_Line ("Loading: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
 
          declare
-            A2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
             Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Raw_Contents);
             Object : constant JSON_Value'Class := Parsers.Parse (Stream);
-            B2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
-            GL_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("glExtensionsUsed");
+            GL_Extensions       : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("glExtensionsUsed");
             Required_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("extensionsRequired");
-
-            --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
-            --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
-            Scenes : constant JSON_Value'Class := Object.Get ("scenes");
-            Nodes  : constant JSON_Value'Class := Object.Get ("nodes");
-
-            Default_Scene : constant JSON_Value'Class := Scenes.Get (Object.Get ("scene").Value);
-            Scene_Nodes   : constant JSON_Array_Value := Default_Scene.Get_Array ("nodes");
-            pragma Assert (Scene_Nodes.Length >= 1);  --  "nodes" could be empty ([])
-
-            Meshes    : constant JSON_Value'Class := Object.Get ("meshes");
-            Accessors : constant JSON_Value'Class := Object.Get ("accessors");
-
-            Parts : String_Maps.Map;
-            Shapes : String_Vectors.Vector;
-
-            Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
-            Mesh_Views : constant Buffer_View_Maps.Map :=
-              Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
-
-            Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
-            C2 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
          begin
-            Ada.Text_IO.Put_Line ("Parsing: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B2 - A2)));
-            Ada.Text_IO.Put_Line ("JSON stuff: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (C2 - B2)));
             Free_String (Raw_Contents);
 
             --  Require indices to be of type UInt
             if not (for some Extension of GL_Extensions => Extension.Value = "OES_element_index_uint") then
-               raise Model_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
+               raise Resource_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
             end if;
 
             --  Raise error if glTF asset requires (unsupported) KHR_binary_glTF extension
             if (for some Extension of Required_Extensions => Extension.Value = "KHR_binary_glTF") then
-               raise Model_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
+               raise Resource_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
             end if;
 
-            return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
-               for Node of Scene_Nodes loop
-                  Object.Scene.Add_Node (Node.Value, "root");
-               end loop;
+            declare
+               --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
+               --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
+               Scenes : constant JSON_Value'Class := Object.Get ("scenes");
+               Nodes  : constant JSON_Value'Class := Object.Get ("nodes");
 
-               A := Ada.Real_Time.Clock;
-               Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-               B := Ada.Real_Time.Clock;
-               Ada.Text_IO.Put_Line ("Nodes: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
+               Default_Scene : constant JSON_Value'Class := Scenes.Get (Object.Get ("scene").Value);
+               Scene_Nodes   : constant JSON_Array_Value := Default_Scene.Get_Array ("nodes");
+               pragma Assert (Scene_Nodes.Length >= 1);  --  "nodes" could be empty ([])
 
-               A := Ada.Real_Time.Clock;
-               Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
-               B := Ada.Real_Time.Clock;
-               Ada.Text_IO.Put_Line ("Parts: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
+               Meshes    : constant JSON_Value'Class := Object.Get ("meshes");
+               Accessors : constant JSON_Value'Class := Object.Get ("accessors");
 
-               Create_Mesh (Object, Batch);
-               Batch.Clear;
-               Object.Shapes := Shapes;
+               Parts  : String_Maps.Map;
+               Shapes : String_Vectors.Vector;
 
-               --  TODO deallocate buffers in Mesh_Buffers
-            end return;
+               Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
+               Mesh_Views : constant Buffer_View_Maps.Map :=
+                 Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
+
+               Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
+            begin
+               return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
+                  for Node of Scene_Nodes loop
+                     Object.Scene.Add_Node (Node.Value, "root");
+                  end loop;
+
+                  Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
+                  Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
+
+                  Create_Mesh (Object, Batch);
+                  Batch.Clear;
+                  Object.Shapes := Shapes;
+
+                  --  TODO deallocate buffers in Mesh_Buffers
+               end return;
+            end;
          end;
       exception
          when others =>

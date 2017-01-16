@@ -14,4 +14,7 @@
 
 package Orka.Resources is
    pragma Preelaborate;
+
+   Resource_Load_Error : exception;
+
 end Orka.Resources;
