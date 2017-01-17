@@ -5,12 +5,12 @@
 
 flat in uint var_InstanceID;
 
-in vec4 var_n;
-in vec4 var_p;
-in vec2 var_uv;
-
-layout(location = 5) uniform mat4 view;
-layout(location = 7) uniform vec4 lightPosition;
+in VS_OUT {
+    vec3 N;
+    vec3 L;
+    vec3 V;
+    vec2 uv;
+} fs_in;
 
 layout(location = 8) uniform sampler2DArray diffuseTexture;
 
@@ -46,13 +46,13 @@ const Material material = {
 
 void main(void) {
     vec4 color = material.emission;
-    vec4 tex_color = texture(diffuseTexture, vec3(var_uv, var_InstanceID));
+    vec4 tex_color = texture(diffuseTexture, vec3(fs_in.uv, var_InstanceID));
 
     color += light.ambient * material.ambient * tex_color;
-    vec3 normal = normalize(var_n.xyz);
 
-    vec3 light_dir = normalize(lightPosition.xyz - var_p.xyz);
-    vec3 view_dir = normalize(-var_p.xyz);
+    vec3 normal    = normalize(fs_in.N);
+    vec3 light_dir = normalize(fs_in.L);
+    vec3 view_dir  = normalize(fs_in.V);
 
     float cosTi = max(dot(normal, light_dir), 0.0); // n.l factor
 

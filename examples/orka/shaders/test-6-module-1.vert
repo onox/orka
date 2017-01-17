@@ -10,10 +10,14 @@ layout(location = 3) in uint in_InstanceID;
 layout(location = 4) uniform samplerBuffer matrixBuffer;
 layout(location = 5) uniform mat4 view;
 layout(location = 6) uniform mat4 proj;
+layout(location = 7) uniform vec4 lightPosition;
 
-out vec4 var_n;
-out vec4 var_p;
-out vec2 var_uv;
+out VS_OUT {
+    vec3 N;
+    vec3 L;
+    vec3 V;
+    vec2 uv;
+} vs_out;
 
 flat out uint var_InstanceID;
 
@@ -37,10 +41,11 @@ void main(void) {
 
     gl_Position = proj * p;
 
-    var_n = normalize(normalMatrix * vec4(in_Normal, 1.0));
-    var_p = p;
+    vs_out.N = mat3(normalMatrix) * in_Normal;
+    vs_out.L = lightPosition.xyz - p.xyz;
+    vs_out.V = -p.xyz;
 
-    var_uv = in_UV;
+    vs_out.uv = in_UV;
 
     // Modulo number of textures
     var_InstanceID = uint(mod(in_InstanceID, 7.0));
