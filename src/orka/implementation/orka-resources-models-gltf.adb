@@ -263,12 +263,12 @@ package body Orka.Resources.Models.glTF is
 
             --  Require indices to be of type UInt
             if not (for some Extension of GL_Extensions => Extension.Value = "OES_element_index_uint") then
-               raise Resource_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
+               raise Model_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
             end if;
 
             --  Raise error if glTF asset requires (unsupported) KHR_binary_glTF extension
             if (for some Extension of Required_Extensions => Extension.Value = "KHR_binary_glTF") then
-               raise Resource_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
+               raise Model_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
             end if;
 
             declare
