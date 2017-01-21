@@ -63,7 +63,7 @@ procedure Orka_Test.Test_4_MDI is
       --  Create mesh and its attributes
       return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
          declare
-            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
+            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Half_Type);
             Attributes_Ins : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (UInt_Type);
          begin
             Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
