@@ -63,8 +63,10 @@ package GL.Objects.Textures is
    --                          Texture Objects                                --
    -----------------------------------------------------------------------------
 
-   type Texture (Kind : Low_Level.Enums.Non_Proxy_Texture_Kind)
+   type Texture (Kind : Low_Level.Enums.Texture_Kind)
      is abstract new GL_Object with private;
+
+   use type Low_Level.Enums.Texture_Kind;
 
    overriding
    procedure Initialize_Id (Object : in out Texture);
@@ -209,6 +211,10 @@ package GL.Objects.Textures is
                                Internal_Format : Pixels.Internal_Format;
                                Width : Types.Size);
 
+   procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
+                               Internal_Format : Pixels.Compressed_Format;
+                               Width : Types.Size);
+
    procedure Load_Empty_Texture (Object : Texture_1D; Level : Mipmap_Level;
                                  Offset_X : Types.Size;
                                  Width    : Types.Size);
@@ -223,7 +229,7 @@ package GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_1D; Level : Mipmap_Level;
                                         Offset_X : Types.Size;
                                         Width    : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size : Types.Size;
                                         Source     : System.Address);
 
@@ -240,12 +246,25 @@ package GL.Objects.Textures is
 
    procedure Allocate_Storage (Object : Texture_2D; Levels : Types.Size;
                                Internal_Format : Pixels.Internal_Format;
-                               Width, Height   : Types.Size);
+                               Width, Height   : Types.Size)
+     with Pre => Object.Kind /= Low_Level.Enums.Texture_2D_Multisample;
+
+   procedure Allocate_Storage (Object : Texture_2D; Levels : Types.Size;
+                               Internal_Format : Pixels.Compressed_Format;
+                               Width, Height   : Types.Size)
+     with Pre => Object.Kind /= Low_Level.Enums.Texture_2D_Multisample;
 
    procedure Allocate_Storage_Multisample (Object : Texture_2D; Samples : Types.Size;
                                            Internal_Format : Pixels.Internal_Format;
                                            Width, Height   : Types.Size;
-                                           Fixed_Locations : Boolean);
+                                           Fixed_Locations : Boolean)
+     with Pre => Object.Kind = Low_Level.Enums.Texture_2D_Multisample;
+
+   procedure Allocate_Storage_Multisample (Object : Texture_2D; Samples : Types.Size;
+                                           Internal_Format : Pixels.Compressed_Format;
+                                           Width, Height   : Types.Size;
+                                           Fixed_Locations : Boolean)
+     with Pre => Object.Kind = Low_Level.Enums.Texture_2D_Multisample;
 
    procedure Load_Empty_Texture (Object : Texture_2D; Level : Mipmap_Level;
                                  Offset_X, Offset_Y : Types.Size;
@@ -261,7 +280,7 @@ package GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_2D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y : Types.Size;
                                         Width, Height      : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
                                         Source        : System.Address);
 
@@ -278,12 +297,25 @@ package GL.Objects.Textures is
 
    procedure Allocate_Storage (Object : Texture_3D; Levels : Types.Size;
                                Internal_Format      : Pixels.Internal_Format;
-                               Width, Height, Depth : Types.Size);
+                               Width, Height, Depth : Types.Size)
+     with Pre => Object.Kind /= Low_Level.Enums.Texture_2D_Multisample_Array;
+
+   procedure Allocate_Storage (Object : Texture_3D; Levels : Types.Size;
+                               Internal_Format      : Pixels.Compressed_Format;
+                               Width, Height, Depth : Types.Size)
+     with Pre => Object.Kind /= Low_Level.Enums.Texture_2D_Multisample_Array;
 
    procedure Allocate_Storage_Multisample (Object : Texture_3D; Samples : Types.Size;
                                            Internal_Format      : Pixels.Internal_Format;
                                            Width, Height, Depth : Types.Size;
-                                           Fixed_Locations : Boolean);
+                                           Fixed_Locations : Boolean)
+     with Pre => Object.Kind = Low_Level.Enums.Texture_2D_Multisample_Array;
+
+   procedure Allocate_Storage_Multisample (Object : Texture_3D; Samples : Types.Size;
+                                           Internal_Format      : Pixels.Compressed_Format;
+                                           Width, Height, Depth : Types.Size;
+                                           Fixed_Locations : Boolean)
+     with Pre => Object.Kind = Low_Level.Enums.Texture_2D_Multisample_Array;
 
    procedure Load_Empty_Texture (Object : Texture_3D; Level  : Mipmap_Level;
                                  Offset_X, Offset_Y, Offset_Z : Types.Size;
@@ -299,7 +331,7 @@ package GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_3D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y, Offset_Z : Types.Size;
                                         Width, Height, Depth         : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
                                         Source        : System.Address);
 
@@ -322,7 +354,7 @@ private
                        Intensity => 16#8049#);
    for Depth_Mode'Size use Int'Size;
 
-   type Texture (Kind : Low_Level.Enums.Non_Proxy_Texture_Kind)
+   type Texture (Kind : Low_Level.Enums.Texture_Kind)
      is new GL_Object with null record;
    type Texture_Base is new Texture with null record;
 

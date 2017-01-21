@@ -41,20 +41,28 @@ package GL.Pixels is
                             Depth_Component32F, Depth32F_Stencil8, Stencil_Index8,
                             RGBA32UI, RGB32UI, RGBA16UI, RGB16UI, RGBA8UI, RGB8UI,
                             RGBA32I, RGB32I, RGBA16I, RGB16I, RGBA8I, RGB8I,
-                            Compressed_Red_RGTC1, Compressed_Signed_Red_RGTC1,
-                            Compressed_RG_RGTC2, Compressed_Signed_RG_RGTC2,
-                            Compressed_RGBA_BPTC_Unorm,
-                            Compressed_SRGB_Alpha_BPTC_UNorm,
-                            Compressed_RGB_BPTC_Signed_Float,
-                            Compressed_RGB_BPTC_Unsigned_Float,
                             R8_SNorm, RG8_SNorm, RGB8_SNorm, RGBA8_SNorm,
-                            R16_SNorm, RG16_SNorm, RGB16_SNorm, RGB10_A2UI,
-                            Compressed_R11_EAC, Compressed_Signed_R11_EAC,
-                            Compressed_RG11_EAC, Compressed_Signed_RG11_EAC,
-                            Compressed_RGB8_ETC2, Compressed_SRGB8_ETC2,
-                            Compressed_RGB8_Punchthrough_Alpha1_ETC2,
-                            Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
-                            Compressed_RGBA8_ETC2_EAC, Compressed_SRGB8_Alpha8_ETC2_EAC);
+                            R16_SNorm, RG16_SNorm, RGB16_SNorm, RGB10_A2UI);
+
+   type Compressed_Format is
+     (Compressed_Red_RGTC1,
+      Compressed_Signed_Red_RGTC1,
+      Compressed_RG_RGTC2,
+      Compressed_Signed_RG_RGTC2,
+      Compressed_RGBA_BPTC_Unorm,
+      Compressed_SRGB_Alpha_BPTC_UNorm,
+      Compressed_RGB_BPTC_Signed_Float,
+      Compressed_RGB_BPTC_Unsigned_Float,
+      Compressed_R11_EAC,
+      Compressed_Signed_R11_EAC,
+      Compressed_RG11_EAC,
+      Compressed_Signed_RG11_EAC,
+      Compressed_RGB8_ETC2,
+      Compressed_SRGB8_ETC2,
+      Compressed_RGB8_Punchthrough_Alpha1_ETC2,
+      Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
+      Compressed_RGBA8_ETC2_EAC,
+      Compressed_SRGB8_Alpha8_ETC2_EAC);
 
    type Format is (Stencil_Index, Depth_Component, Red, Green, Blue,
                    RGB, RGBA, BGR, BGRA, RG, RG_Integer, Depth_Stencil,
@@ -230,16 +238,6 @@ private
                             RGBA8I   => 16#8D8E#,
                             RGB8I    => 16#8D8F#,
 
-                            Compressed_Red_RGTC1        => 16#8DBB#,
-                            Compressed_Signed_Red_RGTC1 => 16#8DBC#,
-                            Compressed_RG_RGTC2         => 16#8DBD#,
-                            Compressed_Signed_RG_RGTC2  => 16#8DBE#,
-
-                            Compressed_RGBA_BPTC_Unorm         => 16#8E8C#,
-                            Compressed_SRGB_Alpha_BPTC_UNorm   => 16#8E8D#,
-                            Compressed_RGB_BPTC_Signed_Float   => 16#8E8E#,
-                            Compressed_RGB_BPTC_Unsigned_Float => 16#8E8F#,
-
                             R8_SNorm    => 16#8F94#,
                             RG8_SNorm   => 16#8F95#,
                             RGB8_SNorm  => 16#8F96#,
@@ -248,19 +246,31 @@ private
                             RG16_SNorm  => 16#8F99#,
                             RGB16_SNorm => 16#8F9A#,
 
-                            RGB10_A2UI => 16#906F#,
-
-                            Compressed_R11_EAC                        => 16#9270#,
-                            Compressed_Signed_R11_EAC                 => 16#9271#,
-                            Compressed_RG11_EAC                       => 16#9272#,
-                            Compressed_Signed_RG11_EAC                => 16#9273#,
-                            Compressed_RGB8_ETC2                      => 16#9274#,
-                            Compressed_SRGB8_ETC2                     => 16#9275#,
-                            Compressed_RGB8_Punchthrough_Alpha1_ETC2  => 16#9276#,
-                            Compressed_SRGB8_Punchthrough_Alpha1_ETC2 => 16#9277#,
-                            Compressed_RGBA8_ETC2_EAC                 => 16#9278#,
-                            Compressed_SRGB8_Alpha8_ETC2_EAC          => 16#9279#);
+                            RGB10_A2UI => 16#906F#);
    for Internal_Format'Size use GL.Types.Int'Size;
+
+   for Compressed_Format use
+     (Compressed_Red_RGTC1                      => 16#8DBB#,
+      Compressed_Signed_Red_RGTC1               => 16#8DBC#,
+      Compressed_RG_RGTC2                       => 16#8DBD#,
+      Compressed_Signed_RG_RGTC2                => 16#8DBE#,
+
+      Compressed_RGBA_BPTC_Unorm                => 16#8E8C#,
+      Compressed_SRGB_Alpha_BPTC_UNorm          => 16#8E8D#,
+      Compressed_RGB_BPTC_Signed_Float          => 16#8E8E#,
+      Compressed_RGB_BPTC_Unsigned_Float        => 16#8E8F#,
+
+      Compressed_R11_EAC                        => 16#9270#,
+      Compressed_Signed_R11_EAC                 => 16#9271#,
+      Compressed_RG11_EAC                       => 16#9272#,
+      Compressed_Signed_RG11_EAC                => 16#9273#,
+      Compressed_RGB8_ETC2                      => 16#9274#,
+      Compressed_SRGB8_ETC2                     => 16#9275#,
+      Compressed_RGB8_Punchthrough_Alpha1_ETC2  => 16#9276#,
+      Compressed_SRGB8_Punchthrough_Alpha1_ETC2 => 16#9277#,
+      Compressed_RGBA8_ETC2_EAC                 => 16#9278#,
+      Compressed_SRGB8_Alpha8_ETC2_EAC          => 16#9279#);
+   for Compressed_Format'Size use GL.Types.Int'Size;
 
    for Format use (Stencil_Index   => 16#1901#,
                    Depth_Component => 16#1902#,

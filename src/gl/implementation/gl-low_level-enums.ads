@@ -14,36 +14,18 @@
 
 package GL.Low_Level.Enums is
    pragma Preelaborate;
-   
+
    -- Unlike GL.Enums, this package is not private and hosts enum types that may
    -- be needed by third-party code or wrappers.
-   
-   type Texture_Kind is (Texture_1D, Texture_2D, Proxy_Texture_1D,
-                         Proxy_Texture_2D, Texture_3D, Proxy_Texture_3D,
-                         Texture_Rectangle, Proxy_Texture_Rectangle,
-                         Texture_Cube_Map, Texture_Cube_Map_Positive_X,
-                         Texture_Cube_Map_Negative_X,
-                         Texture_Cube_Map_Positive_Y,
-                         Texture_Cube_Map_Negative_Y,
-                         Texture_Cube_Map_Positive_Z,
-                         Texture_Cube_Map_Negative_Z,
-                         Proxy_Texture_Cube_Map,
-                         Texture_1D_Array,
-                         Proxy_Texture_1D_Array, Texture_2D_Array,
-                         Proxy_Texture_2D_Array, Texture_Buffer,
-                         Texture_2D_Multisample,
-                         Proxy_Texture_2D_Multisample,
-                         Texture_2D_Multisample_Array,
-                         Proxy_Texture_2D_Multisample_Array);
 
-   type Non_Proxy_Texture_Kind is (Texture_1D, Texture_2D, Texture_3D,
-                                   Texture_Rectangle, Texture_Cube_Map,
-                                   Texture_1D_Array, Texture_2D_Array,
-                                   Texture_Buffer, Texture_Cube_Map_Array,
-                                   Texture_2D_Multisample, Texture_2D_Multisample_Array);
+   type Texture_Kind is (Texture_1D, Texture_2D, Texture_3D,
+                         Texture_Rectangle, Texture_Cube_Map,
+                         Texture_1D_Array, Texture_2D_Array,
+                         Texture_Buffer, Texture_Cube_Map_Array,
+                         Texture_2D_Multisample, Texture_2D_Multisample_Array);
 
    type Renderbuffer_Kind is (Renderbuffer);
-   
+
    type Framebuffer_Kind is (Read, Draw);
 
    type Transform_Feedback_Kind is (Transform_Feedback);
@@ -57,51 +39,26 @@ package GL.Low_Level.Enums is
 
    type Draw_Buffer_Index is (DB0, DB1, DB2, DB3, DB4, DB5, DB6, DB7,
       DB8, DB9, DB10, DB11, DB12, DB13, DB14, DB15);
-   
+
    type Only_Depth_Buffer is (Depth_Buffer);
    type Only_Stencil_Buffer is (Stencil);
    type Only_Depth_Stencil_Buffer is (Depth_Stencil);
    type Only_Color_Buffer is (Color);
-private
-   for Texture_Kind use (Texture_1D       => 16#0DE0#,
-                         Texture_2D       => 16#0DE1#,
-                         Proxy_Texture_1D => 16#8063#,
-                         Proxy_Texture_2D => 16#8064#,
-                         Texture_3D       => 16#806F#,
-                         Proxy_Texture_3D => 16#8070#,
-                         Texture_Rectangle       => 16#84F5#,
-                         Proxy_Texture_Rectangle => 16#84F7#,
-                         Texture_Cube_Map => 16#8513#,
-                         Texture_Cube_Map_Positive_X => 16#8515#,
-                         Texture_Cube_Map_Negative_X => 16#8516#,
-                         Texture_Cube_Map_Positive_Y => 16#8517#,
-                         Texture_Cube_Map_Negative_Y => 16#8518#,
-                         Texture_Cube_Map_Positive_Z => 16#8519#,
-                         Texture_Cube_Map_Negative_Z => 16#851A#,
-                         Proxy_Texture_Cube_Map      => 16#851B#,
-                         Texture_1D_Array       => 16#8C18#,
-                         Proxy_Texture_1D_Array => 16#8C19#,
-                         Texture_2D_Array       => 16#8C1A#,
-                         Proxy_Texture_2D_Array => 16#8C1B#,
-                         Texture_Buffer         => 16#8C2A#,
-                         Texture_2D_Multisample => 16#9100#,
-                         Proxy_Texture_2D_Multisample => 16#9101#,
-                         Texture_2D_Multisample_Array => 16#9102#,
-                         Proxy_Texture_2D_Multisample_Array => 16#9103#);
-   for Texture_Kind'Size use Enum'Size;
 
-   for Non_Proxy_Texture_Kind use (Texture_1D                   => 16#0DE0#,
-                                   Texture_2D                   => 16#0DE1#,
-                                   Texture_3D                   => 16#806F#,
-                                   Texture_Rectangle            => 16#84F5#,
-                                   Texture_Cube_Map             => 16#8513#,
-                                   Texture_1D_Array             => 16#8C18#,
-                                   Texture_2D_Array             => 16#8C1A#,
-                                   Texture_Buffer               => 16#8C2A#,
-                                   Texture_Cube_Map_Array       => 16#9009#,
-                                   Texture_2D_Multisample       => 16#9100#,
-                                   Texture_2D_Multisample_Array => 16#9102#);
-   for Non_Proxy_Texture_Kind'Size use Enum'Size;
+private
+
+   for Texture_Kind use (Texture_1D                   => 16#0DE0#,
+                         Texture_2D                   => 16#0DE1#,
+                         Texture_3D                   => 16#806F#,
+                         Texture_Rectangle            => 16#84F5#,
+                         Texture_Cube_Map             => 16#8513#,
+                         Texture_1D_Array             => 16#8C18#,
+                         Texture_2D_Array             => 16#8C1A#,
+                         Texture_Buffer               => 16#8C2A#,
+                         Texture_Cube_Map_Array       => 16#9009#,
+                         Texture_2D_Multisample       => 16#9100#,
+                         Texture_2D_Multisample_Array => 16#9102#);
+   for Texture_Kind'Size use Enum'Size;
 
    for Renderbuffer_Kind use (Renderbuffer => 16#8D41#);
    for Renderbuffer_Kind'Size use Enum'Size;
@@ -128,7 +85,7 @@ private
                         Query_Buffer              => 16#9192#,
                         Atomic_Counter_Buffer     => 16#92C0#);
    for Buffer_Kind'Size use Enum'Size;
-   
+
    for Draw_Buffer_Index use (DB0  => 16#8825#,
                               DB1  => 16#8826#,
                               DB2  => 16#8827#,
@@ -146,16 +103,17 @@ private
                               DB14 => 16#8833#,
                               DB15 => 16#8834#);
    for Draw_Buffer_Index'Size use Int'Size;
-   
+
    for Only_Depth_Buffer use (Depth_Buffer => 16#1801#);
    for Only_Depth_Buffer'Size use Enum'Size;
-   
+
    for Only_Stencil_Buffer use (Stencil => 16#1802#);
    for Only_Stencil_Buffer'Size use Enum'Size;
-   
+
    for Only_Depth_Stencil_Buffer use (Depth_Stencil => 16#84F9#);
    for Only_Depth_Stencil_Buffer'Size use Enum'Size;
-   
+
    for Only_Color_Buffer use (Color => 16#1800#);
    for Only_Color_Buffer'Size use Enum'Size;
+
 end GL.Low_Level.Enums;

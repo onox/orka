@@ -590,6 +590,15 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Allocate_Storage;
 
+   procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
+                               Internal_Format : Pixels.Compressed_Format;
+                               Width : Types.Size) is
+   begin
+      API.Texture_Storage_1D (Object.Reference.GL_Id, Levels,
+                              Internal_Format, Width);
+      Raise_Exception_On_OpenGL_Error;
+   end Allocate_Storage;
+
    procedure Load_Empty_Texture (Object : Texture_1D;
                                  Level  : Mipmap_Level;
                                  Offset_X, Width : Types.Size) is
@@ -616,7 +625,7 @@ package body GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_1D; Level : Mipmap_Level;
                                         Offset_X : Types.Size;
                                         Width    : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size : Types.Size;
                                         Source     : System.Address) is
    begin
@@ -649,8 +658,28 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Allocate_Storage;
 
+   procedure Allocate_Storage (Object : Texture_2D; Levels : Types.Size;
+                               Internal_Format : Pixels.Compressed_Format;
+                               Width, Height : Types.Size) is
+   begin
+      API.Texture_Storage_2D (Object.Reference.GL_Id, Levels,
+                              Internal_Format, Width, Height);
+      Raise_Exception_On_OpenGL_Error;
+   end Allocate_Storage;
+
    procedure Allocate_Storage_Multisample (Object : Texture_2D; Samples : Types.Size;
                                            Internal_Format : Pixels.Internal_Format;
+                                           Width, Height : Types.Size;
+                                           Fixed_Locations : Boolean) is
+   begin
+      API.Texture_Storage_2D_Multisample (Object.Reference.GL_Id, Samples,
+                                          Internal_Format, Width, Height,
+                                          Low_Level.Bool (Fixed_Locations));
+      Raise_Exception_On_OpenGL_Error;
+   end Allocate_Storage_Multisample;
+
+   procedure Allocate_Storage_Multisample (Object : Texture_2D; Samples : Types.Size;
+                                           Internal_Format : Pixels.Compressed_Format;
                                            Width, Height : Types.Size;
                                            Fixed_Locations : Boolean) is
    begin
@@ -689,7 +718,7 @@ package body GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_2D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y : Types.Size;
                                         Width, Height      : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
                                         Source        : System.Address) is
    begin
@@ -722,10 +751,30 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Allocate_Storage;
 
+   procedure Allocate_Storage (Object : Texture_3D; Levels : Types.Size;
+                               Internal_Format : Pixels.Compressed_Format;
+                               Width, Height, Depth : Types.Size) is
+   begin
+      API.Texture_Storage_3D (Object.Reference.GL_Id, Levels,
+                              Internal_Format, Width, Height, Depth);
+      Raise_Exception_On_OpenGL_Error;
+   end Allocate_Storage;
+
    procedure Allocate_Storage_Multisample (Object : Texture_3D; Samples : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width, Height, Depth : Types.Size;
-                               Fixed_Locations : Boolean) is
+                                           Internal_Format : Pixels.Internal_Format;
+                                           Width, Height, Depth : Types.Size;
+                                           Fixed_Locations : Boolean) is
+   begin
+      API.Texture_Storage_3D_Multisample (Object.Reference.GL_Id, Samples,
+                                          Internal_Format, Width, Height, Depth,
+                                          Low_Level.Bool (Fixed_Locations));
+      Raise_Exception_On_OpenGL_Error;
+   end Allocate_Storage_Multisample;
+
+   procedure Allocate_Storage_Multisample (Object : Texture_3D; Samples : Types.Size;
+                                           Internal_Format : Pixels.Compressed_Format;
+                                           Width, Height, Depth : Types.Size;
+                                           Fixed_Locations : Boolean) is
    begin
       API.Texture_Storage_3D_Multisample (Object.Reference.GL_Id, Samples,
                                           Internal_Format, Width, Height, Depth,
@@ -764,7 +813,7 @@ package body GL.Objects.Textures is
    procedure Load_From_Compressed_Data (Object : Texture_3D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y, Offset_Z : Types.Size;
                                         Width, Height, Depth         : Types.Size;
-                                        Source_Format : Pixels.Format;
+                                        Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
                                         Source        : System.Address) is
    begin

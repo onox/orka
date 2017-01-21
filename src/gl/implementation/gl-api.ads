@@ -467,12 +467,29 @@ private package GL.API is
    procedure Texture_Storage_3D is new Loader.Procedure_With_6_Params
      ("glTextureStorage3D", UInt, Size, Pixels.Internal_Format, Size, Size, Size);
 
+   procedure Texture_Storage_1D is new Loader.Procedure_With_4_Params
+     ("glTextureStorage1D", UInt, Size, Pixels.Compressed_Format, Size);
+
+   procedure Texture_Storage_2D is new Loader.Procedure_With_5_Params
+     ("glTextureStorage2D", UInt, Size, Pixels.Compressed_Format, Size, Size);
+
+   procedure Texture_Storage_3D is new Loader.Procedure_With_6_Params
+     ("glTextureStorage3D", UInt, Size, Pixels.Compressed_Format, Size, Size, Size);
+
    procedure Texture_Storage_2D_Multisample is new Loader.Procedure_With_6_Params
      ("glTextureStorage2DMultisample", UInt, Size, Pixels.Internal_Format,
       Size, Size, Low_Level.Bool);
 
    procedure Texture_Storage_3D_Multisample is new Loader.Procedure_With_7_Params
      ("glTextureStorage3DMultisample", UInt, Size, Pixels.Internal_Format,
+      Size, Size, Size, Low_Level.Bool);
+
+   procedure Texture_Storage_2D_Multisample is new Loader.Procedure_With_6_Params
+     ("glTextureStorage2DMultisample", UInt, Size, Pixels.Compressed_Format,
+      Size, Size, Low_Level.Bool);
+
+   procedure Texture_Storage_3D_Multisample is new Loader.Procedure_With_7_Params
+     ("glTextureStorage3DMultisample", UInt, Size, Pixels.Compressed_Format,
       Size, Size, Size, Low_Level.Bool);
 
    procedure Texture_Sub_Image_1D is new Loader.Procedure_With_7_Params
@@ -492,17 +509,17 @@ private package GL.API is
 
    procedure Compressed_Texture_Sub_Image_1D is new Loader.Procedure_With_7_Params
      ("glCompressedTextureSubImage1D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Size, Pixels.Format, Size,
+      Int, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
    procedure Compressed_Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params
      ("glCompressedTextureSubImage2D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Size, Size, Pixels.Format, Size,
+      Int, Int, Size, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
    procedure Compressed_Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
      ("glCompressedTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Int, Size, Size, Size, Pixels.Format, Size,
+      Int, Int, Int, Size, Size, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
    procedure Copy_Texture_Sub_Image_1D is new Loader.Procedure_With_6_Params
@@ -528,7 +545,7 @@ private package GL.API is
       Int, Int, Int, Size, Size, Size);
 
    procedure Create_Textures is new Loader.Getter_With_3_Params
-     ("glCreateTextures", Low_Level.Enums.Non_Proxy_Texture_Kind, Size, UInt);
+     ("glCreateTextures", Low_Level.Enums.Texture_Kind, Size, UInt);
 
    procedure Bind_Texture_Unit is new Loader.Procedure_With_2_Params
      ("glBindTextureUnit", Objects.Textures.Texture_Unit, UInt);
