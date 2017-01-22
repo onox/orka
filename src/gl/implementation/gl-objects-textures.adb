@@ -19,7 +19,6 @@ with GL.Enums.Indexes;
 with GL.Enums.Textures;
 
 package body GL.Objects.Textures is
-   use type Low_Level.Enums.Texture_Kind;
 
    function Width (Object : Texture_Base; Level : Mipmap_Level) return Size is
       Ret : Size := 0;

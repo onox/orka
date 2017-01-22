@@ -15,6 +15,8 @@
 with GL.Types;
 
 package GL.Window is
+   pragma Preelaborate;
+
    use GL.Types;
 
    procedure Set_Viewport (X, Y : Int; Width, Height : Size);

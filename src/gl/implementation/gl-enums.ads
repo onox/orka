@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Toggles;
 with GL.Low_Level;
 
 private package GL.Enums is
