@@ -74,6 +74,10 @@ package GL.Objects.Textures is
    overriding
    procedure Delete_Id (Object : in out Texture);
 
+   overriding
+   function Identifier (Object : Texture) return Types.Debug.Identifier is
+     (Types.Debug.Texture);
+
    procedure Invalidate_Image (Object : Texture; Level : Mipmap_Level);
 
    procedure Invalidate_Sub_Image (Object : Texture; Level : Mipmap_Level;

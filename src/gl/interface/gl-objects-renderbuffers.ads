@@ -54,7 +54,12 @@ package GL.Objects.Renderbuffers is
    overriding
    procedure Delete_Id (Object : in out Renderbuffer);
 
+   overriding
+   function Identifier (Object : Renderbuffer) return Types.Debug.Identifier is
+     (Types.Debug.Renderbuffer);
+
    No_Renderbuffer : constant Renderbuffer;
+
 private
 
    type Renderbuffer is new GL_Object with null record;
@@ -67,4 +72,5 @@ private
 
    No_Renderbuffer : constant Renderbuffer :=
      Renderbuffer'(GL_Object with null record);
+
 end GL.Objects.Renderbuffers;

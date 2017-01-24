@@ -14,7 +14,7 @@
 
 with Ada.Finalization;
 
-with GL.Types;
+with GL.Types.Debug;
 
 package GL.Objects is
    pragma Preelaborate;
@@ -30,7 +30,7 @@ package GL.Objects is
    --  Increase reference count.
 
    overriding procedure Finalize (Object : in out GL_Object);
-   --  Decrease reference count. Destroys texture when it reaches zero.
+   --  Decrease reference count. Deletes the GL object when it reaches zero.
 
    procedure Initialize_Id (Object : in out GL_Object) is abstract;
    --  Create an OpenGL ID for this object. This has to be done before
@@ -51,6 +51,11 @@ package GL.Objects is
 
    procedure Set_Raw_Id (Object : GL_Object; Id : UInt);
    --  Setter for low-level access.
+
+   function Identifier (Object : GL_Object)
+     return Types.Debug.Identifier is abstract;
+   --  Return the namespace identifier of the object. Used to annotate
+   --  the object in GL.Debug.
 
    overriding
    function "=" (Left, Right : GL_Object) return Boolean;

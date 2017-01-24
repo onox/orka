@@ -26,8 +26,9 @@ package GL.Toggles is
                    Clip_Plane_4, Clip_Plane_5,
                    Polygon_Offset_Fill, Texture_3D, Multisample,
                    Sample_Alpha_To_Coverage, Sample_Alpha_To_One, Sample_Coverage,
+                   Debug_Output_Synchronous,
                    Texture_Cube_Map, Vertex_Program_Point_Size, Depth_Clamp,
-                   Texture_Cube_Map_Seamless, Rasterizer_Discard);
+                   Texture_Cube_Map_Seamless, Rasterizer_Discard, Debug_Output);
 
    procedure Enable (Subject : Toggle);
    procedure Disable (Subject : Toggle);
@@ -61,11 +62,13 @@ private
                    Sample_Alpha_To_Coverage  => 16#809E#,
                    Sample_Alpha_To_One       => 16#809F#,
                    Sample_Coverage           => 16#80A0#,
+                   Debug_Output_Synchronous  => 16#8242#,
                    Texture_Cube_Map          => 16#8513#,
                    Vertex_Program_Point_Size => 16#8642#,
                    Depth_Clamp               => 16#864F#,
                    Texture_Cube_Map_Seamless => 16#884F#,
-                   Rasterizer_Discard        => 16#8C89#);
+                   Rasterizer_Discard        => 16#8C89#,
+                   Debug_Output              => 16#92E0#);
    for Toggle'Size use Low_Level.Enum'Size;
 
 end GL.Toggles;

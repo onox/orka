@@ -117,10 +117,22 @@ package GL.Enums.Getter is
       Stencil_Back_Value_Mask,
       Stencil_Back_Writemask,
       Timestamp,
+      Max_Debug_Message_Length,
+      Debug_Logged_Messages,
       Max_Framebuffer_Width,
       Max_Framebuffer_Height,
       Max_Framebuffer_Layers,
       Max_Framebuffer_Samples);
+
+   type String_Parameter is
+     (Vendor, Renderer, Version, Extensions, Shading_Language_Version);
+
+   type Renderbuffer_Parameter is (Width, Height, Internal_Format, Red_Size,
+                                   Green_Size, Blue_Size, Alpha_Size,
+                                   Depth_Size, Stencil_Size);
+
+private
+
    for Parameter use
      (Point_Size                    => 16#0B11#,
       Point_Size_Range              => 16#0B12#,
@@ -223,14 +235,14 @@ package GL.Enums.Getter is
       Stencil_Back_Value_Mask       => 16#8CA4#,
       Stencil_Back_Writemask        => 16#8CA5#,
       Timestamp                     => 16#8E28#,
+      Max_Debug_Message_Length      => 16#9143#,
+      Debug_Logged_Messages         => 16#9145#,
       Max_Framebuffer_Width         => 16#9315#,
       Max_Framebuffer_Height        => 16#9316#,
       Max_Framebuffer_Layers        => 16#9317#,
       Max_Framebuffer_Samples       => 16#9318#);
    for Parameter'Size use Low_Level.Enum'Size;
 
-   type String_Parameter is
-     (Vendor, Renderer, Version, Extensions, Shading_Language_Version);
    for String_Parameter use
      (Vendor                   => 16#1F00#,
       Renderer                 => 16#1F01#,
@@ -239,9 +251,6 @@ package GL.Enums.Getter is
       Shading_Language_Version => 16#8B8C#);
    for String_Parameter'Size use Low_Level.Enum'Size;
 
-   type Renderbuffer_Parameter is (Width, Height, Internal_Format, Red_Size,
-                                   Green_Size, Blue_Size, Alpha_Size,
-                                   Depth_Size, Stencil_Size);
    for Renderbuffer_Parameter use (Width           => 16#8D42#,
                                    Height          => 16#8D43#,
                                    Internal_Format => 16#8D44#,

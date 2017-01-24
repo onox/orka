@@ -49,6 +49,10 @@ package GL.Objects.Framebuffers is
    overriding
    procedure Delete_Id (Object : in out Framebuffer);
 
+   overriding
+   function Identifier (Object : Framebuffer) return Types.Debug.Identifier is
+     (Types.Debug.Framebuffer);
+
    procedure Set_Active_Buffer (Object   : Framebuffer;
                                 Selector : Buffers.Color_Buffer_Selector)
      with Pre => (if Object = Default_Framebuffer then

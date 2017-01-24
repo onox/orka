@@ -18,6 +18,8 @@ with GL.Attributes;
 with GL.Blending;
 with GL.Buffers;
 with GL.Culling;
+with GL.Debug;
+with GL.Debug_Types;
 with GL.Enums.Getter;
 with GL.Enums.Textures;
 with GL.Errors;
@@ -35,6 +37,7 @@ with GL.Pixels;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types.Colors;
+with GL.Types.Debug;
 
 with Interfaces.C.Strings;
 
@@ -1066,6 +1069,55 @@ private package GL.API is
 
    procedure Memory_Barrier_By_Region is new Loader.Procedure_With_1_Param
      ("glMemoryBarrierByRegion", Low_Level.Bitfield);
+
+   -----------------------------------------------------------------------------
+   --                                  Debug                                  --
+   -----------------------------------------------------------------------------
+
+   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+     ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
+      Debug.Severity, Size, UInt_Array, Low_Level.Bool);
+
+   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+     ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
+      Low_Level.Enum, Size, UInt_Array, Low_Level.Bool);
+
+   procedure Debug_Message_Insert is new Loader.Procedure_With_6_Params
+     ("glDebugMessageInsert", Debug.Source, Debug.Message_Type,
+      UInt, Debug.Severity, Size, C.char_array);
+
+   procedure Debug_Message_Callback is new Loader.Procedure_With_2_Params
+     ("glDebugMessageCallback", System.Address, System.Address);
+
+   function Get_Debug_Message_Log is new Loader.Function_With_8_Params
+     ("glGetDebugMessageLog", UInt, Size, Debug_Types.Source_Array_Access,
+      Debug_Types.Type_Array_Access, Debug_Types.UInt_Array_Access,
+      Debug_Types.Severity_Array_Access, Debug_Types.Size_Array_Access,
+      Debug_Types.String_Access, UInt);
+
+   procedure Push_Debug_Group is new Loader.Procedure_With_4_Params
+     ("glPushDebugGroup", Debug.Source, UInt, Size, C.char_array);
+
+   procedure Pop_Debug_Group is new Loader.Procedure_Without_Params
+    ("glPopDebugGroup");
+
+   procedure Object_Label is new Loader.Procedure_With_4_Params
+     ("glObjectLabel", Types.Debug.Identifier, UInt, Size, C.char_array);
+
+   procedure Get_Object_Label is new Loader.String_Getter_With_5_Params
+     ("glGetObjectLabel", Size, Types.Debug.Identifier, UInt);
+
+   procedure Get_Object_Label_Length is new Loader.Procedure_With_5_Params
+     ("glGetObjectLabel", Types.Debug.Identifier, UInt, Size,
+      Low_Level.Size_Access, C.Strings.chars_ptr);
+
+   procedure Object_Pointer_Label is new Loader.Procedure_With_3_Params
+     ("glObjectPtrLabel", System.Address, Size, C.char_array);
+   --  TODO Use for Sync objects
+
+   procedure Get_Object_Pointer_Label is new Loader.String_Getter_With_4_Params
+     ("glGetObjectPtrLabel", Size, System.Address);
+   --  TODO Use for Sync objects
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --

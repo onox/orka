@@ -32,6 +32,10 @@ package GL.Objects.Samplers is
    overriding
    procedure Delete_Id (Object : in out Sampler);
 
+   overriding
+   function Identifier (Object : Sampler) return Types.Debug.Identifier is
+     (Types.Debug.Sampler);
+
    -----------------------------------------------------------------------------
    --                           Sampler Parameters                            --
    -----------------------------------------------------------------------------

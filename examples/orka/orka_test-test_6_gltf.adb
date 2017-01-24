@@ -22,6 +22,9 @@ with GL.Objects.Programs.Uniforms;
 with GL.Toggles;
 with GL.Types;
 
+with GL.Debug.Logs;
+with Orka.Debug;
+
 --  Needed for TBO
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
@@ -38,8 +41,20 @@ with GL_Test.Display_Backend;
 
 procedure Orka_Test.Test_6_GLTF is
    Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 1000, Height => 1000, Resizable => False);
+     (Major => 3, Minor => 2, Width => 1000, Height => 1000, Resizable => False, Debug => True);
    pragma Unreferenced (Initialized);
+
+   use GL.Debug;
+
+   procedure Print_Debug_Message
+     (From      : Source;
+      Kind      : Message_Type;
+      Level     : Severity;
+      ID        : GL.Types.UInt;
+      Message   : String) is
+   begin
+      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (From, Kind, ID, Level, Message));
+   end Print_Debug_Message;
 
    package Models is new Orka.Resources.Models (Orka.Scenes.Singles.Trees);
    package glTF is new Models.glTF;
@@ -105,6 +120,14 @@ begin
       Ada.Text_IO.Put_Line ("Usage: <path to .gltf file>");
       return;
    end if;
+
+   Ada.Text_IO.Put_Line ("Flushing" & GL.Types.Size'Image (GL.Debug.Logs.Logged_Messages) & " messages in the debug log:");
+   for ML of GL.Debug.Logs.Message_Log loop
+      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (ML.From, ML.Kind, ML.ID, ML.Level, ML.Message.Element));
+   end loop;
+
+   GL.Debug.Set_Message_Callback (Print_Debug_Message'Unrestricted_Access);
+   Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
    declare
       use type Ada.Real_Time.Time;

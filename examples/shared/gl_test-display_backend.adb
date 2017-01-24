@@ -124,7 +124,8 @@ package body GL_Test.Display_Backend is
      (Major, Minor : Natural;
       Width, Height : Natural;
       Visible, Resizable : Boolean := True;
-      Depth_Bits : Natural := 0) return Boolean is
+      Depth_Bits : Natural := 0;
+      Debug : Boolean := False) return Boolean is
    begin
       --  Initialize Glfw
       Enable_Print_Errors;
@@ -134,6 +135,7 @@ package body GL_Test.Display_Backend is
       Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
       Glfw.Windows.Hints.Set_Forward_Compat (True);
       Glfw.Windows.Hints.Set_Profile (Glfw.Windows.Context.Core_Profile);
+      Glfw.Windows.Hints.Set_Debug_Context (Debug);
 
       if not Main_Window.Initialized then
          Glfw.Windows.Hints.Set_Visible (Visible);

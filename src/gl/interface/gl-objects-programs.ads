@@ -66,6 +66,10 @@ package GL.Objects.Programs is
    overriding
    procedure Delete_Id (Object : in out Program);
 
+   overriding
+   function Identifier (Object : Program) return Types.Debug.Identifier is
+     (Types.Debug.Program);
+
    Attribute_Inactive_Error : exception;
    Uniform_Inactive_Error   : exception;
 

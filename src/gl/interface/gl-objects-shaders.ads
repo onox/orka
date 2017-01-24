@@ -22,27 +22,33 @@ package GL.Objects.Shaders is
                         Compute_Shader);
    
    type Shader (Kind : Shader_Type) is new GL_Object with private;
-   
+
    procedure Set_Source (Subject : Shader; Source : String);
    function Source (Subject : Shader) return String;
-   
+
    procedure Compile (Subject : Shader);
-   
+
    procedure Release_Shader_Compiler;
-   
+
    function Compile_Status (Subject : Shader) return Boolean;
-   
+
    function Info_Log (Subject : Shader) return String;
-   
+
    overriding
    procedure Initialize_Id (Object : in out Shader);
-   
+
    overriding
    procedure Delete_Id (Object : in out Shader);
-   
+
+   overriding
+   function Identifier (Object : Shader) return Types.Debug.Identifier is
+     (Types.Debug.Shader);
+
    -- low-level
    function Create_From_Id (Id : UInt) return Shader;
+
 private
+
    type Shader (Kind : Shader_Type) is new GL_Object with null record;
 
    for Shader_Type use (Fragment_Shader        => 16#8B30#,
@@ -52,5 +58,5 @@ private
                         Tess_Control_Shader    => 16#8E88#,
                         Compute_Shader         => 16#91B9#);
    for Shader_Type'Size use Low_Level.Enum'Size;
-   
+
 end GL.Objects.Shaders;

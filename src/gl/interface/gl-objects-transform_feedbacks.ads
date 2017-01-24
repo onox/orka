@@ -52,6 +52,10 @@ package GL.Objects.Transform_Feedbacks is
    overriding
    procedure Delete_Id (Object : in out Feedback_Object);
 
+   overriding
+   function Identifier (Object : Feedback_Object) return Types.Debug.Identifier is
+     (Types.Debug.Transform_Feedback);
+
    No_Feedback_Object : constant Feedback_Object;
 
    type Active_Feedback (<>) is limited new Ada.Finalization.Limited_Controlled with private;

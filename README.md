@@ -55,6 +55,10 @@ In order to build Orka or the OpenGL bindings, you need to have:
     - ARB\_buffer\_storage (OpenGL 4.4)
     - ARB\_direct\_state\_access (OpenGL 4.5)
 
+   Debug context requires:
+
+    - KHR\_debug (OpenGL 4.3)
+
    Program introspection (currently only used for subroutines) requires:
 
     - ARB\_program\_interface\_query (OpenGL 4.3)

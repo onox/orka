@@ -65,6 +65,10 @@ package GL.Objects.Queries is
    overriding
    procedure Delete_Id (Object : in out Query);
 
+   overriding
+   function Identifier (Object : Query) return Types.Debug.Identifier is
+     (Types.Debug.Query);
+
    type Active_Query is limited new Ada.Finalization.Limited_Controlled with private;
 
    type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with private;

@@ -47,6 +47,10 @@ package GL.Objects.Pipelines is
    overriding
    procedure Delete_Id (Object : in out Pipeline);
 
+   overriding
+   function Identifier (Object : Pipeline) return Types.Debug.Identifier is
+     (Types.Debug.Program_Pipeline);
+
 private
 
    type Pipeline is new GL_Object with null record;

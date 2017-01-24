@@ -36,7 +36,8 @@ package GL_Test.Display_Backend is
      (Major, Minor : Natural;
       Width, Height : Natural;
       Visible, Resizable : Boolean := True;
-      Depth_Bits : Natural := 0) return Boolean
+      Depth_Bits : Natural := 0;
+      Debug : Boolean := False) return Boolean
      with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
    function Get_Mouse_X return Float;

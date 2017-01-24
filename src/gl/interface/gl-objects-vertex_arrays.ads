@@ -58,6 +58,10 @@ package GL.Objects.Vertex_Arrays is
    overriding
    procedure Delete_Id (Object : in out Vertex_Array_Object);
 
+   overriding
+   function Identifier (Object : Vertex_Array_Object) return Types.Debug.Identifier is
+     (Types.Debug.Vertex_Array);
+
    Null_Array_Object : constant Vertex_Array_Object;
    --  Bind this object to unbind the current array object
 

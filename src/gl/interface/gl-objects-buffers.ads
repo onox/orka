@@ -44,7 +44,7 @@ package GL.Objects.Buffers is
    type Buffer_Target (<>) is tagged limited private;
    
    type Buffer is new GL_Object with private;
-   
+
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
    --  Bind the buffer object to the target
 
@@ -77,6 +77,10 @@ package GL.Objects.Buffers is
 
    overriding
    procedure Delete_Id (Object : in out Buffer);
+
+   overriding
+   function Identifier (Object : Buffer) return Types.Debug.Identifier is
+     (Types.Debug.Buffer);
 
    procedure Unmap (Object : in out Buffer);
 
