@@ -3,13 +3,12 @@ abstract project Config is
    Version := "0.1";
 
    -- Different operating systems need different linker
-   -- flags. Moreover, some features (such as WGL, GLX,
-   -- CGL) are only available on one specific platform.
+   -- flags. Moreover, some features (such as WGL and GLX)
+   -- are only available on one specific platform.
    -- Supported values:
    --  * windows : Microsoft Windows
    --  * x11     : X Window System
-   --  * quartz  : Quartz Compositor (OS X)
-   type Windowing_System_Type is ("windows", "x11", "quartz");
+   type Windowing_System_Type is ("windows", "x11");
    Windowing_System : Windowing_System_Type := external ("Windowing_System");
 
    type Mode_Type is ("debug", "development", "release");

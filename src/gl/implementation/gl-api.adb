@@ -12,18 +12,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.GLX;
+with GL.Loader;
 
 package body GL.API is
-   function GL_Subprogram_Reference (Function_Name : String)
-                                     return System.Address is
+
+   function GL_Subprogram_Reference (Function_Name : String) return System.Address is
       GL_Function_Name_C : Interfaces.C.Strings.chars_ptr
         := Interfaces.C.Strings.New_String (Function_Name);
 
       Result : constant System.Address
-        := GL.GLX.Get_Proc_Address (GL_Function_Name_C);
+        := GL.Loader.Get_Proc_Address (GL_Function_Name_C);
    begin
       Interfaces.C.Strings.Free (GL_Function_Name_C);
       return Result;
    end GL_Subprogram_Reference;
+
 end GL.API;

@@ -23,8 +23,6 @@ library project Orka.Glfw is
 
    package Linker is
       case Config.Windowing_System is
-         when "quartz" =>
-            for Linker_Options use (GLFW_Lib, "-Wl,-framework,Cocoa,-framework,IOKit");
          when "windows" =>
             for Linker_Options use (GLFW_Lib, "-lwinmm", "-lgdi32");
          when "x11" =>

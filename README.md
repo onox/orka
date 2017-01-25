@@ -20,6 +20,10 @@ functionality for capturing user input on keyboard, mouse and joystick.
 Having a window with an OpenGL context is the prerequisite for using any
 OpenGL functionality.
 
+Orka is supported on Linux and Windows. Support for OS X has been removed
+due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
+extensions have not been implemented in their drivers).
+
 Features
 --------
 
@@ -41,7 +45,7 @@ Build status
 Dependencies
 ------------
 
-In order to build Orka or the OpenGL bindings, you need to have:
+In order to build Orka you need to have:
 
  * A GNAT compiler that supports Ada 2012 (Either GNAT GPL from [AdaCore's Libre Site][url-adacore],
    or the GNAT [version provided by the FSF with GCC][url-fsf])
@@ -140,11 +144,10 @@ If you want to use GLFW, refer to `orka-glfw` instead. The project files
 `orka.gpr` and `orka-glfw.gpr` take the following scenario parameters:
 
  * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
-                       for system-dependent parts of the API (GLX, WGL, CGL):
+                       for system-dependent parts of the API (GLX, WGL):
 
     - `x11`: X Windowing System (Linux, BSD, etc)
     - `windows`: Microsoft Windows
-    - `quartz`: Quartz Compositor (OS X)
 
  * `Mode`: May take one of the following values:
 

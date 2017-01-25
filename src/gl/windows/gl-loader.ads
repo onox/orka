@@ -15,11 +15,11 @@
 with System;
 with Interfaces.C.Strings;
 
-package GL.WGL is
+package GL.Loader is
    pragma Preelaborate;
 
    function Get_Proc_Address (Name : Interfaces.C.Strings.chars_ptr)
      return System.Address
    with Import, Convention => StdCall, External_Name => "wglGetProcAddress";
 
-end GL.WGL;
+end GL.Loader;

@@ -12,18 +12,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.WGL;
+with System;
+with Interfaces.C.Strings;
 
-package body GL.API is
-   function GL_Subprogram_Reference (Function_Name : String) return System.Address is
-      GL_Function_Name_C : Interfaces.C.Strings.chars_ptr
-        := Interfaces.C.Strings.New_String (Function_Name);
+package GL.Loader is
+   pragma Preelaborate;
 
-      Result : constant System.Address
-        := GL.WGL.Get_Proc_Address (GL_Function_Name_C);
-   begin
-      Interfaces.C.Strings.Free (GL_Function_Name_C);
-      return Result;
-   end GL_Subprogram_Reference;
-end GL.API;
+   function Get_Proc_Address (Name : Interfaces.C.Strings.chars_ptr)
+     return System.Address
+   with Import, Convention => C, External_Name => "glXGetProcAddress";
 
+end GL.Loader;

@@ -1,8 +1,5 @@
 WINDOWING_BACKEND := windows
 UNAME := $(shell uname)
-ifeq ($(UNAME), Darwin)
-  WINDOWING_BACKEND := quartz
-endif
 ifeq ($(UNAME), Linux)
   WINDOWING_BACKEND := x11
 endif

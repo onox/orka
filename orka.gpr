@@ -22,7 +22,6 @@ library project Orka is
    case Config.Windowing_System is
       when "windows" => OpenGL_Sources := OpenGL_Sources & "src/gl/windows";
       when "x11"     => OpenGL_Sources := OpenGL_Sources & "src/gl/x11";
-      when "quartz"  => OpenGL_Sources := OpenGL_Sources & "src/gl/mac";
    end case;
 
    case Config.Mode is
@@ -52,8 +51,6 @@ library project Orka is
             for Linker_Options use ("-lOpenGL32", "-lGdi32");
          when "x11" =>
             for Linker_Options use ("-lGL", "-lX11");
-         when "quartz" =>
-            for Linker_Options use ("-Wl,-framework,OpenGL,-framework,CoreFoundation");
       end case;
    end Linker;
 
