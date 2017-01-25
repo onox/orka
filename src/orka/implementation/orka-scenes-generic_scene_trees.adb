@@ -156,7 +156,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
       Current_First_Index : Positive := Node_Cursor.Offset;
       Current_Last_Index  : Positive := Node_Cursor.Offset;
 
-      Next_First_Index, Next_Last_Index : Positive;
+      --  Assign a dummy value to silence any warnings about being uninitialized
+      Next_First_Index, Next_Last_Index : Positive := Positive'Last;
 
       Empty_Level_Index : Positive := Object.Levels.Last_Index + 1;
    begin
@@ -259,8 +260,14 @@ package body Orka.Scenes.Generic_Scene_Trees is
                Empty_Level_Index := Positive'Min (Empty_Level_Index, Level_Index);
             end if;
 
+            --  Exit if there are no nodes that have children
             exit when Min_Index not in Current_First_Index .. Current_Last_Index;
 
+            --  If we reach this code here, then there is a node that has
+            --  children. The variables below have been updated in the if
+            --  block above.
+            pragma Assert (Next_First_Index /= Positive'Last);
+            pragma Assert (Next_Last_Index /= Positive'Last);
             Current_First_Index := Next_First_Index;
             Current_Last_Index  := Next_Last_Index;
          end;
