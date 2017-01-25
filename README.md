@@ -54,27 +54,17 @@ In order to build Orka you need to have:
 
  * OpenGL 3.2 core profile and the following extensions:
 
-    - ARB\_separate\_shader\_objects (OpenGL 4.1)
-    - ARB\_vertex\_attrib\_binding (OpenGL 4.3)
-    - ARB\_buffer\_storage (OpenGL 4.4)
-    - ARB\_direct\_state\_access (OpenGL 4.5)
-
-   Debug context requires:
-
-    - KHR\_debug (OpenGL 4.3)
-
-   Program introspection (currently only used for subroutines) requires:
-
-    - ARB\_program\_interface\_query (OpenGL 4.3)
-
-   Textures require:
-
-    - ARB\_texture\_storage (OpenGL 4.2)
-    - ARB\_texture\_storage\_multisample (OpenGL 4.3)
-
-   Loading .gltf models requires:
-
-    - ARB\_multi\_draw\_indirect (OpenGL 4.5)
+    | Extension                          | OpenGL | Reason      |
+    |------------------------------------|--------|-------------|
+    | ARB\_direct\_state\_access         | 4.5    |             |
+    | ARB\_buffer\_storage               | 4.4    |             |
+    | KHR\_debug                         | 4.3    | Debugging   |
+    | ARB\_multi\_draw\_indirect         | 4.3    | .gltf       |
+    | ARB\_program\_interface\_query     | 4.3    | Subroutines |
+    | ARB\_vertex\_attrib\_binding       | 4.3    |             |
+    | ARB\_texture\_storage\_multisample | 4.3    | Textures    |
+    | ARB\_texture\_storage              | 4.2    | Textures    |
+    | ARB\_separate\_shader\_objects     | 4.1    |             |
 
  * An x86-64 CPU with the AVX and F16C extensions
 
