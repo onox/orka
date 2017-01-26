@@ -44,6 +44,8 @@ package GL.Types is
    type Single is new C.C_float;
    type Double is new C.double;
 
+   subtype Normalized_Single is Single range 0.0 .. 1.0;
+
    --  Array types
    type Int_Array    is array (Size range <>) of aliased Int;
    type UInt_Array   is array (Size range <>) of aliased UInt;
