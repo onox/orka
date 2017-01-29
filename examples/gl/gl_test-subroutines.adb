@@ -137,15 +137,44 @@ begin
 
       Function_X : constant Index_Type := Program.Subroutine_Index (Vertex_Shader, "update_x");
       Function_Y : constant Index_Type := Program.Subroutine_Index (Vertex_Shader, "update_y");
-      Location_U : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "update_pos");
+      Function_Z : constant Index_Type := Program.Subroutine_Index (Vertex_Shader, "update_z");
+      Location_U0 : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "update_pos[0]");
+      Location_U1 : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "update_pos[1]");
+      Location_U2 : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "no_update_pos");
 
       Num_Uniforms : constant Size := Program.Active_Subroutine_Uniform_Locations (Vertex_Shader);
       Indices : UInt_Array (0 .. Num_Uniforms - 1);
    begin
-      Ada.Text_IO.Put_Line ("  Active uniforms: " & Size'Image (Num_Uniforms));
+      Ada.Text_IO.Put_Line ("  Active uniform locations: " & Size'Image (Num_Uniforms));
       Ada.Text_IO.Put_Line ("  Index update_x: " & Index_Type'Image (Function_X));
       Ada.Text_IO.Put_Line ("  Index update_y: " & Index_Type'Image (Function_Y));
-      Ada.Text_IO.Put_Line ("  Location update_pos: " & Location_Type'Image (Location_U));
+      Ada.Text_IO.Put_Line ("  Index update_z: " & Index_Type'Image (Function_Z));
+      Ada.Text_IO.Put_Line ("  Location update_pos[0]: " & Location_Type'Image (Location_U0));
+      Ada.Text_IO.Put_Line ("  Location update_pos[1]: " & Location_Type'Image (Location_U1));
+      Ada.Text_IO.Put_Line ("  Location no_update_pos: " & Location_Type'Image (Location_U2));
+
+      declare
+         Total_Uniforms : constant Size := Program.Active_Subroutine_Uniforms (Vertex_Shader);
+      begin
+         Ada.Text_IO.Put_Line ("Number of subroutine uniforms: " & Size'Image (Total_Uniforms));
+         for Index_Uniform in 0 .. Total_Uniforms - 1 loop
+            declare
+               Index : constant Index_Type := Index_Type (Index_Uniform);
+               Name  : constant String := Program.Subroutine_Uniform_Name (Vertex_Shader, Index);
+            begin
+               Ada.Text_IO.Put_Line ("  (" & Size'Image (Index_Uniform) & ") " & Name);
+
+               for Index_Subroutine of Program.Subroutine_Indices_Uniform (Vertex_Shader, Index) loop
+                  declare
+                     Index : constant Index_Type := Index_Type (Index_Subroutine);
+                     Name  : constant String := Program.Subroutine_Name (Vertex_Shader, Index);
+                  begin
+                     Ada.Text_IO.Put_Line ("    - " & Index_Type'Image (Index_Subroutine) & ": " & Name);
+                  end;
+               end loop;
+            end;
+         end loop;
+      end;
 
       Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between subroutines.");
 
@@ -153,10 +182,12 @@ begin
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
          if Display_Backend.Get_Effect (2) = 0 then
-            Indices (Location_U) := Function_X;
+            Indices (Location_U0) := Function_X;
          else
-            Indices (Location_U) := Function_Y;
+            Indices (Location_U0) := Function_Y;
          end if;
+         Indices (Location_U1) := Function_Y;
+         Indices (Location_U2) := Function_Z;
          GL.Objects.Programs.Set_Uniform_Subroutines (Vertex_Shader, Indices);
 
          Triangle_VAO.Bind;

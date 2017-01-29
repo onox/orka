@@ -80,6 +80,8 @@ package GL.Objects.Programs is
    subtype Subroutine_Index_Type is UInt;
    subtype Uniform_Location_Type is Int range -1 .. Int'Last;
 
+   type Subroutine_Index_Array is array (Size range <>) of Subroutine_Index_Type;
+
    Invalid_Index : constant Subroutine_Index_Type;
 
    function Active_Subroutines (Object : Program; Shader : Shaders.Shader_Type)
@@ -88,7 +90,10 @@ package GL.Objects.Programs is
 
    function Active_Subroutine_Uniforms (Object : Program; Shader : Shaders.Shader_Type)
      return Size;
-   --  Return total number of subroutine uniforms
+   --  Return total number of subroutine uniforms indices
+   --
+   --  A subroutine uniform that is an array has multiple locations, but
+   --  has one index.
 
    function Active_Subroutine_Max_Length (Object : Program; Shader : Shaders.Shader_Type)
      return Size;
@@ -128,11 +133,22 @@ package GL.Objects.Programs is
    --   * Uniform_Size (number of array elements if subroutine uniform is in an array)
    --   * Uniform_Name_Length (length of uniform's name)
 
+   function Subroutine_Indices_Uniform (Object : Program;
+                                        Shader : Shaders.Shader_Type;
+                                        Index  : Subroutine_Index_Type)
+     return Subroutine_Index_Array;
+   --  Return the indices of compatible subroutines for the given subroutine uniform
+
    function Active_Subroutine_Uniform_Locations (Object : Program; Shader : Shaders.Shader_Type)
      return Size;
-   --  Return number of active subroutine uniforms
+   --  Return number of active subroutine uniform locations
    --
-   --  Used to determine length of array given to Set_Uniform_Subroutines.
+   --  All locations between 0 .. Active_Subroutine_Uniform_Locations'Result - 1
+   --  are active locations. A subroutine uniform that is an array has one
+   --  index, but multiple locations.
+   --
+   --  This function is used to determine length of array given to
+   --  Set_Uniform_Subroutines.
 
    procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array)
      with Pre => Indices'First = 0;

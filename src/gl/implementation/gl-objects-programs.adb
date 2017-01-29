@@ -321,6 +321,33 @@ package body GL.Objects.Programs is
       end return;
    end Subroutine_Uniform_Location;
 
+   function Subroutine_Indices_Uniform (Object : Program;
+                                        Shader : Shaders.Shader_Type;
+                                        Index  : Subroutine_Index_Type)
+     return Subroutine_Index_Array
+   is
+      Values : constant Int_Array := API.Get_Program_Resource
+        (Object.Reference.GL_Id,
+         Subroutine_Uniform_Interface (Shader), Index,
+         1, (1 => Enums.Num_Compatible_Subroutines), 1);
+      Num_Subroutines : constant Size := Size (Values (1));
+   begin
+      Raise_Exception_On_OpenGL_Error;
+      declare
+         Values : constant Int_Array := API.Get_Program_Resource
+           (Object.Reference.GL_Id,
+            Subroutine_Uniform_Interface (Shader), Index,
+            1, (1 => Enums.Compatible_Subroutines), Num_Subroutines);
+      begin
+         Raise_Exception_On_OpenGL_Error;
+         return Result : Subroutine_Index_Array (1 .. Num_Subroutines) do
+            for Index in Values'Range loop
+               Result (Size (Index)) := Subroutine_Index_Type (Values (Index));
+            end loop;
+         end return;
+      end;
+   end Subroutine_Indices_Uniform;
+
    function Subroutine_Name (Object : Program; Shader : Shaders.Shader_Type;
                              Index  : Subroutine_Index_Type)
      return String is
