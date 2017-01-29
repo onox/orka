@@ -42,7 +42,7 @@ package body GL.Objects.Textures is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Depth_Size, Ret);
+                                            Enums.Textures.Depth, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Depth;
@@ -420,24 +420,6 @@ package body GL.Objects.Textures is
       return Helpers.Color (Raw);
    end Border_Color;
 
-   procedure Set_Texture_Priority (Object : Texture_Base;
-                                   Value : Priority) is
-   begin
-      API.Texture_Parameter_Float (Object.Reference.GL_Id,
-                                   Enums.Textures.Priority,
-                                   Single (Value));
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Texture_Priority;
-
-   function Texture_Priority (Object : Texture_Base) return Priority is
-      Ret : Low_Level.Single_Array (1 .. 4);
-   begin
-      API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
-                                        Enums.Textures.Priority, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Priority (Ret (1));
-   end Texture_Priority;
-
    procedure Toggle_Compare_X_To_Texture (Object : Texture_Base;
                                           Enabled : Boolean) is
       Value : Enums.Textures.Compare_Kind;
@@ -485,42 +467,6 @@ package body GL.Objects.Textures is
       return Value;
    end Current_Compare_Function;
 
-   procedure Set_Depth_Texture_Mode (Object : Texture_Base;
-                                     Mode : Depth_Mode) is
-   begin
-      API.Texture_Parameter_Depth_Mode (Object.Reference.GL_Id,
-                                        Enums.Textures.Depth, Mode);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Depth_Texture_Mode;
-
-   function Depth_Texture_Mode (Object : Texture_Base) return Depth_Mode is
-      Value : Depth_Mode := Depth_Mode'First;
-   begin
-      API.Get_Texture_Parameter_Depth_Mode (Object.Reference.GL_Id,
-                                            Enums.Textures.Depth, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Value;
-   end Depth_Texture_Mode;
-
-   procedure Toggle_Mipmap_Autoupdate (Object : Texture_Base;
-                                       Enabled : Boolean) is
-   begin
-      API.Texture_Parameter_Bool (Object.Reference.GL_Id,
-                                  Enums.Textures.Generate_Mipmap,
-                                  Low_Level.Bool (Enabled));
-      Raise_Exception_On_OpenGL_Error;
-   end Toggle_Mipmap_Autoupdate;
-
-   function Mipmap_Autoupdate_Enabled (Object : Texture_Base)
-                                       return Boolean is
-      Value : Low_Level.Bool := Low_Level.Bool'First;
-   begin
-      API.Get_Texture_Parameter_Bool (Object.Reference.GL_Id,
-                                      Enums.Textures.Generate_Mipmap, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Boolean (Value);
-   end Mipmap_Autoupdate_Enabled;
-   
    procedure Generate_Mipmap (Object : Texture_Base) is
    begin
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);

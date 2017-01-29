@@ -44,12 +44,8 @@ package GL.Objects.Textures is
 
    subtype Magnifying_Function is Minifying_Function range Nearest .. Linear;
 
-   type Wrapping_Mode is (Clamp, Repeat, Clamp_To_Border, Clamp_To_Edge,
+   type Wrapping_Mode is (Repeat, Clamp_To_Border, Clamp_To_Edge,
                           Mirrored_Repeat);
-
-   subtype Priority is Double range 0.0 .. 1.0;
-
-   type Depth_Mode is (Alpha, Luminance, Intensity);
 
    -- Actual range is implementation-defined.
    --  OpenGL 2.x: At least 2
@@ -133,14 +129,7 @@ package GL.Objects.Textures is
    function Z_Wrapping (Object : Texture_Base) return Wrapping_Mode;
 
    procedure Set_Border_Color         (Object : Texture_Base; Color : Colors.Color);
-   procedure Set_Texture_Priority     (Object : Texture_Base; Value : Priority);
-   procedure Set_Depth_Texture_Mode   (Object : Texture_Base; Mode  : Depth_Mode);
-   procedure Toggle_Mipmap_Autoupdate (Object : Texture_Base; Enabled : Boolean);
-
    function Border_Color              (Object : Texture_Base) return Colors.Color;
-   function Texture_Priority          (Object : Texture_Base) return Priority;
-   function Depth_Texture_Mode        (Object : Texture_Base) return Depth_Mode;
-   function Mipmap_Autoupdate_Enabled (Object : Texture_Base) return Boolean;
 
    procedure Toggle_Compare_X_To_Texture (Object : Texture_Base; Enabled : Boolean);
    procedure Set_Compare_Function        (Object : Texture_Base; Func : Compare_Function);
@@ -346,17 +335,11 @@ package GL.Objects.Textures is
 
 private
 
-   for Wrapping_Mode use (Clamp           => 16#2900#,
-                          Repeat          => 16#2901#,
+   for Wrapping_Mode use (Repeat          => 16#2901#,
                           Clamp_To_Border => 16#812D#,
                           Clamp_To_Edge   => 16#812F#,
                           Mirrored_Repeat => 16#8370#);
    for Wrapping_Mode'Size use Int'Size;
-
-   for Depth_Mode use (Alpha     => 16#1906#,
-                       Luminance => 16#1909#,
-                       Intensity => 16#8049#);
-   for Depth_Mode'Size use Int'Size;
 
    type Texture (Kind : Low_Level.Enums.Texture_Kind)
      is new GL_Object with null record;

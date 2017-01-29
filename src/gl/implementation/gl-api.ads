@@ -412,8 +412,6 @@ private package GL.API is
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
    procedure Texture_Parameter_Compare_Func is new Loader.Procedure_With_3_Params
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Compare_Function);
-   procedure Texture_Parameter_Depth_Mode is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Depth_Mode);
 
    procedure Texture_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Low_Level.Bool);
@@ -434,8 +432,6 @@ private package GL.API is
      ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
    procedure Get_Texture_Parameter_Compare_Func is new Loader.Getter_With_3_Params
      ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
-   procedure Get_Texture_Parameter_Depth_Mode is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Depth_Mode);
 
    procedure Get_Texture_Parameter_Bool is new Loader.Getter_With_3_Params
      ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Low_Level.Bool);
