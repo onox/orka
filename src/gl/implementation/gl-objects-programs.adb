@@ -167,8 +167,8 @@ package body GL.Objects.Programs is
 
    function Attrib_Location (Subject : Program; Name : String)
      return Attributes.Attribute is
-      Location : constant Int := API.Get_Attrib_Location
-        (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
+      Location : constant Int := API.Get_Program_Resource_Location
+        (Subject.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
       if Location = -1 then
