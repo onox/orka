@@ -12,12 +12,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Strings;
+
+with Ada.Unchecked_Conversion;
+
 with GL.API;
 with GL.Enums;
-with GL.Objects.Programs.Uniforms;
 with GL.Low_Level;
-
-with Interfaces.C.Strings;
+with GL.Objects.Programs.Uniforms;
 
 package body GL.Objects.Programs is
 
@@ -155,7 +157,26 @@ package body GL.Objects.Programs is
       end if;
       return Uniforms.Create_Uniform (Subject, Result);
    end Uniform_Location;
-   
+
+   function Uniform_Type (Object : Program; Name : String)
+     return Low_Level.Enums.Resource_Type is
+      Index : constant UInt := API.Get_Program_Resource_Index
+        (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
+   begin
+      Raise_Exception_On_OpenGL_Error;
+      declare
+         Values : constant Int_Array := API.Get_Program_Resource
+           (Object.Reference.GL_Id, Enums.Uniform, Index,
+            1, (1 => Enums.Resource_Type), 1);
+
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Int, Target => Low_Level.Enums.Resource_Type);
+      begin
+         Raise_Exception_On_OpenGL_Error;
+         return Convert (Values (1));
+      end;
+   end Uniform_Type;
+
    procedure Bind_Attrib_Location (Subject : Program;
                                    Index : Attributes.Attribute;
                                    Name : String) is
@@ -176,6 +197,25 @@ package body GL.Objects.Programs is
       end if;
       return Attributes.Attribute (Location);
    end Attrib_Location;
+
+   function Attribute_Type (Object : Program; Name : String)
+     return Low_Level.Enums.Resource_Type is
+      Index : constant UInt := API.Get_Program_Resource_Index
+       (Object.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
+   begin
+      Raise_Exception_On_OpenGL_Error;
+      declare
+         Values : constant Int_Array := API.Get_Program_Resource
+           (Object.Reference.GL_Id, Enums.Program_Input, Index,
+            1, (1 => Enums.Resource_Type), 1);
+
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Int, Target => Low_Level.Enums.Resource_Type);
+      begin
+         Raise_Exception_On_OpenGL_Error;
+         return Convert (Values (1));
+      end;
+   end Attribute_Type;
 
    function Attached_Shaders (Object : Program) return Shaders.Lists.List is
       Shader_Count : aliased Int := 0;

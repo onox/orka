@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with GL.Attributes;
+with GL.Low_Level.Enums;
 with GL.Objects.Shaders.Lists;
 with GL.Objects.Transform_Feedbacks;
 limited with GL.Objects.Programs.Uniforms;
@@ -49,12 +50,18 @@ package GL.Objects.Programs is
    function Uniform_Location (Subject : Program; Name : String)
      return Programs.Uniforms.Uniform;
 
+   function Uniform_Type (Object : Program; Name : String)
+     return Low_Level.Enums.Resource_Type;
+
    procedure Bind_Attrib_Location (Subject : Program;
                                    Index : Attributes.Attribute;
                                    Name : String);
 
    function Attrib_Location (Subject : Program; Name : String)
      return Attributes.Attribute;
+
+   function Attribute_Type (Object : Program; Name : String)
+     return Low_Level.Enums.Resource_Type;
 
    function Attached_Shaders (Object : Program) return Shaders.Lists.List;
 

@@ -84,6 +84,7 @@ package GL.Objects.Framebuffers is
                              Texture_Object : Textures.Texture'Class;
                              Level : Textures.Mipmap_Level)
      with Pre => Object /= Default_Framebuffer;
+   --  TODO If Texture_Object is of MSAA kind, then Level must be 0
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
                                    Attachment : Attachment_Point;
