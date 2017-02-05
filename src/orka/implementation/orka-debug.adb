@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Ada.Calendar.Formatting;
+with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 
 with Orka.Terminals;
@@ -20,6 +21,8 @@ with Orka.Terminals;
 package body Orka.Debug is
 
    package SF renames Ada.Strings.Fixed;
+
+   package L renames Ada.Characters.Latin_1;
 
    function Time_Image return String is
       use Ada.Calendar;
@@ -49,6 +52,16 @@ package body Orka.Debug is
       end;
    end Time_Image;
 
+   function Strip_Line_Term (Value : String) return String is
+      Last_Index : Natural := Value'Last;
+   begin
+      for Index in reverse Value'Range loop
+         exit when Value (Index) not in L.LF | L.CR;
+         Last_Index := Last_Index - 1;
+      end loop;
+      return Value (Value'First .. Last_Index);
+   end Strip_Line_Term;
+
    function Format_Message
      (From    : Source;
       Kind    : Message_Type;
@@ -71,8 +84,7 @@ package body Orka.Debug is
       return Terminals.Colorize ("[" & Time_Image & " " & Level_Image & "]", Level_Color) &
              " " &
              Terminals.Colorize ("[" & Source_Image & ":" & Type_Image & "]", Terminals.Magenta) &
-             ID_Image & ": " &
-             Message;
+             ID_Image & ": " & Strip_Line_Term (Message);
    end Format_Message;
 
 end Orka.Debug;
