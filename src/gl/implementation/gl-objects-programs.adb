@@ -164,6 +164,9 @@ package body GL.Objects.Programs is
         (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
+      if Index = -1 then
+         raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
+      end if;
       declare
          Values : constant Int_Array := API.Get_Program_Resource
            (Object.Reference.GL_Id, Enums.Uniform, Index,
@@ -204,6 +207,9 @@ package body GL.Objects.Programs is
        (Object.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
       Raise_Exception_On_OpenGL_Error;
+      if Index = -1 then
+         raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
+      end if;
       declare
          Values : constant Int_Array := API.Get_Program_Resource
            (Object.Reference.GL_Id, Enums.Program_Input, Index,
