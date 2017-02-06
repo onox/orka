@@ -16,6 +16,7 @@ with GL.Attributes;
 with GL.Objects.Programs;
 
 limited with Orka.Programs.Modules;
+limited with Orka.Programs.Uniforms;
 
 package Orka.Programs is
    pragma Preelaborate;
@@ -35,6 +36,20 @@ package Orka.Programs is
 
    function Attribute_Location (Object : Program; Name : String)
      return GL.Attributes.Attribute;
+
+   function Uniform_Sampler (Object : Program; Name : String)
+     return Programs.Uniforms.Uniform_Sampler;
+   --  Return the uniform sampler that has the given name
+   --
+   --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
+   --  exception is raised if the name is not defined in any of the attached shaders.
+
+   function Uniform (Object : Program; Name : String)
+     return Programs.Uniforms.Uniform;
+   --  Return the uniform that has the given name
+   --
+   --  Name must be a GLSL uniform. A Uniforms.Uniform_Inactive_Error exception
+   --  is raised if the name is not defined in any of the attached shaders.
 
    Program_Link_Error : exception;
 

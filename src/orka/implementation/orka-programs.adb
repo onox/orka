@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Orka.Programs.Modules;
+with Orka.Programs.Uniforms;
 
 package body Orka.Programs is
 
@@ -50,5 +51,17 @@ package body Orka.Programs is
    begin
       return Object.GL_Program.Attrib_Location (Name);
    end Attribute_Location;
+
+   function Uniform_Sampler (Object : Program; Name : String)
+     return Programs.Uniforms.Uniform_Sampler is
+   begin
+      return Programs.Uniforms.Create_Uniform_Sampler (Object, Name);
+   end Uniform_Sampler;
+
+   function Uniform (Object : Program; Name : String)
+     return Programs.Uniforms.Uniform is
+   begin
+      return Programs.Uniforms.Create_Uniform_Variable (Object, Name);
+   end Uniform;
 
 end Orka.Programs;
