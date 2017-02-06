@@ -1,7 +1,6 @@
 #version 330 core
 
 #extension GL_ARB_shading_language_420pack : require
-#extension GL_ARB_explicit_uniform_location : require
 
 flat in uint var_InstanceID;
 
@@ -12,7 +11,7 @@ in VS_OUT {
     vec2 uv;
 } fs_in;
 
-layout(location = 8) uniform sampler2DArray diffuseTexture;
+uniform sampler2DArray diffuseTexture;
 
 out vec4 out_Color;
 

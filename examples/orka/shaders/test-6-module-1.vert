@@ -1,16 +1,14 @@
 #version 330 core
 
-#extension GL_ARB_explicit_uniform_location : require
-
 layout(location = 0) in vec3 in_Position;
 layout(location = 1) in vec3 in_Normal;
 layout(location = 2) in vec2 in_UV;
 layout(location = 3) in uint in_InstanceID;
 
-layout(location = 4) uniform samplerBuffer matrixBuffer;
-layout(location = 5) uniform mat4 view;
-layout(location = 6) uniform mat4 proj;
-layout(location = 7) uniform vec4 lightPosition;
+uniform samplerBuffer matrixBuffer;
+uniform mat4 view;
+uniform mat4 proj;
+uniform vec4 lightPosition;
 
 out VS_OUT {
     vec3 N;

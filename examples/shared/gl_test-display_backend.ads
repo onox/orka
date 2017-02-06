@@ -37,7 +37,8 @@ package GL_Test.Display_Backend is
       Width, Height : Natural;
       Visible, Resizable : Boolean := True;
       Depth_Bits : Natural := 0;
-      Debug : Boolean := False) return Boolean
+      Debug : Boolean := False;
+      Samples : Natural := 0) return Boolean
      with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
    function Get_Mouse_X return Float;
@@ -49,6 +50,10 @@ package GL_Test.Display_Backend is
    procedure Set_Zoom_Distance (Distance : Float);
 
    function Get_Effect (Maximum : Positive) return Integer;
+
+   function Get_Pos_X return Float;
+   function Get_Pos_Y return Float;
+   function Get_Pos_Z return Float;
 
 private
 
@@ -67,6 +72,9 @@ private
       Prev_X, Prev_Y     : Float := 0.0;
 
       Effect : Effects := 0;
+      Pos_X : Float := 0.0;
+      Pos_Y : Float := 0.0;
+      Pos_Z : Float := 0.0;
    end record;
 
    type Test_Window_Access is not null access Test_Window;
