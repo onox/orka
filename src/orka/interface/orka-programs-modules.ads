@@ -35,7 +35,7 @@ private
    use type GL.Objects.Shaders.Shader;
 
    package Shader_Holder is new Ada.Containers.Indefinite_Holders
-      (Element_Type => GL.Objects.Shaders.Shader);
+     (Element_Type => GL.Objects.Shaders.Shader);
 
    type Shader_Array is array (GL.Objects.Shaders.Shader_Type) of Shader_Holder.Holder;
 

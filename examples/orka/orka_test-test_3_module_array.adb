@@ -55,7 +55,7 @@ procedure Orka_Test.Test_3_Module_Array is
 
    use GL.Buffers;
 
-   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Module_Array'(
+   Program_1 : Program := Orka.Programs.Create_Program (Modules.Module_Array'(
      Modules.Create_Module
        (FS => "../examples/orka/shaders/test-3-module-1.frag"),
      Modules.Create_Module

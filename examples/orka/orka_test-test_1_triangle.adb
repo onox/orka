@@ -56,7 +56,7 @@ procedure Orka_Test.Test_1_Triangle is
 
    use GL.Buffers;
 
-   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
+   Program_1 : Program := Orka.Programs.Create_Program (Modules.Create_Module
      (VS => "../examples/gl/shaders/opengl3.vert",
       FS => "../examples/gl/shaders/opengl3.frag"));
 

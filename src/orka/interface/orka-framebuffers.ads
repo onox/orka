@@ -32,10 +32,10 @@ package Orka.Framebuffers is
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
      with Inline;
 
-   procedure Draw (Object : Framebuffer; Program : Orka.Programs.Program;
+   procedure Draw (Object : Framebuffer; Program : in out Orka.Programs.Program;
                    Mesh : Orka.Meshes.Vertex_Format; Offset, Count : GL.Types.Size);
 
-   procedure Draw_Indirect (Object : Framebuffer; Program : Orka.Programs.Program;
+   procedure Draw_Indirect (Object : Framebuffer; Program : in out Orka.Programs.Program;
                             Mesh : Orka.Meshes.Vertex_Format; Buffer : Orka.Buffers.Buffer);
 
    Framebuffer_Incomplete_Error : exception;

@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Indefinite_Holders;
+
 with GL.Low_Level.Enums;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Textures;
@@ -54,12 +56,57 @@ package Orka.Programs.Uniforms is
       Texture : GL.Objects.Textures.Texture'Class;
       Binding : GL.Types.Int)
    with Pre => Texture.Kind = Object.Kind;
+   --  Set the binding point of the uniform sampler and bind the
+   --  given texture to the corresponding texture unit
 
-   function Create_Uniform_Sampler (Object : Program; Name : String)
-     return Uniform_Sampler;
+   type Uniform_Subroutine (<>) is tagged limited private;
 
-   function Create_Uniform_Variable (Object : Program; Name : String)
-     return Uniform;
+   function Is_Compatible
+     (Object : Uniform_Subroutine;
+      Index  : Subroutine_Index) return Boolean;
+   --  Return True if the index is a compatible subroutine function
+   --  for the subroutine uniform, False otherwise
+
+   procedure Set_Function
+     (Object : in out Uniform_Subroutine;
+      Name   : String)
+   with Inline;
+   --  Select the given subroutine function to be used by the
+   --  subroutine uniform
+   --
+   --  This procedure is a shortcut for Set_Function (Index (Name)).
+
+   procedure Set_Function
+     (Object : in out Uniform_Subroutine;
+      Index  : Subroutine_Index)
+   with Pre => Object.Is_Compatible (Index);
+   --  Select the given subroutine function to be used by the
+   --  subroutine uniform
+
+   function Index
+     (Object : Uniform_Subroutine;
+      Name   : String) return Subroutine_Index;
+   --  Return the index of the subroutine function identified
+   --  by the given name
+
+   type Uniform_Block is tagged private;
+
+   function Create_Uniform_Sampler
+     (Object : Program;
+      Name   : String) return Uniform_Sampler;
+
+   function Create_Uniform_Subroutine
+     (Object : in out Program;
+      Shader : GL.Objects.Shaders.Shader_Type;
+      Name   : String) return Uniform_Subroutine;
+
+   function Create_Uniform_Block
+     (Object : Program;
+      Name   : String) return Uniform_Block;
+
+   function Create_Uniform_Variable
+     (Object : Program;
+      Name   : String) return Uniform;
 
    Uniform_Inactive_Error : exception renames GL.Objects.Programs.Uniform_Inactive_Error;
 
@@ -72,6 +119,20 @@ private
    end record;
 
    type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged record
+      GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
+   end record;
+
+   package Indices_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => GL.Objects.Programs.Subroutine_Index_Array,
+      "=" => GL.Objects.Programs."=");
+
+   type Uniform_Subroutine (Program : access Orka.Programs.Program) is tagged limited record
+      Location : Uniform_Location;
+      Indices  : Indices_Holder.Holder;
+      Shader   : GL.Objects.Shaders.Shader_Type;
+   end record;
+
+   type Uniform_Block is tagged record
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 

@@ -81,7 +81,7 @@ procedure Orka_Test.Test_4_MDI is
 
    MDI_Buffers : Orka.Buffers.MDI.MDI_Buffers;
 
-   Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
+   Program_1 : Program := Orka.Programs.Create_Program (Modules.Create_Module
      (VS => "../examples/orka/shaders/test-4-module-1.vert",
       FS => "../examples/orka/shaders/test-4-module-1.frag"));
 

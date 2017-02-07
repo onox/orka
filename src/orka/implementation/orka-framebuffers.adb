@@ -42,7 +42,7 @@ package body Orka.Framebuffers is
       end if;
    end Use_Framebuffer;
 
-   procedure Draw (Object : Framebuffer; Program : Orka.Programs.Program;
+   procedure Draw (Object : Framebuffer; Program : in out Orka.Programs.Program;
                    Mesh : Orka.Meshes.Vertex_Format; Offset, Count : GL.Types.Size) is
    begin
       Use_Framebuffer (Object);
@@ -50,7 +50,7 @@ package body Orka.Framebuffers is
       Mesh.Draw (Count, Offset);
    end Draw;
 
-   procedure Draw_Indirect (Object : Framebuffer; Program : Orka.Programs.Program;
+   procedure Draw_Indirect (Object : Framebuffer; Program : in out Orka.Programs.Program;
                             Mesh : Orka.Meshes.Vertex_Format; Buffer : Orka.Buffers.Buffer) is
    begin
       Use_Framebuffer (Object);
