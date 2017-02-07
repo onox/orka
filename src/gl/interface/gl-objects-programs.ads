@@ -32,9 +32,9 @@ package GL.Objects.Programs is
    function Info_Log (Subject : Program) return String;
 
    procedure Use_Program (Subject : Program);
-   --  Use the shaders of the given program durting rendering
+   --  Use the shaders of the given program during rendering
    --
-   --  If you have subroutines in in some of its shaders, you must
+   --  If you have subroutines in some of its shaders, you must
    --  subsequently call Set_Uniform_Subroutines, because the subroutine
    --  state is completely lost after having called Use_Program.
 
@@ -91,63 +91,80 @@ package GL.Objects.Programs is
 
    Invalid_Index : constant Subroutine_Index_Type;
 
-   function Active_Subroutines (Object : Program; Shader : Shaders.Shader_Type)
-     return Size;
+   function Subroutines_Indices
+     (Object : Program;
+      Shader : Shaders.Shader_Type) return Size;
    --  Return total number of subroutine functions
 
-   function Active_Subroutine_Uniforms (Object : Program; Shader : Shaders.Shader_Type)
-     return Size;
+   function Subroutine_Uniforms_Indices
+     (Object : Program;
+      Shader : Shaders.Shader_Type) return Size;
    --  Return total number of subroutine uniforms indices
    --
    --  A subroutine uniform that is an array has multiple locations, but
    --  has one index.
 
-   function Active_Subroutine_Max_Length (Object : Program; Shader : Shaders.Shader_Type)
-     return Size;
+   function Active_Subroutine_Max_Length
+     (Object : Program;
+      Shader : Shaders.Shader_Type) return Size;
    --  Return the largest name of all subroutine functions used by the
    --  given stage
 
-   function Active_Subroutine_Uniform_Max_Length (Object : Program; Shader : Shaders.Shader_Type)
-     return Size;
+   function Active_Subroutine_Uniform_Max_Length
+     (Object : Program;
+      Shader : Shaders.Shader_Type) return Size;
    --  Return the largest name of all subroutine uniforms used in the
    --  given stage
 
-   function Subroutine_Name (Object : Program; Shader : Shaders.Shader_Type;
-                             Index  : Subroutine_Index_Type) return String;
+   function Subroutine_Name
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Index  : Subroutine_Index_Type) return String;
    --  Return the name of the subroutine function given its index
 
-   function Subroutine_Uniform_Name (Object : Program; Shader : Shaders.Shader_Type;
-                                     Index  : Subroutine_Index_Type) return String;
+   function Subroutine_Uniform_Name
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Index  : Subroutine_Index_Type) return String;
    --  Return the name of the subroutine uniform given its index
 
-   function Subroutine_Index (Object : Program; Shader : Shaders.Shader_Type; Name : String)
-     return Subroutine_Index_Type;
+   function Subroutine_Index
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Name   : String) return Subroutine_Index_Type;
    --  Return the index of the subroutine function given its name
 
-   function Subroutine_Uniform_Location (Object : Program;
-                                         Shader : Shaders.Shader_Type;
-                                         Name   : String)
-     return Uniform_Location_Type;
+   function Subroutine_Uniform_Index
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Name   : String) return Subroutine_Index_Type;
+   --  Return the index of the subroutine uniform given its name
+
+   function Subroutine_Uniform_Location
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Name   : String) return Uniform_Location_Type;
    --  Return the location of a subroutine uniform
    --
    --  The location of the uniform is used when setting the subroutine
    --  function (using the index of the function) that should be used
    --  during rendering.
 
-   --  TODO GetActiveSubroutineUniformiv: get info about a uniform given its index:
-   --   * Num_Compatible_Subroutines (number of subroutine functions for the uniform)
-   --   * Compatible_Subroutines (list of indices of the subroutine functions)
-   --   * Uniform_Size (number of array elements if subroutine uniform is in an array)
-   --   * Uniform_Name_Length (length of uniform's name)
-
-   function Subroutine_Indices_Uniform (Object : Program;
-                                        Shader : Shaders.Shader_Type;
-                                        Index  : Subroutine_Index_Type)
-     return Subroutine_Index_Array;
+   function Subroutine_Indices_Uniform
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Index  : Subroutine_Index_Type) return Subroutine_Index_Array;
    --  Return the indices of compatible subroutines for the given subroutine uniform
 
-   function Active_Subroutine_Uniform_Locations (Object : Program; Shader : Shaders.Shader_Type)
-     return Size;
+   function Subroutine_Uniform_Locations
+     (Object : Program;
+      Shader : Shaders.Shader_Type;
+      Index  : Subroutine_Index_Type) return Size;
+   --  Return number of locations for a specific active subroutine uniform
+
+   function Subroutine_Uniform_Locations
+     (Object : Program;
+      Shader : Shaders.Shader_Type) return Size;
    --  Return number of active subroutine uniform locations
    --
    --  All locations between 0 .. Active_Subroutine_Uniform_Locations'Result - 1
@@ -162,13 +179,13 @@ package GL.Objects.Programs is
    --  Use the given indices of the subroutine functions to set the active
    --  subroutine uniforms
    --
-   --  Size of Indices must be equal to Active_Subroutine_Uniform_Locations.
+   --  Size of Indices must be equal to Subroutine_Uniform_Locations.
    --  You must call this program after Programs.Use_Program, Pipelines.Bind,
    --  or Pipelines.Use_Program_Stages.
    --
    --  This procedure can be used as follows:
    --
-   --  1. Use Active_Subroutine_Uniform_Locations to create a new UInt_Array
+   --  1. Use Subroutine_Uniform_Locations to create a new UInt_Array
    --     with the correct length.
    --  2. Call Subroutine_Index to get the index of a subroutine function.
    --     This will be a *value* in the array.
@@ -178,15 +195,18 @@ package GL.Objects.Programs is
    --     the array.
    --  5. Repeat steps 2 to 4 for all active subroutine uniforms.
 
-   function Uniform_Subroutine (Shader : Shaders.Shader_Type; Location : Uniform_Location_Type)
-     return Subroutine_Index_Type;
+   function Uniform_Subroutine
+     (Shader   : Shaders.Shader_Type;
+      Location : Uniform_Location_Type) return Subroutine_Index_Type;
    --  Return the current index (subroutine function) of a subroutine uniform
    --
    --  Use Subroutine_Name to get the name given its index returned by
    --  this function.
 
 private
+
    Invalid_Index : constant Subroutine_Index_Type := 16#FFFFFFFF#;
-   
+
    type Program is new GL_Object with null record;
+
 end GL.Objects.Programs;

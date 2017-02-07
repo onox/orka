@@ -123,8 +123,8 @@ begin
    Ada.Text_IO.Put_Line ("Loaded data");
 
    Ada.Text_IO.Put_Line ("Subroutines:");
-   Ada.Text_IO.Put_Line ("  Functions: " & Size'Image (Program.Active_Subroutines (Vertex_Shader)));
-   Ada.Text_IO.Put_Line ("  Uniforms: " & Size'Image (Program.Active_Subroutine_Uniforms (Vertex_Shader)));
+   Ada.Text_IO.Put_Line ("  Functions: " & Size'Image (Program.Subroutines_Indices (Vertex_Shader)));
+   Ada.Text_IO.Put_Line ("  Uniforms: " & Size'Image (Program.Subroutine_Uniforms_Indices (Vertex_Shader)));
    Ada.Text_IO.Put_Line ("  Function length: " & Size'Image (Program.Active_Subroutine_Max_Length (Vertex_Shader)));
    Ada.Text_IO.Put_Line ("  Uniform length: " & Size'Image (Program.Active_Subroutine_Uniform_Max_Length (Vertex_Shader)));
 
@@ -142,7 +142,7 @@ begin
       Location_U1 : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "update_pos[1]");
       Location_U2 : constant Location_Type := Program.Subroutine_Uniform_Location (Vertex_Shader, "no_update_pos");
 
-      Num_Uniforms : constant Size := Program.Active_Subroutine_Uniform_Locations (Vertex_Shader);
+      Num_Uniforms : constant Size := Program.Subroutine_Uniform_Locations (Vertex_Shader);
       Indices : UInt_Array (0 .. Num_Uniforms - 1);
    begin
       Ada.Text_IO.Put_Line ("  Active uniform locations: " & Size'Image (Num_Uniforms));
@@ -154,7 +154,7 @@ begin
       Ada.Text_IO.Put_Line ("  Location no_update_pos: " & Location_Type'Image (Location_U2));
 
       declare
-         Total_Uniforms : constant Size := Program.Active_Subroutine_Uniforms (Vertex_Shader);
+         Total_Uniforms : constant Size := Program.Subroutine_Uniforms_Indices (Vertex_Shader);
       begin
          Ada.Text_IO.Put_Line ("Number of subroutine uniforms: " & Size'Image (Total_Uniforms));
          for Index_Uniform in 0 .. Total_Uniforms - 1 loop
@@ -166,8 +166,7 @@ begin
 
                for Index_Subroutine of Program.Subroutine_Indices_Uniform (Vertex_Shader, Index) loop
                   declare
-                     Index : constant Index_Type := Index_Type (Index_Subroutine);
-                     Name  : constant String := Program.Subroutine_Name (Vertex_Shader, Index);
+                     Name  : constant String := Program.Subroutine_Name (Vertex_Shader, Index_Subroutine);
                   begin
                      Ada.Text_IO.Put_Line ("    - " & Index_Type'Image (Index_Subroutine) & ": " & Name);
                   end;
