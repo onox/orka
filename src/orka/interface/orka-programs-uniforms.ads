@@ -68,7 +68,7 @@ package Orka.Programs.Uniforms is
    --  for the subroutine uniform, False otherwise
 
    procedure Set_Function
-     (Object : in out Uniform_Subroutine;
+     (Object : Uniform_Subroutine;
       Name   : String)
    with Inline;
    --  Select the given subroutine function to be used by the
@@ -77,7 +77,7 @@ package Orka.Programs.Uniforms is
    --  This procedure is a shortcut for Set_Function (Index (Name)).
 
    procedure Set_Function
-     (Object : in out Uniform_Subroutine;
+     (Object : Uniform_Subroutine;
       Index  : Subroutine_Index)
    with Pre => Object.Is_Compatible (Index);
    --  Select the given subroutine function to be used by the

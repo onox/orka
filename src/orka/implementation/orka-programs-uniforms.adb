@@ -96,14 +96,14 @@ package body Orka.Programs.Uniforms is
    end Is_Compatible;
 
    procedure Set_Function
-     (Object : in out Uniform_Subroutine;
+     (Object : Uniform_Subroutine;
       Name   : String) is
    begin
       Object.Set_Function (Object.Index (Name));
    end Set_Function;
 
    procedure Set_Function
-     (Object : in out Uniform_Subroutine;
+     (Object : Uniform_Subroutine;
       Index  : Subroutine_Index) is
    begin
       Object.Program.Set_Subroutine_Function (Object.Shader, Object.Location, Index);
