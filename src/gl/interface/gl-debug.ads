@@ -138,7 +138,7 @@ private
    for Severity'Size use Low_Level.Enum'Size;
 
    type Active_Group is limited new Ada.Finalization.Limited_Controlled with record
-      Finalized : Boolean := True;
+      Finalized : Boolean;
    end record;
 
    overriding

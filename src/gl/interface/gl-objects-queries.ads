@@ -190,14 +190,14 @@ private
    type Active_Query is limited new Ada.Finalization.Limited_Controlled with record
       Target : Query_Type;
       Index  : Natural;
-      Finalized : Boolean := True;
+      Finalized : Boolean;
    end record;
 
    overriding
    procedure Finalize (Object : in out Active_Query);
 
    type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with record
-      Finalized : Boolean := True;
+      Finalized : Boolean;
    end record;
 
    overriding

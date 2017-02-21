@@ -123,7 +123,7 @@ private
    type Active_Feedback (Mode : Feedback_Connection_Mode) is
      limited new Ada.Finalization.Limited_Controlled with record
       Feedback  : Feedback_Object;
-      Finalized : Boolean := True;
+      Finalized : Boolean;
    end record;
 
    overriding
@@ -131,7 +131,7 @@ private
 
    type Paused_Feedback is limited new Ada.Finalization.Limited_Controlled with record
       Feedback  : Feedback_Object;
-      Finalized : Boolean := True;
+      Finalized : Boolean;
    end record;
 
    overriding
