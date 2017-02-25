@@ -15,6 +15,7 @@
 with Interfaces.C;
 
 package Glfw is
+   pragma Preelaborate;
 
    subtype Seconds is Interfaces.C.double;
 

@@ -15,6 +15,8 @@
 private with Glfw.Enums;
 
 package Glfw.Input.Joysticks is
+   pragma Preelaborate;
+
    use type Interfaces.C.C_float;
    
    -- GLFW supports up to 16 joysticks; they are indexed from 1 to 16.

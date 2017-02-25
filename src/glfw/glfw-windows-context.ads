@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 package Glfw.Windows.Context is
+   pragma Preelaborate;
 
    type OpenGL_Profile_Kind is (System_Default, Core_Profile, Compat_Profile);
    type API_Kind is (OpenGL, OpenGL_ES);

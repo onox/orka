@@ -25,6 +25,7 @@ with Glfw.Enums;
 with Glfw.Windows.Context;
 
 private package Glfw.API is
+   pragma Preelaborate;
 
    -----------------------------------------------------------------------------
    -- Types
@@ -34,7 +35,7 @@ private package Glfw.API is
    pragma Convention (C, Address_List);
 
    package Address_List_Pointers is new Interfaces.C.Pointers
-     (Positive, System.Address, Address_List, System.Null_Address);
+     (Positive, System.Address, Address_List, 0);  --  0 = System.Null_Address
 
    package VMode_List_Pointers is new Interfaces.C.Pointers
      (Positive, Monitors.Video_Mode, Monitors.Video_Mode_List, (others => 0));

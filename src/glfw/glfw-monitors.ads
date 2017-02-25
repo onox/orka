@@ -15,6 +15,7 @@
 with System;
 
 package Glfw.Monitors is
+   pragma Preelaborate;
 
    type Event is (Connected, Disconnected);
 
@@ -33,7 +34,7 @@ package Glfw.Monitors is
 
    type Monitor is tagged private;
 
-   No_Monitor : constant Monitor;
+   function No_Monitor return Monitor;
 
    type Monitor_List is array (Positive range <>) of Monitor;
    type Video_Mode_List is array (Positive range <>) of aliased Video_Mode;
@@ -59,8 +60,6 @@ private
    type Monitor is tagged record
       Handle : System.Address;
    end record;
-
-   No_Monitor : constant Monitor := (Handle => System.Null_Address);
 
    for Event use (Connected    => 16#00040001#,
                   Disconnected => 16#00040002#);

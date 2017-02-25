@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 package Glfw.Input is
+   pragma Preelaborate;
 
    type Button_State is (Released, Pressed);
 

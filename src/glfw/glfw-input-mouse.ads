@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 package Glfw.Input.Mouse is
+   pragma Preelaborate;
 
    type Button is new Interfaces.C.int range 0 .. 7;
 

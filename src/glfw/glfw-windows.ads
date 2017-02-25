@@ -21,6 +21,7 @@ with Glfw.Monitors;
 private with Ada.Finalization;
 
 package Glfw.Windows is
+   pragma Preelaborate;
 
    type Window is tagged private;
    type Window_Reference is not null access all Window;

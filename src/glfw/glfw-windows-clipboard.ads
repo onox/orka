@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 package Glfw.Windows.Clipboard is
+   pragma Preelaborate;
    -- strings are UTF-8 encoded
 
    function Get (Object : not null access Window'Class) return String;

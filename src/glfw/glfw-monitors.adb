@@ -18,6 +18,9 @@ with Glfw.API;
 
 package body Glfw.Monitors is
 
+   function No_Monitor return Monitor is
+     ((Handle => System.Null_Address));
+
    function Monitors return Monitor_List is
       use type API.Address_List_Pointers.Pointer;
       Count : aliased Interfaces.C.int;

@@ -13,6 +13,8 @@
 --  limitations under the License.
 
 package Glfw.Errors is
+   pragma Preelaborate;
+
    type Kind is (Not_Initialized,
                  No_Current_Context,
                  Invalid_Enum,

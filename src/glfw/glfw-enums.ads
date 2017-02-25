@@ -15,6 +15,7 @@
 with Interfaces.C;
 
 private package Glfw.Enums is
+   pragma Preelaborate;
 
    type Window_Info is (Focused, Iconified, Resizable, Visible, Decorated,
                         Red_Bits, Green_Bits, Blue_Bits, Alpha_Bits, Depth_Bits,

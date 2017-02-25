@@ -15,6 +15,7 @@
 with Glfw.Windows.Context;
 
 package Glfw.Windows.Hints is
+   pragma Preelaborate;
 
    procedure Reset_To_Defaults;
 

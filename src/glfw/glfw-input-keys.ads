@@ -13,6 +13,8 @@
 --  limitations under the License.
 
 package Glfw.Input.Keys is
+   pragma Preelaborate;
+
    type Action is (Release, Press, Repeat);
 
    type Key is (Unknown,
