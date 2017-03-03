@@ -38,5 +38,7 @@ private
    procedure Test_World_Transform;
    procedure Test_Depth;
    procedure Test_Width;
+   procedure Test_Update_Visibilities;
+   procedure Test_Visibility;
 
 end Test_Scene_Trees;

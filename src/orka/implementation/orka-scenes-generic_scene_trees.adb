@@ -70,6 +70,52 @@ package body Orka.Scenes.Generic_Scene_Trees is
       end loop;
    end Update_Transforms;
 
+   procedure Update_Visibilities (Object : in out Tree) is
+      Root_Visible : constant Boolean := Object.Levels (Object.Levels.First_Index).Local_Visibilities.Element (1);
+   begin
+      --  Copy Local_Visibility to World_Visibilitiy of root node
+      Object.Levels (Object.Levels.First_Index).World_Visibilities.Replace_Element (1, Root_Visible);
+
+      for Level_Index in Object.Levels.First_Index .. Object.Levels.Last_Index - 1 loop
+         declare
+            Parent_Level_V : Boolean_Vectors.Vector renames Object.Levels (Level_Index).World_Visibilities;
+            Parent_Level_N : Node_Vectors.Vector    renames Object.Levels (Level_Index).Nodes;
+
+            procedure Update (Child_Level : in out Level) is
+            begin
+               for Parent_Index in Parent_Level_N.First_Index .. Parent_Level_N.Last_Index loop
+                  declare
+                     Parent_Visible : Boolean renames Parent_Level_V.Element (Parent_Index);
+                     Parent         : Node    renames Parent_Level_N.Element (Parent_Index);
+                  begin
+                     for Node_Index in Parent.Offset .. Parent.Offset + Parent.Count - 1 loop
+                        declare
+                           Local : Boolean renames Child_Level.Local_Visibilities.Element (Node_Index);
+                        begin
+                           Child_Level.World_Visibilities.Replace_Element (Node_Index, Parent_Visible and then Local);
+                        end;
+                     end loop;
+                  end;
+               end loop;
+            end Update;
+         begin
+            Object.Levels.Update_Element (Level_Index + 1, Update'Access);
+         end;
+      end loop;
+   end Update_Visibilities;
+
+   procedure Set_Visibility (Object : in out Tree; Node : Cursor; Visible : Boolean) is
+      Node_Level : Level renames Object.Levels (Node.Level);
+   begin
+      Node_Level.Local_Visibilities.Replace_Element (Node.Offset, Visible);
+   end Set_Visibility;
+
+   function Visibility (Object : Tree; Node : Cursor) return Boolean is
+      Node_Level : Level renames Object.Levels (Node.Level);
+   begin
+      return Node_Level.World_Visibilities.Element (Node.Offset);
+   end Visibility;
+
    procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Transforms.Matrix4) is
       Node_Level : Level renames Object.Levels (Node.Level);
    begin
@@ -95,6 +141,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
                                            Count  => 0));
             Root_Level.Local_Transforms.Append (Transforms.Identity_Value);
             Root_Level.World_Transforms.Append (Transforms.Identity_Value);
+            Root_Level.Local_Visibilities.Append (True);
+            Root_Level.World_Visibilities.Append (True);
          end;
       end return;
    end Create_Tree;
@@ -129,6 +177,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
                                             Count  => 0));
             Child_Level.Local_Transforms.Append (Transforms.Identity_Value);
             Child_Level.World_Transforms.Append (Transforms.Identity_Value);
+            Child_Level.Local_Visibilities.Append (True);
+            Child_Level.World_Visibilities.Append (True);
          else
             --  Insert new node and its transforms
             Child_Level.Nodes.Insert (New_Node_Index, Node'(Name   => SU.To_Unbounded_String (Name),
@@ -136,6 +186,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
                                                             Count  => 0));
             Child_Level.Local_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
             Child_Level.World_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
+            Child_Level.Local_Visibilities.Insert (New_Node_Index, True);
+            Child_Level.World_Visibilities.Insert (New_Node_Index, True);
 
             --  After inserting a new node (in level j), increment the offsets
             --  of all parents that come after the new node's parent (in level i)
@@ -252,6 +304,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
                Node_Level.Nodes.Delete (Current_First_Index, Count);
                Node_Level.Local_Transforms.Delete (Current_First_Index, Count);
                Node_Level.World_Transforms.Delete (Current_First_Index, Count);
+               Node_Level.Local_Visibilities.Delete (Current_First_Index, Count);
+               Node_Level.World_Visibilities.Delete (Current_First_Index, Count);
             end;
 
             --  Record the level index of the first empty level. Any levels down

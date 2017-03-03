@@ -37,6 +37,12 @@ package Orka.Scenes.Generic_Scene_Trees is
 
    procedure Update_Transforms (Object : in out Tree);
 
+   procedure Update_Visibilities (Object : in out Tree);
+
+   procedure Set_Visibility (Object : in out Tree; Node : Cursor; Visible : Boolean);
+
+   function Visibility (Object : Tree; Node : Cursor) return Boolean;
+
    procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Transforms.Matrix4);
 
    function World_Transform (Object : Tree; Node : Cursor) return Transforms.Matrix4;
@@ -65,6 +71,8 @@ private
 
    package Node_Vectors is new Ada.Containers.Vectors (Positive, Node);
 
+   package Boolean_Vectors is new Ada.Containers.Vectors (Positive, Boolean);
+
    use type Transforms.Matrix4;
    package Matrix_Vectors is new Ada.Containers.Vectors (Positive, Transforms.Matrix4);
 
@@ -72,6 +80,8 @@ private
       Nodes : Node_Vectors.Vector;
       Local_Transforms : Matrix_Vectors.Vector;
       World_Transforms : Matrix_Vectors.Vector;
+      Local_Visibilities : Boolean_Vectors.Vector;
+      World_Visibilities : Boolean_Vectors.Vector;
    end record;
 
    package Level_Vectors is new Ada.Containers.Vectors (Positive, Level);

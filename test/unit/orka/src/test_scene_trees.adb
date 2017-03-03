@@ -42,6 +42,8 @@ package body Test_Scene_Trees is
       T.Add_Test_Routine (Test_World_Transform'Access, "Test World_Transform function");
       T.Add_Test_Routine (Test_Depth'Access, "Test Depth function");
       T.Add_Test_Routine (Test_Width'Access, "Test Width function");
+      T.Add_Test_Routine (Test_Update_Visibilities'Access, "Test Update_Visibilities procedure");
+      T.Add_Test_Routine (Test_Visibility'Access, "Test Visibility function");
    end Initialize;
 
    procedure Test_Create_Tree is
@@ -254,5 +256,40 @@ package body Test_Scene_Trees is
       Assert (T.Width (2) = 2, "Unexpected Width");
       Assert (T.Width (3) = 1, "Unexpected Width");
    end Test_Width;
+
+   procedure Test_Update_Visibilities is
+      T : Tree := Create_Tree ("root");
+   begin
+      --  Depth 1
+      T.Update_Visibilities;
+
+      --  Depth 2
+      T.Add_Node ("N1", "root");
+      T.Update_Visibilities;
+
+      --  Depth 3
+      T.Add_Node ("N2", "N1");
+      T.Update_Visibilities;
+   end Test_Update_Visibilities;
+
+   procedure Test_Visibility is
+      T : Tree := Create_Tree ("root");
+   begin
+      T.Add_Node ("N1", "root");
+
+      declare
+         C1 : constant Cursor := T.To_Cursor ("root");
+         C2 : constant Cursor := T.To_Cursor ("N1");
+      begin
+         Assert (T.Visibility (C2), "Unexpected Visibility");
+
+         --  Update local visibility of root node
+         T.Set_Visibility (C1, False);
+         T.Update_Visibilities;
+
+         --  Check visibility of node N1
+         Assert (not T.Visibility (C2), "Unexpected Visibility");
+      end;
+   end Test_Visibility;
 
 end Test_Scene_Trees;
