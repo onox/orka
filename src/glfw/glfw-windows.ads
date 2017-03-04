@@ -14,16 +14,16 @@
 
 with System;
 
+with Ada.Finalization;
+
 with Glfw.Input.Mouse;
 with Glfw.Input.Keys;
 with Glfw.Monitors;
 
-private with Ada.Finalization;
-
 package Glfw.Windows is
    pragma Preelaborate;
 
-   type Window is tagged private;
+   type Window is limited new Ada.Finalization.Limited_Controlled with private;
    type Window_Reference is not null access all Window;
 
    Creation_Error : exception;
@@ -132,7 +132,7 @@ package Glfw.Windows is
                                 Char   : Wide_Wide_Character) is null;
 
 private
-   type Window is new Ada.Finalization.Controlled with record
+   type Window is limited new Ada.Finalization.Limited_Controlled with record
       Handle : System.Address := System.Null_Address;
    end record;
 end Glfw.Windows;
