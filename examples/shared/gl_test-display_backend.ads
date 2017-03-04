@@ -51,10 +51,6 @@ package GL_Test.Display_Backend is
 
    function Get_Effect (Maximum : Positive) return Integer;
 
-   function Get_Pos_X return Float;
-   function Get_Pos_Y return Float;
-   function Get_Pos_Z return Float;
-
 private
 
    subtype Mouse_Zoom is Float range 0.5 .. 200.0;
@@ -72,9 +68,6 @@ private
       Prev_X, Prev_Y     : Float := 0.0;
 
       Effect : Effects := 0;
-      Pos_X : Float := 0.0;
-      Pos_Y : Float := 0.0;
-      Pos_Z : Float := 0.0;
    end record;
 
    type Test_Window_Access is not null access Test_Window;

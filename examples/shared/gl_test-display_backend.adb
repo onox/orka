@@ -66,24 +66,6 @@ package body GL_Test.Display_Backend is
       elsif Key = Space and Action = Press then
          Object.Effect := Object.Effect + 1;
       end if;
-      if Key = W and Action = Press then
-         Object.Pos_X := Object.Pos_X + 0.1;
-      end if;
-      if Key = S and Action = Press then
-         Object.Pos_X := Object.Pos_X - 0.1;
-      end if;
-      if Key = A and Action = Press then
-         Object.Pos_Y := Object.Pos_Y + 0.1;
-      end if;
-      if Key = D and Action = Press then
-         Object.Pos_Y := Object.Pos_Y - 0.1;
-      end if;
-      if Key = Q and Action = Press then
-         Object.Pos_Z := Object.Pos_Z + 0.1;
-      end if;
-      if Key = E and Action = Press then
-         Object.Pos_Z := Object.Pos_Z - 0.1;
-      end if;
    end Key_Changed;
 
    overriding
@@ -228,14 +210,5 @@ package body GL_Test.Display_Backend is
    begin
       return Integer (Main_Window.Effect) mod Maximum;
    end Get_Effect;
-
-   function Get_Pos_X return Float is
-     (Main_Window.Pos_X);
-
-   function Get_Pos_Y return Float is
-     (Main_Window.Pos_Y);
-
-   function Get_Pos_Z return Float is
-     (Main_Window.Pos_Z);
 
 end GL_Test.Display_Backend;

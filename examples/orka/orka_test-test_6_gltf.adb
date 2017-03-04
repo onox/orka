@@ -34,25 +34,27 @@ with Orka.Buffers;
 --  Needed for MSAA
 with GL.Objects.Framebuffers;
 with GL.Objects.Renderbuffers;
-with GL.Shading;
 
+with Orka.Behaviors;
+with Orka.Cameras;
 with Orka.Programs.Modules;
 with Orka.Programs.Uniforms;
 with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
-with Orka.SIMD;
-
-with GL_Test.Display_Backend;
+with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_6_GLTF is
    Width   : constant := 1280;
    Height  : constant := 720;
    Samples : constant := 1;
 
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => Width, Height => Height, Resizable => False, Debug => True);
+   Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
    pragma Unreferenced (Initialized);
+
+   W : Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+     (Width, Height, Resizable => False);
 
    use GL.Debug;
 
@@ -148,7 +150,7 @@ begin
 
       use Orka.Programs;
 
-      Program_1 : constant Program := Orka.Programs.Create_Program (Modules.Create_Module
+      Program_1 : Program := Orka.Programs.Create_Program (Modules.Create_Module
         (VS => "../examples/orka/shaders/test-6-module-1.vert",
          FS => "../examples/orka/shaders/test-6-module-1.frag"));
 
@@ -159,22 +161,18 @@ begin
       Uni_WT      : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("diffuseTexture");
 
-      Mouse_X, Mouse_Y, Mouse_Z : GL.Types.Single;
       use Orka.Transforms.Singles.Matrices;
       use type GL.Types.Single;
 
-      Aspect_Ratio : constant GL.Types.Single := GL.Types.Single (Width) / GL.Types.Single (Height);
-      Matrix_Proj : constant Matrix4 := Infinite_Perspective (45.0, Aspect_Ratio, 0.1);
       Matrix_View : Matrix4;
 
       Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
 
-      --  An offset that can be used to change the point at which the
-      --  camera looks. Useful if the center of a 3D model is not at the
-      --  origin.
-      View_Offset : Vector4 := (0.0, 0.0, 0.0, 0.0);
-
       Light_Position : constant Vector4 := (0.0, 0.0, 0.0, 1.0);
+
+      use Orka.Cameras;
+      Lens : constant Lens_Ptr := new Camera_Lens'Class'(Orka.Cameras.Create_Lens (Width, Height, 45.0));
+      Current_Camera : Camera'Class := Orka.Cameras.Create_Camera (Rotate_Around, W.Pointer_Input, Lens);
 
       function Convert_Matrix is new Ada.Unchecked_Conversion
         (Source => Orka.Transforms.Singles.Matrices.Matrix4, Target => GL.Types.Singles.Matrix4);
@@ -215,7 +213,7 @@ begin
       Load_Texture (Texture_1);
       Uni_Texture.Set_Texture (Texture_1, 1);
 
-      Uni_Proj.Set_Matrix (Matrix_Proj);
+      Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
       --  Set-up multisampled FBO
       RB_C.Allocate (GL.Pixels.RGBA8, Width, Height, Samples);
@@ -227,31 +225,19 @@ begin
 
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
-      GL.Shading.Set_Minimum_Sample_Shading (1.0);
       GL.Toggles.Enable (GL.Toggles.Multisample);
 
       GL.Objects.Framebuffers.Draw_Target.Bind (FB_1);
 
-      while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-         Mouse_X := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_X);
-         Mouse_Y := GL.Types.Single (GL_Test.Display_Backend.Get_Mouse_Y);
-         Mouse_Z := GL.Types.Single (GL_Test.Display_Backend.Get_Zoom_Distance);
-
-         View_Offset (Orka.SIMD.X) := GL.Types.Single (GL_Test.Display_Backend.Get_Pos_X);
-         View_Offset (Orka.SIMD.Y) := GL.Types.Single (GL_Test.Display_Backend.Get_Pos_Y);
-         View_Offset (Orka.SIMD.Z) := GL.Types.Single (GL_Test.Display_Backend.Get_Pos_Z);
-
-         if GL_Test.Display_Backend.Get_Effect (2) = 0 then
-            GL.Toggles.Enable (GL.Toggles.Sample_Shading);
-         else
-            GL.Toggles.Disable (GL.Toggles.Sample_Shading);
-         end if;
-
+      while not W.Should_Close loop
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
          FB_1.Invalidate_Data ((GL.Objects.Framebuffers.Color_Attachment_0,
                                 GL.Objects.Framebuffers.Depth_Attachment));
 
-         Matrix_View := (0.0, 0.0, -Mouse_Z, 0.0) + Rx (Mouse_Y) * Rz (Mouse_X) * (View_Offset + Identity_Value);
+         W.Process_Input;
+
+         Orka.Behaviors.Behavior'Class (Current_Camera).Update (0.0);
+         Matrix_View := Current_Camera.View_Matrix;
          Uni_View.Set_Matrix (Matrix_View);
 
          --  Set position of light in camera space
@@ -263,9 +249,7 @@ begin
          GL.Objects.Framebuffers.Blit (FB_1, GL.Objects.Framebuffers.Default_Framebuffer,
            0, 0, Width, Height, 0, 0, Width, Height, (Color => True, others => False), Nearest);
 
-         GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+         W.Swap_Buffers;
       end loop;
    end;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_6_GLTF;
