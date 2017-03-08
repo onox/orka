@@ -40,6 +40,8 @@ package body Test_SIMD_AVX_Arithmetic is
       T.Add_Test_Routine (Test_Minus'Access, "Test unary '-' operator");
       T.Add_Test_Routine (Test_Multiply_Vector'Access, "Test '*' operator on matrix and vector");
       T.Add_Test_Routine (Test_Multiply_Matrices'Access, "Test '*' operator on matrices");
+      T.Add_Test_Routine (Test_Abs'Access, "Test 'abs' operator");
+      T.Add_Test_Routine (Test_Sum'Access, "Test Sum function");
    end Initialize;
 
    procedure Test_Multiply is
@@ -179,5 +181,25 @@ package body Test_SIMD_AVX_Arithmetic is
          end loop;
       end loop;
    end Test_Multiply_Matrices;
+
+   procedure Test_Abs is
+      Elements  : constant m256d := (1.0, -2.0, -3.0, 0.0);
+
+      Expected : constant m256d := (1.0, 2.0, 3.0, 0.0);
+      Result   : constant m256d := abs Elements;
+   begin
+      for I in Index_Homogeneous loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      end loop;
+   end Test_Abs;
+
+   procedure Test_Sum is
+      Elements  : constant m256d := (-1.0, 2.0, -3.0, 4.0);
+
+      Expected : constant GL.Types.Double := 2.0;
+      Result   : constant GL.Types.Double := Sum (Elements);
+   begin
+      Assert (Expected = Result, "Unexpected Double " & GL.Types.Double'Image (Result));
+   end Test_Sum;
 
 end Test_SIMD_AVX_Arithmetic;

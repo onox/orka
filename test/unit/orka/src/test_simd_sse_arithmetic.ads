@@ -32,5 +32,7 @@ private
    procedure Test_Minus;
    procedure Test_Multiply_Vector;
    procedure Test_Multiply_Matrices;
+   procedure Test_Abs;
+   procedure Test_Sum;
 
 end Test_SIMD_SSE_Arithmetic;
