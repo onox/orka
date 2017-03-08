@@ -43,19 +43,19 @@ package Orka.SIMD.F16C is
 
    function Convert_Nearest_Integer (Elements : m128) return m128i is
      (Convert (Elements, 0))
-     with Inline;
+   with Inline;
 
    function Convert_Down (Elements : m128) return m128i is
      (Convert (Elements, 1))
-     with Inline;
+   with Inline;
 
    function Convert_Up (Elements : m128) return m128i is
      (Convert (Elements, 2))
-     with Inline;
+   with Inline;
 
    function Convert_Truncate (Elements : m128) return m128i is
      (Convert (Elements, 3))
-     with Inline;
+   with Inline;
 
    -----------------------------------------------------------------------------
 
@@ -65,18 +65,18 @@ package Orka.SIMD.F16C is
 
    function Convert_Nearest_Integer (Elements : m256) return m128i is
      (Convert (Elements, 0))
-     with Inline;
+   with Inline;
 
    function Convert_Down (Elements : m256) return m128i is
      (Convert (Elements, 1))
-     with Inline;
+   with Inline;
 
    function Convert_Up (Elements : m256) return m128i is
      (Convert (Elements, 2))
-     with Inline;
+   with Inline;
 
    function Convert_Truncate (Elements : m256) return m128i is
      (Convert (Elements, 3))
-     with Inline;
+   with Inline;
 
 end Orka.SIMD.F16C;

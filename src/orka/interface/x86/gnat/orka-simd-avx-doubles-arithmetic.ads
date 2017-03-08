@@ -41,7 +41,14 @@ package Orka.SIMD.AVX.Doubles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subpd256";
 
    function "-" (Elements : m256d) return m256d is
-     ((0.0, 0.0, 0.0, 0.0) - Elements);
+     ((0.0, 0.0, 0.0, 0.0) - Elements)
+   with Inline;
+
+   function "abs" (Elements : m256d) return m256d
+     with Inline;
+
+   function Sum (Elements : m256d) return GL.Types.Double
+     with Inline;
 
    function Add_Subtract (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addsubpd256";

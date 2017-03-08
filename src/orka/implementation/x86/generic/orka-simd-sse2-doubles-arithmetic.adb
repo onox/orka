@@ -14,6 +14,7 @@
 
 with Orka.SIMD.SSE2.Doubles.Compare;
 with Orka.SIMD.SSE2.Doubles.Logical;
+with Orka.SIMD.SSE2.Doubles.Swizzle;
 
 package body Orka.SIMD.SSE2.Doubles.Arithmetic is
 
@@ -32,5 +33,25 @@ package body Orka.SIMD.SSE2.Doubles.Arithmetic is
       --  This will avoid the divide-by-zero exception when dividing.
       return Mask and Normalized;
    end Divide_Or_Zero;
+
+   function "abs" (Elements : m128d) return m128d is
+      use SIMD.SSE2.Doubles.Logical;
+      use type GL.Types.Double;
+   begin
+      return And_Not ((-0.0, -0.0), Elements);
+   end "abs";
+
+   function Sum (Elements : m128d) return GL.Types.Double is
+      use SIMD.SSE2.Doubles.Swizzle;
+
+      --  Based on SIMD.SSE.Singles.Arithmetic.Sum
+
+      Mask_1_0 : constant Unsigned_32 := 1 or 0 * 2;
+
+      Shuffled : constant m128d := Shuffle (Elements, Elements, Mask_1_0);
+      Sum      : constant m128d := Elements + Shuffled;
+   begin
+      return Extract_X (Sum, 0);
+   end Sum;
 
 end Orka.SIMD.SSE2.Doubles.Arithmetic;

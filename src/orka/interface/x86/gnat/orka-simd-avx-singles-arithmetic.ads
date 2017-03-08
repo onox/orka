@@ -32,6 +32,12 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    function "-" (Elements : m256) return m256 is
      ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) - Elements);
 
+   function "abs" (Elements : m256) return m256
+     with Inline;
+
+   function Sum (Elements : m256) return GL.Types.Single
+     with Inline;
+
    function Add_Subtract (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addsubps256";
    --  Subtract and add 32-bit floats from Left and Right
@@ -51,5 +57,8 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    --  from Left are stored in the four floats in the first, second, fifth,
    --  and sixth position, differences from Right in the third, fourth,
    --  seventh, and eight.
+
+   function Dot (Left, Right : m256; Mask : Unsigned_32) return m256
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_dpps256";
 
 end Orka.SIMD.AVX.Singles.Arithmetic;

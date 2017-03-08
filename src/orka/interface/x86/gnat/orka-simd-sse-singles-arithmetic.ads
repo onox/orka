@@ -41,6 +41,13 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subps";
 
    function "-" (Elements : m128) return m128 is
-     ((0.0, 0.0, 0.0, 0.0) - Elements);
+     ((0.0, 0.0, 0.0, 0.0) - Elements)
+   with Inline;
+
+   function "abs" (Elements : m128) return m128
+     with Inline;
+
+   function Sum (Elements : m128) return GL.Types.Single
+     with Inline;
 
 end Orka.SIMD.SSE.Singles.Arithmetic;

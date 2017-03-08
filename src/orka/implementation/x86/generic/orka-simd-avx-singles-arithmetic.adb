@@ -14,6 +14,9 @@
 
 with Orka.SIMD.AVX.Singles.Compare;
 with Orka.SIMD.AVX.Singles.Logical;
+with Orka.SIMD.AVX.Singles.Swizzle;
+with Orka.SIMD.SSE.Singles.Arithmetic;
+with Orka.SIMD.SSE3.Singles.Arithmetic;
 
 package body Orka.SIMD.AVX.Singles.Arithmetic is
 
@@ -32,5 +35,25 @@ package body Orka.SIMD.AVX.Singles.Arithmetic is
       --  This will avoid the divide-by-zero exception when dividing.
       return Mask and Normalized;
    end Divide_Or_Zero;
+
+   function "abs" (Elements : m256) return m256 is
+      use SIMD.AVX.Singles.Logical;
+      use type GL.Types.Single;
+   begin
+      return And_Not ((-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0), Elements);
+   end "abs";
+
+   function Sum (Elements : m256) return GL.Types.Single is
+      use SIMD.SSE.Singles;
+      use SIMD.SSE.Singles.Arithmetic;
+      use SIMD.AVX.Singles.Swizzle;
+
+      --  From https://stackoverflow.com/a/35270026
+
+      Low  : constant m128 := Cast (Elements);
+      High : constant m128 := Extract (Elements, 1);
+   begin
+      return SIMD.SSE3.Singles.Arithmetic.Sum (Low + High);
+   end Sum;
 
 end Orka.SIMD.AVX.Singles.Arithmetic;

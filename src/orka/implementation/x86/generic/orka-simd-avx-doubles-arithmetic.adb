@@ -15,6 +15,7 @@
 with Orka.SIMD.AVX.Doubles.Compare;
 with Orka.SIMD.AVX.Doubles.Logical;
 with Orka.SIMD.AVX.Doubles.Swizzle;
+with Orka.SIMD.SSE2.Doubles.Swizzle;
 
 package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
@@ -74,5 +75,34 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
       --  This will avoid the divide-by-zero exception when dividing.
       return Mask and Normalized;
    end Divide_Or_Zero;
+
+   function "abs" (Elements : m256d) return m256d is
+      use SIMD.AVX.Doubles.Logical;
+      use type GL.Types.Double;
+   begin
+      return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
+   end "abs";
+
+   function Sum (Elements : m256d) return GL.Types.Double is
+      use SIMD.AVX.Doubles.Swizzle;
+      use SIMD.SSE2.Doubles.Swizzle;
+
+      --  Based on SIMD.SSE.Singles.Arithmetic.Sum
+
+      Mask_1_0_1_0 : constant Unsigned_32 := 1 or 0 * 2 or 1 * 4 or 0 * 8;
+
+      --  Elements:  X   Y   Z   W
+      --  Shuffled:  Y   X   W   Z
+      --            --------------- +
+      --  Sum:      X+Y X+Y Z+W Z+W
+      Shuffled : constant m256d := Permute (Elements, Mask_1_0_1_0);
+      Sum      : constant m256d := Elements + Shuffled;
+   begin
+      --  Sum:      X+Y X+Y Z+W Z+W
+      --  Move:     Z+W Z+W Z+W Z+W
+      --            --------------- +
+      --  New sum:  X+Y+Z+W . . .
+      return Extract_X (Cast (Duplicate_HL (Sum) + Sum), 0);
+   end Sum;
 
 end Orka.SIMD.AVX.Doubles.Arithmetic;

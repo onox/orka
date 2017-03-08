@@ -30,6 +30,13 @@ package Orka.SIMD.SSE2.Doubles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subpd";
 
    function "-" (Elements : m128d) return m128d is
-     ((0.0, 0.0) - Elements);
+     ((0.0, 0.0) - Elements)
+   with Inline;
+
+   function "abs" (Elements : m128d) return m128d
+     with Inline;
+
+   function Sum (Elements : m128d) return GL.Types.Double
+     with Inline;
 
 end Orka.SIMD.SSE2.Doubles.Arithmetic;

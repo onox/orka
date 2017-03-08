@@ -50,16 +50,19 @@ package Orka.SIMD.SSE.Singles.Swizzle is
 
    function Duplicate_LH (Elements : m128) return m128 is
      (Move_LH (Elements, Elements))
-     with Inline;
+   with Inline;
 
    function Duplicate_HL (Elements : m128) return m128 is
      (Move_HL (Elements, Elements))
-     with Inline;
+   with Inline;
 
    procedure Transpose (Matrix : in out m128_Array)
      with Inline;
 
    function Transpose (Matrix : m128_Array) return m128_Array
      with Inline;
+
+   function Extract_X (Elements : m128; Zero : Unsigned_32) return GL.Types.Single
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vec_ext_v4sf";
 
 end Orka.SIMD.SSE.Singles.Swizzle;

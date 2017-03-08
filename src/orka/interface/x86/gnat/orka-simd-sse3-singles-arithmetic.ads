@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Types;
+
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.SSE3.Singles.Arithmetic is
@@ -36,5 +38,8 @@ package Orka.SIMD.SSE3.Singles.Arithmetic is
    --  The two differences (four elements gives two pairs) of elements
    --  from Left are stored in the two floats in the lower half, differences
    --  from Right in the upper half.
+
+   function Sum (Elements : m128) return GL.Types.Single
+     with Inline;
 
 end Orka.SIMD.SSE3.Singles.Arithmetic;

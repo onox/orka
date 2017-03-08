@@ -68,4 +68,32 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
       return Mask and Normalized;
    end Divide_Or_Zero;
 
+   function "abs" (Elements : m128) return m128 is
+      use SIMD.SSE.Singles.Logical;
+      use type GL.Types.Single;
+   begin
+      return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
+   end "abs";
+
+   function Sum (Elements : m128) return GL.Types.Single is
+      use SIMD.SSE.Singles.Swizzle;
+
+      --  From https://stackoverflow.com/a/35270026
+
+      Mask_1_0_3_2 : constant Unsigned_32 := 1 or 0 * 4 or 3 * 16 or 2 * 64;
+
+      --  Elements:  X   Y   Z   W
+      --  Shuffled:  Y   X   W   Z
+      --            --------------- +
+      --  Sum:      X+Y X+Y Z+W Z+W
+      Shuffled : constant m128 := Shuffle (Elements, Elements, Mask_1_0_3_2);
+      Sum      : constant m128 := Elements + Shuffled;
+   begin
+      --  Sum:      X+Y X+Y Z+W Z+W
+      --  Move:     Z+W Z+W  W   Z
+      --            --------------- +
+      --  New sum:  X+Y+Z+W . . .
+      return Extract_X (Move_HL (Shuffled, Sum) + Sum, 0);
+   end Sum;
+
 end Orka.SIMD.SSE.Singles.Arithmetic;
