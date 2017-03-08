@@ -24,6 +24,7 @@ generic
    with function Absolute_Vector (Elements : Vector_Type) return Vector_Type;
    with function Sum (Elements : Vector_Type) return Element_Type;
    with function Divide_Or_Zero (Left, Right : Vector_Type) return Vector_Type;
+   with function Cross_Product (Left, Right : Vector_Type) return Vector_Type;
 package Orka.Transforms.SIMD_Vectors is
    pragma Preelaborate;
 
@@ -59,6 +60,6 @@ package Orka.Transforms.SIMD_Vectors is
 
    function Dot (Left, Right : Vector_Type) return Element_Type;
 
-   function Cross (Left, Right : Vector_Type) return Vector_Type;
+   function Cross (Left, Right : Vector_Type) return Vector_Type renames Cross_Product;
 
 end Orka.Transforms.SIMD_Vectors;

@@ -54,4 +54,7 @@ package Orka.SIMD.AVX.Doubles.Math is
    with Inline;
    --  Round each element to zero
 
+   function Cross_Product (Left, Right : m256d) return m256d
+     with Inline;
+
 end Orka.SIMD.AVX.Doubles.Math;

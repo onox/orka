@@ -65,9 +65,4 @@ package body Orka.Transforms.SIMD_Vectors is
    function Dot (Left, Right : Vector_Type) return Element_Type is
      (Sum (Left * Right));
 
-   function Cross (Left, Right : Vector_Type) return Vector_Type is
-   begin
-      -- TODO
-   end Cross;
-
 end Orka.Transforms.SIMD_Vectors;

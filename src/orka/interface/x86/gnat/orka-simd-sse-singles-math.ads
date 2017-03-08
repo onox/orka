@@ -39,4 +39,7 @@ package Orka.SIMD.SSE.Singles.Math is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_sqrtps";
    --  Return the square root (Sqrt(X)) of each element
 
+   function Cross_Product (Left, Right : m128) return m128
+     with Inline;
+
 end Orka.SIMD.SSE.Singles.Math;
