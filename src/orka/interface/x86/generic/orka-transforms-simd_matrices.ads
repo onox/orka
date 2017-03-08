@@ -33,7 +33,8 @@ package Orka.Transforms.SIMD_Matrices is
      (((1.0, 0.0, 0.0, 0.0),
        (0.0, 1.0, 0.0, 0.0),
        (0.0, 0.0, 1.0, 0.0),
-       (0.0, 0.0, 0.0, 1.0)));
+       (0.0, 0.0, 0.0, 1.0)))
+   with Inline;
 
    function T (Offset : Vector_Type) return Matrix_Type;
 
