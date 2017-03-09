@@ -111,11 +111,12 @@ package Orka.Cameras is
      (Object : in out Look_At_Camera;
       Target : Transforms.Vector4);
 
-   overriding
-   function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
+   procedure Set_Up_Direction
+     (Object    : in out Look_At_Camera;
+      Direction : Transforms.Vector4);
 
    overriding
-   procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration);
+   function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
 
    -----------------------------------------------------------------------------
    --                          Third person camera's                          --
@@ -199,6 +200,7 @@ private
 
    type Look_At_Camera is new First_Person_Camera and Observing_Camera with record
       Target : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Up     : Transforms.Vector4 := (0.0, 1.0, 0.0, 0.0);
    end record;
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record

@@ -14,7 +14,12 @@
 
 with Ada.Tags.Generic_Dispatching_Constructor;
 
+with Orka.SIMD;
+with Orka.Transforms.Singles.Vectors;
+
 package body Orka.Cameras is
+
+   package Vector_Transforms renames Orka.Transforms.Singles.Vectors;
 
    procedure Set_FOV (Object : in out Camera_Lens; FOV : GL.Types.Single) is
    begin
@@ -56,6 +61,13 @@ package body Orka.Cameras is
    begin
       Object.Target := Target;
    end Look_At;
+
+   procedure Set_Up_Direction
+     (Object    : in out Look_At_Camera;
+      Direction : Transforms.Vector4) is
+   begin
+      Object.Up := Direction;
+   end Set_Up_Direction;
 
    overriding
    procedure Look_At
@@ -113,15 +125,6 @@ package body Orka.Cameras is
    end Update;
 
    overriding
-   procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
-   begin
-      Object.Input.Lock_Pointer (Using_Camera);
-
-      --  TODO
-   end Update;
-
-   overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
       Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
    begin
@@ -153,23 +156,34 @@ package body Orka.Cameras is
 
    -----------------------------------------------------------------------------
 
-   use Transforms;
-
    overriding
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4 is
+      use Transforms;
    begin
       return Ry (Object.Roll) * Rx (Object.Pitch) * Rz (Object.Yaw) * T (Object.Position);
    end View_Matrix;
 
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
+      use Vector_Transforms;
+      use Orka.SIMD;
+
+      Forward : constant Vector4 := Normalize (Object.Target - Object.Position);
+      Side    : constant Vector4 := Cross (Forward, Object.Up);
+      Up      : constant Vector4 := Cross (Side, Forward);
+
+      use Transforms;
    begin
-      --  TODO
-      return Transforms.Identity_Value;
+      return
+        ((Side (X), Up (X), -Forward (X), 0.0),
+         (Side (Y), Up (Y), -Forward (Y), 0.0),
+         (Side (Z), Up (Z), -Forward (Z), 0.0),
+         (0.0, 0.0, 0.0, 1.0)) * T (Object.Position);
    end View_Matrix;
 
    overriding
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
+      use Transforms;
    begin
       return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Rz (Object.Alpha) * T (Object.Target);
    end View_Matrix;
