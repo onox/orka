@@ -17,7 +17,9 @@ package Orka.Behaviors is
 
    type Visibility is (Invisible, Visible);
 
-   type Behavior is interface;
+   type Behavior is limited interface;
+
+   type Behavior_Ptr is not null access Behavior'Class;
 
    procedure Fixed_Update (Object : in out Behavior; Delta_Time : Duration) is null;
    --  Called zero to multiple times per frame and before Update
