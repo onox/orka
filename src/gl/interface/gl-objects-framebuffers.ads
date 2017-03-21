@@ -73,8 +73,6 @@ package GL.Objects.Framebuffers is
                   else
                     Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
 
-   function Status (Object : Framebuffer) return Framebuffer_Status;
-
    procedure Attach_Renderbuffer (Object : Framebuffer; Attachment : Attachment_Point;
                                   Render_Object : Renderbuffers.Renderbuffer'Class)
      with Pre => Object /= Default_Framebuffer;
@@ -144,6 +142,10 @@ package GL.Objects.Framebuffers is
                    Object : Framebuffer'Class);
 
    function Current (Target : Framebuffer_Target) return Framebuffer'Class;
+
+   function Status
+     (Object : Framebuffer;
+      Target : Framebuffer_Target'Class) return Framebuffer_Status;
 
    Read_Target  : constant Framebuffer_Target;
    Draw_Target  : constant Framebuffer_Target;

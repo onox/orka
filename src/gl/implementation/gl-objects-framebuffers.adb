@@ -20,9 +20,11 @@ with GL.Enums.Getter;
 
 package body GL.Objects.Framebuffers is
 
-   function Status (Object : Framebuffer) return Framebuffer_Status is
+   function Status
+     (Object : Framebuffer;
+      Target : Framebuffer_Target'Class) return Framebuffer_Status is
    begin
-      return API.Check_Named_Framebuffer_Status (Object.Reference.GL_Id);
+      return API.Check_Named_Framebuffer_Status (Object.Reference.GL_Id, Target.Kind);
    end Status;
 
    procedure Set_Active_Buffer (Object   : Framebuffer;

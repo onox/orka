@@ -12,7 +12,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Indefinite_Holders;
+
 with GL.Objects.Framebuffers;
+with GL.Objects.Textures;
 with GL.Types;
 
 with Orka.Buffers;
@@ -22,28 +25,59 @@ with Orka.Programs;
 package Orka.Framebuffers is
    pragma Preelaborate;
 
-   type Framebuffer is tagged limited private;
+   use GL.Types;
 
-   function Create_Framebuffer return Framebuffer;
+   type Framebuffer
+     (Default : Boolean;
+      Width, Height, Samples : Size) is tagged limited private
+   with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
 
-   function Default_Framebuffer return Framebuffer
-     with Inline;
+   use type GL.Objects.Framebuffers.Framebuffer;
+
+   function Create_Framebuffer
+     (Width, Height : Size;
+      Color_Texture : GL.Objects.Textures.Texture'Class) return Framebuffer
+   with Post => not Create_Framebuffer'Result.Default;
+
+   function Create_Framebuffer (Width, Height, Samples : Size) return Framebuffer
+     with Pre  => Samples > 0,
+          Post => not Create_Framebuffer'Result.Default;
+
+   function Create_Default_Framebuffer (Width, Height : Size) return Framebuffer
+     with Inline, Post => Create_Default_Framebuffer'Result.Default
+       and Create_Default_Framebuffer'Result.GL_Framebuffer = GL.Objects.Framebuffers.Default_Framebuffer;
 
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
      with Inline;
 
-   procedure Draw (Object : Framebuffer; Program : in out Orka.Programs.Program;
-                   Mesh : Orka.Meshes.Vertex_Format; Offset, Count : GL.Types.Size);
+   procedure Draw
+     (Object  : Framebuffer;
+      Program : in out Orka.Programs.Program;
+      Mesh    : Orka.Meshes.Vertex_Format;
+      Offset, Count : Size);
 
-   procedure Draw_Indirect (Object : Framebuffer; Program : in out Orka.Programs.Program;
-                            Mesh : Orka.Meshes.Vertex_Format; Buffer : Orka.Buffers.Buffer);
+   procedure Draw_Indirect
+     (Object  : Framebuffer;
+      Program : in out Orka.Programs.Program;
+      Mesh    : Orka.Meshes.Vertex_Format;
+      Buffer  : Orka.Buffers.Buffer);
+
+   procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer)
+     with Pre => Object /= Subject;
+
+   function "=" (Left, Right : Framebuffer) return Boolean;
 
    Framebuffer_Incomplete_Error : exception;
 
 private
 
-   type Framebuffer is tagged limited record
+   package Attachment_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => GL.Objects.GL_Object'Class, "=" => GL.Objects."=");
+
+   type Framebuffer (Default : Boolean; Width, Height, Samples : Size) is tagged limited record
       GL_Framebuffer : GL.Objects.Framebuffers.Framebuffer;
+      Color_Attachment : Attachment_Holder.Holder;
+      Depth_Attachment : Attachment_Holder.Holder;
    end record;
 
 end Orka.Framebuffers;

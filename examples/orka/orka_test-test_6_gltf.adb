@@ -32,8 +32,7 @@ with GL.Pixels;
 with Orka.Buffers;
 
 --  Needed for MSAA
-with GL.Objects.Framebuffers;
-with GL.Objects.Renderbuffers;
+with Orka.Framebuffers;
 
 with Orka.Behaviors;
 with Orka.Cameras;
@@ -187,8 +186,8 @@ begin
       Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), GL.Types.Single_Type, World_Transforms'Length * 16);
       TBO_1 : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
 
-      FB_1 : GL.Objects.Framebuffers.Framebuffer;
-      RB_C, RB_D : GL.Objects.Renderbuffers.Renderbuffer;
+      FB_1 : Orka.Framebuffers.Framebuffer := Orka.Framebuffers.Create_Framebuffer (Width, Height, Samples);
+      FB_D : Orka.Framebuffers.Framebuffer := Orka.Framebuffers.Create_Default_Framebuffer (Width, Height);
    begin
       Ada.Text_IO.Put_Line ("Duration glTF: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
       Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));
@@ -215,24 +214,11 @@ begin
 
       Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
-      --  Set-up multisampled FBO
-      RB_C.Allocate (GL.Pixels.RGBA8, Width, Height, Samples);
-      RB_D.Allocate (GL.Pixels.Depth_Component24, Width, Height, Samples);
-      FB_1.Attach_Renderbuffer (GL.Objects.Framebuffers.Color_Attachment_0, RB_C);
-      FB_1.Attach_Renderbuffer (GL.Objects.Framebuffers.Depth_Attachment, RB_D);
-
-      Program_1.Use_Program;
-
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
-      GL.Toggles.Enable (GL.Toggles.Multisample);
-
-      GL.Objects.Framebuffers.Draw_Target.Bind (FB_1);
 
       while not W.Should_Close loop
          Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
-         FB_1.Invalidate_Data ((GL.Objects.Framebuffers.Color_Attachment_0,
-                                GL.Objects.Framebuffers.Depth_Attachment));
 
          W.Process_Input;
 
@@ -243,11 +229,10 @@ begin
          --  Set position of light in camera space
          Uni_Light.Set_Vector (Matrix_View * Light_Position);
 
-         M.Mesh.Draw_Indirect (M.Command_Buffer);
+         FB_1.Draw_Indirect (Program_1, M.Mesh, M.Command_Buffer);
 
          --  Resolve the multiple samples in the FBO
-         GL.Objects.Framebuffers.Blit (FB_1, GL.Objects.Framebuffers.Default_Framebuffer,
-           0, 0, Width, Height, 0, 0, Width, Height, (Color => True, others => False), Nearest);
+         FB_1.Resolve_To (FB_D);
 
          W.Swap_Buffers;
       end loop;

@@ -724,8 +724,8 @@ private package GL.API is
    procedure Named_Framebuffer_Read_Buffer is new Loader.Procedure_With_2_Params
      ("glNamedFramebufferReadBuffer", UInt, Buffers.Color_Buffer_Selector);
 
-   function Check_Named_Framebuffer_Status is new Loader.Function_With_1_Param
-     ("glCheckNamedFramebufferStatus", UInt,
+   function Check_Named_Framebuffer_Status is new Loader.Function_With_2_Params
+     ("glCheckNamedFramebufferStatus", UInt, Low_Level.Enums.Framebuffer_Kind,
       Objects.Framebuffers.Framebuffer_Status);
 
    procedure Named_Framebuffer_Renderbuffer is new Loader.Procedure_With_4_Params
