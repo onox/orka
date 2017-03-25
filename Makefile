@@ -6,7 +6,7 @@ endif
 
 WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
 LIBRARY_TYPE ?= relocatable
-MODE ?= release
+MODE ?= development
 
 GNAT_FLAGS ?= -dm
 CFLAGS  ?= -O3 -march=native

@@ -80,16 +80,23 @@ Compilation
 A Makefile is provided to build the source code and examples. Use `make` to build
 the source code:
 
-    $ make
+    $ MODE=release make
 
 If you want to check after each call to OpenGL whether an error flag was set
 and raise a corresponding exception, then use the `development` mode:
 
     $ MODE=development make
 
-The default mode is `release`. Both `release` and `development` enable general
+The default mode is `development`. Both `release` and `development` enable general
 optimizations. To enable OpenGL exceptions, disable optimizations, and include
-debugging symbols, use the `debug` mode.
+debugging symbols, use the `debug` mode. See the following table:
+
+|                   | Release | Development | Debug |
+|-------------------|---------|-------------|-------|
+| Optimizations     | Yes     | Yes         | No    |
+| Assertions        | No      | Yes         | Yes   |
+| OpenGL exceptions | No      | Yes         | Yes   |
+| Debugging symbols | No      | No          | Yes   |
 
 Examples
 --------
@@ -139,14 +146,7 @@ If you want to use GLFW, refer to `orka-glfw` instead. The project files
     - `x11`: X Windowing System (Linux, BSD, etc)
     - `windows`: Microsoft Windows
 
- * `Mode`: May take one of the following values:
-
-    - `debug`: Compile the project with debugging symbols and OpenGL
-      exceptions, and without optimizations.
-    - `development`: Compile the project with optimizations, but enable
-      OpenGL exceptions.
-    - `release` (default): Compile the project for a release environment;
-      OpenGL exceptions are disabled and optimizations are enabled.
+ * `Mode`: May take one of the following values: `debug`, `development`, or `release`.
 
  * `GLFW_Lib`: Linker flags for GLFW. The default is `-lglfw`.
 
