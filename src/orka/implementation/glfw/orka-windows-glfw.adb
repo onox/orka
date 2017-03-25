@@ -87,11 +87,19 @@ package body Orka.Windows.GLFW is
 
             Inputs.GLFW.GLFW_Pointer_Input (Result.Input.all).Set_Window (Reference);
 
+            declare
+               Width, Height : Standard.Glfw.Size;
+            begin
+               Reference.Get_Framebuffer_Size (Width, Height);
+               Result.Framebuffer_Size_Changed (Natural (Width), Natural (Height));
+            end;
+
             --  Callbacks
             Reference.Enable_Callback (Windows.Callbacks.Close);
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Button);
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Scroll);
             Reference.Enable_Callback (Windows.Callbacks.Key);
+            Reference.Enable_Callback (Windows.Callbacks.Framebuffer_Size);
 
             Windows.Context.Make_Current (Reference);
          end;
@@ -102,6 +110,14 @@ package body Orka.Windows.GLFW is
    function Pointer_Input
      (Object : GLFW_Window) return Inputs.Pointer_Input_Ptr
    is (Object.Input);
+
+   overriding
+   function Width (Object : GLFW_Window) return Positive is
+     (Object.Width);
+
+   overriding
+   function Height (Object : GLFW_Window) return Positive is
+     (Object.Height);
 
    overriding
    procedure Set_Title (Object : in out GLFW_Window; Value : String) is
@@ -186,5 +202,14 @@ package body Orka.Windows.GLFW is
    begin
       Inputs.GLFW.GLFW_Pointer_Input (Object.Input.all).Set_Button_State (Button, State);
    end Mouse_Button_Changed;
+
+   overriding
+   procedure Framebuffer_Size_Changed
+     (Object : not null access GLFW_Window;
+      Width, Height : Natural) is
+   begin
+      Object.Width  := Width;
+      Object.Height := Height;
+   end Framebuffer_Size_Changed;
 
 end Orka.Windows.GLFW;

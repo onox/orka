@@ -29,8 +29,10 @@ package Orka.Framebuffers is
 
    type Framebuffer
      (Default : Boolean;
-      Width, Height, Samples : Size) is tagged limited private
+      Width, Height, Samples : Size) is tagged private
    with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
+
+   type Framebuffer_Ptr is not null access Framebuffer;
 
    use type GL.Objects.Framebuffers.Framebuffer;
 
@@ -50,6 +52,11 @@ package Orka.Framebuffers is
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
      with Inline;
 
+   procedure Use_Framebuffer (Object : Framebuffer);
+   --  Use the framebuffer during rendering
+   --
+   --  The viewport is adjusted to the size of the framebuffer.
+
    procedure Draw
      (Object  : Framebuffer;
       Program : in out Orka.Programs.Program;
@@ -65,8 +72,6 @@ package Orka.Framebuffers is
    procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer)
      with Pre => Object /= Subject;
 
-   function "=" (Left, Right : Framebuffer) return Boolean;
-
    Framebuffer_Incomplete_Error : exception;
 
 private
@@ -74,7 +79,7 @@ private
    package Attachment_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => GL.Objects.GL_Object'Class, "=" => GL.Objects."=");
 
-   type Framebuffer (Default : Boolean; Width, Height, Samples : Size) is tagged limited record
+   type Framebuffer (Default : Boolean; Width, Height, Samples : Size) is tagged record
       GL_Framebuffer : GL.Objects.Framebuffers.Framebuffer;
       Color_Attachment : Attachment_Holder.Holder;
       Depth_Attachment : Attachment_Holder.Holder;

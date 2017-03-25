@@ -22,7 +22,7 @@ package body Orka.Loops is
    use Ada.Real_Time;
 
    procedure Free is new Ada.Unchecked_Deallocation
-     (Behavior_Array, Behavior_Array_Access);
+     (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
 
    function Behavior_Hash (Element : Behaviors.Behavior_Ptr) return Ada.Containers.Hash_Type is
       function Convert is new Ada.Unchecked_Conversion
@@ -31,16 +31,16 @@ package body Orka.Loops is
       return Ada.Containers.Hash_Type (Convert (Element.all'Address));
    end Behavior_Hash;
 
-   procedure Fixed_Update (Delta_Time : Time_Span; Scene : Behavior_Array_Access) is
-      DT : constant Duration := Ada.Real_Time.To_Duration (Delta_Time);
+   procedure Fixed_Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
+      DT : constant Duration := To_Duration (Delta_Time);
    begin
       for Behavior of Scene.all loop
          Behavior.Fixed_Update (DT);
       end loop;
    end Fixed_Update;
 
-   procedure Update (Delta_Time : Time_Span; Scene : Behavior_Array_Access) is
-      DT : constant Duration := Ada.Real_Time.To_Duration (Delta_Time);
+   procedure Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
+      DT : constant Duration := To_Duration (Delta_Time);
    begin
       for Behavior of Scene.all loop
          Behavior.Update (DT);
@@ -50,24 +50,18 @@ package body Orka.Loops is
       end loop;
    end Update;
 
-   procedure Render (Scene : Behavior_Array_Access) is
-   begin
-      --  TODO
-      null;
-   end Render;
-
    protected body Handler is
       procedure Stop is
       begin
          Stop_Flag := True;
       end Stop;
 
-      procedure Set_Frame_Limit (Value : Ada.Real_Time.Time_Span) is
+      procedure Set_Frame_Limit (Value : Time_Span) is
       begin
          Limit := Value;
       end Set_Frame_Limit;
 
-      function Frame_Limit return Ada.Real_Time.Time_Span is
+      function Frame_Limit return Time_Span is
         (Limit);
 
       function Should_Stop return Boolean is
@@ -87,13 +81,11 @@ package body Orka.Loops is
          Modified_Flag := True;
       end Remove;
 
-      procedure Replace_Array (Target : in out Behavior_Array_Access) is
+      procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access) is
          Index : Positive := 1;
       begin
-         if Target /= null then
-            Free (Target);
-         end if;
-         Target := new Behavior_Array (1 .. Positive (Behaviors_Set.Length));
+         Free (Target);
+         Target := new Behaviors.Behavior_Array (1 .. Positive (Behaviors_Set.Length));
 
          --  Copy the elements from the set to the array
          --  for faster iteration by the game loop
@@ -107,18 +99,26 @@ package body Orka.Loops is
 
       function Modified return Boolean is
         (Modified_Flag);
+
+      procedure Set_Camera (Camera : Cameras.Camera_Ptr) is
+      begin
+         Scene_Camera := Camera;
+      end Set_Camera;
+
+      function Camera return Cameras.Camera_Ptr is
+        (Scene_Camera);
    end Scene;
 
-   task body Game_Loop is
+   procedure Run_Loop is
       Previous_Time : Time := Clock;
       Lag : Time_Span := Time_Span_Zero;
       Next_Time : Time := Previous_Time;
 
-      Scene_Array : Behavior_Array_Access := null;
+      Scene_Array : Behaviors.Behavior_Array_Access := new Behaviors.Behavior_Array (1 .. 0);
    begin
-      --  TODO Synchronize with display's refresh rate
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
+         --  TODO Move Window.Swap_Buffers to here?
          declare
             Current_Time : constant Time := Clock;
             Elapsed : constant Time_Span := Current_Time - Previous_Time;
@@ -135,6 +135,7 @@ package body Orka.Loops is
                Lag := Lag - Time_Step;
             end loop;
 
+            Scene.Camera.Update (To_Duration (Lag));
             Update (Lag, Scene_Array);
 
             Window.Swap_Buffers;
@@ -142,7 +143,7 @@ package body Orka.Loops is
             --  Render the scene *after* having swapped buffers (sync point)
             --  so that rendering on GPU happens in parallel with CPU work
             --  during the next frame
-            Render (Scene_Array);
+            Render (Scene_Array, Scene.Camera);
 
             if Scene.Modified then
                --  TODO Deallocation and allocation should not be done in render loop
@@ -153,8 +154,6 @@ package body Orka.Loops is
                New_Elapsed : constant Time_Span := Clock - Current_Time;
             begin
                if New_Elapsed > Handler.Frame_Limit then
-                  --  TODO Should we stay synchronized with the display?
-                  --  TODO In that case do Next_Time + n * Handler.Frame_Limit;
                   Next_Time := Current_Time;
                else
                   Next_Time := Next_Time + Handler.Frame_Limit;
@@ -163,6 +162,6 @@ package body Orka.Loops is
             end;
          end;
       end loop;
-   end Game_Loop;
+   end Run_Loop;
 
 end Orka.Loops;

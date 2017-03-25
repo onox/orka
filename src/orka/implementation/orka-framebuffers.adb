@@ -135,7 +135,4 @@ package body Orka.Framebuffers is
          (Color => True, others => False), GL.Objects.Textures.Nearest);
    end Resolve_To;
 
-   function "=" (Left, Right : Framebuffer) return Boolean is
-     (Left.GL_Framebuffer = Right.GL_Framebuffer);
-
 end Orka.Framebuffers;

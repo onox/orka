@@ -41,6 +41,12 @@ package Orka.Windows.GLFW is
      (Object : GLFW_Window) return Inputs.Pointer_Input_Ptr;
 
    overriding
+   function Width (Object : GLFW_Window) return Positive;
+
+   overriding
+   function Height (Object : GLFW_Window) return Positive;
+
+   overriding
    procedure Set_Title (Object : in out GLFW_Window; Value : String);
 
    overriding
@@ -70,6 +76,7 @@ private
       Finalized : Boolean;
       Scroll_X  : GL.Types.Double := 0.0;
       Scroll_Y  : GL.Types.Double := 0.0;
+      Width, Height : Positive;
    end record;
 
    overriding
@@ -97,5 +104,10 @@ private
       Button  : Standard.Glfw.Input.Mouse.Button;
       State   : Standard.Glfw.Input.Button_State;
       Mods    : Standard.Glfw.Input.Keys.Modifiers);
+
+   overriding
+   procedure Framebuffer_Size_Changed
+     (Object : not null access GLFW_Window;
+      Width, Height : Natural);
 
 end Orka.Windows.GLFW;

@@ -15,6 +15,7 @@
 with GL.Types;
 
 with Orka.Behaviors;
+with Orka.Framebuffers;
 with Orka.Inputs;
 with Orka.Transforms.Singles.Matrices;
 
@@ -49,7 +50,12 @@ package Orka.Cameras is
 
    type Camera
      (Input : Inputs.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) is abstract new Orka.Behaviors.Behavior with private;
+      Lens  : Lens_Ptr;
+      FB    : Framebuffers.Framebuffer_Ptr) is abstract tagged private;
+
+   type Camera_Ptr is not null access Camera'Class;
+
+   procedure Update (Object : in out Camera; Delta_Time : Duration) is abstract;
 
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
@@ -57,12 +63,10 @@ package Orka.Cameras is
      (Object.Lens.Projection_Matrix)
    with Inline;
 
-   overriding
-   procedure After_Update (Object : in out Camera; Delta_Time : Duration);
-
    type Parameter_Record is record
       Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
+      FB    : Framebuffers.Framebuffer_Ptr;
    end record;
 
    function Create_Camera
@@ -73,13 +77,14 @@ package Orka.Cameras is
    function Create_Camera
      (Kind  : Camera_Kind;
       Input : Inputs.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) return Camera'Class;
+      Lens  : Lens_Ptr;
+      FB    : Framebuffers.Framebuffer_Ptr) return Camera'Class;
 
    type Observing_Camera is interface;
 
    procedure Look_At
      (Object : in out Observing_Camera;
-      Target : Transforms.Vector4) is abstract;
+      Target : Behaviors.Behavior_Ptr) is abstract;
    --  Orient the camera such that it looks at the given target
 
    -----------------------------------------------------------------------------
@@ -109,7 +114,7 @@ package Orka.Cameras is
    overriding
    procedure Look_At
      (Object : in out Look_At_Camera;
-      Target : Transforms.Vector4);
+      Target : Behaviors.Behavior_Ptr);
 
    procedure Set_Up_Direction
      (Object    : in out Look_At_Camera;
@@ -117,6 +122,12 @@ package Orka.Cameras is
 
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
+
+   overriding
+   procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration) is null;
+   --  Look_At camera does not need to implement Update because the
+   --  view matrix does not depend on the pointer (it is computed using
+   --  the camera's and target's positions)
 
    -----------------------------------------------------------------------------
    --                          Third person camera's                          --
@@ -127,7 +138,7 @@ package Orka.Cameras is
    overriding
    procedure Look_At
      (Object : in out Third_Person_Camera;
-      Target : Transforms.Vector4);
+      Target : Behaviors.Behavior_Ptr);
 
    type Rotate_Around_Camera is new Third_Person_Camera with private;
 
@@ -188,7 +199,8 @@ private
 
    type Camera
      (Input : Inputs.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) is abstract new Orka.Behaviors.Behavior with null record;
+      Lens  : Lens_Ptr;
+      FB    : Framebuffers.Framebuffer_Ptr) is abstract tagged null record;
 
    type First_Person_Camera is abstract new Camera with record
       Position : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
@@ -199,12 +211,12 @@ private
    end record;
 
    type Look_At_Camera is new First_Person_Camera and Observing_Camera with record
-      Target : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
       Up     : Transforms.Vector4 := (0.0, 1.0, 0.0, 0.0);
    end record;
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record
-      Target : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
    end record;
 
    type Rotate_Around_Camera is new Third_Person_Camera with record

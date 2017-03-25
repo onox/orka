@@ -57,7 +57,7 @@ package body Orka.Cameras is
    overriding
    procedure Look_At
      (Object : in out Look_At_Camera;
-      Target : Transforms.Vector4) is
+      Target : Behaviors.Behavior_Ptr) is
    begin
       Object.Target := Target;
    end Look_At;
@@ -72,7 +72,7 @@ package body Orka.Cameras is
    overriding
    procedure Look_At
      (Object : in out Third_Person_Camera;
-      Target : Transforms.Vector4) is
+      Target : Behaviors.Behavior_Ptr) is
    begin
       Object.Target := Target;
    end Look_At;
@@ -124,6 +124,10 @@ package body Orka.Cameras is
       end if;
    end Update;
 
+   --  Look_At camera does not need to implement Update because the
+   --  view matrix does not depend on the pointer (it is computed using
+   --  the camera's and target's positions)
+
    overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
       Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
@@ -147,13 +151,6 @@ package body Orka.Cameras is
       --  TODO
    end Update;
 
-   overriding
-   procedure After_Update (Object : in out Camera; Delta_Time : Duration) is
-   begin
-      --  TODO Call Object.View_Matrix and set some uniform with the value
-      null;
-   end After_Update;
-
    -----------------------------------------------------------------------------
 
    overriding
@@ -168,7 +165,7 @@ package body Orka.Cameras is
       use Vector_Transforms;
       use Orka.SIMD;
 
-      Forward : constant Vector4 := Normalize (Object.Target - Object.Position);
+      Forward : constant Vector4 := Normalize (Object.Target.Position - Object.Position);
       Side    : constant Vector4 := Cross (Forward, Object.Up);
       Up      : constant Vector4 := Cross (Side, Forward);
 
@@ -185,7 +182,7 @@ package body Orka.Cameras is
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
       use Transforms;
    begin
-      return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Rz (Object.Alpha) * T (Object.Target);
+      return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Rz (Object.Alpha) * T (Object.Target.Position);
    end View_Matrix;
 
    overriding
@@ -220,7 +217,8 @@ package body Orka.Cameras is
    begin
       return Look_From_Camera'(Camera with
         Input => Parameters.Input,
-        Lens  => Parameters.Lens, others => <>);
+        Lens  => Parameters.Lens,
+        FB    => Parameters.FB, others => <>);
    end Create_Camera;
 
    overriding
@@ -229,7 +227,8 @@ package body Orka.Cameras is
    begin
       return Look_At_Camera'(Camera with
         Input => Parameters.Input,
-        Lens  => Parameters.Lens, others => <>);
+        Lens  => Parameters.Lens,
+        FB    => Parameters.FB, others => <>);
    end Create_Camera;
 
    overriding
@@ -238,7 +237,8 @@ package body Orka.Cameras is
    begin
       return Rotate_Around_Camera'(Camera with
         Input => Parameters.Input,
-        Lens  => Parameters.Lens, others => <>);
+        Lens  => Parameters.Lens,
+        FB    => Parameters.FB, others => <>);
    end Create_Camera;
 
    overriding
@@ -247,18 +247,20 @@ package body Orka.Cameras is
    begin
       return Follow_Camera'(Camera with
         Input => Parameters.Input,
-        Lens  => Parameters.Lens, others => <>);
+        Lens  => Parameters.Lens,
+        FB    => Parameters.FB, others => <>);
    end Create_Camera;
 
    function Create_Camera
      (Kind  : Camera_Kind;
       Input : Inputs.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) return Camera'Class
+      Lens  : Lens_Ptr;
+      FB    : Framebuffers.Framebuffer_Ptr) return Camera'Class
    is
       function Create is new Ada.Tags.Generic_Dispatching_Constructor
         (Camera, Parameter_Record, Create_Camera);
 
-      Parameters : aliased Parameter_Record := (Input, Lens);
+      Parameters : aliased Parameter_Record := (Input, Lens, FB);
    begin
       return Create (Kind_To_Tag (Kind), Parameters'Access);
    end Create_Camera;

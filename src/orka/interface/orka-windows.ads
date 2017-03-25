@@ -24,6 +24,10 @@ package Orka.Windows is
    function Pointer_Input
      (Object : Window) return Inputs.Pointer_Input_Ptr is abstract;
 
+   function Width (Object : Window) return Positive is abstract;
+
+   function Height (Object : Window) return Positive is abstract;
+
    procedure Set_Title (Object : in out Window; Value : String) is abstract;
 
    procedure Close (Object : in out Window) is abstract;

@@ -36,11 +36,13 @@ with Orka.Framebuffers;
 
 with Orka.Behaviors;
 with Orka.Cameras;
+with Orka.Loops;
 with Orka.Programs.Modules;
 with Orka.Programs.Uniforms;
 with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
+with Orka.Transforms.Singles.Vectors;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_6_GLTF is
@@ -148,35 +150,33 @@ begin
       B : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
       use Orka.Programs;
+      use Orka.Framebuffers;
 
-      Program_1 : Program := Orka.Programs.Create_Program (Modules.Create_Module
+      Program_1 : Program := Create_Program (Modules.Create_Module
         (VS => "../examples/orka/shaders/test-6-module-1.vert",
          FS => "../examples/orka/shaders/test-6-module-1.frag"));
 
       Uni_View  : constant Uniforms.Uniform := Program_1.Uniform ("view");
       Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
-      Uni_Light : constant Uniforms.Uniform := Program_1.Uniform ("lightPosition");
 
       Uni_WT      : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("diffuseTexture");
 
+      FB_1 : constant Framebuffer_Ptr := new Framebuffer'(Create_Framebuffer (Width, Height, Samples));
+      FB_D : constant Framebuffer_Ptr := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
+
       use Orka.Transforms.Singles.Matrices;
       use type GL.Types.Single;
 
-      Matrix_View : Matrix4;
-
       Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
 
-      Light_Position : constant Vector4 := (0.0, 0.0, 0.0, 1.0);
-
       use Orka.Cameras;
-      Lens : constant Lens_Ptr := new Camera_Lens'Class'(Orka.Cameras.Create_Lens (Width, Height, 45.0));
-      Current_Camera : Camera'Class := Orka.Cameras.Create_Camera (Rotate_Around, W.Pointer_Input, Lens);
+      Lens : constant Lens_Ptr := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0));
+      Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
       function Convert_Matrix is new Ada.Unchecked_Conversion
         (Source => Orka.Transforms.Singles.Matrices.Matrix4, Target => GL.Types.Singles.Matrix4);
 
-      use GL.Buffers;
       use Orka.Buffers;
 
       World_Transforms : GL.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (M.Shapes.Length))
@@ -185,9 +185,6 @@ begin
       --  Set-up TBO for world transform matrices
       Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), GL.Types.Single_Type, World_Transforms'Length * 16);
       TBO_1 : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
-
-      FB_1 : Orka.Framebuffers.Framebuffer := Orka.Framebuffers.Create_Framebuffer (Width, Height, Samples);
-      FB_D : Orka.Framebuffers.Framebuffer := Orka.Framebuffers.Create_Default_Framebuffer (Width, Height);
    begin
       Ada.Text_IO.Put_Line ("Duration glTF: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
       Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));
@@ -217,24 +214,30 @@ begin
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
-      while not W.Should_Close loop
-         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+      declare
+         procedure Render (Scene : not null Orka.Behaviors.Behavior_Array_Access; Camera : Orka.Cameras.Camera_Ptr) is
+         begin
+            GL.Buffers.Clear (GL.Buffers.Buffer_Bits'(Color => True, Depth => True, others => False));
 
-         W.Process_Input;
+            Uni_View.Set_Matrix (Camera.View_Matrix);
+            --  TODO Update projection matrix if lens changed
 
-         Orka.Behaviors.Behavior'Class (Current_Camera).Update (0.0);
-         Matrix_View := Current_Camera.View_Matrix;
-         Uni_View.Set_Matrix (Matrix_View);
+            --  TODO Render objects in scene here
+            Camera.FB.Draw_Indirect (Program_1, M.Mesh, M.Command_Buffer);
 
-         --  Set position of light in camera space
-         Uni_Light.Set_Vector (Matrix_View * Light_Position);
+            --  Resolve the multiple samples in the FBO
+            Camera.FB.Resolve_To (FB_D.all);
+         end Render;
 
-         FB_1.Draw_Indirect (Program_1, M.Mesh, M.Command_Buffer);
-
-         --  Resolve the multiple samples in the FBO
-         FB_1.Resolve_To (FB_D);
-
-         W.Swap_Buffers;
-      end loop;
+         package Loops is new Orka.Loops
+           (Transforms  => Orka.Transforms.Singles.Vectors,
+            Time_Step   => Ada.Real_Time.Microseconds (2083),
+            Frame_Limit => Ada.Real_Time.Microseconds (16666),
+            Window      => W'Access,
+            Camera      => Current_Camera,
+            Render      => Render'Access);
+      begin
+         Loops.Run_Loop;
+      end;
    end;
 end Orka_Test.Test_6_GLTF;
