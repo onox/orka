@@ -23,6 +23,7 @@ with GL.Debug_Types;
 with GL.Enums.Getter;
 with GL.Enums.Textures;
 with GL.Errors;
+with GL.Fences;
 with GL.Framebuffer;
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
@@ -1118,6 +1119,26 @@ private package GL.API is
    procedure Get_Object_Pointer_Label is new Loader.String_Getter_With_4_Params
      ("glGetObjectPtrLabel", Size, System.Address);
    --  TODO Use for Sync objects
+
+   -----------------------------------------------------------------------------
+   --                                 Syncing                                 --
+   -----------------------------------------------------------------------------
+
+   function Fence_Sync is new Loader.Function_With_2_Params
+     ("glFenceSync", Low_Level.Enum, Low_Level.Bitfield, Low_Level.Sync);
+
+   procedure Delete_Sync is new Loader.Procedure_With_1_Param
+     ("glDeleteSync", Low_Level.Sync);
+
+   function Get_Sync is new Loader.Array_Getter_With_5_Params
+     ("glGetSynciv", Low_Level.Sync, Low_Level.Enum, Int, Int_Array);
+
+   function Client_Wait_Sync is new Loader.Function_With_3_Params
+     ("glClientWaitSync", Low_Level.Sync, Low_Level.Bitfield, Low_Level.UInt64,
+      Fences.Wait_Status);
+
+   procedure Wait_Sync is new Loader.Procedure_With_3_Params
+     ("glWaitSync", Low_Level.Sync, Low_Level.Bitfield, Low_Level.UInt64);
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --

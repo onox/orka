@@ -39,7 +39,7 @@ package body GL.Objects is
          Object.Reference.Reference_Count := Object.Reference.Reference_Count - 1;
          if Object.Reference.Reference_Count = 0 then
             if Object.Reference.Initialized then
-               Delete_Id (GL_Object'Class (Object));
+               GL_Object'Class (Object).Delete_Id;
             end if;
             Free (Object.Reference);
          end if;

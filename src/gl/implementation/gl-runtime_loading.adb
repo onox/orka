@@ -141,7 +141,7 @@ package body GL.Runtime_Loading is
                                         Max_Size : Types.Size)
                                         return Array_Type is
       use type Types.Size;
-      
+
       type Procedure_Reference is
         access procedure (Param1 : Param1_Type; Max : Types.Size;
                           Returned_Size : in out Types.Size;
@@ -163,6 +163,36 @@ package body GL.Runtime_Loading is
          return Ret;
       end if;
    end Array_Getter_With_4_Params;
+
+   function Array_Getter_With_5_Params (Param1 : Param1_Type;
+                                        Param2 : Param2_Type;
+                                        Max_Size : Types.Size)
+                                        return Array_Type is
+      use type Types.Size;
+
+      type Procedure_Reference is
+        access procedure (Param1 : Param1_Type;
+                          Param2 : Param2_Type;
+                          Max : Types.Size;
+                          Returned_Size : in out Types.Size;
+                          Values : in out Array_Type);
+      pragma Convention (StdCall, Procedure_Reference);
+
+      function Load_Function is new Load (Procedure_Reference);
+      Reference : constant Procedure_Reference
+        := Load_Function (Procedure_Name);
+
+      Actual_Size : Types.Size := 0;
+
+      Ret : Array_Type (1 .. Max_Size);
+   begin
+      Reference (Param1, Param2, Max_Size, Actual_Size, Ret);
+      if Actual_Size /= Max_Size then
+         return Ret (1 .. Actual_Size);
+      else
+         return Ret;
+      end if;
+   end Array_Getter_With_5_Params;
 
    function Array_Getter_With_8_Params (Param1 : Param1_Type;
                                         Param2 : Param2_Type;

@@ -67,7 +67,7 @@ private
    type GL_Object_Reference is record
       GL_Id           : UInt;
       Reference_Count : Natural;
-      Initialized     : Boolean := True;
+      Initialized     : Boolean := False;
    end record;
 
    type GL_Object_Reference_Access is access all GL_Object_Reference;
