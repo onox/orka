@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System;
+
 package body Orka.Buffers is
 
    package Half_Pointers is new GL.Objects.Buffers.Buffer_Pointers
@@ -44,6 +46,33 @@ package body Orka.Buffers is
          Result.Buffer.Allocate (Long (Length), Kind, Flags);
          Result.Length := Length;
       end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Kind   : Orka.Types.Non_Numeric_Type;
+      Length : Natural) return Buffer
+   is
+      use Orka.Types;
+
+      Bytes : Natural;
+   begin
+      case Kind is
+         when Single_Vector_Type =>
+            return Create_Buffer (Flags, Single_Type, Length * 4);
+         when Double_Vector_Type =>
+            return Create_Buffer (Flags, Double_Type, Length * 4);
+         when Single_Matrix_Type =>
+            return Create_Buffer (Flags, Single_Type, Length * 16);
+         when Double_Matrix_Type =>
+            return Create_Buffer (Flags, Double_Type, Length * 16);
+         when Arrays_Command_Type =>
+            Bytes := Indirect.Arrays_Indirect_Command'Size / System.Storage_Unit;
+            return Create_Buffer (Flags, Byte_Type, Length * Bytes);
+         when Elements_Command_Type =>
+            Bytes := Indirect.Elements_Indirect_Command'Size / System.Storage_Unit;
+            return Create_Buffer (Flags, Byte_Type, Length * Bytes);
+      end case;
    end Create_Buffer;
 
    function Create_Buffer

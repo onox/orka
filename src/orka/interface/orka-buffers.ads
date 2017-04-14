@@ -16,6 +16,8 @@ with GL.Objects.Buffers;
 with GL.Types.Indirect;
 with GL.Types.Colors;
 
+with Orka.Types;
+
 package Orka.Buffers is
    pragma Preelaborate;
 
@@ -26,6 +28,11 @@ package Orka.Buffers is
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Kind   : Numeric_Type;
+      Length : Natural) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Kind   : Orka.Types.Non_Numeric_Type;
       Length : Natural) return Buffer;
 
    function Create_Buffer

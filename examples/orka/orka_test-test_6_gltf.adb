@@ -30,6 +30,7 @@ with GL.Objects.Buffers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with Orka.Buffers;
+with Orka.Types;
 
 --  Needed for MSAA
 with Orka.Framebuffers;
@@ -183,7 +184,7 @@ begin
         := (others => GL.Types.Singles.Identity4);
 
       --  Set-up TBO for world transform matrices
-      Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), GL.Types.Single_Type, World_Transforms'Length * 16);
+      Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer (GL.Objects.Buffers.Storage_Bits'(Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, World_Transforms'Length);
       TBO_1 : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
       Ada.Text_IO.Put_Line ("Duration glTF: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));

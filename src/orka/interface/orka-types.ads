@@ -17,6 +17,14 @@ with GL.Types;
 package Orka.Types is
    pragma Preelaborate;
 
+   type Non_Numeric_Type is
+     (Single_Vector_Type,
+      Double_Vector_Type,
+      Single_Matrix_Type,
+      Double_Matrix_Type,
+      Arrays_Command_Type,
+      Elements_Command_Type);
+
    function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array;
    function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array;
 
