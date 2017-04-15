@@ -17,15 +17,15 @@ private with Orka.Buffers.Pointers;
 package Orka.Buffers.Persistent_Mapped is
    pragma Preelaborate;
 
-   type Buffer_Mode is (Read, Write);
+   type IO_Mode is (Read, Write);
 
    type Persistent_Mapped_Buffer
-     (Kind : Orka.Types.Composite_Type) is tagged private;
+     (Kind : Orka.Types.Composite_Type; Mode : IO_Mode) is tagged private;
 
    function Create_Buffer
      (Kind   : Orka.Types.Composite_Type;
       Length : Natural;
-      Mode   : Buffer_Mode) return Persistent_Mapped_Buffer
+      Mode   : IO_Mode) return Persistent_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
 
    function Length (Object : Persistent_Mapped_Buffer) return Natural
@@ -35,7 +35,7 @@ package Orka.Buffers.Persistent_Mapped is
    --  Will be less than the actual size of the buffer due to triple
    --  buffering.
 
-   function Offset (Object : Persistent_Mapped_Buffer) return Natural
+   function Index_Offset (Object : Persistent_Mapped_Buffer) return Natural
      with Inline;
    --  Offset in number of elements to the start of the buffer
    --
@@ -44,13 +44,39 @@ package Orka.Buffers.Persistent_Mapped is
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer);
 
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Indirect.Arrays_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
 private
 
    use Orka.Types;
 
    type Index_Type is mod 3;
 
-   type Persistent_Mapped_Buffer (Kind : Orka.Types.Composite_Type) is tagged record
+   type Persistent_Mapped_Buffer
+     (Kind : Orka.Types.Composite_Type; Mode : IO_Mode)
+   is tagged record
       Buffer : Buffers.Buffer;
       Index  : Index_Type;
       case Kind is
