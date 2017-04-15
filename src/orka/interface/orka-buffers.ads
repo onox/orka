@@ -53,7 +53,11 @@ package Orka.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Data   : Singles.Matrix4_Array) return Buffer;
+      Data   : Orka.Types.Singles.Vector4_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Singles.Matrix4_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -95,7 +99,13 @@ package Orka.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Singles.Matrix4_Array;
+      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 

@@ -98,7 +98,17 @@ package body Orka.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Data   : Singles.Matrix4_Array) return Buffer is
+      Data   : Orka.Types.Singles.Vector4_Array) return Buffer is
+   begin
+      return Result : Buffer do
+         Pointers.Single_Vector4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Singles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer do
          Pointers.Single_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
@@ -166,7 +176,15 @@ package body Orka.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Singles.Matrix4_Array;
+      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Single_Vector4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single_Matrix4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);

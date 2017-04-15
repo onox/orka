@@ -14,6 +14,10 @@
 
 with GL.Types;
 
+with Orka.Algebra;
+with Orka.Transforms.Singles.Matrices;
+with Orka.Transforms.Doubles.Matrices;
+
 package Orka.Types is
    pragma Preelaborate;
 
@@ -24,6 +28,10 @@ package Orka.Types is
       Double_Matrix_Type,
       Arrays_Command_Type,
       Elements_Command_Type);
+
+   package Singles is new Orka.Algebra (Orka.Transforms.Singles.Matrices);
+
+   package Doubles is new Orka.Algebra (Orka.Transforms.Doubles.Matrices);
 
    function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array;
    function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array;

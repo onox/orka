@@ -31,16 +31,16 @@ private package Orka.Buffers.Pointers is
      (Colors.Basic_Color_Pointers);
 
    package Single_Vector4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Singles.Vector4_Pointers);
+     (Orka.Types.Singles.Vector4_Pointers);
 
    package Double_Vector4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Doubles.Vector4_Pointers);
+     (Orka.Types.Doubles.Vector4_Pointers);
 
    package Single_Matrix4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Singles.Matrix4_Pointers);
+     (Orka.Types.Singles.Matrix4_Pointers);
 
    package Double_Matrix4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Doubles.Matrix4_Pointers);
+     (Orka.Types.Doubles.Matrix4_Pointers);
 
    package Arrays_Command is new GL.Objects.Buffers.Buffer_Pointers
      (Indirect.Arrays_Indirect_Command_Pointers);

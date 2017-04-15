@@ -15,7 +15,6 @@
 with Ada.Command_Line;
 with Ada.Real_Time;
 with Ada.Text_IO;
-with Ada.Unchecked_Conversion;
 
 with GL.Buffers;
 with GL.Toggles;
@@ -26,7 +25,6 @@ with Orka.Debug;
 
 --  Needed for TBO
 with GL.Low_Level.Enums;
-with GL.Objects.Buffers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with Orka.Buffers;
@@ -175,13 +173,10 @@ begin
       Lens : constant Lens_Ptr := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0));
       Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
-      function Convert_Matrix is new Ada.Unchecked_Conversion
-        (Source => Orka.Transforms.Singles.Matrices.Matrix4, Target => GL.Types.Singles.Matrix4);
-
       use Orka.Buffers;
 
-      World_Transforms : GL.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (M.Shapes.Length))
-        := (others => GL.Types.Singles.Identity4);
+      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (M.Shapes.Length))
+        := (others => Orka.Types.Singles.Identity4);
 
       --  Set-up TBO for world transform matrices
       Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, World_Transforms'Length);
@@ -197,7 +192,7 @@ begin
          declare
             C : constant Orka.Scenes.Singles.Trees.Cursor := M.Scene_Tree.To_Cursor (M.Shapes.Element (Positive (I)));
          begin
-            World_Transforms (GL.Types.Int (I)) := Convert_Matrix (M.Scene_Tree.World_Transform (C));
+            World_Transforms (GL.Types.Int (I)) := M.Scene_Tree.World_Transform (C);
          end;
       end loop;
 
