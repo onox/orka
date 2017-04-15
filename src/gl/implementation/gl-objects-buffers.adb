@@ -241,6 +241,34 @@ package body GL.Objects.Buffers is
          Raise_Exception_On_OpenGL_Error;
       end Map_Range;
 
+      function Get_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset, Length : Types.Size) return Pointers.Element_Array
+      is
+         package IC renames Interfaces.C;
+         use type Pointers.Pointer;
+      begin
+         return Pointers.Value (Pointer + IC.ptrdiff_t (Offset), IC.ptrdiff_t (Length));
+      end Get_Mapped_Data;
+
+      procedure Set_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset  : Types.Size;
+         Data    : Pointers.Element_Array)
+      is
+         package IC renames Interfaces.C;
+         use type Pointers.Pointer;
+
+         subtype Data_Array is Pointers.Element_Array (Data'Range);
+
+         type Data_Access is access Data_Array;
+
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Pointers.Pointer, Target => Data_Access);
+      begin
+         Convert (Pointer + IC.ptrdiff_t (Offset)).all := Data;
+      end Set_Mapped_Data;
+
       procedure Flush_Buffer_Range (Object : in out Buffer;
                                     Offset, Length : Types.Size) is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
@@ -265,7 +293,7 @@ package body GL.Objects.Buffers is
          Raise_Exception_On_OpenGL_Error;
       end Copy_Sub_Data;
 
-      function Pointer (Object : Buffer) return Pointers.Pointer is
+      function To_Pointer (Object : Buffer) return Pointers.Pointer is
          procedure Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
            ("glGetNamedBufferPointerv", UInt,
             Enums.Buffer_Pointer_Param, Pointers.Pointer);
@@ -274,7 +302,7 @@ package body GL.Objects.Buffers is
          Named_Buffer_Pointer (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
          Raise_Exception_On_OpenGL_Error;
          return Ret;
-      end Pointer;
+      end To_Pointer;
 
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;

@@ -140,6 +140,9 @@ package GL.Types is
    package Single_Pointers is new Interfaces.C.Pointers
      (Size, Single, Single_Array, 0.0);
 
+   package Double_Pointers is new Interfaces.C.Pointers
+     (Size, Double, Double_Array, 0.0);
+
    type String_Access is not null access constant String;
 
    type String_Array is array (Positive range <>) of String_Access;

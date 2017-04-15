@@ -90,6 +90,8 @@ package GL.Objects.Buffers is
       with package Pointers is new Interfaces.C.Pointers (<>);
    package Buffer_Pointers is
 
+      subtype Pointer is Pointers.Pointer;
+
       procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
                             Offset, Length : Types.Size);
       --  Bind a part of the buffer object to the index of the target as
@@ -113,10 +115,22 @@ package GL.Objects.Buffers is
                            Offset, Length : Types.Size;
                            Pointer : out Pointers.Pointer);
 
+      function Get_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset, Length : Types.Size) return Pointers.Element_Array
+      with Pre  => Length > 0,
+           Post => Get_Mapped_Data'Result'Length = Length;
+
+      procedure Set_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset  : Types.Size;
+         Data    : Pointers.Element_Array)
+      with Pre => Data'Length > 0;
+
       procedure Flush_Buffer_Range (Object : in out Buffer;
                                     Offset, Length : Types.Size);
 
-      function Pointer (Object : Buffer) return Pointers.Pointer;
+      function To_Pointer (Object : Buffer) return Pointers.Pointer;
 
       procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
                                Read_Offset, Write_Offset, Length : Types.Size);
