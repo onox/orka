@@ -32,7 +32,7 @@ package Orka.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Orka.Types.Non_Numeric_Type;
+      Kind   : Orka.Types.Composite_Type;
       Length : Natural) return Buffer;
 
    function Create_Buffer

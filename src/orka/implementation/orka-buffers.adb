@@ -14,28 +14,9 @@
 
 with System;
 
+with Orka.Buffers.Pointers;
+
 package body Orka.Buffers is
-
-   package Half_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Half_Pointers);
-
-   package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Single_Pointers);
-
-   package UInt_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (UInt_Pointers);
-
-   package Color_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Colors.Basic_Color_Pointers);
-
-   package Matrix4_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Singles.Matrix4_Pointers);
-
-   package Arrays_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Indirect.Arrays_Indirect_Command_Pointers);
-
-   package Elements_Command_Pointers is new GL.Objects.Buffers.Buffer_Pointers
-     (Indirect.Elements_Indirect_Command_Pointers);
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -50,7 +31,7 @@ package body Orka.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Orka.Types.Non_Numeric_Type;
+      Kind   : Orka.Types.Composite_Type;
       Length : Natural) return Buffer
    is
       use Orka.Types;
@@ -80,7 +61,7 @@ package body Orka.Buffers is
       Data   : Half_Array) return Buffer is
    begin
       return Result : Buffer do
-         Half_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Half.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -90,7 +71,7 @@ package body Orka.Buffers is
       Data   : Single_Array) return Buffer is
    begin
       return Result : Buffer do
-         Single_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Single.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -100,7 +81,7 @@ package body Orka.Buffers is
       Data   : UInt_Array) return Buffer is
    begin
       return Result : Buffer do
-         UInt_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.UInt.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -110,7 +91,7 @@ package body Orka.Buffers is
       Data   : Colors.Basic_Color_Array) return Buffer is
    begin
       return Result : Buffer do
-         Color_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Color.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -120,7 +101,7 @@ package body Orka.Buffers is
       Data   : Singles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer do
-         Matrix4_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Single_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -130,7 +111,7 @@ package body Orka.Buffers is
       Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer do
-         Arrays_Command_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Arrays_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -140,7 +121,7 @@ package body Orka.Buffers is
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer do
-         Elements_Command_Pointers.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Elements_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -156,7 +137,7 @@ package body Orka.Buffers is
       Data   : in out Half_Array;
       Offset : Natural := 0) is
    begin
-      Half_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Half.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -164,7 +145,7 @@ package body Orka.Buffers is
       Data   : in out Single_Array;
       Offset : Natural := 0) is
    begin
-      Single_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Single.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -172,7 +153,7 @@ package body Orka.Buffers is
       Data   : in out UInt_Array;
       Offset : Natural := 0) is
    begin
-      UInt_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.UInt.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -180,7 +161,7 @@ package body Orka.Buffers is
       Data   : in out Colors.Basic_Color_Array;
       Offset : Natural := 0) is
    begin
-      Color_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Color.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -188,7 +169,7 @@ package body Orka.Buffers is
       Data   : in out Singles.Matrix4_Array;
       Offset : Natural := 0) is
    begin
-      Matrix4_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Single_Matrix4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -196,7 +177,7 @@ package body Orka.Buffers is
       Data   : in out Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
-      Arrays_Command_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Arrays_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -204,7 +185,7 @@ package body Orka.Buffers is
       Data   : in out Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
-      Elements_Command_Pointers.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+      Pointers.Elements_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
 end Orka.Buffers;

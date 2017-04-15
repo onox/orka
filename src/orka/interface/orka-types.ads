@@ -17,7 +17,7 @@ with GL.Types;
 package Orka.Types is
    pragma Preelaborate;
 
-   type Non_Numeric_Type is
+   type Composite_Type is
      (Single_Vector_Type,
       Double_Vector_Type,
       Single_Matrix_Type,
