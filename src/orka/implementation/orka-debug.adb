@@ -15,6 +15,9 @@
 with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
+with Ada.Text_IO;
+
+with GL.Debug.Logs;
 
 with Orka.Terminals;
 
@@ -86,5 +89,27 @@ package body Orka.Debug is
              Terminals.Colorize ("[" & Source_Image & ":" & Type_Image & "]", Terminals.Magenta) &
              ID_Image & ": " & Strip_Line_Term (Message);
    end Format_Message;
+
+   procedure Flush_Log is
+   begin
+      for M of GL.Debug.Logs.Message_Log loop
+         Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (M.From, M.Kind, M.ID, M.Level, M.Message.Element));
+      end loop;
+   end Flush_Log;
+
+   procedure Print_Debug_Message
+     (From      : Source;
+      Kind      : Message_Type;
+      Level     : Severity;
+      ID        : GL.Types.UInt;
+      Message   : String) is
+   begin
+      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (From, Kind, ID, Level, Message));
+   end Print_Debug_Message;
+
+   procedure Enable_Print_Callback is
+   begin
+      GL.Debug.Set_Message_Callback (Print_Debug_Message'Access);
+   end Enable_Print_Callback;
 
 end Orka.Debug;

@@ -27,4 +27,10 @@ package Orka.Debug is
       Message : String) return String;
    --  Format and colorize the message so that it can be readily printed
 
+   procedure Flush_Log;
+   --  Print all messages currently in the log
+
+   procedure Enable_Print_Callback;
+   --  Enable a callback that will print messages
+
 end Orka.Debug;

@@ -56,18 +56,6 @@ procedure Orka_Test.Test_6_GLTF is
    W : Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
      (Width, Height, Resizable => False);
 
-   use GL.Debug;
-
-   procedure Print_Debug_Message
-     (From      : Source;
-      Kind      : Message_Type;
-      Level     : Severity;
-      ID        : GL.Types.UInt;
-      Message   : String) is
-   begin
-      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (From, Kind, ID, Level, Message));
-   end Print_Debug_Message;
-
    package Models is new Orka.Resources.Models (Orka.Scenes.Singles.Trees);
    package glTF is new Models.glTF;
 
@@ -134,11 +122,9 @@ begin
    end if;
 
    Ada.Text_IO.Put_Line ("Flushing" & GL.Types.Size'Image (GL.Debug.Logs.Logged_Messages) & " messages in the debug log:");
-   for ML of GL.Debug.Logs.Message_Log loop
-      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (ML.From, ML.Kind, ML.ID, ML.Level, ML.Message.Element));
-   end loop;
+   Orka.Debug.Flush_Log;
 
-   GL.Debug.Set_Message_Callback (Print_Debug_Message'Unrestricted_Access);
+   Orka.Debug.Enable_Print_Callback;
    Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
    declare
