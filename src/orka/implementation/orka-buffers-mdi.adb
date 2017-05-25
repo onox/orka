@@ -69,10 +69,10 @@ package body Orka.Buffers.MDI is
 
       declare
          subtype Vertex_Array is Half_Array (0 .. VBO_Length - 1);
-         subtype Index_Array is UInt_Array   (0 .. IBO_Length - 1);
+         subtype Index_Array  is UInt_Array (0 .. IBO_Length - 1);
 
          type Vertex_Array_Access is access Vertex_Array;
-         type Index_Array_Access is access Index_Array;
+         type Index_Array_Access  is access Index_Array;
 
          procedure Free_Vertex_Array is new Ada.Unchecked_Deallocation
            (Object => Vertex_Array, Name => Vertex_Array_Access);

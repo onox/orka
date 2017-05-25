@@ -17,7 +17,7 @@ with GL.Objects.Buffers;
 with GL.Types.Indirect;
 
 with Orka.Buffers.MDI;
-with Orka.Meshes.Attributes;
+with Orka.Meshes;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -53,6 +53,17 @@ procedure Orka_Test.Test_4_MDI is
 
       MDI : Orka.Buffers.MDI.Batch := Orka.Buffers.MDI.Create_Batch (3);
       Instance_ID : Natural;
+
+      procedure Add_Position_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
+      end Add_Position_Attribute;
+
+      procedure Add_Instance_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_InstanceID"), 1);
+         Buffer.Set_Per_Instance (True);
+      end Add_Instance_Attribute;
    begin
       --  Create one VBO, one IBO, and a buffer containing the draw commands
       MDI.Append (Vertices_1, Indices_1, Instance_ID);
@@ -62,17 +73,12 @@ procedure Orka_Test.Test_4_MDI is
 
       --  Create mesh and its attributes
       return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
-         declare
-            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Half_Type);
-            Attributes_Ins : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (UInt_Type);
-         begin
-            Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
-            Attributes_Pos.Set_Buffer (MDI_Buffers.Vertex_Buffer);
+         Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
+         Result.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
 
-            Attributes_Ins.Add_Attribute (Program.Attribute_Location ("in_InstanceID"), 1);
-            Attributes_Ins.Set_Per_Instance (True);
-            Attributes_Ins.Set_Buffer (MDI_Buffers.Instances_Buffer);
-         end;
+         Result.Set_Vertex_Buffer (1, MDI_Buffers.Vertex_Buffer);
+         Result.Set_Vertex_Buffer (2, MDI_Buffers.Instances_Buffer);
+
          Result.Set_Index_Buffer (MDI_Buffers.Index_Buffer);
       end return;
    end Load_Mesh;

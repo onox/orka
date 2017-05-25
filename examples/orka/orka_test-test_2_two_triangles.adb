@@ -18,7 +18,7 @@ with GL.Objects.Buffers;
 with GL.Types.Colors;
 
 with Orka.Buffers;
-with Orka.Meshes.Attributes;
+with Orka.Meshes;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -48,19 +48,23 @@ procedure Orka_Test.Test_2_Two_Triangles is
       --  Upload vertices and color data to VBO's
       VBO_1 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
       VBO_2 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Color_Vertices);
+
+      procedure Add_Position_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
+         Buffer.Set_Buffer (VBO_1);
+      end Add_Position_Attribute;
+
+      procedure Add_Color_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
+         Buffer.Set_Buffer (VBO_2);
+      end Add_Color_Attribute;
    begin
       --  Create mesh and its attributes
       return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
-         declare
-            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
-            Attributes_Col : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
-         begin
-            Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
-            Attributes_Pos.Set_Buffer (VBO_1);
-
-            Attributes_Col.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
-            Attributes_Col.Set_Buffer (VBO_2);
-         end;
+         Result.Add_Attribute_Buffer (Single_Type, Add_Position_Attribute'Access);
+         Result.Add_Attribute_Buffer (Single_Type, Add_Color_Attribute'Access);
       end return;
    end Load_Mesh_1;
 
@@ -72,15 +76,16 @@ procedure Orka_Test.Test_2_Two_Triangles is
 
       --  Upload vertices data to VBO
       VBO_3 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+
+      procedure Add_Vertex_Attributes (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
+         Buffer.Set_Buffer (VBO_3);
+      end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
       return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
-         declare
-            Attributes_Pos : Attributes.Attribute_Buffer := Result.Add_Attribute_Buffer (Single_Type);
-         begin
-            Attributes_Pos.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
-            Attributes_Pos.Set_Buffer (VBO_3);
-         end;
+         Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh_2;
 
