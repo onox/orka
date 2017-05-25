@@ -17,7 +17,7 @@ with GL.Objects.Buffers;
 with GL.Types;
 
 with Orka.Buffers;
-with Orka.Meshes;
+with Orka.Vertex_Formats;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -27,7 +27,7 @@ procedure Orka_Test.Test_1_Triangle is
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
    pragma Unreferenced (Initialized);
 
-   use Orka.Meshes;
+   use Orka.Vertex_Formats;
    use Orka.Programs;
 
    function Load_Mesh (Program : Orka.Programs.Program) return Vertex_Format is
@@ -42,7 +42,7 @@ procedure Orka_Test.Test_1_Triangle is
       --  Upload Vertices data to VBO
       VBO : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
 
-      procedure Add_Vertex_Attributes (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      procedure Add_Vertex_Attributes (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
@@ -50,7 +50,7 @@ procedure Orka_Test.Test_1_Triangle is
       end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
+      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh;

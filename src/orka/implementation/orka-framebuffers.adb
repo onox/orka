@@ -106,8 +106,8 @@ package body Orka.Framebuffers is
 
    procedure Draw
      (Object  : Framebuffer;
-      Program : in out Orka.Programs.Program;
-      Mesh    : Orka.Meshes.Vertex_Format;
+      Program : in out Programs.Program;
+      Mesh    : Vertex_Formats.Vertex_Format;
       Offset, Count : Size) is
    begin
       Use_Framebuffer (Object);
@@ -117,9 +117,9 @@ package body Orka.Framebuffers is
 
    procedure Draw_Indirect
      (Object  : Framebuffer;
-      Program : in out Orka.Programs.Program;
-      Mesh    : Orka.Meshes.Vertex_Format;
-      Buffer  : Orka.Buffers.Buffer) is
+      Program : in out Programs.Program;
+      Mesh    : Vertex_Formats.Vertex_Format;
+      Buffer  : Buffers.Buffer) is
    begin
       Use_Framebuffer (Object);
       Program.Use_Program;

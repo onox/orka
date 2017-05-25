@@ -21,7 +21,7 @@ package body Orka.Resources.Models is
       use GL.Types;
       use GL.Objects.Buffers;
 
-      procedure Add_Vertex_Attributes (Buffer : in out Meshes.Attribute_Buffer) is
+      procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is
       begin
          --  TODO Always assuming that attributes are VEC3, VEC3, VEC2 (each component = Single)
          --  total number of bytes: 12 + 12 + 8 = 32
@@ -30,14 +30,14 @@ package body Orka.Resources.Models is
          Buffer.Add_Attribute (2, 2);
       end Add_Vertex_Attributes;
 
-      procedure Add_Instance_Attribute (Buffer : in out Meshes.Attribute_Buffer) is
+      procedure Add_Instance_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (3, 1);
          Buffer.Set_Per_Instance (True);
       end Add_Instance_Attribute;
    begin
       Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
-      Object.Mesh := Orka.Meshes.Create_Vertex_Format (Triangles);
+      Object.Mesh := Vertex_Formats.Create_Vertex_Format (Triangles);
 
       Object.Mesh.Add_Attribute_Buffer (Half_Type, Add_Vertex_Attributes'Access);
       Object.Mesh.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
@@ -59,7 +59,7 @@ package body Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector is
      (Object.Shapes);
 
-   function Mesh (Object : Model) return Meshes.Vertex_Format is
+   function Mesh (Object : Model) return Vertex_Formats.Vertex_Format is
      (Object.Mesh);
 
    function Command_Buffer (Object : Model) return Buffers.Buffer is

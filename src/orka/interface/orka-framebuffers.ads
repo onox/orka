@@ -19,8 +19,8 @@ with GL.Objects.Textures;
 with GL.Types;
 
 with Orka.Buffers;
-with Orka.Meshes;
 with Orka.Programs;
+with Orka.Vertex_Formats;
 
 package Orka.Framebuffers is
    pragma Preelaborate;
@@ -59,15 +59,15 @@ package Orka.Framebuffers is
 
    procedure Draw
      (Object  : Framebuffer;
-      Program : in out Orka.Programs.Program;
-      Mesh    : Orka.Meshes.Vertex_Format;
+      Program : in out Programs.Program;
+      Mesh    : Vertex_Formats.Vertex_Format;
       Offset, Count : Size);
 
    procedure Draw_Indirect
      (Object  : Framebuffer;
-      Program : in out Orka.Programs.Program;
-      Mesh    : Orka.Meshes.Vertex_Format;
-      Buffer  : Orka.Buffers.Buffer);
+      Program : in out Programs.Program;
+      Mesh    : Vertex_Formats.Vertex_Format;
+      Buffer  : Buffers.Buffer);
 
    procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer)
      with Pre => Object /= Subject;

@@ -20,7 +20,7 @@ with GL.Types;
 
 with Orka.Buffers;
 
-package Orka.Meshes is
+package Orka.Vertex_Formats is
    pragma Preelaborate;
 
    type Attribute_Buffer is tagged private;
@@ -75,4 +75,4 @@ private
       Attributes   : Attribute_Buffers.Vector;
    end record;
 
-end Orka.Meshes;
+end Orka.Vertex_Formats;

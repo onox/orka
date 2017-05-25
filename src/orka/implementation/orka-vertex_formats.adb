@@ -15,7 +15,7 @@
 with GL.Drawing;
 with GL.Objects.Buffers;
 
-package body Orka.Meshes is
+package body Orka.Vertex_Formats is
 
    use GL.Types;
 
@@ -106,4 +106,4 @@ package body Orka.Meshes is
       GL.Drawing.Draw_Multiple_Elements_Indirect (Object.Mode, GL.Types.UInt_Type, GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
 
-end Orka.Meshes;
+end Orka.Vertex_Formats;

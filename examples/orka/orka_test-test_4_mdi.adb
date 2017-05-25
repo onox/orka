@@ -17,7 +17,7 @@ with GL.Objects.Buffers;
 with GL.Types.Indirect;
 
 with Orka.Buffers.MDI;
-with Orka.Meshes;
+with Orka.Vertex_Formats;
 with Orka.Programs.Modules;
 
 with GL_Test.Display_Backend;
@@ -27,7 +27,7 @@ procedure Orka_Test.Test_4_MDI is
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
    pragma Unreferenced (Initialized);
 
-   use Orka.Meshes;
+   use Orka.Vertex_Formats;
    use Orka.Programs;
    use GL.Objects.Buffers;
 
@@ -54,12 +54,12 @@ procedure Orka_Test.Test_4_MDI is
       MDI : Orka.Buffers.MDI.Batch := Orka.Buffers.MDI.Create_Batch (3);
       Instance_ID : Natural;
 
-      procedure Add_Position_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      procedure Add_Position_Attribute (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
       end Add_Position_Attribute;
 
-      procedure Add_Instance_Attribute (Buffer : in out Orka.Meshes.Attribute_Buffer) is
+      procedure Add_Instance_Attribute (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_InstanceID"), 1);
          Buffer.Set_Per_Instance (True);
@@ -72,7 +72,7 @@ procedure Orka_Test.Test_4_MDI is
       MDI_Buffers := MDI.Create_Buffers (Storage_Bits'(others => False));
 
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Meshes.Create_Vertex_Format (Triangles) do
+      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles) do
          Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
 
