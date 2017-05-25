@@ -13,34 +13,16 @@
 --  limitations under the License.
 
 with GL.Objects.Buffers;
-with GL.Types;
+
+with Orka.Vertex_Formats.Formats;
 
 package body Orka.Resources.Models is
 
    procedure Create_Mesh (Object : in out Model; Batch : Buffers.MDI.Batch) is
-      use GL.Types;
       use GL.Objects.Buffers;
-
-      procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is
-      begin
-         --  TODO Always assuming that attributes are VEC3, VEC3, VEC2 (each component = Single)
-         --  total number of bytes: 12 + 12 + 8 = 32
-         Buffer.Add_Attribute (0, 3);
-         Buffer.Add_Attribute (1, 3);
-         Buffer.Add_Attribute (2, 2);
-      end Add_Vertex_Attributes;
-
-      procedure Add_Instance_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (3, 1);
-         Buffer.Set_Per_Instance (True);
-      end Add_Instance_Attribute;
    begin
       Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
-      Object.Mesh := Vertex_Formats.Create_Vertex_Format (Triangles);
-
-      Object.Mesh.Add_Attribute_Buffer (Half_Type, Add_Vertex_Attributes'Access);
-      Object.Mesh.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
+      Object.Mesh := Vertex_Formats.Formats.Position_Normal_UV_Half_MDI;
 
       Object.Mesh.Set_Vertex_Buffer (1, Object.Buffers.Vertex_Buffer);
       Object.Mesh.Set_Vertex_Buffer (2, Object.Buffers.Instances_Buffer);
