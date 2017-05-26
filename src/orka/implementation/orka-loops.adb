@@ -83,9 +83,10 @@ package body Orka.Loops is
 
       procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access) is
          Index : Positive := 1;
+         Count : constant Positive := Positive (Behaviors_Set.Length);
       begin
          Free (Target);
-         Target := new Behaviors.Behavior_Array (1 .. Positive (Behaviors_Set.Length));
+         Target := new Behaviors.Behavior_Array'(1 .. Count => Behaviors.Null_Behavior);
 
          --  Copy the elements from the set to the array
          --  for faster iteration by the game loop
@@ -146,7 +147,6 @@ package body Orka.Loops is
             Render (Scene_Array, Scene.Camera);
 
             if Scene.Modified then
-               --  TODO Deallocation and allocation should not be done in render loop
                Scene.Replace_Array (Scene_Array);
             end if;
 
