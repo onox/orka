@@ -24,6 +24,7 @@ package body Orka.Resources.Models is
 
    function Create_Instance (Object : Model) return Behaviors.Behavior_Ptr is
       Shapes : Shape_Array (1 .. Positive (Object.Shapes.Length));
+      pragma Assert (Shapes'First = Object.Shapes.First_Index);
 
       --  Set-up TBO for world transform matrices
       Transforms_Buffer : constant Buffers.Buffer := Buffers.Create_Buffer
@@ -32,13 +33,8 @@ package body Orka.Resources.Models is
 
       TBO : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
-      for I in 1 .. Object.Shapes.Length loop
-         declare
-            Cursor : constant Scenes.Singles.Trees.Cursor :=
-              Object.Scene.To_Cursor (Object.Shapes.Element (Positive (I)));
-         begin
-            Shapes (Positive (I)) := Cursor;
-         end;
+      for Index in Shapes'Range loop
+         Shapes (Index) := Object.Scene.To_Cursor (Object.Shapes.Element (Index));
       end loop;
 
       TBO.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
@@ -58,8 +54,8 @@ package body Orka.Resources.Models is
 
    overriding
    procedure Render (Object : in out Model_Instance) is
-      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length))
-        := (others => Orka.Types.Singles.Identity4);
+      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length));
+      pragma Assert (Positive (World_Transforms'First) = Object.Shapes.Element'First);
    begin
       Object.Uniform_WT.Set_Texture (Object.TBO, 0);
 
