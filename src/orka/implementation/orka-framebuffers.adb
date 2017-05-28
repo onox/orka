@@ -104,28 +104,6 @@ package body Orka.Framebuffers is
       end if;
    end Use_Framebuffer;
 
-   procedure Draw
-     (Object  : Framebuffer;
-      Program : in out Programs.Program;
-      Mesh    : Vertex_Formats.Vertex_Format;
-      Offset, Count : Size) is
-   begin
-      Use_Framebuffer (Object);
-      Program.Use_Program;
-      Mesh.Draw (Count, Offset);
-   end Draw;
-
-   procedure Draw_Indirect
-     (Object  : Framebuffer;
-      Program : in out Programs.Program;
-      Mesh    : Vertex_Formats.Vertex_Format;
-      Buffer  : Buffers.Buffer) is
-   begin
-      Use_Framebuffer (Object);
-      Program.Use_Program;
-      Mesh.Draw_Indirect (Buffer);
-   end Draw_Indirect;
-
    procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer) is
    begin
       GL.Objects.Framebuffers.Blit

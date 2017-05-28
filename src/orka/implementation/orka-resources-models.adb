@@ -12,39 +12,74 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Objects.Buffers;
+with GL.Pixels;
+with GL.Types;
 
-with Orka.Vertex_Formats.Formats;
+with Orka.Types;
 
 package body Orka.Resources.Models is
-
-   procedure Create_Mesh (Object : in out Model; Batch : Buffers.MDI.Batch) is
-      use GL.Objects.Buffers;
-   begin
-      Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
-      Object.Mesh := Vertex_Formats.Formats.Position_Normal_UV_Half_MDI;
-
-      Object.Mesh.Set_Vertex_Buffer (1, Object.Buffers.Vertex_Buffer);
-      Object.Mesh.Set_Vertex_Buffer (2, Object.Buffers.Instances_Buffer);
-
-      Object.Mesh.Set_Index_Buffer (Object.Buffers.Index_Buffer);
-   end Create_Mesh;
-
-   function Scene_Tree (Object : in out Model) return Trees.Tree is
-     (Object.Scene);
-
-   procedure Update_World_Transforms (Object : in out Model) is
-   begin
-      Object.Scene.Update_Transforms;
-   end Update_World_Transforms;
 
    function Shapes (Object : Model) return String_Vectors.Vector is
      (Object.Shapes);
 
-   function Mesh (Object : Model) return Vertex_Formats.Vertex_Format is
-     (Object.Mesh);
+   function Create_Instance (Object : Model) return Behaviors.Behavior_Ptr is
+      Shapes : Shape_Array (1 .. Positive (Object.Shapes.Length));
 
-   function Command_Buffer (Object : Model) return Buffers.Buffer is
-     (Object.Buffers.Command_Buffer);
+      --  Set-up TBO for world transform matrices
+      Transforms_Buffer : constant Buffers.Buffer := Buffers.Create_Buffer
+        ((Dynamic_Storage => True, others => False),
+         Orka.Types.Single_Matrix_Type, Shapes'Length);
+
+      TBO : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+   begin
+      for I in 1 .. Object.Shapes.Length loop
+         declare
+            Cursor : constant Scenes.Singles.Trees.Cursor :=
+              Object.Scene.To_Cursor (Object.Shapes.Element (Positive (I)));
+         begin
+            Shapes (Positive (I)) := Cursor;
+         end;
+      end loop;
+
+      TBO.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
+
+      return new Model_Instance'
+        (Scene   => Object.Scene,
+         Shapes  => Shape_Array_Holder.To_Holder (Shapes),
+         Format  => Object.Format,
+         Buffers => Object.Buffers,
+         TBO     => TBO,
+         Transforms => Transforms_Buffer,
+         Uniform_WT => Object.Uniform_WT);
+   end Create_Instance;
+
+   function Scene_Tree (Object : in out Model_Instance) return Trees.Tree is
+     (Object.Scene);
+
+   overriding
+   procedure Render (Object : in out Model_Instance) is
+      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length))
+        := (others => Orka.Types.Singles.Identity4);
+   begin
+      Object.Uniform_WT.Set_Texture (Object.TBO, 0);
+
+      --  Compute the world transforms by multiplying the local transform
+      --  of each node with the world transform of its parent.
+      Object.Scene.Update_Transforms;
+
+      for Index in Object.Shapes.Element'Range loop
+         World_Transforms (GL.Types.Int (Index)) := Object.Scene.World_Transform (Object.Shapes.Element (Index));
+      end loop;
+
+      --  TODO In a loop we should use a persistent mapped buffer instead of Set_Data
+      Object.Transforms.Set_Data (World_Transforms);
+
+      --  TODO Only do this once per model, not for each instance
+      Object.Format.Set_Vertex_Buffer (1, Object.Buffers.Vertex_Buffer);
+      Object.Format.Set_Vertex_Buffer (2, Object.Buffers.Instances_Buffer);
+      Object.Format.Set_Index_Buffer (Object.Buffers.Index_Buffer);
+
+      Object.Format.Draw_Indirect (Object.Buffers.Command_Buffer);
+   end Render;
 
 end Orka.Resources.Models;

@@ -26,7 +26,7 @@ package Orka.Scenes.Generic_Scene_Trees is
 
    type Tree is tagged private;
 
-   type Cursor (<>) is private;
+   type Cursor is private;
 
    function To_Cursor (Object : Tree; Name : String) return Cursor;
 
@@ -90,7 +90,9 @@ private
       Levels : Level_Vectors.Vector;
    end record;
 
-   type Cursor (Level, Offset : Positive) is null record;
+   type Cursor is record
+      Level, Offset : Positive;
+   end record;
 
    function Depth (Object : Tree) return Positive is
      (Positive (Object.Levels.Length));

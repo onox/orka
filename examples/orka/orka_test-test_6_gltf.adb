@@ -23,12 +23,9 @@ with GL.Types;
 with GL.Debug.Logs;
 with Orka.Debug;
 
---  Needed for TBO
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 with GL.Pixels;
-with Orka.Buffers;
-with Orka.Types;
 
 --  Needed for MSAA
 with Orka.Framebuffers;
@@ -40,8 +37,8 @@ with Orka.Programs.Modules;
 with Orka.Programs.Uniforms;
 with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
-with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Singles.Vectors;
+with Orka.Vertex_Formats.Formats;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_6_GLTF is
@@ -55,9 +52,6 @@ procedure Orka_Test.Test_6_GLTF is
 
    W : Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
      (Width, Height, Resizable => False);
-
-   package Models is new Orka.Resources.Models (Orka.Scenes.Singles.Trees);
-   package glTF is new Models.glTF;
 
    use GL.Objects.Textures;
 
@@ -130,9 +124,9 @@ begin
    declare
       use type Ada.Real_Time.Time;
 
-      A : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
-      M : Models.Model := glTF.Load_Model (Ada.Command_Line.Argument (1));
-      B : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+      package Models renames Orka.Resources.Models;
+
+      VF : aliased Orka.Vertex_Formats.Vertex_Format := Orka.Vertex_Formats.Formats.Position_Normal_UV_Half_MDI;
 
       use Orka.Programs;
       use Orka.Framebuffers;
@@ -144,14 +138,11 @@ begin
       Uni_View  : constant Uniforms.Uniform := Program_1.Uniform ("view");
       Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
-      Uni_WT      : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
+      Uniform_WT  : aliased  Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("diffuseTexture");
 
       FB_1 : constant Framebuffer_Ptr := new Framebuffer'(Create_Framebuffer (Width, Height, Samples));
       FB_D : constant Framebuffer_Ptr := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
-
-      use Orka.Transforms.Singles.Matrices;
-      use type GL.Types.Single;
 
       Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
 
@@ -159,33 +150,13 @@ begin
       Lens : constant Lens_Ptr := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0));
       Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
-      use Orka.Buffers;
-
-      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (M.Shapes.Length))
-        := (others => Orka.Types.Singles.Identity4);
-
-      --  Set-up TBO for world transform matrices
-      Buffer_1 : constant Buffer := Orka.Buffers.Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, World_Transforms'Length);
-      TBO_1 : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      A : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+      M : constant Models.Model := Models.glTF.Load_Model
+        (VF'Access, Uniform_WT'Access, Ada.Command_Line.Argument (1));
+      B : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
       Ada.Text_IO.Put_Line ("Duration glTF: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
       Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));
-
-      --  Compute the world transforms by multiplying the local transform
-      --  of each node with the world transform of its parent.
-      M.Update_World_Transforms;
-      for I in 1 .. M.Shapes.Length loop
-         declare
-            C : constant Orka.Scenes.Singles.Trees.Cursor := M.Scene_Tree.To_Cursor (M.Shapes.Element (Positive (I)));
-         begin
-            World_Transforms (GL.Types.Int (I)) := M.Scene_Tree.World_Transform (C);
-         end;
-      end loop;
-
-      --  In a loop we should use a persistent mapped buffer instead of Set_Data
-      Buffer_1.Set_Data (World_Transforms);
-      TBO_1.Attach_Buffer (GL.Pixels.RGBA32F, Buffer_1.GL_Buffer);
-      Uni_WT.Set_Texture (TBO_1, 0);
 
       --  Load checkerboard texture
       Load_Texture (Texture_1);
@@ -201,11 +172,16 @@ begin
          begin
             GL.Buffers.Clear (GL.Buffers.Buffer_Bits'(Color => True, Depth => True, others => False));
 
+            Camera.FB.Use_Framebuffer;
+            Program_1.Use_Program;
+
             Uni_View.Set_Matrix (Camera.View_Matrix);
             --  TODO Update projection matrix if lens changed
 
-            --  TODO Render objects in scene here
-            Camera.FB.Draw_Indirect (Program_1, M.Mesh, M.Command_Buffer);
+            --  Render objects in scene here
+            for Behavior of Scene.all loop
+               Behavior.Render;
+            end loop;
 
             --  Resolve the multiple samples in the FBO
             Camera.FB.Resolve_To (FB_D.all);
@@ -219,6 +195,7 @@ begin
             Camera      => Current_Camera,
             Render      => Render'Access);
       begin
+         Loops.Scene.Add (M.Create_Instance);
          Loops.Run_Loop;
       end;
    end;

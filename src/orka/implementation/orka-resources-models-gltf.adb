@@ -23,6 +23,7 @@ with JSON.Parsers;
 with JSON.Streams;
 with JSON.Types;
 
+with GL.Objects.Buffers;
 with GL.Types;
 
 with Orka.SIMD;
@@ -50,7 +51,7 @@ package body Orka.Resources.Models.glTF is
 
                Value : constant Long_Float := Matrix.Get (Column + Row + 1).Value;
             begin
-               Local_Transform (I) (J) := Trees.Transforms.Element_Type (Value);
+               Local_Transform (I) (J) := GL.Types.Single (Value);
             end;
          end loop;
       end loop;
@@ -195,7 +196,7 @@ package body Orka.Resources.Models.glTF is
             Indices_Bytes  : Byte_Array_Access := Elements (Views.Element (View_Indices_Name));
 
             subtype Vertices_Array is Single_Array (1 .. Int (Vertices_Bytes'Length / 4));
-            subtype Indices_Array is UInt_Array (1 .. Int (Indices_Bytes'Length / 4));
+            subtype Indices_Array  is UInt_Array   (1 .. Int (Indices_Bytes'Length / 4));
             --  TODO Assumes here that each index is 4 bytes (only holds if unsigned int)
             --  TODO We have to look at "componentType" of the indices' accessor
             --  TODO Verify that indices' accessor's "byteOffset" = 0
@@ -229,7 +230,11 @@ package body Orka.Resources.Models.glTF is
       pragma Assert (Batch.Length = Natural (Parts.Length));
    end Add_Parts;
 
-   function Load_Model (Path : String) return Model is
+   function Load_Model
+     (Format     : not null access Vertex_Formats.Vertex_Format;
+      Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
+      Path    : String) return Model
+   is
       File        : Ada.Streams.Stream_IO.File_Type;
       File_Stream : Ada.Streams.Stream_IO.Stream_Access;
 
@@ -288,12 +293,17 @@ package body Orka.Resources.Models.glTF is
                Shapes : String_Vectors.Vector;
 
                Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
-               Mesh_Views : constant Buffer_View_Maps.Map :=
+               Mesh_Views   : constant Buffer_View_Maps.Map :=
                  Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
 
                Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
+
+               use GL.Objects.Buffers;
             begin
-               return Object : Model := (Scene => Trees.Create_Tree ("root"), others => <>) do
+               return Object : Model := (Scene  => Trees.Create_Tree ("root"),
+                                         Format => Format.all'Unrestricted_Access,
+                                         Uniform_WT => Uniform_WT.all'Unrestricted_Access,
+                                         others => <>) do
                   for Node of Scene_Nodes loop
                      Object.Scene.Add_Node (Node.Value, "root");
                   end loop;
@@ -301,7 +311,7 @@ package body Orka.Resources.Models.glTF is
                   Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
                   Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
 
-                  Create_Mesh (Object, Batch);
+                  Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
                   Batch.Clear;
                   Object.Shapes := Shapes;
 

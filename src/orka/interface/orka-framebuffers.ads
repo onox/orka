@@ -19,8 +19,6 @@ with GL.Objects.Textures;
 with GL.Types;
 
 with Orka.Buffers;
-with Orka.Programs;
-with Orka.Vertex_Formats;
 
 package Orka.Framebuffers is
    pragma Preelaborate;
@@ -56,18 +54,6 @@ package Orka.Framebuffers is
    --  Use the framebuffer during rendering
    --
    --  The viewport is adjusted to the size of the framebuffer.
-
-   procedure Draw
-     (Object  : Framebuffer;
-      Program : in out Programs.Program;
-      Mesh    : Vertex_Formats.Vertex_Format;
-      Offset, Count : Size);
-
-   procedure Draw_Indirect
-     (Object  : Framebuffer;
-      Program : in out Programs.Program;
-      Mesh    : Vertex_Formats.Vertex_Format;
-      Buffer  : Buffers.Buffer);
 
    procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer)
      with Pre => Object /= Subject;
