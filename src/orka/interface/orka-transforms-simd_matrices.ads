@@ -44,6 +44,11 @@ package Orka.Transforms.SIMD_Matrices is
 
    function R (Axis : Vector_Type; Angle : Element_Type) return Matrix_Type;
 
+   function R (Quaternion : Vector_Type) return Matrix_Type;
+   --  Converts a quaternion to a rotation matrix
+   --
+   --  Note: the quaternion must be a unit quaternion (normalized).
+
    function S (Factors : Vector_Type) return Matrix_Type;
 
    function "*" (Left, Right : Matrix_Type) return Matrix_Type renames Multiply_Matrices;
@@ -64,6 +69,19 @@ package Orka.Transforms.SIMD_Matrices is
                      Angle  : Element_Type; Point : Vector_Type);
    --  Add a rotation transformation to the matrix with the center
    --  of rotation at the given point to the matrix
+
+   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Quaternion : Vector_Type);
+   --  Add a rotation transformation based on a quaternion to the matrix
+   --  with the center of rotation at the origin to the matrix
+   --
+   --  Note: the quaternion must be a unit quaternion (normalized).
+
+   procedure Rotate (Matrix : in out Matrix_Type; Quaternion : Vector_Type;
+                     Point  : Vector_Type);
+   --  Add a rotation transformation based on a quaternion to the matrix
+   --  with the center of rotation at the given point to the matrix
+   --
+   --  Note: the quaternion must be a unit quaternion (normalized).
 
    procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type);
    --  Add a rotation transformation around the X axis with the center

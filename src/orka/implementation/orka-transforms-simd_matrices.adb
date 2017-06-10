@@ -92,6 +92,24 @@ package body Orka.Transforms.SIMD_Matrices is
       return Result;
    end R;
 
+   function R (Quaternion : Vector_Type) return Matrix_Type is
+      Result : Matrix_Type := Identity_Value;
+   begin
+      Result (X) (X) := 1.0 - 2.0 * (Quaternion (Y) * Quaternion (Y) + Quaternion (Z) * Quaternion (Z));
+      Result (X) (Y) := 2.0 * (Quaternion (X) * Quaternion (Y) - Quaternion (Z) * Quaternion (W));
+      Result (X) (Z) := 2.0 * (Quaternion (X) * Quaternion (Z) + Quaternion (Y) * Quaternion (W));
+
+      Result (Y) (X) := 2.0 * (Quaternion (X) * Quaternion (Y) + Quaternion (Z) * Quaternion (W));
+      Result (Y) (Y) := 1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Z) * Quaternion (Z));
+      Result (Y) (Z) := 2.0 * (Quaternion (Y) * Quaternion (Z) - Quaternion (X) * Quaternion (W));
+
+      Result (Z) (X) := 2.0 * (Quaternion (X) * Quaternion (Z) - Quaternion (Y) * Quaternion (W));
+      Result (Z) (Y) := 2.0 * (Quaternion (Y) * Quaternion (Z) + Quaternion (X) * Quaternion (W));
+      Result (Z) (Z) := 1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Y) * Quaternion (Y));
+
+      return Result;
+   end R;
+
    function S (Factors : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
    begin
@@ -120,6 +138,17 @@ package body Orka.Transforms.SIMD_Matrices is
                      Angle  : Element_Type; Point : Vector_Type) is
    begin
       Matrix := T (Point) * R (Axis, Angle) * T (-Point) * Matrix;
+   end Rotate;
+
+   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Quaternion : Vector_Type) is
+   begin
+      Matrix := R (Quaternion) * Matrix;
+   end Rotate_At_Origin;
+
+   procedure Rotate (Matrix : in out Matrix_Type; Quaternion : Vector_Type;
+                     Point  : Vector_Type) is
+   begin
+      Matrix := T (Point) * R (Quaternion) * T (-Point) * Matrix;
    end Rotate;
 
    procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type) is

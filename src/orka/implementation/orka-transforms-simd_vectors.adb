@@ -21,8 +21,7 @@ package body Orka.Transforms.SIMD_Vectors is
    use SIMD;
 
    function Magnitude2 (Elements : Vector_Type) return Element_Type is
-     (Sum (Elements * Elements))
-   with Inline;
+     (Sum (Elements * Elements));
 
    function "*" (Factor : Element_Type; Elements : Vector_Type) return Vector_Type is
    begin
@@ -42,6 +41,16 @@ package body Orka.Transforms.SIMD_Vectors is
    begin
       return Divide_Or_Zero (Elements, (Length, Length, Length, Length));
    end Normalize;
+
+   function Normalized (Elements : Vector_Type) return Boolean is
+      function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
+         Epsilon : constant Element_Type := 2.0 ** (1 - Element_Type'Model_Mantissa);
+      begin
+         return Result in Expected - Epsilon .. Expected + Epsilon;
+      end Is_Equivalent;
+   begin
+      return Is_Equivalent (1.0, Magnitude (Elements));
+   end Normalized;
 
    function Distance (Left, Right : Vector_Type) return Element_Type is
      (Magnitude (Left - Right));

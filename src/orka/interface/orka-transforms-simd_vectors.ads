@@ -46,9 +46,14 @@ package Orka.Transforms.SIMD_Vectors is
 
    function "*" (Elements : Vector_Type; Factor : Element_Type) return Vector_Type;
 
+   function Magnitude2 (Elements : Vector_Type) return Element_Type
+     with Inline;
+
    function Magnitude (Elements : Vector_Type) return Element_Type;
 
    function Normalize (Elements : Vector_Type) return Vector_Type;
+
+   function Normalized (Elements : Vector_Type) return Boolean;
 
    function Distance (Left, Right : Vector_Type) return Element_Type;
 
