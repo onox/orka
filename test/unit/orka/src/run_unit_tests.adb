@@ -32,6 +32,8 @@ with Test_Transforms_Doubles_Matrices;
 with Test_Transforms_Singles_Vectors;
 with Test_Transforms_Doubles_Vectors;
 
+with Test_Transforms_Singles_Quaternions;
+
 with Test_Scene_Trees;
 
 procedure Run_Unit_Tests is
@@ -69,6 +71,7 @@ begin
    --  Transforms
    Suite_Transforms_Singles.Add_Test (new Test_Transforms_Singles_Matrices.Test);
    Suite_Transforms_Singles.Add_Test (new Test_Transforms_Singles_Vectors.Test);
+   Suite_Transforms_Singles.Add_Test (new Test_Transforms_Singles_Quaternions.Test);
    Suite_Transforms.Add_Test (Suite_Transforms_Singles);
 
    Suite_Transforms_Doubles.Add_Test (new Test_Transforms_Doubles_Matrices.Test);
