@@ -86,4 +86,20 @@ package body Orka.Types is
    function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array renames Convert_Single;
    function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array renames Convert_Half;
 
+   -----------------------------------------------------------------------------
+
+   function Clamp (Value : in Source) return Target is
+      A : constant Source := Source'Min (Source (Target'Last), Value);
+      B : constant Source := Source'Max (Source (Target'First), A);
+   begin
+      return Target (B);
+   end Clamp;
+
+   function Normalize_Periodic (Value : in Source) return Target is
+      Target_Min   : constant Source := Source (Target'First);
+      Target_Range : constant Source := Source (Target'Last - Target'First);
+   begin
+      return Target (Value - Target_Range * Source'Floor ((Value - Target_Min) / Target_Range));
+   end Normalize_Periodic;
+
 end Orka.Types;

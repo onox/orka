@@ -36,4 +36,14 @@ package Orka.Types is
    function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array;
    function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array;
 
+   generic
+      type Source is digits <>;
+      type Target is digits <>;
+   function Clamp (Value : in Source) return Target;
+
+   generic
+      type Source is digits <>;
+      type Target is digits <>;
+   function Normalize_Periodic (Value : in Source) return Target;
+
 end Orka.Types;

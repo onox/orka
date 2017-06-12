@@ -16,10 +16,14 @@ with Ada.Tags.Generic_Dispatching_Constructor;
 
 with Orka.SIMD;
 with Orka.Transforms.Singles.Vectors;
+with Orka.Types;
 
 package body Orka.Cameras is
 
    package Vector_Transforms renames Orka.Transforms.Singles.Vectors;
+
+   function Clamp_Distance is new Orka.Types.Clamp (GL.Types.Single, Distance);
+   function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Single, Angle);
 
    procedure Set_FOV (Object : in out Camera_Lens; FOV : GL.Types.Single) is
    begin
@@ -119,8 +123,8 @@ package body Orka.Cameras is
       Object.Input.Lock_Pointer (Using_Camera);
 
       if Using_Camera then
-         Object.Yaw   := Object.Yaw   + Object.Input.Delta_X;
-         Object.Pitch := Object.Pitch + Object.Input.Delta_Y;
+         Object.Yaw   := Normalize_Angle (Object.Yaw   + Object.Input.Delta_X);
+         Object.Pitch := Normalize_Angle (Object.Pitch + Object.Input.Delta_Y);
       end if;
    end Update;
 
@@ -135,11 +139,11 @@ package body Orka.Cameras is
       Object.Input.Lock_Pointer (Using_Camera);
 
       if Using_Camera then
-         Object.Alpha := Object.Alpha + Object.Input.Delta_X;
-         Object.Beta  := Object.Beta  + Object.Input.Delta_Y;
+         Object.Alpha := Normalize_Angle (Object.Alpha + Object.Input.Delta_X);
+         Object.Beta  := Normalize_Angle (Object.Beta  + Object.Input.Delta_Y);
       end if;
 
-      Object.Radius := Object.Radius - Object.Input.Scroll_Y;
+      Object.Radius := Clamp_Distance (Object.Radius - Object.Input.Scroll_Y);
    end Update;
 
    overriding
