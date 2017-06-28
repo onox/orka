@@ -12,129 +12,82 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Deallocation;
-
-with Orka.Types;
-
 package body Orka.Buffers.MDI is
 
-   function Create_Batch (Vertex_Length : Positive) return Batch is
-   begin
-      return (Vertex_Length => Vertex_Length, others => <>);
-   end Create_Batch;
+   procedure Append
+     (Object : in out Batch;
+      Positions : not null Indirect.Half_Array_Access;
+      Normals   : not null Indirect.Half_Array_Access;
+      UVs       : not null Indirect.Half_Array_Access;
+      Indices   : not null Indirect.UInt_Array_Access)
+   is
+      Index_Count  : constant Natural := Indices'Length;
+      Vertex_Count : constant Natural := Positions'Length / 3;
+      --  TODO Don't hardcode
 
-   procedure Append (Object : in out Batch;
-                     Vertices : not null Indirect.Single_Array_Access;
-                     Indices  : not null Indirect.UInt_Array_Access;
-                     Instance_Index : out Natural) is
-   begin
-      Instance_Index := Object.Length;
+      pragma Assert (Positions'Length = Normals'Length);
+      pragma Assert (Vertex_Count = UVs'Length / 2);
 
-      Object.Vertices.Append (Vertices);
-      Object.Indices.Append (Indices);
+      Commands : Indirect.Elements_Indirect_Command_Array (1 .. 1);
+   begin
+      Commands (1) :=
+        (Count         => UInt (Index_Count),
+         Instances     => (if Object.Visible then 1 else 0),
+         First_Index   => UInt (Object.Index_Offset),
+         Base_Vertex   => UInt (Object.Vertex_Offset),
+         Base_Instance => UInt (Object.Index));
+
+      --  Upload attributes to VBO's
+      Object.Positions.Set_Data (Positions.all, Offset => Object.Vertex_Offset * 3);
+      Object.Normals.Set_Data   (Normals.all,   Offset => Object.Vertex_Offset * 3);
+      Object.UVs.Set_Data       (UVs.all,       Offset => Object.Vertex_Offset * 2);
+
+      --  Upload indices to IBO
+      Object.Indices.Set_Data (Indices.all, Offset => Object.Index_Offset);
+
+      --  Upload command to command buffer
+      Object.Commands.Set_Data (Commands, Offset => Object.Index);
+
+      Object.Index_Offset  := Object.Index_Offset  + Index_Count;
+      Object.Vertex_Offset := Object.Vertex_Offset + Vertex_Count;
+      Object.Index := Object.Index + 1;
    end Append;
 
-   procedure Clear (Object : in out Batch) is
-   begin
-      for Vertices of Object.Vertices loop
-         Indirect.Free_Array (Vertices);
-      end loop;
-      for Indices of Object.Indices loop
-         Indirect.Free_Array (Indices);
-      end loop;
-      Object.Vertices.Clear;
-      Object.Indices.Clear;
-   end Clear;
-
-   function Length (Object : Batch) return Natural
-     is (Natural (Object.Vertices.Length));
-
-   function Create_Buffers
-     (Object  : Batch;
+   function Create_Batch
+     (Parts, Vertices, Indices : Positive;
+      Format  : not null access Vertex_Formats.Vertex_Format;
       Flags   : GL.Objects.Buffers.Storage_Bits;
-      Visible : Boolean := True) return MDI_Buffers
+      Visible : Boolean := True) return Batch
    is
-      Commands  : Indirect.Elements_Indirect_Command_Array (1 .. Int (Object.Length));
-      Instances : constant UInt := (if Visible then 1 else 0);
-
-      VBO_Length, IBO_Length : Size := 0;
-
-      Instances_Array : UInt_Array (0 .. Int (Object.Length - 1));
+      Instances_Array : UInt_Array (0 .. Int (Parts - 1));
    begin
-      --  Compute size of vertex and index buffers
-      for I in Commands'Range loop
-         VBO_Length := VBO_Length + Object.Vertices (I).all'Length;
-         IBO_Length := IBO_Length + Object.Indices  (I).all'Length;
-      end loop;
+      return Result : Batch do
+         Result.Visible := Visible;
 
-      declare
-         subtype Vertex_Array is Half_Array (0 .. VBO_Length - 1);
-         subtype Index_Array  is UInt_Array (0 .. IBO_Length - 1);
-
-         type Vertex_Array_Access is access Vertex_Array;
-         type Index_Array_Access  is access Index_Array;
-
-         procedure Free_Vertex_Array is new Ada.Unchecked_Deallocation
-           (Object => Vertex_Array, Name => Vertex_Array_Access);
-         procedure Free_Index_Array is new Ada.Unchecked_Deallocation
-           (Object => Index_Array, Name => Index_Array_Access);
-
-         Vertices : Vertex_Array_Access := new Vertex_Array;
-         Indices  : Index_Array_Access  := new Index_Array;
-
-         Part_Vertex_Count, Part_Index_Count : Size;
-         Vertex_Offset, Index_Offset : Size := 0;
-
-         VA_First, VA_Last : Size := 0;
-         IA_First, IA_Last : Size := 0;
-      begin
-         for I in Commands'Range loop
-            Part_Vertex_Count := Object.Vertices (I).all'Length / Positive_Size (Object.Vertex_Length);
-            Part_Index_Count  := Object.Indices  (I).all'Length;
-
-            VA_First := Vertex_Offset * Positive_Size (Object.Vertex_Length);
-            VA_Last  := VA_First + Part_Vertex_Count * Positive_Size (Object.Vertex_Length) - 1;
-
-            IA_First := Index_Offset;
-            IA_Last  := IA_First + Part_Index_Count - 1;
-
-            --  Copy part data to a slice of the vertices and indices arrays
-            Vertices (VA_First .. VA_Last) := Orka.Types.Convert (Object.Vertices (I).all);
-            Indices  (IA_First .. IA_Last) := Object.Indices (I).all;
-
-            --  Create draw command
-            Commands (I) := (Count         => UInt (Part_Index_Count),
-                             Instances     => Instances,
-                             First_Index   => UInt (Index_Offset),
-                             Base_Vertex   => UInt (Vertex_Offset),
-                             Base_Instance => UInt (I - Commands'First));
-
-            Vertex_Offset := Vertex_Offset + Part_Vertex_Count;
-            Index_Offset  := Index_Offset  + Part_Index_Count;
-         end loop;
-
-         pragma Assert (Vertices'Last = VA_Last);
-         pragma Assert (Indices'Last  = IA_Last);
-
+         --  Create array with the draw ID's
          for I in Instances_Array'Range loop
             Instances_Array (I) := UInt (I);
          end loop;
 
-         return Result : MDI_Buffers do
-            Result.Vertex_Buffer    := Orka.Buffers.Create_Buffer (Flags, Vertices.all);
-            Result.Index_Buffer     := Orka.Buffers.Create_Buffer (Flags, Indices.all);
-            Result.Command_Buffer   := Orka.Buffers.Create_Buffer (Flags, Commands);
-            Result.Instances_Buffer := Orka.Buffers.Create_Buffer (Flags, Instances_Array);
+         Result.Instances := Orka.Buffers.Create_Buffer (Flags, Instances_Array);
+         Result.Commands  := Orka.Buffers.Create_Buffer (Flags, Types.Elements_Command_Type, Parts);
 
-            Free_Vertex_Array (Vertices);
-            Free_Index_Array (Indices);
-         end return;
-      exception
-         when others =>
-            Free_Vertex_Array (Vertices);
-            Free_Index_Array (Indices);
-            raise;
-      end;
-   end Create_Buffers;
+         --  Attributes
+         Result.Positions := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (1), Vertices * 3);
+         Result.Normals   := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (2), Vertices * 3);
+         Result.UVs       := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (3), Vertices * 2);
+         --  TODO Don't hardcode vector size factors
+
+         --  Indices
+         case Format.Index_Kind is
+            when GL.Types.UByte_Type =>
+               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UByte_Type, Indices);
+            when GL.Types.UShort_Type =>
+               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UShort_Type, Indices);
+            when GL.Types.UInt_Type =>
+               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UInt_Type, Indices);
+         end case;
+      end return;
+   end Create_Batch;
 
 end Orka.Buffers.MDI;

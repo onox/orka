@@ -122,11 +122,10 @@ begin
    Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
    declare
-      use type Ada.Real_Time.Time;
-
       package Models renames Orka.Resources.Models;
 
-      VF : aliased Orka.Vertex_Formats.Vertex_Format := Orka.Vertex_Formats.Formats.Position_Normal_UV_Half_MDI;
+      VF : aliased Orka.Vertex_Formats.Vertex_Format
+        := Orka.Vertex_Formats.Formats.Separate_Position_Normal_UV_Half_MDI;
 
       use Orka.Programs;
       use Orka.Framebuffers;
@@ -150,14 +149,9 @@ begin
       Lens : constant Lens_Ptr := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0));
       Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
-      A : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
       M : constant Models.Model := Models.glTF.Load_Model
         (VF'Access, Uniform_WT'Access, Ada.Command_Line.Argument (1));
-      B : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
-      Ada.Text_IO.Put_Line ("Duration glTF: " & Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
-      Ada.Text_IO.Put_Line ("Shapes: " & Integer'Image (Integer (M.Shapes.Length)));
-
       --  Load checkerboard texture
       Load_Texture (Texture_1);
       Uni_Texture.Set_Texture (Texture_1, 1);

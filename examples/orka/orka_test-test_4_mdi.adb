@@ -72,7 +72,7 @@ procedure Orka_Test.Test_4_MDI is
       MDI_Buffers := MDI.Create_Buffers (Storage_Bits'(others => False));
 
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles) do
+      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
 

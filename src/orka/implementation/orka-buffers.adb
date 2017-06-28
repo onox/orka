@@ -49,10 +49,14 @@ package body Orka.Buffers is
             return Create_Buffer (Flags, Double_Type, Length * 16);
          when Arrays_Command_Type =>
             Bytes := Indirect.Arrays_Indirect_Command'Size / System.Storage_Unit;
-            return Create_Buffer (Flags, Byte_Type, Length * Bytes);
+            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
+               Result.Length := Length;
+            end return;
          when Elements_Command_Type =>
             Bytes := Indirect.Elements_Indirect_Command'Size / System.Storage_Unit;
-            return Create_Buffer (Flags, Byte_Type, Length * Bytes);
+            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
+               Result.Length := Length;
+            end return;
       end case;
    end Create_Buffer;
 

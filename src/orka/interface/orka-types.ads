@@ -33,8 +33,10 @@ package Orka.Types is
 
    package Doubles is new Orka.Algebra (Orka.Transforms.Doubles.Matrices);
 
-   function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array;
-   function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array;
+   function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array
+     with Post => Elements'Length = Convert'Result'Length;
+   function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array
+     with Post => Elements'Length = Convert'Result'Length;
 
    generic
       type Source is digits <>;

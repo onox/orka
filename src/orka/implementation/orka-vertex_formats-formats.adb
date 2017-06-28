@@ -18,7 +18,7 @@ package body Orka.Vertex_Formats.Formats is
 
    use GL.Types;
 
-   function Position_Normal_UV return Vertex_Format is
+   function Interleaved_Position_Normal_UV return Vertex_Format is
       procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (0, 3);
@@ -26,18 +26,28 @@ package body Orka.Vertex_Formats.Formats is
          Buffer.Add_Attribute (2, 2);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format (Triangles) do
+      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format
+        (Triangles, UInt_Type)
+      do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
-   end Position_Normal_UV;
+   end Interleaved_Position_Normal_UV;
 
-   function Position_Normal_UV_Half_MDI return Vertex_Format is
-      procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is
+   function Separate_Position_Normal_UV_Half_MDI return Vertex_Format is
+      procedure Add_Position_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (0, 3);
+      end Add_Position_Attribute;
+
+      procedure Add_Normal_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
+      begin
          Buffer.Add_Attribute (1, 3);
+      end Add_Normal_Attribute;
+
+      procedure Add_UV_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
+      begin
          Buffer.Add_Attribute (2, 2);
-      end Add_Vertex_Attributes;
+      end Add_UV_Attribute;
 
       procedure Add_Instance_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
       begin
@@ -45,10 +55,14 @@ package body Orka.Vertex_Formats.Formats is
          Buffer.Set_Per_Instance (True);
       end Add_Instance_Attribute;
    begin
-      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format (Triangles) do
-         Result.Add_Attribute_Buffer (Half_Type, Add_Vertex_Attributes'Access);
+      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format
+        (Triangles, UInt_Type)
+      do
+         Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
+         Result.Add_Attribute_Buffer (Half_Type, Add_Normal_Attribute'Access);
+         Result.Add_Attribute_Buffer (Half_Type, Add_UV_Attribute'Access);
          Result.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
       end return;
-   end Position_Normal_UV_Half_MDI;
+   end Separate_Position_Normal_UV_Half_MDI;
 
 end Orka.Vertex_Formats.Formats;

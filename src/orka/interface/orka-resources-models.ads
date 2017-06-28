@@ -22,12 +22,14 @@ with Orka.Behaviors;
 with Orka.Buffers.MDI;
 with Orka.Programs.Uniforms;
 with Orka.Scenes.Singles.Trees;
+with Orka.Transforms.Singles.Matrices;
 with Orka.Vertex_Formats;
 
 package Orka.Resources.Models is
    pragma Preelaborate;
 
    package Trees renames Scenes.Singles.Trees;
+   package Transforms renames Orka.Transforms.Singles.Matrices;
 
    package String_Vectors is new Ada.Containers.Indefinite_Vectors (Positive, String);
 
@@ -59,7 +61,7 @@ private
       Scene   : Trees.Tree;
       Shapes  : String_Vectors.Vector;
       Format  : not null access Vertex_Formats.Vertex_Format;
-      Buffers : Orka.Buffers.MDI.MDI_Buffers;
+      Batch   : Orka.Buffers.MDI.Batch;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
    end record;
 
@@ -77,7 +79,7 @@ private
       Transforms : Buffers.Buffer;
       TBO        : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Buffers    : Orka.Buffers.MDI.MDI_Buffers;
+      Batch      : Orka.Buffers.MDI.Batch;
    end record;
 
 end Orka.Resources.Models;

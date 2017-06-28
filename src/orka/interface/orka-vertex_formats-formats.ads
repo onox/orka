@@ -15,8 +15,8 @@
 package Orka.Vertex_Formats.Formats is
    pragma Preelaborate;
 
-   function Position_Normal_UV return Vertex_Format;
+   function Interleaved_Position_Normal_UV return Vertex_Format;
 
-   function Position_Normal_UV_Half_MDI return Vertex_Format;
+   function Separate_Position_Normal_UV_Half_MDI return Vertex_Format;
 
 end Orka.Vertex_Formats.Formats;

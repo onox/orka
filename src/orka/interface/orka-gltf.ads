@@ -14,9 +14,19 @@
 
 with Ada.Strings.Unbounded;
 
+with JSON.Types;
+
+with GL.Types;
+
 private package Orka.glTF is
    pragma Preelaborate;
 
    package SU renames Ada.Strings.Unbounded;
+
+   package Types is new JSON.Types (Long_Integer, GL.Types.Single);
+
+   subtype Natural_Optional is Integer range -1 .. Integer'Last;
+
+   Undefined : constant := Natural_Optional'First;
 
 end Orka.glTF;

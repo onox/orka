@@ -38,7 +38,15 @@ package Orka.Vertex_Formats is
 
    type Vertex_Format is tagged private;
 
-   function Create_Vertex_Format (Mode : GL.Types.Connection_Mode) return Vertex_Format;
+   function Create_Vertex_Format
+     (Mode       : GL.Types.Connection_Mode;
+      Index_Kind : GL.Types.Unsigned_Numeric_Type) return Vertex_Format;
+
+   function Index_Kind (Object : Vertex_Format) return GL.Types.Unsigned_Numeric_Type;
+
+   function Attribute_Kind
+     (Object : Vertex_Format;
+      Index  : Positive) return GL.Types.Numeric_Type;
 
    procedure Add_Attribute_Buffer
      (Object  : in out Vertex_Format;
@@ -71,6 +79,7 @@ private
 
    type Vertex_Format is tagged record
       Mode         : GL.Types.Connection_Mode;
+      Index_Kind   : GL.Types.Unsigned_Numeric_Type;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Attributes   : Attribute_Buffers.Vector;
    end record;

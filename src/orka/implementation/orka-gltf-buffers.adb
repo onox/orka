@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Ada.Streams;
+with Ada.Unchecked_Conversion;
 
 with Orka.Base64;
 
@@ -34,34 +35,89 @@ package body Orka.glTF.Buffers is
       end if;
    end Load_Data;
 
-   function Create_Buffer (URI : String; Length : Natural) return Buffer is
+   function Create_Buffer (Object : Types.JSON_Value'Class) return Buffer
+     with Post => Create_Buffer'Result.Data'Length = Create_Buffer'Result.Length;
+
+   function Create_Buffer (Object : Types.JSON_Value'Class) return Buffer is
+      URI    : constant String := Object.Get ("uri").Value;
+      Length : constant Long_Integer := Object.Get ("byteLength").Value;
    begin
       return Result : Buffer do
-         Result.Data := Load_Data (URI);
-         Result.Kind := Array_Buffer;
+         Result.Data   := Load_Data (URI);
+         Result.Length := Natural (Length);
       end return;
    end Create_Buffer;
 
    function Create_Buffer_View
-     (Buffer         : not null Byte_Array_Access;
-      Offset, Length : Natural;
-      Kind           : Buffer_Kind) return Buffer_View is
+     (Buffers : Buffer_Vectors.Vector;
+      Object  : Types.JSON_Value'Class) return Buffer_View
+   is
+      Buffer : constant Long_Integer := Object.Get ("buffer").Value;
+      Offset : constant Long_Integer := Object.Get_Value_Or_Default ("byteOffset", 0).Value;
+      Length : constant Long_Integer := Object.Get ("byteLength").Value;
+      Target : constant Long_Integer := Object.Get ("target").Value;
+      --  TODO target is optional: infer from accessors
+
+      --  If byteStride is not defined, then data is tightly packed
+      Packed : constant Boolean := not Object.Contains ("byteStride");
    begin
-      return Result : Buffer_View do
-         Result.Buffer := Buffer;
-         Result.Offset := Offset;
-         Result.Length := Length;
-         Result.Target := Kind;
+      return Result : Buffer_View (Packed => Packed) do
+         Result.Buffer := Buffers (Natural (Buffer)).Data;
+         pragma Assert (Offset + Length <= Result.Buffer.all'Length);
+
+         Result.Offset := Natural (Offset);
+         Result.Length := Natural (Length);
+         Result.Target := Target_Kinds (Integer (Target));
+
+         if not Packed then
+            declare
+               Stride : constant Long_Integer := Object.Get ("byteStride").Value;
+            begin
+               Result.Stride := Stride_Natural (Stride);
+               pragma Assert (Result.Stride mod 4 = 0);
+            end;
+         end if;
       end return;
    end Create_Buffer_View;
 
-   function Elements (View : Buffer_View) return Byte_Array_Access is
+   procedure Extract_From_Buffer
+     (View  : Buffer_View;
+      Data  : out Element_Array)
+   is
       use Ada.Streams;
 
       Offset : constant Stream_Element_Offset := Stream_Element_Offset (View.Offset);
       Length : constant Stream_Element_Offset := Stream_Element_Offset (View.Length);
+
+      subtype Counted_Element_Array is Element_Array (Data'Range);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Byte_Array, Target => Counted_Element_Array);
    begin
-      return new Byte_Array'(View.Buffer (Offset + 1 .. Offset + Length));
-   end Elements;
+      Data := Convert (Byte_Array'(View.Buffer (Offset + 1 .. Offset + Length)));
+   end Extract_From_Buffer;
+
+   function Get_Buffers
+     (Buffers : Types.JSON_Array_Value) return Buffer_Vectors.Vector
+   is
+      Result : Buffer_Vectors.Vector;
+   begin
+      for Buffer of Buffers loop
+         Result.Append (Create_Buffer (Buffer));
+      end loop;
+      return Result;
+   end Get_Buffers;
+
+   function Get_Buffer_Views
+     (Buffers : Buffer_Vectors.Vector;
+      Views   : Types.JSON_Array_Value) return Buffer_View_Vectors.Vector
+   is
+      Result : Buffer_View_Vectors.Vector;
+   begin
+      for View of Views loop
+         Result.Append (Create_Buffer_View (Buffers, View));
+      end loop;
+      return Result;
+   end Get_Buffer_Views;
 
 end Orka.glTF.Buffers;

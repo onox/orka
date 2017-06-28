@@ -50,7 +50,7 @@ procedure Orka_Test.Test_1_Triangle is
       end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles) do
+      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh;

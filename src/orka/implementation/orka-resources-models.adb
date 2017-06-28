@@ -43,7 +43,7 @@ package body Orka.Resources.Models is
         (Scene   => Object.Scene,
          Shapes  => Shape_Array_Holder.To_Holder (Shapes),
          Format  => Object.Format,
-         Buffers => Object.Buffers,
+         Batch   => Object.Batch,
          TBO     => TBO,
          Transforms => Transforms_Buffer,
          Uniform_WT => Object.Uniform_WT);
@@ -71,11 +71,13 @@ package body Orka.Resources.Models is
       Object.Transforms.Set_Data (World_Transforms);
 
       --  TODO Only do this once per model, not for each instance
-      Object.Format.Set_Vertex_Buffer (1, Object.Buffers.Vertex_Buffer);
-      Object.Format.Set_Vertex_Buffer (2, Object.Buffers.Instances_Buffer);
-      Object.Format.Set_Index_Buffer (Object.Buffers.Index_Buffer);
+      Object.Format.Set_Vertex_Buffer (1, Object.Batch.Positions);
+      Object.Format.Set_Vertex_Buffer (2, Object.Batch.Normals);
+      Object.Format.Set_Vertex_Buffer (3, Object.Batch.UVs);
+      Object.Format.Set_Vertex_Buffer (4, Object.Batch.Instances);
+      Object.Format.Set_Index_Buffer (Object.Batch.Indices);
 
-      Object.Format.Draw_Indirect (Object.Buffers.Command_Buffer);
+      Object.Format.Draw_Indirect (Object.Batch.Commands);
    end Render;
 
 end Orka.Resources.Models;

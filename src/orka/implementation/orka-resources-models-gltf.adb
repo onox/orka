@@ -12,111 +12,84 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
+with System;
+
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Hash;
-with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
+
+with Ada.Real_Time;
 
 with JSON.Parsers;
 with JSON.Streams;
-with JSON.Types;
 
+with GL.Debug;
 with GL.Objects.Buffers;
-with GL.Types;
+with GL.Types.Indirect;
 
-with Orka.SIMD;
 with Orka.glTF.Buffers;
+with Orka.glTF.Accessors;
+with Orka.glTF.Meshes;
+with Orka.glTF.Scenes;
+with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
-   package Types is new JSON.Types (Long_Integer, Long_Float);
-
-   use Types;
-   use Orka.glTF.Buffers;
-
-   procedure Set_Matrix (Scene : in out Trees.Tree; Node : String; Matrix : JSON_Array_Value)
-     with Pre => Matrix.Length = 16;
-   --  Uses the given matrix as the local transform of the node
-
-   procedure Set_Matrix (Scene : in out Trees.Tree; Node : String; Matrix : JSON_Array_Value) is
-      Local_Transform : Trees.Matrix4;
-   begin
-      for I in Orka.SIMD.Index_Homogeneous loop
-         for J in Orka.SIMD.Index_Homogeneous loop
-            declare
-               Column : constant Natural := Orka.SIMD.Index_Homogeneous'Pos (I) * 4;
-               Row    : constant Natural := Orka.SIMD.Index_Homogeneous'Pos (J);
-
-               Value : constant Long_Float := Matrix.Get (Column + Row + 1).Value;
-            begin
-               Local_Transform (I) (J) := GL.Types.Single (Value);
-            end;
-         end loop;
-      end loop;
-
-      Scene.Set_Local_Transform (Scene.To_Cursor (Node), Local_Transform);
-   end Set_Matrix;
-
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
-      Element_Type    => String,
+      Element_Type    => Natural,
       Hash            => Ada.Strings.Hash,
       Equivalent_Keys => "=");
 
-   procedure Add_Scene_Nodes (Scene  : in out Trees.Tree;
-                              Parts  : in out String_Maps.Map;
-                              Nodes   : JSON_Value'Class;
-                              Parents : JSON_Array_Value) is
-      Current_Parents, Next_Parents : String_Vectors.Vector;
+   procedure Add_Nodes
+     (Scene   : in out Trees.Tree;
+      Parts   : in out String_Maps.Map;
+      Nodes   : Orka.glTF.Scenes.Node_Vectors.Vector;
+      Parents : Orka.glTF.Scenes.Natural_Vectors.Vector)
+   is
+      Current_Parents, Next_Parents : Orka.glTF.Scenes.Natural_Vectors.Vector;
    begin
       --  Initialize Current_Parents with the elements in Parents
-      for Parent of Parents loop
-         Current_Parents.Append (Parent.Value);
+      for Parent_Index of Parents loop
+         Current_Parents.Append (Parent_Index);
       end loop;
 
       --  Add the children of Current_Parents, and then the
       --  children of those children, etc. etc.
       loop
-         for Parent of Current_Parents loop
+         for Parent_Index of Current_Parents loop
             declare
-               Parent_Node : constant JSON_Value'Class := Nodes.Get (Parent);
+               Parent_Node : Orka.glTF.Scenes.Node renames Nodes (Parent_Index);
+               Parent_Name : constant String := Parent_Node.Name.all;
+
+               use type Orka.glTF.Scenes.Transform_Kind;
             begin
-               --  Use "matrix" for the local transform
-               if Parent_Node.Contains ("matrix") then
-                  Set_Matrix (Scene, Parent, Parent_Node.Get_Array ("matrix"));
-               end if;
-               --  TODO "rotate", "translate", "scale" not supported yet
-
-               --  Add any children or meshes if there are no children
-               declare
-                  Children : constant JSON_Array_Value := Parent_Node.Get_Array_Or_Empty ("children");
-               begin
+               --  Use "matrix" or TRS for the local transform
+               if Parent_Node.Transform = Orka.glTF.Scenes.Matrix then
+                  Scene.Set_Local_Transform (Scene.To_Cursor (Parent_Name), Parent_Node.Matrix);
+               else
                   declare
-                     Meshes : constant JSON_Array_Value := Parent_Node.Get_Array_Or_Empty ("meshes");
+                     Local_Transform : Trees.Matrix4 := Transforms.Identity_Value;
                   begin
-                     if Children.Length > 0 then
-                        for Child of Children loop
-                           Scene.Add_Node (Child.Value, Parent);
-                           Next_Parents.Append (Child.Value);
-                        end loop;
-                     end if;
+                     Transforms.Scale (Local_Transform, Parent_Node.Scale);
+                     Transforms.Rotate_At_Origin (Local_Transform, Parent_Node.Rotation);
+                     Transforms.Translate (Local_Transform, Parent_Node.Translation);
 
-                     --  Add meshes as MDI parts
-                     if Meshes.Length = 1 then
-                        --  If there is one mesh, map Parent (a node) to the mesh name,
-                        Parts.Insert (Parent, Meshes.Get (1).Value);
-                     else
-                        --  otherwise create a new node for each mesh name and then
-                        --  map those nodes to their corresponding mesh names
-                        for Mesh of Meshes loop
-                           Scene.Add_Node (Mesh.Value, Parent);
-                           Parts.Insert (Mesh.Value, Mesh.Value);
-                        end loop;
-                     end if;
+                     Scene.Set_Local_Transform (Scene.To_Cursor (Parent_Name), Local_Transform);
                   end;
-               end;
+               end if;
+
+               --  Add the children to the scene as nodes
+               for Child_Index of Parent_Node.Children loop
+                  Scene.Add_Node (Nodes (Child_Index).Name.all, Parent_Name);
+                  Next_Parents.Append (Child_Index);
+               end loop;
+
+               --  Add mesh as MDI part by mapping the parent (a node) to the mesh index
+               if Parent_Node.Mesh /= Orka.glTF.Undefined then
+                  Parts.Insert (Parent_Name, Parent_Node.Mesh);
+               end if;
             end;
          end loop;
 
@@ -125,125 +98,247 @@ package body Orka.Resources.Models.glTF is
          Current_Parents := Next_Parents;
          Next_Parents.Clear;
       end loop;
-   end Add_Scene_Nodes;
+   end Add_Nodes;
 
-   function Get_Buffers (Buffers : JSON_Object_Value) return Buffer_Maps.Map is
-      Result : Buffer_Maps.Map;
+   function Shape_List (Parts : String_Maps.Map) return String_Vectors.Vector is
    begin
-      for Name of Buffers loop
+      return Result : String_Vectors.Vector := String_Vectors.To_Vector (Parts.Length) do
          declare
-            Buffer : constant JSON_Value'Class := Buffers.Get (Name);
+            procedure Set_Name (Position : String_Maps.Cursor) is
+               Mesh_Index : Natural renames String_Maps.Element (Position);
+               Node_Name : String renames String_Maps.Key (Position);
+            begin
+               Result.Replace_Element (Mesh_Index + 1, Node_Name);
+            end Set_Name;
          begin
-            Ada.Text_IO.Put_Line ("Buffer length: " & Long_Integer'Image (Long_Integer'(Buffer.Get ("byteLength").Value)));
-            Result.Insert (Name, Create_Buffer
-              (URI    => Buffer.Get ("uri").Value,
-               Length => Natural (Long_Integer'(Buffer.Get ("byteLength").Value))));
+            Parts.Iterate (Set_Name'Access);
          end;
-      end loop;
-      return Result;
-   end Get_Buffers;
+      end return;
+   end Shape_List;
 
-   function Get_Buffer_Views
-     (Buffers : Buffer_Maps.Map;
-      Views   : JSON_Object_Value) return Buffer_View_Maps.Map
+   generic
+      type Target_Type is private;
+      type Target_Array is array (GL.Types.Size range <>) of aliased Target_Type;
+      type Target_Array_Access is access Target_Array;
+   package Buffer_View_Conversions is
+
+      generic
+         type Source_Type is private;
+         type Source_Array is array (GL.Types.Size range <>) of aliased Source_Type;
+         with function Cast (Value : Source_Type) return Target_Type;
+      function Convert_Array (Elements : Source_Array) return Target_Array;
+
+      generic
+         type Source_Type is private;
+         type Source_Array is array (GL.Types.Size range <>) of aliased Source_Type;
+         with function Convert_Array (Elements : Source_Array) return Target_Array;
+      procedure Get_Array
+        (Accessor : Orka.glTF.Accessors.Accessor;
+         View     : Orka.glTF.Buffers.Buffer_View;
+         Target   : not null Target_Array_Access);
+
+   end Buffer_View_Conversions;
+
+   package body Buffer_View_Conversions is
+
+      function Convert_Array (Elements : Source_Array) return Target_Array is
+      begin
+         return Result : Target_Array (Elements'Range) do
+            for Index in Elements'Range loop
+               Result (Index) := Cast (Elements (Index));
+            end loop;
+         end return;
+      end Convert_Array;
+
+      procedure Get_Array
+        (Accessor : Orka.glTF.Accessors.Accessor;
+         View     : Orka.glTF.Buffers.Buffer_View;
+         Target   : not null Target_Array_Access)
+      is
+         use Orka.glTF.Accessors;
+
+         Count : constant Positive := Attribute_Length (Accessor.Kind) * Accessor.Count;
+         Bytes_Per_Element : constant Positive := Bytes_Element (Accessor.Component);
+         pragma Assert (View.Length / Bytes_Per_Element = Count);
+         pragma Assert (Source_Type'Size / System.Storage_Unit = Bytes_Per_Element);
+
+         procedure Extract is new Orka.glTF.Buffers.Extract_From_Buffer (Source_Type, Source_Array);
+
+         Source : Source_Array (Target.all'Range);
+      begin
+         Extract (View, Source);
+         Target.all := Convert_Array (Source);
+      end Get_Array;
+
+   end Buffer_View_Conversions;
+
+   procedure Count_Parts
+     (Format : not null access Vertex_Formats.Vertex_Format;
+      Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
+      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
+      Vertices, Indices : out Natural)
    is
-      Result : Buffer_View_Maps.Map;
+      use type Ada.Containers.Count_Type;
+      use type Orka.glTF.Accessors.Component_Kind;
+      use type GL.Types.Unsigned_Numeric_Type;
+      use Orka.glTF.Accessors;
+
+      Count_Vertices : Natural := 0;
+      Count_Indices  : Natural := 0;
    begin
-      for Name of Views loop
+      for Mesh of Meshes loop
          declare
-            View : constant JSON_Value'Class := Views.Get (Name);
+            Primitives : Orka.glTF.Meshes.Primitive_Vectors.Vector renames Mesh.Primitives;
+            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh.Name.all & "' has more than one primitive");
+
+            First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
+            pragma Assert (First_Primitive.Attributes.Length = 3,
+              "Primitive of mesh " & Mesh.Name.all & " does not have 3 attributes");
+
+            Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
+            Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
+            Attribute_UV       : constant Natural := First_Primitive.Attributes ("TEXCOORD_0");
+
+            pragma Assert (First_Primitive.Indices /= Orka.glTF.Undefined);
+            Attribute_Index : constant Natural := First_Primitive.Indices;
+
+            Accessor_Position : Accessor renames Accessors (Attribute_Position);
+            Accessor_Normal   : Accessor renames Accessors (Attribute_Normal);
+            Accessor_UV       : Accessor renames Accessors (Attribute_UV);
+
+            pragma Assert (Accessor_Position.Component = Orka.glTF.Accessors.Float);
+            pragma Assert (Accessor_Normal.Component = Orka.glTF.Accessors.Float);
+            pragma Assert (Accessor_UV.Component = Orka.glTF.Accessors.Float);
+
+            pragma Assert (Accessor_Position.Kind = Orka.glTF.Accessors.Vector3);
+            pragma Assert (Accessor_Normal.Kind = Orka.glTF.Accessors.Vector3);
+            pragma Assert (Accessor_UV.Kind = Orka.glTF.Accessors.Vector2);
+
+            pragma Assert (Accessor_Position.Count = Accessor_Normal.Count);
+            pragma Assert (Accessor_Position.Count = Accessor_UV.Count);
+
+            Accessor_Index : Accessor renames Accessors (Attribute_Index);
+
+            pragma Assert (Accessor_Index.Kind = Orka.glTF.Accessors.Scalar);
+
+            pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Format.Index_Kind,
+              "Index of mesh " & Mesh.Name.all & " has type " &
+              GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
+              " but expected " &
+              GL.Types.Unsigned_Numeric_Type'Image (Format.Index_Kind) & " or lower");
          begin
-            Result.Insert (Name, Create_Buffer_View
-              (Buffer => Buffers.Element (String'(View.Get ("buffer").Value)).Data,
-               Offset => Natural (Long_Integer'(View.Get ("byteOffset").Value)),
-               Length => Natural (Long_Integer'(View.Get ("byteLength").Value)),
-               Kind   => Target_Kinds (Integer (Long_Integer'(View.Get ("target").Value)))));
+            Count_Vertices := Count_Vertices + Accessor_Position.Count;
+            Count_Indices  := Count_Indices + Accessor_Index.Count;
          end;
       end loop;
-      return Result;
-   end Get_Buffer_Views;
+
+      Vertices := Count_Vertices;
+      Indices := Count_Indices;
+   end Count_Parts;
 
    procedure Add_Parts
-     (Parts  : String_Maps.Map;
-      Views  : Buffer_View_Maps.Map;
+     (Format : not null access Vertex_Formats.Vertex_Format;
       Batch  : in out Buffers.MDI.Batch;
-      Shapes : in out String_Vectors.Vector;
-      Meshes, Accessors : JSON_Value'Class)
+      Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
+      Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
+      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector)
    is
-      Instance_ID : Natural;
-
       use GL.Types;
+      use Orka.glTF.Accessors;
+      use Orka.glTF.Buffers;
+
+      pragma Assert (Format.Index_Kind = UInt_Type);
+      package Index_Conversions is new Buffer_View_Conversions (UInt, UInt_Array, Indirect.UInt_Array_Access);
+      --  TODO Use Format.Index_Kind
+
+      package Vertex_Conversions is new Buffer_View_Conversions (Half, Half_Array, Indirect.Half_Array_Access);
+      procedure Get_Singles is new Vertex_Conversions.Get_Array (Single, Single_Array, Orka.Types.Convert);
+
+      function Cast (Value : UByte)  return UInt is (UInt (Value));
+      function Cast (Value : UShort) return UInt is (UInt (Value));
+      function Cast (Value : UInt)   return UInt is (Value);
+
+      function Convert is new Index_Conversions.Convert_Array (UByte, UByte_Array, Cast);
+      function Convert is new Index_Conversions.Convert_Array (UShort, UShort_Array, Cast);
+      function Convert is new Index_Conversions.Convert_Array (UInt, UInt_Array, Cast);
+
+      procedure Get_UBytes  is new Index_Conversions.Get_Array (UByte, UByte_Array, Convert);
+      procedure Get_UShorts is new Index_Conversions.Get_Array (UShort, UShort_Array, Convert);
+      procedure Get_UInts   is new Index_Conversions.Get_Array (UInt, UInt_Array, Convert);
    begin
-      for Part in Parts.Iterate loop
+      for Mesh of Meshes loop
          declare
-            Node_Name : constant String := String_Maps.Key (Part);
-            Mesh_Name : constant String := String_Maps.Element (Part);
-            pragma Assert (Meshes.Contains (Mesh_Name), "Mesh '" & Mesh_Name & "' not found");
+            First_Primitive : Orka.glTF.Meshes.Primitive renames Mesh.Primitives (0);
 
-            Primitives : constant JSON_Value'Class := Meshes.Get (Mesh_Name).Get_Array ("primitives");
-            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh_Name & "' has more than one primitive");
-            First_Primitive : constant JSON_Object_Value := Primitives.Get_Object (1);
+            Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
+            Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
+            Attribute_UV       : constant Natural := First_Primitive.Attributes ("TEXCOORD_0");
 
-            Accessor_Name : constant String := First_Primitive.Get ("attributes").Get ("POSITION").Value;
-            View_Name     : constant String := Accessors.Get (Accessor_Name).Get ("bufferView").Value;
+            Attribute_Index    : constant Natural := First_Primitive.Indices;
 
-            --  TODO Assumes "indices" exists
-            Accessor_Indices_Name : constant String := First_Primitive.Get ("indices").Value;
-            View_Indices_Name     : constant String := Accessors.Get (Accessor_Indices_Name).Get ("bufferView").Value;
-            pragma Assert (Accessors.Get (Accessor_Indices_Name).Get ("componentType").Value = 5125);
+            Accessor_Position : Accessor renames Accessors (Attribute_Position);
+            Accessor_Normal   : Accessor renames Accessors (Attribute_Normal);
+            Accessor_UV       : Accessor renames Accessors (Attribute_UV);
 
-            Vertices_Bytes : Byte_Array_Access := Elements (Views.Element (View_Name));
-            Indices_Bytes  : Byte_Array_Access := Elements (Views.Element (View_Indices_Name));
+            Accessor_Index    : Accessor renames Accessors (Attribute_Index);
 
-            subtype Vertices_Array is Single_Array (1 .. Int (Vertices_Bytes'Length / 4));
-            subtype Indices_Array  is UInt_Array   (1 .. Int (Indices_Bytes'Length / 4));
-            --  TODO Assumes here that each index is 4 bytes (only holds if unsigned int)
-            --  TODO We have to look at "componentType" of the indices' accessor
-            --  TODO Verify that indices' accessor's "byteOffset" = 0
-            --       and "byteStride" = byte size of "componentType"
+            View_Position : Buffer_View renames Views (Accessor_Position.View);
+            View_Normal   : Buffer_View renames Views (Accessor_Normal.View);
+            View_UV       : Buffer_View renames Views (Accessor_UV.View);
 
-            function Convert_Vertices is new Ada.Unchecked_Conversion
-              (Source => Byte_Array, Target => Vertices_Array);
-            function Convert_Indices is new Ada.Unchecked_Conversion
-              (Source => Byte_Array, Target => Indices_Array);
+            View_Index : Buffer_View renames Views (Accessor_Index.View);
+
+            Positions : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+              (Accessor_Position.Count * Attribute_Length (Accessor_Position.Kind)));
+            Normals   : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+              (Accessor_Normal.Count * Attribute_Length (Accessor_Normal.Kind)));
+            UVs       : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+              (Accessor_UV.Count * Attribute_Length (Accessor_UV.Kind)));
+
+            Indices   : Indirect.UInt_Array_Access := new UInt_Array (1 .. Int
+              (Accessor_Index.Count));
+            --  TODO Use Conversions.Target_Array?
          begin
---            Ada.Text_IO.Put_Line ("Mesh " & Mesh_Name & " has POSITION accessor " & Accessor_Name);
---            Ada.Text_IO.Put_Line (Integer'Image (Vertices_Bytes'Length));
-            --  TODO Making lots of assumptions here:
-            --          - all accessors (POSITION, NORMAL, TEXCOORD_0) have same bufferView
-            --          - attributes are interleaved and are VEC3, VEC3, VEC2
-            --          - indices are unsigned int?
+            --  Convert attributes
+            Get_Singles (Accessor_Position, View_Position, Positions);
+            Get_Singles (Accessor_Normal, View_Normal, Normals);
+            Get_Singles (Accessor_UV, View_UV, UVs);
 
---            Ada.Text_IO.Put_Line ("Node: " & Node_Name);
+            --  Convert indices
+            case Unsigned_Type (Accessor_Index.Component) is
+               when GL.Types.UByte_Type =>
+                  Get_UBytes (Accessor_Index, View_Index, Indices);
+               when GL.Types.UShort_Type =>
+                  Get_UShorts (Accessor_Index, View_Index, Indices);
+               when GL.Types.UInt_Type =>
+                  Get_UInts (Accessor_Index, View_Index, Indices);
+            end case;
 
-            Batch.Append
-              (new Single_Array'(Convert_Vertices (Vertices_Bytes.all)),
-               new UInt_Array'(Convert_Indices (Indices_Bytes.all)),
-               Instance_ID);
---            Ada.Text_IO.Put_Line ("Instance ID: " & Integer'Image (Instance_ID));
-            Free_Byte_Array (Vertices_Bytes);
-            Free_Byte_Array (Indices_Bytes);
+            Batch.Append (Positions, Normals, UVs, Indices);
 
-            Shapes.Append (Node_Name);
+            --  Deallocate buffers after use
+            Indirect.Free_Array (Positions);
+            Indirect.Free_Array (Normals);
+            Indirect.Free_Array (UVs);
+            Indirect.Free_Array (Indices);
          end;
       end loop;
-      pragma Assert (Batch.Length = Natural (Parts.Length));
    end Add_Parts;
 
    function Load_Model
      (Format     : not null access Vertex_Formats.Vertex_Format;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Path    : String) return Model
+      Path       : String) return Model
    is
       File        : Ada.Streams.Stream_IO.File_Type;
       File_Stream : Ada.Streams.Stream_IO.Stream_Access;
-
-      package Parsers is new JSON.Parsers (Types);
 
       type String_Access is access String;
 
       procedure Free_String is new Ada.Unchecked_Deallocation
         (Object => String, Name => String_Access);
+
+      T1 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
    begin
       Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Path);
 
@@ -252,70 +347,147 @@ package body Orka.Resources.Models.glTF is
          subtype File_String is String (1 .. File_Size);
          Raw_Contents : String_Access := new File_String;
       begin
+         --  Read JSON data from file
          File_Stream := Ada.Streams.Stream_IO.Stream (File);
          File_String'Read (File_Stream, Raw_Contents.all);
 
          Ada.Streams.Stream_IO.Close (File);
 
          declare
+            T2 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+            package Parsers is new JSON.Parsers (Orka.glTF.Types);
+            use Orka.glTF.Types;
+
+            --  Tokenize and parse JSON data
             Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Raw_Contents);
             Object : constant JSON_Value'Class := Parsers.Parse (Stream);
 
-            GL_Extensions       : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("glExtensionsUsed");
-            Required_Extensions : constant JSON_Array_Value := Object.Get_Array_Or_Empty ("extensionsRequired");
+            Asset : constant JSON_Object_Value := Object.Get_Object ("asset");
          begin
             Free_String (Raw_Contents);
 
-            --  Require indices to be of type UInt
-            if not (for some Extension of GL_Extensions => Extension.Value = "OES_element_index_uint") then
-               raise Model_Load_Error with "glTF asset '" & Path & "' does not use OES_element_index_uint";
+            --  Require glTF 2.x
+            if Asset.Get ("version").Value /= "2.0" then
+               raise Model_Load_Error with "glTF file '" & Path & "' does not use glTF 2.0";
             end if;
-
-            --  Raise error if glTF asset requires (unsupported) KHR_binary_glTF extension
-            if (for some Extension of Required_Extensions => Extension.Value = "KHR_binary_glTF") then
-               raise Model_Load_Error with "glTF asset '" & Path & "' requires (unsupported) KHR_binary_glTF";
-            end if;
+            --  TODO Check minVersion
 
             declare
-               --  TODO "nodes", "scenes", and "scene" are not required in .gltf file
-               --  TODO only "meshes", "accessors", "asset", "buffers", and "bufferViews" are
-               Scenes : constant JSON_Value'Class := Object.Get ("scenes");
-               Nodes  : constant JSON_Value'Class := Object.Get ("nodes");
+               T3 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
-               Default_Scene : constant JSON_Value'Class := Scenes.Get (Object.Get ("scene").Value);
-               Scene_Nodes   : constant JSON_Array_Value := Default_Scene.Get_Array ("nodes");
-               pragma Assert (Scene_Nodes.Length >= 1);  --  "nodes" could be empty ([])
+               Buffers : constant Orka.glTF.Buffers.Buffer_Vectors.Vector
+                 := Orka.glTF.Buffers.Get_Buffers (JSON_Array_Value (Object.Get ("buffers")));
+               Buffer_Views : constant Orka.glTF.Buffers.Buffer_View_Vectors.Vector
+                 := Orka.glTF.Buffers.Get_Buffer_Views (Buffers, JSON_Array_Value (Object.Get ("bufferViews")));
+               Accessors : constant Orka.glTF.Accessors.Accessor_Vectors.Vector
+                 := Orka.glTF.Accessors.Get_Accessors (JSON_Array_Value (Object.Get ("accessors")));
 
-               Meshes    : constant JSON_Value'Class := Object.Get ("meshes");
-               Accessors : constant JSON_Value'Class := Object.Get ("accessors");
+               Meshes : constant Orka.glTF.Meshes.Mesh_Vectors.Vector
+                 := Orka.glTF.Meshes.Get_Meshes (JSON_Array_Value (Object.Get ("meshes")));
+               Nodes : constant Orka.glTF.Scenes.Node_Vectors.Vector
+                 := Orka.glTF.Scenes.Get_Nodes (JSON_Array_Value (Object.Get ("nodes")));
+               Scenes : constant Orka.glTF.Scenes.Scene_Vectors.Vector
+                 := Orka.glTF.Scenes.Get_Scenes (JSON_Array_Value (Object.Get ("scenes")));
+
+               --  TODO Textures, Images, Samplers, Materials, Cameras
+               T4 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+
+               Default_Scene_Index : constant Long_Integer := Object.Get ("scene").Value;
+               Default_Scene : Orka.glTF.Scenes.Scene renames Scenes (Natural (Default_Scene_Index));
 
                Parts  : String_Maps.Map;
-               Shapes : String_Vectors.Vector;
-
-               Mesh_Buffers : constant Buffer_Maps.Map := Get_Buffers (Object.Get_Object ("buffers"));
-               Mesh_Views   : constant Buffer_View_Maps.Map :=
-                 Get_Buffer_Views (Mesh_Buffers, Object.Get_Object ("bufferViews"));
-
-               Batch : Buffers.MDI.Batch := Buffers.MDI.Create_Batch (8);  --  3 + 3 + 2 = 8
 
                use GL.Objects.Buffers;
+
+               Vertices_Length, Indices_Length : Natural;
+               T5, T6 : Ada.Real_Time.Time;
             begin
-               return Object : Model := (Scene  => Trees.Create_Tree ("root"),
-                                         Format => Format.all'Unrestricted_Access,
-                                         Uniform_WT => Uniform_WT.all'Unrestricted_Access,
-                                         others => <>) do
-                  for Node of Scene_Nodes loop
-                     Object.Scene.Add_Node (Node.Value, "root");
+               if Default_Scene.Nodes.Is_Empty then
+                  raise Model_Load_Error with "glTF file '" & Path & "' has an empty scene";
+               end if;
+
+               return Object : Model
+                 := (Scene      => Trees.Create_Tree ("root"),
+                     Format     => Format.all'Unrestricted_Access,
+                     Uniform_WT => Uniform_WT.all'Unrestricted_Access,
+                     others     => <>)
+               do
+                  declare
+                     use type GL.Types.Single;
+                     use Transforms;
+
+                     --  Convert the object from structural frame (X = aft,
+                     --  Y = right, Z = top) to OpenGL (X = right, Y = top,
+                     --  Z = aft)
+                     --
+                     --  X => Z, Y => X, Z => Y
+--                     Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (90.0);
+                     Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0);
+                     --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
+                  begin
+                     Object.Scene.Set_Local_Transform
+                       (Object.Scene.To_Cursor ("root"), Structural_Frame_To_GL);
+                  end;
+
+                  for Node_Index of Default_Scene.Nodes loop
+                     Object.Scene.Add_Node (Nodes (Node_Index).Name.all, "root");
                   end loop;
 
-                  Add_Scene_Nodes (Object.Scene, Parts, Nodes, Scene_Nodes);
-                  Add_Parts (Parts, Mesh_Views, Batch, Shapes, Meshes, Accessors);
+                  Add_Nodes (Object.Scene, Parts, Nodes, Default_Scene.Nodes);
+                  Object.Shapes := Shape_List (Parts);
+                  T5 := Ada.Real_Time.Clock;
 
-                  Object.Buffers := Batch.Create_Buffers (Storage_Bits'(Dynamic_Storage => True, others => False));
-                  Batch.Clear;
-                  Object.Shapes := Shapes;
+                  Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);
 
-                  --  TODO deallocate buffers in Mesh_Buffers
+                  Object.Batch := Orka.Buffers.MDI.Create_Batch
+                    (Positive (Parts.Length), Vertices_Length, Indices_Length,
+                     Format  => Format,
+                     Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
+                     Visible => True);
+
+                  Add_Parts (Format, Object.Batch, Buffer_Views, Accessors, Meshes);
+                  T6 := Ada.Real_Time.Clock;
+
+                  declare
+                     use type Ada.Real_Time.Time;
+
+                     Reading_Time    : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T2 - T1);
+                     Parsing_Time    : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T3 - T2);
+                     Processing_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T4 - T3);
+                     Scene_Tree_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T5 - T4);
+                     Buffers_Time    : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T5);
+
+                     Loading_Time    : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T1);
+                  begin
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 0,
+                        "Loaded model " & Path);
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 1,
+                        " " & Ada.Containers.Count_Type'Image (Meshes.Length) & " parts," &
+                        Natural'Image (Vertices_Length) & " vertices," &
+                        Natural'Image (Indices_Length) & " indices");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 2,
+                        "  loaded in" & Duration'Image (Loading_Time) & " ms");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 3,
+                        "    reading file:" & Duration'Image (Reading_Time) & " ms");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 4,
+                        "    parsing JSON:" & Duration'Image (Parsing_Time) & " ms");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 5,
+                        "    processing glTF:" & Duration'Image (Processing_Time) & " ms");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 6,
+                        "    scene tree:" & Duration'Image (Scene_Tree_Time) & " ms");
+                     GL.Debug.Insert_Message
+                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 7,
+                        "    buffers:" & Duration'Image (Buffers_Time) & " ms");
+                  end;
+
+                  --  TODO Deallocate any strings allocated in Orka.glTF.*
                end return;
             end;
          end;

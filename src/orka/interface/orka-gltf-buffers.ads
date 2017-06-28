@@ -12,8 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Strings.Hash;
+with Ada.Containers.Indefinite_Vectors;
+with Ada.Containers.Vectors;
 
 with GL.Low_Level.Enums;
 
@@ -33,37 +33,40 @@ package Orka.glTF.Buffers is
 
    type Buffer is record
       Data   : Byte_Array_Access;
-      Kind   : Buffer_Kind;   --  TODO Do we really need Kind?
+      Length : Positive;  --  Length in bytes
    end record;
 
-   package Buffer_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type        => String,
-      Element_Type    => Buffer,
-      Hash            => Ada.Strings.Hash,
-      Equivalent_Keys => "=");
+   package Buffer_Vectors is new Ada.Containers.Vectors (Natural, Buffer);
 
-   type Buffer_View is record
+   function Get_Buffers
+     (Buffers : Types.JSON_Array_Value) return Buffer_Vectors.Vector;
+
+   subtype Stride_Natural is Natural range 4 .. 252;
+
+   type Buffer_View (Packed : Boolean) is record
       Buffer : Byte_Array_Access;
-      Offset : Natural;  --  Offset in bytes
-      Length : Natural;  --  Length in bytes
+      Offset : Natural;   --  Offset in bytes
+      Length : Positive;  --  Length in bytes
       Target : Buffer_Kind;
+      case Packed is
+         when False =>
+            Stride : Stride_Natural;
+         when others =>
+            null;
+      end case;
    end record;
 
-   package Buffer_View_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type        => String,
-      Element_Type    => Buffer_View,
-      Hash            => Ada.Strings.Hash,
-      Equivalent_Keys => "=");
+   package Buffer_View_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Buffer_View);
 
-   function Create_Buffer (URI : String; Length : Natural) return Buffer
-     with Post => Create_Buffer'Result.Data'Length = Length;
+   generic
+      type Element_Type is private;
+      type Element_Array is array (GL.Types.Size range <>) of aliased Element_Type;
+   procedure Extract_From_Buffer
+     (View  : Buffer_View;
+      Data  : out Element_Array);
 
-   function Create_Buffer_View
-     (Buffer         : not null Byte_Array_Access;
-      Offset, Length : Natural;
-      Kind           : Buffer_Kind) return Buffer_View
-     with Pre => Offset + Length <= Buffer.all'Length;
-
-   function Elements (View : Buffer_View) return Byte_Array_Access;
+   function Get_Buffer_Views
+     (Buffers : Buffer_Vectors.Vector;
+      Views   : Types.JSON_Array_Value) return Buffer_View_Vectors.Vector;
 
 end Orka.glTF.Buffers;

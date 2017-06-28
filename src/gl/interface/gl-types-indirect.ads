@@ -19,11 +19,16 @@ with Ada.Unchecked_Deallocation;
 package GL.Types.Indirect is
    pragma Preelaborate;
 
+   type Half_Array_Access is access Half_Array;
    type Single_Array_Access is access Single_Array;
    type UInt_Array_Access   is access UInt_Array;
 
    procedure Free_Array is new Ada.Unchecked_Deallocation
+     (Object => Half_Array, Name => Half_Array_Access);
+
+   procedure Free_Array is new Ada.Unchecked_Deallocation
      (Object => Single_Array, Name => Single_Array_Access);
+
    procedure Free_Array is new Ada.Unchecked_Deallocation
      (Object => UInt_Array, Name => UInt_Array_Access);
 
@@ -37,11 +42,11 @@ package GL.Types.Indirect is
 
    type Arrays_Indirect_Command_Array is array (Size range <>)
      of aliased Arrays_Indirect_Command
-     with Convention => C;
+   with Convention => C;
 
    type Elements_Indirect_Command_Array is array (Size range <>)
      of aliased Elements_Indirect_Command
-     with Convention => C;
+   with Convention => C;
 
    package Arrays_Indirect_Command_Pointers is new Interfaces.C.Pointers
      (Size, Arrays_Indirect_Command,
