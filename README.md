@@ -30,9 +30,11 @@ Features
  * Thick OpenGL 4.5 bindings
  * Thick GLFW 3 bindings
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
- * Easy construction of OpenGL programs and meshes
+ * Easy construction of shader programs and meshes
  * Transforms and scene tree (makes use of the x86 SIMD extensions)
- * glTF loader (uses MDI)
+ * Game loop
+ * Camera's
+ * [glTF 2.0][url-gltf] loader (uses MDI)
 
 Build status
 ------------
@@ -80,12 +82,16 @@ Compilation
 A Makefile is provided to build the source code and examples. Use `make` to build
 the source code:
 
-    $ MODE=release make
+```sh
+$ MODE=release make
+```
 
 If you want to check after each call to OpenGL whether an error flag was set
 and raise a corresponding exception, then use the `development` mode:
 
-    $ MODE=development make
+```sh
+$ MODE=development make
+```
 
 The default mode is `development`. Both `release` and `development` enable general
 optimizations. To enable OpenGL exceptions, disable optimizations, and include
@@ -104,7 +110,9 @@ Examples
 The project contains some examples that demonstrate the basic usage of
 the library. Build the example programs as follows:
 
-    $ make examples
+```sh
+$ make examples
+```
 
 You can execute them in the `bin` directory. Some examples load shader
 files from the source directory by using relative paths, so they only work
@@ -115,18 +123,24 @@ Tests
 
 The project contains a set of unit tests. Use `make test` to build the unit tests:
 
-    $ make test
+```sh
+$ make test
+```
 
 After having build the tests, run the unit tests:
 
-    $ make run_unit_tests
+```sh
+$ make run_unit_tests
+```
 
 Installation
 ------------
 
 After having compiled the source code, the library can be installed by executing:
 
-    $ make PREFIX=/usr install
+```sh
+$ make PREFIX=/usr install
+```
 
 Change `PREFIX` to the preferred destination folder.
 
@@ -135,7 +149,9 @@ Using Orka in your project
 
 Specify the dependency in your \*.gpr project file:
 
-    with "orka";
+```ada
+with "orka";
+```
 
 If you want to use GLFW, refer to `orka-glfw` instead. The project files
 `orka.gpr` and `orka-glfw.gpr` take the following scenario parameters:
@@ -163,3 +179,5 @@ of the [Apache License 2.0][url-apache].
   [url-gprbuild]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
   [url-ahven]: http://ahven.stronglytyped.org
   [url-apache]: https://opensource.org/licenses/Apache-2.0
+  [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
+
