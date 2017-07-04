@@ -16,18 +16,36 @@ with Ada.Unchecked_Conversion;
 
 package body Orka.Programs.Uniforms is
 
-   Sampler_Kind_Array : constant array (LE.Texture_Kind) of LE.Resource_Type :=
-     (LE.Texture_1D                   => LE.Sampler_1D,
-      LE.Texture_2D                   => LE.Sampler_2D,
-      LE.Texture_3D                   => LE.Sampler_3D,
-      LE.Texture_Rectangle            => LE.Sampler_2D_Rect,
-      LE.Texture_Cube_Map             => LE.Sampler_Cube,
-      LE.Texture_1D_Array             => LE.Sampler_1D_Array,
-      LE.Texture_2D_Array             => LE.Sampler_2D_Array,
-      LE.Texture_Buffer               => LE.Sampler_Buffer,
-      LE.Texture_Cube_Map_Array       => LE.Sampler_3D,
-      LE.Texture_2D_Multisample       => LE.Sampler_2D_Multisample,
-      LE.Texture_2D_Multisample_Array => LE.Sampler_2D_Multisample_Array);
+   function Texture_Kind (Sampler : LE.Resource_Type) return LE.Texture_Kind is
+      use LE;
+   begin
+      case Sampler is
+         when Sampler_1D | Int_Sampler_1D | UInt_Sampler_1D | Sampler_1D_Shadow =>
+            return Texture_1D;
+         when Sampler_2D | Int_Sampler_2D | UInt_Sampler_2D | Sampler_2D_Shadow =>
+            return Texture_2D;
+         when Sampler_3D | Int_Sampler_3D | UInt_Sampler_3D =>
+            return Texture_3D;
+         when Sampler_2D_Rect | Int_Sampler_2D_Rect | UInt_Sampler_2D_Rect | Sampler_2D_Rect_Shadow =>
+            return Texture_Rectangle;
+         when Sampler_Cube | Int_Sampler_Cube | UInt_Sampler_Cube | Sampler_Cube_Shadow =>
+            return Texture_Cube_Map;
+         when Sampler_Cube_Array | Int_Sampler_Cube_Array | UInt_Sampler_Cube_Array | Sampler_Cube_Array_Shadow =>
+            return Texture_Cube_Map_Array;
+         when Sampler_1D_Array | Int_Sampler_1D_Array | UInt_Sampler_1D_Array | Sampler_1D_Array_Shadow =>
+            return Texture_1D_Array;
+         when Sampler_2D_Array | Int_Sampler_2D_Array | UInt_Sampler_2D_Array | Sampler_2D_Array_Shadow =>
+            return Texture_2D_Array;
+         when Sampler_Buffer | Int_Sampler_Buffer | UInt_Sampler_Buffer =>
+            return Texture_Buffer;
+         when Sampler_2D_Multisample | Int_Sampler_2D_Multisample | UInt_Sampler_2D_Multisample =>
+            return Texture_2D_Multisample;
+         when Sampler_2D_Multisample_Array | Int_Sampler_2D_Multisample_Array | UInt_Sampler_2D_Multisample_Array =>
+            return Texture_2D_Multisample_Array;
+         when others =>
+            raise Constraint_Error;
+      end case;
+   end Texture_Kind;
 
    procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
@@ -123,14 +141,13 @@ package body Orka.Programs.Uniforms is
       Sampler_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
       Kind_Image : String renames LE.Resource_Type'Image (Sampler_Kind);
    begin
-      for Texture_Kind in Sampler_Kind_Array'Range loop
-         if Sampler_Kind_Array (Texture_Kind) = Sampler_Kind then
-            return Uniform_Sampler'
-              (Kind       => Texture_Kind,
-               GL_Uniform => Object.GL_Program.Uniform_Location (Name));
-         end if;
-      end loop;
-      raise Uniform_Type_Error with "Uniform " & Name & " has unexpected sampler type " & Kind_Image;
+      --  TODO Or store Sampler_Kind?
+      return Uniform_Sampler'
+        (Kind       => Texture_Kind (Sampler_Kind),
+         GL_Uniform => Object.GL_Program.Uniform_Location (Name));
+   exception
+      when Constraint_Error =>
+         raise Uniform_Type_Error with "Uniform " & Name & " has unexpected sampler type " & Kind_Image;
    end Create_Uniform_Sampler;
 
    function Create_Uniform_Subroutine

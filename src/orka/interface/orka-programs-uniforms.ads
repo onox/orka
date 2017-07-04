@@ -56,6 +56,8 @@ package Orka.Programs.Uniforms is
       Texture : GL.Objects.Textures.Texture'Class;
       Binding : GL.Types.Int)
    with Pre => Texture.Kind = Object.Kind;
+   --  TODO Add pre condition to check Texture.Format matches Sampler_Kind
+   --  (see https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Sampler_types)
    --  Set the binding point of the uniform sampler and bind the
    --  given texture to the corresponding texture unit
 
