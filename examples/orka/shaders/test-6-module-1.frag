@@ -13,6 +13,9 @@ in VS_OUT {
 
 uniform sampler2DArray diffuseTexture;
 
+uniform sampler2D ditherTexture;
+// Bayer [5] ordered dithering pattern [6]
+
 out vec4 out_Color;
 
 const float pi = 3.14159265358979323846264338327950288419716939937511;
@@ -42,13 +45,6 @@ const Material material = {
 const vec3 dielectricSpecular = vec3(0.04, 0.04, 0.04);
 
 // Equations from Epic [3] at SIGGRAPH '13 course [4]
-//
-// References:
-//
-// [1] https://www.youtube.com/watch?v=j-A0mwsJRmk
-// [2] http://blog.selfshadow.com/publications/s2013-shading-course/hoffman/s2013_pbs_physics_math_notes.pdf
-// [3] http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
-// [4] http://blog.selfshadow.com/publications/s2013-shading-course/
 
 // Microfacet distribution function
 vec3 D_GGX(in float nh)
@@ -136,4 +132,18 @@ void main(void) {
 
     const vec3 fo = light.intensity * falloff(length(fs_in.L), light.radius);
     out_Color = vec4(fo * light.albedo * (fd + fs), 1.0);
+
+    // Ordered dithering using a 8x8 Bayer pattern
+    out_Color.xyz += vec3(texture(ditherTexture, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
 }
+
+// References:
+//
+// [1] https://www.youtube.com/watch?v=j-A0mwsJRmk
+// [2] http://blog.selfshadow.com/publications/s2013-shading-course/hoffman/s2013_pbs_physics_math_notes.pdf
+// [3] http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+// [4] http://blog.selfshadow.com/publications/s2013-shading-course/
+// [5] Bayer, B. E. (1973). An optimum method for two-level rendition of
+//     continuous-tone pictures. In IEEE Int. Conf. on Communications
+//     (Vol. 26, pp. 11-15).
+// [6] http://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
