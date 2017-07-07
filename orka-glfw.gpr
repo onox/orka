@@ -5,8 +5,8 @@ library project Orka.Glfw is
 
    for Languages use ("ada");
 
-   for Library_Name use "glfwada";
-   for Library_Version use "libglfwada.so." & Config.Version;
+   for Library_Name use "orka-glfw";
+   for Library_Version use "liborka-glfw.so." & Config.Version;
    for Library_Dir use "lib";
    for Library_ALI_Dir use "lib/glfw";
    for Library_Kind use Config.Library_Kind;
