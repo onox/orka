@@ -44,6 +44,8 @@ Build status
 |--------------------|---------|-------------|
 | **GNAT GPL 2015**  | passing | unknown     |
 | **GNAT GPL 2016**  | link failure | unknown     |
+| **GNAT GPL 2017**  | unknown | unknown     |
+| **GNAT FSF 6.3**   | unknown | unknown     |
 
 Dependencies
 ------------
