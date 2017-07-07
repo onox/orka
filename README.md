@@ -35,6 +35,7 @@ Features
  * Game loop
  * Camera's
  * [glTF 2.0][url-gltf] loader (uses MDI)
+ * [KTX][url-ktx] loader
 
 Build status
 ------------
@@ -180,4 +181,5 @@ of the [Apache License 2.0][url-apache].
   [url-ahven]: http://ahven.stronglytyped.org
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
+  [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
 
