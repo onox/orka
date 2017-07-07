@@ -58,12 +58,21 @@ begin
 
       use Orka.Programs;
       use GL.Objects.Textures;
+      use GL.Types;
 
       Program_1 : Program := Create_Program (Modules.Create_Module
         (VS => "../examples/orka/shaders/test-8-module-1.vert",
          FS => "../examples/orka/shaders/test-8-module-1.frag"));
 
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("colorTexture");
+
+      Screen_Size : constant Uniforms.TS.Vector4
+        := (Single (Width), Single (Height), 0.0, 0.0);
+      Image_Size : constant Uniforms.TS.Vector4
+        := (Single (Texture_1.Element.Width (0)), Single (Texture_1.Element.Height (0)), 0.0, 0.0);
+
+      Uni_Screen : constant Uniforms.Uniform := Program_1.Uniform ("screenSize");
+      Uni_Image  : constant Uniforms.Uniform := Program_1.Uniform ("imageSize");
 
       VAO_1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
    begin
@@ -78,12 +87,16 @@ begin
       Texture_1.Element.Set_Magnifying_Filter (Nearest);
 
       Uni_Texture.Set_Texture (Texture_1.Element, 0);
+
+      Uni_Screen.Set_Vector (Screen_Size);
+      Uni_Image.Set_Vector (Image_Size);
+
       Program_1.Use_Program;
 
       while not W.Should_Close loop
-         GL.Buffers.Clear (GL.Buffers.Buffer_Bits'(Color => True, Depth => True, others => False));
          W.Process_Input;
 
+         GL.Buffers.Clear (GL.Buffers.Buffer_Bits'(Color => True, Depth => True, others => False));
          GL.Drawing.Draw_Arrays (GL.Types.Triangles, 0, 6);
 
          W.Swap_Buffers;
