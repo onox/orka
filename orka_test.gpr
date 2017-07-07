@@ -16,7 +16,8 @@ project Orka_Test is
 --                 "orka_test-test_4_mdi",
                  "orka_test-test_5_scene_tree",
                  "orka_test-test_6_gltf",
-                 "orka_test-test_7_half");
+                 "orka_test-test_7_half",
+                 "orka_test-test_8_ktx");
 
    package Ide renames Config.Ide;
    package Compiler renames Config.Compiler;
