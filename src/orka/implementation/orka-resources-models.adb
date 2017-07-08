@@ -60,8 +60,9 @@ package body Orka.Resources.Models is
       Object.Uniform_WT.Set_Texture (Object.TBO, 0);
 
       --  Compute the world transforms by multiplying the local transform
-      --  of each node with the world transform of its parent.
-      Object.Scene.Update_Transforms;
+      --  of each node with the world transform of its parent. Also updates
+      --  the visibility of each node.
+      Object.Scene.Update_Tree;
 
       for Index in Object.Shapes.Element'Range loop
          World_Transforms (GL.Types.Int (Index)) := Object.Scene.World_Transform (Object.Shapes.Element (Index));

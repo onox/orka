@@ -64,7 +64,7 @@ begin
 
    for I in 1 .. 4 loop
       A := Ada.Real_Time.Clock;
-      T.Update_Transforms;
+      T.Update_Tree;
       B := Ada.Real_Time.Clock;
       Ada.Text_IO.Put_Line (Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
    end loop;

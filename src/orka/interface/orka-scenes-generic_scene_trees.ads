@@ -35,9 +35,7 @@ package Orka.Scenes.Generic_Scene_Trees is
    function Width (Object : Tree; Level : Positive) return Natural
      with Pre => Level <= Object.Depth;
 
-   procedure Update_Transforms (Object : in out Tree);
-
-   procedure Update_Visibilities (Object : in out Tree);
+   procedure Update_Tree (Object : in out Tree);
 
    procedure Set_Visibility (Object : in out Tree; Node : Cursor; Visible : Boolean);
 
