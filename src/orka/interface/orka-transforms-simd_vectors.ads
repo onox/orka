@@ -30,8 +30,12 @@ package Orka.Transforms.SIMD_Vectors is
 
    subtype Vector4 is Vector_Type;
 
-   function Zero_Value return Vector_Type is
+   function Zero_Direction return Vector_Type is
      ((0.0, 0.0, 0.0, 0.0))
+   with Inline;
+
+   function Zero_Point return Vector_Type is
+     ((0.0, 0.0, 0.0, 1.0))
    with Inline;
 
    function "+" (Left, Right : Vector_Type) return Vector_Type renames Add_Vectors;
