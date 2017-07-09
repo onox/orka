@@ -13,17 +13,19 @@
 --  limitations under the License.
 
 with Orka.SIMD;
+with Orka.Transforms.SIMD_Vectors;
 
 generic
-   type Element_Type is digits <>;
-   type Vector_Type is array (SIMD.Index_Homogeneous) of Element_Type;
-   type Matrix_Type is array (SIMD.Index_Homogeneous) of Vector_Type;
+   with package Vectors is new Orka.Transforms.SIMD_Vectors (<>);
+   type Matrix_Type is array (SIMD.Index_Homogeneous) of Vectors.Vector_Type;
    with function Multiply_Matrices (Left, Right : Matrix_Type) return Matrix_Type;
-   with function Multiply_Vector (Left : Matrix_Type; Right : Vector_Type) return Vector_Type;
-   with function "-" (Elements : Vector_Type) return Vector_Type;
+   with function Multiply_Vector (Left : Matrix_Type; Right : Vectors.Vector_Type) return Vectors.Vector_Type;
    with function Transpose_Matrix (Matrix : Matrix_Type) return Matrix_Type;
 package Orka.Transforms.SIMD_Matrices is
    pragma Preelaborate;
+
+   subtype Element_Type is Vectors.Element_Type;
+   subtype Vector_Type is Vectors.Vector_Type;
 
    subtype Matrix4 is Matrix_Type;
 
@@ -35,6 +37,8 @@ package Orka.Transforms.SIMD_Matrices is
        (0.0, 0.0, 1.0, 0.0),
        (0.0, 0.0, 0.0, 1.0)))
    with Inline;
+
+   function Zero_Point return Vector_Type renames Vectors.Zero_Point;
 
    function T (Offset : Vector_Type) return Matrix_Type;
 
@@ -118,6 +122,8 @@ package Orka.Transforms.SIMD_Matrices is
 
    procedure Transpose (Matrix : in out Matrix_Type);
    --  Transpose the matrix
+
+   use type Element_Type;
 
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type
      with Pre => FOV > 0.0 and Aspect > 0.0 and Z_Near > 0.0 and Z_Far > Z_Near;

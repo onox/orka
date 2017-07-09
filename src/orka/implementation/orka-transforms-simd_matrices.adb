@@ -18,6 +18,8 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
+   function "-" (Elements : Vectors.Vector_Type) return Vectors.Vector_Type renames Vectors."-";
+
    use SIMD;
 
    function T (Offset : Vector_Type) return Matrix_Type is
