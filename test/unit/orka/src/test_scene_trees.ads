@@ -34,11 +34,10 @@ private
    procedure Test_Remove_Subtree;
    procedure Test_Remove_Root_Exception;
    procedure Test_Set_Local_Transform;
-   procedure Test_Update_World_Transforms;
+   procedure Test_Update_Tree;
    procedure Test_World_Transform;
    procedure Test_Depth;
    procedure Test_Width;
-   procedure Test_Update_Visibilities;
    procedure Test_Visibility;
 
 end Test_Scene_Trees;

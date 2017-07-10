@@ -38,11 +38,10 @@ package body Test_Scene_Trees is
       T.Add_Test_Routine (Test_Remove_Subtree'Access, "Test Remove_Node procedure (subtree)");
       T.Add_Test_Routine (Test_Remove_Root_Exception'Access, "Raise Root_Removal_Error in Remove_Node");
       T.Add_Test_Routine (Test_Set_Local_Transform'Access, "Test Set_Local_Transform procedure");
-      T.Add_Test_Routine (Test_Update_World_Transforms'Access, "Test Update_Transforms procedure");
+      T.Add_Test_Routine (Test_Update_Tree'Access, "Test Update_Tree procedure");
       T.Add_Test_Routine (Test_World_Transform'Access, "Test World_Transform function");
       T.Add_Test_Routine (Test_Depth'Access, "Test Depth function");
       T.Add_Test_Routine (Test_Width'Access, "Test Width function");
-      T.Add_Test_Routine (Test_Update_Visibilities'Access, "Test Update_Visibilities procedure");
       T.Add_Test_Routine (Test_Visibility'Access, "Test Visibility function");
    end Initialize;
 
@@ -190,20 +189,20 @@ package body Test_Scene_Trees is
       T.Set_Local_Transform (C, Transforms.T (Offset));
    end Test_Set_Local_Transform;
 
-   procedure Test_Update_World_Transforms is
+   procedure Test_Update_Tree is
       T : Tree := Create_Tree ("root");
    begin
       --  Depth 1
-      T.Update_Transforms;
+      T.Update_Tree;
 
       --  Depth 2
       T.Add_Node ("N1", "root");
-      T.Update_Transforms;
+      T.Update_Tree;
 
       --  Depth 3
       T.Add_Node ("N2", "N1");
-      T.Update_Transforms;
-   end Test_Update_World_Transforms;
+      T.Update_Tree;
+   end Test_Update_Tree;
 
    procedure Test_World_Transform is
       T : Tree := Create_Tree ("root");
@@ -224,7 +223,7 @@ package body Test_Scene_Trees is
 
          --  Update local transform of root node
          T.Set_Local_Transform (C1, Transforms.T (Offset));
-         T.Update_Transforms;
+         T.Update_Tree;
 
          --  Check world transform of node N1
          Assert (T.World_Transform (C2) (Orka.SIMD.W) = Offset, "Unexpected World_Transform");
@@ -257,21 +256,6 @@ package body Test_Scene_Trees is
       Assert (T.Width (3) = 1, "Unexpected Width");
    end Test_Width;
 
-   procedure Test_Update_Visibilities is
-      T : Tree := Create_Tree ("root");
-   begin
-      --  Depth 1
-      T.Update_Visibilities;
-
-      --  Depth 2
-      T.Add_Node ("N1", "root");
-      T.Update_Visibilities;
-
-      --  Depth 3
-      T.Add_Node ("N2", "N1");
-      T.Update_Visibilities;
-   end Test_Update_Visibilities;
-
    procedure Test_Visibility is
       T : Tree := Create_Tree ("root");
    begin
@@ -285,7 +269,7 @@ package body Test_Scene_Trees is
 
          --  Update local visibility of root node
          T.Set_Visibility (C1, False);
-         T.Update_Visibilities;
+         T.Update_Tree;
 
          --  Check visibility of node N1
          Assert (not T.Visibility (C2), "Unexpected Visibility");
