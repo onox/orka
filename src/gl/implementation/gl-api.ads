@@ -17,6 +17,7 @@ with GL.Runtime_Loading;
 with GL.Attributes;
 with GL.Blending;
 with GL.Buffers;
+with GL.Clipping;
 with GL.Culling;
 with GL.Debug;
 with GL.Debug_Types;
@@ -154,6 +155,16 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Get_Blend_Equation,
                   External_Name => "glGetIntegerv");
 
+   procedure Get_Clip_Origin (Name   : Enums.Getter.Parameter;
+                              Target : access Clipping.Viewport_Origin);
+   pragma Import (Convention => StdCall, Entity => Get_Clip_Origin,
+                  External_Name => "glGetIntegerv");
+
+   procedure Get_Clip_Depth_Mode (Name   : Enums.Getter.Parameter;
+                                  Target : access Clipping.Depth_Mode);
+   pragma Import (Convention => StdCall, Entity => Get_Clip_Depth_Mode,
+                  External_Name => "glGetIntegerv");
+
    procedure Get_Compare_Function (Name : Enums.Getter.Parameter;
                                    Target : access Compare_Function);
    pragma Import (Convention => StdCall, Entity => Get_Compare_Function,
@@ -213,6 +224,13 @@ private package GL.API is
    function Is_Enabled (Subject : Toggles.Toggle) return Low_Level.Bool;
    pragma Import (Convention => StdCall, Entity => Is_Enabled,
                   External_Name => "glIsEnabled");
+
+   -----------------------------------------------------------------------------
+   --                                 Clipping                                --
+   -----------------------------------------------------------------------------
+
+   procedure Clip_Control is new Loader.Procedure_With_2_Params
+     ("glClipControl", Clipping.Viewport_Origin, Clipping.Depth_Mode);
 
    -----------------------------------------------------------------------------
    --                                 Culling                                 --

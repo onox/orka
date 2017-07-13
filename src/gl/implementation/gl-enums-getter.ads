@@ -112,7 +112,9 @@ package GL.Enums.Getter is
       Max_Framebuffer_Width,
       Max_Framebuffer_Height,
       Max_Framebuffer_Layers,
-      Max_Framebuffer_Samples);
+      Max_Framebuffer_Samples,
+      Clip_Origin,
+      Clip_Depth_Mode);
 
    type String_Parameter is
      (Vendor, Renderer, Version, Extensions, Shading_Language_Version);
@@ -220,7 +222,9 @@ private
       Max_Framebuffer_Width         => 16#9315#,
       Max_Framebuffer_Height        => 16#9316#,
       Max_Framebuffer_Layers        => 16#9317#,
-      Max_Framebuffer_Samples       => 16#9318#);
+      Max_Framebuffer_Samples       => 16#9318#,
+      Clip_Origin                   => 16#935C#,
+      Clip_Depth_Mode               => 16#935D#);
    for Parameter'Size use Low_Level.Enum'Size;
 
    for String_Parameter use
