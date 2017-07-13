@@ -35,6 +35,11 @@ package GL.Rasterization is
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type);
    function Polygon_Mode return Polygon_Mode_Type;
 
+   procedure Set_Polygon_Offset (Factor, Units : Single);
+
+   function Polygon_Offset_Factor return Single;
+   function Polygon_Offset_Units return Single;
+
 private
    for Polygon_Mode_Type use (Point => 16#1B00#,
                               Line => 16#1B01#,

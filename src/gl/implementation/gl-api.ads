@@ -353,6 +353,10 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Polygon_Mode,
                   External_Name => "glPolygonMode");
 
+   procedure Polygon_Offset (Factor, Units : Single);
+   pragma Import (Convention => StdCall, Entity => Polygon_Offset,
+                  External_Name => "glPolygonOffset");
+
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --
    -----------------------------------------------------------------------------
