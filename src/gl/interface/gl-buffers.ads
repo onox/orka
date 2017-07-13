@@ -114,6 +114,17 @@ package GL.Buffers is
    procedure Depth_Mask (Enabled : Boolean);
    function Depth_Mask return Boolean;
 
+   procedure Color_Mask (Value : Colors.Enabled_Color);
+   --  Set the color mask for all draw buffers
+
+   procedure Color_Mask
+     (Index : Draw_Buffer_Index;
+      Value : Colors.Enabled_Color);
+   --  Set the color mask for a particular draw buffer
+
+   function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color;
+   --  Return the color mask of a particular draw buffer
+
    procedure Set_Stencil_Function (Func : Compare_Function;
                                    Ref  : Int;
                                    Mask : UInt);

@@ -110,6 +110,10 @@ private package GL.API is
    pragma Import (Convention => StdCall, Entity => Get_Color,
                   External_Name => "glGetFloatv");
 
+   procedure Get_Enabled_Color is new Loader.Getter_With_3_Params
+     ("glGetBooleani_v", Enums.Getter.Parameter, Buffers.Draw_Buffer_Index,
+      Colors.Enabled_Color);
+
    procedure Get_Long (Name : Enums.Getter.Parameter;
                        Target : access Long);
    pragma Import (Convention => StdCall, Entity => Get_Long,
@@ -375,6 +379,14 @@ private package GL.API is
    procedure Clear_Stencil (Index : Buffers.Stencil_Index);
    pragma Import (Convention => StdCall, Entity => Clear_Stencil,
                   External_Name => "glClearStencil");
+
+   procedure Color_Mask (Red, Green, Blue, Alpha : Low_Level.Bool);
+   pragma Import (Convention => StdCall, Entity => Color_Mask,
+                  External_Name => "glColorMask");
+
+   procedure Color_Mask_Indexed is new Loader.Procedure_With_5_Params
+     ("glColorMaski", Buffers.Draw_Buffer_Index,
+      Low_Level.Bool, Low_Level.Bool, Low_Level.Bool, Low_Level.Bool);
 
    -----------------------------------------------------------------------------
    --                        Depth and stencil buffers                        --

@@ -47,6 +47,33 @@ package body GL.Buffers is
       return Value;
    end Color_Clear_Value;
 
+   procedure Color_Mask (Value : Colors.Enabled_Color) is
+   begin
+      API.Color_Mask
+        (Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
+         Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
+      Raise_Exception_On_OpenGL_Error;
+   end Color_Mask;
+
+   procedure Color_Mask
+     (Index : Draw_Buffer_Index;
+      Value : Colors.Enabled_Color) is
+   begin
+      API.Color_Mask_Indexed
+        (Index,
+         Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
+         Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
+      Raise_Exception_On_OpenGL_Error;
+   end Color_Mask;
+
+   function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color is
+      Value : Colors.Enabled_Color;
+   begin
+      API.Get_Enabled_Color (Enums.Getter.Color_Writemask, Index, Value);
+      Raise_Exception_On_OpenGL_Error;
+      return Value;
+   end Color_Mask;
+
    procedure Set_Depth_Clear_Value (Value : Depth) is
    begin
       API.Clear_Depth (Value);
