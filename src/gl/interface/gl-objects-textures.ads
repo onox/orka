@@ -83,6 +83,17 @@ package GL.Objects.Textures is
 
    type Texture_Base is abstract new Texture with private;
 
+   procedure Clear_Using_Data
+     (Object : Texture_Base; Level : Mipmap_Level;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_Base; Level : Mipmap_Level)
+   with Pre => not Object.Compressed (Level);
+
    procedure Generate_Mipmap (Object : Texture_Base);
 
    -----------------------------------------------------------------------------
@@ -217,19 +228,36 @@ package GL.Objects.Textures is
                              Width    : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address);
+                             Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
 
    procedure Load_From_Compressed_Data (Object : Texture_1D; Level : Mipmap_Level;
                                         Offset_X : Types.Size;
                                         Width    : Types.Size;
                                         Source_Format : Pixels.Compressed_Format;
                                         Image_Size : Types.Size;
-                                        Source     : System.Address);
+                                        Source     : System.Address)
+   with Pre => Object.Compressed (Level);
 
    procedure Load_From_Buffer (Object : Texture_1D; Level : Mipmap_Level;
                                Offset_X : Types.Size;
                                X, Y  : Types.Size;
                                Width : Types.Size);
+
+   procedure Clear_Using_Data
+     (Object : Texture_1D; Level : Mipmap_Level;
+      Offset_X : Types.Size;
+      Width    : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_1D; Level : Mipmap_Level;
+      Offset_X : Types.Size;
+      Width    : Types.Size)
+   with Pre => not Object.Compressed (Level);
 
    -----------------------------------------------------------------------------
    --                          Texture 2D Loading                             --
@@ -268,19 +296,36 @@ package GL.Objects.Textures is
                              Width, Height      : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address);
+                             Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
 
    procedure Load_From_Compressed_Data (Object : Texture_2D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y : Types.Size;
                                         Width, Height      : Types.Size;
                                         Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
-                                        Source        : System.Address);
+                                        Source        : System.Address)
+   with Pre => Object.Compressed (Level);
 
    procedure Load_From_Buffer (Object : Texture_2D; Level : Mipmap_Level;
                                Offset_X, Offset_Y : Types.Size;
                                X, Y          : Types.Size;
                                Width, Height : Types.Size);
+
+   procedure Clear_Using_Data
+     (Object : Texture_2D; Level : Mipmap_Level;
+      Offset_X, Offset_Y : Types.Size;
+      Width, Height      : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_2D; Level : Mipmap_Level;
+      Offset_X, Offset_Y : Types.Size;
+      Width, Height      : Types.Size)
+   with Pre => not Object.Compressed (Level);
 
    -----------------------------------------------------------------------------
    --                          Texture 3D Loading                             --
@@ -319,19 +364,36 @@ package GL.Objects.Textures is
                              Width, Height, Depth         : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address);
+                             Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
 
    procedure Load_From_Compressed_Data (Object : Texture_3D; Level : Mipmap_Level;
                                         Offset_X, Offset_Y, Offset_Z : Types.Size;
                                         Width, Height, Depth         : Types.Size;
                                         Source_Format : Pixels.Compressed_Format;
                                         Image_Size    : Types.Size;
-                                        Source        : System.Address);
+                                        Source        : System.Address)
+   with Pre => Object.Compressed (Level);
 
    procedure Load_From_Buffer (Object : Texture_3D; Level : Mipmap_Level;
                                Offset_X, Offset_Y, Offset_Z : Types.Size;
                                X, Y          : Types.Size;
                                Width, Height : Types.Size);
+
+   procedure Clear_Using_Data
+     (Object : Texture_3D; Level : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size;
+      Width, Height, Depth         : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
+   with Pre => not Object.Compressed (Level);
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_3D; Level : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size;
+      Width, Height, Depth         : Types.Size)
+   with Pre => not Object.Compressed (Level);
 
 private
 

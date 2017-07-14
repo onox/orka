@@ -467,6 +467,26 @@ package body GL.Objects.Textures is
       return Value;
    end Current_Compare_Function;
 
+   procedure Clear_Using_Data
+     (Object : Texture_Base; Level : Mipmap_Level;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address) is
+   begin
+      API.Clear_Tex_Image
+        (Object.Reference.GL_Id, Level, Source_Format, Source_Type, Source);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Data;
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_Base; Level : Mipmap_Level) is
+   begin
+      API.Clear_Tex_Image
+        (Object.Reference.GL_Id, Level, Pixels.Format'First,
+         Pixels.Data_Type'First, System.Null_Address);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Zeros;
+
    procedure Generate_Mipmap (Object : Texture_Base) is
    begin
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);
@@ -590,6 +610,32 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Load_From_Buffer;
 
+   procedure Clear_Using_Data
+     (Object : Texture_1D; Level : Mipmap_Level;
+      Offset_X : Types.Size;
+      Width    : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, 0, 0,
+         Width, 1, 1, Source_Format, Source_Type, Source);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Data;
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_1D; Level : Mipmap_Level;
+      Offset_X : Types.Size;
+      Width    : Types.Size) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, 0, 0,
+         Width, 1, 1, Pixels.Format'First,
+         Pixels.Data_Type'First, System.Null_Address);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Zeros;
+
    -----------------------------------------------------------------------------
    --                          Texture 2D Loading                             --
    -----------------------------------------------------------------------------
@@ -682,6 +728,32 @@ package body GL.Objects.Textures is
                                      Offset_X, Offset_Y, X, Y, Width, Height);
       Raise_Exception_On_OpenGL_Error;
    end Load_From_Buffer;
+
+   procedure Clear_Using_Data
+     (Object : Texture_2D; Level : Mipmap_Level;
+      Offset_X, Offset_Y : Types.Size;
+      Width, Height      : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, 0,
+         Width, Height, 1, Source_Format, Source_Type, Source);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Data;
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_2D; Level : Mipmap_Level;
+      Offset_X, Offset_Y : Types.Size;
+      Width, Height      : Types.Size) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, 0,
+         Width, Height, 1, Pixels.Format'First,
+         Pixels.Data_Type'First, System.Null_Address);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Zeros;
 
    -----------------------------------------------------------------------------
    --                          Texture 3D Loading                             --
@@ -779,5 +851,31 @@ package body GL.Objects.Textures is
                                      X, Y, Width, Height);
       Raise_Exception_On_OpenGL_Error;
    end Load_From_Buffer;
+
+   procedure Clear_Using_Data
+     (Object : Texture_3D; Level : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size;
+      Width, Height, Depth         : Types.Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, Offset_Z,
+         Width, Height, Depth, Source_Format, Source_Type, Source);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Data;
+
+   procedure Clear_Using_Zeros
+     (Object : Texture_3D; Level : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size;
+      Width, Height, Depth         : Types.Size) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, Offset_Z,
+         Width, Height, Depth, Pixels.Format'First,
+         Pixels.Data_Type'First, System.Null_Address);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Zeros;
 
 end GL.Objects.Textures;

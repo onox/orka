@@ -575,6 +575,15 @@ private package GL.API is
      ("glCopyTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Int, Int, Size, Size);
 
+   procedure Clear_Tex_Image is new Loader.Procedure_With_5_Params
+     ("glClearTexImage", UInt, Objects.Textures.Mipmap_Level,
+      Pixels.Format, Pixels.Data_Type, System.Address);
+
+   procedure Clear_Tex_Sub_Image is new Loader.Procedure_With_11_Params
+     ("glClearTexSubImage", UInt, Objects.Textures.Mipmap_Level,
+      Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
+      System.Address);
+
    procedure Generate_Texture_Mipmap is new Loader.Procedure_With_1_Param
      ("glGenerateTextureMipmap", UInt);
 
