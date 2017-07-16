@@ -659,6 +659,15 @@ private package GL.API is
    procedure Flush_Mapped_Named_Buffer_Range is new Loader.Procedure_With_3_Params
      ("glFlushMappedNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr);
 
+   procedure Clear_Named_Buffer_Data is new Loader.Procedure_With_5_Params
+     ("glClearNamedBufferSubData", UInt, Pixels.Internal_Format_Buffer_Texture,
+      Pixels.Format, Pixels.Data_Type, System.Address);
+
+   procedure Clear_Named_Buffer_Sub_Data is new Loader.Procedure_With_7_Params
+     ("glClearNamedBufferSubData", UInt, Pixels.Internal_Format_Buffer_Texture,
+      Low_Level.IntPtr, Low_Level.SizeIPtr, Pixels.Format, Pixels.Data_Type,
+      System.Address);
+
    procedure Copy_Named_Buffer_Sub_Data is new Loader.Procedure_With_5_Params
      ("glCopyNamedBufferSubData", UInt, UInt, Low_Level.IntPtr, Low_Level.IntPtr,
       Low_Level.SizeIPtr);

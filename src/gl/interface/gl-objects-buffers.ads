@@ -84,6 +84,8 @@ package GL.Objects.Buffers is
 
    procedure Unmap (Object : in out Buffer);
 
+   procedure Clear_With_Zeros (Object : Buffer);
+
    procedure Invalidate_Data (Object : in out Buffer);
 
    generic
@@ -131,6 +133,27 @@ package GL.Objects.Buffers is
                                     Offset, Length : Types.Size);
 
       function To_Pointer (Object : Buffer) return Pointers.Pointer;
+
+      procedure Clear_Data
+        (Object : Buffer;
+         Kind : Numeric_Type;
+         Data : in out Pointers.Element_Array)
+      with Pre => Data'Length in 1 .. 4
+        and then Kind /= Double_Type
+        and then (if Data'Length = 3 then
+          Kind not in Byte_Type | UByte_Type | Short_Type | UShort_Type | Half_Type);
+
+      procedure Clear_Sub_Data
+        (Object : Buffer;
+         Offset, Length : Types.Size;
+         Kind : Numeric_Type;
+         Data : in out Pointers.Element_Array)
+      with Pre => Data'Length in 1 .. 4
+        and then Kind /= Double_Type
+        and then (if Data'Length = 3 then
+          Kind not in Byte_Type | UByte_Type | Short_Type | UShort_Type | Half_Type);
+
+      procedure Clear_With_Zeros (Object : Buffer; Offset, Length : Types.Size);
 
       procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
                                Read_Offset, Write_Offset, Length : Types.Size);
