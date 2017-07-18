@@ -38,11 +38,11 @@ package Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector
      with Inline;
 
-   function Create_Instance (Object : Model) return Behaviors.Behavior_Ptr;
+   function Create_Instance (Object : in out Model) return Behaviors.Behavior_Ptr;
 
    Model_Load_Error : exception renames Resource_Load_Error;
 
-   type Model_Instance is limited new Behaviors.Behavior with private;
+   type Model_Instance (<>) is limited new Behaviors.Behavior with private;
 
    function Scene_Tree (Object : in out Model_Instance) return Trees.Tree
      with Inline;
@@ -57,13 +57,17 @@ package Orka.Resources.Models is
 
 private
 
+   use GL.Objects.Textures;
+
    type Model is tagged limited record
       Scene   : Trees.Tree;
       Shapes  : String_Vectors.Vector;
-      Bounds  : Buffers.Buffer;
       Format  : not null access Vertex_Formats.Vertex_Format;
       Batch   : Orka.Buffers.MDI.Batch;
+      Bounds  : Buffers.Buffer;
+      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
+      Uniform_BB : not null access Programs.Uniforms.Uniform_Sampler;
    end record;
 
    type Shape_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
@@ -71,16 +75,11 @@ private
    package Shape_Array_Holder is new Ada.Containers.Indefinite_Holders
       (Element_Type => Shape_Array);
 
-   use GL.Objects.Textures;
-
-   type Model_Instance is limited new Behaviors.Behavior with record
+   type Model_Instance (Model : access Orka.Resources.Models.Model) is limited new Behaviors.Behavior with record
       Scene      : Trees.Tree;
       Shapes     : Shape_Array_Holder.Holder;
-      Format     : not null access Vertex_Formats.Vertex_Format;
       Transforms : Buffers.Buffer;
-      TBO        : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
-      Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Batch      : Orka.Buffers.MDI.Batch;
+      TBO_WT     : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    end record;
 
 end Orka.Resources.Models;

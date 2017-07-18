@@ -26,6 +26,7 @@ with JSON.Streams;
 
 with GL.Debug;
 with GL.Objects.Buffers;
+with GL.Pixels;
 with GL.Types.Indirect;
 
 with Orka.glTF.Buffers;
@@ -356,6 +357,7 @@ package body Orka.Resources.Models.glTF is
    function Load_Model
      (Format     : not null access Vertex_Formats.Vertex_Format;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
+      Uniform_BB : not null access Programs.Uniforms.Uniform_Sampler;
       Path       : String) return Model
    is
       File        : Ada.Streams.Stream_IO.File_Type;
@@ -438,6 +440,7 @@ package body Orka.Resources.Models.glTF is
                  := (Scene      => Trees.Create_Tree ("root"),
                      Format     => Format.all'Unrestricted_Access,
                      Uniform_WT => Uniform_WT.all'Unrestricted_Access,
+                     Uniform_BB => Uniform_BB.all'Unrestricted_Access,
                      others     => <>)
                do
                   declare
@@ -470,6 +473,8 @@ package body Orka.Resources.Models.glTF is
                   Object.Bounds := Orka.Buffers.Create_Buffer
                     (Flags => Storage_Bits'(others => False),
                      Data  => Bounds_List (Accessors, Meshes));
+
+                  Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
 
                   Object.Batch := Orka.Buffers.MDI.Create_Batch
                     (Positive (Parts.Length), Vertices_Length, Indices_Length,

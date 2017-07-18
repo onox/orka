@@ -22,7 +22,7 @@ package body Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector is
      (Object.Shapes);
 
-   function Create_Instance (Object : Model) return Behaviors.Behavior_Ptr is
+   function Create_Instance (Object : in out Model) return Behaviors.Behavior_Ptr is
       Shapes : Shape_Array (1 .. Positive (Object.Shapes.Length));
       pragma Assert (Shapes'First = Object.Shapes.First_Index);
 
@@ -31,22 +31,21 @@ package body Orka.Resources.Models is
         ((Dynamic_Storage => True, others => False),
          Orka.Types.Single_Matrix_Type, Shapes'Length);
 
-      TBO : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      TBO_WT : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
       for Index in Shapes'Range loop
          Shapes (Index) := Object.Scene.To_Cursor (Object.Shapes.Element (Index));
       end loop;
 
-      TBO.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
+      TBO_WT.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
 
+      --  Cannot use 'Access because we're returning a pointer to Model_Instance
       return new Model_Instance'
-        (Scene   => Object.Scene,
+        (Model   => Object'Unchecked_Access,
+         Scene   => Object.Scene,
          Shapes  => Shape_Array_Holder.To_Holder (Shapes),
-         Format  => Object.Format,
-         Batch   => Object.Batch,
-         TBO     => TBO,
          Transforms => Transforms_Buffer,
-         Uniform_WT => Object.Uniform_WT);
+         TBO_WT     => TBO_WT);
    end Create_Instance;
 
    function Scene_Tree (Object : in out Model_Instance) return Trees.Tree is
@@ -57,7 +56,8 @@ package body Orka.Resources.Models is
       World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length));
       pragma Assert (Positive (World_Transforms'First) = Object.Shapes.Element'First);
    begin
-      Object.Uniform_WT.Set_Texture (Object.TBO, 0);
+      Object.Model.Uniform_WT.Set_Texture (Object.TBO_WT, 0);
+--      Object.Model.Uniform_BB.Set_Texture (Object.Model.TBO_BB, 1);
 
       --  Compute the world transforms by multiplying the local transform
       --  of each node with the world transform of its parent. Also updates
@@ -72,13 +72,13 @@ package body Orka.Resources.Models is
       Object.Transforms.Set_Data (World_Transforms);
 
       --  TODO Only do this once per model, not for each instance
-      Object.Format.Set_Vertex_Buffer (1, Object.Batch.Positions);
-      Object.Format.Set_Vertex_Buffer (2, Object.Batch.Normals);
-      Object.Format.Set_Vertex_Buffer (3, Object.Batch.UVs);
-      Object.Format.Set_Vertex_Buffer (4, Object.Batch.Instances);
-      Object.Format.Set_Index_Buffer (Object.Batch.Indices);
+      Object.Model.Format.Set_Vertex_Buffer (1, Object.Model.Batch.Positions);
+      Object.Model.Format.Set_Vertex_Buffer (2, Object.Model.Batch.Normals);
+      Object.Model.Format.Set_Vertex_Buffer (3, Object.Model.Batch.UVs);
+      Object.Model.Format.Set_Vertex_Buffer (4, Object.Model.Batch.Instances);
+      Object.Model.Format.Set_Index_Buffer (Object.Model.Batch.Indices);
 
-      Object.Format.Draw_Indirect (Object.Batch.Commands);
+      Object.Model.Format.Draw_Indirect (Object.Model.Batch.Commands);
    end Render;
 
 end Orka.Resources.Models;

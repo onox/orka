@@ -139,6 +139,9 @@ begin
       Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
       Uniform_WT  : aliased  Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
+--      Uniform_BB  : aliased  Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("bboxesBuffer");
+      Uniform_BB  : aliased  Uniforms.Uniform_Sampler := Uniform_WT;
+
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("diffuseTexture");
       Uni_Dither  : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("ditherTexture");
 
@@ -152,8 +155,9 @@ begin
       Lens : constant Lens_Ptr := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0));
       Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
-      M : constant Models.Model := Models.glTF.Load_Model
-        (VF'Access, Uniform_WT'Access, Ada.Command_Line.Argument (1));
+      M : Models.Model := Models.glTF.Load_Model
+        (VF'Access, Uniform_WT'Access, Uniform_BB'Access,
+         Ada.Command_Line.Argument (1));
    begin
       --  Load checkerboard texture
       Load_Texture (Texture_1);
