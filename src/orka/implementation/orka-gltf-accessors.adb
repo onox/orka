@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.SIMD;
+
 package body Orka.glTF.Accessors is
 
    function Unsigned_Type (Value : Component_Kind) return GL.Types.Unsigned_Numeric_Type is
@@ -27,6 +29,17 @@ package body Orka.glTF.Accessors is
             raise Constraint_Error with "accessor.componentType is not of unsigned type";
       end case;
    end Unsigned_Type;
+
+   function Create_Bounds (Bounds : Types.JSON_Array_Value) return Transforms.Vector4 is
+      Key : constant array (Positive range 1 .. 4) of SIMD.Index_Homogeneous :=
+        (1 => SIMD.X, 2 => SIMD.Y, 3 => SIMD.Z, 4 => SIMD.W);
+   begin
+      return Result : Transforms.Vector4 := Transforms.Zero_Direction do
+         for Index in 1 .. Bounds.Length loop
+            Result (Key (Index)) := Bounds.Get (Index).Value;
+         end loop;
+      end return;
+   end Create_Bounds;
 
    function Create_Accessor
      (Object : Types.JSON_Value'Class) return Accessor
@@ -76,13 +89,15 @@ package body Orka.glTF.Accessors is
          raise Constraint_Error with "Invalid accessor.type";
       end if;
 
-      return Result : Accessor do
+      return Result : Accessor (Kind in Scalar .. Vector4) do
          Result.View       := Natural (View);
          Result.Offset     := Natural (Offset);
          Result.Component  := Component;
          Result.Kind       := Kind;
          Result.Normalized := Object.Get_Value_Or_Default ("normalized", False).Value;
          Result.Count      := Positive (Long_Integer'(Object.Get ("count").Value));
+         Result.Min_Bounds := Create_Bounds (Object.Get_Array ("min"));
+         Result.Max_Bounds := Create_Bounds (Object.Get_Array ("max"));
       end return;
    end Create_Accessor;
 

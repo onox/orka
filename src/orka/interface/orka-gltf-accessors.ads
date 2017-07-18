@@ -16,6 +16,8 @@ with Ada.Containers.Indefinite_Vectors;
 
 with GL.Types;
 
+with Orka.Transforms.Singles.Vectors;
+
 package Orka.glTF.Accessors is
    pragma Preelaborate;
 
@@ -52,13 +54,22 @@ package Orka.glTF.Accessors is
 
    function Unsigned_Type (Value : Component_Kind) return GL.Types.Unsigned_Numeric_Type;
 
-   type Accessor is record
+   package Transforms renames Orka.Transforms.Singles.Vectors;
+
+   type Accessor (Bounds : Boolean) is record
       View       : Natural;
       Offset     : Natural;
       Component  : Component_Kind;
       Normalized : Boolean;
       Count      : Positive;
       Kind       : Attribute_Kind;
+      case Bounds is
+         when True =>
+            Min_Bounds : Transforms.Vector4;
+            Max_Bounds : Transforms.Vector4;
+         when False =>
+            null;
+      end case;
    end record;
 
    package Accessor_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Accessor);
