@@ -116,6 +116,34 @@ package body Orka.Resources.Models.glTF is
       end return;
    end Shape_List;
 
+   function Bounds_List
+     (Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
+      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector) return Orka.Types.Singles.Vector4_Array
+   is
+      use type GL.Types.Size;
+      use Orka.glTF.Accessors;
+
+      Mesh_Index : GL.Types.Size := 1;
+   begin
+      return Result : Orka.Types.Singles.Vector4_Array (1 .. GL.Types.Size (Meshes.Length) * 2) do
+         for Mesh of Meshes loop
+            declare
+               Primitives : Orka.glTF.Meshes.Primitive_Vectors.Vector renames Mesh.Primitives;
+               First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
+
+               Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
+               Accessor_Position  : Accessor renames Accessors (Attribute_Position);
+
+               pragma Assert (Accessor_Position.Bounds);
+            begin
+               Result (Mesh_Index + 0) := Accessor_Position.Min_Bounds;
+               Result (Mesh_Index + 1) := Accessor_Position.Max_Bounds;
+               Mesh_Index := Mesh_Index + 2;
+            end;
+         end loop;
+      end return;
+   end Bounds_List;
+
    generic
       type Target_Type is private;
       type Target_Array is array (GL.Types.Size range <>) of aliased Target_Type;
@@ -438,6 +466,10 @@ package body Orka.Resources.Models.glTF is
                   T5 := Ada.Real_Time.Clock;
 
                   Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);
+
+                  Object.Bounds := Orka.Buffers.Create_Buffer
+                    (Flags => Storage_Bits'(others => False),
+                     Data  => Bounds_List (Accessors, Meshes));
 
                   Object.Batch := Orka.Buffers.MDI.Create_Batch
                     (Positive (Parts.Length), Vertices_Length, Indices_Length,

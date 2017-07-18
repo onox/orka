@@ -60,6 +60,7 @@ private
    type Model is tagged limited record
       Scene   : Trees.Tree;
       Shapes  : String_Vectors.Vector;
+      Bounds  : Buffers.Buffer;
       Format  : not null access Vertex_Formats.Vertex_Format;
       Batch   : Orka.Buffers.MDI.Batch;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
