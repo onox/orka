@@ -40,13 +40,21 @@ package body Orka.Buffers is
    begin
       case Kind is
          when Single_Vector_Type =>
-            return Create_Buffer (Flags, Single_Type, Length * 4);
+            return Result : Buffer := Create_Buffer (Flags, Single_Type, Length * 4) do
+               Result.Length := Length;
+            end return;
          when Double_Vector_Type =>
-            return Create_Buffer (Flags, Double_Type, Length * 4);
+            return Result : Buffer := Create_Buffer (Flags, Double_Type, Length * 4) do
+               Result.Length := Length;
+            end return;
          when Single_Matrix_Type =>
-            return Create_Buffer (Flags, Single_Type, Length * 16);
+            return Result : Buffer := Create_Buffer (Flags, Single_Type, Length * 16) do
+               Result.Length := Length;
+            end return;
          when Double_Matrix_Type =>
-            return Create_Buffer (Flags, Double_Type, Length * 16);
+            return Result : Buffer := Create_Buffer (Flags, Double_Type, Length * 16) do
+               Result.Length := Length;
+            end return;
          when Arrays_Command_Type =>
             Bytes := Indirect.Arrays_Indirect_Command'Size / System.Storage_Unit;
             return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
@@ -59,6 +67,8 @@ package body Orka.Buffers is
             end return;
       end case;
    end Create_Buffer;
+
+   -----------------------------------------------------------------------------
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -140,11 +150,15 @@ package body Orka.Buffers is
       end return;
    end Create_Buffer;
 
+   -----------------------------------------------------------------------------
+
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
      is (Object.Buffer);
 
    function Length (Object : Buffer) return Natural
      is (Object.Length);
+
+   -----------------------------------------------------------------------------
 
    procedure Set_Data
      (Object : Buffer;
@@ -160,6 +174,14 @@ package body Orka.Buffers is
       Offset : Natural := 0) is
    begin
       Pointers.Single.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Int_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Int.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -209,5 +231,39 @@ package body Orka.Buffers is
    begin
       Pointers.Elements_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
+
+   -----------------------------------------------------------------------------
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Half_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Half.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Single_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Single.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Int_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Int.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out UInt_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UInt.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
 
 end Orka.Buffers;

@@ -35,6 +35,8 @@ package Orka.Buffers is
       Kind   : Orka.Types.Composite_Type;
       Length : Natural) return Buffer;
 
+   -----------------------------------------------------------------------------
+
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Half_Array) return Buffer;
@@ -67,11 +69,15 @@ package Orka.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer;
 
+   -----------------------------------------------------------------------------
+
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
 
    function Length (Object : Buffer) return Natural
      with Inline;
+
+   -----------------------------------------------------------------------------
 
    procedure Set_Data
      (Object : Buffer;
@@ -82,6 +88,12 @@ package Orka.Buffers is
    procedure Set_Data
      (Object : Buffer;
       Data   : in out Single_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Int_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
@@ -118,6 +130,32 @@ package Orka.Buffers is
    procedure Set_Data
      (Object : Buffer;
       Data   : in out Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   -----------------------------------------------------------------------------
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Half_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Single_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Int_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out UInt_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 

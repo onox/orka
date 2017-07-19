@@ -24,6 +24,9 @@ private package Orka.Buffers.Pointers is
    package Double is new GL.Objects.Buffers.Buffer_Pointers
      (Double_Pointers);
 
+   package Int is new GL.Objects.Buffers.Buffer_Pointers
+     (Int_Pointers);
+
    package UInt is new GL.Objects.Buffers.Buffer_Pointers
      (UInt_Pointers);
 
