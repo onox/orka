@@ -61,6 +61,14 @@ package Orka.Programs.Uniforms is
    --  Set the binding point of the uniform sampler and bind the
    --  given texture to the corresponding texture unit
 
+   type Uniform_Image (Kind : LE.Texture_Kind) is tagged private;
+
+   procedure Set_Image
+     (Object  : Uniform_Image;
+      Texture : GL.Objects.Textures.Texture'Class;
+      Binding : GL.Types.Int)
+   with Pre => Texture.Kind = Object.Kind;
+
    type Uniform_Subroutine (<>) is tagged limited private;
 
    function Is_Compatible
@@ -97,6 +105,10 @@ package Orka.Programs.Uniforms is
      (Object : Program;
       Name   : String) return Uniform_Sampler;
 
+   function Create_Uniform_Image
+     (Object : Program;
+      Name   : String) return Uniform_Image;
+
    function Create_Uniform_Subroutine
      (Object : in out Program;
       Shader : GL.Objects.Shaders.Shader_Type;
@@ -121,6 +133,10 @@ private
    end record;
 
    type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged record
+      GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
+   end record;
+
+   type Uniform_Image (Kind : LE.Texture_Kind) is tagged record
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 

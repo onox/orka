@@ -111,6 +111,12 @@ package body Orka.Programs is
       return Uniforms.Create_Uniform_Sampler (Object, Name);
    end Uniform_Sampler;
 
+   function Uniform_Image (Object : Program; Name : String)
+     return Uniforms.Uniform_Image is
+   begin
+      return Uniforms.Create_Uniform_Image (Object, Name);
+   end Uniform_Image;
+
    function Uniform_Subroutine
      (Object : in out Program;
       Shader : GL.Objects.Shaders.Shader_Type;

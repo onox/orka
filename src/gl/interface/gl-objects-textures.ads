@@ -53,6 +53,8 @@ package GL.Objects.Textures is
    --  OpenGL 4.x: At least 80
    subtype Texture_Unit is Int range 0 .. Int'Last;
 
+   subtype Image_Unit is Int range 0 .. Int'Last;
+
    subtype Mipmap_Level is Int range 0 .. Int'Last;
 
    -----------------------------------------------------------------------------
@@ -80,6 +82,8 @@ package GL.Objects.Textures is
                                    X, Y, Z : Int; Width, Height, Depth : Size);
 
    procedure Bind_Texture_Unit (Object : Texture; Unit : Texture_Unit);
+
+   procedure Bind_Image_Texture (Object : Texture; Unit : Image_Unit);
 
    type Texture_Base is abstract new Texture with private;
 

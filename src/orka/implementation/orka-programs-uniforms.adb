@@ -47,6 +47,37 @@ package body Orka.Programs.Uniforms is
       end case;
    end Texture_Kind;
 
+   function Texture_Image_Kind (Image : LE.Resource_Type) return LE.Texture_Kind is
+      use LE;
+   begin
+      case Image is
+         when Image_1D | Int_Image_1D | UInt_Image_1D =>
+            return Texture_1D;
+         when Image_2D | Int_Image_2D | UInt_Image_2D =>
+            return Texture_2D;
+         when Image_3D | Int_Image_3D | UInt_Image_3D =>
+            return Texture_3D;
+         when Image_2D_Rect | Int_Image_2D_Rect | UInt_Image_2D_Rect =>
+            return Texture_Rectangle;
+         when Image_Cube | Int_Image_Cube | UInt_Image_Cube =>
+            return Texture_Cube_Map;
+         when Image_Cube_Map_Array | Int_Image_Cube_Map_Array | UInt_Image_Cube_Map_Array =>
+            return Texture_Cube_Map_Array;
+         when Image_Buffer | Int_Image_Buffer | UInt_Image_Buffer =>
+            return Texture_Buffer;
+         when Image_1D_Array | Int_Image_1D_Array | UInt_Image_1D_Array =>
+            return Texture_1D_Array;
+         when Image_2D_Array | Int_Image_2D_Array | UInt_Image_2D_Array =>
+            return Texture_2D_Array;
+         when Image_2D_Multisample | Int_Image_2D_Multisample | UInt_Image_2D_Multisample =>
+            return Texture_2D_Multisample;
+         when Image_2D_Multisample_Array | Int_Image_2D_Multisample_Array | UInt_Image_2D_Multisample_Array =>
+            return Texture_2D_Multisample_Array;
+         when others =>
+            raise Constraint_Error;
+      end case;
+   end Texture_Image_Kind;
+
    procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
         (Source => TS.Matrix4, Target => GL.Types.Singles.Matrix4);
@@ -104,6 +135,15 @@ package body Orka.Programs.Uniforms is
       Texture.Bind_Texture_Unit (Binding);
    end Set_Texture;
 
+   procedure Set_Image
+     (Object  : Uniform_Image;
+      Texture : GL.Objects.Textures.Texture'Class;
+      Binding : GL.Types.Int) is
+   begin
+      Object.GL_Uniform.Set_Int (Binding);
+      Texture.Bind_Image_Texture (Binding);
+   end Set_Image;
+
    function Is_Compatible
      (Object : Uniform_Subroutine;
       Index  : Subroutine_Index) return Boolean
@@ -149,6 +189,21 @@ package body Orka.Programs.Uniforms is
       when Constraint_Error =>
          raise Uniform_Type_Error with "Uniform " & Name & " has unexpected sampler type " & Kind_Image;
    end Create_Uniform_Sampler;
+
+   function Create_Uniform_Image
+     (Object : Program;
+      Name   : String) return Uniform_Image
+   is
+      Image_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
+      Kind_Image : String renames LE.Resource_Type'Image (Image_Kind);
+   begin
+      return Uniform_Image'
+        (Kind       => Texture_Image_Kind (Image_Kind),
+         GL_Uniform => Object.GL_Program.Uniform_Location (Name));
+   exception
+      when Constraint_Error =>
+         raise Uniform_Type_Error with "Uniform " & Name & " has unexpected image type " & Kind_Image;
+   end Create_Uniform_Image;
 
    function Create_Uniform_Subroutine
      (Object : in out Program;

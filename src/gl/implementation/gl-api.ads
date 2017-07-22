@@ -601,6 +601,17 @@ private package GL.API is
      ("glBindTextureUnit", Objects.Textures.Texture_Unit, UInt);
 
    -----------------------------------------------------------------------------
+   --                                 Images                                  --
+   -----------------------------------------------------------------------------
+
+   procedure Bind_Image_Texture is new Loader.Procedure_With_7_Params
+     ("glBindImageTexture", UInt, UInt, Objects.Textures.Mipmap_Level,
+      Low_Level.Bool, Size, Objects.Buffers.Access_Kind, Pixels.Internal_Format);
+
+   procedure Bind_Image_Textures is new Loader.Procedure_With_3_Params
+     ("glBindImageTextures", UInt, Size, Low_Level.UInt_Array);
+
+   -----------------------------------------------------------------------------
    --                             Buffer objects                              --
    -----------------------------------------------------------------------------
 

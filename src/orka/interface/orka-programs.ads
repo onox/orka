@@ -64,6 +64,11 @@ package Orka.Programs is
    --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
    --  exception is raised if the name is not defined in any of the attached shaders.
 
+   function Uniform_Image (Object : Program; Name : String) return Uniforms.Uniform_Image;
+   --  Return the uniform image that has the given name
+   --
+   --  Name must be a GLSL uniform image.
+
    function Uniform_Subroutine
      (Object : in out Program;
       Shader : GL.Objects.Shaders.Shader_Type;

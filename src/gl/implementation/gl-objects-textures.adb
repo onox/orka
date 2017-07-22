@@ -197,6 +197,13 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Bind_Texture_Unit;
 
+   procedure Bind_Image_Texture (Object : Texture; Unit : Image_Unit) is
+      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+   begin
+      API.Bind_Image_Textures (0, 1, Arr);
+      Raise_Exception_On_OpenGL_Error;
+   end Bind_Image_Texture;
+
    overriding
    procedure Initialize_Id (Object : in out Texture) is
       New_Id : UInt := 0;
