@@ -49,6 +49,8 @@ package Orka.Programs.Uniforms is
 
    procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt);
 
+   procedure Set_Boolean (Object : Uniform; Value : Boolean);
+
    type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged private;
 
    procedure Set_Texture

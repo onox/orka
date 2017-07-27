@@ -126,6 +126,11 @@ package body Orka.Programs.Uniforms is
       Object.GL_Uniform.Set_UInt (Value);
    end Set_UInt;
 
+   procedure Set_Boolean (Object : Uniform; Value : Boolean) is
+   begin
+      Object.GL_Uniform.Set_Int ((if Value then 1 else 0));
+   end Set_Boolean;
+
    procedure Set_Texture
      (Object  : Uniform_Sampler;
       Texture : GL.Objects.Textures.Texture'Class;
@@ -133,6 +138,7 @@ package body Orka.Programs.Uniforms is
    begin
       Object.GL_Uniform.Set_Int (Binding);
       Texture.Bind_Texture_Unit (Binding);
+      --  TODO Need to rebind after changing the program
    end Set_Texture;
 
    procedure Set_Image
@@ -142,6 +148,7 @@ package body Orka.Programs.Uniforms is
    begin
       Object.GL_Uniform.Set_Int (Binding);
       Texture.Bind_Image_Texture (Binding);
+      --  TODO Need to rebind after changing the program
    end Set_Image;
 
    function Is_Compatible
