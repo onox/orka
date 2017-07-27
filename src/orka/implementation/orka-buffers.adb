@@ -266,4 +266,33 @@ package body Orka.Buffers is
       Pointers.UInt.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Get_Data;
 
+   -----------------------------------------------------------------------------
+
+   procedure Copy_Data
+     (Object : Buffer;
+      Target : Buffer;
+      Kind   : Numeric_Type) is
+   begin
+      case Kind is
+         when Byte_Type =>
+            raise Program_Error with "Not implemented yet";
+         when UByte_Type =>
+            raise Program_Error with "Not implemented yet";
+         when Short_Type =>
+            raise Program_Error with "Not implemented yet";
+         when UShort_Type =>
+            raise Program_Error with "Not implemented yet";
+         when Int_Type =>
+            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+         when UInt_Type =>
+            Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+         when Half_Type =>
+            Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+         when Single_Type =>
+            Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+         when Double_Type =>
+            Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+      end case;
+   end Copy_Data;
+
 end Orka.Buffers;

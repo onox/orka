@@ -410,7 +410,7 @@ package body GL.Objects.Buffers is
          Raise_Exception_On_OpenGL_Error;
       end Clear_With_Zeros;
 
-      procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
+      procedure Copy_Sub_Data (Object, Target_Object : Buffer;
                                Read_Offset, Write_Offset, Length : Types.Size) is
          Read_Offset_In_Bytes  : constant Int := Read_Offset  * Pointers.Element'Size / System.Storage_Unit;
          Write_Offset_In_Bytes : constant Int := Write_Offset * Pointers.Element'Size / System.Storage_Unit;
@@ -462,7 +462,7 @@ package body GL.Objects.Buffers is
          Raise_Exception_On_OpenGL_Error;
       end Get_Sub_Data;
 
-      procedure Invalidate_Sub_Data (Object : in out Buffer;
+      procedure Invalidate_Sub_Data (Object : Buffer;
                                      Offset, Length : Types.Size) is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;

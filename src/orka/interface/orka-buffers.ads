@@ -159,6 +159,15 @@ package Orka.Buffers is
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
+   -----------------------------------------------------------------------------
+
+   procedure Copy_Data
+     (Object : Buffer;
+      Target : Buffer;
+      Kind   : Numeric_Type)
+   with Pre => Object.Length = Target.Length;
+   --  TODO Remove Kind and add pre-condition Object.Kind = Target.Kind
+
 private
 
    type Buffer is tagged record

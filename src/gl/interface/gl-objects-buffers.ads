@@ -155,7 +155,7 @@ package GL.Objects.Buffers is
 
       procedure Clear_With_Zeros (Object : Buffer; Offset, Length : Types.Size);
 
-      procedure Copy_Sub_Data (Object, Target_Object : in out Buffer;
+      procedure Copy_Sub_Data (Object, Target_Object : Buffer;
                                Read_Offset, Write_Offset, Length : Types.Size);
 
       procedure Set_Sub_Data (Object : Buffer;
@@ -166,7 +166,7 @@ package GL.Objects.Buffers is
                               Offset : Types.Size;
                               Data   : out Pointers.Element_Array);
 
-      procedure Invalidate_Sub_Data (Object : in out Buffer;
+      procedure Invalidate_Sub_Data (Object : Buffer;
                                      Offset, Length : Types.Size);
 
    end Buffer_Pointers;
