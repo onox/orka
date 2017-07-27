@@ -158,4 +158,19 @@ package body GL.Debug is
       return Result;
    end Max_Message_Length;
 
+   package body Messages is
+      Identifier : GL.Types.UInt := 0;
+
+      procedure Insert (Level : Severity; Message : String) is
+      begin
+         GL.Debug.Insert_Message (From, Kind, Level, Identifier, Message);
+         Identifier := Identifier + 1;
+      end Insert;
+
+      procedure Reset_Identifier (Value : UInt) is
+      begin
+         Identifier := Value;
+      end Reset_Identifier;
+   end Messages;
+
 end GL.Debug;

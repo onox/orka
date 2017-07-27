@@ -24,6 +24,8 @@ with Orka.KTX;
 
 package body Orka.Resources.Textures.KTX is
 
+   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
+
    function Load_Texture (Path : String) return Texture is
       T1 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
@@ -186,50 +188,38 @@ package body Orka.Resources.Textures.KTX is
 
                Loading_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T1);
             begin
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 0,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "Loaded texture " & Path);
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 1,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "  width:" & GL.Types.Size'Image (Header.Width) &
                   " height:" & GL.Types.Size'Image (Header.Height) &
                   " depth:" & GL.Types.Size'Image (Header.Depth) &
                   " array length:" & GL.Types.Size'Image (Header.Array_Elements) &
                   " mipmap levels:" & GL.Types.Size'Image (Levels));
                if Header.Compressed then
-                  GL.Debug.Insert_Message
-                    (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 2,
+                  Debug_Messages.Insert (GL.Debug.Notification,
                      "  compressed format: " & GL.Pixels.Compressed_Format'Image (Header.Compressed_Format));
                else
-                  GL.Debug.Insert_Message
-                    (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 2,
+                  Debug_Messages.Insert (GL.Debug.Notification,
                      "  internal: " & GL.Pixels.Internal_Format'Image (Header.Internal_Format));
-                  GL.Debug.Insert_Message
-                    (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 3,
+                  Debug_Messages.Insert (GL.Debug.Notification,
                      "  format: " & GL.Pixels.Format'Image (Header.Format));
-                  GL.Debug.Insert_Message
-                    (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 4,
+                  Debug_Messages.Insert (GL.Debug.Notification,
                      "  format: " & GL.Pixels.Data_Type'Image (Header.Data_Type));
                end if;
 
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 5,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "  loaded in" & Duration'Image (Loading_Time) & " ms");
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 6,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "    reading file:" & Duration'Image (Reading_Time) & " ms");
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 7,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "    parsing header:" & Duration'Image (Parsing_Time) & " ms");
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 8,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "    storage:" & Duration'Image (Storage_Time) & " ms");
-               GL.Debug.Insert_Message
-                 (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 9,
+               Debug_Messages.Insert (GL.Debug.Notification,
                   "    buffers:" & Duration'Image (Buffers_Time) & " ms");
                if Header.Mipmap_Levels = 0 then
-                  GL.Debug.Insert_Message
-                    (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 10,
+                  Debug_Messages.Insert (GL.Debug.Notification,
                      "    generating mipmap:" & Duration'Image (Mipmap_Time) & " ms");
                end if;
             end;

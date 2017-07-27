@@ -37,6 +37,8 @@ with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
+   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
+
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
       Element_Type    => Natural,
@@ -496,31 +498,23 @@ package body Orka.Resources.Models.glTF is
 
                      Loading_Time    : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T1);
                   begin
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 0,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "Loaded model " & Path);
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 1,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         " " & Ada.Containers.Count_Type'Image (Meshes.Length) & " parts," &
                         Natural'Image (Vertices_Length) & " vertices," &
                         Natural'Image (Indices_Length) & " indices");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 2,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "  loaded in" & Duration'Image (Loading_Time) & " ms");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 3,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "    reading file:" & Duration'Image (Reading_Time) & " ms");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 4,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "    parsing JSON:" & Duration'Image (Parsing_Time) & " ms");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 5,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "    processing glTF:" & Duration'Image (Processing_Time) & " ms");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 6,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "    scene tree:" & Duration'Image (Scene_Tree_Time) & " ms");
-                     GL.Debug.Insert_Message
-                       (GL.Debug.Third_Party, GL.Debug.Other, GL.Debug.Notification, 7,
+                     Debug_Messages.Insert (GL.Debug.Notification,
                         "    buffers:" & Duration'Image (Buffers_Time) & " ms");
                   end;
 

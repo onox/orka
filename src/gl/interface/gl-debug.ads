@@ -70,7 +70,9 @@ package GL.Debug is
                              Identifier : UInt; Message : String);
    --  Generate a new debug message
    --
-   --  From must be either Third_Party or Application.
+   --  From must be either Third_Party or Application. Instantiate the
+   --  generic package Messages below if you need to print multiple
+   --  messages with the same source and message type.
    --
    --  The generated debug message will either be passed to the callback
    --  (if there is one), or added to the message log (if not full).
@@ -106,6 +108,17 @@ package GL.Debug is
 
    function Max_Message_Length return Size
      with Post => Max_Message_Length'Result >= 1;
+
+   generic
+      From : Source;
+      Kind : Message_Type;
+   package Messages is
+      procedure Insert (Level : Severity; Message : String);
+      --  Generate a new debug message and increment the internal identifier
+
+      procedure Reset_Identifier (Value : UInt);
+      --  Reset the internal identifier to the given value
+   end Messages;
 
 private
 
