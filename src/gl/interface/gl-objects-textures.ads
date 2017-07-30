@@ -51,11 +51,11 @@ package GL.Objects.Textures is
    --  OpenGL 2.x: At least 2
    --  OpenGL 3.x: At least 48
    --  OpenGL 4.x: At least 80
-   subtype Texture_Unit is Int range 0 .. Int'Last;
+   subtype Texture_Unit is UInt;
 
-   subtype Image_Unit is Int range 0 .. Int'Last;
+   subtype Image_Unit is UInt;
 
-   subtype Mipmap_Level is Int range 0 .. Int'Last;
+   subtype Mipmap_Level is Size;
 
    -----------------------------------------------------------------------------
    --                          Texture Objects                                --

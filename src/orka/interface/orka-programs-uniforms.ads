@@ -56,7 +56,7 @@ package Orka.Programs.Uniforms is
    procedure Set_Texture
      (Object  : Uniform_Sampler;
       Texture : GL.Objects.Textures.Texture'Class;
-      Binding : GL.Types.Int)
+      Binding : Natural)
    with Pre => Texture.Kind = Object.Kind;
    --  TODO Add pre condition to check Texture.Format matches Sampler_Kind
    --  (see https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Sampler_types)
@@ -68,7 +68,7 @@ package Orka.Programs.Uniforms is
    procedure Set_Image
      (Object  : Uniform_Image;
       Texture : GL.Objects.Textures.Texture'Class;
-      Binding : GL.Types.Int)
+      Binding : Natural)
    with Pre => Texture.Kind = Object.Kind;
 
    type Uniform_Subroutine (<>) is tagged limited private;

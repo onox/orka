@@ -134,20 +134,20 @@ package body Orka.Programs.Uniforms is
    procedure Set_Texture
      (Object  : Uniform_Sampler;
       Texture : GL.Objects.Textures.Texture'Class;
-      Binding : GL.Types.Int) is
+      Binding : Natural) is
    begin
-      Object.GL_Uniform.Set_Int (Binding);
-      Texture.Bind_Texture_Unit (Binding);
+      Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));
+      Texture.Bind_Texture_Unit (GL.Types.UInt (Binding));
       --  TODO Need to rebind after changing the program
    end Set_Texture;
 
    procedure Set_Image
      (Object  : Uniform_Image;
       Texture : GL.Objects.Textures.Texture'Class;
-      Binding : GL.Types.Int) is
+      Binding : Natural) is
    begin
-      Object.GL_Uniform.Set_Int (Binding);
-      Texture.Bind_Image_Texture (Binding);
+      Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));
+      Texture.Bind_Image_Texture (GL.Types.UInt (Binding));
       --  TODO Need to rebind after changing the program
    end Set_Image;
 

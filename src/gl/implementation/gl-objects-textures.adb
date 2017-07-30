@@ -200,7 +200,7 @@ package body GL.Objects.Textures is
    procedure Bind_Image_Texture (Object : Texture; Unit : Image_Unit) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
-      API.Bind_Image_Textures (0, 1, Arr);
+      API.Bind_Image_Textures (Unit, 1, Arr);
       Raise_Exception_On_OpenGL_Error;
    end Bind_Image_Texture;
 
@@ -508,7 +508,7 @@ package body GL.Objects.Textures is
       Raw_Unit : aliased Int := Enums.Textures.Texture_Unit_Start_Rep;
    begin
       API.Get_Integer (Enums.Getter.Active_Texture, Raw_Unit'Access);
-      return Texture_Indexing.Value (Raw_Unit);
+      return UInt (Texture_Indexing.Value (Raw_Unit));
    end Active_Unit;
 
    function Texture_Unit_Count return Natural is
