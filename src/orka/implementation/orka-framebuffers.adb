@@ -21,7 +21,7 @@ package body Orka.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture : GL.Objects.Textures.Texture'Class) return Framebuffer
+      Color_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
    is
       package FB renames GL.Objects.Framebuffers;
 
@@ -40,6 +40,26 @@ package body Orka.Framebuffers is
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);
+      end return;
+   end Create_Framebuffer;
+
+   function Create_Framebuffer
+     (Width, Height : Size;
+      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
+   is
+      package FB renames GL.Objects.Framebuffers;
+   begin
+      return Result : Framebuffer
+        (Default => False,
+         Width   => Width,
+         Height  => Height,
+         Samples => 0)
+      do
+         Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
+         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Texture, 0);
+
+         Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
+         Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Texture);
       end return;
    end Create_Framebuffer;
 

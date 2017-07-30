@@ -36,7 +36,12 @@ package Orka.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture : GL.Objects.Textures.Texture'Class) return Framebuffer
+      Color_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
+   with Post => not Create_Framebuffer'Result.Default;
+
+   function Create_Framebuffer
+     (Width, Height : Size;
+      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
    with Post => not Create_Framebuffer'Result.Default;
 
    function Create_Framebuffer (Width, Height, Samples : Size) return Framebuffer
