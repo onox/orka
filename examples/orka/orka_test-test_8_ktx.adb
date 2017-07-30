@@ -68,11 +68,8 @@ begin
 
       Screen_Size : constant Uniforms.TS.Vector4
         := (Single (Width), Single (Height), 0.0, 0.0);
-      Image_Size : constant Uniforms.TS.Vector4
-        := (Single (Texture_1.Element.Width (0)), Single (Texture_1.Element.Height (0)), 0.0, 0.0);
 
       Uni_Screen : constant Uniforms.Uniform := Program_1.Uniform ("screenSize");
-      Uni_Image  : constant Uniforms.Uniform := Program_1.Uniform ("imageSize");
 
       VAO_1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
    begin
@@ -87,9 +84,7 @@ begin
       Texture_1.Element.Set_Magnifying_Filter (Nearest);
 
       Uni_Texture.Set_Texture (Texture_1.Element, 0);
-
       Uni_Screen.Set_Vector (Screen_Size);
-      Uni_Image.Set_Vector (Image_Size);
 
       Program_1.Use_Program;
 
