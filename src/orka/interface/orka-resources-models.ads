@@ -38,7 +38,9 @@ package Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector
      with Inline;
 
-   function Create_Instance (Object : in out Model) return Behaviors.Behavior_Ptr;
+   function Create_Instance
+     (Object   : in out Model;
+      Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr;
 
    Model_Load_Error : exception renames Resource_Load_Error;
 
@@ -48,12 +50,16 @@ package Orka.Resources.Models is
      with Inline;
 
    overriding
+   procedure After_Update
+     (Object : in out Model_Instance;
+      Delta_Time    : Duration;
+      View_Position : Transforms.Vector4);
+
+   overriding
    procedure Render (Object : in out Model_Instance);
 
    overriding
-   function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4 is
-     (Behaviors.Null_Behavior.Position);
-   --  TODO Should be based on root node's world transform
+   function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4;
 
 private
 
@@ -67,7 +73,6 @@ private
       Bounds  : Buffers.Buffer;
       TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Uniform_BB : not null access Programs.Uniforms.Uniform_Sampler;
    end record;
 
    type Shape_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
@@ -80,6 +85,7 @@ private
       Shapes     : Shape_Array_Holder.Holder;
       Transforms : Buffers.Buffer;
       TBO_WT     : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      Position   : Behaviors.Transforms.Vector4;
    end record;
 
 end Orka.Resources.Models;

@@ -15,6 +15,7 @@
 with GL.Pixels;
 with GL.Types;
 
+with Orka.Transforms.Singles.Vectors;
 with Orka.Types;
 
 package body Orka.Resources.Models is
@@ -22,7 +23,10 @@ package body Orka.Resources.Models is
    function Shapes (Object : Model) return String_Vectors.Vector is
      (Object.Shapes);
 
-   function Create_Instance (Object : in out Model) return Behaviors.Behavior_Ptr is
+   function Create_Instance
+     (Object   : in out Model;
+      Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr
+   is
       Shapes : Shape_Array (1 .. Positive (Object.Shapes.Length));
       pragma Assert (Shapes'First = Object.Shapes.First_Index);
 
@@ -45,24 +49,34 @@ package body Orka.Resources.Models is
          Scene   => Object.Scene,
          Shapes  => Shape_Array_Holder.To_Holder (Shapes),
          Transforms => Transforms_Buffer,
-         TBO_WT     => TBO_WT);
+         TBO_WT     => TBO_WT,
+         Position   => Position);
    end Create_Instance;
 
    function Scene_Tree (Object : in out Model_Instance) return Trees.Tree is
      (Object.Scene);
 
    overriding
-   procedure Render (Object : in out Model_Instance) is
+   procedure After_Update
+     (Object : in out Model_Instance;
+      Delta_Time    : Duration;
+      View_Position : Transforms.Vector4)
+   is
       World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length));
       pragma Assert (Positive (World_Transforms'First) = Object.Shapes.Element'First);
-   begin
-      Object.Model.Uniform_WT.Set_Texture (Object.TBO_WT, 0);
---      Object.Model.Uniform_BB.Set_Texture (Object.Model.TBO_BB, 1);
 
+      use Transforms;
+      use type GL.Types.Single;
+      Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (-90.0);
+      --  TODO Not efficient to re-compute this every frame (cannot put non-static
+      --  code in preelaborated package)
+
+      use Orka.Transforms.Singles.Vectors;
+   begin
       --  Compute the world transforms by multiplying the local transform
       --  of each node with the world transform of its parent. Also updates
       --  the visibility of each node.
-      Object.Scene.Update_Tree;
+      Object.Scene.Update_Tree (T (Structural_Frame_To_GL * (View_Position - Object.Position)));
 
       for Index in Object.Shapes.Element'Range loop
          World_Transforms (GL.Types.Int (Index)) := Object.Scene.World_Transform (Object.Shapes.Element (Index));
@@ -70,6 +84,12 @@ package body Orka.Resources.Models is
 
       --  TODO In a loop we should use a persistent mapped buffer instead of Set_Data
       Object.Transforms.Set_Data (World_Transforms);
+   end After_Update;
+
+   overriding
+   procedure Render (Object : in out Model_Instance) is
+   begin
+      Object.Model.Uniform_WT.Set_Texture (Object.TBO_WT, 0);
 
       --  TODO Only do this once per model, not for each instance
       Object.Model.Format.Set_Vertex_Buffer (1, Object.Model.Batch.Positions);
@@ -80,5 +100,9 @@ package body Orka.Resources.Models is
 
       Object.Model.Format.Draw_Indirect (Object.Model.Batch.Commands);
    end Render;
+
+   overriding
+   function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4 is
+     (Object.Position);
 
 end Orka.Resources.Models;

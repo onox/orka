@@ -39,7 +39,10 @@ package Orka.Behaviors is
    procedure Update (Object : in out Behavior; Delta_Time : Duration) is null;
    --  Called once per frame and after any calls to Fixed_Update
 
-   procedure After_Update (Object : in out Behavior; Delta_Time : Duration) is null;
+   procedure After_Update
+     (Object : in out Behavior;
+      Delta_Time    : Duration;
+      View_Position : Transforms.Vector4) is null;
    --  Called once per frame and after Update
 
    procedure Visibility_Changed (Object : in out Behavior; State : Visibility) is null;

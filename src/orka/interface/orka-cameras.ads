@@ -59,6 +59,9 @@ package Orka.Cameras is
 
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
+   function View_Position (Object : Camera) return Transforms.Vector4 is abstract;
+   --  Return the position of the camera in world space
+
    function Projection_Matrix (Object : Camera) return Transforms.Matrix4 is
      (Object.Lens.Projection_Matrix)
    with Inline;
@@ -96,6 +99,9 @@ package Orka.Cameras is
    procedure Set_Position
      (Object   : in out First_Person_Camera;
       Position : Transforms.Vector4);
+
+   overriding
+   function View_Position (Object : First_Person_Camera) return Transforms.Vector4;
 
    type Look_From_Camera is new First_Person_Camera with private;
 
@@ -139,6 +145,9 @@ package Orka.Cameras is
    procedure Look_At
      (Object : in out Third_Person_Camera;
       Target : Behaviors.Behavior_Ptr);
+
+   overriding
+   function View_Position (Object : Third_Person_Camera) return Transforms.Vector4;
 
    type Rotate_Around_Camera is new Third_Person_Camera with private;
 

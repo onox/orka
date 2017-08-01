@@ -17,7 +17,6 @@ with Ada.Real_Time;
 
 with Orka.Behaviors;
 with Orka.Cameras;
-with Orka.Transforms.SIMD_Vectors;
 with Orka.Windows;
 
 generic
@@ -25,7 +24,6 @@ generic
    Window : not null access Windows.Window'Class;
    Camera : Cameras.Camera_Ptr;
    Render : access procedure (Scene : not null Behaviors.Behavior_Array_Access; Camera : Cameras.Camera_Ptr);
-   with package Transforms is new Orka.Transforms.SIMD_Vectors (<>);
 package Orka.Loops is
 
    protected Handler is

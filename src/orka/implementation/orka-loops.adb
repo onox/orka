@@ -17,9 +17,13 @@ with System;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
+with Orka.Transforms.Singles.Vectors;
+
 package body Orka.Loops is
 
    use Ada.Real_Time;
+
+   package Transforms renames Orka.Transforms.Singles.Vectors;
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -41,12 +45,13 @@ package body Orka.Loops is
 
    procedure Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
       DT : constant Duration := To_Duration (Delta_Time);
+      View_Position : constant Transforms.Vector4 := Loops.Scene.Camera.View_Position;
    begin
       for Behavior of Scene.all loop
          Behavior.Update (DT);
       end loop;
       for Behavior of Scene.all loop
-         Behavior.After_Update (DT);
+         Behavior.After_Update (DT, View_Position);
       end loop;
    end Update;
 

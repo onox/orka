@@ -161,7 +161,7 @@ package body Orka.Cameras is
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4 is
       use Transforms;
    begin
-      return Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw) * T (Object.Position);
+      return Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw);
    end View_Matrix;
 
    overriding
@@ -179,14 +179,14 @@ package body Orka.Cameras is
         ((Side (X), Up (X), -Forward (X), 0.0),
          (Side (Y), Up (Y), -Forward (Y), 0.0),
          (Side (Z), Up (Z), -Forward (Z), 0.0),
-         (0.0, 0.0, 0.0, 1.0)) * T (Object.Position);
+         (0.0, 0.0, 0.0, 1.0));
    end View_Matrix;
 
    overriding
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
       use Transforms;
    begin
-      return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Ry (Object.Alpha) * T (Object.Target.Position);
+      return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Ry (Object.Alpha);
    end View_Matrix;
 
    overriding
@@ -195,6 +195,16 @@ package body Orka.Cameras is
       --  TODO
       return Transforms.Identity_Value;
    end View_Matrix;
+
+   -----------------------------------------------------------------------------
+
+   overriding
+   function View_Position (Object : First_Person_Camera) return Transforms.Vector4 is
+     (Object.Position);
+
+   overriding
+   function View_Position (Object : Third_Person_Camera) return Transforms.Vector4 is
+     (Object.Target.Position);
 
    -----------------------------------------------------------------------------
 
