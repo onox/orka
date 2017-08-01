@@ -37,6 +37,8 @@ package Orka.Scenes.Generic_Scene_Trees is
 
    procedure Update_Tree (Object : in out Tree);
 
+   procedure Update_Tree (Object : in out Tree; Root_Transform : Transforms.Matrix4);
+
    procedure Set_Visibility (Object : in out Tree; Node : Cursor; Visible : Boolean);
 
    function Visibility (Object : Tree; Node : Cursor) return Boolean;
@@ -44,6 +46,8 @@ package Orka.Scenes.Generic_Scene_Trees is
    procedure Set_Local_Transform (Object : in out Tree; Node : Cursor; Transform : Transforms.Matrix4);
 
    function World_Transform (Object : Tree; Node : Cursor) return Transforms.Matrix4;
+
+   function Root_Name (Object : Tree) return String;
 
    function Create_Tree (Name : String) return Tree;
 

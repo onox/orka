@@ -37,6 +37,8 @@ with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
+   Default_Root_Name : constant String := "root";
+
    package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
 
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
@@ -359,7 +361,6 @@ package body Orka.Resources.Models.glTF is
    function Load_Model
      (Format     : not null access Vertex_Formats.Vertex_Format;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Uniform_BB : not null access Programs.Uniforms.Uniform_Sampler;
       Path       : String) return Model
    is
       File        : Ada.Streams.Stream_IO.File_Type;
@@ -439,10 +440,9 @@ package body Orka.Resources.Models.glTF is
                end if;
 
                return Object : Model
-                 := (Scene      => Trees.Create_Tree ("root"),
+                 := (Scene      => Trees.Create_Tree (Default_Root_Name),
                      Format     => Format.all'Unrestricted_Access,
                      Uniform_WT => Uniform_WT.all'Unrestricted_Access,
-                     Uniform_BB => Uniform_BB.all'Unrestricted_Access,
                      others     => <>)
                do
                   declare
@@ -454,17 +454,21 @@ package body Orka.Resources.Models.glTF is
                      --  Z = aft)
                      --
                      --  X => Z, Y => X, Z => Y
---                     Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (90.0);
+--                     Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (-90.0);
                      Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0);
                      --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
                   begin
                      Object.Scene.Set_Local_Transform
-                       (Object.Scene.To_Cursor ("root"), Structural_Frame_To_GL);
+                       (Object.Scene.To_Cursor (Object.Scene.Root_Name), Structural_Frame_To_GL);
                   end;
 
-                  for Node_Index of Default_Scene.Nodes loop
-                     Object.Scene.Add_Node (Nodes (Node_Index).Name.all, "root");
-                  end loop;
+                  declare
+                     Root_Name : constant String := Object.Scene.Root_Name;
+                  begin
+                     for Node_Index of Default_Scene.Nodes loop
+                        Object.Scene.Add_Node (Nodes (Node_Index).Name.all, Root_Name);
+                     end loop;
+                  end;
 
                   Add_Nodes (Object.Scene, Parts, Nodes, Default_Scene.Nodes);
                   Object.Shapes := Shape_List (Parts);

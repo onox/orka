@@ -18,7 +18,6 @@ package Orka.Resources.Models.glTF is
    function Load_Model
      (Format     : not null access Vertex_Formats.Vertex_Format;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Uniform_BB : not null access Programs.Uniforms.Uniform_Sampler;
       Path       : String) return Model;
 
 end Orka.Resources.Models.glTF;

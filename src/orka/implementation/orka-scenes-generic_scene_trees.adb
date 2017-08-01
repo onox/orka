@@ -36,11 +36,18 @@ package body Orka.Scenes.Generic_Scene_Trees is
    end To_Cursor;
 
    procedure Update_Tree (Object : in out Tree) is
-      Root_Local   : constant Transforms.Matrix4 := Object.Levels (Object.Levels.First_Index).Local_Transforms.Element (1);
-      Root_Visible : constant Boolean            := Object.Levels (Object.Levels.First_Index).Local_Visibilities.Element (1);
+   begin
+      Object.Update_Tree (Transforms.Identity_Value);
+   end Update_Tree;
+
+   procedure Update_Tree (Object : in out Tree; Root_Transform : Transforms.Matrix4) is
+      use Transforms;
+
+      Root_Local   : constant Matrix4 := Object.Levels (Object.Levels.First_Index).Local_Transforms.Element (1);
+      Root_Visible : constant Boolean := Object.Levels (Object.Levels.First_Index).Local_Visibilities.Element (1);
    begin
       --  Copy local data of root node to its world data
-      Object.Levels (Object.Levels.First_Index).World_Transforms.Replace_Element (1, Root_Local);
+      Object.Levels (Object.Levels.First_Index).World_Transforms.Replace_Element (1, Root_Transform * Root_Local);
       Object.Levels (Object.Levels.First_Index).World_Visibilities.Replace_Element (1, Root_Visible);
 
       for Level_Index in Object.Levels.First_Index .. Object.Levels.Last_Index - 1 loop
@@ -53,15 +60,14 @@ package body Orka.Scenes.Generic_Scene_Trees is
             begin
                for Parent_Index in Parent_Level_N.First_Index .. Parent_Level_N.Last_Index loop
                   declare
-                     Parent_Transform : Transforms.Matrix4 renames Parent_Level_W.Element (Parent_Index);
-                     Parent_Visible   : Boolean            renames Parent_Level_V.Element (Parent_Index);
-                     Parent           : Node               renames Parent_Level_N.Element (Parent_Index);
+                     Parent_Transform : Matrix4 renames Parent_Level_W.Element (Parent_Index);
+                     Parent_Visible   : Boolean renames Parent_Level_V.Element (Parent_Index);
+                     Parent           : Node    renames Parent_Level_N.Element (Parent_Index);
                   begin
                      for Node_Index in Parent.Offset .. Parent.Offset + Parent.Count - 1 loop
                         declare
-                           Local_Transform : Transforms.Matrix4 renames Child_Level.Local_Transforms.Element (Node_Index);
-                           Local_Visible   : Boolean            renames Child_Level.Local_Visibilities.Element (Node_Index);
-                           use Transforms;
+                           Local_Transform : Matrix4 renames Child_Level.Local_Transforms.Element (Node_Index);
+                           Local_Visible   : Boolean renames Child_Level.Local_Visibilities.Element (Node_Index);
                         begin
                            Child_Level.World_Transforms.Replace_Element (Node_Index, Parent_Transform * Local_Transform);
                            Child_Level.World_Visibilities.Replace_Element (Node_Index, Parent_Visible and then Local_Visible);
@@ -99,6 +105,9 @@ package body Orka.Scenes.Generic_Scene_Trees is
    begin
       return Node_Level.World_Transforms.Element (Node.Offset);
    end World_Transform;
+
+   function Root_Name (Object : Tree) return String is
+     (SU.To_String (Object.Levels (Object.Levels.First_Index).Nodes.Element (1).Name));
 
    function Create_Tree (Name : String) return Tree is
    begin
