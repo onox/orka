@@ -30,6 +30,9 @@ package Orka.Programs.Modules is
 
    Shader_Compile_Error : exception;
 
+   subtype Non_Compute_Shader_Type is GL.Objects.Shaders.Shader_Type
+     range GL.Objects.Shaders.Fragment_Shader .. GL.Objects.Shaders.Tess_Control_Shader;
+
 private
 
    use type GL.Objects.Shaders.Shader;
@@ -37,7 +40,7 @@ private
    package Shader_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => GL.Objects.Shaders.Shader);
 
-   type Shader_Array is array (GL.Objects.Shaders.Shader_Type) of Shader_Holder.Holder;
+   type Shader_Array is array (Non_Compute_Shader_Type) of Shader_Holder.Holder;
 
    type Module is tagged record
       Shaders : Shader_Array;

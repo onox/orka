@@ -37,7 +37,7 @@ package body Orka.Programs is
 
          --  Construct arrays of subroutine indices per shader kind
          Result.Subroutines_Modified := False;
-         for Shader_Kind in GL.Objects.Shaders.Shader_Type loop
+         for Shader_Kind in Programs.Modules.Non_Compute_Shader_Type loop
             declare
                Locations : constant GL.Types.Size
                  := Result.GL_Program.Subroutine_Uniform_Locations (Shader_Kind);
@@ -61,7 +61,7 @@ package body Orka.Programs is
 
    procedure Use_Subroutines (Object : in out Program) is
    begin
-      for Shader_Kind in GL.Objects.Shaders.Shader_Type loop
+      for Shader_Kind in Programs.Modules.Non_Compute_Shader_Type loop
          declare
             Indices : GL.Types.UInt_Array renames Object.Subroutines (Shader_Kind).Element;
          begin
