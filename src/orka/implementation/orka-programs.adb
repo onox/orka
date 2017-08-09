@@ -36,6 +36,7 @@ package body Orka.Programs is
          end if;
 
          --  Construct arrays of subroutine indices per shader kind
+         Result.Has_Subroutines := False;
          Result.Subroutines_Modified := False;
          for Shader_Kind in Programs.Modules.Non_Compute_Shader_Type loop
             declare
@@ -43,6 +44,9 @@ package body Orka.Programs is
                  := Result.GL_Program.Subroutine_Uniform_Locations (Shader_Kind);
                subtype Indices_Array is GL.Types.UInt_Array (0 .. Locations - 1);
             begin
+               if Indices_Array'Length > 0 then
+                  Result.Has_Subroutines := True;
+               end if;
                Result.Subroutines (Shader_Kind)
                  := Subroutines_Holder.To_Holder (Indices_Array'(others => GL.Types.UInt'Last));
             end;
@@ -58,6 +62,9 @@ package body Orka.Programs is
 
    function GL_Program (Object : Program) return GL.Objects.Programs.Program
      is (Object.GL_Program);
+
+   function Has_Subroutines (Object : Program) return Boolean
+     is (Object.Has_Subroutines);
 
    procedure Use_Subroutines (Object : in out Program) is
    begin
@@ -78,7 +85,9 @@ package body Orka.Programs is
       if Current_Program.Is_Empty or else Object /= Current_Program.Element then
          Object.GL_Program.Use_Program;
          Current_Program.Replace_Element (Object);
-         Object.Use_Subroutines;
+         if Object.Has_Subroutines then
+            Object.Use_Subroutines;
+         end if;
       elsif Object.Subroutines_Modified then
          Object.Use_Subroutines;
       end if;

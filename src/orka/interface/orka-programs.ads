@@ -39,7 +39,10 @@ package Orka.Programs is
    function GL_Program (Object : Program) return GL.Objects.Programs.Program
      with Inline;
 
-   procedure Use_Subroutines (Object : in out Program);
+   function Has_Subroutines (Object : Program) return Boolean;
+
+   procedure Use_Subroutines (Object : in out Program)
+     with Pre => Object.Has_Subroutines;
    --  Use the selected subroutines in the current program
    --
    --  This procedure only needs to be called if a different
@@ -105,6 +108,7 @@ private
    type Program is tagged record
       GL_Program  : GL.Objects.Programs.Program;
       Subroutines : Subroutines_Array;
+      Has_Subroutines      : Boolean := False;
       Subroutines_Modified : Boolean := False;
    end record;
 
@@ -112,6 +116,7 @@ private
      (Object   : in out Program;
       Shader   : GL.Objects.Shaders.Shader_Type;
       Location : Uniform_Location;
-      Index    : Subroutine_Index);
+      Index    : Subroutine_Index)
+   with Pre => Object.Has_Subroutines;
 
 end Orka.Programs;
