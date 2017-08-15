@@ -28,12 +28,12 @@ package body Orka.Loops is
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
 
-   function Behavior_Hash (Element : Behaviors.Behavior_Ptr) return Ada.Containers.Hash_Type is
+   function "<" (Left, Right : Behaviors.Behavior_Ptr) return Boolean is
       function Convert is new Ada.Unchecked_Conversion
         (Source => System.Address, Target => Long_Integer);
    begin
-      return Ada.Containers.Hash_Type (Convert (Element.all'Address));
-   end Behavior_Hash;
+      return Convert (Left.all'Address) < Convert (Right.all'Address);
+   end "<";
 
    procedure Fixed_Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
       DT : constant Duration := To_Duration (Delta_Time);

@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Hashed_Sets;
+with Ada.Containers.Ordered_Sets;
 with Ada.Real_Time;
 
 with Orka.Behaviors;
@@ -42,10 +42,10 @@ package Orka.Loops is
    use type Behaviors.Behavior_Ptr;
    use type Behaviors.Behavior_Array_Access;
 
-   function Behavior_Hash (Element : Behaviors.Behavior_Ptr) return Ada.Containers.Hash_Type;
+   function "<" (Left, Right : Behaviors.Behavior_Ptr) return Boolean;
 
-   package Behavior_Sets is new Ada.Containers.Hashed_Sets
-     (Behaviors.Behavior_Ptr, Behavior_Hash, "=");
+   package Behavior_Sets is new Ada.Containers.Ordered_Sets
+     (Behaviors.Behavior_Ptr, "<", "=");
 
    protected Scene is
       procedure Add (Object : Behaviors.Behavior_Ptr)
