@@ -38,9 +38,10 @@ package body GL.Objects.Queries is
       Object.Reference.Initialized := False;
    end Delete_Id;
 
-   function Begin_Query (Object : in out Query;
-                         Target : in     Async_Query_Type;
-                         Index  : in     Natural) return Active_Query'Class is
+   function Begin_Query
+     (Object : in out Query;
+      Target : in     Async_Query_Type;
+      Index  : in     Natural := 0) return Active_Query'Class is
    begin
       API.Begin_Query_Indexed (Target, UInt (Index), Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
@@ -56,28 +57,6 @@ package body GL.Objects.Queries is
          Object.Finalized := True;
       end if;
    end Finalize;
-
-   function Begin_Primitive_Query (Object : in out Query;
-                                   Target : in     Primitive_Query_Type;
-                                   Index  : in     Natural := 0)
-     return Active_Query'Class is
-   begin
-      return Begin_Query (Object, Target, Index);
-   end Begin_Primitive_Query;
-
-   function Begin_Occlusion_Query (Object : in out Query;
-                                   Target : in     Occlusion_Query_Type)
-     return Active_Query'Class is
-   begin
-      return Begin_Query (Object, Target, 0);
-   end Begin_Occlusion_Query;
-
-   function Begin_Timer_Query (Object : in out Query;
-                               Target : in     Time_Query_Type)
-     return Active_Query'Class is
-   begin
-      return Begin_Query (Object, Target, 0);
-   end Begin_Timer_Query;
 
    function Begin_Conditional_Render (Object : in out Query;
                                       Mode   : in     Query_Mode)

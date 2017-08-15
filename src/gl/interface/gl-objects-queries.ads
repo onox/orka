@@ -17,37 +17,40 @@ with GL.Low_Level;
 package GL.Objects.Queries is
    pragma Preelaborate;
 
-   type Query_Type is (Time_Elapsed,
-                       Samples_Passed, Any_Samples_Passed,
-                       Primitives_Generated,
-                       Transform_Feedback_Primitives_Written,
-                       Any_Samples_Passed_Conservative,
-                       Timestamp);
+   type Query_Type is
+     (Transform_Feedback_Overflow,
+      Transform_Feedback_Stream_Overflow,
+      Time_Elapsed,
+      Samples_Passed,
+      Any_Samples_Passed,
+      Primitives_Generated,
+      Transform_Feedback_Primitives_Written,
+      Any_Samples_Passed_Conservative,
+      Timestamp);
 
    --  Has to be defined here because of the subtype declaration below
-   for Query_Type use (Time_Elapsed                          => 16#88BF#,
-                       Samples_Passed                        => 16#8914#,
-                       Any_Samples_Passed                    => 16#8C2F#,
-                       Primitives_Generated                  => 16#8C87#,
-                       Transform_Feedback_Primitives_Written => 16#8C88#,
-                       Any_Samples_Passed_Conservative       => 16#8D6A#,
-                       Timestamp                             => 16#8E28#);
+   for Query_Type use
+     (Transform_Feedback_Overflow           => 16#82EC#,
+      Transform_Feedback_Stream_Overflow    => 16#82ED#,
+      Time_Elapsed                          => 16#88BF#,
+      Samples_Passed                        => 16#8914#,
+      Any_Samples_Passed                    => 16#8C2F#,
+      Primitives_Generated                  => 16#8C87#,
+      Transform_Feedback_Primitives_Written => 16#8C88#,
+      Any_Samples_Passed_Conservative       => 16#8D6A#,
+      Timestamp                             => 16#8E28#);
    for Query_Type'Size use Low_Level.Enum'Size;
 
-   subtype Async_Query_Type is Query_Type range Time_Elapsed .. Any_Samples_Passed_Conservative;
+   subtype Async_Query_Type is Query_Type
+     range Transform_Feedback_Overflow .. Any_Samples_Passed_Conservative;
 
    subtype Timestamp_Query_Type is Query_Type range Timestamp .. Timestamp;
 
-   subtype Primitive_Query_Type is Query_Type
+   subtype Stream_Query_Type is Query_Type
      with Static_Predicate =>
-       Primitive_Query_Type in Primitives_Generated | Transform_Feedback_Primitives_Written;
-
-   subtype Occlusion_Query_Type is Query_Type
-     with Static_Predicate =>
-       Occlusion_Query_Type in Samples_Passed | Any_Samples_Passed | Any_Samples_Passed_Conservative;
-
-   subtype Time_Query_Type is Query_Type
-     with Static_Predicate => Time_Query_Type = Time_Elapsed;
+       Stream_Query_Type in Primitives_Generated |
+                            Transform_Feedback_Primitives_Written |
+                            Transform_Feedback_Stream_Overflow;
 
    type Query_Mode is (Wait, No_Wait, By_Region_Wait, By_Region_No_Wait,
                        Wait_Inverted, No_Wait_Inverted, By_Region_Wait_Inverted,
@@ -73,41 +76,34 @@ package GL.Objects.Queries is
 
    type Conditional_Render is limited new Ada.Finalization.Limited_Controlled with private;
 
-   function Begin_Primitive_Query (Object : in out Query;
-                                   Target : in     Primitive_Query_Type;
-                                   Index  : in     Natural := 0)
-     return Active_Query'Class;
-   --  Start a primitive query. The value returned is of a controlled
+   function Begin_Query
+     (Object : in out Query;
+      Target : in     Async_Query_Type;
+      Index  : in     Natural := 0) return Active_Query'Class
+   with Pre => (if Target not in Stream_Query_Type then Index = 0);
+   --  Start an asynchronous query. The value returned is of a controlled
    --  type, meaning you must assign it to some local variable, so that
    --  the query will be automatically ended when the variable goes out
    --  of scope.
    --
-   --  Primitive queries support multiple query operations; one for each
-   --  index. The index represents the vertex output stream used in a
-   --  Geometry Shader. If the target type is
-   --  Transform_Feedback_Primitives_Written, then the query should be
-   --  issued while within a transform feedback scope.
-
-   function Begin_Occlusion_Query (Object : in out Query;
-                                   Target : in     Occlusion_Query_Type)
-     return Active_Query'Class;
-   --  Start an occlusion query. The value returned is of a controlled
-   --  type, meaning you must assign it to some local variable, so that
-   --  the query will be automatically ended when the variable goes out
-   --  of scope.
-
-   function Begin_Timer_Query (Object : in out Query;
-                               Target : in     Time_Query_Type)
-     return Active_Query'Class;
-   --  Start a timer query. The value returned is of a controlled
-   --  type, meaning you must assign it to some local variable, so that
-   --  the query will be automatically ended when the variable goes out
-   --  of scope.
-   --
-   --  This function is used only for queries of type Time_Elapsed.
    --  Queries of type Timestamp are not used within a scope. For such
    --  a query you can record the time into the query object by calling
    --  Record_Current_Time.
+   --
+   --  Certain queries support multiple query operations; one for each
+   --  index. The index represents the vertex output stream used in a
+   --  Geometry Shader. These targets are:
+   --
+   --    * Primitives_Generated
+   --    * Transform_Feedback_Primitives_Written
+   --    * Transform_Feedback_Stream_Overflow
+   --
+   --  The query should be issued while within a transform feedback scope
+   --  for one of the following targets:
+   --
+   --    * Transform_Feedback_Primitives_Written
+   --    * Transform_Feedback_Overflow
+   --    * Transform_Feedback_Stream_Overflow
 
    function Begin_Conditional_Render (Object : in out Query;
                                       Mode   : in     Query_Mode)
