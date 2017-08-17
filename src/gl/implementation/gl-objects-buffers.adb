@@ -348,10 +348,8 @@ package body GL.Objects.Buffers is
 
          function Convert is new Ada.Unchecked_Conversion
            (Source => Pointers.Pointer, Target => Data_Access);
-
-         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
       begin
-         Convert (Pointer + IC.ptrdiff_t (Offset_In_Bytes)).all := Data;
+         Convert (Pointer + IC.ptrdiff_t (Offset)).all := Data;
       end Set_Mapped_Data;
 
       procedure Flush_Buffer_Range (Object : in out Buffer;
