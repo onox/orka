@@ -28,6 +28,9 @@ package Orka.Buffers.Persistent_Mapped is
       Mode   : IO_Mode) return Persistent_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
 
+   function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer
+     with Inline;
+
    function Length (Object : Persistent_Mapped_Buffer) return Natural
      with Inline;
    --  Number of elements in the buffer
@@ -53,6 +56,18 @@ package Orka.Buffers.Persistent_Mapped is
    procedure Write_Data
      (Object : Persistent_Mapped_Buffer;
       Data   : Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 

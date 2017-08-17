@@ -55,6 +55,9 @@ package body Orka.Buffers.Persistent_Mapped is
       end return;
    end Create_Buffer;
 
+   function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer is
+     (Object.Buffer.GL_Buffer);
+
    function Length (Object : Persistent_Mapped_Buffer) return Natural is
      (Object.Buffer.Length / Index_Type'Modulus);
 
@@ -82,6 +85,24 @@ package body Orka.Buffers.Persistent_Mapped is
    begin
       Pointers.Single_Matrix4.Set_Mapped_Data
         (Object.Pointer_SM, Size (Object.Index_Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Vector4.Set_Mapped_Data
+        (Object.Pointer_DV, Size (Object.Index_Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Matrix4.Set_Mapped_Data
+        (Object.Pointer_DM, Size (Object.Index_Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
