@@ -14,6 +14,8 @@
 
 private with Orka.Buffers.Pointers;
 
+generic
+   type Index_Type is mod <>;
 package Orka.Buffers.Persistent_Mapped is
    pragma Preelaborate;
 
@@ -27,6 +29,12 @@ package Orka.Buffers.Persistent_Mapped is
       Length : Natural;
       Mode   : IO_Mode) return Persistent_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
+   --  Create a persistent mapped buffer for only writes or only reads
+   --
+   --  The actual size of the buffer is n * Length where n is the number
+   --  of regions. Each region has an index (>= 0).
+   --
+   --  After writing or reading, you must call Advance_Index (once per frame).
 
    function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
@@ -86,8 +94,6 @@ package Orka.Buffers.Persistent_Mapped is
 private
 
    use Orka.Types;
-
-   type Index_Type is mod 3;
 
    type Persistent_Mapped_Buffer
      (Kind : Orka.Types.Composite_Type; Mode : IO_Mode)

@@ -30,7 +30,7 @@ package body Orka.Buffers.Persistent_Mapped is
    begin
       return Result : Persistent_Mapped_Buffer (Kind, Mode) do
          Result.Buffer := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
-         Result.Index  := 0;
+         Result.Index  := Index_Type'First;
 
          case Kind is
             when Single_Vector_Type =>
