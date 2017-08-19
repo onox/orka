@@ -129,6 +129,11 @@ package GL.Objects.Buffers is
          Data    : Pointers.Element_Array)
       with Pre => Data'Length > 0;
 
+      procedure Set_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset  : Types.Size;
+         Value   : Pointers.Element);
+
       procedure Flush_Buffer_Range (Object : in out Buffer;
                                     Offset, Length : Types.Size);
 

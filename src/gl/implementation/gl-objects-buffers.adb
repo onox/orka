@@ -352,6 +352,19 @@ package body GL.Objects.Buffers is
          Convert (Pointer + IC.ptrdiff_t (Offset)).all := Data;
       end Set_Mapped_Data;
 
+      procedure Set_Mapped_Data
+        (Pointer : not null Pointers.Pointer;
+         Offset  : Types.Size;
+         Value   : Pointers.Element)
+      is
+         package IC renames Interfaces.C;
+         use type Pointers.Pointer;
+
+         Offset_Pointer : constant Pointers.Pointer := Pointer + IC.ptrdiff_t (Offset);
+      begin
+         Offset_Pointer.all := Value;
+      end Set_Mapped_Data;
+
       procedure Flush_Buffer_Range (Object : in out Buffer;
                                     Offset, Length : Types.Size) is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;

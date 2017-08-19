@@ -69,6 +69,8 @@ package body Orka.Buffers.Persistent_Mapped is
       Object.Index := Object.Index + 1;
    end Advance_Index;
 
+   -----------------------------------------------------------------------------
+
    procedure Write_Data
      (Object : Persistent_Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
@@ -121,6 +123,62 @@ package body Orka.Buffers.Persistent_Mapped is
    begin
       Pointers.Elements_Command.Set_Mapped_Data
         (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Data);
+   end Write_Data;
+
+   -----------------------------------------------------------------------------
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Singles.Vector4;
+      Offset : Natural) is
+   begin
+      Pointers.Single_Vector4.Set_Mapped_Data
+        (Object.Pointer_SV, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Singles.Matrix4;
+      Offset : Natural) is
+   begin
+      Pointers.Single_Matrix4.Set_Mapped_Data
+        (Object.Pointer_SM, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Doubles.Vector4;
+      Offset : Natural) is
+   begin
+      Pointers.Double_Vector4.Set_Mapped_Data
+        (Object.Pointer_DV, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Doubles.Matrix4;
+      Offset : Natural) is
+   begin
+      Pointers.Double_Matrix4.Set_Mapped_Data
+        (Object.Pointer_DM, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Arrays_Indirect_Command;
+      Offset : Natural) is
+   begin
+      Pointers.Arrays_Command.Set_Mapped_Data
+        (Object.Pointer_AC, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Elements_Indirect_Command;
+      Offset : Natural) is
+   begin
+      Pointers.Elements_Command.Set_Mapped_Data
+        (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Value);
    end Write_Data;
 
 end Orka.Buffers.Persistent_Mapped;

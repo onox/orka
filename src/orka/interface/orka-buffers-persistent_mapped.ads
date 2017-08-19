@@ -55,6 +55,8 @@ package Orka.Buffers.Persistent_Mapped is
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer);
 
+   -----------------------------------------------------------------------------
+
    procedure Write_Data
      (Object : Persistent_Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
@@ -90,6 +92,44 @@ package Orka.Buffers.Persistent_Mapped is
       Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   -----------------------------------------------------------------------------
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Singles.Vector4;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Singles.Matrix4;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Doubles.Vector4;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Orka.Types.Doubles.Matrix4;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Arrays_Indirect_Command;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Elements_Indirect_Command;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
 
 private
 
