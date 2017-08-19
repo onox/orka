@@ -17,6 +17,7 @@ with System;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
+with Orka.Buffer_Fences;
 with Orka.Transforms.Singles.Vectors;
 
 package body Orka.Loops is
@@ -121,6 +122,10 @@ package body Orka.Loops is
       Next_Time : Time := Previous_Time;
 
       Scene_Array : Behaviors.Behavior_Array_Access := new Behaviors.Behavior_Array (1 .. 0);
+
+      package Fences is new Orka.Buffer_Fences (Region_Type);
+
+      Fence : Fences.Buffer_Fence := Fences.Create_Buffer_Fence;
    begin
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -136,6 +141,8 @@ package body Orka.Loops is
 
             exit when Handler.Should_Stop or Window.Should_Close;
 
+            Fence.Prepare_Index;
+
             while Lag > Time_Step loop
                Fixed_Update (Time_Step, Scene_Array);
                Lag := Lag - Time_Step;
@@ -150,6 +157,8 @@ package body Orka.Loops is
             --  so that rendering on GPU happens in parallel with CPU work
             --  during the next frame
             Render (Scene_Array, Scene.Camera);
+
+            Fence.Advance_Index;
 
             if Scene.Modified then
                Scene.Replace_Array (Scene_Array);

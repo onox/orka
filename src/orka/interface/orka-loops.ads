@@ -24,6 +24,7 @@ generic
    Window : not null access Windows.Window'Class;
    Camera : Cameras.Camera_Ptr;
    Render : access procedure (Scene : not null Behaviors.Behavior_Array_Access; Camera : Cameras.Camera_Ptr);
+   type Region_Type is mod <>;
 package Orka.Loops is
 
    protected Handler is
