@@ -44,6 +44,9 @@ package body GL.Objects is
             Free (Object.Reference);
          end if;
       end if;
+
+      --  Idempotence: next call to Finalize has no effect
+      Object.Reference := null;
    end Finalize;
    
    function Initialized (Object : GL_Object) return Boolean is
