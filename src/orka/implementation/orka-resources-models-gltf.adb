@@ -105,20 +105,23 @@ package body Orka.Resources.Models.glTF is
       end loop;
    end Add_Nodes;
 
-   function Shape_List (Parts : String_Maps.Map) return String_Vectors.Vector is
+   function Shape_List
+     (Parts : String_Maps.Map;
+      Scene : Trees.Tree) return Cursor_Array_Holder.Holder
+   is
+      Shapes : Cursor_Array (1 .. Positive (Parts.Length));
    begin
-      return Result : String_Vectors.Vector := String_Vectors.To_Vector (Parts.Length) do
-         declare
-            procedure Set_Name (Position : String_Maps.Cursor) is
-               Mesh_Index : Natural renames String_Maps.Element (Position);
-               Node_Name : String renames String_Maps.Key (Position);
-            begin
-               Result.Replace_Element (Mesh_Index + 1, Node_Name);
-            end Set_Name;
+      declare
+         procedure Set_Name (Position : String_Maps.Cursor) is
+            Mesh_Index : Natural renames String_Maps.Element (Position);
+            Node_Name  : String  renames String_Maps.Key (Position);
          begin
-            Parts.Iterate (Set_Name'Access);
-         end;
-      end return;
+            Shapes (Mesh_Index + 1) := Scene.To_Cursor (Node_Name);
+         end Set_Name;
+      begin
+         Parts.Iterate (Set_Name'Access);
+         return Cursor_Array_Holder.To_Holder (Shapes);
+      end;
    end Shape_List;
 
    function Bounds_List
@@ -361,6 +364,7 @@ package body Orka.Resources.Models.glTF is
    function Load_Model
      (Format     : not null access Vertex_Formats.Vertex_Format;
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
+      Uniform_IO : not null access Programs.Uniforms.Uniform;
       Path       : String) return Model
    is
       File        : Ada.Streams.Stream_IO.File_Type;
@@ -428,7 +432,7 @@ package body Orka.Resources.Models.glTF is
                Default_Scene_Index : constant Long_Integer := Object.Get ("scene").Value;
                Default_Scene : Orka.glTF.Scenes.Scene renames Scenes (Natural (Default_Scene_Index));
 
-               Parts  : String_Maps.Map;
+               Parts : String_Maps.Map;
 
                use GL.Objects.Buffers;
 
@@ -443,6 +447,7 @@ package body Orka.Resources.Models.glTF is
                  := (Scene      => Trees.Create_Tree (Default_Root_Name),
                      Format     => Format.all'Unrestricted_Access,
                      Uniform_WT => Uniform_WT.all'Unrestricted_Access,
+                     Uniform_IO => Uniform_IO.all'Unrestricted_Access,
                      others     => <>)
                do
                   declare
@@ -453,8 +458,7 @@ package body Orka.Resources.Models.glTF is
                      --  Y = right, Z = top) to OpenGL (X = right, Y = top,
                      --  Z = aft)
                      --
-                     --  X => Z, Y => X, Z => Y
---                     Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (-90.0);
+                     --  X => Z, Y => X, Z => Y   -->   Ry (-90.0) * Rx (-90.0)
                      Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0);
                      --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
                   begin
@@ -471,7 +475,7 @@ package body Orka.Resources.Models.glTF is
                   end;
 
                   Add_Nodes (Object.Scene, Parts, Nodes, Default_Scene.Nodes);
-                  Object.Shapes := Shape_List (Parts);
+                  Object.Shapes := Shape_List (Parts, Object.Scene);
                   T5 := Ada.Real_Time.Clock;
 
                   Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);

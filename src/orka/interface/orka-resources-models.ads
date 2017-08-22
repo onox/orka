@@ -13,16 +13,17 @@
 --  limitations under the License.
 
 with Ada.Containers.Indefinite_Holders;
-with Ada.Containers.Indefinite_Vectors;
 
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 
 with Orka.Behaviors;
 with Orka.Buffers.MDI;
+with Orka.Buffers.Persistent_Mapped;
 with Orka.Programs.Uniforms;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
+with Orka.Types;
 with Orka.Vertex_Formats;
 
 package Orka.Resources.Models is
@@ -31,12 +32,11 @@ package Orka.Resources.Models is
    package Trees renames Scenes.Singles.Trees;
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   package String_Vectors is new Ada.Containers.Indefinite_Vectors (Positive, String);
+   type Buffer_Region_Type is mod 4;
+
+   package PMB is new Orka.Buffers.Persistent_Mapped (Buffer_Region_Type);
 
    type Model is tagged limited private;
-
-   function Shapes (Object : Model) return String_Vectors.Vector
-     with Inline;
 
    function Create_Instance
      (Object   : in out Model;
@@ -45,9 +45,6 @@ package Orka.Resources.Models is
    Model_Load_Error : exception renames Resource_Load_Error;
 
    type Model_Instance (<>) is limited new Behaviors.Behavior with private;
-
-   function Scene_Tree (Object : in out Model_Instance) return Trees.Tree
-     with Inline;
 
    overriding
    procedure After_Update
@@ -59,31 +56,37 @@ package Orka.Resources.Models is
    procedure Render (Object : in out Model_Instance);
 
    overriding
+   procedure After_Render (Object : in out Model_Instance);
+
+   overriding
    function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4;
 
 private
 
    use GL.Objects.Textures;
 
+   type Cursor_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
+
+   package Cursor_Array_Holder is new Ada.Containers.Indefinite_Holders
+     (Element_Type => Cursor_Array);
+
    type Model is tagged limited record
       Scene   : Trees.Tree;
-      Shapes  : String_Vectors.Vector;
+      Shapes  : Cursor_Array_Holder.Holder;
       Format  : not null access Vertex_Formats.Vertex_Format;
       Batch   : Orka.Buffers.MDI.Batch;
       Bounds  : Buffers.Buffer;
       TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
+      Uniform_IO : not null access Programs.Uniforms.Uniform;
    end record;
 
-   type Shape_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
-
-   package Shape_Array_Holder is new Ada.Containers.Indefinite_Holders
-      (Element_Type => Shape_Array);
-
-   type Model_Instance (Model : access Orka.Resources.Models.Model) is limited new Behaviors.Behavior with record
+   type Model_Instance (Model : access Orka.Resources.Models.Model) is
+     limited new Behaviors.Behavior with record
       Scene      : Trees.Tree;
-      Shapes     : Shape_Array_Holder.Holder;
-      Transforms : Buffers.Buffer;
+      Transforms : PMB.Persistent_Mapped_Buffer
+        (Kind => Orka.Types.Single_Matrix_Type,
+         Mode => PMB.Write);
       TBO_WT     : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Position   : Behaviors.Transforms.Vector4;
    end record;

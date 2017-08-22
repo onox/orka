@@ -16,45 +16,32 @@ with GL.Pixels;
 with GL.Types;
 
 with Orka.Transforms.Singles.Vectors;
-with Orka.Types;
 
 package body Orka.Resources.Models is
-
-   function Shapes (Object : Model) return String_Vectors.Vector is
-     (Object.Shapes);
 
    function Create_Instance
      (Object   : in out Model;
       Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr
    is
-      Shapes : Shape_Array (1 .. Positive (Object.Shapes.Length));
-      pragma Assert (Shapes'First = Object.Shapes.First_Index);
+      Shapes_Count : constant Natural := Object.Shapes.Element'Length;
 
       --  Set-up TBO for world transform matrices
-      Transforms_Buffer : constant Buffers.Buffer := Buffers.Create_Buffer
-        ((Dynamic_Storage => True, others => False),
-         Orka.Types.Single_Matrix_Type, Shapes'Length);
+      Transforms_Buffer : constant PMB.Persistent_Mapped_Buffer
+        := PMB.Create_Buffer
+            (Orka.Types.Single_Matrix_Type, Shapes_Count, PMB.Write);
 
       TBO_WT : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
    begin
-      for Index in Shapes'Range loop
-         Shapes (Index) := Object.Scene.To_Cursor (Object.Shapes.Element (Index));
-      end loop;
-
       TBO_WT.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
 
       --  Cannot use 'Access because we're returning a pointer to Model_Instance
       return new Model_Instance'
         (Model   => Object'Unchecked_Access,
          Scene   => Object.Scene,
-         Shapes  => Shape_Array_Holder.To_Holder (Shapes),
          Transforms => Transforms_Buffer,
          TBO_WT     => TBO_WT,
          Position   => Position);
    end Create_Instance;
-
-   function Scene_Tree (Object : in out Model_Instance) return Trees.Tree is
-     (Object.Scene);
 
    overriding
    procedure After_Update
@@ -62,9 +49,6 @@ package body Orka.Resources.Models is
       Delta_Time    : Duration;
       View_Position : Transforms.Vector4)
    is
-      World_Transforms : Orka.Types.Singles.Matrix4_Array (1 .. GL.Types.Int (Object.Shapes.Element'Length));
-      pragma Assert (Positive (World_Transforms'First) = Object.Shapes.Element'First);
-
       use Transforms;
       use type GL.Types.Single;
       Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (-90.0);
@@ -72,24 +56,28 @@ package body Orka.Resources.Models is
       --  code in preelaborated package)
 
       use Orka.Transforms.Singles.Vectors;
+
+      procedure Write_Transforms (Cursors : Cursor_Array) is
+      begin
+         for Index in Cursors'Range loop
+            Object.Transforms.Write_Data (Object.Scene.World_Transform (Cursors (Index)), Index - 1);
+         end loop;
+      end Write_Transforms;
    begin
       --  Compute the world transforms by multiplying the local transform
       --  of each node with the world transform of its parent. Also updates
       --  the visibility of each node.
       Object.Scene.Update_Tree (T (Structural_Frame_To_GL * (View_Position - Object.Position)));
 
-      for Index in Object.Shapes.Element'Range loop
-         World_Transforms (GL.Types.Int (Index)) := Object.Scene.World_Transform (Object.Shapes.Element (Index));
-      end loop;
-
-      --  TODO In a loop we should use a persistent mapped buffer instead of Set_Data
-      Object.Transforms.Set_Data (World_Transforms);
+      --  Write the world transform of the leaf nodes to the persistent mapped buffer
+      Object.Model.Shapes.Query_Element (Write_Transforms'Access);
    end After_Update;
 
    overriding
    procedure Render (Object : in out Model_Instance) is
    begin
       Object.Model.Uniform_WT.Set_Texture (Object.TBO_WT, 0);
+      Object.Model.Uniform_IO.Set_Int (GL.Types.Int (Object.Transforms.Index_Offset));
 
       --  TODO Only do this once per model, not for each instance
       Object.Model.Format.Set_Vertex_Buffer (1, Object.Model.Batch.Positions);
@@ -100,6 +88,12 @@ package body Orka.Resources.Models is
 
       Object.Model.Format.Draw_Indirect (Object.Model.Batch.Commands);
    end Render;
+
+   overriding
+   procedure After_Render (Object : in out Model_Instance) is
+   begin
+      Object.Transforms.Advance_Index;
+   end After_Render;
 
    overriding
    function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4 is

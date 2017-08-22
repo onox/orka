@@ -49,6 +49,8 @@ package Orka.Behaviors is
 
    procedure Render (Object : in out Behavior) is null;
 
+   procedure After_Render (Object : in out Behavior) is null;
+
    type Behavior_Array is array (Positive range <>) of Behaviors.Behavior_Ptr;
 
    type Behavior_Array_Access is access Behavior_Array;
