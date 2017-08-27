@@ -16,7 +16,6 @@ with System.Multiprocessors.Dispatching_Domains;
 
 with Ada.Exceptions;
 with Ada.Strings.Fixed;
-with Ada.Synchronous_Barriers;
 with Ada.Text_IO;
 
 with Orka.OS;
@@ -28,14 +27,14 @@ package body Orka.Workers is
    protected body Barrier is
       procedure Update
         (Scene         : not null Behaviors.Behavior_Array_Access;
-         Delta_Time    : Duration;
+         Delta_Time    : Ada.Real_Time.Time_Span;
          View_Position : Transforms.Vector4) is
       begin
          Barrier.Scene := Scene;
          DT := Delta_Time;
          VP := View_Position;
 
-         Updated := True;
+         Proceed := True;
       end Update;
 
       procedure Shutdown is
@@ -45,18 +44,18 @@ package body Orka.Workers is
 
       entry Wait_For_Release
         (Scene         : out not null Behaviors.Behavior_Array_Access;
-         Delta_Time    : out Duration;
+         Delta_Time    : out Ada.Real_Time.Time_Span;
          View_Position : out Transforms.Vector4;
          Shutdown      : out Boolean)
-      when (Wait_For_Release'Count = Count and Updated) or Ready or Stop is
+      when (Wait_For_Release'Count = Count and Proceed) or Ready or Stop is
       begin
          Scene         := Barrier.Scene;
          Delta_Time    := DT;
          View_Position := VP;
          Shutdown      := Stop;
 
-         Ready    := Wait_For_Release'Count > 0;
-         Updated  := False;
+         Ready   := Wait_For_Release'Count > 0;
+         Proceed := False;
       end Wait_For_Release;
    end Barrier;
 
@@ -83,33 +82,22 @@ package body Orka.Workers is
       ID_Image : constant String := Positive'Image (Data.ID);
 
       Scene : not null Behaviors.Behavior_Array_Access := new Behaviors.Behavior_Array (1 .. 0);
-      DT    : Duration;
+      DT    : Ada.Real_Time.Time_Span;
       VP    : Transforms.Vector4;
 
-      Stop, DC : Boolean := False;
+      Stop : Boolean := False;
       Start_Index, End_Index : Natural;
    begin
       --  Set the CPU affinity of the task to its corresponding CPU core
       SM.Dispatching_Domains.Set_CPU (SM.CPU (Data.ID));
-      Orka.OS.Set_Task_Name ("Worker #" & SF.Trim (ID_Image, Ada.Strings.Left));
+      Orka.OS.Set_Task_Name (Name & " #" & SF.Trim (ID_Image, Ada.Strings.Left));
 
       loop
          Barrier.Wait_For_Release (Scene, DT, VP, Stop);
          exit when Stop;
 
          Get_Indices (Scene.all'Length, Data.ID, Start_Index, End_Index);
-
-         for Behavior of Scene.all (Start_Index .. End_Index) loop
-            Behavior.Update (DT);
-         end loop;
-
-         Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
-
-         for Behavior of Scene.all (Start_Index .. End_Index) loop
-            Behavior.After_Update (DT, VP);
-         end loop;
-
-         Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
+         Execute (Scene.all (Start_Index .. End_Index), Sync_Barrier, DT, VP);
       end loop;
    exception
       when Error : others =>

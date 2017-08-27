@@ -12,11 +12,20 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Real_Time;
+with Ada.Synchronous_Barriers;
+
 with Orka.Behaviors;
 with Orka.Transforms.Singles.Vectors;
 
 generic
    Count : Positive;
+   Name  : String;
+   with procedure Execute
+     (Scene         : Behaviors.Behavior_Array;
+      Barrier       : in out Ada.Synchronous_Barriers.Synchronous_Barrier;
+      Delta_Time    : Ada.Real_Time.Time_Span;
+      View_Position : Transforms.Singles.Vectors.Vector4);
 package Orka.Workers is
 
    package Transforms renames Orka.Transforms.Singles.Vectors;
@@ -24,22 +33,22 @@ package Orka.Workers is
    protected Barrier is
       procedure Update
         (Scene         : not null Behaviors.Behavior_Array_Access;
-         Delta_Time    : Duration;
+         Delta_Time    : Ada.Real_Time.Time_Span;
          View_Position : Transforms.Vector4);
 
       procedure Shutdown;
 
       entry Wait_For_Release
         (Scene         : out not null Behaviors.Behavior_Array_Access;
-         Delta_Time    : out Duration;
+         Delta_Time    : out Ada.Real_Time.Time_Span;
          View_Position : out Transforms.Vector4;
          Shutdown      : out Boolean);
    private
       Scene : not null Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
-      DT    : Duration;
+      DT    : Ada.Real_Time.Time_Span;
       VP    : Transforms.Vector4;
 
-      Updated, Ready, Stop : Boolean := False;
+      Proceed, Ready, Stop : Boolean := False;
    end Barrier;
 
    type Worker is limited private;

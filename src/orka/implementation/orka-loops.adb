@@ -16,6 +16,7 @@ with System.Multiprocessors;
 
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
+with Ada.Synchronous_Barriers;
 
 with Orka.Buffer_Fences;
 with Orka.Transforms.Singles.Vectors;
@@ -28,7 +29,53 @@ package body Orka.Loops is
 
    package Transforms renames Orka.Transforms.Singles.Vectors;
 
-   package Workers is new Orka.Workers (Positive (System.Multiprocessors.Number_Of_CPUs));
+   -----------------------------------------------------------------------------
+
+   procedure Fixed_Update
+     (Scene         : Behaviors.Behavior_Array;
+      Barrier       : in out Ada.Synchronous_Barriers.Synchronous_Barrier;
+      Delta_Time    : Time_Span;
+      View_Position : Transforms.Vector4)
+   is
+      DT : constant Duration := To_Duration (Delta_Time);
+      DC : Boolean;
+   begin
+      for Behavior of Scene loop
+         Behavior.Fixed_Update (DT);
+      end loop;
+
+      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
+   end Fixed_Update;
+
+   procedure Update
+     (Scene         : Behaviors.Behavior_Array;
+      Barrier       : in out Ada.Synchronous_Barriers.Synchronous_Barrier;
+      Delta_Time    : Time_Span;
+      View_Position : Transforms.Vector4)
+   is
+      DT : constant Duration := To_Duration (Delta_Time);
+      DC : Boolean;
+   begin
+      for Behavior of Scene loop
+         Behavior.Update (DT);
+      end loop;
+
+      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
+
+      for Behavior of Scene loop
+         Behavior.After_Update (DT, View_Position);
+      end loop;
+
+      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
+   end Update;
+
+   package Fixed_Workers is new Orka.Workers
+     (Positive (System.Multiprocessors.Number_Of_CPUs), "Physics", Fixed_Update);
+
+   package Workers is new Orka.Workers
+     (Positive (System.Multiprocessors.Number_Of_CPUs), "Worker", Update);
+
+   -----------------------------------------------------------------------------
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -39,21 +86,6 @@ package body Orka.Loops is
    begin
       return Convert (Left.all'Address) < Convert (Right.all'Address);
    end "<";
-
-   procedure Fixed_Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
-      DT : constant Duration := To_Duration (Delta_Time);
-   begin
-      for Behavior of Scene.all loop
-         Behavior.Fixed_Update (DT);
-      end loop;
-   end Fixed_Update;
-
-   procedure Update (Delta_Time : Time_Span; Scene : not null Behaviors.Behavior_Array_Access) is
-      DT : constant Duration := To_Duration (Delta_Time);
-      View_Position : constant Transforms.Vector4 := Loops.Scene.Camera.View_Position;
-   begin
-      Workers.Barrier.Update (Scene, DT, View_Position);
-   end Update;
 
    protected body Handler is
       procedure Stop is
@@ -121,6 +153,7 @@ package body Orka.Loops is
       Next_Time : Time := Previous_Time;
 
       Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
+      Dummy_VP : constant Transforms.Vector4 := Transforms.Zero_Point;
 
       package Fences is new Orka.Buffer_Fences (Region_Type);
 
@@ -143,12 +176,12 @@ package body Orka.Loops is
             Fence.Prepare_Index;
 
             while Lag > Time_Step loop
-               Fixed_Update (Time_Step, Scene_Array);
+               Fixed_Workers.Barrier.Update (Scene_Array, Time_Step, Dummy_VP);
                Lag := Lag - Time_Step;
             end loop;
 
             Scene.Camera.Update (To_Duration (Lag));
-            Update (Lag, Scene_Array);
+            Workers.Barrier.Update (Scene_Array, Lag, Scene.Camera.View_Position);
 
             Window.Swap_Buffers;
 
@@ -177,9 +210,11 @@ package body Orka.Loops is
       end loop;
 
       Workers.Barrier.Shutdown;
+      Fixed_Workers.Barrier.Shutdown;
    exception
       when others =>
          Workers.Barrier.Shutdown;
+         Fixed_Workers.Barrier.Shutdown;
          raise;
    end Run_Loop;
 
