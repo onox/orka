@@ -60,6 +60,22 @@ package body Orka.Workers is
       end Wait_For_Release;
    end Barrier;
 
+   procedure Get_Indices
+     (Scene : Natural;
+      ID    : Positive;
+      Start_Index, End_Index : out Natural)
+   is
+      Job_Count : constant Natural := Scene / Count;
+      Rem_Count : constant Natural := Scene rem Count;
+
+      Count : constant Natural := Job_Count + (if ID <= Rem_Count then 1 else 0);
+
+      Offset : constant Natural := (if ID <= Rem_Count then ID else 1 + Rem_Count);
+   begin
+      Start_Index := (ID - 1) * Job_Count + Offset;
+      End_Index   := Start_Index + Count - 1;
+   end Get_Indices;
+
    task body Worker_Task is
       package SM renames System.Multiprocessors;
       package SF renames Ada.Strings.Fixed;
@@ -71,6 +87,7 @@ package body Orka.Workers is
       VP    : Transforms.Vector4;
 
       Stop, DC : Boolean := False;
+      Start_Index, End_Index : Natural;
    begin
       --  Set the CPU affinity of the task to its corresponding CPU core
       SM.Dispatching_Domains.Set_CPU (SM.CPU (Data.ID));
@@ -80,31 +97,19 @@ package body Orka.Workers is
          Barrier.Wait_For_Release (Scene, DT, VP, Stop);
          exit when Stop;
 
-         declare
-            Scene_Count : constant Natural := Scene.all'Length;
+         Get_Indices (Scene.all'Length, Data.ID, Start_Index, End_Index);
 
-            Job_Count : constant Natural := Scene_Count / Count;
-            Rem_Count : constant Natural := Scene_Count rem Count;
+         for Behavior of Scene.all (Start_Index .. End_Index) loop
+            Behavior.Update (DT);
+         end loop;
 
-            Count : constant Natural := Job_Count + (if Data.ID <= Rem_Count then 1 else 0);
+         Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
 
-            Offset : constant Natural := (if Data.ID <= Rem_Count then Data.ID else 1 + Rem_Count);
+         for Behavior of Scene.all (Start_Index .. End_Index) loop
+            Behavior.After_Update (DT, VP);
+         end loop;
 
-            Start_Index : constant Natural := (Data.ID - 1) * Job_Count + Offset;
-            End_Index   : constant Natural := Start_Index + Count - 1;
-         begin
-            for Behavior of Scene.all (Start_Index .. End_Index) loop
-               Behavior.Update (DT);
-            end loop;
-
-            Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
-
-            for Behavior of Scene.all (Start_Index .. End_Index) loop
-               Behavior.After_Update (DT, VP);
-            end loop;
-
-            Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
-         end;
+         Ada.Synchronous_Barriers.Wait_For_Release (Sync_Barrier, DC);
       end loop;
    exception
       when Error : others =>
