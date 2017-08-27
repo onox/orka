@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with System;
+with System.Multiprocessors;
 
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
@@ -20,11 +20,15 @@ with Ada.Unchecked_Deallocation;
 with Orka.Buffer_Fences;
 with Orka.Transforms.Singles.Vectors;
 
+with Orka.Workers;
+
 package body Orka.Loops is
 
    use Ada.Real_Time;
 
    package Transforms renames Orka.Transforms.Singles.Vectors;
+
+   package Workers is new Orka.Workers (Positive (System.Multiprocessors.Number_Of_CPUs));
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -48,12 +52,7 @@ package body Orka.Loops is
       DT : constant Duration := To_Duration (Delta_Time);
       View_Position : constant Transforms.Vector4 := Loops.Scene.Camera.View_Position;
    begin
-      for Behavior of Scene.all loop
-         Behavior.Update (DT);
-      end loop;
-      for Behavior of Scene.all loop
-         Behavior.After_Update (DT, View_Position);
-      end loop;
+      Workers.Barrier.Update (Scene, DT, View_Position);
    end Update;
 
    protected body Handler is
@@ -121,7 +120,7 @@ package body Orka.Loops is
       Lag : Time_Span := Time_Span_Zero;
       Next_Time : Time := Previous_Time;
 
-      Scene_Array : Behaviors.Behavior_Array_Access := new Behaviors.Behavior_Array (1 .. 0);
+      Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
 
       package Fences is new Orka.Buffer_Fences (Region_Type);
 
@@ -176,6 +175,12 @@ package body Orka.Loops is
             end;
          end;
       end loop;
+
+      Workers.Barrier.Shutdown;
+   exception
+      when others =>
+         Workers.Barrier.Shutdown;
+         raise;
    end Run_Loop;
 
 end Orka.Loops;

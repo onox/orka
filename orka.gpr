@@ -20,8 +20,8 @@ library project Orka is
                     "src/orka/implementation/x86/generic");
 
    case Config.Windowing_System is
-      when "windows" => OpenGL_Sources := OpenGL_Sources & "src/gl/windows";
-      when "x11"     => OpenGL_Sources := OpenGL_Sources & "src/gl/x11";
+      when "windows" => OpenGL_Sources := OpenGL_Sources & "src/gl/windows" & "src/orka/windows";
+      when "x11"     => OpenGL_Sources := OpenGL_Sources & "src/gl/x11" & "src/orka/linux";
    end case;
 
    case Config.Mode is
