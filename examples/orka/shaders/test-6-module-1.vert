@@ -6,6 +6,7 @@ layout(location = 2) in vec2 in_UV;
 layout(location = 3) in uint in_InstanceID;
 
 uniform samplerBuffer matrixBuffer;
+uniform int indexOffset;
 uniform mat4 view;
 uniform mat4 proj;
 
@@ -29,7 +30,7 @@ mat4 get_matrix(samplerBuffer buffer, int index) {
 
 void main(void) {
     // Ideally pre-compute modelView and normalMatrix on CPU
-    mat4 world = get_matrix(matrixBuffer, int(in_InstanceID));
+    mat4 world = get_matrix(matrixBuffer, indexOffset + int(in_InstanceID));
     mat4 modelView = view * world;
     mat4 normalMatrix = transpose(inverse(modelView));
 

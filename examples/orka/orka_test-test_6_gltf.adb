@@ -139,8 +139,7 @@ begin
       Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
       Uniform_WT  : aliased  Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
---      Uniform_BB  : aliased  Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("bboxesBuffer");
-      Uniform_BB  : aliased  Uniforms.Uniform_Sampler := Uniform_WT;
+      Uniform_IO  : aliased Uniforms.Uniform := Program_1.Uniform ("indexOffset");
 
       Uni_Texture : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("diffuseTexture");
       Uni_Dither  : constant Uniforms.Uniform_Sampler := Program_1.Uniform_Sampler ("ditherTexture");
@@ -156,7 +155,7 @@ begin
       Current_Camera : constant Camera_Ptr := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
       M : Models.Model := Models.glTF.Load_Model
-        (VF'Access, Uniform_WT'Access, Uniform_BB'Access,
+        (VF'Access, Uniform_WT'Access, Uniform_IO'Access,
          Ada.Command_Line.Argument (1));
    begin
       --  Load checkerboard texture
@@ -192,14 +191,14 @@ begin
          end Render;
 
          package Loops is new Orka.Loops
-           (Transforms  => Orka.Transforms.Singles.Vectors,
-            Time_Step   => Ada.Real_Time.Microseconds (2083),
+           (Time_Step   => Ada.Real_Time.Microseconds (2083),
             Frame_Limit => Ada.Real_Time.Microseconds (16666),
             Window      => W'Access,
             Camera      => Current_Camera,
-            Render      => Render'Access);
+            Render      => Render'Access,
+            Region_Type => Models.Buffer_Region_Type);
       begin
-         Loops.Scene.Add (M.Create_Instance);
+         Loops.Scene.Add (M.Create_Instance ((0.0, 0.0, 0.0, 1.0)));
          Loops.Run_Loop;
       end;
    end;
