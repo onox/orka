@@ -67,7 +67,7 @@ private
    function Position (Object : Origin_Behavior) return Transforms.Vector4 is
      ((0.0, 0.0, 0.0, 1.0));
 
-   Null_Behavior : constant Behavior_Ptr := new Origin_Behavior'(others => <>);
+   Null_Behavior : constant Behavior_Ptr := new Origin_Behavior;
 
    Empty_Behavior_Array : constant Behavior_Array_Access := new Behavior_Array (1 .. 0);
 
