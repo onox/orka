@@ -9,7 +9,7 @@ LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
 GNAT_FLAGS ?= -dm
-CFLAGS  ?= -O3 -march=native
+CFLAGS  ?= -O2 -march=native
 LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 
 GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM} -XLibrary_Type=${LIBRARY_TYPE} -XCompiler_Flags="${CFLAGS}" -XMode=${MODE}

@@ -53,7 +53,7 @@ abstract project Config is
               ("-gnatn2", "-fomit-frame-pointer");
          when "release" =>
             for Switches ("ada") use Compiler_Switches &
-              ("-gnatn2", "-fomit-frame-pointer", "-flto", "-gnato0");
+              ("-gnatn2", "-fomit-frame-pointer", "-gnato0");
       end case;
 
       for Local_Configuration_Pragmas use "gnat.adc";
