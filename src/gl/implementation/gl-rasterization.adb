@@ -25,9 +25,9 @@ package body GL.Rasterization is
    end Set_Line_Width;
 
    function Line_Width return Single is
-      Ret : aliased Single;
+      Ret : aliased Single := 1.0;
    begin
-      API.Get_Single (Enums.Getter.Line_Width, Ret'Access);
+      API.Get_Single (Enums.Getter.Line_Width, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Line_Width;
@@ -49,9 +49,9 @@ package body GL.Rasterization is
    end Smooth_Line_Width_Range;
 
    function Smooth_Line_Width_Granularity return Single is
-      Ret : aliased Single;
+      Ret : Single := 0.0;
    begin
-      API.Get_Single (Enums.Getter.Smooth_Line_Width_Granularity, Ret'Access);
+      API.Get_Single (Enums.Getter.Smooth_Line_Width_Granularity, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Smooth_Line_Width_Granularity;
@@ -63,9 +63,9 @@ package body GL.Rasterization is
    end Set_Polygon_Mode;
 
    function Polygon_Mode return Polygon_Mode_Type is
-      Ret : aliased Polygon_Mode_Type;
+      Ret : Polygon_Mode_Type := Fill;
    begin
-      API.Get_Polygon_Mode (Enums.Getter.Polygon_Mode, Ret'Access);
+      API.Get_Polygon_Mode (Enums.Getter.Polygon_Mode, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Polygon_Mode;
@@ -77,17 +77,17 @@ package body GL.Rasterization is
    end Set_Polygon_Offset;
 
    function Polygon_Offset_Factor return Single is
-      Result : aliased Single;
+      Result : Single := 0.0;
    begin
-      API.Get_Single (Enums.Getter.Polygon_Offset_Factor, Result'Access);
+      API.Get_Single (Enums.Getter.Polygon_Offset_Factor, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Factor;
 
    function Polygon_Offset_Units return Single is
-      Result : aliased Single;
+      Result : Single := 0.0;
    begin
-      API.Get_Single (Enums.Getter.Polygon_Offset_Units, Result'Access);
+      API.Get_Single (Enums.Getter.Polygon_Offset_Units, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Units;

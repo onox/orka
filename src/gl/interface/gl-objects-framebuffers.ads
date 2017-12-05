@@ -109,10 +109,17 @@ package GL.Objects.Framebuffers is
    function Default_Layers  (Object : Framebuffer) return Size;
    function Default_Samples (Object : Framebuffer) return Size;
 
-   function Max_Framebuffer_Width   return Size;
-   function Max_Framebuffer_Height  return Size;
-   function Max_Framebuffer_Layers  return Size;
-   function Max_Framebuffer_Samples return Size;
+   function Max_Framebuffer_Width return Size
+     with Post => Max_Framebuffer_Width'Result >= 16_384;
+
+   function Max_Framebuffer_Height return Size
+     with Post => Max_Framebuffer_Height'Result >= 16_384;
+
+   function Max_Framebuffer_Layers return Size
+     with Post => Max_Framebuffer_Layers'Result >= 2_048;
+
+   function Max_Framebuffer_Samples return Size
+     with Post => Max_Framebuffer_Samples'Result >= 4;
 
    procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
    function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;

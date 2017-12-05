@@ -23,9 +23,9 @@ package body GL.Framebuffer is
    end Set_Clamp_Read_Color;
 
    function Read_Buffer return Buffers.Color_Buffer_Selector is
-      Ret : aliased Buffers.Color_Buffer_Selector;
+      Ret : Buffers.Color_Buffer_Selector := Buffers.Color_Buffer_Selector'First;
    begin
-      API.Get_Read_Buffer_Selector (Enums.Getter.Read_Buffer, Ret'Access);
+      API.Get_Read_Buffer_Selector (Enums.Getter.Read_Buffer, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Read_Buffer;
@@ -48,9 +48,9 @@ package body GL.Framebuffer is
    end Set_Logic_Op_Mode;
 
    function Logic_Op_Mode return Logic_Op is
-      Ret : aliased Logic_Op;
+      Ret : Logic_Op := Logic_Op'First;
    begin
-      API.Get_Logic_Op (Enums.Getter.Logic_Op_Mode, Ret'Access);
+      API.Get_Logic_Op (Enums.Getter.Logic_Op_Mode, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Logic_Op_Mode;

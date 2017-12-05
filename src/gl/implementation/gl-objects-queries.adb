@@ -137,9 +137,9 @@ package body GL.Objects.Queries is
    end Record_Current_Time;
 
    function Get_Current_Time return Long is
-      Result : aliased Types.Long;
+      Result : Types.Long := 0;
    begin
-      API.Get_Long (Enums.Getter.Timestamp, Result'Access);
+      API.Get_Long (Enums.Getter.Timestamp, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Get_Current_Time;

@@ -20,9 +20,9 @@ package body GL.Culling is
    procedure Set_Front_Face (Face : Orientation) renames API.Front_Face;
 
    function Front_Face return Orientation is
-      Ret : aliased Orientation;
+      Ret : Orientation := Orientation'First;
    begin
-      API.Get_Orientation (Enums.Getter.Cull_Face, Ret'Access);
+      API.Get_Orientation (Enums.Getter.Cull_Face, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Front_Face;
@@ -30,9 +30,9 @@ package body GL.Culling is
    procedure Set_Cull_Face (Selector : Face_Selector) renames API.Cull_Face;
 
    function Cull_Face return Face_Selector is
-      Ret : aliased Face_Selector;
+      Ret : Face_Selector := Face_Selector'First;
    begin
-      API.Get_Face_Selector (Enums.Getter.Cull_Face_Mode, Ret'Access);
+      API.Get_Face_Selector (Enums.Getter.Cull_Face_Mode, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Cull_Face;

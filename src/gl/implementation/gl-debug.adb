@@ -151,9 +151,9 @@ package body GL.Debug is
    end Get_Label;
 
    function Max_Message_Length return Size is
-      Result : aliased Int;
+      Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Max_Debug_Message_Length, Result'Access);
+      API.Get_Integer (Enums.Getter.Max_Debug_Message_Length, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Max_Message_Length;

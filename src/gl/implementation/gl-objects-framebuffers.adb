@@ -131,9 +131,9 @@ package body GL.Objects.Framebuffers is
    end Default_Width;
 
    function Max_Framebuffer_Width return Size is
-      Ret : aliased Size;
+      Ret : Size := 16_384;
    begin
-      API.Get_Size (Enums.Getter.Max_Framebuffer_Width, Ret'Access);
+      API.Get_Size (Enums.Getter.Max_Framebuffer_Width, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Width;
@@ -156,9 +156,9 @@ package body GL.Objects.Framebuffers is
    end Default_Height;
 
    function Max_Framebuffer_Height return Size is
-      Ret : aliased Size;
+      Ret : Size := 16_384;
    begin
-      API.Get_Size (Enums.Getter.Max_Framebuffer_Height, Ret'Unchecked_Access);
+      API.Get_Size (Enums.Getter.Max_Framebuffer_Height, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Height;
@@ -180,9 +180,9 @@ package body GL.Objects.Framebuffers is
    end Default_Layers;
 
    function Max_Framebuffer_Layers return Size is
-      Ret : aliased Size;
+      Ret : Size := 2_048;
    begin
-      API.Get_Size (Enums.Getter.Max_Framebuffer_Layers, Ret'Unchecked_Access);
+      API.Get_Size (Enums.Getter.Max_Framebuffer_Layers, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Layers;
@@ -205,9 +205,9 @@ package body GL.Objects.Framebuffers is
    end Default_Samples;
 
    function Max_Framebuffer_Samples return Size is
-      Ret : aliased Size;
+      Ret : Size := 4;
    begin
-      API.Get_Size (Enums.Getter.Max_Framebuffer_Samples, Ret'Unchecked_Access);
+      API.Get_Size (Enums.Getter.Max_Framebuffer_Samples, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Samples;

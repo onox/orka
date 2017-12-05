@@ -24,17 +24,17 @@ package body GL.Clipping is
    end Set_Clipping;
 
    function Origin return Viewport_Origin is
-      Result : aliased Viewport_Origin;
+      Result : Viewport_Origin := Viewport_Origin'First;
    begin
-      API.Get_Clip_Origin (Enums.Getter.Clip_Origin, Result'Access);
+      API.Get_Clip_Origin (Enums.Getter.Clip_Origin, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Origin;
 
    function Depth return Depth_Mode is
-      Result : aliased Depth_Mode;
+      Result : Depth_Mode := Depth_Mode'First;
    begin
-      API.Get_Clip_Depth_Mode (Enums.Getter.Clip_Depth_Mode, Result'Access);
+      API.Get_Clip_Depth_Mode (Enums.Getter.Clip_Depth_Mode, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Depth;

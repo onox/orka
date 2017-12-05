@@ -47,33 +47,33 @@ package body GL.Blending is
    end Set_Blend_Func_Separate;
 
    function Blend_Func_Src_RGB return Blend_Factor is
-      Ret : aliased Blend_Factor;
+      Ret : Blend_Factor := One;
    begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Src_RGB, Ret'Access);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Src_RGB, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Func_Src_RGB;
 
    function Blend_Func_Src_Alpha return Blend_Factor is
-      Ret : aliased Blend_Factor;
+      Ret : Blend_Factor := One;
    begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Src_Alpha, Ret'Access);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Src_Alpha, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Func_Src_Alpha;
 
    function Blend_Func_Dst_RGB return Blend_Factor is
-      Ret : aliased Blend_Factor;
+      Ret : Blend_Factor := Zero;
    begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_RGB, Ret'Access);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_RGB, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Func_Dst_RGB;
 
    function Blend_Func_Dst_Alpha return Blend_Factor is
-      Ret : aliased Blend_Factor;
+      Ret : Blend_Factor := Zero;
    begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_Alpha, Ret'Access);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_Alpha, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Func_Dst_Alpha;
@@ -119,17 +119,17 @@ package body GL.Blending is
    end Set_Blend_Equation_Separate;
 
    function Blend_Equation_RGB return Equation is
-      Ret : aliased Equation;
+      Ret : Equation := Equation'First;
    begin
-      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_RGB, Ret'Access);
+      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_RGB, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Equation_RGB;
 
    function Blend_Equation_Alpha return Equation is
-      Ret : aliased Equation;
+      Ret : Equation := Equation'First;
    begin
-      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_Alpha, Ret'Access);
+      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_Alpha, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Blend_Equation_Alpha;

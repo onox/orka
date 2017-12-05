@@ -505,24 +505,23 @@ package body GL.Objects.Textures is
          (Enums.Textures.Texture_Unit_Start_Rep,
           Enums.Getter.Max_Combined_Texture_Image_Units);
       
-      Raw_Unit : aliased Int := Enums.Textures.Texture_Unit_Start_Rep;
+      Raw_Unit : Int := Enums.Textures.Texture_Unit_Start_Rep;
    begin
-      API.Get_Integer (Enums.Getter.Active_Texture, Raw_Unit'Access);
+      API.Get_Integer (Enums.Getter.Active_Texture, Raw_Unit);
       return UInt (Texture_Indexing.Value (Raw_Unit));
    end Active_Unit;
 
    function Texture_Unit_Count return Natural is
-      Count : aliased Int;
+      Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Max_Combined_Texture_Image_Units,
-                       Count'Access);
+      API.Get_Integer (Enums.Getter.Max_Combined_Texture_Image_Units, Count);
       return Natural (Count);
    end Texture_Unit_Count;
 
    function Maximum_Anisotropy return Single is
-      Ret : aliased Single;
+      Ret : Single := 2.0;
    begin
-      API.Get_Single (Enums.Getter.Max_Texture_Max_Anisotropy, Ret'Access);
+      API.Get_Single (Enums.Getter.Max_Texture_Max_Anisotropy, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Maximum_Anisotropy;

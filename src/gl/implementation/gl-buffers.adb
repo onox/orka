@@ -81,9 +81,9 @@ package body GL.Buffers is
    end Set_Depth_Clear_Value;
 
    function Depth_Clear_Value return Depth is
-      Value : aliased Double;
+      Value : Double := 1.0;
    begin
-      API.Get_Double (Enums.Getter.Depth_Clear_Value, Value'Access);
+      API.Get_Double (Enums.Getter.Depth_Clear_Value, Value);
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Depth_Clear_Value;
@@ -95,9 +95,9 @@ package body GL.Buffers is
    end Set_Stencil_Clear_Value;
 
    function Stencil_Clear_Value return Stencil_Index is
-      Value : aliased Stencil_Index;
+      Value : Stencil_Index := Stencil_Index'First;
    begin
-      API.Get_Integer (Enums.Getter.Stencil_Clear_Value, Value'Access);
+      API.Get_Integer (Enums.Getter.Stencil_Clear_Value, Value);
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Clear_Value;
@@ -109,9 +109,9 @@ package body GL.Buffers is
    end Set_Depth_Function;
 
    function Depth_Function return Compare_Function is
-      Value : aliased Compare_Function;
+      Value : Compare_Function := Compare_Function'First;
    begin
-      API.Get_Compare_Function (Enums.Getter.Depth_Func, Value'Access);
+      API.Get_Compare_Function (Enums.Getter.Depth_Func, Value);
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Depth_Function;
@@ -123,9 +123,9 @@ package body GL.Buffers is
    end Depth_Mask;
 
    function Depth_Mask return Boolean is
-      Value : aliased Low_Level.Bool;
+      Value : Low_Level.Bool := Low_Level.Bool (True);
    begin
-      API.Get_Boolean (Enums.Getter.Depth_Writemask, Value'Access);
+      API.Get_Boolean (Enums.Getter.Depth_Writemask, Value);
       Raise_Exception_On_OpenGL_Error;
       return Boolean (Value);
    end Depth_Mask;
@@ -148,36 +148,36 @@ package body GL.Buffers is
    end Set_Stencil_Function;
 
    function Stencil_Function (Face : Single_Face_Selector) return Compare_Function is
-      Value : aliased Compare_Function;
+      Value : Compare_Function := Compare_Function'First;
    begin
       if Face = Culling.Front then
-         API.Get_Compare_Function (Enums.Getter.Stencil_Func, Value'Access);
+         API.Get_Compare_Function (Enums.Getter.Stencil_Func, Value);
       else
-         API.Get_Compare_Function (Enums.Getter.Stencil_Back_Func, Value'Access);
+         API.Get_Compare_Function (Enums.Getter.Stencil_Back_Func, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Function;
 
    function Stencil_Reference_Value (Face : Single_Face_Selector) return Int is
-      Value : aliased Int;
+      Value : Int := 0;
    begin
       if Face = Culling.Front then
-         API.Get_Integer (Enums.Getter.Stencil_Ref, Value'Access);
+         API.Get_Integer (Enums.Getter.Stencil_Ref, Value);
       else
-         API.Get_Integer (Enums.Getter.Stencil_Back_Ref, Value'Access);
+         API.Get_Integer (Enums.Getter.Stencil_Back_Ref, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Reference_Value;
 
    function Stencil_Value_Mask (Face : Single_Face_Selector) return UInt is
-      Value : aliased UInt;
+      Value : UInt := 0;
    begin
       if Face = Culling.Front then
-         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Value_Mask, Value'Access);
+         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Value_Mask, Value);
       else
-         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Value_Mask, Value'Access);
+         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Value_Mask, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
@@ -201,36 +201,36 @@ package body GL.Buffers is
    end Set_Stencil_Operation;
 
    function Stencil_Operation_Stencil_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action is
-      Value : aliased Buffers.Stencil_Action;
+      Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Fail, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Fail, Value);
       else
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Fail, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Fail, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Operation_Stencil_Fail;
 
    function Stencil_Operation_Depth_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action is
-      Value : aliased Buffers.Stencil_Action;
+      Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Fail, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Fail, Value);
       else
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Fail, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Fail, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Operation_Depth_Fail;
 
    function Stencil_Operation_Depth_Pass (Face : Single_Face_Selector) return Buffers.Stencil_Action is
-      Value : aliased Buffers.Stencil_Action;
+      Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Pass, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Pass, Value);
       else
-         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Pass, Value'Access);
+         API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Pass, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;
@@ -250,12 +250,12 @@ package body GL.Buffers is
    end Set_Stencil_Mask;
 
    function Stencil_Mask (Face : Single_Face_Selector) return UInt is
-      Value : aliased UInt;
+      Value : UInt := 0;
    begin
       if Face = Culling.Front then
-         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Writemask, Value'Access);
+         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Writemask, Value);
       else
-         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Writemask, Value'Access);
+         API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Writemask, Value);
       end if;
       Raise_Exception_On_OpenGL_Error;
       return Value;

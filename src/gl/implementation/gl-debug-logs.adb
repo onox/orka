@@ -83,9 +83,9 @@ package body GL.Debug.Logs is
    end Message_Log;
 
    function Logged_Messages return Size is
-      Result : aliased Int;
+      Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Debug_Logged_Messages, Result'Access);
+      API.Get_Integer (Enums.Getter.Debug_Logged_Messages, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Logged_Messages;

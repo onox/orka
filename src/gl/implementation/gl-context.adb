@@ -27,17 +27,17 @@ package body GL.Context is
      (C.Strings.Value (API.Get_String_I (Enums.Getter.Shading_Language_Version, UInt (Index - 1))));
 
    function Major_Version return Int is
-      Result : aliased Int;
+      Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Major_Version, Result'Access);
+      API.Get_Integer (Enums.Getter.Major_Version, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Major_Version;
 
    function Minor_Version return Int is
-      Result : aliased Int;
+      Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Minor_Version, Result'Access);
+      API.Get_Integer (Enums.Getter.Minor_Version, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Minor_Version;
@@ -60,9 +60,9 @@ package body GL.Context is
    function Extensions return String_List is
       use Ada.Strings.Unbounded;
       use type Errors.Error_Code;
-      Count : aliased Int;
+      Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Extensions, Count'Access);
+      API.Get_Integer (Enums.Getter.Num_Extensions, Count);
       Raise_Exception_On_OpenGL_Error;
 
       pragma Assert (API.Get_Error = Errors.No_Error);
@@ -77,9 +77,9 @@ package body GL.Context is
 
    function Has_Extension (Name : String) return Boolean is
       use type Errors.Error_Code;
-      Count : aliased Int;
+      Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Extensions, Count'Access);
+      API.Get_Integer (Enums.Getter.Num_Extensions, Count);
       Raise_Exception_On_OpenGL_Error;
 
       pragma Assert (API.Get_Error = Errors.No_Error);
@@ -99,9 +99,9 @@ package body GL.Context is
    function Supported_Shading_Language_Versions return String_List is
       use Ada.Strings.Unbounded;
       use type Errors.Error_Code;
-      Count : aliased Int;
+      Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count'Access);
+      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count);
       if API.Get_Error = Errors.Invalid_Enum then
          raise Feature_Not_Supported_Exception;
       end if;
@@ -113,9 +113,9 @@ package body GL.Context is
    end Supported_Shading_Language_Versions;
 
    function Supports_Shading_Language_Version (Name : String) return Boolean is
-      Count : aliased Int;
+      Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count'Access);
+      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count);
       Raise_Exception_On_OpenGL_Error;
 
       return (for some I in 1 .. Positive (Count) => GLSL_Version (I) = Name);

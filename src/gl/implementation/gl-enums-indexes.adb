@@ -27,9 +27,9 @@ package body GL.Enums.Indexes is
    end Value;
    
    function Get_Max return Int is
-      Max : aliased Int;
+      Max : Int := 0;
    begin
-      API.Get_Integer (Getter_Param, Max'Access);
+      API.Get_Integer (Getter_Param, Max);
       return Max - 1;
    end Get_Max;
    

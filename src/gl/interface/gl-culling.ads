@@ -36,6 +36,4 @@ private
                           Front_And_Back => 16#0408#);
    for Face_Selector'Size use Low_Level.Enum'Size;
 
-   pragma Convention (StdCall, Set_Cull_Face);
-   pragma Convention (StdCall, Set_Front_Face);
 end GL.Culling;
