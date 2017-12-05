@@ -225,32 +225,36 @@ private package GL.API is
      ("glMultiDrawArraysIndirect", Connection_Mode, Int, Size, Size);
 
    procedure Draw_Elements is new Loader.Procedure_With_4_Params
-     ("glDrawElements", Connection_Mode, Size, Unsigned_Numeric_Type, Zero);
+     ("glDrawElements", Connection_Mode, Size, Unsigned_Numeric_Type, Low_Level.IntPtr);
 
    procedure Draw_Elements_Base_Vertex is new Loader.Procedure_With_5_Params
-     ("glDrawElementsBaseVertex", Connection_Mode, Size, Unsigned_Numeric_Type, Int, Int);
+     ("glDrawElementsBaseVertex", Connection_Mode, Size, Unsigned_Numeric_Type,
+      Low_Level.IntPtr, Int);
 
    procedure Draw_Elements_Instanced is new Loader.Procedure_With_5_Params
-     ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type, Zero, Size);
+     ("glDrawElementsInstanced", Connection_Mode, Size, Unsigned_Numeric_Type,
+      Low_Level.IntPtr, Size);
 
    procedure Draw_Elements_Instanced_Base_Instance is new Loader.Procedure_With_6_Params
      ("glDrawElementsInstancedBaseInstance", Connection_Mode, Size,
-      Unsigned_Numeric_Type, Int, Size, UInt);
+      Unsigned_Numeric_Type, Low_Level.IntPtr, Size, UInt);
 
    procedure Draw_Elements_Instanced_Base_Vertex is new Loader.Procedure_With_6_Params
      ("glDrawElementsInstancedBaseVertex", Connection_Mode, Size,
-      Unsigned_Numeric_Type, Int, Size, Int);
+      Unsigned_Numeric_Type, Low_Level.IntPtr, Size, Int);
 
-   procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance is new Loader.Procedure_With_7_Params
+   procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance
+     is new Loader.Procedure_With_7_Params
      ("glDrawElementsInstancedBaseVertexBaseInstance", Connection_Mode, Size,
-      Unsigned_Numeric_Type, Int, Size, Int, UInt);
+      Unsigned_Numeric_Type, Low_Level.IntPtr, Size, Int, UInt);
 
    procedure Multi_Draw_Elements is new Loader.Procedure_With_5_Params
-     ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type, Size_Array, Size);
+     ("glMultiDrawElements", Connection_Mode, Size_Array, Unsigned_Numeric_Type,
+      Low_Level.IntPtr_Array, Size);
 
    procedure Multi_Draw_Elements_Base_Vertex is new Loader.Procedure_With_6_Params
      ("glMultiDrawElementsBaseVertex", Connection_Mode, Size_Array,
-      Unsigned_Numeric_Type, Size_Array, Size, Size_Array);
+      Unsigned_Numeric_Type, Low_Level.IntPtr_Array, Size, Size_Array);
 
    procedure Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
      ("glMultiDrawElementsIndirect", Connection_Mode, Unsigned_Numeric_Type,

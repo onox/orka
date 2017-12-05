@@ -56,6 +56,9 @@ package GL.Low_Level is
    subtype IntPtr is C.long;
    subtype SizeIPtr is C.long;
 
+   type IntPtr_Array is array (Size range <>) of aliased IntPtr
+     with Convention => C;
+
    subtype Sync is C.long;
 
    type CharPtr_Array is array (Positive range <>) of aliased C.Strings.chars_ptr;

@@ -256,7 +256,7 @@ begin
          Uni_View.Set_Single_Matrix (Matrix_View);
 
          Array1.Bind;
-         GL.Drawing.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length);
+         GL.Drawing.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length, 0);
 
          -- Swap front and back buffers and process events
          Display_Backend.Swap_Buffers_And_Poll_Events;

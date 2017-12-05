@@ -29,29 +29,31 @@ package GL.Drawing is
      with Pre => Offsets'Length = Counts'Length;
 
    procedure Draw_Elements (Mode : Connection_Mode; Count : Size;
-                            Index_Type : Unsigned_Numeric_Type);
+                            Index_Type : Unsigned_Numeric_Type;
+                            Element_Offset : Natural);
    procedure Draw_Elements (Mode : Connection_Mode; Count : Size;
                             Index_Type : Unsigned_Numeric_Type;
-                            Instances  : Size);
+                            Instances  : Size;
+                            Element_Offset : Natural);
 
    procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size;
                                         Index_Type : Unsigned_Numeric_Type;
-                                        Vertex_Offset, Index_Offset : Int);
+                                        Vertex_Offset, Index_Offset : Natural);
    procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size;
                                         Index_Type : Unsigned_Numeric_Type;
                                         Instances  : Size;
-                                        Vertex_Offset, Index_Offset : Int);
+                                        Vertex_Offset, Index_Offset : Natural);
 
    procedure Draw_Elements_Base_Vertex_Base_Instance (Mode : Connection_Mode; Count : Size;
                                                       Index_Type : Unsigned_Numeric_Type;
                                                       Instances  : Size;
-                                                      Vertex_Offset, Index_Offset : Int;
+                                                      Vertex_Offset, Index_Offset : Natural;
                                                       Base_Instance : Size);
 
    procedure Draw_Elements_Base_Instance (Mode : Connection_Mode; Count : Size;
                                           Index_Type : Unsigned_Numeric_Type;
                                           Instances  : Size;
-                                          Index_Offset : Int;
+                                          Index_Offset : Natural;
                                           Base_Instance : Size);
 
    procedure Draw_Multiple_Elements (Mode : Connection_Mode;
