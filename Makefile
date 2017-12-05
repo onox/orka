@@ -1,7 +1,7 @@
 WINDOWING_BACKEND := windows
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-  WINDOWING_BACKEND := x11
+  WINDOWING_BACKEND := egl
 endif
 
 WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
@@ -34,9 +34,11 @@ run_unit_tests:
 
 clean_src:
 	$(GPRCLEAN) -r -P root.gpr
-	rmdir lib/{glfw,orka}
+	rmdir lib/glfw
+	rmdir lib/orka
 	rmdir lib
-	rmdir obj/{glfw,orka}
+	rmdir obj/glfw
+	rmdir obj/orka
 	rmdir obj
 
 clean_examples:

@@ -30,7 +30,7 @@ library project Orka.Glfw is
       case Config.Windowing_System is
          when "windows" =>
             for Linker_Options use (GLFW_Lib, "-lwinmm", "-lgdi32");
-         when "x11" =>
+         when "x11" | "egl" =>
 		      -- -lX11 is already set in orka.gpr
             for Linker_Options use (GLFW_Lib);
       end case;
