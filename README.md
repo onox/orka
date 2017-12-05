@@ -46,6 +46,7 @@ Build status
 | **GNAT GPL 2016**  | link failure | unknown     |
 | **GNAT GPL 2017**  | unknown | unknown     |
 | **GNAT FSF 6.3**   | unknown | unknown     |
+| **GNAT FSF 7.2**   | passing | unknown     |
 
 Dependencies
 ------------
@@ -160,14 +161,13 @@ If you want to use GLFW, refer to `orka-glfw` instead. The project files
 `orka.gpr` and `orka-glfw.gpr` take the following scenario parameters:
 
  * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
-                       for system-dependent parts of the API (GLX, WGL):
+                       for system-dependent parts of the API (EGL, GLX, WGL):
 
+    - `egl`: Khronos [EGL][url-egl] (Wayland)
     - `x11`: X Windowing System (Linux, BSD, etc)
     - `windows`: Microsoft Windows
 
  * `Mode`: May take one of the following values: `debug`, `development`, or `release`.
-
- * `GLFW_Lib`: Linker flags for GLFW. The default is `-lglfw`.
 
 License
 -------
@@ -184,4 +184,5 @@ of the [Apache License 2.0][url-apache].
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
+  [url-egl]: https://www.khronos.org/egl
 
