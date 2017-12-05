@@ -62,6 +62,16 @@ package Glfw.Windows is
                                 Button : Input.Mouse.Button)
                                 return Input.Button_State;
 
+   function Get_Input_Toggle (Object : not null access Window;
+                              Kind   : Input.Sticky_Toggle) return Boolean;
+
+   procedure Set_Input_Toggle (Object : not null access Window;
+                               Kind   : Input.Sticky_Toggle;
+                               Value  : Boolean);
+
+   function Get_Cursor_Mode (Object : not null access Window)
+     return Input.Mouse.Cursor_Mode;
+
    procedure Set_Cursor_Mode (Object : not null access Window;
                               Mode   : Input.Mouse.Cursor_Mode);
 

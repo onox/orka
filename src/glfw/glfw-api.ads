@@ -384,7 +384,7 @@ private package Glfw.API is
    -----------------------------------------------------------------------------
 
    function Get_Input_Mode (Window : System.Address;
-                            Mode : Enums.Input_Toggle) return Bool;
+                            Mode : Input.Sticky_Toggle) return Bool;
    function Get_Input_Mode (Window : System.Address;
                             Mode : Enums.Input_Toggle)
                             return Input.Mouse.Cursor_Mode;
@@ -392,7 +392,7 @@ private package Glfw.API is
                   External_Name => "glfwGetInputMode");
 
    procedure Set_Input_Mode (Window : System.Address;
-                             Mode   : Enums.Input_Toggle;
+                             Mode   : Input.Sticky_Toggle;
                              Value  : Bool);
    procedure Set_Input_Mode (Window : System.Address;
                              Mode   : Enums.Input_Toggle;
