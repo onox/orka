@@ -12,7 +12,6 @@ library project Orka.Glfw is
    for Library_Kind use Config.Library_Kind;
 
    Shared_Example_Sources := ("examples/shared");
-   GLFW_Lib := external ("GLFW_Lib", "-lglfw");
 
    GLFW_Sources := ("src/glfw");
 
@@ -29,10 +28,9 @@ library project Orka.Glfw is
    package Linker is
       case Config.Windowing_System is
          when "windows" =>
-            for Linker_Options use (GLFW_Lib, "-lwinmm", "-lgdi32");
+            for Linker_Options use ("-lglfw3", "-lwinmm", "-lgdi32");
          when "x11" | "egl" =>
-		      -- -lX11 is already set in orka.gpr
-            for Linker_Options use (GLFW_Lib);
+            for Linker_Options use ("-lglfw");
       end case;
    end Linker;
 
