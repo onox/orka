@@ -29,7 +29,7 @@ with GL.Objects.Vertex_Arrays;
 with GL.Objects.Textures;
 with GL.Objects.Framebuffers;
 with GL.Objects.Renderbuffers;
-with GL.Types;
+with GL.Types.Colors;
 with GL.Toggles;
 with GL.Transforms;
 with GL.Window;
@@ -43,6 +43,7 @@ procedure GL_Test.Buffers is
 
    use GL.Buffers;
    use GL.Types;
+   use GL.Types.Colors;
    use GL.Objects.Vertex_Arrays;
 
    package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
@@ -336,16 +337,23 @@ begin
          Uni_Proj.Set_Single_Matrix (Matrix_Proj);
          Uni_Effect.Set_Int (Int (Display_Backend.Get_Effect (5)));
 
+         GL.Objects.Framebuffers.Draw_Target.Bind (GL.Objects.Framebuffers.Default_Framebuffer);
+         GL.Window.Set_Viewport (0, 0, GL.Types.Int (Width), GL.Types.Int (Height));
+         Set_Color_Clear_Value (Color'(1.0, 0.0, 0.0, 1.0));
+         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+
          --  Bind frame buffer and draw 3D scene
          GL.Objects.Framebuffers.Draw_Target.Bind (FB);
+         Set_Color_Clear_Value (Color'(0.0, 0.0, 0.0, 1.0));
+         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+
          Array_Cube.Bind;
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
          Scene_Program.Use_Program;
          Scene_Texture.Bind_Texture_Unit (0);
 
-         GL.Window.Set_Viewport (GL.Types.Int'(0), GL.Types.Int'(0), GL.Types.Int (Width), GL.Types.Int (Height));
-         Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+         ---------------------------------------------------------------
 
          --  Draw cube
          GL.Drawing.Draw_Arrays (Triangles, 0, 30);
@@ -359,6 +367,8 @@ begin
          Set_Stencil_Operation (Keep, Keep, Replace);
          Set_Stencil_Mask (16#FF#);  -- Allow writing to stencil buffer
 
+         -- Disable writing to the depth buffer in order to prevent the
+         -- floor from hiding the reflection cube
          Depth_Mask (False);
          Clear (Buffer_Bits'(Stencil => True, others => False));
          GL.Drawing.Draw_Arrays (Triangles, 30, 6);

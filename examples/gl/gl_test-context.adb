@@ -33,9 +33,13 @@ procedure GL_Test.Context is
       Put_Line ("Major version: " & GL.Types.Int'Image (GL.Context.Major_Version));
       Put_Line ("Minor version: " & GL.Types.Int'Image (GL.Context.Minor_Version));
 
-      Put_Line ("Version string: " & GL.Context.Version_String);
       Put_Line ("Vendor: "   & GL.Context.Vendor);
       Put_Line ("Renderer: " & GL.Context.Renderer);
+
+      Put_Line ("OpenGL version: " & GL.Context.Version_String);
+      Put_Line ("  GLSL version: " &
+                GL.Context.Primary_Shading_Language_Version);
+
       Put_Line ("Extensions: ");
 
       for US_Name of GL.Context.Extensions loop
@@ -46,9 +50,6 @@ procedure GL_Test.Context is
             pragma Assert (GL.Context.Has_Extension (Name));
          end;
       end loop;
-
-      Put_Line ("Primary shading language version: " &
-                GL.Context.Primary_Shading_Language_Version);
 
       begin
          declare
