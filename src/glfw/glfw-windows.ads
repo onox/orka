@@ -142,7 +142,11 @@ package Glfw.Windows is
                                 Char   : Wide_Wide_Character) is null;
 
 private
+
    type Window is limited new Ada.Finalization.Limited_Controlled with record
       Handle : System.Address := System.Null_Address;
    end record;
+
+   function Window_Ptr (Raw : System.Address) return not null access Window'Class;
+
 end Glfw.Windows;

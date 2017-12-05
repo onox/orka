@@ -38,7 +38,6 @@ with Orka.Programs.Uniforms;
 with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
 with Orka.Textures;
-with Orka.Transforms.Singles.Vectors;
 with Orka.Vertex_Formats.Formats;
 with Orka.Windows.GLFW;
 

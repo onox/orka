@@ -12,12 +12,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System.Address_To_Access_Conversions;
+
 with Ada.Unchecked_Conversion;
 
 with Glfw.API;
 with Glfw.Enums;
 
 package body Glfw.Windows is
+
+   package Conversions is new System.Address_To_Access_Conversions (Window'Class);
+
    procedure Raw_Position_Callback (Raw  : System.Address;
                                     X, Y : Interfaces.C.int);
    procedure Raw_Size_Callback (Raw  : System.Address;
@@ -60,46 +65,47 @@ package body Glfw.Windows is
    pragma Convention (C, Raw_Key_Callback);
    pragma Convention (C, Raw_Character_Callback);
 
+   function Window_Ptr (Raw : System.Address) return not null access Window'Class is
+   begin
+      return Conversions.To_Pointer (API.Get_Window_User_Pointer (Raw));
+   end Window_Ptr;
+
    procedure Raw_Position_Callback (Raw  : System.Address;
                                     X, Y : Interfaces.C.int) is
    begin
-      API.Get_Window_User_Pointer (Raw).Position_Changed
-        (Integer (X), Integer (Y));
+      Window_Ptr (Raw).Position_Changed (Integer (X), Integer (Y));
    end Raw_Position_Callback;
 
    procedure Raw_Size_Callback (Raw  : System.Address;
                                 Width, Height : Interfaces.C.int) is
    begin
-      API.Get_Window_User_Pointer (Raw).Size_Changed
-        (Natural (Width), Natural (Height));
+      Window_Ptr (Raw).Size_Changed (Natural (Width), Natural (Height));
    end Raw_Size_Callback;
 
    procedure Raw_Close_Callback (Raw  : System.Address) is
    begin
-      API.Get_Window_User_Pointer (Raw).Close_Requested;
+      Window_Ptr (Raw).Close_Requested;
    end Raw_Close_Callback;
 
    procedure Raw_Refresh_Callback (Raw  : System.Address) is
    begin
-      API.Get_Window_User_Pointer (Raw).Refresh;
+      Window_Ptr (Raw).Refresh;
    end Raw_Refresh_Callback;
 
    procedure Raw_Focus_Callback (Raw : System.Address; Focused : Bool) is
    begin
-      API.Get_Window_User_Pointer (Raw).Focus_Changed (Boolean (Focused));
+      Window_Ptr (Raw).Focus_Changed (Boolean (Focused));
    end Raw_Focus_Callback;
 
    procedure Raw_Iconify_Callback (Raw : System.Address; Iconified : Bool) is
    begin
-      API.Get_Window_User_Pointer (Raw).Iconification_Changed
-        (Boolean (Iconified));
+      Window_Ptr (Raw).Iconification_Changed (Boolean (Iconified));
    end Raw_Iconify_Callback;
 
    procedure Raw_Framebuffer_Size_Callback (Raw : System.Address;
                                             Width, Height : Interfaces.C.int) is
    begin
-      API.Get_Window_User_Pointer (Raw).Framebuffer_Size_Changed
-        (Natural (Width), Natural (Height));
+      Window_Ptr (Raw).Framebuffer_Size_Changed (Natural (Width), Natural (Height));
    end Raw_Framebuffer_Size_Callback;
 
    procedure Raw_Mouse_Button_Callback (Raw    : System.Address;
@@ -107,26 +113,25 @@ package body Glfw.Windows is
                                         State  : Input.Button_State;
                                         Mods   : Input.Keys.Modifiers) is
    begin
-      API.Get_Window_User_Pointer (Raw).Mouse_Button_Changed
-        (Button, State, Mods);
+      Window_Ptr (Raw).Mouse_Button_Changed (Button, State, Mods);
    end Raw_Mouse_Button_Callback;
 
    procedure Raw_Mouse_Position_Callback (Raw : System.Address;
                                           X, Y : Input.Mouse.Coordinate) is
    begin
-      API.Get_Window_User_Pointer (Raw).Mouse_Position_Changed (X, Y);
+      Window_Ptr (Raw).Mouse_Position_Changed (X, Y);
    end Raw_Mouse_Position_Callback;
 
    procedure Raw_Mouse_Scroll_Callback (Raw  : System.Address;
                                         X, Y : Input.Mouse.Scroll_Offset) is
    begin
-      API.Get_Window_User_Pointer (Raw).Mouse_Scrolled (X, Y);
+      Window_Ptr (Raw).Mouse_Scrolled (X, Y);
    end Raw_Mouse_Scroll_Callback;
 
    procedure Raw_Mouse_Enter_Callback (Raw  : System.Address;
                                        Action : Input.Mouse.Enter_Action) is
    begin
-      API.Get_Window_User_Pointer (Raw).Mouse_Entered (Action);
+      Window_Ptr (Raw).Mouse_Entered (Action);
    end Raw_Mouse_Enter_Callback;
 
    procedure Raw_Key_Callback (Raw : System.Address;
@@ -135,7 +140,7 @@ package body Glfw.Windows is
                                Action   : Input.Keys.Action;
                                Mods     : Input.Keys.Modifiers) is
    begin
-      API.Get_Window_User_Pointer (Raw).Key_Changed (Key, Scancode, Action, Mods);
+      Window_Ptr (Raw).Key_Changed (Key, Scancode, Action, Mods);
    end Raw_Key_Callback;
 
    procedure Raw_Character_Callback (Raw  : System.Address;
@@ -143,7 +148,7 @@ package body Glfw.Windows is
       function Convert is new Ada.Unchecked_Conversion
         (Interfaces.C.unsigned, Wide_Wide_Character);
    begin
-      API.Get_Window_User_Pointer (Raw).Character_Entered (Convert (Char));
+      Window_Ptr (Raw).Character_Entered (Convert (Char));
    end Raw_Character_Callback;
 
    procedure Init (Object        : not null access Window;
@@ -170,7 +175,8 @@ package body Glfw.Windows is
       if Object.Handle = System.Null_Address then
          raise Creation_Error;
       end if;
-      API.Set_Window_User_Pointer (Object.Handle, Object);
+      API.Set_Window_User_Pointer (Object.Handle, Conversions.To_Address
+        (Conversions.Object_Pointer'(Object.all'Unchecked_Access)));
    end Init;
 
    function Initialized (Object : not null access Window) return Boolean is
