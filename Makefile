@@ -4,7 +4,6 @@ ifeq ($(UNAME), Linux)
   WINDOWING_BACKEND := egl
 endif
 
-WINDOWING_SYSTEM := -XWindowing_System=${WINDOWING_BACKEND}
 LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
@@ -12,14 +11,30 @@ GNAT_FLAGS ?= -dm
 CFLAGS  ?= -O2 -march=native
 LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 
-GPRBUILD = gprbuild $(GNAT_FLAGS) -p ${WINDOWING_SYSTEM} -XLibrary_Type=${LIBRARY_TYPE} -XCompiler_Flags="${CFLAGS}" -XMode=${MODE}
-GPRCLEAN = gprclean -q ${WINDOWING_SYSTEM}
+X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
+X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
+X_MODE = -XMode=$(MODE)
+X_COMPILER_FLAGS = -XCompiler_Flags="${CFLAGS}"
+
+GPRBUILD = gprbuild $(GNAT_FLAGS) -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_COMPILER_FLAGS) $(X_MODE)
+GPRCLEAN = gprclean -q $(X_WINDOWING_SYSTEM)
+GPRINSTALL = gprinstall -q $(X_WINDOWING_SYSTEM)
+
+SRC_DIR = src
+LIB_DIR = lib
+
+PREFIX ?= /usr
+
+includedir = $(PREFIX)/include
+gprdir     = $(PREFIX)/share/gpr
+libdir     = $(PREFIX)/lib
+alidir     = $(libdir)
 
 build_src:
-	$(GPRBUILD) -P root.gpr -largs ${LDFLAGS}
+	$(GPRBUILD) -P root.gpr -largs $(LDFLAGS)
 
 build_examples:
-	$(GPRBUILD) -P examples.gpr -largs ${LDFLAGS}
+	$(GPRBUILD) -P examples.gpr -largs $(LDFLAGS)
 
 build_unit_tests:
 	$(GPRBUILD) -P test/unit/orka/unit_tests.gpr
@@ -54,3 +69,18 @@ examples: build_examples
 test: build_unit_tests
 
 clean: clean_examples clean_unit_tests clean_src
+
+
+install:
+	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka' \
+		--sources-subdir=$(includedir) \
+		--project-subdir=$(gprdir) \
+		--lib-subdir=$(libdir) \
+		--ali-subdir=$(alidir) \
+		--prefix=$(PREFIX) -P orka.gpr
+	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka-glfw' \
+		--sources-subdir=$(includedir) \
+		--project-subdir=$(gprdir) \
+		--lib-subdir=$(libdir) \
+		--ali-subdir=$(alidir) \
+		--prefix=$(PREFIX) -P orka-glfw.gpr
