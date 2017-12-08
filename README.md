@@ -43,9 +43,7 @@ Build status
 |                    | Linux   | Windows     |
 |--------------------|---------|-------------|
 | **GNAT GPL 2015**  | passing | unknown     |
-| **GNAT GPL 2016**  | link failure | unknown     |
 | **GNAT GPL 2017**  | unknown | unknown     |
-| **GNAT FSF 6.3**   | unknown | unknown     |
 | **GNAT FSF 7.2**   | passing | unknown     |
 
 Dependencies
@@ -53,10 +51,11 @@ Dependencies
 
 In order to build Orka you need to have:
 
- * A GNAT compiler that supports Ada 2012 (Either GNAT GPL from [AdaCore's Libre Site][url-adacore],
-   or the GNAT [version provided by the FSF with GCC][url-fsf])
+ * A GNAT Ada 2012 compiler (Either GNAT GPL from [AdaCore's Libre Site][url-adacore],
+   or [GNAT FSF][url-fsf] from your Linux distribution)
 
- * [GPRBuild][url-gprbuild] (Is bundled with AdaCore's GNAT distribution)
+ * [GPRBuild][url-gprbuild] (Bundled with AdaCore's GNAT GPL or available
+   via your Linux distribution)
 
  * OpenGL 3.2 core profile and the following extensions:
 
@@ -74,11 +73,23 @@ In order to build Orka you need to have:
 
  * An x86-64 CPU with the AVX and F16C extensions
 
+Recommended dependencies:
+
+ * [GLFW 3][url-glfw] for the GLFW bindings
+
 Optional dependencies:
 
  * [Ahven 2][url-ahven] if you want to build and run the unit tests
 
- * [GLFW 3][url-glfw] for the GLFW bindings
+Installing dependencies on Ubuntu 17.10
+---------------------------------------
+
+Install the dependencies using apt:
+
+```sh
+$ sudo apt install gnat-7 gprbuild libahven6-dev
+$ sudo apt install libglfw3-wayland libglfw3-dev libegl1-mesa-dev
+```
 
 Compilation
 -----------
@@ -89,6 +100,10 @@ the source code:
 ```sh
 $ MODE=release make
 ```
+
+You can override CFLAGS if desired. The Makefile determines which
+system-dependent API ([EGL][url-egl], GLX, or WGL) to use for fetching OpenGL
+function pointers. Adjust the Makefile if necessary.
 
 If you want to check after each call to OpenGL whether an error flag was set
 and raise a corresponding exception, then use the `development` mode:
@@ -154,20 +169,10 @@ Using Orka in your project
 Specify the dependency in your \*.gpr project file:
 
 ```ada
-with "orka";
+with "orka-glfw";
 ```
 
-If you want to use GLFW, refer to `orka-glfw` instead. The project files
-`orka.gpr` and `orka-glfw.gpr` take the following scenario parameters:
-
- * `Windowing_System`: Sets the backend windowing system. Used for GLFW and also
-                       for system-dependent parts of the API (EGL, GLX, WGL):
-
-    - `egl`: Khronos [EGL][url-egl] (Wayland)
-    - `x11`: X Windowing System (Linux, BSD, etc)
-    - `windows`: Microsoft Windows
-
- * `Mode`: May take one of the following values: `debug`, `development`, or `release`.
+If you do not want to use GLFW, refer to `orka` instead.
 
 License
 -------
@@ -179,7 +184,7 @@ of the [Apache License 2.0][url-apache].
   [url-glfw]: http://www.glfw.org/
   [url-adacore]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
-  [url-gprbuild]: http://www.adacore.com/gnatpro/toolsuite/gprbuild/
+  [url-gprbuild]: https://www.adacore.com/gnatpro/toolsuite
   [url-ahven]: http://ahven.stronglytyped.org
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
