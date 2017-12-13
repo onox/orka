@@ -23,7 +23,7 @@ private package Orka.Base64 is
 
    function Base64_Encoded (Text : String) return Boolean is
      (Text'Length >= Data_Prefix'Length
-        and then Text (Text'First .. Data_Prefix'Length) = Data_Prefix)
+        and then Text (Text'First .. Text'First + Data_Prefix'Length - 1) = Data_Prefix)
      with Inline;
 
    function Decode (Input : String) return Stream_Element_Array;
