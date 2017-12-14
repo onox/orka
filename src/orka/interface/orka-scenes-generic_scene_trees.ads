@@ -71,6 +71,10 @@ private
       Name   : SU.Unbounded_String;
    end record;
 
+   pragma Suppress (Tampering_Check);
+   --  Disabling the tampering check speeds up execution of Add_Node,
+   --  reducing the time to create a full scene tree to around 20 %.
+
    package Node_Vectors is new Ada.Containers.Vectors (Positive, Node);
 
    package Boolean_Vectors is new Ada.Containers.Vectors (Positive, Boolean);
