@@ -20,10 +20,11 @@ package GL.Drawing is
    use GL.Types;
 
    procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size);
-   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count, Instances : Size);
 
-   procedure Draw_Arrays_Base_Instance (Mode : Connection_Mode; Offset, Count : Size;
-                                        Instances, Base_Instance : Size);
+   procedure Draw_Arrays
+     (Mode : Connection_Mode;
+      Offset, Count, Instances : Size;
+      Base_Instance : Size := 0);
 
    procedure Draw_Multiple_Arrays (Mode : Connection_Mode; Offsets, Counts : Size_Array)
      with Pre => Offsets'Length = Counts'Length;
@@ -36,33 +37,24 @@ package GL.Drawing is
       Max_Count    : Size)
    with Pre => Count_Offset mod 4 = 0;
 
-   procedure Draw_Elements (Mode : Connection_Mode; Count : Size;
-                            Index_Type : Unsigned_Numeric_Type;
-                            Element_Offset : Natural);
-   procedure Draw_Elements (Mode : Connection_Mode; Count : Size;
-                            Index_Type : Unsigned_Numeric_Type;
-                            Instances  : Size;
-                            Element_Offset : Natural);
+   procedure Draw_Elements
+     (Mode       : Connection_Mode; Count : Size;
+      Index_Type : Unsigned_Numeric_Type;
+      Index_Offset : Natural);
 
-   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size;
-                                        Index_Type : Unsigned_Numeric_Type;
-                                        Vertex_Offset, Index_Offset : Natural);
-   procedure Draw_Elements_Base_Vertex (Mode : Connection_Mode; Count : Size;
-                                        Index_Type : Unsigned_Numeric_Type;
-                                        Instances  : Size;
-                                        Vertex_Offset, Index_Offset : Natural);
+   procedure Draw_Elements
+     (Mode       : Connection_Mode; Count : Size;
+      Index_Type : Unsigned_Numeric_Type;
+      Instances  : Size;
+      Index_Offset  : Natural;
+      Base_Instance : Size := 0);
 
-   procedure Draw_Elements_Base_Vertex_Base_Instance (Mode : Connection_Mode; Count : Size;
-                                                      Index_Type : Unsigned_Numeric_Type;
-                                                      Instances  : Size;
-                                                      Vertex_Offset, Index_Offset : Natural;
-                                                      Base_Instance : Size);
-
-   procedure Draw_Elements_Base_Instance (Mode : Connection_Mode; Count : Size;
-                                          Index_Type : Unsigned_Numeric_Type;
-                                          Instances  : Size;
-                                          Index_Offset : Natural;
-                                          Base_Instance : Size);
+   procedure Draw_Elements_Base_Vertex_Base_Instance
+     (Mode       : Connection_Mode; Count : Size;
+      Index_Type : Unsigned_Numeric_Type;
+      Instances  : Size;
+      Vertex_Offset, Index_Offset : Natural;
+      Base_Instance : Size := 0);
 
    procedure Draw_Multiple_Elements (Mode : Connection_Mode;
                                      Index_Type : Unsigned_Numeric_Type;
