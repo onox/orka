@@ -70,9 +70,9 @@ package body GL.Rasterization is
       return Ret;
    end Polygon_Mode;
 
-   procedure Set_Polygon_Offset (Factor, Units : Single) is
+   procedure Set_Polygon_Offset (Factor, Units : Single; Clamp : Single := 0.0) is
    begin
-      API.Polygon_Offset (Factor, Units);
+      API.Polygon_Offset_Clamp (Factor, Units, Clamp);
       Raise_Exception_On_OpenGL_Error;
    end Set_Polygon_Offset;
 
@@ -91,5 +91,13 @@ package body GL.Rasterization is
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Units;
+
+   function Polygon_Offset_Clamp return Single is
+      Result : Single := 0.0;
+   begin
+      API.Get_Single (Enums.Getter.Polygon_Offset_Clamp, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Polygon_Offset_Clamp;
 
 end GL.Rasterization;

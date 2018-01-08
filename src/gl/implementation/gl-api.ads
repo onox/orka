@@ -306,8 +306,8 @@ private package GL.API is
    procedure Polygon_Mode is new Loader.Procedure_With_2_Params
      ("glPolygonMode", Culling.Face_Selector, Rasterization.Polygon_Mode_Type);
 
-   procedure Polygon_Offset is new Loader.Procedure_With_2_Params
-     ("glPolygonOffset", Single, Single);
+   procedure Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
+     ("glPolygonOffsetClamp", Single, Single, Single);
 
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --

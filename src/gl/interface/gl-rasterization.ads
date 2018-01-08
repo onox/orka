@@ -35,10 +35,14 @@ package GL.Rasterization is
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type);
    function Polygon_Mode return Polygon_Mode_Type;
 
-   procedure Set_Polygon_Offset (Factor, Units : Single);
+   procedure Set_Polygon_Offset (Factor, Units : Single; Clamp : Single := 0.0);
+   --  Offset the depth values of a polygon
+   --
+   --  If Clamp /= 0.0 then the resulting offset is clamped.
 
    function Polygon_Offset_Factor return Single;
    function Polygon_Offset_Units return Single;
+   function Polygon_Offset_Clamp return Single;
 
 private
    for Polygon_Mode_Type use (Point => 16#1B00#,
