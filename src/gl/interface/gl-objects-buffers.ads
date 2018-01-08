@@ -110,9 +110,6 @@ package GL.Objects.Buffers is
                                           Data   : Pointers.Element_Array;
                                           Storage_Flags : Storage_Bits);
 
-      procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
-                     Pointer : out Pointers.Pointer);
-
       procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
                            Offset, Length : Types.Size;
                            Pointer : out Pointers.Pointer);

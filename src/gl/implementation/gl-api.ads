@@ -558,7 +558,7 @@ private package GL.API is
       ("glNamedBufferStorage", UInt, Low_Level.SizeIPtr,
        System.Address, Low_Level.Bitfield);
 
-   -- glMapNamedBuffer[Range] returns an instance of generic Interfaces.C.Pointers.Pointer,
+   -- glMapNamedBufferRange returns an instance of generic Interfaces.C.Pointers.Pointer,
    -- therefore declared in GL.Objects.Buffers
 
    procedure Unmap_Named_Buffer is new Loader.Procedure_With_1_Param

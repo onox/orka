@@ -289,16 +289,6 @@ package body GL.Objects.Buffers is
          Raise_Exception_On_OpenGL_Error;
       end Load_To_Immutable_Buffer;
 
-      procedure Map (Object : in out Buffer; Access_Type : Access_Kind;
-                     Pointer : out Pointers.Pointer) is
-         function Map_Named_Buffer is new API.Loader.Function_With_2_Params
-           ("glMapNamedBuffer", UInt, Access_Kind,
-            Pointers.Pointer);
-      begin
-         Pointer := Map_Named_Buffer (Object.Reference.GL_Id, Access_Type);
-         Raise_Exception_On_OpenGL_Error;
-      end Map;
-
       procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
                      Offset, Length : Types.Size;
                      Pointer : out Pointers.Pointer) is
