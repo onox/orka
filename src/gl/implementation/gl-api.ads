@@ -224,6 +224,9 @@ private package GL.API is
    procedure Multi_Draw_Arrays_Indirect is new Loader.Procedure_With_4_Params
      ("glMultiDrawArraysIndirect", Connection_Mode, Int, Size, Size);
 
+   procedure Multi_Draw_Arrays_Indirect_Count is new Loader.Procedure_With_5_Params
+     ("glMultiDrawArraysIndirectCount", Connection_Mode, Int, Low_Level.IntPtr, Size, Size);
+
    procedure Draw_Elements is new Loader.Procedure_With_4_Params
      ("glDrawElements", Connection_Mode, Size, Unsigned_Numeric_Type, Low_Level.IntPtr);
 
@@ -259,6 +262,10 @@ private package GL.API is
    procedure Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
      ("glMultiDrawElementsIndirect", Connection_Mode, Unsigned_Numeric_Type,
       Int, Size, Size);
+
+   procedure Multi_Draw_Elements_Indirect_Count is new Loader.Procedure_With_6_Params
+     ("glMultiDrawElementsIndirectCount", Connection_Mode, Unsigned_Numeric_Type,
+      Int, Low_Level.IntPtr, Size, Size);
 
    -----------------------------------------------------------------------------
    --                                Blending                                 --

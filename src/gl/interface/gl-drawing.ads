@@ -28,6 +28,14 @@ package GL.Drawing is
    procedure Draw_Multiple_Arrays (Mode : Connection_Mode; Offsets, Counts : Size_Array)
      with Pre => Offsets'Length = Counts'Length;
 
+   procedure Draw_Multiple_Arrays_Indirect (Mode : Connection_Mode; Count : Size);
+
+   procedure Draw_Multiple_Arrays_Indirect_Count
+     (Mode         : Connection_Mode;
+      Count_Offset : Natural;
+      Max_Count    : Size)
+   with Pre => Count_Offset mod 4 = 0;
+
    procedure Draw_Elements (Mode : Connection_Mode; Count : Size;
                             Index_Type : Unsigned_Numeric_Type;
                             Element_Offset : Natural);
@@ -67,8 +75,16 @@ package GL.Drawing is
      with Pre => Counts'Length = Vertex_Offsets'Length and
                  Counts'Length = Index_Offsets'Length;
 
-   procedure Draw_Multiple_Elements_Indirect (Mode : Connection_Mode;
-                                              Index_Type : Unsigned_Numeric_Type;
-                                              Count : Size);
+   procedure Draw_Multiple_Elements_Indirect
+     (Mode       : Connection_Mode;
+      Index_Type : Unsigned_Numeric_Type;
+      Count      : Size);
+
+   procedure Draw_Multiple_Elements_Indirect_Count
+     (Mode         : Connection_Mode;
+      Index_Type   : Unsigned_Numeric_Type;
+      Count_Offset : Natural;
+      Max_Count    : Size)
+   with Pre => Count_Offset mod 4 = 0;
 
 end GL.Drawing;

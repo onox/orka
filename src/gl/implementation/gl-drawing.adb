@@ -43,6 +43,22 @@ package body GL.Drawing is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays;
 
+   procedure Draw_Multiple_Arrays_Indirect (Mode : Connection_Mode; Count : Size) is
+   begin
+      API.Multi_Draw_Arrays_Indirect (Mode, 0, Count, 0);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Multiple_Arrays_Indirect;
+
+   procedure Draw_Multiple_Arrays_Indirect_Count
+     (Mode         : Connection_Mode;
+      Count_Offset : Natural;
+      Max_Count    : Size) is
+   begin
+      API.Multi_Draw_Arrays_Indirect_Count
+        (Mode, 0, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Multiple_Arrays_Indirect_Count;
+
    procedure Draw_Elements (Mode : Connection_Mode; Count : Types.Size;
                             Index_Type : Unsigned_Numeric_Type;
                             Element_Offset : Natural)
@@ -193,12 +209,24 @@ package body GL.Drawing is
       end;
    end Draw_Multiple_Elements_Base_Vertex;
 
-   procedure Draw_Multiple_Elements_Indirect (Mode : Connection_Mode;
-                                              Index_Type : Unsigned_Numeric_Type;
-                                              Count : Types.Size) is
+   procedure Draw_Multiple_Elements_Indirect
+     (Mode       : Connection_Mode;
+      Index_Type : Unsigned_Numeric_Type;
+      Count      : Size) is
    begin
       API.Multi_Draw_Elements_Indirect (Mode, Index_Type, 0, Count, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements_Indirect;
+
+   procedure Draw_Multiple_Elements_Indirect_Count
+     (Mode         : Connection_Mode;
+      Index_Type   : Unsigned_Numeric_Type;
+      Count_Offset : Natural;
+      Max_Count    : Size) is
+   begin
+      API.Multi_Draw_Elements_Indirect_Count
+        (Mode, Index_Type, 0, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
+      Raise_Exception_On_OpenGL_Error;
+   end Draw_Multiple_Elements_Indirect_Count;
 
 end GL.Drawing;

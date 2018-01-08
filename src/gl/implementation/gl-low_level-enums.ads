@@ -30,9 +30,9 @@ package GL.Low_Level.Enums is
 
    type Transform_Feedback_Kind is (Transform_Feedback);
 
-   type Buffer_Kind is (Array_Buffer, Element_Array_Buffer, Pixel_Pack_Buffer,
-                        Pixel_Unpack_Buffer, Uniform_Buffer, Texture_Buffer,
-                        Transform_Feedback_Buffer, Copy_Read_Buffer,
+   type Buffer_Kind is (Parameter_Buffer, Array_Buffer, Element_Array_Buffer,
+                        Pixel_Pack_Buffer, Pixel_Unpack_Buffer, Uniform_Buffer,
+                        Texture_Buffer, Transform_Feedback_Buffer, Copy_Read_Buffer,
                         Copy_Write_Buffer, Draw_Indirect_Buffer,
                         Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
                         Query_Buffer, Atomic_Counter_Buffer);
@@ -185,7 +185,8 @@ private
    for Transform_Feedback_Kind use (Transform_Feedback => 16#8E22#);
    for Transform_Feedback_Kind'Size use Enum'Size;
 
-   for Buffer_Kind use (Array_Buffer              => 16#8892#,
+   for Buffer_Kind use (Parameter_Buffer          => 16#80EE#,
+                        Array_Buffer              => 16#8892#,
                         Element_Array_Buffer      => 16#8893#,
                         Pixel_Pack_Buffer         => 16#88EB#,
                         Pixel_Unpack_Buffer       => 16#88EC#,
