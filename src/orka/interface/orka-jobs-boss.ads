@@ -23,16 +23,25 @@ package Orka.Jobs.Boss is
 
    Queue : aliased Queues.Queue (Queue_Size);
 
+   Number_Of_Workers : constant System.Multiprocessors.CPU;
+
+   procedure Shutdown;
+
 private
 
    package SM renames System.Multiprocessors;
 
    use type SM.CPU;
 
+   Number_Of_Workers : constant SM.CPU := SM.Number_Of_CPUs - 1;
+
    package Workers is new Orka.Jobs.Workers
-     ("Worker", Queue'Unchecked_Access, SM.Number_Of_CPUs - 1);
+     ("Worker", Queue'Unchecked_Access, Number_Of_Workers);
    --  For n logical CPU's we spawn n - 1 workers (1 CPU is dedicated
    --  to rendering)
    --  TODO Or allocate Queue with new keyword?
+
+   procedure Shutdown is null;
+   --  FIXME
 
 end Orka.Jobs.Boss;

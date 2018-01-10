@@ -23,9 +23,12 @@ package Orka.Jobs.Queues is
 
    protected type Queue (Capacity : Positive) is
       entry Enqueue (Element : Job_Ptr);
-      --  TODO What to do if Element has dependencies? Drop it on the floor?
+      --  TODO Pre => not Element.Has_Dependencies
+      --         and then Element.all not in Parallel_Job'Class
+      --         and then Element /= Null_Job
 
       entry Dequeue (Element : out Job_Ptr);
+      --  TODO Post => not Element.Has_Dependencies
    private
       entry Enqueue_Job (Priority) (Element : Job_Ptr);
 

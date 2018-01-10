@@ -32,4 +32,16 @@ package body Orka.Atomics is
       return Subtract_And_Fetch (Value'Unrestricted_Access, 1);
    end Decrement;
 
+   procedure Add (Value : in out Unsigned_32; Addition : Unsigned_32) is
+   begin
+      Add_And_Fetch (Value'Unrestricted_Access, Addition);
+   end Add;
+
+   procedure Sub (Value : in out Unsigned_32; Subtraction : Unsigned_32) is
+      Result : Unsigned_32;
+      pragma Unreferenced (Result);
+   begin
+      Result := Subtract_And_Fetch (Value'Unrestricted_Access, Subtraction);
+   end Sub;
+
 end Orka.Atomics;

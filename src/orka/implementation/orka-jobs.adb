@@ -14,6 +14,8 @@
 
 with Ada.Unchecked_Deallocation;
 
+with Orka.Jobs.Queues;
+
 package body Orka.Jobs is
 
    procedure Free (Pointer : in out Job_Ptr) is
@@ -32,12 +34,88 @@ package body Orka.Jobs is
       return Atomics.Decrement (Object.Dependencies) = 0;
    end Decrement_Dependencies;
 
-   procedure Set_Dependencies (Object : Job_Ptr; Dependencies : Dependency_Array) is
+   overriding
+   procedure Set_Dependencies
+     (Object : access Abstract_Job; Dependencies : Dependency_Array) is
    begin
-      Abstract_Job (Object.all).Dependencies := Dependencies'Length;
+      Atomics.Add (Object.Dependencies, Atomics.Unsigned_32 (Dependencies'Length));
       for Dependency of Dependencies loop
-         Abstract_Job (Dependency.all).Dependent := Object;
+         Abstract_Job (Dependency.all).Dependent := Job_Ptr (Object);
       end loop;
    end Set_Dependencies;
+
+   function Parallelize
+     (Job : not null access Parallel_Job'Class;
+      Length, Slice : Positive) return Job_Ptr is
+   begin
+      return new Parallel_For_Job'
+        (Abstract_Job with
+          Length => Length,
+          Slice  => Slice,
+          Job    => Job);
+   end Parallelize;
+
+   overriding
+   procedure Execute (Object : Parallel_For_Job; Queue : Jobs.Queues.Queue_Ptr) is
+      Slice_Length : constant Positive := Positive'Min (Object.Length, Object.Slice);
+
+      Slices    : constant Positive := Object.Length / Slice_Length;
+      Remaining : constant Natural  := Object.Length rem Slice_Length;
+
+      Array_Length : constant Positive := Slices + (if Remaining /= 0 then 1 else 0);
+
+      Parallel_Jobs : constant Dependency_Array (1 .. Array_Length)
+        := (others => new Parallel_Job'Class'(Object.Job.all));
+
+      From, To : Positive := 1;
+   begin
+      for Slice_Index in 1 .. Slices loop
+         To := From + Slice_Length - 1;
+         Parallel_Job'Class (Parallel_Jobs (Slice_Index).all).Set_Range (From, To);
+         From := To + 1;
+      end loop;
+      if Remaining /= 0 then
+         To := From + Slice_Length - 1 + Remaining;
+         Parallel_Job'Class (Parallel_Jobs (Parallel_Jobs'Last).all).Set_Range (From, To);
+      end if;
+      pragma Assert (To = Object.Length);
+
+      --  Make the jobs in Parallel_Jobs dependencies of Object.Dependent
+      if Object.Dependent /= Null_Job then
+         Object.Dependent.Set_Dependencies (Parallel_Jobs);
+
+         --  Object is still a (useless) dependency of Object.Dependent,
+         --  but the worker that called this Execute procedure will decrement
+         --  Object.Dependent.Dependencies after this procedure is done
+      end if;
+
+      for Job of Parallel_Jobs loop
+         Queue.Enqueue (Job);
+      end loop;
+
+      declare
+         Original_Job : Job_Ptr := Job_Ptr (Object.Job);
+      begin
+         --  Copies of Object.Job have been made in Parallel_Jobs
+         --  and these will be freed when they have been executed by
+         --  workers. However, Object.Job itself will never be enqueued and
+         --  executed by a worker (it just exists so we can copy it) so
+         --  we need to manually free it.
+         Free (Original_Job);
+      end;
+   end Execute;
+
+   overriding
+   procedure Execute (Object : Slice_Job; Queue : Jobs.Queues.Queue_Ptr) is
+   begin
+      Slice_Job'Class (Object).Execute (Object.From, Object.To);
+   end Execute;
+
+   overriding
+   procedure Set_Range (Object : in out Slice_Job; From, To : Positive) is
+   begin
+      Object.From := From;
+      Object.To   := To;
+   end Set_Range;
 
 end Orka.Jobs;

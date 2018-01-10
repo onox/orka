@@ -21,7 +21,7 @@ package Orka.Jobs is
 
    type Job is limited interface;
 
-   type Job_Ptr is not null access Job'Class;
+   type Job_Ptr is not null access all Job'Class;
 
    procedure Execute (Object : Job; Queue : Queues.Queue_Ptr) is abstract;
    --  Execute the job, a pointer to the job queue is given so that the job
@@ -36,6 +36,11 @@ package Orka.Jobs is
    --  at least one job that still needs to run.
    --
    --  When this function returns True, this job can and should be scheduled.
+
+   type Dependency_Array is array (Positive range <>) of Job_Ptr;
+
+   procedure Set_Dependencies
+     (Object : access Job; Dependencies : Dependency_Array) is abstract;
 
    -----------------------------------------------------------------------------
 
@@ -52,9 +57,23 @@ package Orka.Jobs is
 
    type Abstract_Job is abstract new Job with private;
 
-   type Dependency_Array is array (Positive range <>) of Job_Ptr;
+   type Parallel_Job is interface and Job;
 
-   procedure Set_Dependencies (Object : Job_Ptr; Dependencies : Dependency_Array);
+   procedure Set_Range (Object : in out Parallel_Job; From, To : Positive) is abstract;
+
+   procedure Execute (Object : Parallel_Job; From, To : Positive) is abstract;
+
+   function Parallelize
+     (Job : not null access Parallel_Job'Class;
+      Length, Slice : Positive) return Job_Ptr;
+
+   type Slice_Job is abstract new Abstract_Job and Parallel_Job with private;
+
+   overriding
+   procedure Execute (Object : Slice_Job; Queue : Jobs.Queues.Queue_Ptr);
+
+   overriding
+   procedure Set_Range (Object : in out Slice_Job; From, To : Positive);
 
 private
 
@@ -69,7 +88,13 @@ private
    overriding
    function Decrement_Dependencies (Object : in out Empty_Job) return Boolean is (False);
 
+   overriding
+   procedure Set_Dependencies
+     (Object : access Empty_Job; Dependencies : Dependency_Array) is null;
+
    Null_Job : constant Job_Ptr := new Empty_Job;
+
+   -----------------------------------------------------------------------------
 
    type Abstract_Job is abstract new Job with record
       Dependent    : Job_Ptr := Null_Job;
@@ -81,5 +106,23 @@ private
 
    overriding
    function Decrement_Dependencies (Object : in out Abstract_Job) return Boolean;
+
+   overriding
+   procedure Set_Dependencies
+     (Object : access Abstract_Job; Dependencies : Dependency_Array);
+
+   -----------------------------------------------------------------------------
+
+   type Parallel_For_Job is new Abstract_Job with record
+      Length, Slice : Positive;
+      Job : access Parallel_Job'Class;
+   end record;
+
+   overriding
+   procedure Execute (Object : Parallel_For_Job; Queue : Jobs.Queues.Queue_Ptr);
+
+   type Slice_Job is abstract new Abstract_Job and Parallel_Job with record
+      From, To : Positive;
+   end record;
 
 end Orka.Jobs;

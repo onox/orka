@@ -25,4 +25,10 @@ package Orka.Atomics is
      with Inline_Always;
    --  Atomically decrement the value by 1 and return the new value
 
+   procedure Add (Value : in out Unsigned_32; Addition : Unsigned_32)
+     with Inline_Always;
+
+   procedure Sub (Value : in out Unsigned_32; Subtraction : Unsigned_32)
+     with Inline_Always;
+
 end Orka.Atomics;
