@@ -28,6 +28,8 @@ package Orka.Jobs.Workers is
 
    Workers : constant Worker_Array;
 
+   procedure Shutdown;
+
 private
 
    task type Worker_Task (Data : not null access constant Worker);

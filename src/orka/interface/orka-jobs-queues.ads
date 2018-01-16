@@ -27,12 +27,15 @@ package Orka.Jobs.Queues is
       --         and then Element.all not in Parallel_Job'Class
       --         and then Element /= Null_Job
 
-      entry Dequeue (Element : out Job_Ptr);
+      entry Dequeue (Element : out Job_Ptr; Stop : out Boolean);
       --  TODO Post => not Element.Has_Dependencies
+
+      procedure Shutdown;
    private
       entry Enqueue_Job (Priority) (Element : Job_Ptr);
 
       No_Dependents, Has_Dependents : Buffers.Buffer (Capacity);
+      Should_Stop : Boolean := False;
    end Queue;
 
    type Queue_Ptr is not null access all Queue;

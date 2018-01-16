@@ -31,15 +31,18 @@ package body Orka.Jobs.Workers is
       ID   : constant String := Positive'Image (Data.ID);
       Name : constant String := Prefix & " #" & SF.Trim (ID, Ada.Strings.Left);
 
-      Job : Job_Ptr := Null_Job;
+      Job  : Job_Ptr := Null_Job;
+      Stop : Boolean := False;
    begin
       --  Set the CPU affinity of the task to its corresponding CPU core
       SM.Dispatching_Domains.Set_CPU (SM.CPU (Data.ID) + 1);
       Orka.OS.Set_Task_Name (Name);
 
       loop
-         --  TODO Handle shutdown + idling > 10 s + idling > 10 ms
-         Queue.Dequeue (Job);
+         --  TODO Handle idling > 10 s + idling > 10 ms
+         Queue.Dequeue (Job, Stop);
+         exit when Stop;
+
          Job.Execute (Queue);
 
          --  If another job depends on this job, decrement its dependencies counter
@@ -63,5 +66,10 @@ package body Orka.Jobs.Workers is
          end loop;
       end return;
    end Make_Workers;
+
+   procedure Shutdown is
+   begin
+      Queue.Shutdown;
+   end Shutdown;
 
 end Orka.Jobs.Workers;

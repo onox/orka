@@ -41,7 +41,6 @@ private
    --  to rendering)
    --  TODO Or allocate Queue with new keyword?
 
-   procedure Shutdown is null;
-   --  FIXME
+   procedure Shutdown renames Workers.Shutdown;
 
 end Orka.Jobs.Boss;

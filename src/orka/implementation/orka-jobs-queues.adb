@@ -50,8 +50,13 @@ package body Orka.Jobs.Queues is
          end case;
       end Enqueue_Job;
 
-      entry Dequeue (Element : out Job_Ptr) when Has_Jobs is
+      entry Dequeue (Element : out Job_Ptr; Stop : out Boolean) when Should_Stop or Has_Jobs is
       begin
+         Stop := Should_Stop;
+         if Should_Stop then
+            return;
+         end if;
+
          --  Prioritize jobs that have no dependencies themselves but
          --  are a dependency of some other job.
          if not Has_Dependents.Empty then
@@ -60,6 +65,11 @@ package body Orka.Jobs.Queues is
             Element := No_Dependents.Remove_First;
          end if;
       end Dequeue;
+
+      procedure Shutdown is
+      begin
+         Should_Stop := True;
+      end Shutdown;
 
    end Queue;
 
