@@ -23,10 +23,13 @@ private with Orka.Atomics;
 
 generic
    type Object_Type is private;
-
-   with procedure Free (Value : in out Object_Type) is null;
+   --  Objects are freed by providing an access to a procedure in Set. This
+   --  is needed if Object_Type is a classwide type and we don't know how
+   --  to free an object when this package gets instantiated.
 package Orka.Smart_Pointers is
    pragma Preelaborate;
+
+   type Free_Ptr is not null access procedure (Value : in out Object_Type);
 
    type Reference (Value : not null access Object_Type) is limited private
      with Implicit_Dereference => Value;
@@ -36,21 +39,33 @@ package Orka.Smart_Pointers is
 
    type Abstract_Pointer is abstract tagged private;
 
-   procedure Set (Object : in out Abstract_Pointer; Value : Object_Type);
+   function Is_Null (Object : Abstract_Pointer) return Boolean;
+
+   function References (Object : Abstract_Pointer) return Natural
+     with Pre => not Object.Is_Null;
+
+   procedure Set
+     (Object : in out Abstract_Pointer;
+      Value  : Object_Type;
+      Free   : not null access procedure (Value : in out Object_Type))
+   with Post => not Object.Is_Null and then Object.References = 1;
 
    type Mutable_Pointer is new Abstract_Pointer with private;
 
-   function Get (Object : Mutable_Pointer) return Reference;
+   function Get (Object : Mutable_Pointer) return Reference
+     with Pre => not Object.Is_Null;
 
    type Pointer is new Abstract_Pointer with private;
 
-   function Get (Object : Pointer) return Constant_Reference;
+   function Get (Object : Pointer) return Constant_Reference
+     with Pre => not Object.Is_Null;
 
 private
 
    type Data_Record is record
       References : Atomics.Unsigned_32 := 0;
       Object     : aliased Object_Type;
+      Free       : Free_Ptr;
    end record;
 
    type Data_Record_Access is access Data_Record;
