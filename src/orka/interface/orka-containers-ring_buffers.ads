@@ -43,7 +43,7 @@ private
    type Buffer (Capacity : Positive) is tagged record
       Elements   : Element_Array (1 .. Capacity) := (others => Null_Element);
       Head, Tail : Positive := 1;
-      Count      : Natural := 0;
+      Count      : Natural  := 0;
    end record;
 
 end Orka.Containers.Ring_Buffers;

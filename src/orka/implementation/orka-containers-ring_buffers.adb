@@ -26,15 +26,21 @@ package body Orka.Containers.Ring_Buffers is
    procedure Add_Last (Container : in out Buffer; Element : Element_Type) is
    begin
       Container.Elements (Container.Head) := Element;
-      Container.Head := (Container.Head mod Container.Capacity) + 1;
+
+      Container.Head  := (Container.Head mod Container.Capacity) + 1;
       Container.Count := Container.Count + 1;
    end Add_Last;
 
    function Remove_First (Container : in out Buffer) return Element_Type is
       Result : constant Element_Type := Container.Elements (Container.Tail);
    begin
-      Container.Tail := (Container.Tail mod Container.Capacity) + 1;
+      --  Make position in buffer null to fix references in case Element_Type
+      --  is/contains a controlled type
+      Container.Elements (Container.Tail) := Null_Element;
+
+      Container.Tail  := (Container.Tail mod Container.Capacity) + 1;
       Container.Count := Container.Count - 1;
+
       return Result;
    end Remove_First;
 
