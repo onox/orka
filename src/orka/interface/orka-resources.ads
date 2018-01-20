@@ -14,6 +14,7 @@
 
 with Ada.Finalization;
 with Ada.Streams.Stream_IO;
+with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
 package Orka.Resources is
@@ -33,6 +34,8 @@ package Orka.Resources is
    function Open_File (File_Name : String) return Byte_Array_File'Class;
 
    Resource_Load_Error : exception;
+
+   package SU renames Ada.Strings.Unbounded;
 
 private
 
