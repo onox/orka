@@ -18,17 +18,15 @@ with Orka_Test.Package_9_Jobs;
 procedure Orka_Test.Test_9_Jobs is
    package Boss is new Orka.Jobs.Boss (100);
 
-   Job_0 : Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
+   Job_0 : constant Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
      (Orka.Jobs.Abstract_Job with ID => 0);
-   Job_1 : Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
+   Job_1 : constant Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
      (Orka.Jobs.Abstract_Job with ID => 1);
-   Job_2 : Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
+   Job_2 : constant Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
      (Orka.Jobs.Abstract_Job with ID => 2);
 
-   Job_3 : Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Parallel_Job;
-
-   Job_4 : Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize
-     (Orka.Jobs.Parallel_Job'Class (Job_3.all)'Access, 24, 6);
+   Job_3 : constant Orka.Jobs.Parallel_Job_Ptr := new Package_9_Jobs.Test_Parallel_Job;
+   Job_4 : constant Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize (Job_3, 24, 6);
 begin
    --  Graph: Job_0 --> Job_1 --> Job_4 (4 slices) --> Job_2
    Job_1.Set_Dependencies ((1 => Job_0));

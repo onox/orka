@@ -45,7 +45,7 @@ package body Orka.Jobs is
    end Set_Dependencies;
 
    function Parallelize
-     (Job : not null access Parallel_Job'Class;
+     (Job : Parallel_Job_Ptr;
       Length, Slice : Positive) return Job_Ptr is
    begin
       return new Parallel_For_Job'

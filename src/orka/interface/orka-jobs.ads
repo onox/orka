@@ -59,12 +59,14 @@ package Orka.Jobs is
 
    type Parallel_Job is interface and Job;
 
+   type Parallel_Job_Ptr is not null access all Jobs.Parallel_Job'Class;
+
    procedure Set_Range (Object : in out Parallel_Job; From, To : Positive) is abstract;
 
    procedure Execute (Object : Parallel_Job; From, To : Positive) is abstract;
 
    function Parallelize
-     (Job : not null access Parallel_Job'Class;
+     (Job : Parallel_Job_Ptr;
       Length, Slice : Positive) return Job_Ptr;
 
    type Slice_Job is abstract new Abstract_Job and Parallel_Job with private;
