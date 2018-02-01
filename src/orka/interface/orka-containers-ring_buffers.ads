@@ -21,16 +21,16 @@ package Orka.Containers.Ring_Buffers is
    type Buffer (Capacity : Positive) is tagged private;
 
    procedure Add_Last (Container : in out Buffer; Element : Element_Type)
-     with Pre  => Container.Count < Container.Capacity,
-          Post => Container.Count = Container'Old.Count + 1;
+     with Pre  => Container.Length < Container.Capacity,
+          Post => Container.Length = Container'Old.Length + 1;
    --  Add the element to the end of the buffer (at index k + 1)
 
    function Remove_First (Container : in out Buffer) return Element_Type
-     with Pre  => Container.Count > 0,
-          Post => Container.Count = Container'Old.Count - 1;
+     with Pre  => Container.Length > 0,
+          Post => Container.Length = Container'Old.Length - 1;
    --  Remove and return the first element in the buffer (at index 1)
 
-   function Count (Container : Buffer) return Natural;
+   function Length (Container : Buffer) return Natural;
 
    function Empty (Container : Buffer) return Boolean;
 

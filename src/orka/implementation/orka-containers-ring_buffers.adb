@@ -14,14 +14,14 @@
 
 package body Orka.Containers.Ring_Buffers is
 
-   function Count (Container : Buffer) return Natural is
+   function Length (Container : Buffer) return Natural is
      (Container.Count);
 
    function Empty (Container : Buffer) return Boolean is
-     (Count (Container) = 0);
+     (Length (Container) = 0);
 
    function Full (Container : Buffer) return Boolean is
-     (Count (Container) = Container.Capacity);
+     (Length (Container) = Container.Capacity);
 
    procedure Add_Last (Container : in out Buffer; Element : Element_Type) is
    begin
@@ -40,7 +40,6 @@ package body Orka.Containers.Ring_Buffers is
 
       Container.Tail  := (Container.Tail mod Container.Capacity) + 1;
       Container.Count := Container.Count - 1;
-
       return Result;
    end Remove_First;
 
