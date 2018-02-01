@@ -31,4 +31,14 @@ package Orka.Atomics is
    procedure Sub (Value : in out Unsigned_32; Subtraction : Unsigned_32)
      with Inline_Always;
 
+   protected type Counter (Initial_Value : Natural) is
+      procedure Increment;
+
+      procedure Decrement (Zero : out Boolean);
+
+      function Count return Natural;
+   private
+      References : Natural := Initial_Value;
+   end Counter;
+
 end Orka.Atomics;

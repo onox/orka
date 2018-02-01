@@ -63,7 +63,7 @@ package Orka.Smart_Pointers is
 private
 
    type Data_Record is record
-      References : Atomics.Unsigned_32 := 0;
+      References : Atomics.Counter (Initial_Value => 1);
       Object     : aliased Object_Type;
       Free       : Free_Ptr;
    end record;

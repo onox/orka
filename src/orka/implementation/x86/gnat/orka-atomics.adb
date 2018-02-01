@@ -44,4 +44,19 @@ package body Orka.Atomics is
       Result := Subtract_And_Fetch (Value'Unrestricted_Access, Subtraction);
    end Sub;
 
+   protected body Counter is
+      procedure Increment is
+      begin
+         References := References + 1;
+      end Increment;
+
+      procedure Decrement (Zero : out Boolean) is
+      begin
+         References := References - 1;
+         Zero := References = 0;
+      end Decrement;
+
+      function Count return Natural is (References);
+   end Counter;
+
 end Orka.Atomics;
