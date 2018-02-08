@@ -12,70 +12,23 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with System.Multiprocessors;
+with System;
 
+with Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
-with Ada.Synchronous_Barriers;
 
 with Orka.Buffer_Fences;
-with Orka.Transforms.Singles.Vectors;
-
-with Orka.Workers;
+with Orka.Futures;
+with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
 
    use Ada.Real_Time;
 
-   package Transforms renames Orka.Transforms.Singles.Vectors;
+   package STC renames Ada.Synchronous_Task_Control;
 
-   -----------------------------------------------------------------------------
-
-   procedure Fixed_Update
-     (Scene         : Behaviors.Behavior_Array;
-      Barrier       : in out Ada.Synchronous_Barriers.Synchronous_Barrier;
-      Delta_Time    : Time_Span;
-      View_Position : Transforms.Vector4)
-   is
-      DT : constant Duration := To_Duration (Delta_Time);
-      DC : Boolean;
-   begin
-      for Behavior of Scene loop
-         Behavior.Fixed_Update (DT);
-      end loop;
-
-      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
-   end Fixed_Update;
-
-   procedure Update
-     (Scene         : Behaviors.Behavior_Array;
-      Barrier       : in out Ada.Synchronous_Barriers.Synchronous_Barrier;
-      Delta_Time    : Time_Span;
-      View_Position : Transforms.Vector4)
-   is
-      DT : constant Duration := To_Duration (Delta_Time);
-      DC : Boolean;
-   begin
-      for Behavior of Scene loop
-         Behavior.Update (DT);
-      end loop;
-
-      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
-
-      for Behavior of Scene loop
-         Behavior.After_Update (DT, View_Position);
-      end loop;
-
-      Ada.Synchronous_Barriers.Wait_For_Release (Barrier, DC);
-   end Update;
-
-   package Fixed_Workers is new Orka.Workers
-     (Positive (System.Multiprocessors.Number_Of_CPUs), "Physics", Fixed_Update);
-
-   package Workers is new Orka.Workers
-     (Positive (System.Multiprocessors.Number_Of_CPUs), "Worker", Update);
-
-   -----------------------------------------------------------------------------
+   Frame_Sync_Point : STC.Suspension_Object;
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -147,21 +100,40 @@ package body Orka.Loops is
         (Scene_Camera);
    end Scene;
 
-   procedure Run_Loop is
+   protected body Input_Processor is
+      procedure Reset is
+      begin
+         Processed := False;
+      end Reset;
+
+      procedure Process_Input is
+      begin
+         if not Processed then
+            Window.Process_Input;
+            Processed := True;
+         end if;
+      end Process_Input;
+
+      entry Wait_Until_Processed when Processed is
+      begin
+         null;
+      end Wait_Until_Processed;
+   end Input_Processor;
+
+   procedure Run_Simulation_Loop is
+      package SJ renames Simulation_Jobs;
+
       Previous_Time : Time := Clock;
+      Next_Time     : Time := Previous_Time;
+
       Lag : Time_Span := Time_Span_Zero;
-      Next_Time : Time := Previous_Time;
 
       Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
-      Dummy_VP : constant Transforms.Vector4 := Transforms.Zero_Point;
-
-      package Fences is new Orka.Buffer_Fences (Region_Type);
-
-      Fence : Fences.Buffer_Fence := Fences.Create_Buffer_Fence;
    begin
+      STC.Set_False (Frame_Sync_Point);
+
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
-         --  TODO Move Window.Swap_Buffers to here?
          declare
             Current_Time : constant Time := Clock;
             Elapsed : constant Time_Span := Current_Time - Previous_Time;
@@ -169,28 +141,42 @@ package body Orka.Loops is
             Previous_Time := Current_Time;
             Lag := Lag + Elapsed;
 
-            Window.Process_Input;
+            exit when Handler.Should_Stop;
 
-            exit when Handler.Should_Stop or Window.Should_Close;
+            --  Because the render loop needs to set and wait for a GL
+            --  fence, wait until the render loop says we can continue
+            STC.Suspend_Until_True (Frame_Sync_Point);
+            STC.Set_False (Frame_Sync_Point);
 
-            Fence.Prepare_Index;
+            declare
+               Iterations : constant Natural := Lag / Time_Step;
 
-            while Lag > Time_Step loop
-               Fixed_Workers.Barrier.Update (Scene_Array, Time_Step, Dummy_VP);
-               Lag := Lag - Time_Step;
-            end loop;
+               Fixed_Update_Job : constant Jobs.Job_Ptr
+                 := Jobs.Parallelize (SJ.Create_Fixed_Update_Job
+                   (Scene_Array, Time_Step, Iterations),
+                   Scene_Array'Length, 10);
+            begin
+               Lag := Lag - Iterations * Time_Step;
+               Scene.Camera.Update (To_Duration (Lag));
 
-            Scene.Camera.Update (To_Duration (Lag));
-            Workers.Barrier.Update (Scene_Array, Lag, Scene.Camera.View_Position);
+               declare
+                  Finished_Job : constant Jobs.Job_Ptr := SJ.Create_Finished_Job
+                    (Scene_Array, Time_Step, Scene.Camera.View_Position);
 
-            Window.Swap_Buffers;
+                  Handle : Futures.Pointers.Pointer;
+                  Status : Futures.Status;
+               begin
+                  Finished_Job.Set_Dependencies ((1 => Fixed_Update_Job));
+                  Job_Manager.Queue.Enqueue (Fixed_Update_Job, Handle);
 
-            --  Render the scene *after* having swapped buffers (sync point)
-            --  so that rendering on GPU happens in parallel with CPU work
-            --  during the next frame
-            Render (Scene_Array, Scene.Camera);
-
-            Fence.Advance_Index;
+                  select
+                     Handle.Get.all.Wait_Until_Done (Status);
+                  or
+                     delay until Clock + Handler.Frame_Limit;
+                  end select;
+               end;
+            end;
+            --  TODO Tell the render loop that it can swap the buffers
 
             if Scene.Modified then
                Scene.Replace_Array (Scene_Array);
@@ -209,13 +195,37 @@ package body Orka.Loops is
          end;
       end loop;
 
-      Workers.Barrier.Shutdown;
-      Fixed_Workers.Barrier.Shutdown;
+      Job_Manager.Shutdown;
    exception
       when others =>
-         Workers.Barrier.Shutdown;
-         Fixed_Workers.Barrier.Shutdown;
+         Job_Manager.Shutdown;
          raise;
-   end Run_Loop;
+   end Run_Simulation_Loop;
+
+   procedure Run_Render_Loop is
+      package Fences is new Orka.Buffer_Fences (Region_Type);
+
+      Fence : Fences.Buffer_Fence := Fences.Create_Buffer_Fence;
+   begin
+      loop
+         Input_Processor.Reset;
+
+         if Window.Should_Close then
+            Handler.Stop;
+            exit;
+         end if;
+
+         Fence.Prepare_Index;
+         --  Notify the simulation loop that it can continue
+         STC.Set_True (Frame_Sync_Point);
+
+         --  TODO Drain render queue
+         --  TODO And call Process_Input.Process_Input when a message asks us
+         --  TODO Render (Scene_Array, Scene.Camera);
+
+         Fence.Advance_Index;
+         Window.Swap_Buffers;
+      end loop;
+   end Run_Render_Loop;
 
 end Orka.Loops;

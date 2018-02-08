@@ -17,14 +17,18 @@ with Ada.Real_Time;
 
 with Orka.Behaviors;
 with Orka.Cameras;
+with Orka.Jobs.Boss;
 with Orka.Windows;
 
 generic
    Time_Step, Frame_Limit : Ada.Real_Time.Time_Span;
    Window : not null access Windows.Window'Class;
    Camera : Cameras.Camera_Ptr;
-   Render : access procedure (Scene : not null Behaviors.Behavior_Array_Access; Camera : Cameras.Camera_Ptr);
+   Render : access procedure
+     (Scene  : not null Behaviors.Behavior_Array_Access;
+      Camera : Cameras.Camera_Ptr);
    type Region_Type is mod <>;
+   with package Job_Manager is new Orka.Jobs.Boss (<>);
 package Orka.Loops is
 
    protected Handler is
@@ -70,6 +74,18 @@ package Orka.Loops is
       Scene_Camera  : Cameras.Camera_Ptr := Orka.Loops.Camera;
    end Scene;
 
-   procedure Run_Loop;
+   protected Input_Processor is
+      procedure Reset;
+
+      procedure Process_Input;
+
+      entry Wait_Until_Processed;
+   private
+      Processed : Boolean := False;
+   end Input_Processor;
+
+   procedure Run_Simulation_Loop;
+
+   procedure Run_Render_Loop;
 
 end Orka.Loops;
