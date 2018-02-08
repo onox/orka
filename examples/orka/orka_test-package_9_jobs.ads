@@ -12,9 +12,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Jobs.Queues;
+with Orka.Jobs.Boss;
 
 package Orka_Test.Package_9_Jobs is
+
+   package Boss is new Orka.Jobs.Boss (4, 1, 4);
 
    type Test_Parallel_Job is new Orka.Jobs.Slice_Job with null record;
 
@@ -26,6 +28,8 @@ package Orka_Test.Package_9_Jobs is
    end record;
 
    overriding
-   procedure Execute (Object : Test_Sequential_Job; Queue : Orka.Jobs.Queues.Queue_Ptr);
+   procedure Execute
+     (Object  : Test_Sequential_Job;
+      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
 
 end Orka_Test.Package_9_Jobs;

@@ -12,12 +12,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Real_Time;
 with Ada.Text_IO;
 
 package body Orka_Test.Package_9_Jobs is
 
+   use type Ada.Real_Time.Time;
+
    overriding
-   procedure Execute (Object : Test_Sequential_Job; Queue : Orka.Jobs.Queues.Queue_Ptr) is
+   procedure Execute
+     (Object  : Test_Sequential_Job;
+      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr)) is
    begin
       Ada.Text_IO.Put_Line ("Sequential job " & Object.ID'Image);
    end Execute;
