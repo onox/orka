@@ -13,7 +13,6 @@
 --  limitations under the License.
 
 with Ada.Exceptions;
-with Ada.Real_Time;
 
 with GL.Debug;
 with GL.Low_Level.Enums;
@@ -233,5 +232,15 @@ package body Orka.Resources.Textures.KTX is
             raise Texture_Load_Error with Path & " has " & Message;
          end;
    end Load_Texture;
+
+   procedure Load
+     (Bytes  : in out Byte_Array_Access;
+      Time   : Ada.Real_Time.Time_Span;
+      Path   : SU.Unbounded_String;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is
+   begin
+      --  TODO Implement
+      null;
+   end Load;
 
 end Orka.Resources.Textures.KTX;

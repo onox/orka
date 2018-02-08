@@ -23,7 +23,7 @@ package body Orka.Resources.Models is
      (Object   : in out Model;
       Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr
    is
-      Shapes_Count : constant Natural := Object.Shapes.Element'Length;
+      Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
 
       --  Set-up TBO for world transform matrices
       Transforms_Buffer : constant PMB.Persistent_Mapped_Buffer
@@ -37,7 +37,7 @@ package body Orka.Resources.Models is
       --  Cannot use 'Access because we're returning a pointer to Model_Instance
       return new Model_Instance'
         (Model   => Object'Unchecked_Access,
-         Scene   => Object.Scene,
+         Scene   => Object.Scene.Scene,
          Transforms => Transforms_Buffer,
          TBO_WT     => TBO_WT,
          Position   => Position);
@@ -70,7 +70,7 @@ package body Orka.Resources.Models is
       Object.Scene.Update_Tree (T (Structural_Frame_To_GL * (View_Position - Object.Position)));
 
       --  Write the world transform of the leaf nodes to the persistent mapped buffer
-      Object.Model.Shapes.Query_Element (Write_Transforms'Access);
+      Object.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);
    end After_Update;
 
    overriding

@@ -70,9 +70,15 @@ private
    package Cursor_Array_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Cursor_Array);
 
+   type Model_Scene is limited record
+      Scene  : Trees.Tree;
+      Shapes : Cursor_Array_Holder.Holder;
+   end record;
+
+   type Model_Scene_Ptr is not null access Model_Scene;
+
    type Model is tagged limited record
-      Scene   : Trees.Tree;
-      Shapes  : Cursor_Array_Holder.Holder;
+      Scene   : Model_Scene_Ptr;
       Format  : not null access Vertex_Formats.Vertex_Format;
       Batch   : Orka.Buffers.MDI.Batch;
       Bounds  : Buffers.Buffer;
