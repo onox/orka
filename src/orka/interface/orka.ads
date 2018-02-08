@@ -13,5 +13,5 @@
 --  limitations under the License.
 
 package Orka is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka;

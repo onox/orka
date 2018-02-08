@@ -14,8 +14,6 @@
 
 with Ada.Unchecked_Deallocation;
 
-with Orka.Jobs.Queues;
-
 package body Orka.Jobs is
 
    procedure Free (Pointer : in out Job_Ptr) is
@@ -28,11 +26,26 @@ package body Orka.Jobs is
    end Free;
 
    overriding
+   procedure Execute
+     (Object  : No_Job;
+      Enqueue : not null access procedure (Element : Job_Ptr)) is
+   begin
+      raise Program_Error with "Cannot execute Null_Job";
+   end Execute;
+
+   overriding
    function Decrement_Dependencies (Object : in out Abstract_Job) return Boolean is
       use type Atomics.Unsigned_32;
    begin
       return Atomics.Decrement (Object.Dependencies) = 0;
    end Decrement_Dependencies;
+
+   overriding
+   function Has_Dependencies (Object : Abstract_Job) return Boolean is
+      use type Atomics.Unsigned_32;
+   begin
+      return Object.Dependencies > 0;
+   end Has_Dependencies;
 
    overriding
    procedure Set_Dependencies
@@ -56,7 +69,10 @@ package body Orka.Jobs is
    end Parallelize;
 
    overriding
-   procedure Execute (Object : Parallel_For_Job; Queue : Jobs.Queues.Queue_Ptr) is
+   procedure Execute
+     (Object  : Parallel_For_Job;
+      Enqueue : not null access procedure (Element : Job_Ptr))
+   is
       Slice_Length : constant Positive := Positive'Min (Object.Length, Object.Slice);
 
       Slices    : constant Positive := Object.Length / Slice_Length;
@@ -80,18 +96,13 @@ package body Orka.Jobs is
       end if;
       pragma Assert (To = Object.Length);
 
-      --  Make the jobs in Parallel_Jobs dependencies of Object.Dependent
-      if Object.Dependent /= Null_Job then
-         Object.Dependent.Set_Dependencies (Parallel_Jobs);
-
-         --  Object is still a (useless) dependency of Object.Dependent,
-         --  but the worker that called this Execute procedure will decrement
-         --  Object.Dependent.Dependencies after this procedure is done
-      end if;
-
       for Job of Parallel_Jobs loop
-         Queue.Enqueue (Job);
+         Enqueue (Job);
       end loop;
+
+      --  Object is still a (useless) dependency of Object.Dependent,
+      --  but the worker that called this Execute procedure will decrement
+      --  Object.Dependent.Dependencies after this procedure is done
 
       declare
          Original_Job : Job_Ptr := Job_Ptr (Object.Job);
@@ -106,7 +117,9 @@ package body Orka.Jobs is
    end Execute;
 
    overriding
-   procedure Execute (Object : Slice_Job; Queue : Jobs.Queues.Queue_Ptr) is
+   procedure Execute
+     (Object  : Slice_Job;
+      Enqueue : not null access procedure (Element : Job_Ptr)) is
    begin
       Slice_Job'Class (Object).Execute (Object.From, Object.To);
    end Execute;

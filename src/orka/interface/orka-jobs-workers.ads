@@ -17,20 +17,26 @@ with System.Multiprocessors;
 with Orka.Jobs.Queues;
 
 generic
-   Prefix : String;
-   Queue  : Queues.Queue_Ptr;
-   Count  : System.Multiprocessors.CPU;
+   with package Queues is new Orka.Jobs.Queues (<>);
+
+   Queue : Queues.Queue_Ptr;
+
+   Task_Name : String;
+   --  Name of a worker task in system's process viewer
+
+   Count : System.Multiprocessors.CPU;
+   --  Number of workers to spawn
+
+   Maximum_Enqueued_By_Job : Positive;
+   --  Maximum number of extra jobs that a job can enqueue
 package Orka.Jobs.Workers is
 
-   type Worker is limited private;
-
-   type Worker_Array is array (Positive range <>) of Worker;
-
-   Workers : constant Worker_Array;
-
    procedure Shutdown;
+   --  Ask all workers to stop dequeuing jobs and terminate
 
 private
+
+   type Worker;
 
    task type Worker_Task (Data : not null access constant Worker);
 
@@ -38,6 +44,8 @@ private
       ID : Positive;
       T  : Worker_Task (Worker'Access);
    end record;
+
+   type Worker_Array is array (Positive range <>) of Worker;
 
    function Make_Workers return Worker_Array;
 

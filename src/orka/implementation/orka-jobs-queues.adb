@@ -14,43 +14,67 @@
 
 package body Orka.Jobs.Queues is
 
+   procedure Release_Future (Value : in out Futures.Future_Access) is
+   begin
+      Slots.Manager.Release (Slots.Future_Object_Access (Value));
+   end Release_Future;
+
    protected body Queue is
 
       function Can_Schedule_Job (P : Priority) return Boolean is
       begin
          case P is
+            when High =>
+               return not Priority_High.Full;
             when Normal =>
-               return not Has_Dependents.Full;
-            when Low =>
-               return not No_Dependents.Full;
+               return not Priority_Normal.Full;
          end case;
       end Can_Schedule_Job;
 
       function Has_Jobs return Boolean is
-        (not Has_Dependents.Empty or else not No_Dependents.Empty);
+        (not Priority_High.Empty or else not Priority_Normal.Empty);
 
-      entry Enqueue (Element : Job_Ptr) when True is
+      entry Enqueue
+        (Element : Job_Ptr;
+         Future  : in out Futures.Pointers.Pointer) when True is
       begin
          --  Prioritize jobs that have no dependencies themselves but
          --  are a dependency of some other job.
          if Element.Dependent /= Null_Job then
-            requeue Enqueue_Job (Normal);
+            requeue Enqueue_Job (High);
          else
-            requeue Enqueue_Job (Low);
+            requeue Enqueue_Job (Normal);
          end if;
       end Enqueue;
 
-      entry Enqueue_Job (for P in Priority) (Element : Job_Ptr) when Can_Schedule_Job (P) is
+      entry Enqueue_Job (for P in Priority)
+        (Element : Job_Ptr;
+         Future  : in out Futures.Pointers.Pointer) when Can_Schedule_Job (P) is
       begin
+         if Future.Is_Null then
+            declare
+               Slot : Slots.Future_Object_Access;
+            begin
+               select
+                  Slots.Manager.Acquire (Slot);
+                  Future.Set (Futures.Future_Access (Slot), Release_Future'Unrestricted_Access);
+               else
+                  raise Program_Error;
+               end select;
+            end;
+         end if;
+
          case P is
+            when High =>
+               Priority_High.Add_Last ((Job => Element, Future => Future));
             when Normal =>
-               Has_Dependents.Add_Last (Element);
-            when Low =>
-               No_Dependents.Add_Last (Element);
+               Priority_Normal.Add_Last ((Job => Element, Future => Future));
          end case;
       end Enqueue_Job;
 
-      entry Dequeue (Element : out Job_Ptr; Stop : out Boolean) when Should_Stop or Has_Jobs is
+      entry Dequeue
+        (Element : out Pair;
+         Stop    : out Boolean) when Should_Stop or else Has_Jobs is
       begin
          Stop := Should_Stop;
          if Should_Stop then
@@ -59,18 +83,28 @@ package body Orka.Jobs.Queues is
 
          --  Prioritize jobs that have no dependencies themselves but
          --  are a dependency of some other job.
-         if not Has_Dependents.Empty then
-            Element := Has_Dependents.Remove_First;
-         elsif not No_Dependents.Empty then
-            Element := No_Dependents.Remove_First;
+         if not Priority_High.Empty then
+            Element := Priority_High.Remove_First;
+         elsif not Priority_Normal.Empty then
+            Element := Priority_Normal.Remove_First;
          end if;
       end Dequeue;
 
       procedure Shutdown is
       begin
+         Slots.Manager.Shutdown;
          Should_Stop := True;
       end Shutdown;
 
+      function Length (P : Priority) return Natural is
+      begin
+         case P is
+            when High =>
+               return Priority_High.Length;
+            when Normal =>
+               return Priority_Normal.Length;
+         end case;
+      end Length;
    end Queue;
 
 end Orka.Jobs.Queues;

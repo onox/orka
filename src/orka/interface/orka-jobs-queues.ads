@@ -13,31 +13,52 @@
 --  limitations under the License.
 
 with Orka.Containers.Ring_Buffers;
+with Orka.Futures.Slots;
 
+generic
+   Maximum_Graphs : Positive;
+   --  Maximum number of separate job graphs
 package Orka.Jobs.Queues is
-   pragma Preelaborate;
 
-   type Priority is (Normal, Low);
+   type Priority is (High, Normal);
 
-   package Buffers is new Orka.Containers.Ring_Buffers (Job_Ptr, Get_Null_Job);
+   type Pair is record
+      Job    : Job_Ptr := Null_Job;
+      Future : Futures.Pointers.Pointer;
+   end record;
+
+   function Get_Null_Pair return Pair is (others => <>);
+
+   package Buffers is new Orka.Containers.Ring_Buffers (Pair, Get_Null_Pair);
 
    protected type Queue (Capacity : Positive) is
-      entry Enqueue (Element : Job_Ptr);
-      --  TODO Pre => not Element.Has_Dependencies
-      --         and then Element.all not in Parallel_Job'Class
-      --         and then Element /= Null_Job
+      entry Enqueue (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
+      --  with Pre => not Element.Has_Dependencies
+      --     and then Element.all not in Parallel_Job'Class
+      --     and then Element /= Null_Job
 
-      entry Dequeue (Element : out Job_Ptr; Stop : out Boolean);
-      --  TODO Post => not Element.Has_Dependencies
+      entry Dequeue (Element : out Pair; Stop : out Boolean)
+        with Post => Stop or else not Element.Job.Has_Dependencies;
 
       procedure Shutdown;
-   private
-      entry Enqueue_Job (Priority) (Element : Job_Ptr);
 
-      No_Dependents, Has_Dependents : Buffers.Buffer (Capacity);
+      function Length (P : Priority) return Natural;
+   private
+      entry Enqueue_Job (Priority)
+        (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
+
+      Priority_High   : Buffers.Buffer (Capacity);
+      Priority_Normal : Buffers.Buffer (Capacity);
+
       Should_Stop : Boolean := False;
    end Queue;
 
    type Queue_Ptr is not null access all Queue;
+
+   -----------------------------------------------------------------------------
+
+   package Slots is new Orka.Futures.Slots (Count => Maximum_Graphs);
+
+   procedure Release_Future (Value : in out Futures.Future_Access);
 
 end Orka.Jobs.Queues;

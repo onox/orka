@@ -26,16 +26,14 @@ package body Orka.Smart_Pointers is
    procedure Set
      (Object : in out Abstract_Pointer;
       Value  : Object_Type;
-      Free   : not null access procedure (Value : in out Object_Type))
-   is
-      Procedure_Free : constant Free_Ptr := Free;
+      Free   : Free_Ptr) is
    begin
       if Object.Data /= null then
          --  Decrement old reference count
          Finalize (Object);
       end if;
 
-      Object.Data := new Data_Record'(Object => Value, Free => Procedure_Free, References => <>);
+      Object.Data := new Data_Record'(Object => Value, Free => Free, References => <>);
    end Set;
 
    function Get (Object : Mutable_Pointer) return Reference is
