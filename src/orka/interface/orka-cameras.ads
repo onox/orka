@@ -15,8 +15,8 @@
 with GL.Types;
 
 with Orka.Behaviors;
-with Orka.Framebuffers;
 with Orka.Inputs;
+with Orka.Rendering.Framebuffers;
 with Orka.Transforms.Singles.Matrices;
 
 package Orka.Cameras is
@@ -51,7 +51,7 @@ package Orka.Cameras is
    type Camera
      (Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Framebuffers.Framebuffer_Ptr) is abstract tagged private;
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr) is abstract tagged private;
 
    type Camera_Ptr is not null access Camera'Class;
 
@@ -69,7 +69,7 @@ package Orka.Cameras is
    type Parameter_Record is record
       Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Framebuffers.Framebuffer_Ptr;
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr;
    end record;
 
    function Create_Camera
@@ -81,7 +81,7 @@ package Orka.Cameras is
      (Kind  : Camera_Kind;
       Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Framebuffers.Framebuffer_Ptr) return Camera'Class;
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera'Class;
 
    type Observing_Camera is interface;
 
@@ -209,7 +209,7 @@ private
    type Camera
      (Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Framebuffers.Framebuffer_Ptr) is abstract tagged null record;
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr) is abstract tagged null record;
 
    type First_Person_Camera is abstract new Camera with record
       Position : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);

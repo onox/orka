@@ -18,9 +18,9 @@ with GL.Attributes;
 with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
-with Orka.Buffers;
+with Orka.Rendering.Buffers;
 
-package Orka.Vertex_Formats is
+package Orka.Rendering.Vertex_Formats is
    pragma Preelaborate;
 
    type Attribute_Buffer is tagged private;
@@ -30,7 +30,7 @@ package Orka.Vertex_Formats is
       Index  : GL.Attributes.Attribute;
       Count  : GL.Types.Component_Count);
 
-   procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Orka.Buffers.Buffer);
+   procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Buffers.Buffer);
 
    procedure Set_Per_Instance (Object : Attribute_Buffer; Per_Instance : Boolean);
 
@@ -56,15 +56,15 @@ package Orka.Vertex_Formats is
    procedure Set_Vertex_Buffer
      (Object : in out Vertex_Format;
       Index  : Positive;
-      Buffer : Orka.Buffers.Buffer);
+      Buffer : Buffers.Buffer);
 
    procedure Set_Index_Buffer
      (Object : in out Vertex_Format;
-      Buffer : Orka.Buffers.Buffer);
+      Buffer : Buffers.Buffer);
 
    procedure Draw (Object : Vertex_Format; Offset, Count : GL.Types.Size);
 
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Orka.Buffers.Buffer);
+   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer);
 
 private
 
@@ -84,4 +84,4 @@ private
       Attributes   : Attribute_Buffers.Vector;
    end record;
 
-end Orka.Vertex_Formats;
+end Orka.Rendering.Vertex_Formats;

@@ -12,11 +12,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Orka.Buffers.Pointers;
+private with Orka.Rendering.Buffers.Pointers;
 
 generic
    type Index_Type is mod <>;
-package Orka.Buffers.Persistent_Mapped is
+package Orka.Rendering.Buffers.Persistent_Mapped is
    pragma Preelaborate;
 
    type IO_Mode is (Read, Write);
@@ -156,4 +156,4 @@ private
       end case;
    end record;
 
-end Orka.Buffers.Persistent_Mapped;
+end Orka.Rendering.Buffers.Persistent_Mapped;

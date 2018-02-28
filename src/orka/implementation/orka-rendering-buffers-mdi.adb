@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Buffers.MDI is
+package body Orka.Rendering.Buffers.MDI is
 
    procedure Append
      (Object : in out Batch;
@@ -55,7 +55,7 @@ package body Orka.Buffers.MDI is
 
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
-      Format  : not null access Vertex_Formats.Vertex_Format;
+      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
       Flags   : GL.Objects.Buffers.Storage_Bits;
       Visible : Boolean := True) return Batch
    is
@@ -69,25 +69,25 @@ package body Orka.Buffers.MDI is
             Instances_Array (I) := UInt (I);
          end loop;
 
-         Result.Instances := Orka.Buffers.Create_Buffer (Flags, Instances_Array);
-         Result.Commands  := Orka.Buffers.Create_Buffer (Flags, Types.Elements_Command_Type, Parts);
+         Result.Instances := Buffers.Create_Buffer (Flags, Instances_Array);
+         Result.Commands  := Buffers.Create_Buffer (Flags, Types.Elements_Command_Type, Parts);
 
          --  Attributes
-         Result.Positions := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (1), Vertices * 3);
-         Result.Normals   := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (2), Vertices * 3);
-         Result.UVs       := Orka.Buffers.Create_Buffer (Flags, Format.Attribute_Kind (3), Vertices * 2);
+         Result.Positions := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (1), Vertices * 3);
+         Result.Normals   := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (2), Vertices * 3);
+         Result.UVs       := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (3), Vertices * 2);
          --  TODO Don't hardcode vector size factors
 
          --  Indices
          case Format.Index_Kind is
             when GL.Types.UByte_Type =>
-               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UByte_Type, Indices);
+               Result.Indices := Buffers.Create_Buffer (Flags, UByte_Type, Indices);
             when GL.Types.UShort_Type =>
-               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UShort_Type, Indices);
+               Result.Indices := Buffers.Create_Buffer (Flags, UShort_Type, Indices);
             when GL.Types.UInt_Type =>
-               Result.Indices := Orka.Buffers.Create_Buffer (Flags, UInt_Type, Indices);
+               Result.Indices := Buffers.Create_Buffer (Flags, UInt_Type, Indices);
          end case;
       end return;
    end Create_Batch;
 
-end Orka.Buffers.MDI;
+end Orka.Rendering.Buffers.MDI;

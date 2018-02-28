@@ -14,7 +14,7 @@
 
 with GL.Debug;
 
-package body Orka.Buffer_Fences is
+package body Orka.Rendering.Fences is
 
    package Debug_Messages is new GL.Debug.Messages
      (GL.Debug.Third_Party, GL.Debug.Performance);
@@ -49,4 +49,4 @@ package body Orka.Buffer_Fences is
       Object.Index := Object.Index + 1;
    end Advance_Index;
 
-end Orka.Buffer_Fences;
+end Orka.Rendering.Fences;

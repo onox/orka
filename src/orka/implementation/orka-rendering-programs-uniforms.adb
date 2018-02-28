@@ -14,7 +14,7 @@
 
 with Ada.Unchecked_Conversion;
 
-package body Orka.Programs.Uniforms is
+package body Orka.Rendering.Programs.Uniforms is
 
    function Texture_Kind (Sampler : LE.Resource_Type) return LE.Texture_Kind is
       use LE;
@@ -249,4 +249,4 @@ package body Orka.Programs.Uniforms is
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
    end Create_Uniform_Variable;
 
-end Orka.Programs.Uniforms;
+end Orka.Rendering.Programs.Uniforms;

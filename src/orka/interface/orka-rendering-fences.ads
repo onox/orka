@@ -17,7 +17,7 @@ with GL.Fences;
 generic
    type Index_Type is mod <>;
    Maximum_Wait : Duration := 0.010;
-package Orka.Buffer_Fences is
+package Orka.Rendering.Fences is
 
    type Buffer_Fence is tagged private;
 
@@ -39,4 +39,4 @@ private
       Index  : Index_Type;
    end record;
 
-end Orka.Buffer_Fences;
+end Orka.Rendering.Fences;

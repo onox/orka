@@ -18,13 +18,13 @@ with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 
 with Orka.Behaviors;
-with Orka.Buffers.MDI;
-with Orka.Buffers.Persistent_Mapped;
-with Orka.Programs.Uniforms;
+with Orka.Rendering.Buffers.MDI;
+with Orka.Rendering.Buffers.Persistent_Mapped;
+with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.Vertex_Formats;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
-with Orka.Vertex_Formats;
 
 package Orka.Resources.Models is
    pragma Preelaborate;
@@ -34,7 +34,7 @@ package Orka.Resources.Models is
 
    type Buffer_Region_Type is mod 4;
 
-   package PMB is new Orka.Buffers.Persistent_Mapped (Buffer_Region_Type);
+   package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Buffer_Region_Type);
 
    type Model is tagged limited private;
 
@@ -79,12 +79,12 @@ private
 
    type Model is tagged limited record
       Scene   : Model_Scene_Ptr;
-      Format  : not null access Vertex_Formats.Vertex_Format;
-      Batch   : Orka.Buffers.MDI.Batch;
-      Bounds  : Buffers.Buffer;
+      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
+      Batch   : Rendering.Buffers.MDI.Batch;
+      Bounds  : Rendering.Buffers.Buffer;
       TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
-      Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
-      Uniform_IO : not null access Programs.Uniforms.Uniform;
+      Uniform_WT : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;
 
    type Model_Instance (Model : access Orka.Resources.Models.Model) is

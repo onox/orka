@@ -15,7 +15,7 @@
 with GL.Drawing;
 with GL.Objects.Buffers;
 
-package body Orka.Vertex_Formats is
+package body Orka.Rendering.Vertex_Formats is
 
    use GL.Types;
 
@@ -39,7 +39,7 @@ package body Orka.Vertex_Formats is
       Object.Attributes_Count := Object.Attributes_Count + Natural (Count);
    end Add_Attribute;
 
-   procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Orka.Buffers.Buffer) is
+   procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind_Vertex_Buffer (Object.Binding_Index, Buffer.GL_Buffer,
                                               Object.Kind, 0,
@@ -99,7 +99,7 @@ package body Orka.Vertex_Formats is
    procedure Set_Vertex_Buffer
      (Object : in out Vertex_Format;
       Index  : Positive;
-      Buffer : Orka.Buffers.Buffer)
+      Buffer : Buffers.Buffer)
    is
       procedure Update (Element : in out Attribute_Buffer) is
       begin
@@ -109,7 +109,7 @@ package body Orka.Vertex_Formats is
       Object.Attributes.Update_Element (Index, Update'Access);
    end Set_Vertex_Buffer;
 
-   procedure Set_Index_Buffer (Object : in out Vertex_Format; Buffer : Orka.Buffers.Buffer) is
+   procedure Set_Index_Buffer (Object : in out Vertex_Format; Buffer : Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind_Element_Buffer (Buffer.GL_Buffer);
    end Set_Index_Buffer;
@@ -120,7 +120,7 @@ package body Orka.Vertex_Formats is
       GL.Drawing.Draw_Arrays (Object.Mode, Offset, Count);
    end Draw;
 
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Orka.Buffers.Buffer) is
+   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind;
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
@@ -128,4 +128,4 @@ package body Orka.Vertex_Formats is
         (Object.Mode, Object.Index_Kind, GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
 
-end Orka.Vertex_Formats;
+end Orka.Rendering.Vertex_Formats;

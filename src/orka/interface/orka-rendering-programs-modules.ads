@@ -16,7 +16,7 @@ with Ada.Containers.Indefinite_Holders;
 
 with GL.Objects.Shaders;
 
-package Orka.Programs.Modules is
+package Orka.Rendering.Programs.Modules is
    pragma Preelaborate;
 
    type Module is tagged private;
@@ -46,4 +46,4 @@ private
       Shaders : Shader_Array;
    end record;
 
-end Orka.Programs.Modules;
+end Orka.Rendering.Programs.Modules;

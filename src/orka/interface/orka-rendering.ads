@@ -1,4 +1,4 @@
---  Copyright (c) 2017 onox <denkpadje@gmail.com>
+--  Copyright (c) 2018 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -12,11 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Vertex_Formats.Formats is
-   pragma Preelaborate;
-
-   function Interleaved_Position_Normal_UV return Vertex_Format;
-
-   function Separate_Position_Normal_UV_Half_MDI return Vertex_Format;
-
-end Orka.Vertex_Formats.Formats;
+package Orka.Rendering is
+   pragma Pure;
+end Orka.Rendering;

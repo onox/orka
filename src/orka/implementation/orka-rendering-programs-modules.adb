@@ -14,7 +14,7 @@
 
 with GL.Files;
 
-package body Orka.Programs.Modules is
+package body Orka.Rendering.Programs.Modules is
 
    procedure Load_And_Compile
      (Object : in out Module;
@@ -70,4 +70,4 @@ package body Orka.Programs.Modules is
       end loop;
    end Attach_Shaders;
 
-end Orka.Programs.Modules;
+end Orka.Rendering.Programs.Modules;

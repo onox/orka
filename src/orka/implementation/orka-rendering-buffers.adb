@@ -14,9 +14,9 @@
 
 with System;
 
-with Orka.Buffers.Pointers;
+with Orka.Rendering.Buffers.Pointers;
 
-package body Orka.Buffers is
+package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -295,4 +295,4 @@ package body Orka.Buffers is
       end case;
    end Copy_Data;
 
-end Orka.Buffers;
+end Orka.Rendering.Buffers;

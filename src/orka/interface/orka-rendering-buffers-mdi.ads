@@ -12,9 +12,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Vertex_Formats;
+with Orka.Rendering.Vertex_Formats;
 
-package Orka.Buffers.MDI is
+package Orka.Rendering.Buffers.MDI is
    pragma Preelaborate;
 
    type Batch is tagged record
@@ -43,8 +43,8 @@ package Orka.Buffers.MDI is
 
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
-      Format  : not null access Vertex_Formats.Vertex_Format;
+      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
       Flags   : GL.Objects.Buffers.Storage_Bits;
       Visible : Boolean := True) return Batch;
 
-end Orka.Buffers.MDI;
+end Orka.Rendering.Buffers.MDI;

@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private package Orka.Buffers.Pointers is
+private package Orka.Rendering.Buffers.Pointers is
    pragma Preelaborate;
 
    package Half is new GL.Objects.Buffers.Buffer_Pointers
@@ -51,4 +51,4 @@ private package Orka.Buffers.Pointers is
    package Elements_Command is new GL.Objects.Buffers.Buffer_Pointers
      (Indirect.Elements_Indirect_Command_Pointers);
 
-end Orka.Buffers.Pointers;
+end Orka.Rendering.Buffers.Pointers;

@@ -19,10 +19,10 @@ with GL.Objects.Programs;
 with GL.Objects.Shaders;
 with GL.Types;
 
-limited with Orka.Programs.Modules;
-limited with Orka.Programs.Uniforms;
+limited with Orka.Rendering.Programs.Modules;
+limited with Orka.Rendering.Programs.Uniforms;
 
-package Orka.Programs is
+package Orka.Rendering.Programs is
    pragma Preelaborate;
 
    subtype Uniform_Location is GL.Objects.Programs.Uniform_Location_Type;
@@ -119,4 +119,4 @@ private
       Index    : Subroutine_Index)
    with Pre => Object.Has_Subroutines;
 
-end Orka.Programs;
+end Orka.Rendering.Programs;

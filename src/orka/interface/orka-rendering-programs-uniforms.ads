@@ -22,7 +22,7 @@ with GL.Types;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Matrices;
 
-package Orka.Programs.Uniforms is
+package Orka.Rendering.Programs.Uniforms is
    pragma Preelaborate;
 
    package LE renames GL.Low_Level.Enums;
@@ -146,7 +146,7 @@ private
      (Element_Type => GL.Objects.Programs.Subroutine_Index_Array,
       "=" => GL.Objects.Programs."=");
 
-   type Uniform_Subroutine (Program : access Orka.Programs.Program) is tagged limited record
+   type Uniform_Subroutine (Program : access Programs.Program) is tagged limited record
       Location : Uniform_Location;
       Indices  : Indices_Holder.Holder;
       Shader   : GL.Objects.Shaders.Shader_Type;
@@ -156,4 +156,4 @@ private
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 
-end Orka.Programs.Uniforms;
+end Orka.Rendering.Programs.Uniforms;

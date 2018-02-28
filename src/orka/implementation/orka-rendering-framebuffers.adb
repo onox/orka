@@ -17,7 +17,7 @@ with GL.Pixels;
 with GL.Toggles;
 with GL.Window;
 
-package body Orka.Framebuffers is
+package body Orka.Rendering.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
@@ -133,4 +133,4 @@ package body Orka.Framebuffers is
          (Color => True, others => False), GL.Objects.Textures.Nearest);
    end Resolve_To;
 
-end Orka.Framebuffers;
+end Orka.Rendering.Framebuffers;

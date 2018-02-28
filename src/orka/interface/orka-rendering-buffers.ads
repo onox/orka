@@ -18,7 +18,7 @@ with GL.Types.Colors;
 
 with Orka.Types;
 
-package Orka.Buffers is
+package Orka.Rendering.Buffers is
    pragma Preelaborate;
 
    use GL.Types;
@@ -175,4 +175,4 @@ private
       Length : Natural;
    end record;
 
-end Orka.Buffers;
+end Orka.Rendering.Buffers;

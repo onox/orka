@@ -16,7 +16,7 @@ with GL.Low_Level.Enums;
 with GL.Pixels;
 with GL.Types;
 
-package body Orka.Textures is
+package body Orka.Rendering.Textures is
 
    use GL.Objects.Textures;
 
@@ -48,4 +48,4 @@ package body Orka.Textures is
       end return;
    end Bayer_Dithering_Pattern;
 
-end Orka.Textures;
+end Orka.Rendering.Textures;

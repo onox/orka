@@ -14,7 +14,7 @@
 
 with GL.Objects.Textures;
 
-package Orka.Textures is
+package Orka.Rendering.Textures is
    pragma Preelaborate;
 
    function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture_2D;
@@ -25,4 +25,4 @@ package Orka.Textures is
    --  uniform sampler2D dither;
    --  color.xyz += vec3(texture(dither, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
 
-end Orka.Textures;
+end Orka.Rendering.Textures;

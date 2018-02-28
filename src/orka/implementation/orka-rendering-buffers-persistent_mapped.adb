@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Buffers.Persistent_Mapped is
+package body Orka.Rendering.Buffers.Persistent_Mapped is
 
    function Create_Buffer
      (Kind   : Orka.Types.Composite_Type;
@@ -181,4 +181,4 @@ package body Orka.Buffers.Persistent_Mapped is
         (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Value);
    end Write_Data;
 
-end Orka.Buffers.Persistent_Mapped;
+end Orka.Rendering.Buffers.Persistent_Mapped;

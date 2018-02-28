@@ -12,10 +12,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Programs.Modules;
-with Orka.Programs.Uniforms;
+with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Uniforms;
 
-package body Orka.Programs is
+package body Orka.Rendering.Programs is
 
    package Program_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Program);
@@ -148,4 +148,4 @@ package body Orka.Programs is
       return Uniforms.Create_Uniform_Variable (Object, Name);
    end Uniform;
 
-end Orka.Programs;
+end Orka.Rendering.Programs;

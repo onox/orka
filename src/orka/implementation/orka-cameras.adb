@@ -269,7 +269,7 @@ package body Orka.Cameras is
      (Kind  : Camera_Kind;
       Input : Inputs.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Framebuffers.Framebuffer_Ptr) return Camera'Class
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera'Class
    is
       function Create is new Ada.Tags.Generic_Dispatching_Constructor
         (Camera, Parameter_Record, Create_Camera);

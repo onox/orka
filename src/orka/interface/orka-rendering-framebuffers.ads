@@ -18,9 +18,9 @@ with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
 with GL.Types;
 
-with Orka.Buffers;
+with Orka.Rendering.Buffers;
 
-package Orka.Framebuffers is
+package Orka.Rendering.Framebuffers is
    pragma Preelaborate;
 
    use GL.Types;
@@ -76,4 +76,4 @@ private
       Depth_Attachment : Attachment_Holder.Holder;
    end record;
 
-end Orka.Framebuffers;
+end Orka.Rendering.Framebuffers;

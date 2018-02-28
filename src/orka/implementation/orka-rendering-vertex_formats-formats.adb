@@ -14,7 +14,7 @@
 
 with GL.Types;
 
-package body Orka.Vertex_Formats.Formats is
+package body Orka.Rendering.Vertex_Formats.Formats is
 
    use GL.Types;
 
@@ -65,4 +65,4 @@ package body Orka.Vertex_Formats.Formats is
       end return;
    end Separate_Position_Normal_UV_Half_MDI;
 
-end Orka.Vertex_Formats.Formats;
+end Orka.Rendering.Vertex_Formats.Formats;

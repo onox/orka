@@ -199,7 +199,7 @@ package body Orka.Resources.Models.glTF is
    end Buffer_View_Conversions;
 
    procedure Count_Parts
-     (Format : not null access Vertex_Formats.Vertex_Format;
+     (Format : not null access Rendering.Vertex_Formats.Vertex_Format;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Vertices, Indices : out Natural)
@@ -263,8 +263,8 @@ package body Orka.Resources.Models.glTF is
    end Count_Parts;
 
    procedure Add_Parts
-     (Format : not null access Vertex_Formats.Vertex_Format;
-      Batch  : in out Buffers.MDI.Batch;
+     (Format : not null access Rendering.Vertex_Formats.Vertex_Format;
+      Batch  : in out Rendering.Buffers.MDI.Batch;
       Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector)
