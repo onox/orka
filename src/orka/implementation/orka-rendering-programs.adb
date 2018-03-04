@@ -27,12 +27,14 @@ package body Orka.Rendering.Programs is
       use type GL.Types.Int;
    begin
       return Result : Program do
+         Result.GL_Program.Set_Separable (Separable);
+
          --  Attach all shaders to the program before linking
          Programs.Modules.Attach_Shaders (Modules, Result);
 
-         Result.GL_Program.Set_Separable (Separable);
-
          Result.GL_Program.Link;
+         Programs.Modules.Detach_Shaders (Modules, Result);
+
          if not Result.GL_Program.Link_Status then
             raise Program_Link_Error with Result.GL_Program.Info_Log;
          end if;

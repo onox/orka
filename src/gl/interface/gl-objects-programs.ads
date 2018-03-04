@@ -25,6 +25,8 @@ package GL.Objects.Programs is
 
    procedure Attach (Subject : Program; Shader : Shaders.Shader);
 
+   procedure Detach (Subject : Program; Shader : Shaders.Shader);
+
    procedure Link (Subject : Program);
 
    function Link_Status (Subject : Program) return Boolean;

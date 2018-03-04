@@ -70,4 +70,23 @@ package body Orka.Rendering.Programs.Modules is
       end loop;
    end Attach_Shaders;
 
+   procedure Detach_Shaders (Modules : Module_Array; Program : Programs.Program) is
+      use GL.Objects.Shaders;
+
+      procedure Detach (Holder : Shader_Holder.Holder) is
+      begin
+         if not Holder.Is_Empty then
+            Program.GL_Program.Detach (Holder.Element);
+         end if;
+      end Detach;
+   begin
+      for Module of Modules loop
+         Detach (Module.Shaders (Vertex_Shader));
+         Detach (Module.Shaders (Tess_Control_Shader));
+         Detach (Module.Shaders (Tess_Evaluation_Shader));
+         Detach (Module.Shaders (Geometry_Shader));
+         Detach (Module.Shaders (Fragment_Shader));
+      end loop;
+   end Detach_Shaders;
+
 end Orka.Rendering.Programs.Modules;

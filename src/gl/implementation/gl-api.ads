@@ -814,6 +814,9 @@ private package GL.API is
    procedure Attach_Shader is new Loader.Procedure_With_2_Params
      ("glAttachShader", UInt, UInt);
 
+   procedure Detach_Shader is new Loader.Procedure_With_2_Params
+     ("glDetachShader", UInt, UInt);
+
    procedure Link_Program is new Loader.Procedure_With_1_Param
      ("glLinkProgram", UInt);
 

@@ -28,6 +28,8 @@ package Orka.Rendering.Programs.Modules is
 
    procedure Attach_Shaders (Modules : Module_Array; Program : Programs.Program);
 
+   procedure Detach_Shaders (Modules : Module_Array; Program : Programs.Program);
+
    Shader_Compile_Error : exception;
 
    subtype Non_Compute_Shader_Type is GL.Objects.Shaders.Shader_Type

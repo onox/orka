@@ -29,6 +29,12 @@ package body GL.Objects.Programs is
       Raise_Exception_On_OpenGL_Error;
    end Attach;
 
+   procedure Detach (Subject : Program; Shader : Shaders.Shader) is
+   begin
+      API.Detach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
+      Raise_Exception_On_OpenGL_Error;
+   end Detach;
+
    procedure Link (Subject : Program) is
    begin
       API.Link_Program (Subject.Reference.GL_Id);
