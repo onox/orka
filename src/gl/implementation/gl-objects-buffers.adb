@@ -18,10 +18,18 @@ with Ada.Unchecked_Conversion;
 with System;
 
 with GL.API;
-with GL.Enums;
+with GL.Enums.Getter;
 with GL.Pixels;
 
 package body GL.Objects.Buffers is
+
+   function Minimum_Alignment return Types.Size is
+      Ret : Types.Size := 64;
+   begin
+      API.Get_Size (Enums.Getter.Min_Map_Buffer_Alignment, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Minimum_Alignment;
 
    use type Low_Level.Enums.Buffer_Kind;
 

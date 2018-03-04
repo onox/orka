@@ -19,6 +19,11 @@ private with GL.Low_Level.Enums;
 package GL.Objects.Buffers is
    pragma Preelaborate;
 
+   function Minimum_Alignment return Types.Size
+     with Post => Minimum_Alignment'Result >= 64;
+   --  Minimum byte alignment of pointers returned by Map_Range
+   --  (at least 64 bytes to support SIMD CPU instructions)
+
    type Access_Kind is (Read_Only, Write_Only, Read_Write);
 
    type Access_Bits is record
