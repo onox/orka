@@ -16,9 +16,9 @@ with GL.Buffers;
 with GL.Objects.Buffers;
 with GL.Types;
 
-with Orka.Buffers;
-with Orka.Vertex_Formats;
-with Orka.Programs.Modules;
+with Orka.Rendering.Buffers;
+with Orka.Rendering.Vertex_Formats;
+with Orka.Rendering.Programs.Modules;
 
 with GL_Test.Display_Backend;
 
@@ -27,10 +27,10 @@ procedure Orka_Test.Test_3_Module_Array is
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
    pragma Unreferenced (Initialized);
 
-   use Orka.Vertex_Formats;
-   use Orka.Programs;
+   use Orka.Rendering.Vertex_Formats;
+   use Orka.Rendering.Programs;
 
-   function Load_Mesh (Program : Orka.Programs.Program) return Vertex_Format is
+   function Load_Mesh (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
       use GL.Types;
       use GL.Objects.Buffers;
 
@@ -40,23 +40,23 @@ procedure Orka_Test.Test_3_Module_Array is
              0.0,  0.5);
 
       --  Upload Vertices data to VBO
-      VBO : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+      VBO : constant Orka.Rendering.Buffers.Buffer := Orka.Rendering.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
 
-      procedure Add_Vertex_Attributes (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
+      procedure Add_Vertex_Attributes (Buffer : in out Orka.Rendering.Vertex_Formats.Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
          Buffer.Set_Buffer (VBO);
       end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Orka.Rendering.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh;
 
    use GL.Buffers;
 
-   Program_1 : Program := Orka.Programs.Create_Program (Modules.Module_Array'(
+   Program_1 : Program := Orka.Rendering.Programs.Create_Program (Modules.Module_Array'(
      Modules.Create_Module
        (FS => "../examples/orka/shaders/test-3-module-1.frag"),
      Modules.Create_Module

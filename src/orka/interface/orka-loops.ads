@@ -59,9 +59,9 @@ package Orka.Loops is
       procedure Remove (Object : Behaviors.Behavior_Ptr)
         with Post => Modified;
 
-      procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access)
-        with Pre  => Target /= null and Modified,
-             Post => Target /= null and not Modified;
+      procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access);
+        --with Pre  => Target /= null and Modified,
+        --     Post => Target /= null and not Modified;
 
       function Modified return Boolean;
 

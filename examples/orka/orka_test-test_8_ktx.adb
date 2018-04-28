@@ -23,8 +23,8 @@ with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
 with Orka.Debug;
-with Orka.Programs.Modules;
-with Orka.Programs.Uniforms;
+with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Uniforms;
 with Orka.Resources.Textures.KTX;
 with Orka.Windows.GLFW;
 
@@ -56,7 +56,7 @@ begin
       Texture_1 : constant Textures.Texture := Textures.KTX.Load_Texture (Ada.Command_Line.Argument (1));
       --  TODO Handle non-Texture_2D textures
 
-      use Orka.Programs;
+      use Orka.Rendering.Programs;
       use GL.Objects.Textures;
       use GL.Types;
 
