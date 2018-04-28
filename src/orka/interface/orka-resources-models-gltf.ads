@@ -21,8 +21,11 @@ private with Orka.glTF.Meshes;
 private with Orka.glTF.Scenes;
 
 with Orka.Jobs;
+with Orka.Rendering.Vertex_Formats;
+with Orka.Rendering.Programs;
 
 package Orka.Resources.Models.glTF is
+
 
    procedure Load
      (Bytes   : in out Byte_Array_Access;

@@ -18,7 +18,7 @@ with Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
-with Orka.Buffer_Fences;
+with Orka.Rendering.Fences;
 with Orka.Futures;
 with Orka.Simulation_Jobs;
 
@@ -203,7 +203,7 @@ package body Orka.Loops is
    end Run_Simulation_Loop;
 
    procedure Run_Render_Loop is
-      package Fences is new Orka.Buffer_Fences (Region_Type);
+      package Fences is new Orka.Rendering.Fences (Region_Type);
 
       Fence : Fences.Buffer_Fence := Fences.Create_Buffer_Fence;
    begin

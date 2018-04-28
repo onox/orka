@@ -52,8 +52,8 @@ package Orka.Futures.Slots is
       entry Acquire (Slot : out Future_Object_Access);
       --  with Pre => not Stopping
 
-      procedure Release (Slot : not null Future_Object_Access)
-        with Pre => Stopping or else Slot.Current_Status in Futures.Done | Futures.Failed;
+      procedure Release (Slot : not null Future_Object_Access);
+        --with Pre => Stopping or else Slot.Current_Status in Futures.Done | Futures.Failed;
 
       procedure Shutdown;
 

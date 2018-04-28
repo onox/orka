@@ -20,9 +20,8 @@ with Ada.Strings.Hash;
 with JSON.Parsers;
 with JSON.Streams;
 
---  with GL.Debug;
---  with GL.Objects.Buffers;
---  with GL.Pixels;
+with GL.Objects.Buffers;
+with GL.Pixels;
 with GL.Types.Indirect;
 
 with Orka.Types;
@@ -31,7 +30,7 @@ package body Orka.Resources.Models.glTF is
 
    Default_Root_Name : constant String := "root";
 
---   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
+   --   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
 
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
@@ -219,7 +218,7 @@ package body Orka.Resources.Models.glTF is
 
             First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
             pragma Assert (First_Primitive.Attributes.Length = 3,
-              "Primitive of mesh " & Mesh.Name.all & " does not have 3 attributes");
+                           "Primitive of mesh " & Mesh.Name.all & " does not have 3 attributes");
 
             Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
             Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
@@ -248,10 +247,10 @@ package body Orka.Resources.Models.glTF is
             pragma Assert (Accessor_Index.Kind = Orka.glTF.Accessors.Scalar);
 
             pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Format.Index_Kind,
-              "Index of mesh " & Mesh.Name.all & " has type " &
-              GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
-              " but expected " &
-              GL.Types.Unsigned_Numeric_Type'Image (Format.Index_Kind) & " or lower");
+                           "Index of mesh " & Mesh.Name.all & " has type " &
+                             GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
+                             " but expected " &
+                             GL.Types.Unsigned_Numeric_Type'Image (Format.Index_Kind) & " or lower");
          begin
             Count_Vertices := Count_Vertices + Accessor_Position.Count;
             Count_Indices  := Count_Indices + Accessor_Index.Count;
@@ -315,14 +314,14 @@ package body Orka.Resources.Models.glTF is
             View_Index : Buffer_View renames Views (Accessor_Index.View);
 
             Positions : Indirect.Half_Array_Access := new Half_Array (1 .. Int
-              (Accessor_Position.Count * Attribute_Length (Accessor_Position.Kind)));
+                                                                      (Accessor_Position.Count * Attribute_Length (Accessor_Position.Kind)));
             Normals   : Indirect.Half_Array_Access := new Half_Array (1 .. Int
-              (Accessor_Normal.Count * Attribute_Length (Accessor_Normal.Kind)));
+                                                                      (Accessor_Normal.Count * Attribute_Length (Accessor_Normal.Kind)));
             UVs       : Indirect.Half_Array_Access := new Half_Array (1 .. Int
-              (Accessor_UV.Count * Attribute_Length (Accessor_UV.Kind)));
+                                                                      (Accessor_UV.Count * Attribute_Length (Accessor_UV.Kind)));
 
             Indices   : Indirect.UInt_Array_Access := new UInt_Array (1 .. Int
-              (Accessor_Index.Count));
+                                                                      (Accessor_Index.Count));
             --  TODO Use Conversions.Target_Array?
          begin
             --  Convert attributes
@@ -351,82 +350,82 @@ package body Orka.Resources.Models.glTF is
       end loop;
    end Add_Parts;
 
---   function Load_Model
---     (Format     : not null access Vertex_Formats.Vertex_Format;
---      Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
---      Uniform_IO : not null access Programs.Uniforms.Uniform;
---      Path       : String) return Model
---   is
---   begin
---         begin
---            declare
---               use GL.Objects.Buffers;
-
---               Vertices_Length, Indices_Length : Natural;
---               T1, T2, T3, T4, T5, T6 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
---               Meshes_Length : Ada.Containers.Count_Type := 0;
---            begin
---               return Object : Model
---                 := (Scene      => new Model_Scene'(Scene => Trees.Create_Tree (Default_Root_Name), Shapes => <>),
---                     Format     => Format.all'Unrestricted_Access,
---                     Uniform_WT => Uniform_WT.all'Unrestricted_Access,
---                     Uniform_IO => Uniform_IO.all'Unrestricted_Access,
---                     others     => <>)
---               do
---                  T5 := Ada.Real_Time.Clock;
-
---                  Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);
-
---                  Object.Bounds := Orka.Buffers.Create_Buffer
---                    (Flags => Storage_Bits'(others => False),
---                     Data  => Bounds_List (Accessors, Meshes));
-
---                  Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
-
---                  Object.Batch := Orka.Buffers.MDI.Create_Batch
---                    (Positive (Parts.Length), Vertices_Length, Indices_Length,
---                     Format  => Format,
---                     Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
---                     Visible => True);
-
---                  Add_Parts (Format, Object.Batch, Buffer_Views, Accessors, Meshes);
---                  T6 := Ada.Real_Time.Clock;
-
---                  declare
---                     use type Ada.Real_Time.Time;
---                     use Ada.Real_Time;
-
---                     Reading_Time    : constant Duration := 1e3 * To_Duration (T2 - T1);
---                     Parsing_Time    : constant Duration := 1e3 * To_Duration (T3 - T2);
---                     Processing_Time : constant Duration := 1e3 * To_Duration (T4 - T3);
---                     Scene_Tree_Time : constant Duration := 1e3 * To_Duration (T5 - T4);
---                     Buffers_Time    : constant Duration := 1e3 * To_Duration (T6 - T5);
---                     Loading_Time    : constant Duration := 1e3 * To_Duration (T6 - T1);
---                  begin
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "Loaded model " & Path);
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        " " & Ada.Containers.Count_Type'Image (Meshes_Length) & " parts," &
---                        Natural'Image (Vertices_Length) & " vertices," &
---                        Natural'Image (Indices_Length) & " indices");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "  loaded in" & Duration'Image (Loading_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    reading file:" & Duration'Image (Reading_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    parsing JSON:" & Duration'Image (Parsing_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    processing glTF:" & Duration'Image (Processing_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    scene tree:" & Duration'Image (Scene_Tree_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    buffers:" & Duration'Image (Buffers_Time) & " ms");
---                  end;
-
---               end return;
---            end;
---         end;
---   end Load_Model;
+--     function Load_Model
+--       (Format     : not null access Orka.Rendering.Vertex_Formats.Vertex_Format;
+--        Uniform_WT : not null access Orka.Rendering.Programs.Uniforms.Uniform_Sampler;
+--        Uniform_IO : not null access Orka.Rendering.Programs.Uniforms.Uniform;
+--        Path       : String) return Model
+--     is
+--     begin
+--        begin
+--           declare
+--              use GL.Objects.Buffers;
+--
+--              Vertices_Length, Indices_Length : Natural;
+--              T1, T2, T3, T4, T5, T6 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
+--              Meshes_Length : Ada.Containers.Count_Type := 0;
+--           begin
+--              return Object : Model
+--                := (Scene      => new Model_Scene'(Scene => Trees.Create_Tree (Default_Root_Name), Shapes => <>),
+--                    Format     => Format.all'Unrestricted_Access,
+--                    Uniform_WT => Uniform_WT.all'Unrestricted_Access,
+--                    Uniform_IO => Uniform_IO.all'Unrestricted_Access,
+--                    others     => <>)
+--              do
+--                 T5 := Ada.Real_Time.Clock;
+--
+--                 Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);
+--
+--                 Object.Bounds := Orka.Rendering.Buffers.Create_Buffer
+--                   (Flags => Storage_Bits'(others => False),
+--                    Data  => Bounds_List (Accessors, Meshes));
+--
+--                 Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
+--
+--                 Object.Batch := Orka.Rendering.Buffers.MDI.Create_Batch
+--                   (Positive (Parts.Length), Vertices_Length, Indices_Length,
+--                    Format  => Format,
+--                    Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
+--                    Visible => True);
+--
+--                 Add_Parts (Format, Object.Batch, Buffer_Views, Accessors, Meshes);
+--                 T6 := Ada.Real_Time.Clock;
+--
+--                 declare
+--                    use type Ada.Real_Time.Time;
+--                    use Ada.Real_Time;
+--
+--                    Reading_Time    : constant Duration := 1e3 * To_Duration (T2 - T1);
+--                    Parsing_Time    : constant Duration := 1e3 * To_Duration (T3 - T2);
+--                    Processing_Time : constant Duration := 1e3 * To_Duration (T4 - T3);
+--                    Scene_Tree_Time : constant Duration := 1e3 * To_Duration (T5 - T4);
+--                    Buffers_Time    : constant Duration := 1e3 * To_Duration (T6 - T5);
+--                    Loading_Time    : constant Duration := 1e3 * To_Duration (T6 - T1);
+--                 begin
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "Loaded model " & Path);
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           " " & Ada.Containers.Count_Type'Image (Meshes_Length) & " parts," &
+--                                             Natural'Image (Vertices_Length) & " vertices," &
+--                                             Natural'Image (Indices_Length) & " indices");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "  loaded in" & Duration'Image (Loading_Time) & " ms");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "    reading file:" & Duration'Image (Reading_Time) & " ms");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "    parsing JSON:" & Duration'Image (Parsing_Time) & " ms");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "    processing glTF:" & Duration'Image (Processing_Time) & " ms");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "    scene tree:" & Duration'Image (Scene_Tree_Time) & " ms");
+--                    Debug_Messages.Insert (GL.Debug.Notification,
+--                                           "    buffers:" & Duration'Image (Buffers_Time) & " ms");
+--                 end;
+--
+--              end return;
+--           end;
+--        end;
+--     end Load_Model;
 
    procedure Load
      (Bytes   : in out Byte_Array_Access;
