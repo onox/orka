@@ -42,9 +42,11 @@ Build status
 
 |                    | Linux   | Windows     |
 |--------------------|---------|-------------|
-| **GNAT GPL 2015**  | passing | unknown     |
-| **GNAT GPL 2017**  | unknown | unknown     |
+| **GNAT GPL 2017**  | failing | failing     |
 | **GNAT FSF 7.2**   | passing | unknown     |
+
+Currently the game loop and the glTF example are broken due to some
+functionality not having been implemented yet.
 
 Dependencies
 ------------
