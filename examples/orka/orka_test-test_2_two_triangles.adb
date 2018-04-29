@@ -17,9 +17,9 @@ with GL.Buffers;
 with GL.Objects.Buffers;
 with GL.Types.Colors;
 
-with Orka.Buffers;
-with Orka.Vertex_Formats;
-with Orka.Programs.Modules;
+with Orka.Rendering.Buffers;
+with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Vertex_Formats;
 
 with GL_Test.Display_Backend;
 
@@ -29,12 +29,12 @@ procedure Orka_Test.Test_2_Two_Triangles is
    pragma Unreferenced (Initialized);
 
    use GL.Types;
-   use GL.Objects.Buffers;
 
-   use Orka.Vertex_Formats;
-   use Orka.Programs;
+   use Orka.Rendering.Buffers;
+   use Orka.Rendering.Vertex_Formats;
+   use Orka.Rendering.Programs;
 
-   function Load_Mesh_1 (Program : Orka.Programs.Program) return Vertex_Format is
+   function Load_Mesh_1 (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
       Vertices : constant Single_Array
         := (-0.3,  0.5, -1.0,
             -0.8, -0.5, -1.0,
@@ -46,52 +46,55 @@ procedure Orka_Test.Test_2_Two_Triangles is
             (0.0, 0.0, 1.0));
 
       --  Upload vertices and color data to VBO's
-      VBO_1 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
-      VBO_2 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Color_Vertices);
+      VBO_1 : constant Buffer := Create_Buffer
+        (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
+      VBO_2 : constant Buffer := Create_Buffer
+        (GL.Objects.Buffers.Storage_Bits'(others => False), Color_Vertices);
 
-      procedure Add_Position_Attribute (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
+      procedure Add_Position_Attribute (Buffer : in out Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
          Buffer.Set_Buffer (VBO_1);
       end Add_Position_Attribute;
 
-      procedure Add_Color_Attribute (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
+      procedure Add_Color_Attribute (Buffer : in out Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
          Buffer.Set_Buffer (VBO_2);
       end Add_Color_Attribute;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (Single_Type, Add_Color_Attribute'Access);
       end return;
    end Load_Mesh_1;
 
-   function Load_Mesh_2 (Program : Orka.Programs.Program) return Vertex_Format is
+   function Load_Mesh_2 (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
       Vertices : constant Single_Array
         := (-0.2,  0.5, -1.0,
              0.3, -0.5, -1.0,
              0.8,  0.5, -1.0);
 
       --  Upload vertices data to VBO
-      VBO_3 : constant Orka.Buffers.Buffer := Orka.Buffers.Create_Buffer (Storage_Bits'(others => False), Vertices);
+      VBO_3 : constant Buffer := Create_Buffer
+        (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
 
-      procedure Add_Vertex_Attributes (Buffer : in out Orka.Vertex_Formats.Attribute_Buffer) is
+      procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
          Buffer.Set_Buffer (VBO_3);
       end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Orka.Vertex_Formats.Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh_2;
 
    use GL.Buffers;
 
-   Program_1 : Program := Orka.Programs.Create_Program (Modules.Create_Module
+   Program_1 : Program := Create_Program (Modules.Create_Module
      (VS => "../examples/gl/shaders/opengl3.vert",
       FS => "../examples/gl/shaders/opengl3.frag"));
 
