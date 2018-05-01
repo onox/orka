@@ -19,20 +19,20 @@ package body Orka.Simulation_Jobs is
       Time_Step : Time_Span;
       Count     : Natural) return Jobs.Parallel_Job_Ptr
    is (new Fixed_Update_Job'
-     (Jobs.Slice_Job with Scene => Scene, Time_Step => Time_Step, Count => Count));
+     (Jobs.Abstract_Parallel_Job with Scene => Scene, Time_Step => Time_Step, Count => Count));
 
    function Create_Update_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span) return Jobs.Parallel_Job_Ptr
    is (new Update_Job'
-     (Jobs.Slice_Job with Scene => Scene, Time_Step => Time_Step));
+     (Jobs.Abstract_Parallel_Job with Scene => Scene, Time_Step => Time_Step));
 
    function Create_After_Update_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
       Position  : Transforms.Vector4) return Jobs.Parallel_Job_Ptr
    is (new After_Update_Job'
-     (Jobs.Slice_Job with Scene => Scene, Time_Step => Time_Step, View_Position => Position));
+     (Jobs.Abstract_Parallel_Job with Scene => Scene, Time_Step => Time_Step, View_Position => Position));
 
    function Create_Finished_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;

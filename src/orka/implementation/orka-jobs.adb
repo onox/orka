@@ -118,14 +118,14 @@ package body Orka.Jobs is
 
    overriding
    procedure Execute
-     (Object  : Slice_Job;
+     (Object  : Abstract_Parallel_Job;
       Enqueue : not null access procedure (Element : Job_Ptr)) is
    begin
-      Slice_Job'Class (Object).Execute (Object.From, Object.To);
+      Abstract_Parallel_Job'Class (Object).Execute (Object.From, Object.To);
    end Execute;
 
    overriding
-   procedure Set_Range (Object : in out Slice_Job; From, To : Positive) is
+   procedure Set_Range (Object : in out Abstract_Parallel_Job; From, To : Positive) is
    begin
       Object.From := From;
       Object.To   := To;

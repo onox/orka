@@ -20,17 +20,17 @@ with Orka.Transforms.Singles.Vectors;
 
 private package Orka.Simulation_Jobs is
 
-   type Fixed_Update_Job is new Jobs.Slice_Job with private;
+   type Fixed_Update_Job is new Jobs.Abstract_Parallel_Job with private;
 
    overriding
    procedure Execute (Object : Fixed_Update_Job; From, To : Positive);
 
-   type Update_Job is new Jobs.Slice_Job with private;
+   type Update_Job is new Jobs.Abstract_Parallel_Job with private;
 
    overriding
    procedure Execute (Object : Update_Job; From, To : Positive);
 
-   type After_Update_Job is new Jobs.Slice_Job with private;
+   type After_Update_Job is new Jobs.Abstract_Parallel_Job with private;
 
    overriding
    procedure Execute (Object : After_Update_Job; From, To : Positive);
@@ -60,18 +60,18 @@ private package Orka.Simulation_Jobs is
 
 private
 
-   type Fixed_Update_Job is new Jobs.Slice_Job with record
+   type Fixed_Update_Job is new Jobs.Abstract_Parallel_Job with record
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
       Count     : Natural;
    end record;
 
-   type Update_Job is new Jobs.Slice_Job with record
+   type Update_Job is new Jobs.Abstract_Parallel_Job with record
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
    end record;
 
-   type After_Update_Job is new Jobs.Slice_Job with record
+   type After_Update_Job is new Jobs.Abstract_Parallel_Job with record
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
       View_Position : Transforms.Vector4;

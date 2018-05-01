@@ -73,15 +73,15 @@ package Orka.Jobs is
      (Job : Parallel_Job_Ptr;
       Length, Slice : Positive) return Job_Ptr;
 
-   type Slice_Job is abstract new Abstract_Job and Parallel_Job with private;
+   type Abstract_Parallel_Job is abstract new Abstract_Job and Parallel_Job with private;
 
    overriding
    procedure Execute
-     (Object  : Slice_Job;
+     (Object  : Abstract_Parallel_Job;
       Enqueue : not null access procedure (Element : Job_Ptr));
 
    overriding
-   procedure Set_Range (Object : in out Slice_Job; From, To : Positive);
+   procedure Set_Range (Object : in out Abstract_Parallel_Job; From, To : Positive);
 
 private
 
@@ -150,7 +150,7 @@ private
      (Object  : Parallel_For_Job;
       Enqueue : not null access procedure (Element : Job_Ptr));
 
-   type Slice_Job is abstract new Abstract_Job and Parallel_Job with record
+   type Abstract_Parallel_Job is abstract new Abstract_Job and Parallel_Job with record
       From, To : Positive;
    end record;
 

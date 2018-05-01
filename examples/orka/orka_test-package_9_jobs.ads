@@ -18,7 +18,7 @@ package Orka_Test.Package_9_Jobs is
 
    package Boss is new Orka.Jobs.Boss (4, 1, 4);
 
-   type Test_Parallel_Job is new Orka.Jobs.Slice_Job with null record;
+   type Test_Parallel_Job is new Orka.Jobs.Abstract_Parallel_Job with null record;
 
    overriding
    procedure Execute (Object : Test_Parallel_Job; From, To : Positive);
