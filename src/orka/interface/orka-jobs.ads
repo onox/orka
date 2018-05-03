@@ -59,8 +59,6 @@ package Orka.Jobs is
 
    -----------------------------------------------------------------------------
 
-   type Abstract_Job is abstract new Job with private;
-
    type Parallel_Job is interface and Job;
 
    type Parallel_Job_Ptr is not null access all Jobs.Parallel_Job'Class;
@@ -73,6 +71,10 @@ package Orka.Jobs is
      (Job : Parallel_Job_Ptr;
       Length, Slice : Positive) return Job_Ptr;
 
+   -----------------------------------------------------------------------------
+
+   type Abstract_Job is abstract new Job with private;
+
    type Abstract_Parallel_Job is abstract new Abstract_Job and Parallel_Job with private;
 
    overriding
@@ -82,6 +84,10 @@ package Orka.Jobs is
 
    overriding
    procedure Set_Range (Object : in out Abstract_Parallel_Job; From, To : Positive);
+
+   -----------------------------------------------------------------------------
+
+   type GPU_Job is interface and Job;
 
 private
 

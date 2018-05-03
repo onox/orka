@@ -60,7 +60,7 @@ package body Orka.Jobs.Workers is
 
       loop
          T0 := Ada.Real_Time.Clock;
-         Queue.Dequeue (Pair, Stop);
+         Queue.Dequeue (Queues.CPU) (Pair, Stop);
          exit when Stop;
 
          declare

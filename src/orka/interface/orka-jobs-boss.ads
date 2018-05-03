@@ -34,9 +34,11 @@ generic
    --  Maximum number of extra jobs that a job can enqueue
 package Orka.Jobs.Boss is
 
-   package Queues is new Jobs.Queues (Maximum_Graphs => Maximum_Job_Graphs);
+   package Queues is new Jobs.Queues
+     (Maximum_Graphs => Maximum_Job_Graphs,
+      Capacity       => Maximum_Queued_Jobs);
 
-   Queue : aliased Queues.Queue (Maximum_Queued_Jobs);
+   Queue : aliased Queues.Queue;
 
    Number_Of_Workers : constant System.Multiprocessors.CPU;
 
@@ -52,7 +54,7 @@ private
    --  For n logical CPU's we spawn n - 1 workers (1 CPU is dedicated
    --  to rendering)
 
-   package Workers is new Orka.Jobs.Workers
+   package Workers is new Jobs.Workers
      (Queues, Queue'Access, "Worker", Number_Of_Workers, Maximum_Enqueued_By_Job);
 
    procedure Shutdown renames Workers.Shutdown;

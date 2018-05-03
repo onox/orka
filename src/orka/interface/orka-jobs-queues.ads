@@ -18,9 +18,11 @@ with Orka.Futures.Slots;
 generic
    Maximum_Graphs : Positive;
    --  Maximum number of separate job graphs
+
+   Capacity : Positive;
 package Orka.Jobs.Queues is
 
-   type Priority is (High, Normal);
+   type Executor_Kind is (CPU, GPU);
 
    type Pair is record
       Job    : Job_Ptr := Null_Job;
@@ -31,25 +33,26 @@ package Orka.Jobs.Queues is
 
    package Buffers is new Orka.Containers.Ring_Buffers (Pair, Get_Null_Pair);
 
-   protected type Queue (Capacity : Positive) is
+   type Buffer_Array is array (Executor_Kind) of Buffers.Buffer (Capacity);
+
+   protected type Queue is
       entry Enqueue (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
       --  with Pre => not Element.Has_Dependencies
       --     and then Element.all not in Parallel_Job'Class
       --     and then Element /= Null_Job
 
-      entry Dequeue (Element : out Pair; Stop : out Boolean)
-        with Post => Stop or else not Element.Job.Has_Dependencies;
+      entry Dequeue (Executor_Kind)
+        (Element : out Pair; Stop : out Boolean)
+      with Post => Stop or else not Element.Job.Has_Dependencies;
 
       procedure Shutdown;
 
-      function Length (P : Priority) return Natural;
+      function Length return Natural;
    private
-      entry Enqueue_Job (Priority)
+      entry Enqueue_Job (Executor_Kind)
         (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
 
-      Priority_High   : Buffers.Buffer (Capacity);
-      Priority_Normal : Buffers.Buffer (Capacity);
-
+      Buffers     : Buffer_Array;
       Should_Stop : Boolean := False;
    end Queue;
 

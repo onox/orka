@@ -62,6 +62,5 @@ begin
 
    Boss.Shutdown;
 
-   Put_Line ("High priority queue:   " & Boss.Queue.Length (Boss.Queues.High)'Image);
-   Put_Line ("Normal priority queue: " & Boss.Queue.Length (Boss.Queues.Normal)'Image);
+   Put_Line ("Queue:   " & Natural'Image (Boss.Queue.Length));
 end Orka_Test.Test_9_Jobs;

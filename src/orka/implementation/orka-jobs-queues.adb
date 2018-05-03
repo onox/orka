@@ -21,35 +21,26 @@ package body Orka.Jobs.Queues is
 
    protected body Queue is
 
-      function Can_Schedule_Job (P : Priority) return Boolean is
-      begin
-         case P is
-            when High =>
-               return not Priority_High.Full;
-            when Normal =>
-               return not Priority_Normal.Full;
-         end case;
-      end Can_Schedule_Job;
+      function Can_Schedule_Job (Kind : Executor_Kind) return Boolean is
+        (not Buffers (Kind).Full);
 
-      function Has_Jobs return Boolean is
-        (not Priority_High.Empty or else not Priority_Normal.Empty);
+      function Has_Jobs (Kind : Executor_Kind) return Boolean is
+        (not Buffers (Kind).Empty);
 
       entry Enqueue
         (Element : Job_Ptr;
          Future  : in out Futures.Pointers.Pointer) when True is
       begin
-         --  Prioritize jobs that have no dependencies themselves but
-         --  are a dependency of some other job.
-         if Element.Dependent /= Null_Job then
-            requeue Enqueue_Job (High);
+         if Element.all in GPU_Job'Class then
+            requeue Enqueue_Job (GPU);
          else
-            requeue Enqueue_Job (Normal);
+            requeue Enqueue_Job (CPU);
          end if;
       end Enqueue;
 
-      entry Enqueue_Job (for P in Priority)
+      entry Enqueue_Job (for Kind in Executor_Kind)
         (Element : Job_Ptr;
-         Future  : in out Futures.Pointers.Pointer) when Can_Schedule_Job (P) is
+         Future  : in out Futures.Pointers.Pointer) when Can_Schedule_Job (Kind) is
       begin
          if Future.Is_Null then
             declare
@@ -64,30 +55,19 @@ package body Orka.Jobs.Queues is
             end;
          end if;
 
-         case P is
-            when High =>
-               Priority_High.Add_Last ((Job => Element, Future => Future));
-            when Normal =>
-               Priority_Normal.Add_Last ((Job => Element, Future => Future));
-         end case;
+         Buffers (Kind).Add_Last ((Job => Element, Future => Future));
       end Enqueue_Job;
 
-      entry Dequeue
+      entry Dequeue (for Kind in Executor_Kind)
         (Element : out Pair;
-         Stop    : out Boolean) when Should_Stop or else Has_Jobs is
+         Stop    : out Boolean) when Should_Stop or else Has_Jobs (Kind) is
       begin
          Stop := Should_Stop;
          if Should_Stop then
             return;
          end if;
 
-         --  Prioritize jobs that have no dependencies themselves but
-         --  are a dependency of some other job.
-         if not Priority_High.Empty then
-            Element := Priority_High.Remove_First;
-         elsif not Priority_Normal.Empty then
-            Element := Priority_Normal.Remove_First;
-         end if;
+         Element := Buffers (Kind).Remove_First;
       end Dequeue;
 
       procedure Shutdown is
@@ -96,15 +76,8 @@ package body Orka.Jobs.Queues is
          Should_Stop := True;
       end Shutdown;
 
-      function Length (P : Priority) return Natural is
-      begin
-         case P is
-            when High =>
-               return Priority_High.Length;
-            when Normal =>
-               return Priority_Normal.Length;
-         end case;
-      end Length;
+      function Length return Natural is
+        (Buffers (CPU).Length + Buffers (GPU).Length);
    end Queue;
 
 end Orka.Jobs.Queues;
