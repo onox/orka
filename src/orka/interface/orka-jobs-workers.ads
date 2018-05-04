@@ -14,21 +14,18 @@
 
 with System.Multiprocessors;
 
-with Orka.Jobs.Queues;
+with Orka.Jobs.Executors;
 
 generic
-   with package Queues is new Orka.Jobs.Queues (<>);
+   with package Executors is new Orka.Jobs.Executors (<>);
 
-   Queue : Queues.Queue_Ptr;
+   Queue : Executors.Queues.Queue_Ptr;
 
    Task_Name : String;
    --  Name of a worker task in system's process viewer
 
    Count : System.Multiprocessors.CPU;
    --  Number of workers to spawn
-
-   Maximum_Enqueued_By_Job : Positive;
-   --  Maximum number of extra jobs that a job can enqueue
 package Orka.Jobs.Workers is
 
    procedure Shutdown;

@@ -14,8 +14,9 @@
 
 with System.Multiprocessors;
 
-with Orka.Jobs.Workers;
+with Orka.Jobs.Executors;
 with Orka.Jobs.Queues;
+with Orka.Jobs.Workers;
 
 generic
    Maximum_Queued_Jobs : Positive;
@@ -38,6 +39,8 @@ package Orka.Jobs.Boss is
      (Maximum_Graphs => Maximum_Job_Graphs,
       Capacity       => Maximum_Queued_Jobs);
 
+   package Executors is new Jobs.Executors (Queues, Maximum_Enqueued_By_Job);
+
    Queue : aliased Queues.Queue;
 
    Number_Of_Workers : constant System.Multiprocessors.CPU;
@@ -55,7 +58,7 @@ private
    --  to rendering)
 
    package Workers is new Jobs.Workers
-     (Queues, Queue'Access, "Worker", Number_Of_Workers, Maximum_Enqueued_By_Job);
+     (Executors, Queue'Access, "Worker", Number_Of_Workers);
 
    procedure Shutdown renames Workers.Shutdown;
 
