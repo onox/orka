@@ -50,7 +50,7 @@ package body Orka.Jobs.Queues is
                   Slots.Manager.Acquire (Slot);
                   Future.Set (Futures.Future_Access (Slot), Release_Future'Unrestricted_Access);
                else
-                  raise Program_Error;
+                  raise Program_Error with Executor_Kind'Image (Kind) & " queue full";
                end select;
             end;
          end if;
@@ -76,8 +76,8 @@ package body Orka.Jobs.Queues is
          Should_Stop := True;
       end Shutdown;
 
-      function Length return Natural is
-        (Buffers (CPU).Length + Buffers (GPU).Length);
+      function Length (Kind : Executor_Kind) return Natural is
+        (Buffers (Kind).Length);
    end Queue;
 
 end Orka.Jobs.Queues;

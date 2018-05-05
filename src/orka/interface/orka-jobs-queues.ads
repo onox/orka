@@ -47,7 +47,7 @@ package Orka.Jobs.Queues is
 
       procedure Shutdown;
 
-      function Length return Natural;
+      function Length (Kind : Executor_Kind) return Natural;
    private
       entry Enqueue_Job (Executor_Kind)
         (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);

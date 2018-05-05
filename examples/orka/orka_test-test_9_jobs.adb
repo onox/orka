@@ -62,5 +62,6 @@ begin
 
    Boss.Shutdown;
 
-   Put_Line ("Queue:   " & Natural'Image (Boss.Queue.Length));
+   Put_Line ("CPU Queue:   " & Boss.Queue.Length (Boss.Queues.CPU)'Image);
+   Put_Line ("GPU Queue:   " & Boss.Queue.Length (Boss.Queues.GPU)'Image);
 end Orka_Test.Test_9_Jobs;
