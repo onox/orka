@@ -41,16 +41,43 @@ package Orka.Jobs is
 
    type Dependency_Array is array (Positive range <>) of Job_Ptr;
 
+   procedure Set_Dependency
+     (Object : access Job; Dependency : Job_Ptr) is abstract;
+   --  Set a job as the dependency of the given job. Object becomes the
+   --  dependent (successor) job of Dependency
+   --
+   --  J2.Set_Dependency (J1) creates the link J1 --> J2
+
    procedure Set_Dependencies
      (Object : access Job; Dependencies : Dependency_Array) is abstract;
+   --  Set some jobs as dependencies of the given job. Object becomes
+   --  the dependent (successor) job of each job in Dependencies
+   --
+   --  J4.Set_Dependencies ((J1, J2, J3)) gives:
+   --
+   --  J1 --
+   --       \
+   --  J2 ---> J4
+   --       /
+   --  J3 --
+
+   procedure Chain (Jobs : Dependency_Array);
+   --  Create a chain of jobs such that each job is a dependency of the
+   --  next job
+   --
+   --  Chain ((J1, J2, J3)) will result in:
+   --
+   --  J1 --> J2 --> J3
+   --
+   --  where J1 is the first job that will be executed and J3 the last job.
 
    -----------------------------------------------------------------------------
 
    Null_Job : constant Job_Ptr;
 
    function Get_Null_Job return Job_Ptr is (Null_Job);
-   --  A function that is used when we need a non-static constant (Null_Job)
-   --  in a preelaborated unit
+   --  A function that is used when a non-static constant (Null_Job) is
+   --  needed in a preelaborated unit
 
    procedure Free (Pointer : in out Job_Ptr)
      with Pre => Pointer /= Null_Job;
@@ -66,10 +93,18 @@ package Orka.Jobs is
    procedure Set_Range (Object : in out Parallel_Job; From, To : Positive) is abstract;
 
    procedure Execute (Object : Parallel_Job; From, To : Positive) is abstract;
+   --  Any job which inherits Abstract_Parallel_Job needs to override this
+   --  procedure instead of the regular Execute procedure
 
    function Parallelize
      (Job : Parallel_Job_Ptr;
       Length, Slice : Positive) return Job_Ptr;
+   --  Parallelize a job by returning a new job that will enqueue multiple
+   --  instances of the given job with different ranges
+   --
+   --  Length is the total number of elements and Slice is the maximum range
+   --  of a slice. For example, Length => 24 and Slice => 6 will spawn 4 jobs
+   --  with the ranges 1..6, 7..12, 13..18, and 19..24.
 
    -----------------------------------------------------------------------------
 
@@ -108,6 +143,10 @@ private
    function Has_Dependencies (Object : No_Job) return Boolean is (False);
 
    overriding
+   procedure Set_Dependency
+     (Object : access No_Job; Dependency : Job_Ptr) is null;
+
+   overriding
    procedure Set_Dependencies
      (Object : access No_Job; Dependencies : Dependency_Array) is null;
 
@@ -128,6 +167,10 @@ private
 
    overriding
    function Has_Dependencies (Object : Abstract_Job) return Boolean;
+
+   overriding
+   procedure Set_Dependency
+     (Object : access Abstract_Job; Dependency : Job_Ptr);
 
    overriding
    procedure Set_Dependencies

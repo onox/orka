@@ -48,6 +48,14 @@ package body Orka.Jobs is
    end Has_Dependencies;
 
    overriding
+   procedure Set_Dependency
+     (Object : access Abstract_Job; Dependency : Job_Ptr) is
+   begin
+      Atomics.Add (Object.Dependencies, 1);
+      Abstract_Job (Dependency.all).Dependent := Job_Ptr (Object);
+   end Set_Dependency;
+
+   overriding
    procedure Set_Dependencies
      (Object : access Abstract_Job; Dependencies : Dependency_Array) is
    begin
@@ -56,6 +64,13 @@ package body Orka.Jobs is
          Abstract_Job (Dependency.all).Dependent := Job_Ptr (Object);
       end loop;
    end Set_Dependencies;
+
+   procedure Chain (Jobs : Dependency_Array) is
+   begin
+      for Index in Jobs'First .. Jobs'Last - 1 loop
+         Jobs (Index + 1).Set_Dependency (Jobs (Index));
+      end loop;
+   end Chain;
 
    function Parallelize
      (Job : Parallel_Job_Ptr;
