@@ -14,11 +14,11 @@
 
 with System;
 
-with Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
+with Ada.Text_IO;
+with Ada.Exceptions;
 
-with Orka.Buffer_Fences;
 with Orka.Futures;
 with Orka.Simulation_Jobs;
 
@@ -26,9 +26,7 @@ package body Orka.Loops is
 
    use Ada.Real_Time;
 
-   package STC renames Ada.Synchronous_Task_Control;
-
-   Frame_Sync_Point : STC.Suspension_Object;
+   Render_Job_Start, Render_Job_Finish : Jobs.Job_Ptr := Jobs.Null_Job;
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -100,29 +98,9 @@ package body Orka.Loops is
         (Scene_Camera);
    end Scene;
 
-   protected body Input_Processor is
-      procedure Reset is
-      begin
-         Processed := False;
-      end Reset;
+   package SJ renames Simulation_Jobs;
 
-      procedure Process_Input is
-      begin
-         if not Processed then
-            Window.Process_Input;
-            Processed := True;
-         end if;
-      end Process_Input;
-
-      entry Wait_Until_Processed when Processed is
-      begin
-         null;
-      end Wait_Until_Processed;
-   end Input_Processor;
-
-   procedure Run_Simulation_Loop is
-      package SJ renames Simulation_Jobs;
-
+   procedure Run_Game_Loop is
       Previous_Time : Time := Clock;
       Next_Time     : Time := Previous_Time;
 
@@ -130,7 +108,7 @@ package body Orka.Loops is
 
       Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
    begin
-      STC.Set_False (Frame_Sync_Point);
+      Scene.Replace_Array (Scene_Array);
 
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -143,40 +121,41 @@ package body Orka.Loops is
 
             exit when Handler.Should_Stop;
 
-            --  Because the render loop needs to set and wait for a GL
-            --  fence, wait until the render loop says we can continue
-            STC.Suspend_Until_True (Frame_Sync_Point);
-            STC.Set_False (Frame_Sync_Point);
-
             declare
                Iterations : constant Natural := Lag / Time_Step;
-
-               Fixed_Update_Job : constant Jobs.Job_Ptr
-                 := Jobs.Parallelize (SJ.Create_Fixed_Update_Job
-                   (Scene_Array, Time_Step, Iterations),
-                   Scene_Array'Length, 10);
             begin
                Lag := Lag - Iterations * Time_Step;
                Scene.Camera.Update (To_Duration (Lag));
 
                declare
+                  Fixed_Update_Job : constant Jobs.Job_Ptr
+                    := Jobs.Parallelize (SJ.Create_Fixed_Update_Job
+                         (Scene_Array, Time_Step, Iterations), Scene_Array'Length, 10);
+
                   Finished_Job : constant Jobs.Job_Ptr := SJ.Create_Finished_Job
                     (Scene_Array, Time_Step, Scene.Camera.View_Position);
+
+                  Render_Start_Job : constant Jobs.Job_Ptr
+                    := new Jobs.GPU_Job'Class'(Jobs.GPU_Job'Class (Render_Job_Start.all));
+
+                  Render_Scene_Job : constant Jobs.Job_Ptr
+                    := SJ.Create_Scene_Render_Job (Render, Scene_Array, Scene.Camera);
+
+                  Render_Finish_Job : constant Jobs.Job_Ptr
+                    := new Jobs.GPU_Job'Class'(Jobs.GPU_Job'Class (Render_Job_Finish.all));
 
                   Handle : Futures.Pointers.Pointer;
                   Status : Futures.Status;
                begin
-                  Finished_Job.Set_Dependencies ((1 => Fixed_Update_Job));
-                  Job_Manager.Queue.Enqueue (Fixed_Update_Job, Handle);
+                  Orka.Jobs.Chain
+                    ((Render_Start_Job, Fixed_Update_Job, Finished_Job,
+                      Render_Scene_Job, Render_Finish_Job));
 
-                  select
-                     Handle.Get.all.Wait_Until_Done (Status);
-                  or
-                     delay until Clock + Handler.Frame_Limit;
-                  end select;
+                  Job_Manager.Queue.Enqueue (Render_Start_Job, Handle);
+
+                  Handle.Get.all.Wait_Until_Done (Status);
                end;
             end;
-            --  TODO Tell the render loop that it can swap the buffers
 
             if Scene.Modified then
                Scene.Replace_Array (Scene_Array);
@@ -200,32 +179,36 @@ package body Orka.Loops is
       when others =>
          Job_Manager.Shutdown;
          raise;
-   end Run_Simulation_Loop;
+   end Run_Game_Loop;
 
-   procedure Run_Render_Loop is
-      package Fences is new Orka.Buffer_Fences (Region_Type);
-
-      Fence : Fences.Buffer_Fence := Fences.Create_Buffer_Fence;
+   procedure Stop_Loop is
    begin
-      loop
-         Input_Processor.Reset;
+      Handler.Stop;
+   end Stop_Loop;
 
-         if Window.Should_Close then
-            Handler.Stop;
-            exit;
-         end if;
+   procedure Run_Loop is
+      Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence;
+   begin
+      Render_Job_Start  := SJ.Create_Start_Render_Job (Fence'Unchecked_Access, Window);
+      Render_Job_Finish := SJ.Create_Finish_Render_Job (Fence'Unchecked_Access, Window,
+        Stop_Loop'Unrestricted_Access);
 
-         Fence.Prepare_Index;
-         --  Notify the simulation loop that it can continue
-         STC.Set_True (Frame_Sync_Point);
+      declare
+         task Simulation;
 
-         --  TODO Drain render queue
-         --  TODO And call Process_Input.Process_Input when a message asks us
-         --  TODO Render (Scene_Array, Scene.Camera);
+         use Ada.Exceptions;
 
-         Fence.Advance_Index;
-         Window.Swap_Buffers;
-      end loop;
-   end Run_Render_Loop;
+         task body Simulation is
+         begin
+            Run_Game_Loop;
+         exception
+            when Error : others =>
+               Ada.Text_IO.Put_Line ("Exception game loop: " & Exception_Information (Error));
+         end Simulation;
+      begin
+         Job_Manager.Executors.Execute_Jobs
+           ("Renderer", Job_Manager.Queues.GPU, Job_Manager.Queue'Access);
+      end;
+   end Run_Loop;
 
 end Orka.Loops;

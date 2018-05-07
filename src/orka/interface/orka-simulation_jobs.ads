@@ -15,38 +15,24 @@
 with Ada.Real_Time;
 
 with Orka.Behaviors;
+with Orka.Cameras;
 with Orka.Jobs;
+with Orka.Rendering.Fences;
+with Orka.Simulation;
 with Orka.Transforms.Singles.Vectors;
+with Orka.Windows;
 
 private package Orka.Simulation_Jobs is
 
-   type Fixed_Update_Job is new Jobs.Abstract_Parallel_Job with private;
-
-   overriding
-   procedure Execute (Object : Fixed_Update_Job; From, To : Positive);
-
-   type Update_Job is new Jobs.Abstract_Parallel_Job with private;
-
-   overriding
-   procedure Execute (Object : Update_Job; From, To : Positive);
-
-   type After_Update_Job is new Jobs.Abstract_Parallel_Job with private;
-
-   overriding
-   procedure Execute (Object : After_Update_Job; From, To : Positive);
-
-   type Finished_Fixed_Update_Job is new Jobs.Abstract_Job with private;
-
-   overriding
-   procedure Execute
-     (Object  : Finished_Fixed_Update_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
-   -----------------------------------------------------------------------------
-
    use Ada.Real_Time;
 
+   type Buffer_Region_Type is mod 4;
+
    package Transforms renames Orka.Transforms.Singles.Vectors;
+
+   package Fences is new Orka.Rendering.Fences (Buffer_Region_Type);
+
+   -----------------------------------------------------------------------------
 
    function Create_Fixed_Update_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
@@ -58,29 +44,20 @@ private package Orka.Simulation_Jobs is
       Time_Step : Time_Span;
       Position  : Transforms.Vector4) return Jobs.Job_Ptr;
 
-private
+   -----------------------------------------------------------------------------
 
-   type Fixed_Update_Job is new Jobs.Abstract_Parallel_Job with record
-      Scene     : not null Behaviors.Behavior_Array_Access;
-      Time_Step : Time_Span;
-      Count     : Natural;
-   end record;
+   function Create_Start_Render_Job
+     (Fence  : not null access Fences.Buffer_Fence;
+      Window : Windows.Window_Ptr) return Jobs.Job_Ptr;
 
-   type Update_Job is new Jobs.Abstract_Parallel_Job with record
-      Scene     : not null Behaviors.Behavior_Array_Access;
-      Time_Step : Time_Span;
-   end record;
+   function Create_Scene_Render_Job
+     (Render : Simulation.Render_Ptr;
+      Scene  : not null Behaviors.Behavior_Array_Access;
+      Camera : Cameras.Camera_Ptr) return Jobs.Job_Ptr;
 
-   type After_Update_Job is new Jobs.Abstract_Parallel_Job with record
-      Scene     : not null Behaviors.Behavior_Array_Access;
-      Time_Step : Time_Span;
-      View_Position : Transforms.Vector4;
-   end record;
-
-   type Finished_Fixed_Update_Job is new Jobs.Abstract_Job with record
-      Scene     : not null Behaviors.Behavior_Array_Access;
-      Time_Step : Time_Span;
-      View_Position : Transforms.Vector4;
-   end record;
+   function Create_Finish_Render_Job
+     (Fence  : not null access Fences.Buffer_Fence;
+      Window : Windows.Window_Ptr;
+      Stop   : Simulation.Stop_Ptr) return Jobs.Job_Ptr;
 
 end Orka.Simulation_Jobs;
