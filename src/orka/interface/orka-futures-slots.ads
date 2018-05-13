@@ -22,37 +22,17 @@ package Orka.Futures.Slots is
 
    subtype Location_Index is Slot_Index;
 
-   protected type Future_Object is new Futures.Future with
-      overriding
-      function Current_Status return Futures.Status;
-
-      overriding
-      procedure Set_Status (Value : Futures.Status);
-
-      overriding
-      entry Wait_Until_Done (Value : out Futures.Status);
-
-      function Handle_Location return Location_Index;
-
-      procedure Reset_And_Set_Location (Value : Location_Index);
-   private
-      Status   : Futures.Status := Futures.Waiting;
-      Location : Location_Index := 1;
-   end Future_Object;
-
    -----------------------------------------------------------------------------
 
    type Handle_Array is array (Location_Index) of Future_Handle;
 
    function Make_Handles return Handle_Array;
 
-   type Future_Object_Access is access all Future_Object;
-
    protected Manager is
-      entry Acquire (Slot : out Future_Object_Access);
+      entry Acquire (Slot : out Future_Access);
       --  with Pre => not Stopping
 
-      procedure Release (Slot : not null Future_Object_Access)
+      procedure Release (Slot : not null Future_Access)
         with Pre => Stopping or else Slot.Current_Status in Futures.Done | Futures.Failed;
 
       procedure Shutdown;
@@ -102,10 +82,30 @@ package Orka.Futures.Slots is
 
 private
 
+   protected type Future_Object is new Futures.Future with
+      overriding
+      function Current_Status return Futures.Status;
+
+      overriding
+      procedure Set_Status (Value : Futures.Status);
+
+      overriding
+      entry Wait_Until_Done (Value : out Futures.Status);
+
+      function Handle_Location return Location_Index;
+
+      procedure Reset_And_Set_Location (Value : Location_Index);
+   private
+      Status   : Futures.Status := Futures.Waiting;
+      Location : Location_Index := 1;
+   end Future_Object;
+
    type Future_Array is array (Future_Handle) of aliased Future_Object;
 
    function Make_Futures return Future_Array;
 
    Future_Slots : Future_Array := Make_Futures;
+
+   type Future_Object_Access is access all Future_Object;
 
 end Orka.Futures.Slots;

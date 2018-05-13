@@ -61,7 +61,7 @@ package body Orka.Futures.Slots is
    end Make_Futures;
 
    protected body Manager is
-      entry Acquire (Slot : out Future_Object_Access) when Acquired < Handles'Length is
+      entry Acquire (Slot : out Future_Access) when Acquired < Handles'Length is
       begin
          Acquired := Acquired + 1;
 
@@ -70,11 +70,11 @@ package body Orka.Futures.Slots is
          begin
             Slot := Future_Slots (New_Handle)'Access;
          end;
-         pragma Assert (Slot.Handle_Location = Acquired);
+         pragma Assert (Future_Object_Access (Slot).Handle_Location = Acquired);
       end Acquire;
 
-      procedure Release (Slot : not null Future_Object_Access) is
-         From : constant Location_Index := Slot.Handle_Location;
+      procedure Release (Slot : not null Future_Access) is
+         From : constant Location_Index := Future_Object_Access (Slot).Handle_Location;
          To   : constant Location_Index := Acquired;
          pragma Assert (From <= To);
          --  Only a slot that has been acquired can be released

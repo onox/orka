@@ -36,13 +36,13 @@ package body Orka.Resources.Loader is
          end if;
       end Loader;
 
-      Slot : Queues.Slots.Future_Object_Access;
+      Slot : Futures.Future_Access;
    begin
       Queues.Slots.Manager.Acquire (Slot);
       declare
          Pointer : Futures.Pointers.Mutable_Pointer;
       begin
-         Pointer.Set (Futures.Future_Access (Slot), Queues.Release_Future'Unrestricted_Access);
+         Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
          Queue.Enqueue
            ((Path   => SU.To_Unbounded_String (Path),
              Load   => Loader,

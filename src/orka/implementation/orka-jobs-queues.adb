@@ -16,7 +16,7 @@ package body Orka.Jobs.Queues is
 
    procedure Release_Future (Value : in out Futures.Future_Access) is
    begin
-      Slots.Manager.Release (Slots.Future_Object_Access (Value));
+      Slots.Manager.Release (Value);
    end Release_Future;
 
    protected body Queue is
@@ -44,11 +44,11 @@ package body Orka.Jobs.Queues is
       begin
          if Future.Is_Null then
             declare
-               Slot : Slots.Future_Object_Access;
+               Slot : Futures.Future_Access;
             begin
                select
                   Slots.Manager.Acquire (Slot);
-                  Future.Set (Futures.Future_Access (Slot), Release_Future'Unrestricted_Access);
+                  Future.Set (Slot, Release_Future'Unrestricted_Access);
                else
                   raise Program_Error with Executor_Kind'Image (Kind) & " queue full";
                end select;
