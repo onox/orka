@@ -30,7 +30,7 @@ procedure Orka_Test.Test_9_Jobs is
    Job_3 : constant Orka.Jobs.Parallel_Job_Ptr := new Package_9_Jobs.Test_Parallel_Job;
    Job_4 : constant Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize (Job_3, 24, 6);
 
-   Future : Orka.Futures.Pointers.Pointer;
+   Future : Orka.Futures.Pointers.Mutable_Pointer;
    Status : Orka.Futures.Status;
 
    use Ada.Real_Time;
@@ -49,15 +49,20 @@ begin
    Put_Line ("References (2): " & Future.References'Image);
 
    T1 := Clock;
-   select
-      Future.Get.all.Wait_Until_Done (Status);
-      T2 := Clock;
-      Put_Line ("   Status: " & Status'Image);
-      Put_Line ("   Time:  " & Duration'Image (1e3 * To_Duration (T2 - T1)) & " ms");
-   or
-      delay until Clock + Milliseconds (10);
-      Put_Line ("   Time out: " & Future.Get.all.Current_Status'Image);
-   end select;
+   declare
+      Reference : Orka.Futures.Pointers.Reference := Future.Get;
+      Future : constant Orka.Futures.Future_Access := Reference.Value;
+   begin
+      select
+         Future.Wait_Until_Done (Status);
+         T2 := Clock;
+         Put_Line ("   Status: " & Status'Image);
+         Put_Line ("   Time:  " & Duration'Image (1e3 * To_Duration (T2 - T1)) & " ms");
+      or
+         delay until Clock + Milliseconds (10);
+         Put_Line ("   Time out: " & Reference.Current_Status'Image);
+      end select;
+   end;
    Put_Line ("References (1): " & Future.References'Image);
 
    Boss.Shutdown;

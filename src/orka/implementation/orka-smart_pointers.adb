@@ -25,7 +25,7 @@ package body Orka.Smart_Pointers is
 
    procedure Set
      (Object : in out Abstract_Pointer;
-      Value  : Object_Type;
+      Value  : Object_Access;
       Free   : Free_Ptr) is
    begin
       if Object.Data /= null then
@@ -38,12 +38,12 @@ package body Orka.Smart_Pointers is
 
    function Get (Object : Mutable_Pointer) return Reference is
    begin
-      return Reference'(Value => Object.Data.Object'Access, Hold => Object);
+      return Reference'(Value => Object.Data.Object, Hold => Object);
    end Get;
 
    function Get (Object : Pointer) return Constant_Reference is
    begin
-      return Constant_Reference'(Value => Object.Data.Object'Access, Hold => Object);
+      return Constant_Reference'(Value => Object.Data.Object, Hold => Object);
    end Get;
 
    overriding

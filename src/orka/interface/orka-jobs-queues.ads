@@ -26,7 +26,7 @@ package Orka.Jobs.Queues is
 
    type Pair is record
       Job    : Job_Ptr := Null_Job;
-      Future : Futures.Pointers.Pointer;
+      Future : Futures.Pointers.Mutable_Pointer;
    end record;
 
    function Get_Null_Pair return Pair is (others => <>);
@@ -36,7 +36,7 @@ package Orka.Jobs.Queues is
    type Buffer_Array is array (Executor_Kind) of Buffers.Buffer (Capacity);
 
    protected type Queue is
-      entry Enqueue (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
+      entry Enqueue (Element : Job_Ptr; Future : in out Futures.Pointers.Mutable_Pointer);
       --  with Pre => not Element.Has_Dependencies
       --     and then Element.all not in Parallel_Job'Class
       --     and then Element /= Null_Job
@@ -50,7 +50,7 @@ package Orka.Jobs.Queues is
       function Length (Kind : Executor_Kind) return Natural;
    private
       entry Enqueue_Job (Executor_Kind)
-        (Element : Job_Ptr; Future : in out Futures.Pointers.Pointer);
+        (Element : Job_Ptr; Future : in out Futures.Pointers.Mutable_Pointer);
 
       Buffers     : Buffer_Array;
       Should_Stop : Boolean := False;

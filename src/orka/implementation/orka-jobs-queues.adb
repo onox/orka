@@ -29,7 +29,7 @@ package body Orka.Jobs.Queues is
 
       entry Enqueue
         (Element : Job_Ptr;
-         Future  : in out Futures.Pointers.Pointer) when True is
+         Future  : in out Futures.Pointers.Mutable_Pointer) when True is
       begin
          if Element.all in GPU_Job'Class then
             requeue Enqueue_Job (GPU);
@@ -40,7 +40,7 @@ package body Orka.Jobs.Queues is
 
       entry Enqueue_Job (for Kind in Executor_Kind)
         (Element : Job_Ptr;
-         Future  : in out Futures.Pointers.Pointer) when Can_Schedule_Job (Kind) is
+         Future  : in out Futures.Pointers.Mutable_Pointer) when Can_Schedule_Job (Kind) is
       begin
          if Future.Is_Null then
             declare

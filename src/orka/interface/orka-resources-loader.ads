@@ -32,7 +32,7 @@ generic
    Task_Name : String := "Resource Loader";
 package Orka.Resources.Loader is
 
-   function Load (Path : String) return Futures.Pointers.Constant_Reference;
+   function Load (Path : String) return Futures.Pointers.Reference;
    --  Load the given resource from a file system or archive and return
    --  a handle for querying the processing status of the resource. Calling
    --  this function may block until there is a free slot available for
@@ -60,7 +60,7 @@ private
    type Read_Request is record
       Path   : SU.Unbounded_String;
       Load   : Load_Ptr := Empty_Loader'Access;
-      Future : Futures.Pointers.Pointer;
+      Future : Futures.Pointers.Mutable_Pointer;
    end record;
 
    Null_Request : constant Read_Request := (others => <>);

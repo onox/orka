@@ -53,7 +53,7 @@ package body Orka.Jobs.Executors is
 
          declare
             Job    : Job_Ptr renames Pair.Job;
-            Future : Futures.Future_Access renames Pair.Future.Get;
+            Future : Futures.Pointers.Reference renames Pair.Future.Get;
 
             Jobs : Vectors.Vector (Capacity => Maximum_Enqueued_By_Job);
 

@@ -144,7 +144,7 @@ package body Orka.Loops is
                   Render_Finish_Job : constant Jobs.Job_Ptr
                     := new Jobs.GPU_Job'Class'(Jobs.GPU_Job'Class (Render_Job_Finish.all));
 
-                  Handle : Futures.Pointers.Pointer;
+                  Handle : Futures.Pointers.Mutable_Pointer;
                   Status : Futures.Status;
                begin
                   Orka.Jobs.Chain
@@ -153,7 +153,7 @@ package body Orka.Loops is
 
                   Job_Manager.Queue.Enqueue (Render_Start_Job, Handle);
 
-                  Handle.Get.all.Wait_Until_Done (Status);
+                  Handle.Get.Wait_Until_Done (Status);
                end;
             end;
 

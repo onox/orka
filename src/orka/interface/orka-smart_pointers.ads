@@ -22,14 +22,15 @@ private with Ada.Finalization;
 private with Orka.Atomics;
 
 generic
-   type Object_Type is private;
+   type Object_Type (<>) is limited private;
+   type Object_Access is access Object_Type;
    --  Objects are freed by providing an access to a procedure in Set. This
    --  is needed if Object_Type is a classwide type and we don't know how
    --  to free an object when this package gets instantiated.
 package Orka.Smart_Pointers is
    pragma Preelaborate;
 
-   type Free_Ptr is not null access procedure (Value : in out Object_Type);
+   type Free_Ptr is not null access procedure (Value : in out Object_Access);
 
    type Reference (Value : not null access Object_Type) is limited private
      with Implicit_Dereference => Value;
@@ -46,7 +47,7 @@ package Orka.Smart_Pointers is
 
    procedure Set
      (Object : in out Abstract_Pointer;
-      Value  : Object_Type;
+      Value  : Object_Access;
       Free   : Free_Ptr)
    with Post => not Object.Is_Null and then Object.References = 1;
 
@@ -64,7 +65,7 @@ private
 
    type Data_Record is record
       References : Atomics.Counter (Initial_Value => 1);
-      Object     : aliased Object_Type;
+      Object     : Object_Access;
       Free       : Free_Ptr;
    end record;
 

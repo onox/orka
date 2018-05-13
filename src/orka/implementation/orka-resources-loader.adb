@@ -24,7 +24,7 @@ package body Orka.Resources.Loader is
    function Is_Extension (Path, Extension : String) return Boolean is
      (Path (Path'Last - Extension'Length .. Path'Last) = "." & Extension);
 
-   function Load (Path : String) return Futures.Pointers.Pointer is
+   function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
       function Loader return Load_Ptr is
       begin
          if Is_Extension (Path, "gltf") then
@@ -40,7 +40,7 @@ package body Orka.Resources.Loader is
    begin
       Queues.Slots.Manager.Acquire (Slot);
       declare
-         Pointer : Futures.Pointers.Pointer;
+         Pointer : Futures.Pointers.Mutable_Pointer;
       begin
          Pointer.Set (Futures.Future_Access (Slot), Queues.Release_Future'Unrestricted_Access);
          Queue.Enqueue
@@ -53,7 +53,7 @@ package body Orka.Resources.Loader is
       end;
    end Load;
 
-   function Load (Path : String) return Futures.Pointers.Constant_Reference is
+   function Load (Path : String) return Futures.Pointers.Reference is
      (Load (Path).Get);
    --  A helper function to avoid raising a Storage_Error
 
@@ -98,7 +98,7 @@ package body Orka.Resources.Loader is
          exit when Stop;
 
          declare
-            Future : Futures.Future_Access renames Request.Future.Get;
+            Future : Futures.Pointers.Reference renames Request.Future.Get;
          begin
             Future.Set_Status (Futures.Running);
 

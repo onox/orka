@@ -36,6 +36,6 @@ package Orka.Futures is
 
    type Future_Access is access all Future'Class;
 
-   package Pointers is new Orka.Smart_Pointers (Future_Access);
+   package Pointers is new Orka.Smart_Pointers (Future'Class, Future_Access);
 
 end Orka.Futures;
