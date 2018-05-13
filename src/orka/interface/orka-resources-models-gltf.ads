@@ -32,10 +32,20 @@ package Orka.Resources.Models.glTF is
 
 private
 
+   use Ada.Real_Time;
+
    type JSON_Value_Access is access Orka.glTF.Types.JSON_Value'Class;
 
    procedure Free_JSON is new Ada.Unchecked_Deallocation
      (Object => Orka.glTF.Types.JSON_Value'Class, Name => JSON_Value_Access);
+
+   type Times_Data is record
+      Reading    : Time_Span;
+      Parsing    : Time_Span;
+      Processing : Time_Span;
+      Scene      : Time_Span;
+      Buffers    : Time_Span;
+   end record;
 
    type GLTF_Data is limited record
       JSON      : JSON_Value_Access;
@@ -45,11 +55,7 @@ private
       Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector;
       Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector;
-      Reading_Time : Ada.Real_Time.Time_Span;
-      Parsing_Time : Ada.Real_Time.Time_Span;
-      Process_Time : Ada.Real_Time.Time_Span;
-      Scene_Time   : Ada.Real_Time.Time_Span;
-      Buffers_Time : Ada.Real_Time.Time_Span;
+      Times     : Times_Data := (others => Time_Span_Zero);
    end record;
 
    type GLTF_Data_Access is access GLTF_Data;
@@ -105,14 +111,26 @@ private
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
 
    type GLTF_Finish_Processing_Job is new Jobs.Abstract_Job with record
-      Data : GLTF_Data_Access;
+      Data : not null GLTF_Data_Access;
       Path : SU.Unbounded_String;
-      Start_Time : Ada.Real_Time.Time;
+      Processing_Start_Time : Ada.Real_Time.Time;
    end record;
 
    overriding
    procedure Execute
      (Object  : GLTF_Finish_Processing_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   type GLTF_Create_Buffers_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
+      Data  : not null GLTF_Data_Access;
+      Path  : SU.Unbounded_String;
+      Scene : Model_Scene_Ptr;
+      Vertices, Indices : Natural;
+   end record;
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Create_Buffers_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
 
 end Orka.Resources.Models.glTF;

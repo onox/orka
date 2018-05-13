@@ -20,18 +20,17 @@ with Ada.Strings.Hash;
 with JSON.Parsers;
 with JSON.Streams;
 
---  with GL.Debug;
---  with GL.Objects.Buffers;
+with GL.Debug;
+with GL.Objects.Buffers;
 --  with GL.Pixels;
 with GL.Types.Indirect;
 
+with Orka.Rendering.Vertex_Formats.Formats;
 with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
    Default_Root_Name : constant String := "root";
-
---   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
 
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
@@ -97,7 +96,7 @@ package body Orka.Resources.Models.glTF is
       end loop;
    end Add_Nodes;
 
-   function Shape_List
+   function Mesh_Node_Cursors
      (Parts : String_Maps.Map;
       Scene : Trees.Tree) return Cursor_Array_Holder.Holder
    is
@@ -112,7 +111,7 @@ package body Orka.Resources.Models.glTF is
    begin
       Parts.Iterate (Set_Name'Access);
       return Cursor_Array_Holder.To_Holder (Shapes);
-   end Shape_List;
+   end Mesh_Node_Cursors;
 
    function Bounds_List
      (Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
@@ -199,7 +198,7 @@ package body Orka.Resources.Models.glTF is
    end Buffer_View_Conversions;
 
    procedure Count_Parts
-     (Format : not null access Rendering.Vertex_Formats.Vertex_Format;
+     (Index_Kind : GL.Types.Unsigned_Numeric_Type;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Vertices, Indices : out Natural)
@@ -247,11 +246,11 @@ package body Orka.Resources.Models.glTF is
 
             pragma Assert (Accessor_Index.Kind = Orka.glTF.Accessors.Scalar);
 
-            pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Format.Index_Kind,
+            pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Index_Kind,
               "Index of mesh " & Mesh.Name.all & " has type " &
               GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
               " but expected " &
-              GL.Types.Unsigned_Numeric_Type'Image (Format.Index_Kind) & " or lower");
+              GL.Types.Unsigned_Numeric_Type'Image (Index_Kind) & " or lower");
          begin
             Count_Vertices := Count_Vertices + Accessor_Position.Count;
             Count_Indices  := Count_Indices + Accessor_Index.Count;
@@ -259,7 +258,7 @@ package body Orka.Resources.Models.glTF is
       end loop;
 
       Vertices := Count_Vertices;
-      Indices := Count_Indices;
+      Indices  := Count_Indices;
    end Count_Parts;
 
    procedure Add_Parts
@@ -351,86 +350,9 @@ package body Orka.Resources.Models.glTF is
       end loop;
    end Add_Parts;
 
---   function Load_Model
---     (Format     : not null access Vertex_Formats.Vertex_Format;
---      Uniform_WT : not null access Programs.Uniforms.Uniform_Sampler;
---      Uniform_IO : not null access Programs.Uniforms.Uniform;
---      Path       : String) return Model
---   is
---   begin
---         begin
---            declare
---               use GL.Objects.Buffers;
-
---               Vertices_Length, Indices_Length : Natural;
---               T1, T2, T3, T4, T5, T6 : Ada.Real_Time.Time := Ada.Real_Time.Clock;
---               Meshes_Length : Ada.Containers.Count_Type := 0;
---            begin
---               return Object : Model
---                 := (Scene      => new Model_Scene'(Scene => Trees.Create_Tree (Default_Root_Name), Shapes => <>),
---                     Format     => Format.all'Unrestricted_Access,
---                     Uniform_WT => Uniform_WT.all'Unrestricted_Access,
---                     Uniform_IO => Uniform_IO.all'Unrestricted_Access,
---                     others     => <>)
---               do
---                  T5 := Ada.Real_Time.Clock;
-
---                  Count_Parts (Format, Accessors, Meshes, Vertices_Length, Indices_Length);
-
---                  Object.Bounds := Orka.Buffers.Create_Buffer
---                    (Flags => Storage_Bits'(others => False),
---                     Data  => Bounds_List (Accessors, Meshes));
-
---                  Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
-
---                  Object.Batch := Orka.Buffers.MDI.Create_Batch
---                    (Positive (Parts.Length), Vertices_Length, Indices_Length,
---                     Format  => Format,
---                     Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
---                     Visible => True);
-
---                  Add_Parts (Format, Object.Batch, Buffer_Views, Accessors, Meshes);
---                  T6 := Ada.Real_Time.Clock;
-
---                  declare
---                     use type Ada.Real_Time.Time;
---                     use Ada.Real_Time;
-
---                     Reading_Time    : constant Duration := 1e3 * To_Duration (T2 - T1);
---                     Parsing_Time    : constant Duration := 1e3 * To_Duration (T3 - T2);
---                     Processing_Time : constant Duration := 1e3 * To_Duration (T4 - T3);
---                     Scene_Tree_Time : constant Duration := 1e3 * To_Duration (T5 - T4);
---                     Buffers_Time    : constant Duration := 1e3 * To_Duration (T6 - T5);
---                     Loading_Time    : constant Duration := 1e3 * To_Duration (T6 - T1);
---                  begin
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "Loaded model " & Path);
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        " " & Ada.Containers.Count_Type'Image (Meshes_Length) & " parts," &
---                        Natural'Image (Vertices_Length) & " vertices," &
---                        Natural'Image (Indices_Length) & " indices");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "  loaded in" & Duration'Image (Loading_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    reading file:" & Duration'Image (Reading_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    parsing JSON:" & Duration'Image (Parsing_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    processing glTF:" & Duration'Image (Processing_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    scene tree:" & Duration'Image (Scene_Tree_Time) & " ms");
---                     Debug_Messages.Insert (GL.Debug.Notification,
---                        "    buffers:" & Duration'Image (Buffers_Time) & " ms");
---                  end;
-
---               end return;
---            end;
---         end;
---   end Load_Model;
-
    procedure Load
      (Bytes   : in out Byte_Array_Access;
-      Time    : Ada.Real_Time.Time_Span;
+      Time    : Time_Span;
       Path    : SU.Unbounded_String;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
@@ -446,7 +368,6 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      use type Ada.Real_Time.Time;
 
       package Parsers is new JSON.Parsers (Orka.glTF.Types);
 
@@ -454,7 +375,7 @@ package body Orka.Resources.Models.glTF is
       Path  : String renames SU.To_String (Object.Path);
    begin
       declare
-         T1 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+         T1 : constant Time := Clock;
 
          --  Tokenize and parse JSON data
          Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Bytes);
@@ -462,7 +383,7 @@ package body Orka.Resources.Models.glTF is
            (JSON   => new JSON_Value'Class'(Parsers.Parse (Stream)),
             others => <>);
 
-         T2 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+         T2 : constant Time := Clock;
 
          Asset : constant JSON_Object_Value := Data.JSON.Get_Object ("asset");
       begin
@@ -474,7 +395,8 @@ package body Orka.Resources.Models.glTF is
 
          declare
             Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Processing_Job'
-              (Jobs.Abstract_Job with Data => Data, Path => Object.Path, Start_Time => T2);
+              (Jobs.Abstract_Job with Data => Data, Path => Object.Path,
+                Processing_Start_Time => T2);
 
             Process_1_Job : constant Jobs.Job_Ptr := new GLTF_Process_Buffers_Job'
               (Jobs.Abstract_Job with Data => Data);
@@ -488,8 +410,8 @@ package body Orka.Resources.Models.glTF is
             Finish_Job.Set_Dependencies
               ((Process_1_Job, Process_2_Job, Process_3_Job, Process_4_Job));
 
-            Data.Reading_Time := Object.Reading_Time;
-            Data.Parsing_Time := T2 - T1;
+            Data.Times.Reading := Object.Reading_Time;
+            Data.Times.Parsing := T2 - T1;
 
             Enqueue (Process_1_Job);
             Enqueue (Process_2_Job);
@@ -498,6 +420,7 @@ package body Orka.Resources.Models.glTF is
          end;
       exception
          when others =>
+            --  TODO Ugly
             declare
                JSON2 : JSON_Value_Access := Data.JSON;
                Data2 : GLTF_Data_Access  := Data;
@@ -568,7 +491,6 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      use type Ada.Real_Time.Time;
 
       --  TODO Textures, Images, Samplers, Materials, Cameras
 
@@ -584,7 +506,7 @@ package body Orka.Resources.Models.glTF is
          raise Model_Load_Error with "glTF file '" & Path & "' has an empty scene";
       end if;
 
-      Object.Data.Process_Time := Ada.Real_Time.Clock - Object.Start_Time;
+      Object.Data.Times.Processing := Clock - Object.Processing_Start_Time;
 
       declare
          Scene_Data : constant Model_Scene_Ptr := new Model_Scene'
@@ -595,7 +517,7 @@ package body Orka.Resources.Models.glTF is
 
          use type GL.Types.Single;
          use Transforms;
-         Start_Time : Ada.Real_Time.Time;
+         Start_Time : Time;
 
          --  Convert the object from structural frame (X = aft,
          --  Y = right, Z = top) to OpenGL (X = right, Y = top,
@@ -604,9 +526,13 @@ package body Orka.Resources.Models.glTF is
          --  X => Z, Y => X, Z => Y   -->   Ry (-90.0) * Rx (-90.0)
          Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0);
          --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
-      begin
-         Start_Time := Ada.Real_Time.Clock;
 
+         Vertices, Indices : Natural;
+      begin
+         Start_Time := Clock;
+
+         --  Rotate the whole object so that the nose of a model points
+         --  to the screen by transforming the root node
          Scene.Set_Local_Transform
            (Scene.To_Cursor (Scene.Root_Name), Structural_Frame_To_GL);
 
@@ -617,29 +543,93 @@ package body Orka.Resources.Models.glTF is
          end loop;
          Add_Nodes (Scene, Parts, Object.Data.Nodes, Default_Scene.Nodes);
 
-         Scene_Data.Shapes := Shape_List (Parts, Scene);
+         --  Collect an array of cursors to nodes in the scene for nodes
+         --  that have a corresponding mesh part. This is needed so that,
+         --  after updating the whole scene tree, the world transforms of
+         --  these nodes can be copied to a GPU buffer before rendering.
+         Scene_Data.Shapes := Mesh_Node_Cursors (Parts, Scene);
 
-         Object.Data.Scene_Time := Ada.Real_Time.Clock - Start_Time;
-         --  TODO Do something with Scene_Data and copy Object.Data.*_Time
+--         Scene_Data.Bounds := Bounds_List (Object.Data.Accessors, Object.Data.Meshes);
+
+         Object.Data.Times.Scene := Clock - Start_Time;
+
+         --  Count total number of vertices and indices
+         Count_Parts (GL.Types.UInt_Type, Object.Data.Accessors,
+           Object.Data.Meshes, Vertices, Indices);
 
          declare
-            JSON : JSON_Value_Access := Object.Data.JSON;
-            Data : GLTF_Data_Access := Object.Data;
+            Buffers_Job : constant Jobs.Job_Ptr := new GLTF_Create_Buffers_Job'
+              (Jobs.Abstract_Job with Data => Object.Data, Path => Object.Path,
+                Scene => Scene_Data, Vertices => Vertices, Indices => Indices);
          begin
-            Free_JSON (JSON);
-            Free_Data (Data);
+            Enqueue (Buffers_Job);
          end;
       end;
-   exception
-      when Error : others =>
-         declare
-            JSON : JSON_Value_Access := Object.Data.JSON;
-            Data : GLTF_Data_Access  := Object.Data;
-         begin
-            Free_JSON (JSON);
-            Free_Data (Data);
-         end;
-         raise;
+   end Execute;
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Create_Buffers_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+   is
+      use GL.Debug;
+      use GL.Objects.Buffers;
+
+      package Messages is new GL.Debug.Messages (Third_Party, Other);
+
+      Meshes_Length : constant Ada.Containers.Count_Type := 10;
+
+      Path  : String renames SU.To_String (Object.Path);
+      Data  : GLTF_Data_Access renames Object.Data;
+      Parts : Natural := Object.Scene.Shapes.Element'Length;
+      --  TODO Assert Parts > 0
+
+      T5 : Time := Clock;
+
+      Format : aliased Orka.Rendering.Vertex_Formats.Vertex_Format
+        := Orka.Rendering.Vertex_Formats.Formats.Separate_Position_Normal_UV_Half_MDI;
+
+      Batch : Rendering.Buffers.MDI.Batch;
+   begin
+--      Object.Bounds := Orka.Buffers.Create_Buffer
+--        (Flags => Storage_Bits'(others => False),
+--         Data  => Bounds_List (Accessors, Meshes));
+
+--      Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
+
+      Batch := Rendering.Buffers.MDI.Create_Batch
+        (Positive (Parts), Object.Vertices, Object.Indices,
+         Format  => Format'Access,
+         Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
+         Visible => True);
+
+      Add_Parts (Format'Access, Batch, Data.Views, Data.Accessors, Data.Meshes);
+
+      Data.Times.Buffers := Clock - T5;
+
+      declare
+         Read_Time    : constant Duration := 1e3 * To_Duration (Data.Times.Reading);
+         Parse_Time   : constant Duration := 1e3 * To_Duration (Data.Times.Parsing);
+         Process_Time : constant Duration := 1e3 * To_Duration (Data.Times.Processing);
+         Scene_Time   : constant Duration := 1e3 * To_Duration (Data.Times.Scene);
+         Buffers_Time : constant Duration := 1e3 * To_Duration (Data.Times.Buffers);
+         Load_Time    : constant Duration := 0.0;
+      begin
+         Messages.Insert (Notification, "Loaded model " & Path);
+         Messages.Insert (Notification,
+           " " & Parts'Image & " parts," &
+           Object.Vertices'Image & " vertices," &
+           Object.Indices'Image & " indices");
+         Messages.Insert (Notification, "  loaded in" & Load_Time'Image & " ms");
+         Messages.Insert (Notification, "    reading file:" & Read_Time'Image & " ms");
+         Messages.Insert (Notification, "    parsing JSON:" & Parse_Time'Image & " ms");
+         Messages.Insert (Notification, "    processing glTF:" & Process_Time'Image & " ms");
+         Messages.Insert (Notification, "    scene tree:" & Scene_Time'Image & " ms");
+         Messages.Insert (Notification, "    buffers:" & Buffers_Time'Image & " ms");
+      end;
+
+      --  TODO Deallocate Object.Data.JSON
+      --  TODO Deallocate Object.Data
    end Execute;
 
 end Orka.Resources.Models.glTF;
