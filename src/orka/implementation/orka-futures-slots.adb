@@ -40,6 +40,11 @@ package body Orka.Futures.Slots is
          Location := Value;
          Status   := Futures.Waiting;
       end Reset_And_Set_Location;
+
+      procedure Set_Location (Value : Location_Index) is
+      begin
+         Location := Value;
+      end Set_Location;
    end Future_Object;
 
    function Make_Handles return Handle_Array is
@@ -85,10 +90,12 @@ package body Orka.Futures.Slots is
          Handles (From) := To_Handle;
          Handles (To)   := From_Handle;
 
+         pragma Assert (Future_Slots (From_Handle)'Access = Slot);
+
          --  After having moved the locations of the handles, we need to
          --  update the slots so that they point to correct locations again
          Future_Slots (From_Handle).Reset_And_Set_Location (To);
-         Future_Slots (To_Handle).Reset_And_Set_Location (From);
+         Future_Slots (To_Handle).Set_Location (From);
 
          Acquired := Acquired - 1;
       end Release;

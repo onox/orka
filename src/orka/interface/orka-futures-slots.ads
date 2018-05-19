@@ -30,7 +30,8 @@ package Orka.Futures.Slots is
 
    protected Manager is
       entry Acquire (Slot : out Future_Access);
-      --  with Pre => not Stopping
+      --  with Pre  => not Stopping,
+      --       Post => Slot.Current_Status = Futures.Waiting;
 
       procedure Release (Slot : not null Future_Access)
         with Pre => Stopping or else Slot.Current_Status in Futures.Done | Futures.Failed;
@@ -95,6 +96,7 @@ private
       function Handle_Location return Location_Index;
 
       procedure Reset_And_Set_Location (Value : Location_Index);
+      procedure Set_Location (Value : Location_Index);
    private
       Status   : Futures.Status := Futures.Waiting;
       Location : Location_Index := 1;
