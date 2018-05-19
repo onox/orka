@@ -12,32 +12,77 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Containers.Vectors;
 with Ada.Exceptions;
+with Ada.Real_Time;
 with Ada.Text_IO;
 
 with Orka.OS;
-with Orka.Resources.Models.glTF;
-with Orka.Resources.Textures.KTX;
 
 package body Orka.Resources.Loader is
 
    function Is_Extension (Path, Extension : String) return Boolean is
      (Path (Path'Last - Extension'Length .. Path'Last) = "." & Extension);
 
-   function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
-      function Loader return Load_Ptr is
-      begin
-         if Is_Extension (Path, "gltf") then
-            return Orka.Resources.Models.glTF.Load'Access;
-         elsif Is_Extension (Path, "ktx") then
-            return Orka.Resources.Textures.KTX.Load'Access;
-         else
-            raise Resource_Load_Error with Path & " has an unknown extension";
-         end if;
-      end Loader;
+   use type Loaders.Loader_Access;
 
+   package Loader_Vectors is new Ada.Containers.Vectors (Positive, Loaders.Loader_Access);
+   --  Using a vector instead of a map gives looking up a loader a time
+   --  complexity of O(n) instead of O(1), but it is assumed that there
+   --  will only be a handful of registered loaders
+
+   protected Extensions is
+      procedure Register (Loader : Loaders.Loader_Ptr);
+      --  Add the loader to the list of loaders
+
+      function Has_Loader (Path : String) return Boolean;
+      --  Return True if a loader has been registered that can load the
+      --  file at the given path based on its extension, False otherwise
+
+      function Loader (Path : String) return Loaders.Loader_Ptr;
+      --  Return a loader based on the extension of the given path
+   private
+      Extension_Loaders : Loader_Vectors.Vector;
+   end Extensions;
+
+   protected body Extensions is
+      procedure Register (Loader : Loaders.Loader_Ptr) is
+      begin
+         if (for some L of Extension_Loaders => L.Extension = Loader.Extension) then
+            raise Constraint_Error with
+              "Already registered loader for extension " & Loader.Extension;
+         end if;
+
+         Extension_Loaders.Append (Loader);
+      end Register;
+
+      function Has_Loader (Path : String) return Boolean is
+        ((for some Loader of Extension_Loaders => Is_Extension (Path, Loader.Extension)));
+
+      function Loader (Path : String) return Loaders.Loader_Ptr is
+      begin
+         for Loader of Extension_Loaders loop
+            if Is_Extension (Path, Loader.Extension) then
+               return Loader;
+            end if;
+         end loop;
+
+         raise Constraint_Error;
+      end Loader;
+   end Extensions;
+
+   procedure Register (Loader : Loaders.Loader_Ptr) is
+   begin
+      Extensions.Register (Loader);
+   end Register;
+
+   function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
       Slot : Futures.Future_Access;
    begin
+      if not Extensions.Has_Loader (Path) then
+         raise Resource_Load_Error with "No registered loader for " & Path;
+      end if;
+
       Queues.Slots.Manager.Acquire (Slot);
       declare
          Pointer : Futures.Pointers.Mutable_Pointer;
@@ -45,7 +90,6 @@ package body Orka.Resources.Loader is
          Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
          Queue.Enqueue
            ((Path   => SU.To_Unbounded_String (Path),
-             Load   => Loader,
              Future => Pointer));
          return Pointer;
          --  Return Pointer instead of Pointer.Get to prevent
@@ -98,26 +142,31 @@ package body Orka.Resources.Loader is
          exit when Stop;
 
          declare
+            Path : constant String := SU.To_String (Request.Path);
+
             Future : Futures.Pointers.Reference renames Request.Future.Get;
+            Loader : Loaders.Loader_Ptr renames Extensions.Loader (Path);
          begin
             Future.Set_Status (Futures.Running);
 
             declare
-               Time_Start : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+               use Ada.Real_Time;
 
-               File  : Byte_Array_File'Class := Open_File (SU.To_String (Request.Path));
+               Time_Start : constant Time := Clock;
+
+               File  : Byte_Array_File'Class := Open_File (Path);
                Bytes : Byte_Array_Access := File.Read_File;
 
-               Time_End : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+               Time_End : constant Time := Clock;
 
-               use type Ada.Real_Time.Time;
+               Reading_Time : constant Time_Span := Time_End - Time_Start;
 
                procedure Enqueue (Element : Jobs.Job_Ptr) is
                begin
                   Job_Queue.Enqueue (Element, Request.Future);
                end Enqueue;
             begin
-               Request.Load (Bytes, Time_End - Time_Start, Request.Path, Enqueue'Access);
+               Loader.Load ((Bytes, To_Duration (Reading_Time), Request.Path), Enqueue'Access);
             end;
          exception
             when Error : others =>

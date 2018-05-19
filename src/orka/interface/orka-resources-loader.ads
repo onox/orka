@@ -12,11 +12,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-
 with Orka.Containers.Ring_Buffers;
 with Orka.Futures;
 with Orka.Jobs.Queues;
+
+with Orka.Resources.Loaders;
 
 generic
    with package Queues is new Orka.Jobs.Queues (<>);
@@ -32,6 +32,8 @@ generic
    Task_Name : String := "Resource Loader";
 package Orka.Resources.Loader is
 
+   procedure Register (Loader : Loaders.Loader_Ptr);
+
    function Load (Path : String) return Futures.Pointers.Reference;
    --  Load the given resource from a file system or archive and return
    --  a handle for querying the processing status of the resource. Calling
@@ -42,24 +44,8 @@ package Orka.Resources.Loader is
 
 private
 
-   type Load_Ptr is not null access procedure
-     (Bytes   : in out Byte_Array_Access;
-      Time    : Ada.Real_Time.Time_Span;
-      Path    : SU.Unbounded_String;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
-   procedure Empty_Loader
-     (Bytes   : in out Byte_Array_Access;
-      Time    : Ada.Real_Time.Time_Span;
-      Path    : SU.Unbounded_String;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is null;
-   --  This null procedure is needed because without it the declaration
-   --  of a Read_Request in the task body will generate an access
-   --  check failure.
-
    type Read_Request is record
       Path   : SU.Unbounded_String;
-      Load   : Load_Ptr := Empty_Loader'Access;
       Future : Futures.Pointers.Mutable_Pointer;
    end record;
 

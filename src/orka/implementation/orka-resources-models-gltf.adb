@@ -350,17 +350,28 @@ package body Orka.Resources.Models.glTF is
       end loop;
    end Add_Parts;
 
+   -----------------------------------------------------------------------------
+
+   type GLTF_Loader is new Loaders.Loader with null record;
+
+   overriding
+   function Extension (Object : GLTF_Loader) return Loaders.Extension_String is ("gltf");
+
+   overriding
    procedure Load
-     (Bytes   : in out Byte_Array_Access;
-      Time    : Time_Span;
-      Path    : SU.Unbounded_String;
+     (Object  : GLTF_Loader;
+      Data    : Loaders.Resource_Data;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       Job : constant Jobs.Job_Ptr := new GLTF_Parse_Job'
-        (Jobs.Abstract_Job with Bytes => Bytes, Path => Path, Reading_Time => Time);
+        (Jobs.Abstract_Job with Data => Data);
    begin
       Enqueue (Job);
    end Load;
+
+   function Create_Loader return Loaders.Loader_Ptr is (new GLTF_Loader);
+
+   -----------------------------------------------------------------------------
 
    overriding
    procedure Execute
@@ -371,8 +382,8 @@ package body Orka.Resources.Models.glTF is
 
       package Parsers is new JSON.Parsers (Orka.glTF.Types);
 
-      Bytes : Byte_Array_Access := Object.Bytes;
-      Path  : String renames SU.To_String (Object.Path);
+      Bytes : Byte_Array_Access := Object.Data.Bytes;
+      Path  : String renames SU.To_String (Object.Data.Path);
    begin
       declare
          T1 : constant Time := Clock;
@@ -395,7 +406,7 @@ package body Orka.Resources.Models.glTF is
 
          declare
             Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Processing_Job'
-              (Jobs.Abstract_Job with Data => Data, Path => Object.Path,
+              (Jobs.Abstract_Job with Data => Data, Path => Object.Data.Path,
                 Processing_Start_Time => T2);
 
             Process_1_Job : constant Jobs.Job_Ptr := new GLTF_Process_Buffers_Job'
@@ -410,7 +421,7 @@ package body Orka.Resources.Models.glTF is
             Finish_Job.Set_Dependencies
               ((Process_1_Job, Process_2_Job, Process_3_Job, Process_4_Job));
 
-            Data.Times.Reading := Object.Reading_Time;
+            Data.Times.Reading := To_Time_Span (Object.Data.Reading_Time);
             Data.Times.Parsing := T2 - T1;
 
             Enqueue (Process_1_Job);
@@ -582,7 +593,7 @@ package body Orka.Resources.Models.glTF is
       Path  : String renames SU.To_String (Object.Path);
       Data  : GLTF_Data_Access renames Object.Data;
       Parts : Natural := Object.Scene.Shapes.Element'Length;
-      --  TODO Assert Parts > 0
+      pragma Assert (Parts > 0);
 
       T5 : Time := Clock;
 

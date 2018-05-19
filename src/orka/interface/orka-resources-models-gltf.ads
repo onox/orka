@@ -21,14 +21,11 @@ private with Orka.glTF.Meshes;
 private with Orka.glTF.Scenes;
 
 with Orka.Jobs;
+with Orka.Resources.Loaders;
 
 package Orka.Resources.Models.glTF is
 
-   procedure Load
-     (Bytes   : in out Byte_Array_Access;
-      Time    : Ada.Real_Time.Time_Span;
-      Path    : SU.Unbounded_String;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+   function Create_Loader return Loaders.Loader_Ptr;
 
 private
 
@@ -64,9 +61,7 @@ private
      (Object => GLTF_Data, Name => GLTF_Data_Access);
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
-      Bytes : not null Byte_Array_Access;
-      Path  : SU.Unbounded_String;
-      Reading_Time : Ada.Real_Time.Time_Span;
+      Data  : Loaders.Resource_Data;
    end record;
 
    overriding
