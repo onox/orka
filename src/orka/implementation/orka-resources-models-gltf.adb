@@ -392,6 +392,7 @@ package body Orka.Resources.Models.glTF is
          Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Bytes);
          Data : GLTF_Data_Access := new GLTF_Data'
            (JSON   => new JSON_Value'Class'(Parsers.Parse (Stream)),
+            Start_Time => Object.Data.Start_Time,
             others => <>);
 
          T2 : constant Time := Clock;
@@ -421,7 +422,7 @@ package body Orka.Resources.Models.glTF is
             Finish_Job.Set_Dependencies
               ((Process_1_Job, Process_2_Job, Process_3_Job, Process_4_Job));
 
-            Data.Times.Reading := To_Time_Span (Object.Data.Reading_Time);
+            Data.Times.Reading := Object.Data.Reading_Time;
             Data.Times.Parsing := T2 - T1;
 
             Enqueue (Process_1_Job);
@@ -624,7 +625,7 @@ package body Orka.Resources.Models.glTF is
          Process_Time : constant Duration := 1e3 * To_Duration (Data.Times.Processing);
          Scene_Time   : constant Duration := 1e3 * To_Duration (Data.Times.Scene);
          Buffers_Time : constant Duration := 1e3 * To_Duration (Data.Times.Buffers);
-         Load_Time    : constant Duration := 0.0;
+         Load_Time    : constant Duration := 1e3 * To_Duration (Clock - Data.Start_Time);
       begin
          Messages.Insert (Notification, "Loaded model " & Path);
          Messages.Insert (Notification,

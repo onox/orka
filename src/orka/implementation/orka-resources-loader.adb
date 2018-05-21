@@ -14,7 +14,6 @@
 
 with Ada.Containers.Vectors;
 with Ada.Exceptions;
-with Ada.Real_Time;
 with Ada.Text_IO;
 
 with Orka.OS;
@@ -90,7 +89,8 @@ package body Orka.Resources.Loader is
          Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
          Queue.Enqueue
            ((Path   => SU.To_Unbounded_String (Path),
-             Future => Pointer));
+             Future => Pointer,
+             Time   => Ada.Real_Time.Clock));
          return Pointer;
          --  Return Pointer instead of Pointer.Get to prevent
          --  adjust/finalize raising a Storage_Error
@@ -166,7 +166,7 @@ package body Orka.Resources.Loader is
                   Job_Queue.Enqueue (Element, Request.Future);
                end Enqueue;
             begin
-               Loader.Load ((Bytes, To_Duration (Reading_Time), Request.Path), Enqueue'Access);
+               Loader.Load ((Bytes, Reading_Time, Request.Time, Request.Path), Enqueue'Access);
             end;
          exception
             when Error : others =>

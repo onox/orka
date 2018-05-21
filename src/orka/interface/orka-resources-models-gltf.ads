@@ -53,6 +53,7 @@ private
       Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector;
       Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector;
       Times     : Times_Data := (others => Time_Span_Zero);
+      Start_Time : Time;
    end record;
 
    type GLTF_Data_Access is access GLTF_Data;

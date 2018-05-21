@@ -12,10 +12,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Real_Time;
+
 with Orka.Containers.Ring_Buffers;
 with Orka.Futures;
 with Orka.Jobs.Queues;
-
 with Orka.Resources.Loaders;
 
 generic
@@ -47,6 +48,7 @@ private
    type Read_Request is record
       Path   : SU.Unbounded_String;
       Future : Futures.Pointers.Mutable_Pointer;
+      Time   : Ada.Real_Time.Time;
    end record;
 
    Null_Request : constant Read_Request := (others => <>);
