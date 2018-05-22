@@ -44,7 +44,9 @@ package GL.Objects.Buffers is
       Coherent          : Boolean := False;
       Dynamic_Storage   : Boolean := False;
       Client_Storage    : Boolean := False;
-   end record;
+   end record
+     with Dynamic_Predicate => (if Storage_Bits.Coherent then Storage_Bits.Persistent)
+       and (if Storage_Bits.Persistent then Storage_Bits.Read or Storage_Bits.Write);
 
    type Buffer_Target (<>) is tagged limited private;
    
