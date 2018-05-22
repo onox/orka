@@ -54,6 +54,7 @@ package GL.Objects.Buffers is
 
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
    --  Bind the buffer object to the target
+   --  TODO Not one of the four targets used by Bind_Base
 
    procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural);
    --  Bind the buffer object to the index of the target as well as to
@@ -180,15 +181,13 @@ package GL.Objects.Buffers is
 
    end Buffer_Pointers;
 
-   Array_Buffer              : constant Buffer_Target;
-   Element_Array_Buffer      : constant Buffer_Target;
+   --  Array_Buffer, Element_Array_Buffer, Texture_Buffer,
+   --  Copy_Read_Buffer, and Copy_Write_Buffer are no longer needed
+   --  since the GL.Objects.* packages use DSA
    Pixel_Pack_Buffer         : constant Buffer_Target;
    Pixel_Unpack_Buffer       : constant Buffer_Target;
    Uniform_Buffer            : constant Buffer_Target;
-   Texture_Buffer            : constant Buffer_Target;
    Transform_Feedback_Buffer : constant Buffer_Target;
-   Copy_Read_Buffer          : constant Buffer_Target;
-   Copy_Write_Buffer         : constant Buffer_Target;
    Draw_Indirect_Buffer      : constant Buffer_Target;
    Parameter_Buffer          : constant Buffer_Target;
    Shader_Storage_Buffer     : constant Buffer_Target;
@@ -230,24 +229,14 @@ private
 
    type Buffer is new GL_Object with null record;
    
-   Array_Buffer              : constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Array_Buffer);
-   Element_Array_Buffer      : constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Element_Array_Buffer);
    Pixel_Pack_Buffer         : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Pack_Buffer);
    Pixel_Unpack_Buffer       : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Unpack_Buffer);
    Uniform_Buffer            : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Uniform_Buffer);
-   Texture_Buffer            : constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Texture_Buffer);
    Transform_Feedback_Buffer : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Transform_Feedback_Buffer);
-   Copy_Read_Buffer          : constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Copy_Read_Buffer);
-   Copy_Write_Buffer         : constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Copy_Write_Buffer);
    Draw_Indirect_Buffer      : constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Draw_Indirect_Buffer);
    Parameter_Buffer          : constant Buffer_Target
