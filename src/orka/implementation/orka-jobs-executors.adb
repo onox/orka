@@ -36,6 +36,7 @@ package body Orka.Jobs.Executors is
       Queue : Queues.Queue_Ptr)
    is
       use type Ada.Real_Time.Time;
+      use type Futures.Status;
 
       Pair : Queues.Pair;
       Stop : Boolean := False;
@@ -87,7 +88,10 @@ package body Orka.Jobs.Executors is
          begin
             T1 := Ada.Real_Time.Clock;
 
-            Promise.Set_Status (Futures.Running);
+            if Future.Current_Status = Futures.Waiting then
+               Promise.Set_Status (Futures.Running);
+            end if;
+
             begin
                Job.Execute (Enqueue'Access);
             exception
