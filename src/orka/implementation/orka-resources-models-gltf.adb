@@ -25,7 +25,6 @@ with GL.Objects.Buffers;
 --  with GL.Pixels;
 with GL.Types.Indirect;
 
-with Orka.Rendering.Vertex_Formats.Formats;
 with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
@@ -352,7 +351,9 @@ package body Orka.Resources.Models.glTF is
 
    -----------------------------------------------------------------------------
 
-   type GLTF_Loader is new Loaders.Loader with null record;
+   type GLTF_Loader is new Loaders.Loader with record
+      Format : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+   end record;
 
    overriding
    function Extension (Object : GLTF_Loader) return Loaders.Extension_String is ("gltf");
@@ -364,12 +365,14 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       Job : constant Jobs.Job_Ptr := new GLTF_Parse_Job'
-        (Jobs.Abstract_Job with Data => Data);
+        (Jobs.Abstract_Job with Data => Data, Format => Object.Format);
    begin
       Enqueue (Job);
    end Load;
 
-   function Create_Loader return Loaders.Loader_Ptr is (new GLTF_Loader);
+   function Create_Loader
+     (Format : Rendering.Vertex_Formats.Vertex_Format_Ptr) return Loaders.Loader_Ptr
+   is (new GLTF_Loader'(Format => Format));
 
    -----------------------------------------------------------------------------
 
@@ -392,6 +395,7 @@ package body Orka.Resources.Models.glTF is
          Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Bytes);
          Data : GLTF_Data_Access := new GLTF_Data'
            (JSON   => new JSON_Value'Class'(Parsers.Parse (Stream)),
+            Format => Object.Format,
             Start_Time => Object.Data.Start_Time,
             others => <>);
 
@@ -598,9 +602,6 @@ package body Orka.Resources.Models.glTF is
 
       T5 : Time := Clock;
 
-      Format : aliased Orka.Rendering.Vertex_Formats.Vertex_Format
-        := Orka.Rendering.Vertex_Formats.Formats.Separate_Position_Normal_UV_Half_MDI;
-
       Batch : Rendering.Buffers.MDI.Batch;
    begin
 --      Object.Bounds := Orka.Buffers.Create_Buffer
@@ -611,11 +612,11 @@ package body Orka.Resources.Models.glTF is
 
       Batch := Rendering.Buffers.MDI.Create_Batch
         (Positive (Parts), Object.Vertices, Object.Indices,
-         Format  => Format'Access,
+         Format  => Object.Data.Format,
          Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
          Visible => True);
 
-      Add_Parts (Format'Access, Batch, Data.Views, Data.Accessors, Data.Meshes);
+      Add_Parts (Object.Data.Format, Batch, Data.Views, Data.Accessors, Data.Meshes);
 
       Data.Times.Buffers := Clock - T5;
 

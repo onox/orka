@@ -25,7 +25,8 @@ with Orka.Resources.Loaders;
 
 package Orka.Resources.Models.glTF is
 
-   function Create_Loader return Loaders.Loader_Ptr;
+   function Create_Loader
+     (Format : Rendering.Vertex_Formats.Vertex_Format_Ptr) return Loaders.Loader_Ptr;
 
 private
 
@@ -54,6 +55,7 @@ private
       Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector;
       Times     : Times_Data := (others => Time_Span_Zero);
       Start_Time : Time;
+      Format    : Rendering.Vertex_Formats.Vertex_Format_Ptr;
    end record;
 
    type GLTF_Data_Access is access GLTF_Data;
@@ -62,7 +64,8 @@ private
      (Object => GLTF_Data, Name => GLTF_Data_Access);
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
-      Data  : Loaders.Resource_Data;
+      Data   : Loaders.Resource_Data;
+      Format : Rendering.Vertex_Formats.Vertex_Format_Ptr;
    end record;
 
    overriding

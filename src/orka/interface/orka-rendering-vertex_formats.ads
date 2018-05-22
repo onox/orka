@@ -38,6 +38,8 @@ package Orka.Rendering.Vertex_Formats is
 
    type Vertex_Format is tagged private;
 
+   type Vertex_Format_Ptr is not null access Vertex_Format;
+
    function Create_Vertex_Format
      (Mode       : GL.Types.Connection_Mode;
       Index_Kind : GL.Types.Unsigned_Numeric_Type) return Vertex_Format;
