@@ -142,9 +142,10 @@ package body Orka.Resources.Loader is
          exit when Stop;
 
          declare
-            Future : Futures.Pointers.Reference renames Request.Future.Get;
+            Future  : Futures.Pointers.Reference renames Request.Future.Get;
+            Promise : Futures.Promise'Class renames Futures.Promise'Class (Future.Value.all);
          begin
-            Future.Set_Status (Futures.Running);
+            Promise.Set_Status (Futures.Running);
 
             declare
                Path : constant String := SU.To_String (Request.Path);
@@ -171,7 +172,7 @@ package body Orka.Resources.Loader is
          exception
             when Error : others =>
                Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
-               Future.Set_Failed (Error);
+               Promise.Set_Failed (Error);
          end;
 
          --  Finalize the smart pointer (Request.Future) to reduce the

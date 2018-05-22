@@ -26,16 +26,6 @@ package Orka.Futures is
 
    type Future is synchronized interface;
 
-   procedure Set_Status
-     (Object : in out Future;
-      Value  : Non_Failed_Status) is abstract
-   with Synchronization => By_Protected_Procedure;
-
-   procedure Set_Failed
-     (Object : in out Future;
-      Reason : Ada.Exceptions.Exception_Occurrence) is abstract
-   with Synchronization => By_Protected_Procedure;
-
    procedure Wait_Until_Done
      (Object : in out Future;
       Value  : out Status) is abstract
@@ -46,5 +36,19 @@ package Orka.Futures is
    type Future_Access is access all Future'Class;
 
    package Pointers is new Orka.Smart_Pointers (Future'Class, Future_Access);
+
+   -----------------------------------------------------------------------------
+
+   type Promise is synchronized interface and Future;
+
+   procedure Set_Status
+     (Object : in out Promise;
+      Value  : Non_Failed_Status) is abstract
+   with Synchronization => By_Protected_Procedure;
+
+   procedure Set_Failed
+     (Object : in out Promise;
+      Reason : Ada.Exceptions.Exception_Occurrence) is abstract
+   with Synchronization => By_Protected_Procedure;
 
 end Orka.Futures;

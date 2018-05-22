@@ -52,8 +52,10 @@ package body Orka.Jobs.Executors is
          exit when Stop;
 
          declare
-            Job    : Job_Ptr renames Pair.Job;
-            Future : Futures.Pointers.Reference renames Pair.Future.Get;
+            Job     : Job_Ptr renames Pair.Job;
+
+            Future  : Futures.Pointers.Reference renames Pair.Future.Get;
+            Promise : Futures.Promise'Class renames Futures.Promise'Class (Future.Value.all);
 
             Jobs : Vectors.Vector (Capacity => Maximum_Enqueued_By_Job);
 
@@ -85,12 +87,12 @@ package body Orka.Jobs.Executors is
          begin
             T1 := Ada.Real_Time.Clock;
 
-            Future.Set_Status (Futures.Running);
+            Promise.Set_Status (Futures.Running);
             begin
                Job.Execute (Enqueue'Access);
             exception
                when Error : others =>
-                  Future.Set_Failed (Error);
+                  Promise.Set_Failed (Error);
                   raise;
             end;
 
@@ -117,7 +119,7 @@ package body Orka.Jobs.Executors is
                   Queue.Enqueue (Job.Dependent, Pair.Future);
                end if;
             elsif Jobs.Empty then
-               Future.Set_Status (Futures.Done);
+               Promise.Set_Status (Futures.Done);
             else
                --  If the job has enqueued new jobs, we need to create an
                --  empty job which has the root dependents of these new jobs

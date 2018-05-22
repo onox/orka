@@ -83,7 +83,7 @@ package Orka.Futures.Slots is
 
 private
 
-   protected type Future_Object is new Futures.Future with
+   protected type Future_Object is new Futures.Promise with
       overriding
       function Current_Status return Futures.Status;
 
