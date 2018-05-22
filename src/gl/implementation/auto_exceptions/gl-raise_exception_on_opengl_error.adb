@@ -12,11 +12,15 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Task_Identification;
+
 with GL.Errors;
 
 separate (GL)
 procedure Raise_Exception_On_OpenGL_Error is
+   use Ada.Task_Identification;
 begin
+   pragma Assert (Current_Task = Environment_Task);
    case Errors.Error_Flag is
       when Errors.Invalid_Operation => raise Errors.Invalid_Operation_Error;
       when Errors.Invalid_Value => raise Errors.Invalid_Value_Error;
