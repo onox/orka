@@ -17,20 +17,30 @@ package body Orka.Futures.Slots is
    protected body Future_Object is
       function Current_Status return Futures.Status is (Status);
 
-      procedure Set_Status (Value : Futures.Status) is
+      procedure Set_Status (Value : Futures.Non_Failed_Status) is
       begin
          case Status is
             when Waiting | Running =>
                Status := Value;
             when Failed | Done =>
-               pragma Assert (Value /= Done);
+               raise Program_Error with "Future is already done or failed";
          end case;
       end Set_Status;
+
+      procedure Set_Failed (Reason : Ada.Exceptions.Exception_Occurrence) is
+      begin
+         Status := Failed;
+         Ada.Exceptions.Save_Occurrence (Occurrence, Reason);
+      end Set_Failed;
 
       entry Wait_Until_Done (Value : out Futures.Status)
         when Status in Done | Failed is
       begin
          Value := Status;
+
+         if Status = Failed then
+            Ada.Exceptions.Reraise_Occurrence (Occurrence);
+         end if;
       end Wait_Until_Done;
 
       function Handle_Location return Location_Index is (Location);

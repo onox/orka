@@ -89,8 +89,8 @@ package body Orka.Jobs.Executors is
             begin
                Job.Execute (Enqueue'Access);
             exception
-               when others =>
-                  Future.Set_Status (Futures.Failed);
+               when Error : others =>
+                  Future.Set_Failed (Error);
                   raise;
             end;
 

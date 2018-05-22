@@ -142,14 +142,14 @@ package body Orka.Resources.Loader is
          exit when Stop;
 
          declare
-            Path : constant String := SU.To_String (Request.Path);
-
             Future : Futures.Pointers.Reference renames Request.Future.Get;
-            Loader : Loaders.Loader_Ptr renames Extensions.Loader (Path);
          begin
             Future.Set_Status (Futures.Running);
 
             declare
+               Path : constant String := SU.To_String (Request.Path);
+               Loader : Loaders.Loader_Ptr renames Extensions.Loader (Path);
+
                use Ada.Real_Time;
 
                Time_Start : constant Time := Clock;
@@ -171,8 +171,7 @@ package body Orka.Resources.Loader is
          exception
             when Error : others =>
                Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
-               Future.Set_Status (Futures.Failed);
-               --  TODO Store exception occurrence?
+               Future.Set_Failed (Error);
          end;
 
          --  Finalize the smart pointer (Request.Future) to reduce the

@@ -88,7 +88,10 @@ private
       function Current_Status return Futures.Status;
 
       overriding
-      procedure Set_Status (Value : Futures.Status);
+      procedure Set_Status (Value : Futures.Non_Failed_Status);
+
+      overriding
+      procedure Set_Failed (Reason : Ada.Exceptions.Exception_Occurrence);
 
       overriding
       entry Wait_Until_Done (Value : out Futures.Status);
@@ -100,6 +103,8 @@ private
    private
       Status   : Futures.Status := Futures.Waiting;
       Location : Location_Index := 1;
+
+      Occurrence : Ada.Exceptions.Exception_Occurrence;
    end Future_Object;
 
    type Future_Array is array (Future_Handle) of aliased Future_Object;

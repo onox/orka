@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Exceptions;
+
 with Orka.Smart_Pointers;
 
 package Orka.Futures is
@@ -20,11 +22,18 @@ package Orka.Futures is
    type Status is (Waiting, Running, Done, Failed)
      with Default_Value => Waiting;
 
+   subtype Non_Failed_Status is Status range Waiting .. Done;
+
    type Future is synchronized interface;
 
    procedure Set_Status
      (Object : in out Future;
-      Value  : Status) is abstract
+      Value  : Non_Failed_Status) is abstract
+   with Synchronization => By_Protected_Procedure;
+
+   procedure Set_Failed
+     (Object : in out Future;
+      Reason : Ada.Exceptions.Exception_Occurrence) is abstract
    with Synchronization => By_Protected_Procedure;
 
    procedure Wait_Until_Done
