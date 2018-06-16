@@ -28,14 +28,16 @@ package Orka.Resources.Loaders is
    subtype Extension_String is String
      with Dynamic_Predicate => Extension_String'Length <= 4;
 
-   type Loader is interface;
+   type Loader is limited interface;
 
    function Extension (Object : Loader) return Extension_String is abstract;
+   --  Return the extension of files that the loader can load
 
    procedure Load
      (Object  : Loader;
       Data    : Resource_Data;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is abstract;
+   --  Load the given resource data
 
    type Loader_Access is access Loader'Class;
 

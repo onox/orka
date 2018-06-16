@@ -14,8 +14,10 @@
 
 with Ada.Containers.Vectors;
 with Ada.Exceptions;
+with Ada.Real_Time;
 with Ada.Text_IO;
 
+with Orka.Containers.Ring_Buffers;
 with Orka.OS;
 
 package body Orka.Resources.Loader is
@@ -30,7 +32,7 @@ package body Orka.Resources.Loader is
    --  complexity of O(n) instead of O(1), but it is assumed that there
    --  will only be a handful of registered loaders
 
-   protected Extensions is
+   protected Resource_Loaders is
       procedure Register (Loader : Loaders.Loader_Ptr);
       --  Add the loader to the list of loaders
 
@@ -41,26 +43,26 @@ package body Orka.Resources.Loader is
       function Loader (Path : String) return Loaders.Loader_Ptr;
       --  Return a loader based on the extension of the given path
    private
-      Extension_Loaders : Loader_Vectors.Vector;
-   end Extensions;
+      Loaders_Vector : Loader_Vectors.Vector;
+   end Resource_Loaders;
 
-   protected body Extensions is
+   protected body Resource_Loaders is
       procedure Register (Loader : Loaders.Loader_Ptr) is
       begin
-         if (for some L of Extension_Loaders => L.Extension = Loader.Extension) then
+         if (for some L of Loaders_Vector => L.Extension = Loader.Extension) then
             raise Constraint_Error with
               "Already registered loader for extension " & Loader.Extension;
          end if;
 
-         Extension_Loaders.Append (Loader);
+         Loaders_Vector.Append (Loader);
       end Register;
 
       function Has_Loader (Path : String) return Boolean is
-        ((for some Loader of Extension_Loaders => Is_Extension (Path, Loader.Extension)));
+        (for some Loader of Loaders_Vector => Is_Extension (Path, Loader.Extension));
 
       function Loader (Path : String) return Loaders.Loader_Ptr is
       begin
-         for Loader of Extension_Loaders loop
+         for Loader of Loaders_Vector loop
             if Is_Extension (Path, Loader.Extension) then
                return Loader;
             end if;
@@ -68,38 +70,106 @@ package body Orka.Resources.Loader is
 
          raise Constraint_Error;
       end Loader;
-   end Extensions;
+   end Resource_Loaders;
 
-   procedure Register (Loader : Loaders.Loader_Ptr) is
-   begin
-      Extensions.Register (Loader);
-   end Register;
+   -----------------------------------------------------------------------------
 
-   function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
-      Slot : Futures.Future_Access;
-   begin
-      if not Extensions.Has_Loader (Path) then
-         raise Resource_Load_Error with "No registered loader for " & Path;
-      end if;
+   type Pair is record
+      Location : Locations.Location_Ptr;
+      Loader   : Loaders.Loader_Ptr;
+   end record;
 
-      Queues.Slots.Manager.Acquire (Slot);
-      declare
-         Pointer : Futures.Pointers.Mutable_Pointer;
+   package Pair_Vectors is new Ada.Containers.Vectors (Positive, Pair);
+
+   protected Resource_Locations is
+      procedure Add (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr);
+
+      function Read_Data
+        (Loader : Loaders.Loader_Ptr;
+         Path   : String) return not null Byte_Array_Access;
+      --  Return the data of the file identified by the given path in the
+      --  first of the locations that match with the given loader
+      --
+      --  If none of the locations contains a file identified by the
+      --  given path, the exception Locations.Name_Error is raised.
+      --
+      --  If the file at the given path could not be read for any reason
+      --  then any kind of error is raised.
+   private
+      Pairs : Pair_Vectors.Vector;
+   end Resource_Locations;
+
+   protected body Resource_Locations is
+
+      procedure Add (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr) is
+         Element : constant Pair := (Location => Location, Loader => Loader);
       begin
-         Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
-         Queue.Enqueue
-           ((Path   => SU.To_Unbounded_String (Path),
-             Future => Pointer,
-             Time   => Ada.Real_Time.Clock));
-         return Pointer;
-         --  Return Pointer instead of Pointer.Get to prevent
-         --  adjust/finalize raising a Storage_Error
-      end;
-   end Load;
+         -- Check that the same combination of location and loader isn't
+         -- added multiple times
+         if (for some Pair of Pairs => Pair = Element) then
+            raise Constraint_Error with "Location already added for the given loader";
+         end if;
 
-   function Load (Path : String) return Futures.Pointers.Reference is
-     (Load (Path).Get);
-   --  A helper function to avoid raising a Storage_Error
+         Pairs.Append (Element);
+      end Add;
+
+      function Read_Data
+        (Loader : Loaders.Loader_Ptr;
+         Path   : String) return not null Byte_Array_Access
+      is
+         File_Not_Found : Boolean := False;
+         Occurrence : Ada.Exceptions.Exception_Occurrence;
+      begin
+         for Pair of Pairs loop
+            if Loader = Pair.Loader then
+               begin
+                  return Pair.Location.Read_Data (Path);
+               exception
+                  --  Catch the exception raised if the location does not
+                  --  have the requested resource, because there might be
+                  --  multiple locations that we want to try
+                  when Error : Locations.Name_Error =>
+                     File_Not_Found := True;
+                     Ada.Exceptions.Save_Occurrence (Occurrence, Error);
+               end;
+            end if;
+         end loop;
+
+         if File_Not_Found then
+            Ada.Exceptions.Reraise_Occurrence (Occurrence);
+         end if;
+
+         --  No locations have been added for the given loader
+         raise Constraint_Error with "No locations added for the given loader";
+      end Read_Data;
+
+   end Resource_Locations;
+
+   -----------------------------------------------------------------------------
+
+   type Read_Request is record
+      Path   : SU.Unbounded_String;
+      Future : Futures.Pointers.Mutable_Pointer;
+      Time   : Ada.Real_Time.Time;
+   end record;
+
+   Null_Request : constant Read_Request := (others => <>);
+
+   function Get_Null_Request return Read_Request is (Null_Request);
+
+   package Buffers is new Orka.Containers.Ring_Buffers
+     (Read_Request, Get_Null_Request);
+
+   protected Queue is
+      entry Enqueue (Element : Read_Request);
+
+      entry Dequeue (Element : out Read_Request; Stop : out Boolean);
+
+      procedure Shutdown;
+   private
+      Requests    : Buffers.Buffer (Maximum_Requests);
+      Should_Stop : Boolean := False;
+   end Queue;
 
    protected body Queue is
       entry Enqueue (Element : Read_Request) when not Requests.Full is
@@ -123,6 +193,44 @@ package body Orka.Resources.Loader is
          Should_Stop := True;
       end Shutdown;
    end Queue;
+
+   -----------------------------------------------------------------------------
+
+   procedure Register (Loader : Loaders.Loader_Ptr) is
+   begin
+      Resource_Loaders.Register (Loader);
+   end Register;
+
+   procedure Add_Location (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr) is
+   begin
+      Resource_Locations.Add (Location, Loader);
+   end Add_Location;
+
+   function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
+      Slot : Futures.Future_Access;
+   begin
+      if not Resource_Loaders.Has_Loader (Path) then
+         raise Resource_Load_Error with "No registered loader for " & Path;
+      end if;
+
+      Queues.Slots.Manager.Acquire (Slot);
+      declare
+         Pointer : Futures.Pointers.Mutable_Pointer;
+      begin
+         Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
+         Queue.Enqueue
+           ((Path   => SU.To_Unbounded_String (Path),
+             Future => Pointer,
+             Time   => Ada.Real_Time.Clock));
+         return Pointer;
+         --  Return Pointer instead of Pointer.Get to prevent
+         --  adjust/finalize raising a Storage_Error
+      end;
+   end Load;
+
+   function Load (Path : String) return Futures.Pointers.Reference is
+     (Load (Path).Get);
+   --  A helper function to avoid raising a Storage_Error
 
    procedure Shutdown is
    begin
@@ -149,14 +257,13 @@ package body Orka.Resources.Loader is
 
             declare
                Path : constant String := SU.To_String (Request.Path);
-               Loader : Loaders.Loader_Ptr renames Extensions.Loader (Path);
+               Loader : Loaders.Loader_Ptr renames Resource_Loaders.Loader (Path);
 
                use Ada.Real_Time;
 
                Time_Start : constant Time := Clock;
 
-               File  : Byte_Array_File'Class := Open_File (Path);
-               Bytes : Byte_Array_Access := File.Read_File;
+               Bytes : constant Byte_Array_Access := Resource_Locations.Read_Data (Loader, Path);
 
                Time_End : constant Time := Clock;
 

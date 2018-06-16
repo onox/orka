@@ -12,11 +12,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-
-with Orka.Containers.Ring_Buffers;
 with Orka.Futures;
 with Orka.Jobs.Queues;
+with Orka.Resources.Locations;
 with Orka.Resources.Loaders;
 
 generic
@@ -34,6 +32,16 @@ generic
 package Orka.Resources.Loader is
 
    procedure Register (Loader : Loaders.Loader_Ptr);
+   --  Register a loader
+   --
+   --  A loader can only load resources that have a specific extension.
+   --  The extension can be queried by calling the Loader.Extension function.
+
+   procedure Add_Location (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr);
+   --  Add a location that contains files that can be loaded by the
+   --  given loader. Multiple loaders can be registered for a specific
+   --  location and multiple locations can be registered for a specific
+   --  loader.
 
    function Load (Path : String) return Futures.Pointers.Reference;
    --  Load the given resource from a file system or archive and return
@@ -44,30 +52,6 @@ package Orka.Resources.Loader is
    procedure Shutdown;
 
 private
-
-   type Read_Request is record
-      Path   : SU.Unbounded_String;
-      Future : Futures.Pointers.Mutable_Pointer;
-      Time   : Ada.Real_Time.Time;
-   end record;
-
-   Null_Request : constant Read_Request := (others => <>);
-
-   function Get_Null_Request return Read_Request is (Null_Request);
-
-   package Buffers is new Orka.Containers.Ring_Buffers
-     (Read_Request, Get_Null_Request);
-
-   protected Queue is
-      entry Enqueue (Element : Read_Request);
-
-      entry Dequeue (Element : out Read_Request; Stop : out Boolean);
-
-      procedure Shutdown;
-   private
-      Requests    : Buffers.Buffer (Maximum_Requests);
-      Should_Stop : Boolean := False;
-   end Queue;
 
    task Loader;
 

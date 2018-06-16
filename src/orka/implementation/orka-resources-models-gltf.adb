@@ -350,8 +350,10 @@ package body Orka.Resources.Models.glTF is
    end Add_Parts;
 
    -----------------------------------------------------------------------------
+   --                                 Loader                                  --
+   -----------------------------------------------------------------------------
 
-   type GLTF_Loader is new Loaders.Loader with record
+   type GLTF_Loader is limited new Loaders.Loader with record
       Format : Rendering.Vertex_Formats.Vertex_Format_Ptr;
    end record;
 
