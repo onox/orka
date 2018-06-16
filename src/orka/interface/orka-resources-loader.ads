@@ -31,17 +31,14 @@ generic
    Task_Name : String := "Resource Loader";
 package Orka.Resources.Loader is
 
-   procedure Register (Loader : Loaders.Loader_Ptr);
-   --  Register a loader
-   --
-   --  A loader can only load resources that have a specific extension.
-   --  The extension can be queried by calling the Loader.Extension function.
-
    procedure Add_Location (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr);
    --  Add a location that contains files that can be loaded by the
    --  given loader. Multiple loaders can be registered for a specific
    --  location and multiple locations can be registered for a specific
    --  loader.
+   --
+   --  A loader can only load resources that have a specific extension.
+   --  The extension can be queried by calling the Loader.Extension function.
 
    function Load (Path : String) return Futures.Pointers.Reference;
    --  Load the given resource from a file system or archive and return

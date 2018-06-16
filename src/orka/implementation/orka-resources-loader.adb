@@ -33,8 +33,9 @@ package body Orka.Resources.Loader is
    --  will only be a handful of registered loaders
 
    protected Resource_Loaders is
-      procedure Register (Loader : Loaders.Loader_Ptr);
-      --  Add the loader to the list of loaders
+      procedure Include (Loader : Loaders.Loader_Ptr);
+      --  Add the loader to the list of loaders if it hasn't already
+      --  been added
 
       function Has_Loader (Path : String) return Boolean;
       --  Return True if a loader has been registered that can load the
@@ -47,15 +48,12 @@ package body Orka.Resources.Loader is
    end Resource_Loaders;
 
    protected body Resource_Loaders is
-      procedure Register (Loader : Loaders.Loader_Ptr) is
+      procedure Include (Loader : Loaders.Loader_Ptr) is
       begin
-         if (for some L of Loaders_Vector => L.Extension = Loader.Extension) then
-            raise Constraint_Error with
-              "Already registered loader for extension " & Loader.Extension;
+         if not (for some L of Loaders_Vector => L.Extension = Loader.Extension) then
+            Loaders_Vector.Append (Loader);
          end if;
-
-         Loaders_Vector.Append (Loader);
-      end Register;
+      end Include;
 
       function Has_Loader (Path : String) return Boolean is
         (for some Loader of Loaders_Vector => Is_Extension (Path, Loader.Extension));
@@ -196,14 +194,10 @@ package body Orka.Resources.Loader is
 
    -----------------------------------------------------------------------------
 
-   procedure Register (Loader : Loaders.Loader_Ptr) is
-   begin
-      Resource_Loaders.Register (Loader);
-   end Register;
-
    procedure Add_Location (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr) is
    begin
       Resource_Locations.Add (Location, Loader);
+      Resource_Loaders.Include (Loader);
    end Add_Location;
 
    function Load (Path : String) return Futures.Pointers.Mutable_Pointer is
