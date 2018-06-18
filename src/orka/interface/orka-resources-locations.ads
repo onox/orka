@@ -19,6 +19,8 @@ package Orka.Resources.Locations is
 
    type Location is limited interface;
 
+   function Exists (Object : Location; Path : String) return Boolean is abstract;
+
    function Read_Data
      (Object : Location;
       Path   : String) return not null Byte_Array_Access is abstract;
@@ -32,5 +34,8 @@ package Orka.Resources.Locations is
    type Location_Ptr is not null access Location'Class;
 
    Name_Error : exception renames Ada.IO_Exceptions.Name_Error;
+
+   Path_Separator : constant Character
+     with Import, Convention => C, External_Name => "__gnat_dir_separator";
 
 end Orka.Resources.Locations;

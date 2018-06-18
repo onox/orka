@@ -15,6 +15,7 @@
 with System;
 
 with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Directories;
 with Ada.Strings.Hash;
 
 with JSON.Parsers;
@@ -362,12 +363,13 @@ package body Orka.Resources.Models.glTF is
 
    overriding
    procedure Load
-     (Object  : GLTF_Loader;
-      Data    : Loaders.Resource_Data;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+     (Object   : GLTF_Loader;
+      Data     : Loaders.Resource_Data;
+      Enqueue  : not null access procedure (Element : Jobs.Job_Ptr);
+      Location : Locations.Location_Ptr)
    is
       Job : constant Jobs.Job_Ptr := new GLTF_Parse_Job'
-        (Jobs.Abstract_Job with Data => Data, Format => Object.Format);
+        (Jobs.Abstract_Job with Data => Data, Format => Object.Format, Location => Location);
    begin
       Enqueue (Job);
    end Load;
@@ -395,11 +397,13 @@ package body Orka.Resources.Models.glTF is
 
          --  Tokenize and parse JSON data
          Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Bytes);
-         Data : GLTF_Data_Access := new GLTF_Data'
-           (JSON   => new JSON_Value'Class'(Parsers.Parse (Stream)),
-            Format => Object.Format,
+         Data : constant GLTF_Data_Access := new GLTF_Data'
+           (JSON       => new JSON_Value'Class'(Parsers.Parse (Stream)),
+            Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
+            Location   => Object.Location,
+            Format     => Object.Format,
             Start_Time => Object.Data.Start_Time,
-            others => <>);
+            others     => <>);
 
          T2 : constant Time := Clock;
 
@@ -463,8 +467,15 @@ package body Orka.Resources.Models.glTF is
       use Orka.glTF.Types;
       Buffers : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("buffers"));
       Views   : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("bufferViews"));
+
+      function Load_Data (Path : String) return not null Byte_Array_Access is
+         Directory     : String renames SU.To_String (Object.Data.Directory);
+         Relative_Path : constant String := Directory & Locations.Path_Separator & Path;
+      begin
+         return Object.Data.Location.Read_Data (Relative_Path);
+      end Load_Data;
    begin
-      Object.Data.Buffers := Orka.glTF.Buffers.Get_Buffers (Buffers);
+      Object.Data.Buffers := Orka.glTF.Buffers.Get_Buffers (Buffers, Load_Data'Access);
       Object.Data.Views   := Orka.glTF.Buffers.Get_Buffer_Views (Object.Data.Buffers, Views);
    end Execute;
 

@@ -28,8 +28,10 @@ package body Orka.Resources.Textures.KTX is
    function Load_Texture (Path : String) return Texture is
       T1 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
-      File : Byte_Array_File'Class := Open_File (Path);
-      Bytes : constant Byte_Array_Access := File.Read_File;
+--      File : Byte_Array_File'Class := Open_File (Path);
+--      Bytes : constant Byte_Array_Access := File.Read_File;
+      Bytes : constant Byte_Array_Access := null;
+      --  FIXME Use Loader task or Location object
 
       T2 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
 
@@ -239,7 +241,7 @@ package body Orka.Resources.Textures.KTX is
       Path   : SU.Unbounded_String;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is
    begin
-      --  TODO Implement
+      --  FIXME Implement
       null;
    end Load;
 

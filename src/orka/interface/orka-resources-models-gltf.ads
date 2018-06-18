@@ -20,7 +20,9 @@ private with Orka.glTF.Accessors;
 private with Orka.glTF.Meshes;
 private with Orka.glTF.Scenes;
 
-with Orka.Jobs;
+private with Orka.Jobs;
+private with Orka.Resources.Locations;
+
 with Orka.Resources.Loaders;
 
 package Orka.Resources.Models.glTF is
@@ -47,6 +49,8 @@ private
 
    type GLTF_Data is limited record
       JSON      : JSON_Value_Access;
+      Directory : SU.Unbounded_String;
+      Location  : Locations.Location_Ptr;
       Buffers   : Orka.glTF.Buffers.Buffer_Vectors.Vector;
       Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
@@ -64,8 +68,9 @@ private
      (Object => GLTF_Data, Name => GLTF_Data_Access);
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
-      Data   : Loaders.Resource_Data;
-      Format : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Data     : Loaders.Resource_Data;
+      Format   : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Location : Locations.Location_Ptr;
    end record;
 
    overriding

@@ -12,8 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Finalization;
-with Ada.Streams.Stream_IO;
+with Ada.Streams;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
@@ -27,24 +26,8 @@ package Orka.Resources is
    procedure Free_Byte_Array is new Ada.Unchecked_Deallocation
      (Object => Byte_Array, Name => Byte_Array_Access);
 
-   type Byte_Array_File is limited new Ada.Finalization.Limited_Controlled with private;
-
-   function Read_File (Object : in out Byte_Array_File) return Byte_Array_Access;
-
-   function Open_File (File_Name : String) return Byte_Array_File'Class;
-
    Resource_Load_Error : exception;
 
    package SU renames Ada.Strings.Unbounded;
-
-private
-
-   type Byte_Array_File is limited new Ada.Finalization.Limited_Controlled with record
-      File : Ada.Streams.Stream_IO.File_Type;
-      Finalized : Boolean;
-   end record;
-
-   overriding
-   procedure Finalize (Object : in out Byte_Array_File);
 
 end Orka.Resources;

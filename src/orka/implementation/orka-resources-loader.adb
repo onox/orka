@@ -82,17 +82,14 @@ package body Orka.Resources.Loader is
    protected Resource_Locations is
       procedure Add (Location : Locations.Location_Ptr; Loader : Loaders.Loader_Ptr);
 
-      function Read_Data
+      function Location
         (Loader : Loaders.Loader_Ptr;
-         Path   : String) return not null Byte_Array_Access;
-      --  Return the data of the file identified by the given path in the
-      --  first of the locations that match with the given loader
+         Path   : String) return Locations.Location_Ptr;
+      --  Return the first location, that match with the given loader,
+      --  containing the file identified by the given path
       --
-      --  If none of the locations contains a file identified by the
+      --  If none of the locations contain a file identified by the
       --  given path, the exception Locations.Name_Error is raised.
-      --
-      --  If the file at the given path could not be read for any reason
-      --  then any kind of error is raised.
    private
       Pairs : Pair_Vectors.Vector;
    end Resource_Locations;
@@ -111,35 +108,29 @@ package body Orka.Resources.Loader is
          Pairs.Append (Element);
       end Add;
 
-      function Read_Data
+      function Location
         (Loader : Loaders.Loader_Ptr;
-         Path   : String) return not null Byte_Array_Access
+         Path   : String) return Locations.Location_Ptr
       is
          File_Not_Found : Boolean := False;
-         Occurrence : Ada.Exceptions.Exception_Occurrence;
       begin
          for Pair of Pairs loop
             if Loader = Pair.Loader then
-               begin
-                  return Pair.Location.Read_Data (Path);
-               exception
-                  --  Catch the exception raised if the location does not
-                  --  have the requested resource, because there might be
-                  --  multiple locations that we want to try
-                  when Error : Locations.Name_Error =>
-                     File_Not_Found := True;
-                     Ada.Exceptions.Save_Occurrence (Occurrence, Error);
-               end;
+               if Pair.Location.Exists (Path) then
+                  return Pair.Location;
+               else
+                  File_Not_Found := True;
+               end if;
             end if;
          end loop;
 
          if File_Not_Found then
-            Ada.Exceptions.Reraise_Occurrence (Occurrence);
+            raise Locations.Name_Error with "Path '" & Path & "' not found";
          end if;
 
          --  No locations have been added for the given loader
          raise Constraint_Error with "No locations added for the given loader";
-      end Read_Data;
+      end Location;
 
    end Resource_Locations;
 
@@ -257,7 +248,9 @@ package body Orka.Resources.Loader is
 
                Time_Start : constant Time := Clock;
 
-               Bytes : constant Byte_Array_Access := Resource_Locations.Read_Data (Loader, Path);
+               Location : constant Locations.Location_Ptr
+                 := Resource_Locations.Location (Loader, Path);
+               Bytes : constant Byte_Array_Access := Location.Read_Data (Path);
 
                Time_End : constant Time := Clock;
 
@@ -268,7 +261,9 @@ package body Orka.Resources.Loader is
                   Job_Queue.Enqueue (Element, Request.Future);
                end Enqueue;
             begin
-               Loader.Load ((Bytes, Reading_Time, Request.Time, Request.Path), Enqueue'Access);
+               Loader.Load
+                 ((Bytes, Reading_Time, Request.Time, Request.Path),
+                  Enqueue'Access, Location);
             end;
          exception
             when Error : others =>

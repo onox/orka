@@ -19,28 +19,29 @@ with Orka.Base64;
 
 package body Orka.glTF.Buffers is
 
-   function Load_Data_From_File (File_Name : String) return Byte_Array_Access is
-      File : Byte_Array_File'Class := Open_File (File_Name);
-      --  TODO Handle relative and absolute paths
-   begin
-      return File.Read_File;
-   end Load_Data_From_File;
+   function Create_Buffer
+     (Object    : Types.JSON_Value'Class;
+      Load_Path : not null access function (Path : String)
+                    return not null Byte_Array_Access) return Buffer
+   with Post => Create_Buffer'Result.Data'Length = Create_Buffer'Result.Length;
 
-   function Load_Data (URI : String) return Byte_Array_Access is
-   begin
-      if Base64.Base64_Encoded (URI) then
-         return new Byte_Array'(Base64.Decode (URI (Base64.Data_Prefix'Last + 1 .. URI'Last)));
-      else
-         return Load_Data_From_File (URI);
-      end if;
-   end Load_Data;
-
-   function Create_Buffer (Object : Types.JSON_Value'Class) return Buffer
-     with Post => Create_Buffer'Result.Data'Length = Create_Buffer'Result.Length;
-
-   function Create_Buffer (Object : Types.JSON_Value'Class) return Buffer is
+   function Create_Buffer
+     (Object    : Types.JSON_Value'Class;
+      Load_Path : not null access function (Path : String)
+                    return not null Byte_Array_Access) return Buffer
+   is
       URI    : constant String := Object.Get ("uri").Value;
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
+
+      function Load_Data (URI : String) return not null Byte_Array_Access is
+         Encoded_Data : String renames URI (Base64.Data_Prefix'Last + 1 .. URI'Last);
+      begin
+         if Base64.Base64_Encoded (URI) then
+            return new Byte_Array'(Base64.Decode (Encoded_Data));
+         else
+            return Load_Path (URI);
+         end if;
+      end Load_Data;
    begin
       return Result : Buffer do
          Result.Data   := Load_Data (URI);
@@ -98,12 +99,14 @@ package body Orka.glTF.Buffers is
    end Extract_From_Buffer;
 
    function Get_Buffers
-     (Buffers : Types.JSON_Array_Value) return Buffer_Vectors.Vector
+     (Buffers   : Types.JSON_Array_Value;
+      Load_Path : not null access function (Path : String)
+                    return not null Byte_Array_Access) return Buffer_Vectors.Vector
    is
       Result : Buffer_Vectors.Vector;
    begin
       for Buffer of Buffers loop
-         Result.Append (Create_Buffer (Buffer));
+         Result.Append (Create_Buffer (Buffer, Load_Path));
       end loop;
       return Result;
    end Get_Buffers;

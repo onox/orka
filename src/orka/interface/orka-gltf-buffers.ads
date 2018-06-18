@@ -39,7 +39,9 @@ package Orka.glTF.Buffers is
    package Buffer_Vectors is new Ada.Containers.Vectors (Natural, Buffer);
 
    function Get_Buffers
-     (Buffers : Types.JSON_Array_Value) return Buffer_Vectors.Vector;
+     (Buffers   : Types.JSON_Array_Value;
+      Load_Path : not null access function (Path : String)
+                    return not null Byte_Array_Access) return Buffer_Vectors.Vector;
 
    subtype Stride_Natural is Natural range 4 .. 252;
 

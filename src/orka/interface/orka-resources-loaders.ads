@@ -15,6 +15,7 @@
 with Ada.Real_Time;
 
 with Orka.Jobs;
+with Orka.Resources.Locations;
 
 package Orka.Resources.Loaders is
 
@@ -34,9 +35,10 @@ package Orka.Resources.Loaders is
    --  Return the extension of files that the loader can load
 
    procedure Load
-     (Object  : Loader;
-      Data    : Resource_Data;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is abstract;
+     (Object   : Loader;
+      Data     : Resource_Data;
+      Enqueue  : not null access procedure (Element : Jobs.Job_Ptr);
+      Location : Locations.Location_Ptr) is abstract;
    --  Load the given resource data
 
    type Loader_Access is access Loader'Class;
