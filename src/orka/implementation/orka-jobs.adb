@@ -106,7 +106,7 @@ package body Orka.Jobs is
          From := To + 1;
       end loop;
       if Remaining /= 0 then
-         To := From + Slice_Length - 1 + Remaining;
+         To := From + Remaining - 1;
          Parallel_Job'Class (Parallel_Jobs (Parallel_Jobs'Last).all).Set_Range (From, To);
       end if;
       pragma Assert (To = Object.Length);
