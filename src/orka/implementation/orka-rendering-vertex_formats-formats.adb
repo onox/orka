@@ -48,12 +48,6 @@ package body Orka.Rendering.Vertex_Formats.Formats is
       begin
          Buffer.Add_Attribute (2, 2);
       end Add_UV_Attribute;
-
-      procedure Add_Instance_Attribute (Buffer : in out Vertex_Formats.Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (3, 1);
-         Buffer.Set_Per_Instance (True);
-      end Add_Instance_Attribute;
    begin
       return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format
         (Triangles, UInt_Type)
@@ -61,7 +55,6 @@ package body Orka.Rendering.Vertex_Formats.Formats is
          Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (Half_Type, Add_Normal_Attribute'Access);
          Result.Add_Attribute_Buffer (Half_Type, Add_UV_Attribute'Access);
-         Result.Add_Attribute_Buffer (UInt_Type, Add_Instance_Attribute'Access);
       end return;
    end Separate_Position_Normal_UV_Half_MDI;
 

@@ -25,7 +25,6 @@ package Orka.Rendering.Buffers.MDI is
 
       Indices   : Buffer;
 
-      Instances : Buffer;
       Commands  : Buffer;
 
       Visible       : Boolean;

@@ -57,25 +57,21 @@ package body Orka.Rendering.Buffers.MDI is
      (Parts, Vertices, Indices : Positive;
       Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
       Flags   : GL.Objects.Buffers.Storage_Bits;
-      Visible : Boolean := True) return Batch
-   is
-      Instances_Array : UInt_Array (0 .. Int (Parts - 1));
+      Visible : Boolean := True) return Batch is
    begin
       return Result : Batch do
          Result.Visible := Visible;
 
-         --  Create array with the draw ID's
-         for I in Instances_Array'Range loop
-            Instances_Array (I) := UInt (I);
-         end loop;
-
-         Result.Instances := Buffers.Create_Buffer (Flags, Instances_Array);
-         Result.Commands  := Buffers.Create_Buffer (Flags, Types.Elements_Command_Type, Parts);
+         Result.Commands  := Buffers.Create_Buffer
+           (Flags, Types.Elements_Command_Type, Parts);
 
          --  Attributes
-         Result.Positions := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (1), Vertices * 3);
-         Result.Normals   := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (2), Vertices * 3);
-         Result.UVs       := Buffers.Create_Buffer (Flags, Format.Attribute_Kind (3), Vertices * 2);
+         Result.Positions := Buffers.Create_Buffer
+           (Flags, Format.Attribute_Kind (1), Vertices * 3);
+         Result.Normals   := Buffers.Create_Buffer
+           (Flags, Format.Attribute_Kind (2), Vertices * 3);
+         Result.UVs       := Buffers.Create_Buffer
+           (Flags, Format.Attribute_Kind (3), Vertices * 2);
          --  TODO Don't hardcode vector size factors
 
          --  Indices
@@ -97,7 +93,6 @@ package body Orka.Rendering.Buffers.MDI is
       Format.Set_Vertex_Buffer (1, Object.Positions);
       Format.Set_Vertex_Buffer (2, Object.Normals);
       Format.Set_Vertex_Buffer (3, Object.UVs);
-      Format.Set_Vertex_Buffer (4, Object.Instances);
 
       Format.Set_Index_Buffer (Object.Indices);
    end Bind_Buffers_To;

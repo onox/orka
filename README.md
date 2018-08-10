@@ -3,13 +3,13 @@
 Orka
 ====
 
-Orka is the OpenGL Rendering Kernel in Ada. It is written in Ada 2012
+Orka is the OpenGL 4.6 Rendering Kernel in Ada. It is written in Ada 2012
 and provides an object-oriented API for modern OpenGL. Orka makes it easy
 to construct OpenGL programs and meshes and to use them in a scene tree.
 Orka and the OpenGL bindings require and use OpenGL 4.5's Direct State
 Access (DSA) extension.
 
-Orka builds upon and provides thick bindings for OpenGL 4.5. These bindings
+Orka builds upon and provides thick bindings for OpenGL 4.6. These bindings
 are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
 the fixed function functionality have been removed and bindings for various
 extensions of OpenGL 4.x have been added.
@@ -27,7 +27,7 @@ extensions have not been implemented in their drivers).
 Features
 --------
 
- * Thick OpenGL 4.5 bindings
+ * Thick OpenGL 4.6 bindings
  * Thick GLFW 3 bindings
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
  * Easy construction of shader programs and meshes
@@ -66,12 +66,13 @@ In order to build Orka you need to have:
     | ARB\_direct\_state\_access         | 4.5    |             |
     | ARB\_buffer\_storage               | 4.4    |             |
     | KHR\_debug                         | 4.3    | Debugging   |
-    | ARB\_multi\_draw\_indirect         | 4.3    | .gltf       |
+    | ARB\_multi\_draw\_indirect         | 4.3    | glTF        |
     | ARB\_program\_interface\_query     | 4.3    | Subroutines |
     | ARB\_vertex\_attrib\_binding       | 4.3    |             |
     | ARB\_texture\_storage\_multisample | 4.3    | Textures    |
     | ARB\_texture\_storage              | 4.2    | Textures    |
     | ARB\_separate\_shader\_objects     | 4.1    |             |
+    | ARB\_shader\_draw\_parameters      | 4.6    | glTF        |
 
  * An x86-64 CPU with the AVX and F16C extensions
 
