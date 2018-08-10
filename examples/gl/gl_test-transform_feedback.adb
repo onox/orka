@@ -136,8 +136,10 @@ begin
 
    --  Bind the Vertex_Buffer_Output to index 0 of the transform feedback target
    GL.Objects.Transform_Feedbacks.Active_Transform_Feedback.Bind (Feedback);
-   GL.Objects.Buffers.Transform_Feedback_Buffer.Bind (Vertex_Buffer_Output);
    Feedback.Bind_Base (Vertex_Buffer_Output, 0);
+
+   --  Alternative:
+--   GL.Objects.Buffers.Transform_Feedback_Buffer.Bind_Base (Vertex_Buffer_Output, 0);
 
    Array_Input.Bind;
    declare
