@@ -35,6 +35,7 @@ package body Orka.Simulation_Jobs is
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
       View_Position : Transforms.Vector4;
+      Batch_Length : Positive;
    end record;
 
    overriding
@@ -114,10 +115,12 @@ package body Orka.Simulation_Jobs is
    function Create_Finished_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      Position  : Transforms.Vector4) return Jobs.Job_Ptr
+      Position  : Transforms.Vector4;
+      Batch_Length : Positive) return Jobs.Job_Ptr
    is (new Finished_Fixed_Update_Job'
      (Jobs.Abstract_Job with
-       Scene => Scene, Time_Step => Time_Step, View_Position => Position));
+       Scene => Scene, Time_Step => Time_Step, View_Position => Position,
+       Batch_Length => Batch_Length));
 
    -----------------------------------------------------------------------------
    --                              CONSTRUCTORS                               --
@@ -183,12 +186,12 @@ package body Orka.Simulation_Jobs is
    is
       Update_Job : constant Jobs.Job_Ptr
         := Jobs.Parallelize (Create_Update_Job (Object.Scene, Object.Time_Step),
-          Object.Scene'Length, 10);
+          Object.Scene'Length, Object.Batch_Length);
 
       After_Update_Job : constant Jobs.Job_Ptr
         := Jobs.Parallelize (Create_After_Update_Job
              (Object.Scene, Object.Time_Step, Object.View_Position),
-          Object.Scene'Length, 10);
+          Object.Scene'Length, Object.Batch_Length);
    begin
       After_Update_Job.Set_Dependency (Update_Job);
       Enqueue (Update_Job);

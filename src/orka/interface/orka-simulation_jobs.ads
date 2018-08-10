@@ -42,7 +42,8 @@ private package Orka.Simulation_Jobs is
    function Create_Finished_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      Position  : Transforms.Vector4) return Jobs.Job_Ptr;
+      Position  : Transforms.Vector4;
+      Batch_Length : Positive) return Jobs.Job_Ptr;
 
    -----------------------------------------------------------------------------
 
