@@ -21,24 +21,32 @@ with Orka.Jobs.Boss;
 with Orka.Simulation;
 with Orka.Windows;
 
+use Ada.Real_Time;
+
 generic
-   Time_Step, Frame_Limit : Ada.Real_Time.Time_Span;
+   Time_Step, Frame_Limit : Time_Span;
+
    Window : Windows.Window_Ptr;
    Camera : Cameras.Camera_Ptr;
    Render : Simulation.Render_Ptr;
+
    with package Job_Manager is new Orka.Jobs.Boss (<>);
+
+   Maximum_Frame_Time : Time_Span := Milliseconds (1000);
+   --  Maximum allowed duration of a frame. The simulation loop will
+   --  exit by raising an exception if this time is exceeded
 package Orka.Loops is
 
    protected Handler is
       procedure Stop;
 
-      procedure Set_Frame_Limit (Value : Ada.Real_Time.Time_Span);
+      procedure Set_Frame_Limit (Value : Time_Span);
 
-      function Frame_Limit return Ada.Real_Time.Time_Span;
+      function Frame_Limit return Time_Span;
 
       function Should_Stop return Boolean;
    private
-      Limit : Ada.Real_Time.Time_Span := Orka.Loops.Frame_Limit;
+      Limit : Time_Span := Orka.Loops.Frame_Limit;
       Stop_Flag : Boolean := False;
    end Handler;
 

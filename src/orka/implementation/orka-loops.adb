@@ -24,8 +24,6 @@ with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
 
-   use Ada.Real_Time;
-
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
 
@@ -157,7 +155,22 @@ package body Orka.Loops is
 
                   Job_Manager.Queue.Enqueue (Render_Start_Job, Handle);
 
-                  Handle.Get.Wait_Until_Done (Status);
+                  declare
+                     Frame_Future : constant Orka.Futures.Future_Access := Handle.Get.Value;
+                  begin
+                     select
+                        Frame_Future.Wait_Until_Done (Status);
+                     or
+                        delay until Clock + Maximum_Frame_Time;
+                        declare
+                           Frame_Time : constant Duration
+                             := 1e3 * To_Duration (Maximum_Frame_Time);
+                        begin
+                           raise Program_Error with
+                             "Maximum frame time of " & Frame_Time'Image & " ms exceeded";
+                        end;
+                     end select;
+                  end;
                end;
             end;
 
