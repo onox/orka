@@ -47,4 +47,8 @@ package Orka.Rendering.Buffers.MDI is
       Flags   : GL.Objects.Buffers.Storage_Bits;
       Visible : Boolean := True) return Batch;
 
+   procedure Bind_Buffers_To
+     (Object : in out Batch;
+      Format : in out Vertex_Formats.Vertex_Format);
+
 end Orka.Rendering.Buffers.MDI;

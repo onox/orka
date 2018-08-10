@@ -80,11 +80,7 @@ package body Orka.Resources.Models is
       Object.Model.Uniform_IO.Set_Int (GL.Types.Int (Object.Transforms.Index_Offset));
 
       --  TODO Only do this once per model, not for each instance
-      Object.Model.Format.Set_Vertex_Buffer (1, Object.Model.Batch.Positions);
-      Object.Model.Format.Set_Vertex_Buffer (2, Object.Model.Batch.Normals);
-      Object.Model.Format.Set_Vertex_Buffer (3, Object.Model.Batch.UVs);
-      Object.Model.Format.Set_Vertex_Buffer (4, Object.Model.Batch.Instances);
-      Object.Model.Format.Set_Index_Buffer (Object.Model.Batch.Indices);
+      Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);
 
       Object.Model.Format.Draw_Indirect (Object.Model.Batch.Commands);
    end Render;

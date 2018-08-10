@@ -36,11 +36,13 @@ package Orka.Resources.Models is
 
    package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Buffer_Region_Type);
 
-   type Model is tagged limited private;
+   type Model is limited new Resource with private;
 
    function Create_Instance
      (Object   : in out Model;
       Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr;
+
+   type Model_Ptr is not null access all Model;
 
    Model_Load_Error : exception renames Resource_Load_Error;
 
@@ -77,12 +79,12 @@ private
 
    type Model_Scene_Ptr is not null access Model_Scene;
 
-   type Model is tagged limited record
+   type Model is limited new Resource with record
       Scene   : Model_Scene_Ptr;
-      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
       Batch   : Rendering.Buffers.MDI.Batch;
-      Bounds  : Rendering.Buffers.Buffer;
-      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
+--      Bounds  : Rendering.Buffers.Buffer;
+--      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
       Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;

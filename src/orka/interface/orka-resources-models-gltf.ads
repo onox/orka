@@ -24,11 +24,15 @@ private with Orka.Jobs;
 private with Orka.Resources.Locations;
 
 with Orka.Resources.Loaders;
+with Orka.Resources.Managers;
 
 package Orka.Resources.Models.glTF is
 
    function Create_Loader
-     (Format : Rendering.Vertex_Formats.Vertex_Format_Ptr) return Loaders.Loader_Ptr;
+     (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
+      Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
 private
 
@@ -60,6 +64,9 @@ private
       Times     : Times_Data := (others => Time_Span_Zero);
       Start_Time : Time;
       Format    : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
+      Manager   : Managers.Manager_Ptr;
    end record;
 
    type GLTF_Data_Access is access GLTF_Data;
@@ -70,6 +77,9 @@ private
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
       Data     : Loaders.Resource_Data;
       Format   : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
+      Manager  : Managers.Manager_Ptr;
       Location : Locations.Location_Ptr;
    end record;
 

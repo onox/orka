@@ -19,6 +19,12 @@ with Ada.Unchecked_Deallocation;
 package Orka.Resources is
    pragma Preelaborate;
 
+   type Resource is limited interface;
+
+   type Resource_Ptr is not null access all Resource'Class;
+
+   -----------------------------------------------------------------------------
+
    subtype Byte_Array is Ada.Streams.Stream_Element_Array;
 
    type Byte_Array_Access is access Byte_Array;

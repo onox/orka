@@ -90,4 +90,16 @@ package body Orka.Rendering.Buffers.MDI is
       end return;
    end Create_Batch;
 
+   procedure Bind_Buffers_To
+     (Object : in out Batch;
+      Format : in out Vertex_Formats.Vertex_Format) is
+   begin
+      Format.Set_Vertex_Buffer (1, Object.Positions);
+      Format.Set_Vertex_Buffer (2, Object.Normals);
+      Format.Set_Vertex_Buffer (3, Object.UVs);
+      Format.Set_Vertex_Buffer (4, Object.Instances);
+
+      Format.Set_Index_Buffer (Object.Indices);
+   end Bind_Buffers_To;
+
 end Orka.Rendering.Buffers.MDI;

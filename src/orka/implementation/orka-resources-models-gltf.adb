@@ -355,7 +355,10 @@ package body Orka.Resources.Models.glTF is
    -----------------------------------------------------------------------------
 
    type GLTF_Loader is limited new Loaders.Loader with record
-      Format : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
+      Manager : Managers.Manager_Ptr;
    end record;
 
    overriding
@@ -369,14 +372,27 @@ package body Orka.Resources.Models.glTF is
       Location : Locations.Location_Ptr)
    is
       Job : constant Jobs.Job_Ptr := new GLTF_Parse_Job'
-        (Jobs.Abstract_Job with Data => Data, Format => Object.Format, Location => Location);
+        (Jobs.Abstract_Job with
+          Data     => Data,
+          Format   => Object.Format,
+          Transforms   => Object.Transforms,
+          Index_Offset => Object.Index_Offset,
+          Manager  => Object.Manager,
+          Location => Location);
    begin
       Enqueue (Job);
    end Load;
 
    function Create_Loader
-     (Format : Rendering.Vertex_Formats.Vertex_Format_Ptr) return Loaders.Loader_Ptr
-   is (new GLTF_Loader'(Format => Format));
+     (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
+      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
+      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
+      Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
+   is (new GLTF_Loader'
+     (Format       => Format,
+      Transforms   => Transforms,
+      Index_Offset => Index_Offset,
+      Manager      => Manager));
 
    -----------------------------------------------------------------------------
 
@@ -402,6 +418,9 @@ package body Orka.Resources.Models.glTF is
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
+            Transforms   => Object.Transforms,
+            Index_Offset => Object.Index_Offset,
+            Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
             others     => <>);
 
@@ -546,7 +565,7 @@ package body Orka.Resources.Models.glTF is
 
          use type GL.Types.Single;
          use Transforms;
-         Start_Time : Time;
+         Start_Time : constant Time := Clock;
 
          --  Convert the object from structural frame (X = aft,
          --  Y = right, Z = top) to OpenGL (X = right, Y = top,
@@ -558,8 +577,6 @@ package body Orka.Resources.Models.glTF is
 
          Vertices, Indices : Natural;
       begin
-         Start_Time := Clock;
-
          --  Rotate the whole object so that the nose of a model points
          --  to the screen by transforming the root node
          Scene.Set_Local_Transform
@@ -577,6 +594,11 @@ package body Orka.Resources.Models.glTF is
          --  after updating the whole scene tree, the world transforms of
          --  these nodes can be copied to a GPU buffer before rendering.
          Scene_Data.Shapes := Mesh_Node_Cursors (Parts, Scene);
+
+         if Scene_Data.Shapes.Element'Length = 0 then
+            --  TODO Free Scene_Data
+            raise Model_Load_Error with "glTF file '" & Path & "' has no mesh parts";
+         end if;
 
 --         Scene_Data.Bounds := Bounds_List (Object.Data.Accessors, Object.Data.Meshes);
 
@@ -606,16 +628,22 @@ package body Orka.Resources.Models.glTF is
 
       package Messages is new GL.Debug.Messages (Third_Party, Other);
 
-      Meshes_Length : constant Ada.Containers.Count_Type := 10;
-
       Path  : String renames SU.To_String (Object.Path);
       Data  : GLTF_Data_Access renames Object.Data;
-      Parts : Natural := Object.Scene.Shapes.Element'Length;
-      pragma Assert (Parts > 0);
+      Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
-      T5 : Time := Clock;
+      Start_Time : constant Time := Clock;
 
-      Batch : Rendering.Buffers.MDI.Batch;
+      Model_Data : constant Model_Ptr := new Model'
+        (Scene  => Object.Scene,
+         Format => Data.Format,
+         Uniform_WT => Data.Transforms,
+         Uniform_IO => Data.Index_Offset,
+         Batch  => Rendering.Buffers.MDI.Create_Batch
+           (Parts, Object.Vertices, Object.Indices,
+            Format  => Object.Data.Format,
+            Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
+            Visible => True));
    begin
 --      Object.Bounds := Orka.Buffers.Create_Buffer
 --        (Flags => Storage_Bits'(others => False),
@@ -623,15 +651,12 @@ package body Orka.Resources.Models.glTF is
 
 --      Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
 
-      Batch := Rendering.Buffers.MDI.Create_Batch
-        (Positive (Parts), Object.Vertices, Object.Indices,
-         Format  => Object.Data.Format,
-         Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
-         Visible => True);
+      Add_Parts (Data.Format, Model_Data.Batch, Data.Views, Data.Accessors, Data.Meshes);
 
-      Add_Parts (Object.Data.Format, Batch, Data.Views, Data.Accessors, Data.Meshes);
+      --  Register the model at the resource manager
+      Data.Manager.Add_Resource (Path, Resource_Ptr (Model_Data));
 
-      Data.Times.Buffers := Clock - T5;
+      Data.Times.Buffers := Clock - Start_Time;
 
       declare
          Read_Time    : constant Duration := 1e3 * To_Duration (Data.Times.Reading);
