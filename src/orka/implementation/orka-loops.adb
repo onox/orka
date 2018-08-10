@@ -26,8 +26,6 @@ package body Orka.Loops is
 
    use Ada.Real_Time;
 
-   Render_Job_Start, Render_Job_Finish : Jobs.Job_Ptr := Jobs.Null_Job;
-
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
 
@@ -100,7 +98,12 @@ package body Orka.Loops is
 
    package SJ renames Simulation_Jobs;
 
-   procedure Run_Game_Loop is
+   procedure Stop_Loop is
+   begin
+      Handler.Stop;
+   end Stop_Loop;
+
+   procedure Run_Game_Loop (Fence : not null access SJ.Fences.Buffer_Fence) is
       Previous_Time : Time := Clock;
       Next_Time     : Time := Previous_Time;
 
@@ -136,14 +139,14 @@ package body Orka.Loops is
                   Finished_Job : constant Jobs.Job_Ptr := SJ.Create_Finished_Job
                     (Scene_Array, Time_Step, Scene.Camera.View_Position, Batch_Length);
 
-                  Render_Start_Job : constant Jobs.Job_Ptr
-                    := new Jobs.GPU_Job'Class'(Jobs.GPU_Job'Class (Render_Job_Start.all));
-
                   Render_Scene_Job : constant Jobs.Job_Ptr
                     := SJ.Create_Scene_Render_Job (Render, Scene_Array, Scene.Camera);
 
+                  Render_Start_Job  : constant Jobs.Job_Ptr
+                    := SJ.Create_Start_Render_Job (Fence, Window);
                   Render_Finish_Job : constant Jobs.Job_Ptr
-                    := new Jobs.GPU_Job'Class'(Jobs.GPU_Job'Class (Render_Job_Finish.all));
+                    := SJ.Create_Finish_Render_Job (Fence, Window,
+                      Stop_Loop'Unrestricted_Access);
 
                   Handle : Futures.Pointers.Mutable_Pointer;
                   Status : Futures.Status;
@@ -182,31 +185,25 @@ package body Orka.Loops is
          raise;
    end Run_Game_Loop;
 
-   procedure Stop_Loop is
-   begin
-      Handler.Stop;
-   end Stop_Loop;
-
    procedure Run_Loop is
       Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence;
    begin
-      Render_Job_Start  := SJ.Create_Start_Render_Job (Fence'Unchecked_Access, Window);
-      Render_Job_Finish := SJ.Create_Finish_Render_Job (Fence'Unchecked_Access, Window,
-        Stop_Loop'Unrestricted_Access);
-
       declare
+         --  Create a separate task for the game loop. The current task
+         --  will be used to dequeue and execute GPU jobs.
          task Simulation;
 
          use Ada.Exceptions;
 
          task body Simulation is
          begin
-            Run_Game_Loop;
+            Run_Game_Loop (Fence'Unchecked_Access);
          exception
             when Error : others =>
                Ada.Text_IO.Put_Line ("Exception game loop: " & Exception_Information (Error));
          end Simulation;
       begin
+         --  Execute GPU jobs in the current task
          Job_Manager.Executors.Execute_Jobs
            ("Renderer", Job_Manager.Queues.GPU, Job_Manager.Queue'Access);
       end;
