@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Finalization;
+
 private with Orka.Atomics;
 
 package Orka.Jobs is
@@ -88,7 +90,7 @@ package Orka.Jobs is
 
    type Parallel_Job is interface and Job;
 
-   type Parallel_Job_Ptr is not null access all Jobs.Parallel_Job'Class;
+   type Parallel_Job_Ptr is not null access all Parallel_Job'Class;
 
    procedure Set_Range (Object : in out Parallel_Job; From, To : Positive) is abstract;
 
@@ -154,9 +156,23 @@ private
 
    -----------------------------------------------------------------------------
 
+   subtype Zero_Counter is Atomics.Counter (Initial_Value => 0);
+
+   type Zero_Counter_Access is access Zero_Counter;
+
+   type Counter_Controlled is new Ada.Finalization.Controlled with record
+      Counter : Zero_Counter_Access := new Zero_Counter;
+   end record;
+
+   overriding
+   procedure Adjust (Object : in out Counter_Controlled);
+
+   overriding
+   procedure Finalize (Object : in out Counter_Controlled);
+
    type Abstract_Job is abstract new Job with record
       Dependent    : Job_Ptr := Null_Job;
-      Dependencies : Atomics.Unsigned_32 := 0;
+      Dependencies : Counter_Controlled;
    end record;
 
    overriding
@@ -192,7 +208,8 @@ private
    type Parallel_For_Job is new Abstract_Job with record
       Length, Slice : Positive;
       Job : access Parallel_Job'Class;
-   end record;
+   end record
+     with Dynamic_Predicate => not Parallel_For_Job.Job.Has_Dependencies;
 
    overriding
    procedure Execute

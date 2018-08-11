@@ -12,19 +12,26 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Atomics is
-   pragma Preelaborate;
+package body Orka.Atomics is
 
-   protected type Counter (Initial_Value : Natural) is
-      procedure Add (Addition : Natural);
+   protected body Counter is
+      procedure Add (Addition : Natural) is
+      begin
+         Value := Value + Addition;
+      end Add;
 
-      procedure Increment;
+      procedure Increment is
+      begin
+         Value := Value + 1;
+      end Increment;
 
-      procedure Decrement (Zero : out Boolean);
+      procedure Decrement (Zero : out Boolean) is
+      begin
+         Value := Value - 1;
+         Zero  := Value = 0;
+      end Decrement;
 
-      function Count return Natural;
-   private
-      Value : Natural := Initial_Value;
+      function Count return Natural is (Value);
    end Counter;
 
 end Orka.Atomics;

@@ -26,6 +26,25 @@ package body Orka.Jobs is
    end Free;
 
    overriding
+   procedure Adjust (Object : in out Counter_Controlled) is
+   begin
+      Object.Counter := new Zero_Counter;
+   end Adjust;
+
+   overriding
+   procedure Finalize (Object : in out Counter_Controlled) is
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Zero_Counter, Name => Zero_Counter_Access);
+   begin
+      if Object.Counter /= null then
+         Free (Object.Counter);
+      end if;
+
+      --  Idempotence: next call to Finalize has no effect
+      Object.Counter := null;
+   end Finalize;
+
+   overriding
    procedure Execute
      (Object  : No_Job;
       Enqueue : not null access procedure (Element : Job_Ptr)) is
@@ -35,23 +54,23 @@ package body Orka.Jobs is
 
    overriding
    function Decrement_Dependencies (Object : in out Abstract_Job) return Boolean is
-      use type Atomics.Unsigned_32;
+      Zero : Boolean := False;
    begin
-      return Atomics.Decrement (Object.Dependencies) = 0;
+      Object.Dependencies.Counter.Decrement (Zero);
+      return Zero;
    end Decrement_Dependencies;
 
    overriding
    function Has_Dependencies (Object : Abstract_Job) return Boolean is
-      use type Atomics.Unsigned_32;
    begin
-      return Object.Dependencies > 0;
+      return Object.Dependencies.Counter.Count > 0;
    end Has_Dependencies;
 
    overriding
    procedure Set_Dependency
      (Object : access Abstract_Job; Dependency : Job_Ptr) is
    begin
-      Atomics.Add (Object.Dependencies, 1);
+      Object.Dependencies.Counter.Increment;
       Abstract_Job (Dependency.all).Dependent := Job_Ptr (Object);
    end Set_Dependency;
 
@@ -59,7 +78,7 @@ package body Orka.Jobs is
    procedure Set_Dependencies
      (Object : access Abstract_Job; Dependencies : Dependency_Array) is
    begin
-      Atomics.Add (Object.Dependencies, Atomics.Unsigned_32 (Dependencies'Length));
+      Object.Dependencies.Counter.Add (Dependencies'Length);
       for Dependency of Dependencies loop
          Abstract_Job (Dependency.all).Dependent := Job_Ptr (Object);
       end loop;

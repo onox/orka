@@ -34,7 +34,7 @@ library project Orka is
 
    case Config.Compiler_Name is
       when "gnat" => Orka_Sources :=
-        Orka_Sources & ("src/orka/interface/x86/gnat", "src/orka/implementation/x86/gnat");
+        Orka_Sources & ("src/orka/interface/x86/gnat");
       when others =>
         null;
    end case;
