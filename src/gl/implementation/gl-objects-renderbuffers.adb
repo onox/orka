@@ -114,6 +114,14 @@ package body GL.Objects.Renderbuffers is
       return Value;
    end Stencil_Size;
 
+   function Samples (Object : Renderbuffer) return Size is
+      Value : Int := 0;
+   begin
+      API.Get_Named_Renderbuffer_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Getter.Samples, Value);
+      return Value;
+   end Samples;
+
    function Raw_Kind (Object : Renderbuffer_Target)
                       return Low_Level.Enums.Renderbuffer_Kind is
    begin

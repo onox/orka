@@ -47,6 +47,7 @@ package GL.Objects.Renderbuffers is
    function Alpha_Size   (Object : Renderbuffer) return Size;
    function Depth_Size   (Object : Renderbuffer) return Size;
    function Stencil_Size (Object : Renderbuffer) return Size;
+   function Samples      (Object : Renderbuffer) return Size;
 
    overriding
    procedure Initialize_Id (Object : in out Renderbuffer);

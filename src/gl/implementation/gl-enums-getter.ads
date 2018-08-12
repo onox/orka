@@ -121,9 +121,10 @@ package GL.Enums.Getter is
    type String_Parameter is
      (Vendor, Renderer, Version, Extensions, Shading_Language_Version);
 
-   type Renderbuffer_Parameter is (Width, Height, Internal_Format, Red_Size,
-                                   Green_Size, Blue_Size, Alpha_Size,
-                                   Depth_Size, Stencil_Size);
+   type Renderbuffer_Parameter is
+     (Samples, Width, Height, Internal_Format,
+      Red_Size, Green_Size, Blue_Size, Alpha_Size,
+      Depth_Size, Stencil_Size);
 
 private
 
@@ -239,7 +240,8 @@ private
       Shading_Language_Version => 16#8B8C#);
    for String_Parameter'Size use Low_Level.Enum'Size;
 
-   for Renderbuffer_Parameter use (Width           => 16#8D42#,
+   for Renderbuffer_Parameter use (Samples         => 16#8CAB#,
+                                   Width           => 16#8D42#,
                                    Height          => 16#8D43#,
                                    Internal_Format => 16#8D44#,
                                    Red_Size        => 16#8D50#,
