@@ -23,7 +23,7 @@ with JSON.Streams;
 
 with GL.Debug;
 with GL.Objects.Buffers;
---  with GL.Pixels;
+with GL.Pixels;
 with GL.Types.Indirect;
 
 with Orka.Types;
@@ -643,13 +643,14 @@ package body Orka.Resources.Models.glTF is
            (Parts, Object.Vertices, Object.Indices,
             Format  => Object.Data.Format,
             Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
-            Visible => True));
+            Visible => True),
+         Bounds => Rendering.Buffers.Create_Buffer
+           (Flags => Storage_Bits'(others => False),
+            Data  => Bounds_List (Data.Accessors, Data.Meshes)),
+         others => <>);
    begin
---      Object.Bounds := Orka.Buffers.Create_Buffer
---        (Flags => Storage_Bits'(others => False),
---         Data  => Bounds_List (Accessors, Meshes));
-
---      Object.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Object.Bounds.GL_Buffer);
+      --  Bounding boxes for culling
+      Model_Data.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Model_Data.Bounds.GL_Buffer);
 
       Add_Parts (Data.Format, Model_Data.Batch, Data.Views, Data.Accessors, Data.Meshes);
 

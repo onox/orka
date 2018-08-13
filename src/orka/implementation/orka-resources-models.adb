@@ -71,6 +71,8 @@ package body Orka.Resources.Models is
 
       --  Write the world transform of the leaf nodes to the persistent mapped buffer
       Object.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);
+      --  Note: This requires that the structure of the model's scene tree is
+      --  identical to the instance's scene so that we can re-use the cursors
    end After_Update;
 
    overriding

@@ -83,8 +83,8 @@ private
       Scene   : Model_Scene_Ptr;
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
---      Bounds  : Rendering.Buffers.Buffer;
---      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      Bounds  : Rendering.Buffers.Buffer;
+      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
       Uniform_WT : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
       Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;
