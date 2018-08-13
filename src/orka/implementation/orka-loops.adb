@@ -161,7 +161,7 @@ package body Orka.Loops is
                      select
                         Frame_Future.Wait_Until_Done (Status);
                      or
-                        delay until Clock + Maximum_Frame_Time;
+                        delay until Current_Time + Maximum_Frame_Time;
                         declare
                            Frame_Time : constant Duration
                              := 1e3 * To_Duration (Maximum_Frame_Time);
