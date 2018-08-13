@@ -83,8 +83,8 @@ Optional dependencies:
 
  * [Ahven 2][url-ahven] if you want to build and run the unit tests
 
-Installing dependencies on Ubuntu 17.10
----------------------------------------
+Installing dependencies on Ubuntu 18.04 LTS
+-------------------------------------------
 
 Install the dependencies using apt:
 
