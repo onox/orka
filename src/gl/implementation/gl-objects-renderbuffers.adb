@@ -31,13 +31,8 @@ package body GL.Objects.Renderbuffers is
                        Width, Height : Size;
                        Samples : Size := 0) is
    begin
-      if Samples = 0 then
-         API.Named_Renderbuffer_Storage
-           (Object.Reference.GL_Id, Format, Width, Height);
-      else
-         API.Named_Renderbuffer_Storage_Multisample
-           (Object.Reference.GL_Id, Samples, Format, Width, Height);
-      end if;
+      API.Named_Renderbuffer_Storage_Multisample
+        (Object.Reference.GL_Id, Samples, Format, Width, Height);
       Raise_Exception_On_OpenGL_Error;
    end Allocate;
 
