@@ -18,6 +18,7 @@ with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
 
 package Orka.Rendering.Framebuffers is
@@ -44,9 +45,11 @@ package Orka.Rendering.Framebuffers is
       Color_Texture, Depth_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
    with Post => not Create_Framebuffer'Result.Default;
 
-   function Create_Framebuffer (Width, Height, Samples : Size) return Framebuffer
-     with Pre  => Samples > 0,
-          Post => not Create_Framebuffer'Result.Default;
+   function Create_Framebuffer
+     (Width, Height, Samples : Size;
+      Context : Contexts.Context) return Framebuffer
+   with Pre  => Samples > 0 and Context.Enabled (Contexts.Multisample),
+        Post => not Create_Framebuffer'Result.Default;
 
    function Create_Default_Framebuffer (Width, Height : Size) return Framebuffer
      with Inline, Post => Create_Default_Framebuffer'Result.Default

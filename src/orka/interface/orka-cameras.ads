@@ -15,6 +15,7 @@
 with GL.Types;
 
 with Orka.Behaviors;
+with Orka.Contexts;
 with Orka.Inputs;
 with Orka.Rendering.Framebuffers;
 with Orka.Transforms.Singles.Matrices;
@@ -44,7 +45,9 @@ package Orka.Cameras is
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV : GL.Types.Single) return Camera_Lens'Class;
+      FOV : GL.Types.Single;
+      Context : Contexts.Context) return Camera_Lens'Class
+   with Pre => Context.Enabled (Contexts.Reversed_Z);
 
    -----------------------------------------------------------------------------
 

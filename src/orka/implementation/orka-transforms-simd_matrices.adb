@@ -222,12 +222,35 @@ package body Orka.Transforms.SIMD_Matrices is
    begin
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
+
+      --  No reversed Z
       Result (Z) (Z) := Element_Type (-1.0);
       Result (W) (Z) := -2.0 * Z_Near;
+
       Result (Z) (W) := Element_Type (-1.0);
       Result (W) (W) := Element_Type (0.0);
+
       return Result;
    end Infinite_Perspective;
+
+   function Infinite_Perspective_Reversed_Z
+     (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type
+   is
+      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV, 360.0);
+      Result : Matrix_Type := Identity_Value;
+   begin
+      Result (X) (X) := F / Aspect;
+      Result (Y) (Y) := F;
+
+      --  Reversed Z
+      Result (Z) (Z) := Element_Type (0.0);
+      Result (W) (Z) := Z_Near;  --  Depth normalized to [0, 1] instead of [-1 , 1]
+
+      Result (Z) (W) := Element_Type (-1.0);
+      Result (W) (W) := Element_Type (0.0);
+
+      return Result;
+   end Infinite_Perspective_Reversed_Z;
 
    function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;

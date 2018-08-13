@@ -14,7 +14,6 @@
 
 with GL.Objects.Renderbuffers;
 with GL.Pixels;
-with GL.Toggles;
 with GL.Window;
 
 package body Orka.Rendering.Framebuffers is
@@ -33,7 +32,7 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => 0)
       do
-         Depth_Buffer.Allocate (GL.Pixels.Depth24_Stencil8, Width, Height);
+         Depth_Buffer.Allocate (GL.Pixels.Depth32F_Stencil8, Width, Height);
 
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
          Result.GL_Framebuffer.Attach_Renderbuffer (FB.Depth_Stencil_Attachment, Depth_Buffer);
@@ -63,7 +62,10 @@ package body Orka.Rendering.Framebuffers is
       end return;
    end Create_Framebuffer;
 
-   function Create_Framebuffer (Width, Height, Samples : Size) return Framebuffer is
+   function Create_Framebuffer
+     (Width, Height, Samples : Size;
+      Context : Contexts.Context) return Framebuffer
+   is
       package FB renames GL.Objects.Framebuffers;
 
       Color_Buffer, Depth_Buffer : GL.Objects.Renderbuffers.Renderbuffer;
@@ -74,15 +76,12 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => Samples)
       do
-         --  Enable MSAA
-         GL.Toggles.Enable (GL.Toggles.Multisample);
-
          --  Allocate and attach multisampled render buffers
          Color_Buffer.Allocate (GL.Pixels.RGBA8, Width, Height, Samples);
-         Depth_Buffer.Allocate (GL.Pixels.Depth_Component24, Width, Height, Samples);
+         Depth_Buffer.Allocate (GL.Pixels.Depth32F_Stencil8, Width, Height, Samples);
 
          Result.GL_Framebuffer.Attach_Renderbuffer (FB.Color_Attachment_0, Color_Buffer);
-         Result.GL_Framebuffer.Attach_Renderbuffer (FB.Depth_Attachment, Depth_Buffer);
+         Result.GL_Framebuffer.Attach_Renderbuffer (FB.Depth_Stencil_Attachment, Depth_Buffer);
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Buffer);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);
@@ -126,6 +125,8 @@ package body Orka.Rendering.Framebuffers is
 
    procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer) is
    begin
+      --  Note: simultaneously resolving and scaling requires
+      --  GL_EXT_framebuffer_multisample_blit_scaled
       GL.Objects.Framebuffers.Blit
         (Object.GL_Framebuffer, Subject.GL_Framebuffer,
          0, 0, Object.Width, Object.Height,
