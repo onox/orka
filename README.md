@@ -43,6 +43,7 @@ Build status
 |                    | Linux   | Windows     |
 |--------------------|---------|-------------|
 | **GNAT GPL 2017**  | failing | failing     |
+| **GNAT CE 2018**   | unknown | unknown     |
 | **GNAT FSF 7.2**   | passing | unknown     |
 
 Currently the game loop and the glTF example are broken due to some
@@ -53,17 +54,16 @@ Dependencies
 
 In order to build Orka you need to have:
 
- * A GNAT Ada 2012 compiler (Either GNAT GPL from [AdaCore's Libre Site][url-adacore],
-   or [GNAT FSF][url-fsf] from your Linux distribution)
-
- * [GPRBuild][url-gprbuild] (Bundled with AdaCore's GNAT GPL or available
-   via your Linux distribution)
+ * A GNAT Ada 2012 compiler with GPRBuild (Either [GNAT FSF][url-fsf] from
+   your Linux distribution or [GNAT CE][url-ce])
 
  * OpenGL 3.2 core profile and the following extensions:
 
     | Extension                          | OpenGL | Reason      |
     |------------------------------------|--------|-------------|
+    | ARB\_shader\_draw\_parameters      | 4.6    | glTF        |
     | ARB\_direct\_state\_access         | 4.5    |             |
+    | ARB\_clip\_control                 | 4.5    |             |
     | ARB\_buffer\_storage               | 4.4    |             |
     | KHR\_debug                         | 4.3    | Debugging   |
     | ARB\_multi\_draw\_indirect         | 4.3    | glTF        |
@@ -72,7 +72,6 @@ In order to build Orka you need to have:
     | ARB\_texture\_storage\_multisample | 4.3    | Textures    |
     | ARB\_texture\_storage              | 4.2    | Textures    |
     | ARB\_separate\_shader\_objects     | 4.1    |             |
-    | ARB\_shader\_draw\_parameters      | 4.6    | glTF        |
 
  * An x86-64 CPU with the AVX and F16C extensions
 
@@ -185,9 +184,8 @@ of the [Apache License 2.0][url-apache].
 
   [url-openglada]: https://github.com/flyx/OpenGLAda
   [url-glfw]: http://www.glfw.org/
-  [url-adacore]: http://libre.adacore.com/
+  [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
-  [url-gprbuild]: https://www.adacore.com/gnatpro/toolsuite
   [url-ahven]: http://ahven.stronglytyped.org
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
