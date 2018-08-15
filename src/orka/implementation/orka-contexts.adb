@@ -14,6 +14,7 @@
 
 with GL.Buffers;
 with GL.Clipping;
+with GL.Shading;
 with GL.Toggles;
 with GL.Types;
 
@@ -32,6 +33,16 @@ package body Orka.Contexts is
          when Multisample =>
             --  Enable MSAA
             GL.Toggles.Enable (GL.Toggles.Multisample);
+         when Sample_Shading =>
+            if not Object.Enabled (Multisample) then
+               raise Program_Error with "MSAA not enabled";
+            end if;
+
+            --  Enable shading per-sample. Applies if MSAA is enabled.
+            --  Provides better anti-aliasing for certain cases like
+            --  alpha-tested transparency
+            GL.Shading.Set_Minimum_Sample_Shading (1.0);
+            GL.Toggles.Enable (GL.Toggles.Sample_Shading);
       end case;
       Object.Features (Subject) := True;
    end Enable;

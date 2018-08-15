@@ -15,7 +15,7 @@
 package Orka.Contexts is
    pragma Preelaborate;
 
-   type Feature is (Reversed_Z, Multisample);
+   type Feature is (Reversed_Z, Multisample, Sample_Shading);
 
    type Context is tagged limited private;
 
