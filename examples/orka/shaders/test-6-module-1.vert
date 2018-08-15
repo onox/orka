@@ -43,7 +43,7 @@ void main(void) {
     gl_Position = proj * p;
 
     vs_out.N = mat3(normalMatrix) * in_Normal;
-    vs_out.L = (view * vec4(0.0, 0.0, 0.0, 1.0)).xyz - p.xyz;
+    vs_out.L = (view * vec4(0.0, 0.0, 1.0, 1.0)).xyz - p.xyz;
     vs_out.V = -p.xyz;
 
     vs_out.uv = in_UV;

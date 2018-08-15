@@ -34,7 +34,7 @@ struct Material {
 const Light light = {
     vec3(1.0, 1.0, 1.0),
     10.0,
-    1.0,
+    5.0,
 };
 
 const Material material = {
