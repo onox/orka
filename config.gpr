@@ -32,8 +32,7 @@ abstract project Config is
       "-gnatwFl.l.n.s",
       "-gnaty",         --  Default style checks
       "-gnatyAdOSux-msbc",
-      "-gnat2012",      --  Use Ada 2012
-      "-Wall"           --  All GCC warnings
+      "-gnat2012"       --  Use Ada 2012
    ) & Compiler_Flags;
 
    Dev_Switches := (
