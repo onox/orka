@@ -44,7 +44,8 @@ Build status
 |--------------------|---------|-------------|
 | **GNAT GPL 2017**  | failing | failing     |
 | **GNAT CE 2018**   | unknown | unknown     |
-| **GNAT FSF 7.2**   | passing | unknown     |
+| **GNAT FSF 7.3**   | passing |             |
+| **GNAT FSF 8.2**   | passing |             |
 
 Currently the game loop and the glTF example are broken due to some
 functionality not having been implemented yet.
@@ -56,6 +57,8 @@ In order to build Orka you need to have:
 
  * A GNAT Ada 2012 compiler with GPRBuild (Either [GNAT FSF][url-fsf] from
    your Linux distribution or [GNAT CE][url-ce])
+
+ * [json-ada][url-json-ada]
 
  * OpenGL 3.2 core profile and the following extensions:
 
@@ -90,8 +93,33 @@ Install the dependencies using apt:
 
 ```sh
 $ sudo apt install gnat-7 gprbuild libahven6-dev
-$ sudo apt install libglfw3-wayland libglfw3-dev libegl1-mesa-dev
+$ sudo apt install libglfw3 libglfw3-dev libegl1-mesa-dev
 ```
+
+Compile and install [json-ada][url-json-ada].
+
+Installing dependencies on Arch Linux
+-------------------------------------
+
+Install the dependencies using pacman and makepkg:
+
+```sh
+$ sudo pacman -S gcc-ada glfw-x11
+```
+
+You also need to compile and install GPRBuild:
+
+```sh
+$ sudo pacman -S --needed base-devel
+$ git clone https://aur.archlinux.org/gprbuild-bootstrap.git
+$ git clone https://aur.archlinux.org/xmlada.git
+$ git clone https://aur.archlinux.org/gprbuild.git
+```
+
+Go to each folder (`gprbuild-bootstrap`, then `xmlada`, then `gprbuild`),
+inspect the content of the files and then execute `makepkg -si`.
+
+Compile and install [json-ada][url-json-ada].
 
 Compilation
 -----------
@@ -183,6 +211,7 @@ The OpenGL and GLFW bindings and Orka are distributed under the terms
 of the [Apache License 2.0][url-apache].
 
   [url-openglada]: https://github.com/flyx/OpenGLAda
+  [url-json-ada]: https://github.com/onox/json-ada
   [url-glfw]: http://www.glfw.org/
   [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
