@@ -45,6 +45,7 @@ library project Orka is
    package Ide renames Config.Ide;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
+   package Builder renames Config.Builder;
 
    package Linker is
       case Config.Windowing_System is

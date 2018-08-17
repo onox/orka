@@ -1,9 +1,0 @@
-aggregate project Root is
-
-   for Project_Files use ("orka.gpr", "orka-glfw.gpr");
-
-   package Builder is
-      for Switches (others) use ("-j0", "-m");
-   end Builder;
-
-end Root;

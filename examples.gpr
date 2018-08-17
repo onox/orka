@@ -1,9 +1,51 @@
-aggregate project Examples is
+with "config";
+with "orka-glfw";
 
-   for Project_Files use ("opengl_test.gpr", "orka_test.gpr");
+project Examples is
 
-   package Builder is
-      for Switches (others) use ("-j0", "-m");
-   end Builder;
+   for Languages use ("ada");
+
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   for Source_Dirs use Orka.Glfw.Shared_Example_Sources &
+     "examples/gl" & "examples/orka" & "examples/glfw";
+
+   OpenGL_Examples := (
+      "gl_test-context",
+      "gl_test-opengl3",
+      "gl_test-vbo",
+      "gl_test-instancing",
+      "gl_test-buffers",
+      "gl_test-geometry",
+      "gl_test-transform_feedback",
+      "gl_test-subroutines",
+      "gl_test-mdi"
+   );
+
+   Orka_Examples := (
+      "orka_test-test_1_triangle",
+      "orka_test-test_2_two_triangles",
+      "orka_test-test_3_module_array",
+--      "orka_test-test_4_mdi",
+      "orka_test-test_5_scene_tree",
+      "orka_test-test_6_gltf",
+      "orka_test-test_7_half",
+--      "orka_test-test_8_ktx",
+      "orka_test-test_9_jobs"
+   );
+
+   GLFW_Examples := (
+      "glfw_test-monitors",
+      "glfw_test-windows",
+      "glfw_test-clipboard"
+   );
+
+   for Main use OpenGL_Examples & Orka_Examples;  --  & GLFW_Examples;
+
+   package Ide renames Config.Ide;
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
+   package Builder renames Config.Builder;
 
 end Examples;

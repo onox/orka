@@ -31,7 +31,7 @@ libdir     = $(PREFIX)/lib
 alidir     = $(libdir)
 
 build_src:
-	$(GPRBUILD) -P root.gpr -largs $(LDFLAGS)
+	$(GPRBUILD) -P orka-glfw.gpr -largs $(LDFLAGS)
 
 build_examples:
 	$(GPRBUILD) -P examples.gpr -largs $(LDFLAGS)
@@ -48,7 +48,7 @@ run_unit_tests:
 	./test/unit/orka/bin/run_unit_tests
 
 clean_src:
-	$(GPRCLEAN) -r -P root.gpr
+	$(GPRCLEAN) -r -P orka-glfw.gpr
 	rmdir lib/glfw
 	rmdir lib/orka
 	rmdir lib
