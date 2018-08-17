@@ -46,12 +46,11 @@ package body Orka.Jobs.Queues is
             declare
                Slot : Futures.Future_Access;
             begin
-               select
-                  Slots.Manager.Acquire (Slot);
-                  Future.Set (Slot, Release_Future'Unrestricted_Access);
-               else
+               Slots.Manager.Acquire_Or_Fail (Slot);
+               Future.Set (Slot, Release_Future'Unrestricted_Access);
+            exception
+               when Program_Error =>
                   raise Program_Error with Executor_Kind'Image (Kind) & " queue full";
-               end select;
             end;
          end if;
 

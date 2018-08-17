@@ -24,6 +24,7 @@ package body GL.Objects.Renderbuffers is
 
    type Renderbuffer_Target_Array is array (Low_Level.Enums.Renderbuffer_Kind)
      of Renderbuffer_Holder.Holder;
+
    Current_Renderbuffers : Renderbuffer_Target_Array;
 
    procedure Allocate (Object : Renderbuffer;
@@ -137,7 +138,8 @@ package body GL.Objects.Renderbuffers is
       Holder : constant Renderbuffer_Holder.Holder := Current_Renderbuffers (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Renderbuffer_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with
+           GL.Low_Level.Enums.Renderbuffer_Kind'Image (Target.Kind);
       else
          return Holder.Element;
       end if;
@@ -162,5 +164,9 @@ package body GL.Objects.Renderbuffers is
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
+
+   No_RB : constant Renderbuffer := Renderbuffer'(GL_Object with null record);
+
+   function No_Renderbuffer return Renderbuffer is (No_RB);
 
 end GL.Objects.Renderbuffers;

@@ -29,12 +29,13 @@ package Orka.Futures.Slots is
    function Make_Handles return Handle_Array;
 
    protected Manager is
-      entry Acquire (Slot : out Future_Access);
-      --  with Pre  => not Stopping,
-      --       Post => Slot.Current_Status = Futures.Waiting;
+      procedure Acquire_Or_Fail (Slot : out Future_Access)
+        with Post => Slot.Current_Status = Waiting;
 
-      procedure Release (Slot : not null Future_Access)
-        with Pre => Stopping or else Slot.Current_Status in Futures.Done | Futures.Failed;
+      entry Acquire (Slot : out Future_Access)
+        with Post => Slot.Current_Status = Waiting;
+
+      procedure Release (Slot : not null Future_Access);
 
       procedure Shutdown;
 
@@ -110,8 +111,6 @@ private
    type Future_Array is array (Future_Handle) of aliased Future_Object;
 
    function Make_Futures return Future_Array;
-
-   Future_Slots : Future_Array := Make_Futures;
 
    type Future_Object_Access is access all Future_Object;
 

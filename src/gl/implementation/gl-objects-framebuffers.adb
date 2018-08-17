@@ -253,7 +253,9 @@ package body GL.Objects.Framebuffers is
    package Framebuffer_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Framebuffer'Class);
 
-   type Framebuffer_Target_Array is array (Low_Level.Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
+   type Framebuffer_Target_Array is
+     array (Low_Level.Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
+
    Current_Framebuffers : Framebuffer_Target_Array;
 
    procedure Bind (Target : Framebuffer_Target;
@@ -271,7 +273,8 @@ package body GL.Objects.Framebuffers is
       Holder : constant Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Framebuffer_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with
+           GL.Low_Level.Enums.Framebuffer_Kind'Image (Target.Kind);
       else
          return Holder.Element;
       end if;
@@ -313,5 +316,9 @@ package body GL.Objects.Framebuffers is
                                                  Depth_Value, Stencil_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_And_Stencil_Buffer;
+
+   Default_FB : constant Framebuffer := Framebuffer'(GL_Object with null record);
+
+   function Default_Framebuffer return Framebuffer is (Default_FB);
 
 end GL.Objects.Framebuffers;

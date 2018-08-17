@@ -13,21 +13,16 @@
 --  limitations under the License.
 
 with GL.Types;
-with GL.Enums.Getter;
 
 generic
    Min_Representation : Types.Int;
-   Getter_Param : Enums.Getter.Parameter;
+   Maximum : GL.Types.Int;
 package GL.Enums.Indexes is
    pragma Preelaborate;
 
    use GL.Types;
 
-   function Get_Max return Int;
-
-   Max : constant Int := Get_Max;
-
-   subtype Index is Int range 0 .. Max;
+   subtype Index is Int range 0 .. Maximum;
 
    function Representation (Value : Index) return Int;
 

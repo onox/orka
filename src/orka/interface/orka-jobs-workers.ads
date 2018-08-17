@@ -46,6 +46,4 @@ private
 
    function Make_Workers return Worker_Array;
 
-   Workers : constant Worker_Array := Make_Workers;
-
 end Orka.Jobs.Workers;

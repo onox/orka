@@ -12,8 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.API;
-
 package body GL.Enums.Indexes is
    
    function Representation (Value : Index) return Int is
@@ -25,12 +23,5 @@ package body GL.Enums.Indexes is
    begin
       return Representation - Min_Representation;
    end Value;
-   
-   function Get_Max return Int is
-      Max : Int := 0;
-   begin
-      API.Get_Integer (Getter_Param, Max);
-      return Max - 1;
-   end Get_Max;
    
 end GL.Enums.Indexes;

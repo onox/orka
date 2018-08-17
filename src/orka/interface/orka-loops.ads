@@ -66,7 +66,7 @@ package Orka.Loops is
         with Post => Modified;
 
       procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access)
-        with Pre  => Target /= null and Modified,
+        with Pre  => Target /= null,
              Post => Target /= null and not Modified;
 
       function Modified return Boolean;

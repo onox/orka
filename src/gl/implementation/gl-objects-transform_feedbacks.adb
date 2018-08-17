@@ -25,6 +25,7 @@ package body GL.Objects.Transform_Feedbacks is
 
    type Feedback_Object_Target_Array is array (Low_Level.Enums.Transform_Feedback_Kind)
      of Feedback_Object_Holder.Holder;
+
    Current_Feedback_Objects : Feedback_Object_Target_Array;
 
    procedure Bind (Target : Feedback_Target; Object : Feedback_Object'Class) is
@@ -51,7 +52,8 @@ package body GL.Objects.Transform_Feedbacks is
       Holder : constant Feedback_Object_Holder.Holder := Current_Feedback_Objects (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Transform_Feedback_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with
+           GL.Low_Level.Enums.Transform_Feedback_Kind'Image (Target.Kind);
       else
          return Holder.Element;
       end if;
@@ -149,5 +151,9 @@ package body GL.Objects.Transform_Feedbacks is
          Object.Finalized := True;
       end if;
    end Finalize;
+
+   No_FO : constant Feedback_Object := Feedback_Object'(GL_Object with null record);
+
+   function No_Feedback_Object return Feedback_Object is (No_FO);
 
 end GL.Objects.Transform_Feedbacks;

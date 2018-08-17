@@ -66,6 +66,8 @@ package body Orka.Loops is
       end Remove;
 
       procedure Replace_Array (Target : in out Behaviors.Behavior_Array_Access) is
+         pragma Assert (Modified);
+
          Index : Positive := 1;
          Count : constant Positive := Positive (Behaviors_Set.Length);
       begin

@@ -62,15 +62,11 @@ package GL.Objects.Vertex_Arrays is
    function Identifier (Object : Vertex_Array_Object) return Types.Debug.Identifier is
      (Types.Debug.Vertex_Array);
 
-   Null_Array_Object : constant Vertex_Array_Object;
+   function No_Vertex_Array_Object return Vertex_Array_Object;
    --  Bind this object to unbind the current array object
 
 private
 
    type Vertex_Array_Object is new GL_Object with null record;
-
-   Null_Array_Object : constant Vertex_Array_Object
-     := Vertex_Array_Object'(Ada.Finalization.Controlled with
-        Reference => null);
 
 end GL.Objects.Vertex_Arrays;

@@ -18,8 +18,6 @@ package body Orka.Transforms.SIMD_Vectors is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   use SIMD;
-
    function Magnitude2 (Elements : Vector_Type) return Element_Type is
      (Sum (Elements * Elements));
 

@@ -19,6 +19,7 @@ with Interfaces.C.Strings;
 package body Glfw is
 
    procedure Init is
+      use type Interfaces.C.int;
    begin
       if API.Init = 0 then
          raise Initialization_Exception;

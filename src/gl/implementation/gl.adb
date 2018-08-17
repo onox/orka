@@ -26,6 +26,7 @@ package body GL is
       API.Finish;
    end Finish;
 
-   -- implementation depends on whether Auto_Exceptions has been enabled.
    procedure Raise_Exception_On_OpenGL_Error is separate;
+   --  Implementation depends on whether Auto_Exceptions has been enabled
+
 end GL;

@@ -172,8 +172,6 @@ package body Orka.Cameras is
       Forward : constant Vector4 := Normalize (Object.Target.Position - Object.Position);
       Side    : constant Vector4 := Cross (Forward, Object.Up);
       Up      : constant Vector4 := Cross (Side, Forward);
-
-      use Transforms;
    begin
       return
         ((Side (X), Up (X), -Forward (X), 0.0),

@@ -31,7 +31,9 @@ package Orka.Resources.Locations is
    --  If the file at the given path could not be read for any reason
    --  then any kind of error is raised.
 
-   type Location_Ptr is not null access Location'Class;
+   type Location_Access is access Location'Class;
+
+   subtype Location_Ptr is not null Location_Access;
 
    Name_Error : exception renames Ada.IO_Exceptions.Name_Error;
 

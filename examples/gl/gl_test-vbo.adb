@@ -130,7 +130,7 @@ begin
 
       Array1.Bind;
       GL.Drawing.Draw_Arrays (Triangles, 0, 3);
-      GL.Objects.Vertex_Arrays.Null_Array_Object.Bind;
+      GL.Objects.Vertex_Arrays.No_Vertex_Array_Object.Bind;
 
       Display_Backend.Swap_Buffers_And_Poll_Events;
    end loop;

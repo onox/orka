@@ -16,7 +16,10 @@ with Orka.Jobs.Boss;
 
 package Orka_Test.Package_9_Jobs is
 
-   package Boss is new Orka.Jobs.Boss (4, 1, 4);
+   package Boss is new Orka.Jobs.Boss
+     (Maximum_Queued_Jobs     => 4,
+      Maximum_Job_Graphs      => 1,
+      Maximum_Enqueued_By_Job => 4);
 
    type Test_Parallel_Job is new Orka.Jobs.Abstract_Parallel_Job with null record;
 

@@ -59,7 +59,7 @@ package GL.Objects.Renderbuffers is
    function Identifier (Object : Renderbuffer) return Types.Debug.Identifier is
      (Types.Debug.Renderbuffer);
 
-   No_Renderbuffer : constant Renderbuffer;
+   function No_Renderbuffer return Renderbuffer;
 
 private
 
@@ -70,8 +70,5 @@ private
 
    Active_Renderbuffer : constant Renderbuffer_Target
      := Renderbuffer_Target'(Kind => Low_Level.Enums.Renderbuffer);
-
-   No_Renderbuffer : constant Renderbuffer :=
-     Renderbuffer'(GL_Object with null record);
 
 end GL.Objects.Renderbuffers;

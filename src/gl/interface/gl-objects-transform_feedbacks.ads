@@ -56,7 +56,7 @@ package GL.Objects.Transform_Feedbacks is
    function Identifier (Object : Feedback_Object) return Types.Debug.Identifier is
      (Types.Debug.Transform_Feedback);
 
-   No_Feedback_Object : constant Feedback_Object;
+   function No_Feedback_Object return Feedback_Object;
 
    type Active_Feedback (<>) is limited new Ada.Finalization.Limited_Controlled with private;
 
@@ -116,9 +116,6 @@ private
 
    Active_Transform_Feedback : constant Feedback_Target
      := Feedback_Target'(Kind => Low_Level.Enums.Transform_Feedback);
-
-   No_Feedback_Object : constant Feedback_Object :=
-     Feedback_Object'(GL_Object with null record);
 
    type Active_Feedback (Mode : Feedback_Connection_Mode) is
      limited new Ada.Finalization.Limited_Controlled with record

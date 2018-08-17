@@ -73,8 +73,8 @@ package body Orka.Resources.Loader is
    -----------------------------------------------------------------------------
 
    type Pair is record
-      Location : Locations.Location_Ptr;
-      Loader   : Loaders.Loader_Ptr;
+      Location : Locations.Location_Access;
+      Loader   : Loaders.Loader_Access;
    end record;
 
    package Pair_Vectors is new Ada.Containers.Vectors (Positive, Pair);

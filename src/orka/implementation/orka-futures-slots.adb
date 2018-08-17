@@ -75,9 +75,21 @@ package body Orka.Futures.Slots is
       end return;
    end Make_Futures;
 
+   Future_Slots : Future_Array := Make_Futures;
+
    protected body Manager is
       entry Acquire (Slot : out Future_Access) when Acquired < Handles'Length is
       begin
+         Acquire_Or_Fail (Slot);
+      end Acquire;
+
+      procedure Acquire_Or_Fail (Slot : out Future_Access) is
+         pragma Assert (not Should_Stop);
+      begin
+         if Acquired >= Handles'Length then
+            raise Program_Error;
+         end if;
+
          Acquired := Acquired + 1;
 
          declare
@@ -86,9 +98,11 @@ package body Orka.Futures.Slots is
             Slot := Future_Slots (New_Handle)'Access;
          end;
          pragma Assert (Future_Object_Access (Slot).Handle_Location = Acquired);
-      end Acquire;
+      end Acquire_Or_Fail;
 
       procedure Release (Slot : not null Future_Access) is
+         pragma Assert (Should_Stop or else Slot.Current_Status in Done | Failed);
+
          From : constant Location_Index := Future_Object_Access (Slot).Handle_Location;
          To   : constant Location_Index := Acquired;
          pragma Assert (From <= To);

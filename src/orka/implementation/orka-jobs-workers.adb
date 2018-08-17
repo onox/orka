@@ -55,4 +55,7 @@ package body Orka.Jobs.Workers is
       Queue.Shutdown;
    end Shutdown;
 
+   Workers : constant Worker_Array := Make_Workers;
+   pragma Unreferenced (Workers);
+
 end Orka.Jobs.Workers;
