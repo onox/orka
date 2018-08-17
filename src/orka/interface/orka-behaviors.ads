@@ -57,7 +57,7 @@ package Orka.Behaviors is
 
    Null_Behavior : constant Behavior_Ptr;
 
-   Empty_Behavior_Array : constant Behavior_Array_Access;
+   function Empty_Behavior_Array return Behavior_Array_Access;
 
 private
 
@@ -69,6 +69,7 @@ private
 
    Null_Behavior : constant Behavior_Ptr := new Origin_Behavior;
 
-   Empty_Behavior_Array : constant Behavior_Array_Access := new Behavior_Array (1 .. 0);
+   function Empty_Behavior_Array return Behavior_Array_Access is
+     (new Behavior_Array'(1 .. 0 => Null_Behavior));
 
 end Orka.Behaviors;
