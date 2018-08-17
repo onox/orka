@@ -41,7 +41,7 @@ package Orka.glTF.Meshes is
 
    type Mesh is record
       Primitives : Primitive_Vectors.Vector;
-      Name       : SU.String_Access;
+      Name       : SU.Unbounded_String;
    end record;
 
    package Mesh_Vectors is new Ada.Containers.Vectors (Natural, Mesh);

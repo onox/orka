@@ -129,6 +129,11 @@ package body Orka.Scenes.Generic_Scene_Trees is
    end Create_Tree;
 
    procedure Add_Node (Object : in out Tree; Name, Parent : String) is
+   begin
+      Object.Add_Node (SU.To_Unbounded_String (Name), Parent);
+   end Add_Node;
+
+   procedure Add_Node (Object : in out Tree; Name : SU.Unbounded_String; Parent : String) is
       Parent_Cursor : constant Cursor := To_Cursor (Object, Parent);
    begin
       --  Add a new level if parent is a leaf node
@@ -153,7 +158,7 @@ package body Orka.Scenes.Generic_Scene_Trees is
          --  If the node (in level j) has a parent that is the last node in level i,
          --  then the node can simply be appended to level j, which is faster to do
          if Parent_Cursor.Offset = Parent_Last_Index then
-            Child_Level.Nodes.Append (Node'(Name   => SU.To_Unbounded_String (Name),
+            Child_Level.Nodes.Append (Node'(Name   => Name,
                                             Offset => 1,
                                             Count  => 0));
             Child_Level.Local_Transforms.Append (Transforms.Identity_Value);
@@ -162,7 +167,7 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Child_Level.World_Visibilities.Append (True);
          else
             --  Insert new node and its transforms
-            Child_Level.Nodes.Insert (New_Node_Index, Node'(Name   => SU.To_Unbounded_String (Name),
+            Child_Level.Nodes.Insert (New_Node_Index, Node'(Name   => Name,
                                                             Offset => 1,
                                                             Count  => 0));
             Child_Level.Local_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);

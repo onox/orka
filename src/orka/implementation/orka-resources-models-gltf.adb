@@ -57,7 +57,7 @@ package body Orka.Resources.Models.glTF is
          for Parent_Index of Current_Parents loop
             declare
                Parent_Node : Orka.glTF.Scenes.Node renames Nodes (Parent_Index);
-               Parent_Name : constant String := Parent_Node.Name.all;
+               Parent_Name : String renames SU.To_String (Parent_Node.Name);
 
                use type Orka.glTF.Scenes.Transform_Kind;
             begin
@@ -78,7 +78,7 @@ package body Orka.Resources.Models.glTF is
 
                --  Add the children to the scene as nodes
                for Child_Index of Parent_Node.Children loop
-                  Scene.Add_Node (Nodes (Child_Index).Name.all, Parent_Name);
+                  Scene.Add_Node (Nodes (Child_Index).Name, Parent_Name);
                   Next_Parents.Append (Child_Index);
                end loop;
 
@@ -213,12 +213,14 @@ package body Orka.Resources.Models.glTF is
    begin
       for Mesh of Meshes loop
          declare
+            Mesh_Name : String renames SU.To_String (Mesh.Name);
+
             Primitives : Orka.glTF.Meshes.Primitive_Vectors.Vector renames Mesh.Primitives;
-            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh.Name.all & "' has more than one primitive");
+            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh_Name & "' has more than one primitive");
 
             First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
             pragma Assert (First_Primitive.Attributes.Length = 3,
-              "Primitive of mesh " & Mesh.Name.all & " does not have 3 attributes");
+              "Primitive of mesh " & Mesh_Name & " does not have 3 attributes");
 
             Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
             Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
@@ -247,7 +249,7 @@ package body Orka.Resources.Models.glTF is
             pragma Assert (Accessor_Index.Kind = Orka.glTF.Accessors.Scalar);
 
             pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Index_Kind,
-              "Index of mesh " & Mesh.Name.all & " has type " &
+              "Index of mesh " & Mesh_Name & " has type " &
               GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
               " but expected " &
               GL.Types.Unsigned_Numeric_Type'Image (Index_Kind) & " or lower");
@@ -585,7 +587,7 @@ package body Orka.Resources.Models.glTF is
          --  Link the nodes in the default scene to the root node and
          --  then add all the other nodes that are reachable
          for Node_Index of Default_Scene.Nodes loop
-            Scene.Add_Node (Object.Data.Nodes (Node_Index).Name.all, Scene.Root_Name);
+            Scene.Add_Node (Object.Data.Nodes (Node_Index).Name, Scene.Root_Name);
          end loop;
          Add_Nodes (Scene, Parts, Object.Data.Nodes, Default_Scene.Nodes);
 

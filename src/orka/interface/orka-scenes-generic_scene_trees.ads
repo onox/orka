@@ -13,7 +13,7 @@
 --  limitations under the License.
 
 private with Ada.Containers.Vectors;
-private with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded;
 
 with Orka.Transforms.SIMD_Matrices;
 
@@ -21,6 +21,8 @@ generic
    with package Transforms is new Orka.Transforms.SIMD_Matrices (<>);
 package Orka.Scenes.Generic_Scene_Trees is
    pragma Preelaborate;
+
+   package SU renames Ada.Strings.Unbounded;
 
    subtype Matrix4 is Transforms.Matrix4;
 
@@ -52,6 +54,7 @@ package Orka.Scenes.Generic_Scene_Trees is
    function Create_Tree (Name : String) return Tree;
 
    procedure Add_Node (Object : in out Tree; Name, Parent : String);
+   procedure Add_Node (Object : in out Tree; Name : SU.Unbounded_String; Parent : String);
 
    procedure Remove_Node (Object : in out Tree; Name : String);
 
@@ -62,8 +65,6 @@ package Orka.Scenes.Generic_Scene_Trees is
    --  Exception raised if user tries to remove the root node
 
 private
-
-   package SU renames Ada.Strings.Unbounded;
 
    type Node is record
       Offset : Positive;

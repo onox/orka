@@ -116,7 +116,7 @@ package body Orka.glTF.Accessors is
          --  TODO accessor.byteOffset + STRIDE * (accessor.count - 1) + SIZE_OF_ELEMENT <= bufferView.length
 
          if Accessor.Contains ("sparse") then
-               raise Constraint_Error with "Sparse accessor is not supported";
+            raise Constraint_Error with "Sparse accessor is not supported";
          end if;
 
          Result.Append (Create_Accessor (Accessor));
