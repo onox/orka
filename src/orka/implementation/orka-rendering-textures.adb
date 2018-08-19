@@ -21,7 +21,7 @@ package body Orka.Rendering.Textures is
    use GL.Objects.Textures;
 
    function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture_2D is
-      Pixels : constant GL.Types.UByte_Array
+      Pixels : aliased constant GL.Types.UByte_Array
         := (0, 32,  8, 40,  2, 34, 10, 42,
            48, 16, 56, 24, 50, 18, 58, 26,
            12, 44,  4, 36, 14, 46,  6, 38,

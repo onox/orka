@@ -112,7 +112,7 @@ package body Orka.Resources.Textures.KTX is
                      Padding_Size : constant Natural := 3 - ((Image_Size + 3) mod 4);
                      Mipmap_Size  : constant Natural := 4 + Image_Size + Padding_Size;
 
-                     Image_Data : Byte_Array := Bytes (Image_Size_Index + 4 .. Image_Size_Index + 4 + Stream_Element_Offset (Image_Size) - 1);
+                     Image_Data : aliased Byte_Array := Bytes (Image_Size_Index + 4 .. Image_Size_Index + 4 + Stream_Element_Offset (Image_Size) - 1);
 
                      procedure Load_1D (Element : Textures.Texture_Base'Class) is
                         Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);

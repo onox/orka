@@ -62,14 +62,14 @@ procedure Orka_Test.Test_6_GLTF is
 
    W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
      (Width, Height, Resizable => False);
-   W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unrestricted_Access);
+   W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unchecked_Access);
 
    Context : Orka.Contexts.Context;
 
    use GL.Objects.Textures;
 
    procedure Load_Texture (Texture : Texture_3D) is
-      Pixels : constant GL.Types.Single_Array
+      Pixels : aliased constant GL.Types.Single_Array
             --  White
         := (0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,
@@ -234,7 +234,7 @@ begin
          use Ada.Real_Time;
 
          Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
-           (VF_1, Uni_WT'Unrestricted_Access, Uni_IO'Unrestricted_Access, Manager);
+           (VF_1, Uni_WT'Unchecked_Access, Uni_IO'Unchecked_Access, Manager);
 
          Location_Models : constant Locations.Location_Ptr
            := Locations.Directories.Create_Location (Location_Path);

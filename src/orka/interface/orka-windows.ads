@@ -19,7 +19,7 @@ package Orka.Windows is
 
    type Window is limited interface;
 
-   type Window_Ptr is not null access Window'Class;
+   type Window_Ptr is not null access all Window'Class;
 
    function Pointer_Input
      (Object : Window) return Inputs.Pointer_Input_Ptr is abstract;

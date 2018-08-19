@@ -198,7 +198,7 @@ procedure GL_Test.Buffers is
    procedure Load_Texture (Texture : GL.Objects.Textures.Texture_2D) is
       use GL.Objects.Textures;
 
-      Pixels : constant Single_Array
+      Pixels : aliased constant Single_Array
         := (0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,
             0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,

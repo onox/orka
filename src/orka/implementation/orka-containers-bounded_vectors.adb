@@ -53,7 +53,7 @@ package body Orka.Containers.Bounded_Vectors is
    function Iterate (Container : Vector)
      return Vector_Iterator_Interfaces.Reversible_Iterator'Class is
    begin
-      return Iterator'(Limited_Controlled with Container => Container'Unrestricted_Access);
+      return Iterator'(Limited_Controlled with Container => Container'Unchecked_Access);
    end Iterate;
 
    overriding function First (Object : Iterator) return Cursor is
