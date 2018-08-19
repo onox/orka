@@ -68,7 +68,7 @@ examples: build_examples
 
 test: build_unit_tests
 
-clean: clean_examples clean_unit_tests clean_src
+clean: clean_examples clean_src clean_unit_tests
 
 
 install:
