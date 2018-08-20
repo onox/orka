@@ -13,8 +13,8 @@
 --  limitations under the License.
 
 with Ada.Real_Time;
-with Ada.Tags;
-with Ada.Text_IO;
+--  with Ada.Tags;
+--  with Ada.Text_IO;
 
 with Orka.Containers.Bounded_Vectors;
 with Orka.Futures;
@@ -45,10 +45,10 @@ package body Orka.Jobs.Executors is
 
       package Vectors is new Orka.Containers.Bounded_Vectors (Job_Ptr, Get_Null_Job);
 
-      T0, T1, T2 : Ada.Real_Time.Time;
+--      T0, T1, T2 : Ada.Real_Time.Time;
    begin
       loop
-         T0 := Ada.Real_Time.Clock;
+--         T0 := Ada.Real_Time.Clock;
          Queue.Dequeue (Kind) (Pair, Stop);
          exit when Stop;
 
@@ -85,9 +85,12 @@ package body Orka.Jobs.Executors is
 
                Root_Dependents.Query (Set_Dependencies'Access);
             end Set_Root_Dependent;
-         begin
-            T1 := Ada.Real_Time.Clock;
 
+--            Tag : String renames Ada.Tags.Expanded_Name (Job'Tag);
+         begin
+--            T1 := Ada.Real_Time.Clock;
+
+--            Ada.Text_IO.Put_Line (Name & " executing job " & Tag);
             if Future.Current_Status = Futures.Waiting then
                Promise.Set_Status (Futures.Running);
             end if;
@@ -100,15 +103,13 @@ package body Orka.Jobs.Executors is
                   raise;
             end;
 
-            T2 := Ada.Real_Time.Clock;
-
-            declare
-               Waiting_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T1 - T0);
-               Running_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T2 - T1);
-               Tag : String renames Ada.Tags.Expanded_Name (Job'Tag);
-            begin
-               Ada.Text_IO.Put_Line (Name & " (blocked" & Waiting_Time'Image & " ms) executed job " & Tag & " in" & Running_Time'Image & " ms");
-            end;
+--            T2 := Ada.Real_Time.Clock;
+--            declare
+--               Waiting_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T1 - T0);
+--               Running_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T2 - T1);
+--            begin
+--               Ada.Text_IO.Put_Line (Name & " (blocked" & Waiting_Time'Image & " ms) executed job " & Tag & " in" & Running_Time'Image & " ms");
+--            end;
 
             if Job.Dependent /= Null_Job then
                --  Make the root dependents of the jobs in Jobs
@@ -124,6 +125,7 @@ package body Orka.Jobs.Executors is
                end if;
             elsif Jobs.Empty then
                Promise.Set_Status (Futures.Done);
+--               Ada.Text_IO.Put_Line (Name & " completed graph with job " & Tag);
             else
                --  If the job has enqueued new jobs, we need to create an
                --  empty job which has the root dependents of these new jobs
