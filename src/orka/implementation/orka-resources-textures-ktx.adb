@@ -28,8 +28,8 @@ package body Orka.Resources.Textures.KTX is
    package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
 
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
-      Data     : Loaders.Resource_Data;
-      Manager  : Managers.Manager_Ptr;
+      Data    : Loaders.Resource_Data;
+      Manager : Managers.Manager_Ptr;
    end record;
 
    overriding
@@ -136,7 +136,8 @@ package body Orka.Resources.Textures.KTX is
                   begin
                      if Header.Compressed then
                         Texture.Load_From_Compressed_Data (Level, 0, Header.Width,
-                          Header.Compressed_Format, GL.Types.Int (Image_Size), Image_Data'Address);
+                          Header.Compressed_Format, GL.Types.Int (Image_Size),
+                          Image_Data'Address);
                      else
                         Texture.Load_From_Data (Level, 0, Header.Width,
                           Header.Format, Header.Data_Type, Image_Data'Address);
@@ -212,36 +213,36 @@ package body Orka.Resources.Textures.KTX is
             Debug_Messages.Insert (GL.Debug.Notification,
                "Loaded texture " & Path);
             Debug_Messages.Insert (GL.Debug.Notification,
-               "  width:" & GL.Types.Size'Image (Header.Width) &
-               " height:" & GL.Types.Size'Image (Header.Height) &
-               " depth:" & GL.Types.Size'Image (Header.Depth) &
-               " array length:" & GL.Types.Size'Image (Header.Array_Elements) &
-               " mipmap levels:" & GL.Types.Size'Image (Levels));
+               "  width:" & Header.Width'Image &
+               " height:" & Header.Height'Image &
+               " depth:" & Header.Depth'Image &
+               " array length:" & Header.Array_Elements'Image &
+               " mipmap levels:" & Levels'Image);
             if Header.Compressed then
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "  compressed format: " & GL.Pixels.Compressed_Format'Image (Header.Compressed_Format));
+                  "  compressed format: " & Header.Compressed_Format'Image);
             else
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "  internal: " & GL.Pixels.Internal_Format'Image (Header.Internal_Format));
+                  "  internal: " & Header.Internal_Format'Image);
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "  format: " & GL.Pixels.Format'Image (Header.Format));
+                  "  format: " & Header.Format'Image);
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "  format: " & GL.Pixels.Data_Type'Image (Header.Data_Type));
+                  "  format: " & Header.Data_Type'Image);
             end if;
 
             Debug_Messages.Insert (GL.Debug.Notification,
-               "  loaded in" & Duration'Image (Loading_Time) & " ms");
+               "  loaded in" & Loading_Time'Image & " ms");
             Debug_Messages.Insert (GL.Debug.Notification,
-               "    reading file:" & Duration'Image (Reading_Time) & " ms");
+               "    reading file:" & Reading_Time'Image & " ms");
             Debug_Messages.Insert (GL.Debug.Notification,
-               "    parsing header:" & Duration'Image (Parsing_Time) & " ms");
+               "    parsing header:" & Parsing_Time'Image & " ms");
             Debug_Messages.Insert (GL.Debug.Notification,
-               "    storage:" & Duration'Image (Storage_Time) & " ms");
+               "    storage:" & Storage_Time'Image & " ms");
             Debug_Messages.Insert (GL.Debug.Notification,
-               "    buffers:" & Duration'Image (Buffers_Time) & " ms");
+               "    buffers:" & Buffers_Time'Image & " ms");
             if Header.Mipmap_Levels = 0 then
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "    generating mipmap:" & Duration'Image (Mipmap_Time) & " ms");
+                  "    generating mipmap:" & Mipmap_Time'Image & " ms");
             end if;
          end;
       end;
@@ -274,8 +275,8 @@ package body Orka.Resources.Textures.KTX is
    is
       Job : constant Jobs.Job_Ptr := new KTX_Load_Job'
         (Jobs.Abstract_Job with
-          Data     => Data,
-          Manager  => Object.Manager);
+          Data    => Data,
+          Manager => Object.Manager);
    begin
       Enqueue (Job);
    end Load;
