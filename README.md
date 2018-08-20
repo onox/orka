@@ -47,9 +47,6 @@ Build status
 | **GNAT FSF 7.3**   | passing |             |
 | **GNAT FSF 8.2**   | passing |             |
 
-Currently the game loop and the glTF example are broken due to some
-functionality not having been implemented yet.
-
 Dependencies
 ------------
 
