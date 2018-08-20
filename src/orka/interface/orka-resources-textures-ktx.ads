@@ -12,19 +12,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-
 with Orka.Jobs;
 
+with Orka.Resources.Loaders;
+with Orka.Resources.Managers;
+
 package Orka.Resources.Textures.KTX is
---   pragma Preelaborate;
 
-   procedure Load
-     (Bytes   : in out Byte_Array_Access;
-      Time    : Ada.Real_Time.Time_Span;
-      Path    : SU.Unbounded_String;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
-   function Load_Texture (Path : String) return Texture;
+   function Create_Loader
+     (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
 end Orka.Resources.Textures.KTX;

@@ -19,9 +19,11 @@ with GL.Objects.Textures;
 package Orka.Resources.Textures is
    pragma Preelaborate;
 
-   type Texture is tagged limited private;
+   type Texture is limited new Resource with private;
 
    function Element (Object : Texture) return GL.Objects.Textures.Texture_Base'Class;
+
+   type Texture_Ptr is not null access all Texture;
 
    Texture_Load_Error : exception renames Resource_Load_Error;
 
@@ -31,7 +33,7 @@ private
      (Element_Type => GL.Objects.Textures.Texture_Base'Class,
       "=" => GL.Objects.Textures."=");
 
-   type Texture is tagged limited record
+   type Texture is limited new Resource with record
       Texture : Texture_Holder.Holder;
    end record;
 
