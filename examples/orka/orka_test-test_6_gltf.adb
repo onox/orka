@@ -332,7 +332,7 @@ begin
             GL.Toggles.Disable (GL.Toggles.Depth_Test);
             GL.Buffers.Depth_Mask (False);
 
-            VF_2.Draw (0, 6);
+            VF_2.Draw (0, 3);
 
             GL.Buffers.Depth_Mask (True);
             GL.Toggles.Enable (GL.Toggles.Depth_Test);

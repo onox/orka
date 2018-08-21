@@ -200,7 +200,7 @@ begin
                Loaded := True;
             end if;
 
-            VF_1.Draw (0, 6);
+            VF_1.Draw (0, 3);
          end Render;
 
          package Loops is new Orka.Loops
