@@ -528,7 +528,7 @@ package body GL.Objects.Textures is
    end Texture_Unit_Count;
 
    function Maximum_Anisotropy return Single is
-      Ret : Single := 2.0;
+      Ret : Single := 16.0;
    begin
       API.Get_Single (Enums.Getter.Max_Texture_Max_Anisotropy, Ret);
       Raise_Exception_On_OpenGL_Error;

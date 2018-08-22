@@ -95,7 +95,7 @@ package GL.Enums.Getter is
       Num_Shading_Language_Versions,
       Aliased_Line_Width_Range,
       Active_Texture,
-      Max_Texture_Max_Anisotropy,  --  Part of EXT_texture_filter_anisotropic
+      Max_Texture_Max_Anisotropy,
       Stencil_Back_Func,
       Stencil_Back_Fail,
       Stencil_Back_Pass_Depth_Fail,

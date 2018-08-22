@@ -23,7 +23,7 @@ package GL.Objects.Textures is
    pragma Preelaborate;
 
    function Maximum_Anisotropy return Single
-     with Post => Maximum_Anisotropy'Result >= 2.0;
+     with Post => Maximum_Anisotropy'Result >= 16.0;
 
    -----------------------------------------------------------------------------
    --                            Basic Types                                  --
@@ -127,10 +127,6 @@ package GL.Objects.Textures is
    --  For best results, combine the use of anisotropy filtering with
    --  a Linear_Mipmap_Linear minification filter and a Linear maxification
    --  filter.
-   --
-   --  Note: this procedure requires the EXT_texture_filter_anisotropic
-   --  extension. This extension is not part of core OpenGL, but is basically
-   --  available anywhere.
 
    function Max_Anisotropy (Object : Texture_Base) return Double
      with Post => Max_Anisotropy'Result >= 1.0;
