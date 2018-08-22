@@ -32,6 +32,9 @@ private package Orka.KTX is
       Hash            => Ada.Strings.Hash,
       Equivalent_Keys => "=");
 
+   use GL.Low_Level.Enums;
+   use type GL.Types.Size;
+
    type Header (Compressed : Boolean) is record
       Kind   : GL.Low_Level.Enums.Texture_Kind;
       Width  : GL.Types.Size;
@@ -48,7 +51,21 @@ private package Orka.KTX is
             Format          : GL.Pixels.Format;
             Internal_Format : GL.Pixels.Internal_Format;
       end case;
-   end record;
+   end record
+     with Dynamic_Predicate => Header.Width > 0
+       and (if Header.Depth > 0  then Header.Height > 0)
+       and (if Header.Compressed then Header.Mipmap_Levels > 0)
+       and (case Header.Kind is
+              when Texture_1D | Texture_2D | Texture_3D => Header.Array_Elements = 0,
+              when Texture_Cube_Map                     => Header.Array_Elements = 0,
+              when others                               => Header.Array_Elements > 0)
+       and (case Header.Kind is
+              when Texture_1D | Texture_1D_Array => Header.Height = 0,
+              when Texture_2D | Texture_2D_Array => Header.Height > 0 and Header.Depth = 0,
+              when Texture_3D                    => Header.Depth > 0,
+              when Texture_Cube_Map       => Header.Width = Header.Height and Header.Depth = 0,
+              when Texture_Cube_Map_Array => Header.Width = Header.Height and Header.Depth > 0,
+              when others => raise Constraint_Error);
 
    function Valid_Identifier (Bytes : Resources.Byte_Array_Access) return Boolean;
 

@@ -17,7 +17,6 @@ with Ada.Real_Time;
 
 with GL.Debug;
 with GL.Low_Level.Enums;
-with GL.Pixels;
 with GL.Types;
 
 with Orka.KTX;

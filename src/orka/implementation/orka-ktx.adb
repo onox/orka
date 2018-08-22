@@ -79,7 +79,7 @@ package body Orka.KTX is
 
       Offset : constant Stream_Element_Offset := Bytes'First + Identifier'Length;
       File_Header : constant Internal_Header := Convert (Header_Array
-        (Bytes (Offset .. Offset + 13 * 4 - 1)));
+        (Bytes (Offset .. Offset + Header_Array'Length - 1)));
 
       Compressed : constant Boolean := File_Header.Data_Type = 0;
    begin
@@ -103,29 +103,29 @@ package body Orka.KTX is
             pragma Assert (File_Header.Depth = 0);
 
             if File_Header.Array_Elements > 0 then
-               Result.Kind := GL.Low_Level.Enums.Texture_Cube_Map_Array;
+               Result.Kind := Texture_Cube_Map_Array;
                Result.Depth := GL.Types.Size (File_Header.Array_Elements * File_Header.Faces);
             else
-               Result.Kind := GL.Low_Level.Enums.Texture_Cube_Map;
+               Result.Kind := Texture_Cube_Map;
             end if;
          else
             if File_Header.Array_Elements > 0 then
                if File_Header.Depth > 0 then
                   raise Constraint_Error with "OpenGL does not support 3D texture arrays";
                elsif File_Header.Height > 0 then
-                  Result.Kind := GL.Low_Level.Enums.Texture_2D_Array;
+                  Result.Kind := Texture_2D_Array;
                   Result.Depth := GL.Types.Size (File_Header.Array_Elements);
                else
-                  Result.Kind := GL.Low_Level.Enums.Texture_1D_Array;
+                  Result.Kind := Texture_1D_Array;
                   Result.Height := GL.Types.Size (File_Header.Array_Elements);
                end if;
             else
                if File_Header.Depth > 0 then
-                  Result.Kind := GL.Low_Level.Enums.Texture_3D;
+                  Result.Kind := Texture_3D;
                elsif File_Header.Height > 0 then
-                  Result.Kind := GL.Low_Level.Enums.Texture_2D;
+                  Result.Kind := Texture_2D;
                else
-                  Result.Kind := GL.Low_Level.Enums.Texture_1D;
+                  Result.Kind := Texture_1D;
                end if;
             end if;
          end if;
