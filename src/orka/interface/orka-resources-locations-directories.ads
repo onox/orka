@@ -27,6 +27,15 @@ package Orka.Resources.Locations.Directories is
      (Object : Directory_Location;
       Path   : String) return not null Byte_Array_Access;
 
+   procedure Write_Data
+     (Object : Directory_Location;
+      Path   : String;
+      Data   : Byte_Array_Access);
+   --  Write data to a non-existing file at the given path in the location
+   --
+   --  If the file at the given path could not be created or written to
+   --  for any reason then any kind of error is raised.
+
    function Create_Location (Path : String) return Location_Ptr;
 
 private

@@ -55,6 +55,26 @@ package body Orka.Resources.Locations.Directories is
 
    -----------------------------------------------------------------------------
 
+   function Create_File (File_Name : String) return Byte_Array_File is
+   begin
+      return Result : Byte_Array_File
+        := (Ada.Finalization.Limited_Controlled with File => <>, Finalized => False) do
+         Stream_IO.Create (Result.File, Stream_IO.In_File, File_Name);
+      end return;
+   end Create_File;
+
+   procedure Write_Data (Object : in out Byte_Array_File; Data : Byte_Array_Access) is
+      File_Stream : Stream_IO.Stream_Access;
+      File_Size   : constant Integer := Data'Length;
+
+      subtype File_Byte_Array is Byte_Array (1 .. Stream_Element_Offset (File_Size));
+   begin
+      File_Stream := Stream_IO.Stream (Object.File);
+      File_Byte_Array'Write (File_Stream, Data.all);
+   end Write_Data;
+
+   -----------------------------------------------------------------------------
+
    overriding
    function Exists (Object : Directory_Location; Path : String) return Boolean is
       Directory : String renames SU.To_String (Object.Full_Path);
@@ -87,6 +107,27 @@ package body Orka.Resources.Locations.Directories is
          return File.Read_File;
       end;
    end Read_Data;
+
+   procedure Write_Data
+     (Object : Directory_Location;
+      Path   : String;
+      Data   : Byte_Array_Access)
+   is
+      Directory : String renames SU.To_String (Object.Full_Path);
+      Full_Path : constant String := Directory & Path_Separator & Path;
+
+      use Ada.Directories;
+   begin
+      if Exists (Full_Path) then
+         raise Name_Error with "File '" & Full_Path & "' already exists";
+      end if;
+
+      declare
+         File : constant Byte_Array_File'Class := Create_File (Full_Path);
+      begin
+         File.Write_Data (Data);
+      end;
+   end Write_Data;
 
    function Create_Location (Path : String) return Location_Ptr is
       use Ada.Directories;
