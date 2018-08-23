@@ -211,7 +211,8 @@ package GL.Objects.Textures is
    --                          Texture 1D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_1D is new Texture_Base with private;
+   type Texture_1D is new Texture_Base with private
+     with Static_Predicate => Texture_1D.Kind = LE.Texture_1D;
 
    procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
                                Internal_Format : Pixels.Internal_Format;
@@ -265,7 +266,10 @@ package GL.Objects.Textures is
    --                          Texture 2D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_2D is new Texture_Base with private;
+   type Texture_2D is new Texture_Base with private
+     with Static_Predicate => Texture_2D.Kind in
+       LE.Texture_2D | LE.Texture_1D_Array | LE.Texture_Cube_Map | LE.Texture_Rectangle |
+       LE.Texture_2D_Multisample;
 
    procedure Allocate_Storage (Object : Texture_2D; Levels : Types.Size;
                                Internal_Format : Pixels.Internal_Format;
@@ -333,7 +337,10 @@ package GL.Objects.Textures is
    --                          Texture 3D Loading                             --
    -----------------------------------------------------------------------------
 
-   type Texture_3D is new Texture_Base with private;
+   type Texture_3D is new Texture_Base with private
+     with Static_Predicate => Texture_3D.Kind in
+       LE.Texture_3D | LE.Texture_2D_Array | LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array |
+       LE.Texture_2D_Multisample_Array;
 
    procedure Allocate_Storage (Object : Texture_3D; Levels : Types.Size;
                                Internal_Format      : Pixels.Internal_Format;
