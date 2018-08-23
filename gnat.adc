@@ -8,7 +8,6 @@ pragma Restrictions (No_Recursion);
 
 pragma Restrictions (No_Anonymous_Allocators);
 pragma Restrictions (No_Access_Parameter_Allocators);
-pragma Restrictions (No_Implicit_Heap_Allocations);
 
 --  pragma Restrictions (No_Abort_Statements);
 pragma Restrictions (No_Dependence => Ada.Asynchronous_Task_Control);

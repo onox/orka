@@ -63,7 +63,7 @@ package body Orka.Resources.Locations.Directories is
       end return;
    end Create_File;
 
-   procedure Write_Data (Object : in out Byte_Array_File; Data : Byte_Array_Access) is
+   procedure Write_Data (Object : in out Byte_Array_File'Class; Data : Byte_Array_Access) is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Data'Length;
 
