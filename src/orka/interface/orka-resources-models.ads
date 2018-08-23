@@ -14,7 +14,6 @@
 
 with Ada.Containers.Indefinite_Holders;
 
-with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 
 with Orka.Behaviors;
@@ -84,7 +83,7 @@ private
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
       Bounds  : Rendering.Buffers.Buffer;
-      TBO_BB  : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      TBO_BB  : Buffer_Texture;
       Uniform_WT : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
       Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;
@@ -95,7 +94,7 @@ private
       Transforms : PMB.Persistent_Mapped_Buffer
         (Kind => Orka.Types.Single_Matrix_Type,
          Mode => PMB.Write);
-      TBO_WT     : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      TBO_WT     : Buffer_Texture;
       Position   : Behaviors.Transforms.Vector4;
    end record;
 

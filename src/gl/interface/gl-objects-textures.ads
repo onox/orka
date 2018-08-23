@@ -22,6 +22,8 @@ with GL.Types.Colors;
 package GL.Objects.Textures is
    pragma Preelaborate;
 
+   package LE renames Low_Level.Enums;
+
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
 
@@ -61,10 +63,10 @@ package GL.Objects.Textures is
    --                          Texture Objects                                --
    -----------------------------------------------------------------------------
 
-   type Texture (Kind : Low_Level.Enums.Texture_Kind)
+   type Texture (Kind : LE.Texture_Kind)
      is abstract new GL_Object with private;
 
-   use type Low_Level.Enums.Texture_Kind;
+   use type LE.Texture_Kind;
 
    overriding
    procedure Initialize_Id (Object : in out Texture);
@@ -194,7 +196,7 @@ package GL.Objects.Textures is
    --                        Buffer Texture Loading                           --
    -----------------------------------------------------------------------------
 
-   type Buffer_Texture is new Texture with private;
+   type Buffer_Texture is new Texture (Kind => LE.Texture_Buffer) with private;
 
    procedure Attach_Buffer (Object : Buffer_Texture;
                             Internal_Format : Pixels.Internal_Format_Buffer_Texture;
@@ -407,7 +409,7 @@ private
      is new GL_Object with null record;
    type Texture_Base is new Texture with null record;
 
-   type Buffer_Texture is new Texture with null record;
+   type Buffer_Texture is new Texture (Kind => LE.Texture_Buffer) with null record;
 
    type Texture_1D is new Texture_Base with null record;
    type Texture_2D is new Texture_Base with null record;

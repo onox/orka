@@ -30,7 +30,7 @@ package body Orka.Resources.Models is
         := PMB.Create_Buffer
             (Orka.Types.Single_Matrix_Type, Shapes_Count, PMB.Write);
 
-      TBO_WT : Buffer_Texture (GL.Low_Level.Enums.Texture_Buffer);
+      TBO_WT : Buffer_Texture;
    begin
       TBO_WT.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
 
