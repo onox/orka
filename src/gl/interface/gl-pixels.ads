@@ -43,6 +43,7 @@ package GL.Pixels is
                             RGBA32I, RGB32I, RGBA16I, RGB16I, RGBA8I, RGB8I,
                             R8_SNorm, RG8_SNorm, RGB8_SNorm, RGBA8_SNorm,
                             R16_SNorm, RG16_SNorm, RGB16_SNorm, RGB10_A2UI);
+   --  Table 8.12 of the OpenGL specification
 
    type Compressed_Format is
      (Compressed_Red_RGTC1,
@@ -63,11 +64,13 @@ package GL.Pixels is
       Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
       Compressed_RGBA8_ETC2_EAC,
       Compressed_SRGB8_Alpha8_ETC2_EAC);
+   --  Specific compressed internal formats of table 8.14 of the OpenGL specification
 
    type Format is (Stencil_Index, Depth_Component, Red, Green, Blue,
                    RGB, RGBA, BGR, BGRA, RG, RG_Integer, Depth_Stencil,
                    Red_Integer, Green_Integer, Blue_Integer,
                    RGB_Integer, RGBA_Integer, BGR_Integer, BGRA_Integer);
+   --  Table 8.3 of the OpenGL specification
 
    type Data_Type is (Byte, Unsigned_Byte, Short, Unsigned_Short, Int,
                       Unsigned_Int, Float, Half_Float, Unsigned_Byte_3_3_2,
@@ -86,6 +89,7 @@ package GL.Pixels is
                       Unsigned_Int_10F_11F_11F_Rev,
                       Unsigned_Int_5_9_9_9_Rev,
                       Float_32_Unsigned_Int_24_8_Rev);
+   --  Table 8.2 of the OpenGL specification
 
    type Channel_Data_Type is (None, Int_Type, Unsigned_Int_Type, Float_Type,
                               Unsigned_Normalized, Signed_Normalized);
@@ -101,6 +105,11 @@ package GL.Pixels is
    procedure Set_Pack_Skip_Images  (Value : Size);
    procedure Set_Pack_Alignment    (Value : Alignment);
 
+   procedure Set_Pack_Compressed_Block_Width  (Value : Size);
+   procedure Set_Pack_Compressed_Block_Height (Value : Size);
+   procedure Set_Pack_Compressed_Block_Depth  (Value : Size);
+   procedure Set_Pack_Compressed_Block_Size   (Value : Size);
+
    function Pack_Swap_Bytes   return Boolean;
    function Pack_LSB_First    return Boolean;
    function Pack_Row_Length   return Size;
@@ -109,6 +118,11 @@ package GL.Pixels is
    function Pack_Skip_Rows    return Size;
    function Pack_Skip_Images  return Size;
    function Pack_Alignment    return Alignment;
+
+   function Pack_Compressed_Block_Width  return Size;
+   function Pack_Compressed_Block_Height return Size;
+   function Pack_Compressed_Block_Depth  return Size;
+   function Pack_Compressed_Block_Size   return Size;
 
    procedure Set_Unpack_Swap_Bytes   (Value : Boolean);
    procedure Set_Unpack_LSB_First    (Value : Boolean);
@@ -119,6 +133,11 @@ package GL.Pixels is
    procedure Set_Unpack_Skip_Images  (Value : Size);
    procedure Set_Unpack_Alignment    (Value : Alignment);
 
+   procedure Set_Unpack_Compressed_Block_Width  (Value : Size);
+   procedure Set_Unpack_Compressed_Block_Height (Value : Size);
+   procedure Set_Unpack_Compressed_Block_Depth  (Value : Size);
+   procedure Set_Unpack_Compressed_Block_Size   (Value : Size);
+
    function Unpack_Swap_Bytes   return Boolean;
    function Unpack_LSB_First    return Boolean;
    function Unpack_Row_Length   return Size;
@@ -127,6 +146,11 @@ package GL.Pixels is
    function Unpack_Skip_Rows    return Size;
    function Unpack_Skip_Images  return Size;
    function Unpack_Alignment    return Alignment;
+
+   function Unpack_Compressed_Block_Width  return Size;
+   function Unpack_Compressed_Block_Height return Size;
+   function Unpack_Compressed_Block_Depth  return Size;
+   function Unpack_Compressed_Block_Size   return Size;
 
 private
 

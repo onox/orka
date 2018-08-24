@@ -118,7 +118,12 @@ private package GL.Enums is
                               Pack_Swap_Bytes, Pack_LSB_First, Pack_Row_Length,
                               Pack_Skip_Rows, Pack_Skip_Pixels,
                               Pack_Alignment, Pack_Skip_Images, Pack_Image_Height,
-                              Unpack_Skip_Images, Unpack_Image_Height);
+                              Unpack_Skip_Images, Unpack_Image_Height,
+                              Unpack_Compressed_Block_Width, Unpack_Compressed_Block_Height,
+                              Unpack_Compressed_Block_Depth, Unpack_Compressed_Block_Size,
+                              Pack_Compressed_Block_Width, Pack_Compressed_Block_Height,
+                              Pack_Compressed_Block_Depth, Pack_Compressed_Block_Size);
+   --  Table 8.1 and 18.1 of the OpenGL specification
    
    type Buffer_Param is (Buffer_Immutable_Storage, Buffer_Storage_Flags,
                          Buffer_Size, Buffer_Access, Buffer_Mapped,
@@ -288,7 +293,15 @@ private
                               Pack_Skip_Images    => 16#806B#,
                               Pack_Image_Height   => 16#806C#,
                               Unpack_Skip_Images  => 16#806D#,
-                              Unpack_Image_Height => 16#806E#);
+                              Unpack_Image_Height => 16#806E#,
+                              Unpack_Compressed_Block_Width  => 16#9127#,
+                              Unpack_Compressed_Block_Height => 16#9128#,
+                              Unpack_Compressed_Block_Depth  => 16#9129#,
+                              Unpack_Compressed_Block_Size   => 16#912A#,
+                              Pack_Compressed_Block_Width  => 16#912B#,
+                              Pack_Compressed_Block_Height => 16#912C#,
+                              Pack_Compressed_Block_Depth  => 16#912D#,
+                              Pack_Compressed_Block_Size   => 16#912E#);
    for Pixel_Store_Param'Size use Low_Level.Enum'Size;
 
    for Buffer_Param use (Buffer_Immutable_Storage => 16#821F#,
