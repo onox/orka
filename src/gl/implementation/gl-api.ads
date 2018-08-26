@@ -427,9 +427,6 @@ private package GL.API is
    procedure Texture_Storage_3D is new Loader.Procedure_With_6_Params
      ("glTextureStorage3D", UInt, Size, Pixels.Internal_Format, Size, Size, Size);
 
-   procedure Texture_Storage_1D is new Loader.Procedure_With_4_Params
-     ("glTextureStorage1D", UInt, Size, Pixels.Compressed_Format, Size);
-
    procedure Texture_Storage_2D is new Loader.Procedure_With_5_Params
      ("glTextureStorage2D", UInt, Size, Pixels.Compressed_Format, Size, Size);
 
@@ -465,11 +462,6 @@ private package GL.API is
    procedure Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
      ("glTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
-      System.Address);
-
-   procedure Compressed_Texture_Sub_Image_1D is new Loader.Procedure_With_7_Params
-     ("glCompressedTextureSubImage1D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
    procedure Compressed_Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params

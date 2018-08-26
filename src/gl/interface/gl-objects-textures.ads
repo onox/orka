@@ -221,10 +221,6 @@ package GL.Objects.Textures is
                                Internal_Format : Pixels.Internal_Format;
                                Width : Types.Size);
 
-   procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
-                               Internal_Format : Pixels.Compressed_Format;
-                               Width : Types.Size);
-
    procedure Load_Empty_Texture (Object : Texture_1D; Level : Mipmap_Level;
                                  Offset_X : Types.Size;
                                  Width    : Types.Size);
@@ -236,14 +232,6 @@ package GL.Objects.Textures is
                              Source_Type   : Pixels.Data_Type;
                              Source        : System.Address)
    with Pre => not Object.Compressed (Level);
-
-   procedure Load_From_Compressed_Data (Object : Texture_1D; Level : Mipmap_Level;
-                                        Offset_X : Types.Size;
-                                        Width    : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size : Types.Size;
-                                        Source     : System.Address)
-   with Pre => Object.Compressed (Level);
 
    procedure Load_From_Buffer (Object : Texture_1D; Level : Mipmap_Level;
                                Offset_X : Types.Size;

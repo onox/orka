@@ -100,8 +100,7 @@ package body Orka.Resources.Textures.KTX is
                   Texture : GL.Objects.Textures.Texture_1D (Header.Kind);
                begin
                   if Header.Compressed then
-                     Texture.Allocate_Storage (Levels, Header.Compressed_Format,
-                       Header.Width);
+                     raise Texture_Load_Error with Path & " has unknown 1D compressed format";
                   else
                      Texture.Allocate_Storage (Levels, Header.Internal_Format,
                        Header.Width);
@@ -134,9 +133,7 @@ package body Orka.Resources.Textures.KTX is
                      Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);
                   begin
                      if Header.Compressed then
-                        Texture.Load_From_Compressed_Data (Level, 0, Header.Width,
-                          Header.Compressed_Format, GL.Types.Int (Image_Size),
-                          Image_Data'Address);
+                        raise Texture_Load_Error with Path & " has unknown 1D compressed format";
                      else
                         Texture.Load_From_Data (Level, 0, Header.Width,
                           Header.Format, Header.Data_Type, Image_Data'Address);

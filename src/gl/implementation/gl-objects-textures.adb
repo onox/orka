@@ -570,15 +570,6 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Allocate_Storage;
 
-   procedure Allocate_Storage (Object : Texture_1D; Levels : Types.Size;
-                               Internal_Format : Pixels.Compressed_Format;
-                               Width : Types.Size) is
-   begin
-      API.Texture_Storage_1D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width);
-      Raise_Exception_On_OpenGL_Error;
-   end Allocate_Storage;
-
    procedure Load_Empty_Texture (Object : Texture_1D;
                                  Level  : Mipmap_Level;
                                  Offset_X, Width : Types.Size) is
@@ -607,19 +598,6 @@ package body GL.Objects.Textures is
                                 Source_Type, Source);
       Raise_Exception_On_OpenGL_Error;
    end Load_From_Data;
-
-   procedure Load_From_Compressed_Data (Object : Texture_1D; Level : Mipmap_Level;
-                                        Offset_X : Types.Size;
-                                        Width    : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size : Types.Size;
-                                        Source     : System.Address) is
-   begin
-      API.Compressed_Texture_Sub_Image_1D (Object.Reference.GL_Id, Level,
-                                           Offset_X, Width, Source_Format,
-                                           Image_Size, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Compressed_Data;
 
    procedure Load_From_Buffer (Object : Texture_1D; Level : Mipmap_Level;
                                Offset_X : Types.Size;
