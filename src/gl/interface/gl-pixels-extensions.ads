@@ -64,7 +64,7 @@ package GL.Pixels.Extensions is
      with Static_Predicate => Compressed_Byte_Count in 8 | 16;
 
    function Block_Bytes (Format : Pixels.Compressed_Format) return Compressed_Byte_Count is
-     (Case Format is
+     (case Format is
         --  RGTC
         when Compressed_Red_RGTC1                      => 8,
         when Compressed_Signed_Red_RGTC1               => 8,
