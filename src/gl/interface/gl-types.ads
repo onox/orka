@@ -136,6 +136,12 @@ package GL.Types is
                                       One_Value    => 1.0);
 
    --  Pointer types (for use with data transfer functions
+   package UByte_Pointers is new Interfaces.C.Pointers
+     (Size, UByte, UByte_Array, UByte'Last);
+
+   package UShort_Pointers is new Interfaces.C.Pointers
+     (Size, UShort, UShort_Array, UShort'Last);
+
    package Int_Pointers is new Interfaces.C.Pointers
      (Size, Int, Int_Array, Int'Last);
 
