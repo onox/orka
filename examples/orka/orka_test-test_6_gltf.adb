@@ -68,7 +68,7 @@ procedure Orka_Test.Test_6_GLTF is
 
    use GL.Objects.Textures;
 
-   procedure Load_Texture (Texture : Texture_3D) is
+   procedure Load_Texture (Texture : in out Texture_3D) is
       Pixels : aliased constant GL.Types.Single_Array
             --  White
         := (0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,

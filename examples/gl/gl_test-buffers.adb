@@ -195,7 +195,7 @@ procedure GL_Test.Buffers is
       end if;
    end Load_Shaders;
 
-   procedure Load_Texture (Texture : GL.Objects.Textures.Texture_2D) is
+   procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture_2D) is
       use GL.Objects.Textures;
 
       Pixels : aliased constant Single_Array
@@ -217,7 +217,7 @@ procedure GL_Test.Buffers is
       Texture.Load_From_Data (0, 0, 0, 4, 4, GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   procedure Load_Color_Texture (Texture : GL.Objects.Textures.Texture_2D) is
+   procedure Load_Color_Texture (Texture : in out GL.Objects.Textures.Texture_2D) is
       use GL.Objects.Textures;
    begin
       Texture.Bind_Texture_Unit (0);
