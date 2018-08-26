@@ -594,7 +594,13 @@ package body GL.Objects.Textures is
                              Offset_X, Width : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address) is
+                             Source        : System.Address)
+   is
+      --  Data is considered to be packed. When loading it to a texture,
+      --  it will be unpacked. Therefore, each row must be a multiple of the
+      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
+      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
+      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
    begin
       API.Texture_Sub_Image_1D (Object.Reference.GL_Id, Level,
                                 Offset_X, Width, Source_Format,
@@ -713,7 +719,13 @@ package body GL.Objects.Textures is
                              Width, Height : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address) is
+                             Source        : System.Address)
+   is
+      --  Data is considered to be packed. When loading it to a texture,
+      --  it will be unpacked. Therefore, each row must be a multiple of the
+      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
+      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
+      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
    begin
       API.Texture_Sub_Image_2D (Object.Reference.GL_Id, Level,
                                 Offset_X, Offset_Y, Width, Height,
@@ -833,7 +845,13 @@ package body GL.Objects.Textures is
                              Width, Height, Depth : Types.Size;
                              Source_Format : Pixels.Format;
                              Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address) is
+                             Source        : System.Address)
+   is
+      --  Data is considered to be packed. When loading it to a texture,
+      --  it will be unpacked. Therefore, each row must be a multiple of the
+      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
+      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
+      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
    begin
       API.Texture_Sub_Image_3D (Object.Reference.GL_Id, Level,
                                 Offset_X, Offset_Y, Offset_Z,
