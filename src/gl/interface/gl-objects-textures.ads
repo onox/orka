@@ -14,15 +14,18 @@
 
 with System;
 
+with Interfaces.C.Pointers;
+
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
-with GL.Pixels;
+with GL.Pixels.Extensions;
 with GL.Types.Colors;
 
 package GL.Objects.Textures is
    pragma Preelaborate;
 
    package LE renames Low_Level.Enums;
+   package PE renames Pixels.Extensions;
 
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
@@ -403,6 +406,54 @@ package GL.Objects.Textures is
       Offset_X, Offset_Y, Offset_Z : Types.Size;
       Width, Height, Depth         : Types.Size)
    with Pre => not Object.Compressed (Level);
+
+   -----------------------------------------------------------------------------
+
+   function Get_Compressed_Data
+     (Object : Texture_2D;
+      Level  : Mipmap_Level;
+      X, Y, Width, Height : Types.Size;
+      Format : Pixels.Compressed_Format) return UByte_Array
+   with Pre => Object.Compressed (Level)
+     and Object.Kind /= LE.Texture_2D_Multisample;
+
+   function Get_Compressed_Data
+     (Object : Texture_3D;
+      Level  : Mipmap_Level;
+      X, Y, Z, Width, Height, Depth : Types.Size;
+      Format : Pixels.Compressed_Format) return UByte_Array
+   with Pre => Object.Compressed (Level)
+     and Object.Kind /= LE.Texture_2D_Multisample_Array;
+
+   generic
+      with package Pointers is new Interfaces.C.Pointers (<>);
+   package Texture_Pointers is
+
+      function Get_Data
+        (Object : Texture_1D;
+         Level  : Mipmap_Level;
+         X, Width  : Types.Size;
+         Format    : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      with Pre => not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
+
+      function Get_Data
+        (Object : Texture_2D;
+         Level  : Mipmap_Level;
+         X, Y, Width, Height : Types.Size;
+         Format    : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      with Pre => not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
+
+      function Get_Data
+        (Object : Texture_3D;
+         Level  : Mipmap_Level;
+         X, Y, Z, Width, Height, Depth : Types.Size;
+         Format    : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      with Pre => not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
+
+   end Texture_Pointers;
 
 private
 

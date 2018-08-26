@@ -86,6 +86,10 @@ package GL.Types is
    subtype Component_Count is Int range 1 .. 4;
    --  Counts the number of components for vertex attributes
 
+   subtype Byte_Count is Int range 1 .. 4
+     with Static_Predicate => Byte_Count in 1 | 2 | 4;
+   --  Number of bytes of a component
+
    package Bytes is new GL.Algebra (Element_Type => Byte,
                                     Index_Type   => Size,
                                     Null_Value   => 0,

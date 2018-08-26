@@ -506,6 +506,15 @@ private package GL.API is
    procedure Generate_Texture_Mipmap is new Loader.Procedure_With_1_Param
      ("glGenerateTextureMipmap", UInt);
 
+   procedure Get_Texture_Sub_Image is new Loader.Procedure_With_12_Params
+     ("glGetTextureSubImage", UInt, Objects.Textures.Mipmap_Level,
+      Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
+      Size, System.Address);
+
+   procedure Get_Compressed_Texture_Sub_Image is new Loader.Procedure_With_10_Params
+     ("glGetCompressedTextureSubImage", UInt, Objects.Textures.Mipmap_Level,
+      Int, Int, Int, Size, Size, Size, Size, System.Address);
+
    procedure Invalidate_Tex_Image is new Loader.Procedure_With_2_Params
      ("glInvalidateTexImage", UInt, Objects.Textures.Mipmap_Level);
 

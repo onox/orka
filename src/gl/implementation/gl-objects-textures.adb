@@ -893,4 +893,101 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Zeros;
 
+   -----------------------------------------------------------------------------
+
+   function Get_Compressed_Texture_Data
+     (Object : Texture_Base'Class;
+      Level  : Mipmap_Level;
+      X, Y, Z, Width, Height, Depth : Types.Size;
+      Format : Pixels.Compressed_Format) return UByte_Array
+   is
+      Blocks : constant Int := ((Width + 3) / 4) * ((Height + 3) / 4) * Depth;
+      Number_Of_Bytes : constant Int := Blocks * PE.Block_Bytes (Format);
+
+      Result : aliased UByte_Array (1 .. Number_Of_Bytes);
+   begin
+      API.Get_Compressed_Texture_Sub_Image
+        (Object.Reference.GL_Id, Level, X, Y, Z,
+         Width, Height, Depth, Number_Of_Bytes, Result'Address);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Get_Compressed_Texture_Data;
+
+   function Get_Compressed_Data
+     (Object : Texture_2D;
+      Level  : Mipmap_Level;
+      X, Y, Width, Height : Types.Size;
+      Format : Pixels.Compressed_Format) return UByte_Array
+   is (Get_Compressed_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format));
+
+   function Get_Compressed_Data
+     (Object : Texture_3D;
+      Level  : Mipmap_Level;
+      X, Y, Z, Width, Height, Depth : Types.Size;
+      Format : Pixels.Compressed_Format) return UByte_Array
+   is (Get_Compressed_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format));
+
+   package body Texture_Pointers is
+
+      function Get_Texture_Data
+        (Object    : Texture_Base'Class;
+         Level     : Mipmap_Level;
+         X, Y, Z, Width, Height, Depth : Types.Size;
+         Format    : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      is
+         --  Texture data is considered to be unpacked. When retrieving
+         --  it from a texture, it will be packed. Therefore, each row
+         --  must be a multiple of the current pack alignment. Call
+         --  Set_Pack_Alignment if necessary.
+         Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Pack_Alignment);
+         pragma Assert ((Width * PE.Bytes (Data_Type)) mod Alignment = 0);
+
+         Bytes_Per_Element : constant Int := Pointers.Element'Size / System.Storage_Unit;
+         Bytes_Per_Texel   : constant Int := PE.Components (Format) * PE.Bytes (Data_Type);
+         --  TODO Handle packed data types and depth/stenil formats
+         pragma Assert (Bytes_Per_Texel rem Bytes_Per_Element = 0);
+
+         Texels : constant Int := Width * Height * Depth;
+
+         Number_Of_Bytes : constant Int := Texels * Bytes_Per_Texel;
+         Length : constant Int := Texels * Bytes_Per_Texel / Bytes_Per_Element;
+
+         I1 : constant Pointers.Index := Pointers.Index'First;
+         I2 : constant Pointers.Index := Pointers.Index'Val (Pointers.Index'Pos (I1) + Length);
+         Result : aliased Pointers.Element_Array (I1 .. Pointers.Index'Pred (I2));
+      begin
+         API.Get_Texture_Sub_Image
+           (Object.Reference.GL_Id, Level, X, Y, Z,
+            Width, Height, Depth, Format, Data_Type, Number_Of_Bytes, Result'Address);
+         Raise_Exception_On_OpenGL_Error;
+         return Result;
+      end Get_Texture_Data;
+
+      function Get_Data
+        (Object    : Texture_1D;
+         Level     : Mipmap_Level;
+         X, Width  : Types.Size;
+         Format    : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      is (Get_Texture_Data (Object, Level, X, 0, 0, Width, 1, 1, Format, Data_Type));
+
+      function Get_Data
+        (Object : Texture_2D;
+         Level  : Mipmap_Level;
+         X, Y, Width, Height : Types.Size;
+         Format : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      is (Get_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format, Data_Type));
+
+      function Get_Data
+        (Object : Texture_3D;
+         Level  : Mipmap_Level;
+         X, Y, Z, Width, Height, Depth : Types.Size;
+         Format : Pixels.Format;
+         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+      is (Get_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format, Data_Type));
+
+   end Texture_Pointers;
+
 end GL.Objects.Textures;
