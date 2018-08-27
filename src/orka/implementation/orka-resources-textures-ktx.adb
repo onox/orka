@@ -119,15 +119,27 @@ package body Orka.Resources.Textures.KTX is
             Image_Size_Index : Stream_Element_Offset
               := Orka.KTX.Get_Data_Offset (Bytes, Header.Bytes_Key_Value);
 
+            Cube_Map : constant Boolean := Header.Kind = Texture_Cube_Map;
+
             package Textures renames GL.Objects.Textures;
          begin
             for Level in 0 .. Levels - 1 loop
                declare
-                  Image_Size   : constant Natural := Orka.KTX.Get_Length (Bytes, Image_Size_Index);
-                  Padding_Size : constant Natural := 3 - ((Image_Size + 3) mod 4);
-                  Mipmap_Size  : constant Natural := 4 + Image_Size + Padding_Size;
+                  Face_Size : constant Natural := Orka.KTX.Get_Length (Bytes, Image_Size_Index);
+                  --  If not Cube_Map, then Face_Size is the size of the whole level
 
-                  Image_Data : aliased Byte_Array := Bytes (Image_Size_Index + 4 .. Image_Size_Index + 4 + Stream_Element_Offset (Image_Size) - 1);
+                  Cube_Padding : constant Natural := 3 - ((Face_Size + 3) mod 4);
+                  Image_Size   : constant Natural
+                    := (if Cube_Map then (Face_Size + Cube_Padding) * 6 else Face_Size);
+                  -- If Cube_Map then Levels = 1 so no need to add it to the expression
+
+                  --  Compute size of the whole mipmap level
+                  Mip_Padding : constant Natural := 3 - ((Image_Size + 3) mod 4);
+                  Mipmap_Size : constant Natural := 4 + Image_Size + Mip_Padding;
+
+                  Offset : constant Stream_Element_Offset := Image_Size_Index + 4;
+                  Image_Data : aliased Byte_Array
+                    := Bytes (Offset .. Offset + Stream_Element_Offset (Image_Size) - 1);
 
                   procedure Load_1D (Element : Textures.Texture_Base'Class) is
                      Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);
@@ -156,16 +168,22 @@ package body Orka.Resources.Textures.KTX is
 
                   procedure Load_3D (Element : Textures.Texture_Base'Class) is
                      Texture : Textures.Texture_3D renames Textures.Texture_3D (Element);
+                     Depth   : GL.Types.Size := Header.Depth;
                   begin
+                     --  For a cube map, depth is the number of faces, for
+                     --  a cube map array, depth is the number of layer-faces
+                     if Header.Kind in Texture_Cube_Map | Texture_Cube_Map_Array then
+                        Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
+                     end if;
+
                      if Header.Compressed then
                         Texture.Load_From_Compressed_Data (Level, 0, 0, 0,
-                          Header.Width, Header.Height, Header.Depth,
+                          Header.Width, Header.Height, Depth,
                           Header.Compressed_Format, GL.Types.Int (Image_Size),
                           Image_Data'Address);
-                        --  TODO For Texture_Cube_Map, Image_Size is the size of one face
                      else
                         Texture.Load_From_Data (Level, 0, 0, 0,
-                          Header.Width, Header.Height, Header.Depth, Header.Format,
+                          Header.Width, Header.Height, Depth, Header.Format,
                           Header.Data_Type, Image_Data'Address);
                      end if;
                   end Load_3D;
@@ -173,7 +191,11 @@ package body Orka.Resources.Textures.KTX is
                   case Header.Kind is
                      when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array =>
                         Resource.Texture.Query_Element (Load_3D'Access);
-                     when Texture_2D | Texture_1D_Array | Texture_Cube_Map =>
+                     when Texture_Cube_Map =>
+                        --  Texture_Cube_Map uses 2D storage, but 3D load operation
+                        --  according to table 8.15 of the OpenGL specification
+                        Resource.Texture.Query_Element (Load_3D'Access);
+                     when Texture_2D | Texture_1D_Array =>
                         Resource.Texture.Query_Element (Load_2D'Access);
                      when Texture_1D =>
                         Resource.Texture.Query_Element (Load_1D'Access);

@@ -64,7 +64,7 @@ private package Orka.KTX is
               when Texture_2D | Texture_2D_Array => Header.Height > 0 and Header.Depth = 0,
               when Texture_3D                    => Header.Depth > 0,
               when Texture_Cube_Map       => Header.Width = Header.Height and Header.Depth = 0,
-              when Texture_Cube_Map_Array => Header.Width = Header.Height and Header.Depth > 0,
+              when Texture_Cube_Map_Array => Header.Width = Header.Height and Header.Depth = 0,
               when others => raise Constraint_Error);
 
    function Valid_Identifier (Bytes : Resources.Byte_Array_Access) return Boolean;
