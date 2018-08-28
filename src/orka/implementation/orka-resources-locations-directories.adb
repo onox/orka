@@ -59,7 +59,7 @@ package body Orka.Resources.Locations.Directories is
    begin
       return Result : Byte_Array_File
         := (Ada.Finalization.Limited_Controlled with File => <>, Finalized => False) do
-         Stream_IO.Create (Result.File, Stream_IO.In_File, File_Name);
+         Stream_IO.Create (Result.File, Stream_IO.Out_File, File_Name);
       end return;
    end Create_File;
 
