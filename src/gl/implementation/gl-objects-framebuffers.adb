@@ -58,7 +58,7 @@ package body GL.Objects.Framebuffers is
 
    procedure Attach_Texture (Object : Framebuffer;
                              Attachment : Attachment_Point;
-                             Texture_Object : Textures.Texture'Class;
+                             Texture_Object : Textures.Texture_Base'Class;
                              Level : Textures.Mipmap_Level) is
    begin
       API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment,
@@ -68,7 +68,7 @@ package body GL.Objects.Framebuffers is
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
                                    Attachment : Attachment_Point;
-                                   Texture_Object : Textures.Texture'Class;
+                                   Texture_Object : Textures.Texture_Base'Class;
                                    Level : Textures.Mipmap_Level;
                                    Layer : Natural) is
    begin
@@ -76,6 +76,12 @@ package body GL.Objects.Framebuffers is
                                            Texture_Object.Raw_Id, Level, Int (Layer));
       Raise_Exception_On_OpenGL_Error;
    end Attach_Texture_Layer;
+
+   procedure Detach (Object : Framebuffer; Attachment : Attachment_Point) is
+   begin
+      API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment, 0, 0);
+      Raise_Exception_On_OpenGL_Error;
+   end Detach;
 
    procedure Invalidate_Data (Object : Framebuffer;
                               Attachments : Attachment_List) is
