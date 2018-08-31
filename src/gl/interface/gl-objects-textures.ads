@@ -425,7 +425,7 @@ package GL.Objects.Textures is
      (Object : Texture_2D;
       Level  : Mipmap_Level;
       X, Y, Width, Height : Types.Size;
-      Format : Pixels.Compressed_Format) return UByte_Array
+      Format : Pixels.Compressed_Format) return Types.UByte_Array_Ptr
    with Pre => Object.Allocated and Object.Compressed (Level)
      and Object.Kind /= LE.Texture_2D_Multisample;
 
@@ -433,7 +433,7 @@ package GL.Objects.Textures is
      (Object : Texture_3D;
       Level  : Mipmap_Level;
       X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return UByte_Array
+      Format : Pixels.Compressed_Format) return Types.UByte_Array_Ptr
    with Pre => Object.Allocated and Object.Compressed (Level)
      and Object.Kind /= LE.Texture_2D_Multisample_Array;
 
@@ -441,12 +441,14 @@ package GL.Objects.Textures is
       with package Pointers is new Interfaces.C.Pointers (<>);
    package Texture_Pointers is
 
+      type Element_Array_Ptr is not null access Pointers.Element_Array;
+
       function Get_Data
         (Object : Texture_1D;
          Level  : Mipmap_Level;
          X, Width  : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 
@@ -455,7 +457,7 @@ package GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Width, Height : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 
@@ -464,7 +466,7 @@ package GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Z, Width, Height, Depth : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Pointers.Element_Array
+         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 

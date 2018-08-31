@@ -138,9 +138,8 @@ package body Orka.Resources.Textures.KTX is
                   Mipmap_Size : constant Natural := 4 + Image_Size + Mip_Padding;
 
                   Offset : constant Stream_Element_Offset := Image_Size_Index + 4;
-                  Image_Data : aliased Byte_Array
-                    := Bytes (Offset .. Offset + Stream_Element_Offset (Image_Size) - 1);
-
+                  pragma Assert (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes'Last);
+                  Image_Data : constant System.Address := Bytes (Offset)'Address;
                   procedure Load_1D (Element : Textures.Texture_Base'Class) is
                      Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);
                   begin
@@ -148,7 +147,7 @@ package body Orka.Resources.Textures.KTX is
                         raise Texture_Load_Error with Path & " has unknown 1D compressed format";
                      else
                         Texture.Load_From_Data (Level, 0, Header.Width,
-                          Header.Format, Header.Data_Type, Image_Data'Address);
+                          Header.Format, Header.Data_Type, Image_Data);
                      end if;
                   end Load_1D;
 
@@ -158,11 +157,11 @@ package body Orka.Resources.Textures.KTX is
                      if Header.Compressed then
                         Texture.Load_From_Compressed_Data (Level, 0, 0,
                           Header.Width, Header.Height, Header.Compressed_Format,
-                          GL.Types.Int (Image_Size), Image_Data'Address);
+                          GL.Types.Int (Image_Size), Image_Data);
                      else
                         Texture.Load_From_Data (Level, 0, 0,
                           Header.Width, Header.Height, Header.Format,
-                          Header.Data_Type, Image_Data'Address);
+                          Header.Data_Type, Image_Data);
                      end if;
                   end Load_2D;
 
@@ -180,11 +179,11 @@ package body Orka.Resources.Textures.KTX is
                         Texture.Load_From_Compressed_Data (Level, 0, 0, 0,
                           Header.Width, Header.Height, Depth,
                           Header.Compressed_Format, GL.Types.Int (Image_Size),
-                          Image_Data'Address);
+                          Image_Data);
                      else
                         Texture.Load_From_Data (Level, 0, 0, 0,
                           Header.Width, Header.Height, Depth, Header.Format,
-                          Header.Data_Type, Image_Data'Address);
+                          Header.Data_Type, Image_Data);
                      end if;
                   end Load_3D;
                begin
