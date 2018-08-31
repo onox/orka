@@ -401,6 +401,9 @@ private package GL.API is
    procedure Get_Texture_Level_Parameter_Format is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Pixels.Internal_Format);
+   procedure Get_Texture_Level_Parameter_Format is new Loader.Getter_With_4_Params
+     ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
+      Enums.Textures.Level_Parameter, Pixels.Compressed_Format);
    procedure Get_Texture_Level_Parameter_Type is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Pixels.Channel_Data_Type);

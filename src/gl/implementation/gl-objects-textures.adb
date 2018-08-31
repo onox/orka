@@ -49,7 +49,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth;
 
-   function Format (Object : Texture_Base; Level : Mipmap_Level)
+   function Internal_Format (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Internal_Format is
       Ret : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
@@ -57,7 +57,17 @@ package body GL.Objects.Textures is
                                               Enums.Textures.Internal_Format, Ret);
       Raise_Exception_On_OpenGL_Error;
       return Ret;
-   end Format;
+   end Internal_Format;
+
+   function Compressed_Format (Object : Texture_Base; Level : Mipmap_Level)
+     return Pixels.Compressed_Format is
+      Ret : Pixels.Compressed_Format := Pixels.Compressed_Format'First;
+   begin
+      API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Level,
+                                              Enums.Textures.Internal_Format, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Compressed_Format;
 
    function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is

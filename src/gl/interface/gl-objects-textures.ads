@@ -163,8 +163,13 @@ package GL.Objects.Textures is
    function Height (Object : Texture_Base; Level : Mipmap_Level) return Size;
    function Depth  (Object : Texture_Base; Level : Mipmap_Level) return Size;
 
-   function Format (Object : Texture_Base; Level : Mipmap_Level)
-     return Pixels.Internal_Format;
+   function Internal_Format (Object : Texture_Base; Level : Mipmap_Level)
+     return Pixels.Internal_Format
+   with Pre => Object.Allocated and not Object.Compressed (Level);
+
+   function Compressed_Format (Object : Texture_Base; Level : Mipmap_Level)
+     return Pixels.Compressed_Format
+   with Pre => Object.Allocated and Object.Compressed (Level);
 
    function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
