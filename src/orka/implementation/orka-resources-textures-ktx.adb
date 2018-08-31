@@ -72,26 +72,49 @@ package body Orka.Resources.Textures.KTX is
             when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array =>
                declare
                   Texture : GL.Objects.Textures.Texture_3D (Header.Kind);
+                  Depth   : GL.Types.Size;
                begin
+                  case Header.Kind is
+                     when Texture_2D_Array =>
+                        Depth := Header.Array_Elements;
+                     when Texture_Cube_Map_Array =>
+                        --  For a cube map array, depth is the number of layer-faces
+                        Depth := Header.Array_Elements * 6;
+                     when Texture_3D =>
+                        Depth := Header.Depth;
+                     when others =>
+                        raise Program_Error;
+                  end case;
+
                   if Header.Compressed then
                      Texture.Allocate_Storage (Levels, Header.Compressed_Format,
-                       Header.Width, Header.Height, Header.Depth);
+                       Header.Width, Header.Height, Depth);
                   else
                      Texture.Allocate_Storage (Levels, Header.Internal_Format,
-                       Header.Width, Header.Height, Header.Depth);
+                       Header.Width, Header.Height, Depth);
                   end if;
                   Resource.Texture.Replace_Element (Texture);
                end;
             when Texture_2D | Texture_1D_Array | Texture_Cube_Map =>
                declare
                   Texture : GL.Objects.Textures.Texture_2D (Header.Kind);
+                  Height  : GL.Types.Size;
                begin
+                  case Header.Kind is
+                     when Texture_1D_Array =>
+                        Height := Header.Array_Elements;
+                     when Texture_2D | Texture_Cube_Map =>
+                        Height := Header.Height;
+                     when others =>
+                        raise Program_Error;
+                  end case;
+
                   if Header.Compressed then
                      Texture.Allocate_Storage (Levels, Header.Compressed_Format,
-                       Header.Width, Header.Height);
+                       Header.Width, Height);
                   else
                      Texture.Allocate_Storage (Levels, Header.Internal_Format,
-                       Header.Width, Header.Height);
+                       Header.Width, Height);
                   end if;
                   Resource.Texture.Replace_Element (Texture);
                end;
@@ -244,7 +267,7 @@ package body Orka.Resources.Textures.KTX is
                Debug_Messages.Insert (GL.Debug.Notification,
                   "  format: " & Header.Format'Image);
                Debug_Messages.Insert (GL.Debug.Notification,
-                  "  format: " & Header.Data_Type'Image);
+                  "  type: " & Header.Data_Type'Image);
             end if;
 
             Debug_Messages.Insert (GL.Debug.Notification,
