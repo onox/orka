@@ -16,6 +16,8 @@ with System;
 
 with Interfaces.C.Pointers;
 
+with Ada.Unchecked_Deallocation;
+
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
 with GL.Pixels.Extensions;
@@ -425,7 +427,7 @@ package GL.Objects.Textures is
      (Object : Texture_2D;
       Level  : Mipmap_Level;
       X, Y, Width, Height : Types.Size;
-      Format : Pixels.Compressed_Format) return Types.UByte_Array_Ptr
+      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
    with Pre => Object.Allocated and Object.Compressed (Level)
      and Object.Kind /= LE.Texture_2D_Multisample;
 
@@ -433,7 +435,7 @@ package GL.Objects.Textures is
      (Object : Texture_3D;
       Level  : Mipmap_Level;
       X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return Types.UByte_Array_Ptr
+      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
    with Pre => Object.Allocated and Object.Compressed (Level)
      and Object.Kind /= LE.Texture_2D_Multisample_Array;
 
@@ -441,14 +443,17 @@ package GL.Objects.Textures is
       with package Pointers is new Interfaces.C.Pointers (<>);
    package Texture_Pointers is
 
-      type Element_Array_Ptr is not null access Pointers.Element_Array;
+      type Element_Array_Access is access Pointers.Element_Array;
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Pointers.Element_Array, Name => Element_Array_Access);
 
       function Get_Data
         (Object : Texture_1D;
          Level  : Mipmap_Level;
          X, Width  : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 
@@ -457,7 +462,7 @@ package GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Width, Height : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 
@@ -466,7 +471,7 @@ package GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Z, Width, Height, Depth : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
                     not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
 

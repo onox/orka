@@ -916,12 +916,12 @@ package body GL.Objects.Textures is
      (Object : Texture_Base'Class;
       Level  : Mipmap_Level;
       X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return Types.UByte_Array_Ptr
+      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
    is
       Blocks : constant Int := ((Width + 3) / 4) * ((Height + 3) / 4) * Depth;
       Number_Of_Bytes : constant Int := Blocks * PE.Block_Bytes (Format);
 
-      Result : constant Types.UByte_Array_Ptr
+      Result : constant Types.UByte_Array_Access
         := new UByte_Array (1 .. Number_Of_Bytes);
    begin
       API.Get_Compressed_Texture_Sub_Image
@@ -935,14 +935,14 @@ package body GL.Objects.Textures is
      (Object : Texture_2D;
       Level  : Mipmap_Level;
       X, Y, Width, Height : Types.Size;
-      Format : Pixels.Compressed_Format) return UByte_Array_Ptr
+      Format : Pixels.Compressed_Format) return not null UByte_Array_Access
    is (Get_Compressed_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format));
 
    function Get_Compressed_Data
      (Object : Texture_3D;
       Level  : Mipmap_Level;
       X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return UByte_Array_Ptr
+      Format : Pixels.Compressed_Format) return not null UByte_Array_Access
    is (Get_Compressed_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format));
 
    package body Texture_Pointers is
@@ -950,14 +950,14 @@ package body GL.Objects.Textures is
       procedure Get_Texture_Sub_Image is new API.Loader.Procedure_With_12_Params
         ("glGetTextureSubImage", UInt, Objects.Textures.Mipmap_Level,
          Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
-         Size, Element_Array_Ptr);
+         Size, Element_Array_Access);
 
       function Get_Texture_Data
         (Object    : Texture_Base'Class;
          Level     : Mipmap_Level;
          X, Y, Z, Width, Height, Depth : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       is
          --  Texture data is considered to be unpacked. When retrieving
          --  it from a texture, it will be packed. Therefore, each row
@@ -979,7 +979,7 @@ package body GL.Objects.Textures is
 
          I1 : constant Pointers.Index := Pointers.Index'First;
          I2 : constant Pointers.Index := Pointers.Index'Val (Pointers.Index'Pos (I1) + Length);
-         Result : constant Element_Array_Ptr
+         Result : constant Element_Array_Access
            := new Pointers.Element_Array (I1 .. Pointers.Index'Pred (I2));
          pragma Assert (Result'Length > 0);
       begin
@@ -995,7 +995,7 @@ package body GL.Objects.Textures is
          Level     : Mipmap_Level;
          X, Width  : Types.Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       is (Get_Texture_Data (Object, Level, X, 0, 0, Width, 1, 1, Format, Data_Type));
 
       function Get_Data
@@ -1003,7 +1003,7 @@ package body GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Width, Height : Types.Size;
          Format : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       is (Get_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format, Data_Type));
 
       function Get_Data
@@ -1011,7 +1011,7 @@ package body GL.Objects.Textures is
          Level  : Mipmap_Level;
          X, Y, Z, Width, Height, Depth : Types.Size;
          Format : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return Element_Array_Ptr
+         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       is (Get_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format, Data_Type));
 
    end Texture_Pointers;

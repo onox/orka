@@ -161,7 +161,7 @@ package GL.Types is
 
    type String_Array is array (Positive range <>) of String_Access;
 
-   type UByte_Array_Ptr is not null access UByte_Array;
+   type UByte_Array_Access is access UByte_Array;
 
 private
 
