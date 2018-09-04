@@ -12,15 +12,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System;
+
 with Ada.Exceptions;
 with Ada.Real_Time;
+with Ada.Unchecked_Deallocation;
 
 with GL.Debug;
 with GL.Low_Level.Enums;
 with GL.Types;
+with GL.Pixels;
 
 with Orka.KTX;
-with Orka.Resources.Locations;
 
 package body Orka.Resources.Textures.KTX is
 
@@ -163,6 +166,9 @@ package body Orka.Resources.Textures.KTX is
                   Offset : constant Stream_Element_Offset := Image_Size_Index + 4;
                   pragma Assert (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes'Last);
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
+                  --  TODO Unpack_Alignment must be 4, but Load_From_Data wants 1 | 2 | 4
+                  --  depending on Header.Data_Type
+
                   procedure Load_1D (Element : Textures.Texture_Base'Class) is
                      Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);
                   begin
@@ -324,5 +330,153 @@ package body Orka.Resources.Textures.KTX is
    function Create_Loader
      (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
    is (new KTX_Loader'(Manager => Manager));
+
+   -----------------------------------------------------------------------------
+   --                                 Writer                                  --
+   -----------------------------------------------------------------------------
+
+   procedure Write_Texture
+     (Texture  : GL.Objects.Textures.Texture_Base'Class;
+      Location : Locations.Writable_Location_Ptr;
+      Path     : String)
+   is
+      package Textures renames GL.Objects.Textures;
+      package Pointers is new Textures.Texture_Pointers (Byte_Pointers);
+
+      Format    : constant GL.Pixels.Format    := GL.Pixels.RGBA;
+      Data_Type : constant GL.Pixels.Data_Type := GL.Pixels.Float;
+      --  FIXME Determine format and type using ARB_internalformat_query2
+
+      use Ada.Streams;
+      use GL.Low_Level.Enums;
+      use type GL.Types.Size;
+
+      Compressed : constant Boolean := Texture.Compressed (0);
+
+      Header : Orka.KTX.Header (Compressed);
+
+      function Convert
+        (Bytes : in out GL.Types.UByte_Array_Access) return Byte_Array_Access
+      is
+         Result : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
+
+         procedure Free is new Ada.Unchecked_Deallocation
+           (Object => GL.Types.UByte_Array, Name => GL.Types.UByte_Array_Access);
+      begin
+         for Index in Bytes'Range loop
+            declare
+               Target_Index : constant Stream_Element_Offset
+                 := Stream_Element_Offset (Index - Bytes'First + 1);
+            begin
+               Result (Target_Index) := Stream_Element (Bytes (Index));
+            end;
+         end loop;
+         Free (Bytes);
+         return Result;
+      end Convert;
+
+      function Convert
+        (Bytes : in out Pointers.Element_Array_Access) return Byte_Array_Access
+      is
+         Result : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
+      begin
+         Result.all := Bytes.all;
+         Pointers.Free (Bytes);
+         return Result;
+      end Convert;
+
+      function Get_Data (Level : Textures.Mipmap_Level) return Byte_Array_Access is
+         Data : Pointers.Element_Array_Access;
+      begin
+         case Texture.Kind is
+            when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array | Texture_Cube_Map =>
+               Data := Pointers.Get_Data (Textures.Texture_3D (Texture), Level, 0, 0, 0,
+                 Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
+                 Format, Data_Type);
+            when Texture_2D | Texture_1D_Array =>
+               Data := Pointers.Get_Data (Textures.Texture_2D (Texture), Level, 0, 0,
+                 Texture.Width (Level), Texture.Height (Level),
+                 Format, Data_Type);
+            when Texture_1D =>
+               Data := Pointers.Get_Data (Textures.Texture_1D (Texture), Level, 0,
+                 Texture.Width (Level),
+                 Format, Data_Type);
+            when others =>
+               raise Program_Error;
+         end case;
+         return Convert (Data);
+      end Get_Data;
+
+      function Get_Compressed_Data (Level : Textures.Mipmap_Level) return Byte_Array_Access is
+         Data : GL.Types.UByte_Array_Access;
+      begin
+         case Texture.Kind is
+            when Texture_3D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array =>
+               Data := Textures.Get_Compressed_Data
+                 (Textures.Texture_3D (Texture), Level, 0, 0, 0,
+                  Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
+                  Texture.Compressed_Format (0));
+            when Texture_2D | Texture_1D_Array =>
+               Data := Textures.Get_Compressed_Data
+                 (Textures.Texture_2D (Texture), Level, 0, 0,
+                  Texture.Width (Level), Texture.Height (Level), Texture.Compressed_Format (0));
+            when others =>
+               raise Program_Error;
+         end case;
+         return Convert (Data);
+      end Get_Compressed_Data;
+   begin
+      Header.Kind := Texture.Kind;
+
+      Header.Width := Texture.Width (0);
+      case Texture.Kind is
+         when Texture_3D =>
+            Header.Height := Texture.Height (0);
+            Header.Depth  := Texture.Depth (0);
+         when Texture_2D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array =>
+            Header.Height := Texture.Height (0);
+            Header.Depth  := 0;
+         when Texture_1D | Texture_1D_Array =>
+            Header.Height := 0;
+            Header.Depth  := 0;
+         when others =>
+            raise Program_Error;
+      end case;
+
+      case Texture.Kind is
+         when Texture_1D_Array =>
+            Header.Array_Elements := Texture.Height (0);
+         when Texture_2D_Array =>
+            Header.Array_Elements := Texture.Depth (0);
+         when Texture_Cube_Map_Array =>
+            Header.Array_Elements := Texture.Depth (0) / 6;
+         when Texture_1D | Texture_2D | Texture_3D | Texture_Cube_Map =>
+            Header.Array_Elements := 0;
+         when others =>
+            raise Program_Error;
+      end case;
+
+      Header.Mipmap_Levels   := 1;
+      Header.Bytes_Key_Value := 0;
+
+      if Compressed then
+         Header.Compressed_Format := Texture.Compressed_Format (0);
+      else
+         Header.Internal_Format := Texture.Internal_Format (0);
+         Header.Format    := Format;
+         Header.Data_Type := Data_Type;
+      end if;
+
+      declare
+         Data : Byte_Array_Access
+           := (if Compressed then Get_Compressed_Data (0) else Get_Data (0));
+
+         Bytes : Byte_Array_Access := Orka.KTX.Create_KTX_Bytes (Header, Data);
+      begin
+         Location.Write_Data (Path, Bytes);
+         Free_Byte_Array (Data);
+         Free_Byte_Array (Bytes);
+      end;
+   end Write_Texture;
 
 end Orka.Resources.Textures.KTX;

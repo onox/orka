@@ -12,14 +12,22 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Objects.Textures;
+
 with Orka.Jobs;
 
 with Orka.Resources.Loaders;
+with Orka.Resources.Locations;
 with Orka.Resources.Managers;
 
 package Orka.Resources.Textures.KTX is
 
    function Create_Loader
      (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
+
+   procedure Write_Texture
+     (Texture  : GL.Objects.Textures.Texture_Base'Class;
+      Location : Locations.Writable_Location_Ptr;
+      Path     : String);
 
 end Orka.Resources.Textures.KTX;

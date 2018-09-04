@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Pointers;
+
 with Ada.Streams;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
@@ -35,5 +37,9 @@ package Orka.Resources is
    Resource_Load_Error : exception;
 
    package SU renames Ada.Strings.Unbounded;
+
+   package Byte_Pointers is new Interfaces.C.Pointers
+     (Ada.Streams.Stream_Element_Offset, Ada.Streams.Stream_Element,
+      Byte_Array, Ada.Streams.Stream_Element'Last);
 
 end Orka.Resources;

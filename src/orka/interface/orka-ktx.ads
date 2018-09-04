@@ -86,4 +86,8 @@ private package Orka.KTX is
 
    Invalid_Enum_Error : exception;
 
+   function Create_KTX_Bytes
+     (KTX_Header : Header;
+      Data       : Resources.Byte_Array_Access) return Resources.Byte_Array_Access;
+
 end Orka.KTX;

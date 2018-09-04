@@ -19,6 +19,8 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Maps;
 with Ada.Unchecked_Conversion;
 
+with GL.Pixels.Extensions;
+
 with Orka.Resources;
 
 package body Orka.KTX is
@@ -252,5 +254,87 @@ package body Orka.KTX is
      (Bytes  : Resources.Byte_Array_Access;
       Bytes_Key_Value : GL.Types.Size) return Stream_Element_Offset
    is (Bytes'First + Identifier'Length + Header_Array'Length + Stream_Element_Offset (Bytes_Key_Value));
+
+   function Create_KTX_Bytes
+     (KTX_Header : Header;
+      Data       : Resources.Byte_Array_Access) return Resources.Byte_Array_Access
+   is
+      pragma Assert (KTX_Header.Mipmap_Levels = 1);
+      --  TODO Data is 1 pointer to a Byte_Array, so only supporting 1 mipmap
+      --  level at the moment
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Internal_Header, Target => Header_Array);
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => ICE.Unsigned_32, Target => Four_Bytes_Array);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => GL.Pixels.Data_Type,         Target => ICE.Unsigned_32);
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => GL.Pixels.Format,            Target => ICE.Unsigned_32);
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => GL.Pixels.Internal_Format,   Target => ICE.Unsigned_32);
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => GL.Pixels.Compressed_Format, Target => ICE.Unsigned_32);
+
+      package PE renames GL.Pixels.Extensions;
+      use type ICE.Unsigned_32;
+
+      Compressed : Boolean renames KTX_Header.Compressed;
+
+      pragma Assert (if not Compressed then Data'Length mod 4 = 0);
+      --  Data must be a multiple of 4 bytes because of the requirement
+      --  of GL.Pixels.Unpack_Alignment = Words (= 4)
+      --  Note: assertion is not precise because length of a row might
+      --  not be a multiple of 4 bytes
+      --  Note: Cube padding and mipmap padding can be assumed to be 0
+
+      Type_Size : constant GL.Types.Size
+        := (if Compressed then 1 else PE.Bytes (KTX_Header.Data_Type));
+
+      Faces : constant ICE.Unsigned_32
+        := (if KTX_Header.Kind in Texture_Cube_Map | Texture_Cube_Map_Array then 6 else 1);
+
+      File_Header : constant Internal_Header
+        := (Endianness           => Endianness_Reference,
+            Data_Type            => (if Compressed then 0 else Convert (KTX_Header.Data_Type)),
+            Type_Size            => ICE.Unsigned_32 (if Compressed then 1 else Type_Size),
+            Format               => (if Compressed then 0 else Convert (KTX_Header.Format)),
+            Internal_Format      =>
+              (if Compressed then
+                 Convert (KTX_Header.Compressed_Format)
+               else
+                 Convert (KTX_Header.Internal_Format)),
+            Base_Internal_Format =>
+              (if Compressed then
+                 Convert (KTX_Header.Compressed_Format)
+               else
+                 Convert (KTX_Header.Format)),
+            Width                => ICE.Unsigned_32 (KTX_Header.Width),
+            Height               => ICE.Unsigned_32 (KTX_Header.Height),
+            Depth                => ICE.Unsigned_32 (if Faces = 6 then 0 else KTX_Header.Depth),
+            Array_Elements       => ICE.Unsigned_32 (KTX_Header.Array_Elements),
+            Faces                => Faces,
+            Mipmap_Levels        => ICE.Unsigned_32 (KTX_Header.Mipmap_Levels),
+            Bytes_Key_Value_Data => 0);
+      --  TODO Support key value map?
+
+      Result : constant Resources.Byte_Array_Access := new Resources.Byte_Array
+        (1 .. Identifier'Length + Header_Array'Length + 4 + Data'Length);
+      --  TODO Supports just 1 level at the moment
+
+      Image_Size : constant ICE.Unsigned_32
+        := (if KTX_Header.Kind = Texture_Cube_Map then Data'Length / 6 else Data'Length);
+
+      Header_Offset : constant Stream_Element_Offset := Result'First + Identifier'Length;
+      Size_Offset   : constant Stream_Element_Offset := Header_Offset + Header_Array'Length;
+      Data_Offset   : constant Stream_Element_Offset := Size_Offset + 4;
+   begin
+      Result (Result'First .. Header_Offset - 1) := Identifier;
+      Result (Header_Offset .. Size_Offset - 1)  := Stream_Element_Array (Convert (File_Header));
+      Result (Size_Offset .. Data_Offset - 1)    := Stream_Element_Array (Convert (Image_Size));
+      Result (Data_Offset .. Result'Last)        := Data.all;
+      return Result;
+   end Create_KTX_Bytes;
 
 end Orka.KTX;
