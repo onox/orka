@@ -63,7 +63,7 @@ package body Orka.Resources.Locations.Directories is
       end return;
    end Create_File;
 
-   procedure Write_Data (Object : in out Byte_Array_File'Class; Data : Byte_Array_Access) is
+   procedure Write_Data (Object : in out Byte_Array_File; Data : Byte_Array_Access) is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Data'Length;
 
@@ -108,8 +108,9 @@ package body Orka.Resources.Locations.Directories is
       end;
    end Read_Data;
 
+   overriding
    procedure Write_Data
-     (Object : Directory_Location;
+     (Object : Writable_Directory_Location;
       Path   : String;
       Data   : Byte_Array_Access)
    is
@@ -143,6 +144,26 @@ package body Orka.Resources.Locations.Directories is
       end if;
 
       return new Directory_Location'(Full_Path => SU.To_Unbounded_String (Full_Path));
+   end Create_Location;
+
+   function Create_Location (Path : String) return Writable_Location_Ptr is
+      use Ada.Directories;
+
+      Full_Path : constant String := Full_Name (Path);
+   begin
+      if not Exists (Full_Path) then
+         raise Name_Error with "Directory '" & Full_Path & "' not found";
+      end if;
+
+      if Kind (Full_Path) /= Directory then
+         raise Name_Error with "Path '" & Full_Path & "' is not a directory";
+      end if;
+
+      --  The pointer is stored in a variable to make the compiler happy
+      return Result : constant Writable_Location_Ptr
+        := new Writable_Directory_Location'(Full_Path => SU.To_Unbounded_String (Full_Path)) do
+         null;
+      end return;
    end Create_Location;
 
 end Orka.Resources.Locations.Directories;

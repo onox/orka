@@ -31,9 +31,22 @@ package Orka.Resources.Locations is
    --  If the file at the given path could not be read for any reason
    --  then any kind of error is raised.
 
+   type Writable_Location is limited interface and Location;
+
+   procedure Write_Data
+     (Object : Writable_Location;
+      Path   : String;
+      Data   : Byte_Array_Access) is abstract;
+   --  Write data to a non-existing file at the given path in the location
+   --
+   --  If the file at the given path could not be created or written to
+   --  for any reason then any kind of error is raised.
+
    type Location_Access is access Location'Class;
 
    subtype Location_Ptr is not null Location_Access;
+
+   type Writable_Location_Ptr is not null access Writable_Location'Class;
 
    Name_Error : exception renames Ada.IO_Exceptions.Name_Error;
 

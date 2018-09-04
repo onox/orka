@@ -27,22 +27,26 @@ package Orka.Resources.Locations.Directories is
      (Object : Directory_Location;
       Path   : String) return not null Byte_Array_Access;
 
+   type Writable_Directory_Location is limited new Writable_Location with private;
+
+   overriding
    procedure Write_Data
-     (Object : Directory_Location;
+     (Object : Writable_Directory_Location;
       Path   : String;
       Data   : Byte_Array_Access);
-   --  Write data to a non-existing file at the given path in the location
-   --
-   --  If the file at the given path could not be created or written to
-   --  for any reason then any kind of error is raised.
 
    function Create_Location (Path : String) return Location_Ptr;
+
+   function Create_Location (Path : String) return Writable_Location_Ptr;
 
 private
 
    type Directory_Location is limited new Location with record
       Full_Path : SU.Unbounded_String;
    end record;
+
+   type Writable_Directory_Location is limited
+     new Directory_Location and Writable_Location with null record;
 
    type Byte_Array_File is limited new Ada.Finalization.Limited_Controlled with record
       File : Ada.Streams.Stream_IO.File_Type;
@@ -51,7 +55,5 @@ private
 
    overriding
    procedure Finalize (Object : in out Byte_Array_File);
-
-   function Read_File (Object : in out Byte_Array_File) return Byte_Array_Access;
 
 end Orka.Resources.Locations.Directories;
