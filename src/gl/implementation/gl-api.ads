@@ -310,12 +310,14 @@ private package GL.API is
    procedure Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
      ("glPolygonOffsetClamp", Single, Single, Single);
 
+   --  TODO glPointSize, glSampleCoverage, glSampleMaski, glPointParameter{if}[v]
+
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --
    -----------------------------------------------------------------------------
 
    procedure Min_Sample_Shading is new Loader.Procedure_With_1_Param
-     ("glMinSampleShadingARB", Single);
+     ("glMinSampleShading", Single);
 
    -----------------------------------------------------------------------------
    --                                 Buffers                                 --
