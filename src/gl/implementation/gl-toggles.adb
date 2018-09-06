@@ -15,31 +15,65 @@
 with GL.API;
 
 package body GL.Toggles is
+
    procedure Enable (Subject : Toggle) is
    begin
       API.Enable (Subject);
+      Raise_Exception_On_OpenGL_Error;
    end Enable;
    
    procedure Disable (Subject : Toggle) is
    begin
       API.Disable (Subject);
+      Raise_Exception_On_OpenGL_Error;
    end Disable;
    
    procedure Set (Subject : Toggle; Value : Toggle_State) is
    begin
-      if Value = Disabled then
-         API.Disable (Subject);
-      else
+      if Value = Enabled then
          API.Enable (Subject);
+      else
+         API.Disable (Subject);
       end if;
+      Raise_Exception_On_OpenGL_Error;
    end Set;
    
    function State (Subject : Toggle) return Toggle_State is
+      Result : Toggle_State;
    begin
-      if API.Is_Enabled (Subject) then
-         return Enabled;
-      else
-         return Disabled;
-      end if;
+      Result := (if API.Is_Enabled (Subject) then Enabled else Disabled);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
    end State;
+
+   procedure Enable  (Subject : Toggle_Indexed; Index : Types.UInt) is
+   begin
+      API.Enable_I (Subject, Index);
+      Raise_Exception_On_OpenGL_Error;
+   end Enable;
+
+   procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt) is
+   begin
+      API.Disable_I (Subject, Index);
+      Raise_Exception_On_OpenGL_Error;
+   end Disable;
+
+   procedure Set (Subject : Toggle_Indexed; Index : Types.UInt; Value : Toggle_State) is
+   begin
+      if Value = Enabled then
+         API.Enable_I (Subject, Index);
+      else
+         API.Disable_I (Subject, Index);
+      end if;
+      Raise_Exception_On_OpenGL_Error;
+   end Set;
+
+   function State (Subject : Toggle_Indexed; Index : Types.UInt) return Toggle_State is
+      Result : Toggle_State;
+   begin
+      Result := (if API.Is_Enabled_I (Subject, Index) then Enabled else Disabled);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end State;
+
 end GL.Toggles;

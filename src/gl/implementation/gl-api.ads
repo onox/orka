@@ -168,6 +168,15 @@ private package GL.API is
    function Is_Enabled is new Loader.Function_With_1_Param
      ("glIsEnabled", Toggles.Toggle, Low_Level.Bool);
 
+   procedure Enable_I is new Loader.Procedure_With_2_Params
+     ("glEnablei", Toggles.Toggle_Indexed, UInt);
+
+   procedure Disable_I is new Loader.Procedure_With_2_Params
+     ("glDisablei", Toggles.Toggle_Indexed, UInt);
+
+   function Is_Enabled_I is new Loader.Function_With_2_Params
+     ("glIsEnabledi", Toggles.Toggle_Indexed, UInt, Low_Level.Bool);
+
    -----------------------------------------------------------------------------
    --                                 Clipping                                --
    -----------------------------------------------------------------------------

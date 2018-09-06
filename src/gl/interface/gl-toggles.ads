@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 private with GL.Low_Level;
+with GL.Types;
 
 package GL.Toggles is
    pragma Preelaborate;
@@ -21,20 +22,32 @@ package GL.Toggles is
 
    type Toggle is (Line_Smooth, Polygon_Smooth, Cull_Face, Depth_Test,
                    Stencil_Test, Dither, Blend, Color_Logic_Op, Scissor_Test,
-                   Texture_1D, Texture_2D, Polygon_Offset_Point, Polygon_Offset_Line,
-                   Clip_Plane_0, Clip_Plane_1, Clip_Plane_2, Clip_Plane_3,
-                   Clip_Plane_4, Clip_Plane_5,
-                   Polygon_Offset_Fill, Texture_3D, Multisample,
+                   Polygon_Offset_Point, Polygon_Offset_Line,
+                   Clip_Distance_0, Clip_Distance_1, Clip_Distance_2, Clip_Distance_3,
+                   Clip_Distance_4, Clip_Distance_5, Clip_Distance_6, Clip_Distance_7,
+                   Polygon_Offset_Fill, Multisample,
                    Sample_Alpha_To_Coverage, Sample_Alpha_To_One, Sample_Coverage,
                    Debug_Output_Synchronous,
-                   Texture_Cube_Map, Vertex_Program_Point_Size, Depth_Clamp,
+                   Program_Point_Size, Depth_Clamp,
                    Texture_Cube_Map_Seamless, Sample_Shading,
-                   Rasterizer_Discard, Debug_Output);
+                   Rasterizer_Discard, Primitive_Restart_Fixed_Index,
+                   Framebuffer_SRGB, Sample_Mask, Primitive_Restart,
+                   Debug_Output);
 
-   procedure Enable (Subject : Toggle);
+   procedure Enable  (Subject : Toggle);
    procedure Disable (Subject : Toggle);
+
    procedure Set (Subject : Toggle; Value : Toggle_State);
    function State (Subject : Toggle) return Toggle_State;
+
+   subtype Toggle_Indexed is Toggle
+     with Static_Predicate => Toggle_Indexed in Scissor_Test | Blend;
+
+   procedure Enable  (Subject : Toggle_Indexed; Index : Types.UInt);
+   procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt);
+
+   procedure Set (Subject : Toggle_Indexed; Index : Types.UInt; Value : Toggle_State);
+   function State (Subject : Toggle_Indexed; Index : Types.UInt) return Toggle_State;
 
 private
 
@@ -47,29 +60,31 @@ private
                    Blend                     => 16#0BE2#,
                    Color_Logic_Op            => 16#0BF2#,
                    Scissor_Test              => 16#0C11#,
-                   Texture_1D                => 16#0DE0#,
-                   Texture_2D                => 16#0DE1#,
                    Polygon_Offset_Point      => 16#2A01#,
                    Polygon_Offset_Line       => 16#2A02#,
-                   Clip_Plane_0              => 16#3000#,
-                   Clip_Plane_1              => 16#3001#,
-                   Clip_Plane_2              => 16#3002#,
-                   Clip_Plane_3              => 16#3003#,
-                   Clip_Plane_4              => 16#3004#,
-                   Clip_Plane_5              => 16#3005#,
+                   Clip_Distance_0           => 16#3000#,
+                   Clip_Distance_1           => 16#3001#,
+                   Clip_Distance_2           => 16#3002#,
+                   Clip_Distance_3           => 16#3003#,
+                   Clip_Distance_4           => 16#3004#,
+                   Clip_Distance_5           => 16#3005#,
+                   Clip_Distance_6           => 16#3006#,
+                   Clip_Distance_7           => 16#3007#,
                    Polygon_Offset_Fill       => 16#8037#,
-                   Texture_3D                => 16#806F#,
                    Multisample               => 16#809D#,
                    Sample_Alpha_To_Coverage  => 16#809E#,
                    Sample_Alpha_To_One       => 16#809F#,
                    Sample_Coverage           => 16#80A0#,
                    Debug_Output_Synchronous  => 16#8242#,
-                   Texture_Cube_Map          => 16#8513#,
-                   Vertex_Program_Point_Size => 16#8642#,
+                   Program_Point_Size        => 16#8642#,
                    Depth_Clamp               => 16#864F#,
                    Texture_Cube_Map_Seamless => 16#884F#,
                    Sample_Shading            => 16#8C36#,
                    Rasterizer_Discard        => 16#8C89#,
+                   Primitive_Restart_Fixed_Index => 16#8D69#,
+                   Framebuffer_SRGB          => 16#8DB9#,
+                   Sample_Mask               => 16#8E51#,
+                   Primitive_Restart         => 16#8F9D#,
                    Debug_Output              => 16#92E0#);
    for Toggle'Size use Low_Level.Enum'Size;
 
