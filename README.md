@@ -35,7 +35,7 @@ Features
  * Game loop
  * Camera's
  * [glTF 2.0][url-gltf] loader (uses MDI)
- * [KTX][url-ktx] loader
+ * [KTX][url-ktx] loader and writer
 
 Build status
 ------------
@@ -57,13 +57,13 @@ In order to build Orka you need to have:
 
  * [json-ada][url-json-ada]
 
- * OpenGL 3.2 core profile and the following extensions:
+ * OpenGL 4.0 core profile and the following extensions:
 
     | Extension                          | OpenGL | Reason      |
     |------------------------------------|--------|-------------|
     | ARB\_shader\_draw\_parameters      | 4.6    | glTF        |
     | ARB\_direct\_state\_access         | 4.5    |             |
-    | ARB\_clip\_control                 | 4.5    |             |
+    | ARB\_clip\_control                 | 4.5    | Reversed Z  |
     | ARB\_buffer\_storage               | 4.4    |             |
     | KHR\_debug                         | 4.3    | Debugging   |
     | ARB\_multi\_draw\_indirect         | 4.3    | glTF        |
@@ -121,8 +121,8 @@ Compile and install [json-ada][url-json-ada].
 Compilation
 -----------
 
-A Makefile is provided to build the source code and examples. Use `make` to build
-the source code:
+A Makefile is provided to build the source code, examples, and tools.
+Use `make` to build the source code:
 
 ```sh
 $ MODE=release make
@@ -149,6 +149,20 @@ debugging symbols, use the `debug` mode. See the following table:
 | Assertions        | No      | Yes         | Yes   |
 | OpenGL exceptions | No      | Yes         | Yes   |
 | Debugging symbols | No      | No          | Yes   |
+
+Tools
+-----
+
+The project provides tools to view glTF models, KTX textures, and to
+display the OpenGL version and list the available extensions.
+
+```sh
+$ make tools
+```
+
+You can execute them in the `bin` directory. Some tools load shader
+files from the source directory by using relative paths, so they only work
+with `bin` as the current directory.
 
 Examples
 --------
