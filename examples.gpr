@@ -12,7 +12,6 @@ project Examples is
      "examples/gl" & "examples/orka" & "examples/glfw";
 
    OpenGL_Examples := (
-      "gl_test-context",
       "gl_test-opengl3",
       "gl_test-vbo",
       "gl_test-instancing",

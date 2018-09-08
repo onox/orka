@@ -18,12 +18,16 @@ with Ada.Text_IO;
 with GL.Context;
 with GL.Types;
 
-with GL_Test.Display_Backend;
+with Orka.Windows.GLFW;
 
-procedure GL_Test.Context is
-   Initialized : constant Boolean := Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 500, Height => 500, Visible => False);
+procedure Orka_Info is
+   Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2);
    pragma Unreferenced (Initialized);
+
+   W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+     (1, 1, Visible => False);
+   pragma Unreferenced (W);
 
    use Ada.Text_IO;
 
@@ -71,10 +75,7 @@ procedure GL_Test.Context is
             Put_Line ("OpenGL version too old for querying supported versions");
       end;
    end Display_Context_Information;
-
 begin
    Put_Line ("Getting information with requested OpenGL version 3.2:");
    Display_Context_Information;
-
-   Display_Backend.Shutdown;
-end GL_Test.Context;
+end Orka_Info;
