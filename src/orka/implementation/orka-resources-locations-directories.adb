@@ -37,7 +37,7 @@ package body Orka.Resources.Locations.Directories is
       end if;
    end Finalize;
 
-   function Read_File (Object : in out Byte_Array_File) return Byte_Array_Access is
+   function Read_File (Object : Byte_Array_File) return Byte_Array_Access is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Integer (Stream_IO.Size (Object.File));
 
@@ -63,7 +63,7 @@ package body Orka.Resources.Locations.Directories is
       end return;
    end Create_File;
 
-   procedure Write_Data (Object : in out Byte_Array_File; Data : Byte_Array_Access) is
+   procedure Write_Data (Object : Byte_Array_File; Data : Byte_Array_Access) is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Data'Length;
 
@@ -102,7 +102,7 @@ package body Orka.Resources.Locations.Directories is
       end if;
 
       declare
-         File : constant Byte_Array_File'Class := Open_File (Full_Path);
+         File : constant Byte_Array_File := Open_File (Full_Path);
       begin
          return File.Read_File;
       end;
@@ -124,7 +124,7 @@ package body Orka.Resources.Locations.Directories is
       end if;
 
       declare
-         File : constant Byte_Array_File'Class := Create_File (Full_Path);
+         File : constant Byte_Array_File := Create_File (Full_Path);
       begin
          File.Write_Data (Data);
       end;
