@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with System;
+with System.Multiprocessors.Dispatching_Domains;
 
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
@@ -218,6 +218,8 @@ package body Orka.Loops is
                Ada.Text_IO.Put_Line ("Exception game loop: " & Exception_Information (Error));
          end Simulation;
       begin
+         System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
+
          --  Execute GPU jobs in the current task
          Job_Manager.Executors.Execute_Jobs
            ("Renderer", Job_Manager.Queues.GPU, Job_Manager.Queue'Access);

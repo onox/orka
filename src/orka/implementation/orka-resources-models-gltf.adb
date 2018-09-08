@@ -551,7 +551,7 @@ package body Orka.Resources.Models.glTF is
 
       Path : String renames SU.To_String (Object.Path);
    begin
-      --  TODO Deallocate any strings allocated in Orka.glTF.*
+      --  TODO Deallocate any byte arrays allocated in Orka.glTF.Buffers
       if Default_Scene.Nodes.Is_Empty then
          raise Model_Load_Error with "glTF file '" & Path & "' has an empty scene";
       end if;
@@ -601,8 +601,6 @@ package body Orka.Resources.Models.glTF is
             --  TODO Free Scene_Data
             raise Model_Load_Error with "glTF file '" & Path & "' has no mesh parts";
          end if;
-
---         Scene_Data.Bounds := Bounds_List (Object.Data.Accessors, Object.Data.Meshes);
 
          Object.Data.Times.Scene := Clock - Start_Time;
 

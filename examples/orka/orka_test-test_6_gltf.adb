@@ -12,8 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with System.Multiprocessors.Dispatching_Domains;
-
 with Ada.Command_Line;
 with Ada.Real_Time;
 with Ada.Text_IO;
@@ -42,19 +40,22 @@ with Orka.Rendering.Vertex_Formats.Formats;
 with Orka.Resources.Loaders;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Managers;
-with Orka.Resources.Models;
+with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
+with Orka.Types;
 with Orka.Windows.GLFW;
 
 with Orka_Test.Package_6_glTF;
 
-with Orka.Resources.Models.glTF;
-
 procedure Orka_Test.Test_6_GLTF is
    Width   : constant := 1280;
    Height  : constant := 720;
-   Samples : constant := 1;
-   Effect  : constant := 2;
+   Samples : constant := 2;
+
+   use type GL.Types.Single;
+   Light_Position : constant Orka.Types.Singles.Vector4 := (0.0, 0.0, 0.0, 1.0);
+
+   ----------------------------------------------------------------------
 
    Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
      := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
@@ -65,6 +66,8 @@ procedure Orka_Test.Test_6_GLTF is
    W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unchecked_Access);
 
    Context : Orka.Contexts.Context;
+
+   ----------------------------------------------------------------------
 
    use GL.Objects.Textures;
 
@@ -120,25 +123,9 @@ procedure Orka_Test.Test_6_GLTF is
 
       --  Load texture data
       Texture.Allocate_Storage (1, GL.Pixels.RGBA8, 4, 4, 7);
-      Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 7, GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
+      Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 7,
+        GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
-
-   --  Textures for post-processing
-   Color_Texture, Depth_Texture : Texture_2D (GL.Low_Level.Enums.Texture_2D);
-
-   procedure Load_Post_Processing_Textures is
-   begin
-      Color_Texture.Allocate_Storage (1, GL.Pixels.RGBA8, Width, Height);
-      Depth_Texture.Allocate_Storage (1, GL.Pixels.Depth32F_Stencil8, Width, Height);
-
-      Depth_Texture.Set_X_Wrapping (Clamp_To_Edge);
-      Depth_Texture.Set_Y_Wrapping (Clamp_To_Edge);
-
-      Depth_Texture.Set_Minifying_Filter (Nearest_Mipmap_Nearest);
-      Depth_Texture.Set_Magnifying_Filter (Nearest);
-
-      Depth_Texture.Toggle_Compare_X_To_Texture (False);
-   end Load_Post_Processing_Textures;
 
    package Boss   renames Orka_Test.Package_6_glTF.Boss;
    package Loader renames Orka_Test.Package_6_glTF.Loader;
@@ -152,9 +139,11 @@ begin
       return;
    end if;
 
-   System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
-
-   Ada.Text_IO.Put_Line ("Flushing" & GL.Types.Size'Image (GL.Debug.Logs.Logged_Messages) & " messages in the debug log:");
+   declare
+      Messages : constant GL.Types.Size := GL.Debug.Logs.Logged_Messages;
+   begin
+      Ada.Text_IO.Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
+   end;
    Orka.Debug.Flush_Log;
 
    Orka.Debug.Enable_Print_Callback;
@@ -167,8 +156,7 @@ begin
    end if;
 
    GL.Toggles.Enable (GL.Toggles.Cull_Face);
-
-   Load_Post_Processing_Textures;
+   GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
    declare
       Location_Path : constant String := Ada.Command_Line.Argument (1);
@@ -189,41 +177,33 @@ begin
       Uni_View  : constant Uniforms.Uniform := P_1.Uniform ("view");
       Uni_Proj  : constant Uniforms.Uniform := P_1.Uniform ("proj");
 
+      Uni_Light : constant Uniforms.Uniform := P_1.Uniform ("lightPosition");
+
       Uni_WT  : aliased Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("matrixBuffer");
       Uni_IO  : aliased Uniforms.Uniform := P_1.Uniform ("indexOffset");
-
-      ----------------------------------------------------------------------
-
-      P_2 : Program := Create_Program (Modules.Create_Module
-       (VS => "../examples/orka/shaders/test-8-module-1.vert",
-        FS => "../examples/orka/shaders/test-6-module-2.frag"));
-
-      VF_2 : constant Formats.Vertex_Format
-        := Formats.Create_Vertex_Format (GL.Types.Triangles, GL.Types.UInt_Type);
-
-      Uni_CT     : constant Uniforms.Uniform_Sampler := P_2.Uniform_Sampler ("colorTexture");
-      Uni_Effect : constant Uniforms.Uniform := P_2.Uniform ("effect");
 
       ----------------------------------------------------------------------
 
       Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("diffuseTexture");
       Uni_Dither  : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("ditherTexture");
 
-      FB_1 : constant Framebuffer_Ptr
-        := new Framebuffer'(Create_Framebuffer (Width, Height, Samples, Context));
-      FB_2 : constant Framebuffer_Ptr
-        := new Framebuffer'(Create_Framebuffer (Width, Height, Color_Texture, Depth_Texture));
-      FB_D : constant Framebuffer_Ptr
-        := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
-
       Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
       Texture_2 : constant Texture_2D := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
+
+      ----------------------------------------------------------------------
+
+      FB_1 : constant Framebuffer_Ptr
+        := new Framebuffer'(Create_Framebuffer (Width, Height, Samples, Context));
+      FB_D : constant Framebuffer_Ptr
+        := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
 
       use Orka.Cameras;
       Lens : constant Lens_Ptr
         := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
       Current_Camera : constant Camera_Ptr
         := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
+
+      ----------------------------------------------------------------------
 
       task Resource_Test;
 
@@ -240,7 +220,7 @@ begin
            := Locations.Directories.Create_Location (Location_Path);
       begin
          Loader.Add_Location (Location_Models, Loader_glTF);
-         Ada.Text_IO.Put_Line ("Registered resource locations");
+         Ada.Text_IO.Put_Line ("Registered location for glTF models");
 
          declare
             T1 : constant Time := Clock;
@@ -289,7 +269,7 @@ begin
             Ada.Text_IO.Put_Line ("Error loading resource: " & Exception_Information (Error));
       end Resource_Test;
    begin
-      --  Load checkerboard texture
+      --  Load checkerboard texture array
       Load_Texture (Texture_1);
       Uni_Texture.Set_Texture (Texture_1, 1);
 
@@ -298,17 +278,13 @@ begin
 
       Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
-      Uni_CT.Set_Texture (Color_Texture, 0);
-      Uni_Effect.Set_Int (Effect);
+      Uni_Light.Set_Vector (Light_Position);
 
       declare
          procedure Render
            (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
             Camera : Orka.Cameras.Camera_Ptr) is
          begin
-            GL.Buffers.Clear (GL.Buffers.Buffer_Bits'
-              (Color => True, Depth => True, others => False));
-
             Camera.FB.Use_Framebuffer;
             P_1.Use_Program;
 
@@ -323,19 +299,7 @@ begin
             end loop;
 
             --  Resolve the multiple samples in the FBO
-            Camera.FB.Resolve_To (FB_2.all);
-
-            --  Post-processing
-            FB_D.Use_Framebuffer;
-            P_2.Use_Program;
-
-            GL.Toggles.Disable (GL.Toggles.Depth_Test);
-            GL.Buffers.Depth_Mask (False);
-
-            VF_2.Draw (0, 3);
-
-            GL.Buffers.Depth_Mask (True);
-            GL.Toggles.Enable (GL.Toggles.Depth_Test);
+            Camera.FB.Resolve_To (FB_D.all);
          end Render;
 
          package Loops is new Orka.Loops

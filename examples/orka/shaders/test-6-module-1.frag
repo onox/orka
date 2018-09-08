@@ -38,8 +38,8 @@ const Light light = {
 };
 
 const Material material = {
-    0.0,
-    0.5,
+    0.2,
+    0.7,
 };
 
 const vec3 dielectricSpecular = vec3(0.04, 0.04, 0.04);
@@ -111,13 +111,13 @@ vec3 specular(in vec3 n, in vec3 l, in vec3 v, in vec4 baseColor)
 }
 
 // Inverse square falloff
-vec3 falloff(in float distance, in float lightRadius)
+float falloff(in float distance, in float lightRadius)
 {
     // saturate(1 - (distance / lightRadius)^4)^2
     // ------------------------------------------
     //              distance^2 + 1
     const float sat = clamp(1.0 - pow(distance / lightRadius, 4.0), 0.0, 1.0);
-    return vec3((sat * sat) / (distance * distance + 1.0));
+    return (sat * sat) / (distance * distance + 1.0);
 }
 
 void main(void) {
@@ -130,8 +130,8 @@ void main(void) {
     const vec3 fd = diffuse(normal, light_dir, albedo);
     const vec3 fs = specular(normal, light_dir, view_dir, albedo);
 
-    const vec3 fo = light.intensity * falloff(length(fs_in.L), light.radius);
-    out_Color = vec4(fo * light.albedo * (fd + fs), 1.0);
+    const float fo = light.intensity * falloff(length(fs_in.L), light.radius);
+    out_Color = vec4(vec3(fo) * light.albedo * (fd + fs), 1.0);
 
     // Ordered dithering using a 8x8 Bayer pattern
     out_Color.xyz += vec3(texture(ditherTexture, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
