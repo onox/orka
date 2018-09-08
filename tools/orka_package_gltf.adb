@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka_Test.Package_6_glTF is
+package body Orka_Package_glTF is
 
    overriding
    procedure Execute
@@ -22,4 +22,4 @@ package body Orka_Test.Package_6_glTF is
       Add_Resource (Object.Model.Create_Instance ((0.0, 0.0, 0.0, 1.0)));
    end Execute;
 
-end Orka_Test.Package_6_glTF;
+end Orka_Package_glTF;

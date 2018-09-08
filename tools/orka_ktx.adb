@@ -12,8 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with System.Multiprocessors.Dispatching_Domains;
-
 with Ada.Command_Line;
 with Ada.Exceptions;
 with Ada.Real_Time;
@@ -40,9 +38,9 @@ with Orka.Resources.Managers;
 with Orka.Resources.Textures.KTX;
 with Orka.Windows.GLFW;
 
-with Orka_Test.Package_6_glTF;
+with Orka_Package_glTF;
 
-procedure Orka_Test.Test_8_KTX is
+procedure Orka_KTX is
    Width   : constant := 1280;
    Height  : constant := 720;
 
@@ -56,8 +54,8 @@ procedure Orka_Test.Test_8_KTX is
 
    Context : Orka.Contexts.Context;
 
-   package Boss   renames Orka_Test.Package_6_glTF.Boss;
-   package Loader renames Orka_Test.Package_6_glTF.Loader;
+   package Boss   renames Orka_Package_glTF.Boss;
+   package Loader renames Orka_Package_glTF.Loader;
 
    use Ada.Exceptions;
 begin
@@ -68,9 +66,11 @@ begin
       return;
    end if;
 
-   System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
-
-   Ada.Text_IO.Put_Line ("Flushing" & GL.Types.Size'Image (GL.Debug.Logs.Logged_Messages) & " messages in the debug log:");
+   declare
+      Messages : constant GL.Types.Size := GL.Debug.Logs.Logged_Messages;
+   begin
+      Ada.Text_IO.Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
+   end;
    Orka.Debug.Flush_Log;
 
    Orka.Debug.Enable_Print_Callback;
@@ -92,8 +92,8 @@ begin
       use GL.Types;
 
       P_1 : Program := Create_Program (Modules.Create_Module
-        (VS => "../examples/orka/shaders/test-8-module-1.vert",
-         FS => "../examples/orka/shaders/test-8-module-1.frag"));
+        (VS => "../resources/oversized-triangle.vert",
+         FS => "../tools/shaders/ktx.frag"));
 
       Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("colorTexture");
 
@@ -107,6 +107,8 @@ begin
       VF_1 : constant Formats.Vertex_Format
         := Formats.Create_Vertex_Format (GL.Types.Triangles, GL.Types.UInt_Type);
 
+      ----------------------------------------------------------------------
+
       FB_D : constant Framebuffer_Ptr
         := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
 
@@ -117,6 +119,8 @@ begin
         := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
       Current_Camera : constant Camera_Ptr
         := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_D));
+
+      ----------------------------------------------------------------------
 
       task Load_Resource;
 
@@ -223,4 +227,4 @@ begin
 exception
    when Error : others =>
       Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));
-end Orka_Test.Test_8_KTX;
+end Orka_KTX;

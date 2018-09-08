@@ -1,0 +1,29 @@
+with "config";
+with "orka-glfw";
+
+project Tools is
+
+   for Languages use ("ada");
+
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   for Source_Dirs use ("tools");
+
+   Executables := (
+      "orka_gltf",
+      "orka_ktx"
+   );
+
+   for Main use Executables;
+
+   package Ide renames Config.Ide;
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
+   package Builder extends Config.Builder is
+      for Executable ("orka_gltf.adb") use "orka-gltf";
+      for Executable ("orka_ktx.adb") use "orka-ktx";
+   end Builder;
+
+
+end Tools;

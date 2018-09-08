@@ -45,9 +45,9 @@ with Orka.Scenes.Singles.Trees;
 with Orka.Types;
 with Orka.Windows.GLFW;
 
-with Orka_Test.Package_6_glTF;
+with Orka_Package_glTF;
 
-procedure Orka_Test.Test_6_GLTF is
+procedure Orka_GLTF is
    Width   : constant := 1280;
    Height  : constant := 720;
    Samples : constant := 2;
@@ -127,8 +127,8 @@ procedure Orka_Test.Test_6_GLTF is
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   package Boss   renames Orka_Test.Package_6_glTF.Boss;
-   package Loader renames Orka_Test.Package_6_glTF.Loader;
+   package Boss   renames Orka_Package_glTF.Boss;
+   package Loader renames Orka_Package_glTF.Loader;
 
    use Ada.Exceptions;
 begin
@@ -171,8 +171,8 @@ begin
       use Orka.Rendering.Framebuffers;
 
       P_1 : Program := Create_Program (Modules.Create_Module
-        (VS => "../examples/orka/shaders/test-6-module-1.vert",
-         FS => "../examples/orka/shaders/test-6-module-1.frag"));
+        (VS => "../tools/shaders/gltf.vert",
+         FS => "../tools/shaders/gltf.frag"));
 
       Uni_View  : constant Uniforms.Uniform := P_1.Uniform ("view");
       Uni_Proj  : constant Uniforms.Uniform := P_1.Uniform ("proj");
@@ -253,7 +253,7 @@ begin
                   Handle : Orka.Futures.Pointers.Mutable_Pointer;
 
                   Create_Instance_Job : constant Orka.Jobs.Job_Ptr
-                    := new Orka_Test.Package_6_glTF.Create_Instance_Job'
+                    := new Orka_Package_glTF.Create_Instance_Job'
                         (Orka.Jobs.Abstract_Job with Model => Model_1);
                begin
                   Ada.Text_IO.Put_Line ("Adding resource to scene...");
@@ -315,7 +315,7 @@ begin
             Loops.Scene.Add (Object);
          end Add_Behavior;
       begin
-         Orka_Test.Package_6_glTF.Add_Resource := Add_Behavior'Unrestricted_Access;
+         Orka_Package_glTF.Add_Resource := Add_Behavior'Unrestricted_Access;
          Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
          Ada.Text_IO.Put_Line ("Running render loop...");
          Loops.Run_Loop;
@@ -331,4 +331,4 @@ begin
 exception
    when Error : others =>
       Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));
-end Orka_Test.Test_6_GLTF;
+end Orka_GLTF;

@@ -36,6 +36,9 @@ build_src:
 build_examples:
 	$(GPRBUILD) -P examples.gpr -largs $(LDFLAGS)
 
+build_tools:
+	$(GPRBUILD) -P tools.gpr -largs $(LDFLAGS)
+
 build_unit_tests:
 	$(GPRBUILD) -P test/unit/orka/unit_tests.gpr
 
@@ -60,16 +63,21 @@ clean_examples:
 	$(GPRCLEAN) -P examples.gpr
 	rmdir bin
 
+clean_tools:
+	$(GPRCLEAN) -P tools.gpr
+	rmdir bin
+
 all: build
 
 build: build_src
 
 examples: build_examples
 
+tools: build_tools
+
 test: build_unit_tests
 
-clean: clean_examples clean_src clean_unit_tests
-
+clean: clean_examples clean_tools clean_src clean_unit_tests
 
 install:
 	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka' \

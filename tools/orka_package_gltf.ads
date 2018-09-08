@@ -17,7 +17,7 @@ with Orka.Jobs.Boss;
 with Orka.Resources.Loader;
 with Orka.Resources.Models;
 
-package Orka_Test.Package_6_glTF is
+package Orka_Package_glTF is
 
    package Boss is new Orka.Jobs.Boss
      (Maximum_Queued_Jobs     => 50,
@@ -38,4 +38,4 @@ package Orka_Test.Package_6_glTF is
      (Object  : Create_Instance_Job;
       Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
 
-end Orka_Test.Package_6_glTF;
+end Orka_Package_glTF;
