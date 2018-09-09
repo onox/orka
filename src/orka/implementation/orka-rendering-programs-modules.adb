@@ -38,8 +38,45 @@ package body Orka.Rendering.Programs.Modules is
       end if;
    end Load_And_Compile;
 
+   procedure Set_And_Compile
+     (Object : in out Module;
+      Shader_Kind : GL.Objects.Shaders.Shader_Type;
+      Source : String) is
+   begin
+      if Source /= "" then
+         pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
+         declare
+            Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
+         begin
+            Shader.Set_Source (Source);
+
+            Shader.Compile;
+            if not Shader.Compile_Status then
+               raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader.Info_Log;
+            end if;
+
+            Object.Shaders (Shader_Kind).Replace_Element (Shader);
+         end;
+      end if;
+   end Set_And_Compile;
+
+   function Create_Module_From_Sources (VS, TCS, TES, GS, FS : String := "")
+     return Module
+   is
+      use GL.Objects.Shaders;
+   begin
+      return Result : Module do
+         Set_And_Compile (Result, Vertex_Shader, VS);
+         Set_And_Compile (Result, Tess_Control_Shader, TCS);
+         Set_And_Compile (Result, Tess_Evaluation_Shader, TES);
+         Set_And_Compile (Result, Geometry_Shader, GS);
+         Set_And_Compile (Result, Fragment_Shader, FS);
+      end return;
+   end Create_Module_From_Sources;
+
    function Create_Module (VS, TCS, TES, GS, FS : String := "")
-     return Module is
+     return Module
+   is
       use GL.Objects.Shaders;
    begin
       return Result : Module do
