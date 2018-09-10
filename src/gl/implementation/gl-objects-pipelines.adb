@@ -32,6 +32,8 @@ package body GL.Objects.Pipelines is
 
    procedure Bind (Object : Pipeline) is
    begin
+      API.Use_Program (0);
+      Raise_Exception_On_OpenGL_Error;
       API.Bind_Program_Pipeline (Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
    end Bind;
