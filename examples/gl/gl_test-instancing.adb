@@ -14,7 +14,6 @@
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
@@ -68,7 +67,6 @@ procedure GL_Test.Instancing is
                         Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
                         Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       Vertices : constant Single_Array
         := (-0.5,  0.5, -0.5, 0.0, 0.0, 1.0,

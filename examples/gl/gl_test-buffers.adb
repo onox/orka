@@ -16,7 +16,6 @@ with Interfaces.C;
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
@@ -53,7 +52,6 @@ procedure GL_Test.Buffers is
                               Buffer_Cube : GL.Objects.Buffers.Buffer;
                               Program     : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       Vertices : constant Single_Array
             -- Top
@@ -131,7 +129,6 @@ procedure GL_Test.Buffers is
                                Buffer_Quad : GL.Objects.Buffers.Buffer;
                                Program     : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       Vertices : constant Single_Array
         := (-1.0,  1.0, 0.0, 1.0,

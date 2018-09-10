@@ -14,7 +14,6 @@
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Drawing;
 with GL.Files;
 with GL.Buffers;
@@ -82,7 +81,6 @@ procedure GL_Test.Geometry is
                         Buffer_Points : GL.Objects.Buffers.Buffer;
                         Program       : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       Vertices : constant Single_Array
         --  Position        Color           Sides

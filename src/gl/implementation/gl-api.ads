@@ -14,7 +14,6 @@
 
 with GL.Runtime_Loading;
 
-with GL.Attributes;
 with GL.Blending;
 with GL.Buffers;
 with GL.Clipping;
@@ -633,19 +632,19 @@ private package GL.API is
      ("glBindVertexArray", UInt);
 
    procedure Vertex_Array_Attrib_Format is new Loader.Procedure_With_6_Params
-     ("glVertexArrayAttribFormat", UInt, Attributes.Attribute, Component_Count,
+     ("glVertexArrayAttribFormat", UInt, Attribute, Component_Count,
       Numeric_Type, Low_Level.Bool, UInt);
 
    procedure Vertex_Array_AttribI_Format is new Loader.Procedure_With_5_Params
-     ("glVertexArrayAttribIFormat", UInt, Attributes.Attribute, Component_Count,
+     ("glVertexArrayAttribIFormat", UInt, Attribute, Component_Count,
       Numeric_Type, UInt);
 
    procedure Vertex_Array_AttribL_Format is new Loader.Procedure_With_5_Params
-     ("glVertexArrayAttribLFormat", UInt, Attributes.Attribute, Component_Count,
+     ("glVertexArrayAttribLFormat", UInt, Attribute, Component_Count,
       Numeric_Type, UInt);
 
    procedure Vertex_Array_Attrib_Binding is new Loader.Procedure_With_3_Params
-     ("glVertexArrayAttribBinding", UInt, Attributes.Attribute, Objects.Vertex_Arrays.Binding);
+     ("glVertexArrayAttribBinding", UInt, Attribute, Objects.Vertex_Arrays.Binding);
 
    procedure Vertex_Array_Binding_Divisor is new Loader.Procedure_With_3_Params
      ("glVertexArrayBindingDivisor", UInt, Objects.Vertex_Arrays.Binding, UInt);
@@ -657,10 +656,10 @@ private package GL.API is
      ("glVertexArrayElementBuffer", UInt, UInt);
 
    procedure Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
-     ("glEnableVertexArrayAttrib", UInt, Attributes.Attribute);
+     ("glEnableVertexArrayAttrib", UInt, Attribute);
 
    procedure Disable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
-     ("glDisableVertexArrayAttrib", UInt, Attributes.Attribute);
+     ("glDisableVertexArrayAttrib", UInt, Attribute);
 
    -----------------------------------------------------------------------------
    --                           Renderbuffer objects                          --
@@ -861,7 +860,7 @@ private package GL.API is
      ("glGetUniformLocation", UInt, C.char_array, Int);
 
    procedure Bind_Attrib_Location is new Loader.Procedure_With_3_Params
-     ("glBindAttribLocation", UInt, Attributes.Attribute, C.char_array);
+     ("glBindAttribLocation", UInt, Attribute, C.char_array);
 
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);

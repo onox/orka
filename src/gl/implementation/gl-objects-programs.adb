@@ -196,7 +196,7 @@ package body GL.Objects.Programs is
    end Uniform_Type;
 
    procedure Bind_Attrib_Location (Subject : Program;
-                                   Index : Attributes.Attribute;
+                                   Index : Attribute;
                                    Name : String) is
    begin
       API.Bind_Attrib_Location (Subject.Reference.GL_Id, Index,
@@ -205,7 +205,7 @@ package body GL.Objects.Programs is
    end Bind_Attrib_Location;
 
    function Attrib_Location (Subject : Program; Name : String)
-     return Attributes.Attribute is
+     return Attribute is
       Location : constant Int := API.Get_Program_Resource_Location
         (Subject.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
@@ -213,7 +213,7 @@ package body GL.Objects.Programs is
       if Location = -1 then
          raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
       end if;
-      return Attributes.Attribute (Location);
+      return Attribute (Location);
    end Attrib_Location;
 
    function Attribute_Type (Object : Program; Name : String)

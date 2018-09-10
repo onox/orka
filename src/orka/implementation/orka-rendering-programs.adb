@@ -98,7 +98,7 @@ package body Orka.Rendering.Programs is
    end Use_Program;
 
    function Attribute_Location (Object : Program; Name : String)
-      return GL.Attributes.Attribute is
+      return GL.Types.Attribute is
    begin
       return Object.GL_Program.Attrib_Location (Name);
    end Attribute_Location;

@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Attributes;
 with GL.Low_Level.Enums;
 with GL.Objects.Shaders.Lists;
 with GL.Objects.Transform_Feedbacks;
@@ -60,11 +59,11 @@ package GL.Objects.Programs is
      return Low_Level.Enums.Resource_Type;
 
    procedure Bind_Attrib_Location (Subject : Program;
-                                   Index : Attributes.Attribute;
+                                   Index : Attribute;
                                    Name : String);
 
    function Attrib_Location (Subject : Program; Name : String)
-     return Attributes.Attribute;
+     return Attribute;
 
    function Attribute_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type;

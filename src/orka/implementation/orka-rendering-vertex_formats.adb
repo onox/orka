@@ -29,7 +29,7 @@ package body Orka.Rendering.Vertex_Formats is
 
    procedure Add_Attribute
      (Object : in out Attribute_Buffer;
-      Index  : GL.Attributes.Attribute;
+      Index  : GL.Types.Attribute;
       Count  : Component_Count) is
    begin
       Object.Vertex_Array.Enable_Attribute (Index);

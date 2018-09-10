@@ -14,7 +14,6 @@
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
@@ -42,7 +41,6 @@ procedure GL_Test.VBO is
                         Buffer1 : GL.Objects.Buffers.Buffer;
                         Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       Vertices : constant Single_Array
         := (-0.5, -0.5,     1.0, 0.0, 0.0,

@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Objects.Buffers;
 with GL.Types.Colors;
@@ -76,19 +75,32 @@ procedure Orka_Test.Test_2_Two_Triangles is
              0.3, -0.5, -1.0,
              0.8,  0.5, -1.0);
 
+      Color_Triangle : constant Colors.Basic_Color_Array
+        := (1 => (1.0, 0.0, 0.0));
+
       --  Upload vertices data to VBO
       VBO_3 : constant Buffer := Create_Buffer
         (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
+      VBO_4 : constant Buffer := Create_Buffer
+        (GL.Objects.Buffers.Storage_Bits'(others => False), Color_Triangle);
 
       procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
       begin
          Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
          Buffer.Set_Buffer (VBO_3);
       end Add_Vertex_Attributes;
+
+      procedure Add_Instance_Attribute (Buffer : in out Attribute_Buffer) is
+      begin
+         Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
+         Buffer.Set_Buffer (VBO_4);
+         Buffer.Set_Per_Instance (True);
+      end Add_Instance_Attribute;
    begin
       --  Create mesh and its attributes
       return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
+         Result.Add_Attribute_Buffer (Single_Type, Add_Instance_Attribute'Access);
       end return;
    end Load_Mesh_2;
 
@@ -107,7 +119,6 @@ begin
       Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
 
       Triangle_1.Draw (0, 3);
-      GL.Attributes.Set_Single (Program_1.Attribute_Location ("in_Color"), 1.0, 0.0, 0.0);
       Triangle_2.Draw (0, 3);
 
       GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;

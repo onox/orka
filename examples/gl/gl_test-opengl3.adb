@@ -14,7 +14,6 @@
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
@@ -42,10 +41,9 @@ procedure GL_Test.OpenGL3 is
      (Colors.Basic_Color_Pointers);
 
    procedure Load_Data (Array1, Array2            : Vertex_Array_Object;
-                        Buffer1, Buffer2, Buffer3 : GL.Objects.Buffers.Buffer;
+                        Buffer1, Buffer2, Buffer3, Buffer4 : GL.Objects.Buffers.Buffer;
                         Program                   : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
    
       Triangle1 : constant Singles.Vector3_Array
         := ((-0.3,  0.5, -1.0),
@@ -59,6 +57,8 @@ procedure GL_Test.OpenGL3 is
         := ((1.0, 0.0, 0.0),
             (0.0, 1.0, 0.0),
             (0.0, 0.0, 1.0));
+      One_Color_Array : constant Colors.Basic_Color_Array
+        := (1 => (1.0, 0.0, 0.0));
 
       Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
       Attrib_Color : constant Attribute := Program.Attrib_Location ("in_Color");
@@ -85,13 +85,23 @@ procedure GL_Test.OpenGL3 is
       --  Upload Triangle2 data to Buffer3
       Vector3_Pointers.Load_To_Immutable_Buffer (Buffer3, Triangle2, Storage_Bits'(others => False));
 
+      --  Upload One_Color_Array data to Buffer4
+      Color_Pointers.Load_To_Immutable_Buffer (Buffer4, One_Color_Array, Storage_Bits'(others => False));
+
       --  Enable and set attributes for Array2 VAO
       Array2.Enable_Attribute (Attrib_Pos);
+      Array2.Enable_Attribute (Attrib_Color);
 
       Array2.Set_Attribute_Format (Attrib_Pos, 3, Single_Type, 0);
+      Array2.Set_Attribute_Format (Attrib_Color, 3, Single_Type, 0);
+
       Array2.Set_Attribute_Binding (Attrib_Pos, 0);
+      Array2.Set_Attribute_Binding (Attrib_Color, 1);
 
       Array2.Bind_Vertex_Buffer (0, Buffer3, Single_Type, 0, 3);
+      Array2.Bind_Vertex_Buffer (1, Buffer4, Single_Type, 0, 3);
+
+      Array2.Set_Attribute_Binding_Divisor (1, 1);
    end Load_Data;
 
    procedure Load_Shaders (Vertex_Shader, Fragment_Shader : GL.Objects.Shaders.Shader;
@@ -142,13 +152,13 @@ procedure GL_Test.OpenGL3 is
      (Kind => GL.Objects.Shaders.Fragment_Shader);
    Program         : GL.Objects.Programs.Program;
 
-   Vector_Buffer1, Vector_Buffer2, Color_Buffer : GL.Objects.Buffers.Buffer;
+   Vector_Buffer1, Vector_Buffer2, Color_Buffer, Color_Buffer2 : GL.Objects.Buffers.Buffer;
    Array1, Array2 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
 begin
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
    Ada.Text_IO.Put_Line ("Loaded shaders");
 
-   Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2, Program);
+   Load_Data (Array1, Array2, Vector_Buffer1, Color_Buffer, Vector_Buffer2, Color_Buffer2, Program);
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
@@ -158,7 +168,6 @@ begin
       GL.Drawing.Draw_Arrays (Triangles, 0, 3);
 
       Array2.Bind;
-      GL.Attributes.Set_Single (1, 1.0, 0.0, 0.0);
       GL.Drawing.Draw_Arrays (Triangles, 0, 3);
 
       --  Swap front and back buffers and process events

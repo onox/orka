@@ -14,7 +14,6 @@
 
 with Ada.Containers.Indefinite_Holders;
 
-with GL.Attributes;
 with GL.Objects.Programs;
 with GL.Objects.Shaders;
 with GL.Types;
@@ -59,7 +58,7 @@ package Orka.Rendering.Programs is
 
    function Attribute_Location
      (Object : Program;
-      Name   : String) return GL.Attributes.Attribute;
+      Name   : String) return GL.Types.Attribute;
 
    function Uniform_Sampler (Object : Program; Name : String) return Uniforms.Uniform_Sampler;
    --  Return the uniform sampler that has the given name

@@ -14,7 +14,6 @@
 
 with Ada.Text_IO;
 
-with GL.Attributes;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
@@ -41,7 +40,6 @@ procedure GL_Test.MDI is
                         Buffer1, Buffer2, Buffer3, Buffer4 : GL.Objects.Buffers.Buffer;
                         Program : GL.Objects.Programs.Program) is
       use GL.Objects.Buffers;
-      use GL.Attributes;
 
       package Single_Pointers is new GL.Objects.Buffers.Buffer_Pointers
         (Single_Pointers);

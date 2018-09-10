@@ -44,20 +44,20 @@ package body GL.Objects.Vertex_Arrays is
       end if;
    end Bind;
 
-   procedure Enable_Attribute (Object : Vertex_Array_Object; Index : Attributes.Attribute) is
+   procedure Enable_Attribute (Object : Vertex_Array_Object; Index : Attribute) is
    begin
       API.Enable_Vertex_Array_Attrib (Object.Reference.GL_Id, Index);
       Raise_Exception_On_OpenGL_Error;
    end Enable_Attribute;
 
-   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attributes.Attribute) is
+   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attribute) is
    begin
       API.Disable_Vertex_Array_Attrib (Object.Reference.GL_Id, Index);
       Raise_Exception_On_OpenGL_Error;
    end Disable_Attribute;
 
    procedure Set_Attribute_Format (Object : Vertex_Array_Object;
-                                   Index  : Attributes.Attribute;
+                                   Index  : Attribute;
                                    Count  : Component_Count;
                                    Kind   : Numeric_Type;
                                    Offset : UInt) is
@@ -104,7 +104,7 @@ package body GL.Objects.Vertex_Arrays is
    end Set_Attribute_Format;
 
    procedure Set_Attribute_Binding (Object : Vertex_Array_Object;
-                                    Index  : Attributes.Attribute;
+                                    Index  : Attribute;
                                     Binding_Index : Binding) is
    begin
       API.Vertex_Array_Attrib_Binding (Object.Reference.GL_Id, Index, Binding_Index);

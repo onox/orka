@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Attributes;
 with GL.Objects.Buffers;
 
 package GL.Objects.Vertex_Arrays is
@@ -24,17 +23,17 @@ package GL.Objects.Vertex_Arrays is
 
    procedure Bind (Object : Vertex_Array_Object);
 
-   procedure Enable_Attribute  (Object : Vertex_Array_Object; Index : Attributes.Attribute);
-   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attributes.Attribute);
+   procedure Enable_Attribute  (Object : Vertex_Array_Object; Index : Attribute);
+   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attribute);
 
    procedure Set_Attribute_Format (Object : Vertex_Array_Object;
-                                   Index  : Attributes.Attribute;
+                                   Index  : Attribute;
                                    Count  : Component_Count;
                                    Kind   : Numeric_Type;
                                    Offset : UInt);
 
    procedure Set_Attribute_Binding (Object : Vertex_Array_Object;
-                                    Index  : Attributes.Attribute;
+                                    Index  : Attribute;
                                     Binding_Index : Binding);
 
    procedure Bind_Vertex_Buffer (Object : Vertex_Array_Object;

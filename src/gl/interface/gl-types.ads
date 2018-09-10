@@ -75,6 +75,8 @@ package GL.Types is
    type Unsigned_Numeric_Type is (UByte_Type, UShort_Type, UInt_Type);
 
    --  Doesn't really fit here, but there's no other place it fits better
+   type Attribute is new UInt;
+
    type Connection_Mode is (Points, Lines, Line_Loop, Line_Strip, Triangles,
                             Triangle_Strip, Triangle_Fan, Lines_Adjacency,
                             Line_Strip_Adjacency, Triangles_Adjacency,

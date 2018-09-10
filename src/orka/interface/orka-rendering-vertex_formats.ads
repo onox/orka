@@ -14,7 +14,6 @@
 
 with Ada.Containers.Vectors;
 
-with GL.Attributes;
 with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
@@ -27,7 +26,7 @@ package Orka.Rendering.Vertex_Formats is
 
    procedure Add_Attribute
      (Object : in out Attribute_Buffer;
-      Index  : GL.Attributes.Attribute;
+      Index  : GL.Types.Attribute;
       Count  : GL.Types.Component_Count);
 
    procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Buffers.Buffer);
