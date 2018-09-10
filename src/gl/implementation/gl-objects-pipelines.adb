@@ -12,15 +12,26 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Unchecked_Conversion;
+
 with GL.API;
 with GL.Enums;
 
 package body GL.Objects.Pipelines is
 
-   procedure Use_Program_Stages (Object : Pipeline; Shader : Shaders.Shader_Type;
-                                 Program : Programs.Program) is
+   procedure Use_Program_Stages
+     (Object  : Pipeline;
+      Stages  : Stage_Bits;
+      Program : Programs.Program)
+   is
+      use type Low_Level.Bitfield;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Stage_Bits, Target => Low_Level.Bitfield);
+      Raw_Bits : constant Low_Level.Bitfield :=
+        Convert (Stages) and 2#0000000000111111#;
    begin
-      API.Use_Program_Stages (Object.Reference.GL_Id, Shader, Program.Raw_Id);
+      API.Use_Program_Stages (Object.Reference.GL_Id, Raw_Bits, Program.Raw_Id);
       Raise_Exception_On_OpenGL_Error;
    end Use_Program_Stages;
 

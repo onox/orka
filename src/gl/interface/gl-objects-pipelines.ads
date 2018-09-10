@@ -13,18 +13,31 @@
 --  limitations under the License.
 
 with GL.Objects.Programs;
-with GL.Objects.Shaders;
+
+private with GL.Low_Level;
 
 package GL.Objects.Pipelines is
    pragma Preelaborate;
 
+   type Stage_Bits is record
+      Vertex_Shader          : Boolean := False;
+      Fragment_Shader        : Boolean := False;
+      Geometry_Shader        : Boolean := False;
+      Tess_Control_Shader    : Boolean := False;
+      Tess_Evaluation_Shader : Boolean := False;
+      Compute_Shader         : Boolean := False;
+   end record;
+
    type Pipeline is new GL_Object with private;
 
-   procedure Use_Program_Stages (Object : Pipeline; Shader : Shaders.Shader_Type;
-                                 Program : Programs.Program);
-   --  Use the specified shader from the given program in the pipeline
+   procedure Use_Program_Stages
+     (Object  : Pipeline;
+      Stages  : Stage_Bits;
+      Program : Programs.Program)
+   with Pre => Program.Separable;
+   --  Use the specified stages from the given program in the pipeline
    --
-   --  If you have subroutines in some of its shaders, you must
+   --  If you have subroutines in some of its stages, you must
    --  subsequently call Set_Uniform_Subroutines, because the subroutine
    --  state is completely lost after having called Use_Program_Stages.
 
@@ -52,5 +65,15 @@ package GL.Objects.Pipelines is
 private
 
    type Pipeline is new GL_Object with null record;
+
+   for Stage_Bits use record
+      Vertex_Shader          at 0 range 0 .. 0;
+      Fragment_Shader        at 0 range 1 .. 1;
+      Geometry_Shader        at 0 range 2 .. 2;
+      Tess_Control_Shader    at 0 range 3 .. 3;
+      Tess_Evaluation_Shader at 0 range 4 .. 4;
+      Compute_Shader         at 0 range 5 .. 5;
+   end record;
+   for Stage_Bits'Size use Low_Level.Bitfield'Size;
 
 end GL.Objects.Pipelines;

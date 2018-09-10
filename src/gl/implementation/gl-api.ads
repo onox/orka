@@ -908,7 +908,7 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Use_Program_Stages is new Loader.Procedure_With_3_Params
-     ("glUseProgramStages", UInt, Objects.Shaders.Shader_Type, UInt);
+     ("glUseProgramStages", UInt, Low_Level.Bitfield, UInt);
 
    procedure Create_Program_Pipelines is new Loader.Getter_With_2_Params
      ("glCreateProgramPipelines", Size, UInt);
