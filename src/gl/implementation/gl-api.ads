@@ -919,9 +919,6 @@ private package GL.API is
    procedure Bind_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glBindProgramPipeline", UInt);
 
-   procedure Active_Shader_Program is new Loader.Procedure_With_2_Params
-     ("glActiveShaderProgram", UInt, UInt);
-
    procedure Get_Program_Pipeline_Param is new Loader.Getter_With_3_Params
      ("glGetProgramPipelineiv", UInt, Enums.Program_Pipeline_Param, Int);
 

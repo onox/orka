@@ -28,8 +28,6 @@ package GL.Objects.Pipelines is
    --  subsequently call Set_Uniform_Subroutines, because the subroutine
    --  state is completely lost after having called Use_Program_Stages.
 
-   procedure Set_Active_Program (Object : Pipeline; Program : Programs.Program);
-
    procedure Bind (Object : Pipeline);
    --  Bind the pipeline to the current context
    --

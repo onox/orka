@@ -24,12 +24,6 @@ package body GL.Objects.Pipelines is
       Raise_Exception_On_OpenGL_Error;
    end Use_Program_Stages;
 
-   procedure Set_Active_Program (Object : Pipeline; Program : Programs.Program) is
-   begin
-      API.Active_Shader_Program (Object.Reference.GL_Id, Program.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Active_Program;
-
    procedure Bind (Object : Pipeline) is
    begin
       API.Use_Program (0);
