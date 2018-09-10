@@ -111,6 +111,15 @@ package body GL.Objects.Programs is
       return Separable_Value /= 0;
    end Separable;
 
+   function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array is
+      Values : Compute.Dimension_Size_Array := (others => 0);
+   begin
+      API.Get_Program_Param (Object.Reference.GL_Id, Enums.Compute_Work_Group_Size,
+                             Values);
+      Raise_Exception_On_OpenGL_Error;
+      return Values;
+   end Compute_Work_Group_Size;
+
    procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
                                    Format : Transform_Feedbacks.Outputs_Format) is
       C_Source : Low_Level.CharPtr_Array (Names'Range);

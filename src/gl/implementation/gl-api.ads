@@ -39,6 +39,7 @@ with GL.Pixels;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types.Colors;
+with GL.Types.Compute;
 with GL.Types.Debug;
 
 with Interfaces.C.Strings;
@@ -112,6 +113,9 @@ private package GL.API is
 
    procedure Get_Size is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Size);
+
+   procedure Get_Size_I is new Loader.Getter_With_3_Params
+     ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Size);
 
    procedure Get_Blend_Factor is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Blend_Factor);
@@ -817,6 +821,9 @@ private package GL.API is
    procedure Get_Program_Param is new Loader.Getter_With_3_Params
      ("glGetProgramiv", UInt, Enums.Program_Param, Int);
 
+   procedure Get_Program_Param is new Loader.Getter_With_3_Params
+     ("glGetProgramiv", UInt, Enums.Program_Param, Compute.Dimension_Size_Array);
+
    procedure Program_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glProgramParameteri", UInt, Enums.Program_Set_Param, Low_Level.Bool);
 
@@ -858,6 +865,16 @@ private package GL.API is
 
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);
+
+   -----------------------------------------------------------------------------
+   --                                 Compute                                 --
+   -----------------------------------------------------------------------------
+
+   procedure Dispatch_Compute is new Loader.Procedure_With_3_Params
+     ("glDispatchCompute", UInt, UInt, UInt);
+
+   procedure Dispatch_Compute_Indirect is new Loader.Procedure_With_1_Param
+     ("glDispatchComputeIndirect", Low_Level.IntPtr);
 
    -----------------------------------------------------------------------------
    --                    Program interfaces and resources                     --

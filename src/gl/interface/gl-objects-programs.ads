@@ -17,6 +17,7 @@ with GL.Low_Level.Enums;
 with GL.Objects.Shaders.Lists;
 with GL.Objects.Transform_Feedbacks;
 limited with GL.Objects.Programs.Uniforms;
+with GL.Types.Compute;
 
 package GL.Objects.Programs is
    pragma Preelaborate;
@@ -45,6 +46,9 @@ package GL.Objects.Programs is
 
    procedure Set_Separable (Subject : Program; Separable : Boolean);
    function Separable (Subject : Program) return Boolean;
+
+   function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array;
+   --  Size (per dimension) of a local work group in the linked compute stage
 
    procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
                                    Format : Transform_Feedbacks.Outputs_Format);

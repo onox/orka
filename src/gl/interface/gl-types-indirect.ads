@@ -32,6 +32,8 @@ package GL.Types.Indirect is
    procedure Free_Array is new Ada.Unchecked_Deallocation
      (Object => UInt_Array, Name => UInt_Array_Access);
 
+   -----------------------------------------------------------------------------
+
    type Arrays_Indirect_Command is record
       Count, Instances, First_Vertex, Base_Instance : UInt;
    end record;
@@ -55,5 +57,19 @@ package GL.Types.Indirect is
    package Elements_Indirect_Command_Pointers is new Interfaces.C.Pointers
      (Size, Elements_Indirect_Command,
       Elements_Indirect_Command_Array, Elements_Indirect_Command'(others => 0));
+
+   -----------------------------------------------------------------------------
+
+   type Dispatch_Indirect_Command is record
+      Group_X, Groups_Y, Groups_Z : UInt;
+   end record;
+
+   type Dispatch_Indirect_Command_Array is array (Size range <>)
+     of aliased Dispatch_Indirect_Command
+   with Convention => C;
+
+   package Dispatch_Indirect_Command_Pointers is new Interfaces.C.Pointers
+     (Size, Dispatch_Indirect_Command,
+      Dispatch_Indirect_Command_Array, Dispatch_Indirect_Command'(others => 0));
 
 end GL.Types.Indirect;
