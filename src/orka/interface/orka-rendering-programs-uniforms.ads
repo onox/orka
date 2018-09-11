@@ -51,6 +51,8 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Boolean (Object : Uniform; Value : Boolean);
 
+   -----------------------------------------------------------------------------
+
    type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged private;
 
    procedure Set_Texture
@@ -63,6 +65,8 @@ package Orka.Rendering.Programs.Uniforms is
    --  Set the binding point of the uniform sampler and bind the
    --  given texture to the corresponding texture unit
 
+   -----------------------------------------------------------------------------
+
    type Uniform_Image (Kind : LE.Texture_Kind) is tagged private;
 
    procedure Set_Image
@@ -70,6 +74,8 @@ package Orka.Rendering.Programs.Uniforms is
       Texture : GL.Objects.Textures.Texture'Class;
       Binding : Natural)
    with Pre => Texture.Kind = Object.Kind;
+
+   -----------------------------------------------------------------------------
 
    type Uniform_Subroutine (<>) is tagged limited private;
 
@@ -101,7 +107,11 @@ package Orka.Rendering.Programs.Uniforms is
    --  Return the index of the subroutine function identified
    --  by the given name
 
+   -----------------------------------------------------------------------------
+
    type Uniform_Block is tagged private;
+
+   -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
      (Object : Program;

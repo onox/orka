@@ -54,9 +54,18 @@ package GL.Objects.Programs is
 
    function Uniform_Location (Subject : Program; Name : String)
      return Programs.Uniforms.Uniform;
+   --  Return a Uniform given its name
+   --
+   --  The returned object can be used to set values for use in the
+   --  shaders.
+   --
+   --  Raises the Uniform_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    function Uniform_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type;
+   --  Raises the Uniform_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    procedure Bind_Attrib_Location (Subject : Program;
                                    Index : Attribute;
@@ -64,9 +73,17 @@ package GL.Objects.Programs is
 
    function Attrib_Location (Subject : Program; Name : String)
      return Attribute;
+   --  Return an Attribute given its name
+   --
+   --  The returned attribute can be used when defining a vertex format.
+   --
+   --  Raises the Attribute_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    function Attribute_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type;
+   --  Raises the Attribute_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    function Attached_Shaders (Object : Program) return Shaders.Lists.List;
 
@@ -82,8 +99,9 @@ package GL.Objects.Programs is
    function Identifier (Object : Program) return Types.Debug.Identifier is
      (Types.Debug.Program);
 
-   Attribute_Inactive_Error : exception;
-   Uniform_Inactive_Error   : exception;
+   Attribute_Inactive_Error  : exception;
+   Uniform_Inactive_Error    : exception;
+   Subroutine_Inactive_Error : exception;
 
    -----------------------------------------------------------------------------
    --                               Subroutines                               --
@@ -138,12 +156,18 @@ package GL.Objects.Programs is
       Shader : Shaders.Shader_Type;
       Name   : String) return Subroutine_Index_Type;
    --  Return the index of the subroutine function given its name
+   --
+   --  Raises the Subroutine_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    function Subroutine_Uniform_Index
      (Object : Program;
       Shader : Shaders.Shader_Type;
       Name   : String) return Subroutine_Index_Type;
    --  Return the index of the subroutine uniform given its name
+   --
+   --  Raises the Uniform_Inactive_Error exception if the name
+   --  does not exist or is unused.
 
    function Subroutine_Uniform_Location
      (Object : Program;

@@ -390,6 +390,9 @@ package body GL.Objects.Programs is
                                          Subroutine_Interface (Shader), C_String))
       do
          Raise_Exception_On_OpenGL_Error;
+         if Index = -1 then
+            raise Subroutine_Inactive_Error with "Subroutine " & Name & " is inactive (unused)";
+         end if;
       end return;
    end Subroutine_Index;
 
@@ -408,6 +411,9 @@ package body GL.Objects.Programs is
               C_String))
       do
          Raise_Exception_On_OpenGL_Error;
+         if Index = -1 then
+            raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
+         end if;
       end return;
    end Subroutine_Uniform_Index;
 
