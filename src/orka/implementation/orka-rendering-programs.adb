@@ -42,18 +42,22 @@ package body Orka.Rendering.Programs is
          --  Construct arrays of subroutine indices per shader kind
          Result.Has_Subroutines := False;
          Result.Subroutines_Modified := False;
-         for Shader_Kind in Programs.Modules.Non_Compute_Shader_Type loop
-            declare
-               Locations : constant GL.Types.Size
-                 := Result.GL_Program.Subroutine_Uniform_Locations (Shader_Kind);
-               subtype Indices_Array is GL.Types.UInt_Array (0 .. Locations - 1);
-            begin
-               if Indices_Array'Length > 0 then
-                  Result.Has_Subroutines := True;
-               end if;
-               Result.Subroutines (Shader_Kind)
-                 := Subroutines_Holder.To_Holder (Indices_Array'(others => GL.Types.UInt'Last));
-            end;
+
+         for Shader_Kind in Result.Stages'Range loop
+            if Result.Stages (Shader_Kind) then
+               declare
+                  Locations : constant GL.Types.Size
+                    := Result.GL_Program.Subroutine_Uniform_Locations (Shader_Kind);
+                  subtype Indices_Array is GL.Types.UInt_Array (0 .. Locations - 1);
+               begin
+                  if Indices_Array'Length > 0 then
+                     Result.Has_Subroutines := True;
+                     Result.Subroutines (Shader_Kind)
+                       := Subroutines_Holder.To_Holder
+                            (Indices_Array'(others => GL.Types.UInt'Last));
+                  end if;
+               end;
+            end if;
          end loop;
       end return;
    end Create_Program;
@@ -72,14 +76,15 @@ package body Orka.Rendering.Programs is
 
    procedure Use_Subroutines (Object : in out Program) is
    begin
-      for Shader_Kind in Programs.Modules.Non_Compute_Shader_Type loop
-         declare
-            Indices : GL.Types.UInt_Array renames Object.Subroutines (Shader_Kind).Element;
-         begin
-            if Indices'Length > 0 then
+      for Shader_Kind in Object.Subroutines'Range loop
+         if not Object.Subroutines (Shader_Kind).Is_Empty then
+            declare
+               Indices : GL.Types.UInt_Array renames Object.Subroutines (Shader_Kind).Element;
+            begin
+               pragma Assert (Indices'Length > 0);
                GL.Objects.Programs.Set_Uniform_Subroutines (Shader_Kind, Indices);
-            end if;
-         end;
+            end;
+         end if;
       end loop;
       Object.Subroutines_Modified := False;
    end Use_Subroutines;

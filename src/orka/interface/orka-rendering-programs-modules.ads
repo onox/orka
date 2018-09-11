@@ -31,14 +31,11 @@ package Orka.Rendering.Programs.Modules is
      return Module;
    --  Create a module containing shaders that have a non-empty file path
 
-   procedure Attach_Shaders (Modules : Module_Array; Program : Programs.Program);
+   procedure Attach_Shaders (Modules : Module_Array; Program : in out Programs.Program);
 
    procedure Detach_Shaders (Modules : Module_Array; Program : Programs.Program);
 
    Shader_Compile_Error : exception;
-
-   subtype Non_Compute_Shader_Type is GL.Objects.Shaders.Shader_Type
-     range GL.Objects.Shaders.Fragment_Shader .. GL.Objects.Shaders.Tess_Control_Shader;
 
 private
 
@@ -47,7 +44,7 @@ private
    package Shader_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => GL.Objects.Shaders.Shader);
 
-   type Shader_Array is array (Non_Compute_Shader_Type) of Shader_Holder.Holder;
+   type Shader_Array is array (GL.Objects.Shaders.Shader_Type) of Shader_Holder.Holder;
 
    type Module is tagged record
       Shaders : Shader_Array;

@@ -88,22 +88,24 @@ package body Orka.Rendering.Programs.Modules is
       end return;
    end Create_Module;
 
-   procedure Attach_Shaders (Modules : Module_Array; Program : Programs.Program) is
+   procedure Attach_Shaders (Modules : Module_Array; Program : in out Programs.Program) is
       use GL.Objects.Shaders;
 
-      procedure Attach (Holder : Shader_Holder.Holder) is
+      procedure Attach (Subject : Module; Stage : GL.Objects.Shaders.Shader_Type) is
+         Holder : Shader_Holder.Holder renames Subject.Shaders (Stage);
       begin
          if not Holder.Is_Empty then
             Program.GL_Program.Attach (Holder.Element);
+            Program.Stages (Stage) := True;
          end if;
       end Attach;
    begin
       for Module of Modules loop
-         Attach (Module.Shaders (Vertex_Shader));
-         Attach (Module.Shaders (Tess_Control_Shader));
-         Attach (Module.Shaders (Tess_Evaluation_Shader));
-         Attach (Module.Shaders (Geometry_Shader));
-         Attach (Module.Shaders (Fragment_Shader));
+         Attach (Module, Vertex_Shader);
+         Attach (Module, Tess_Control_Shader);
+         Attach (Module, Tess_Evaluation_Shader);
+         Attach (Module, Geometry_Shader);
+         Attach (Module, Fragment_Shader);
       end loop;
    end Attach_Shaders;
 

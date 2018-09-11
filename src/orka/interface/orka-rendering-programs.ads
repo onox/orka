@@ -104,9 +104,12 @@ private
 
    type Subroutines_Array is array (GL.Objects.Shaders.Shader_Type) of Subroutines_Holder.Holder;
 
+   type Stages_Array is array (GL.Objects.Shaders.Shader_Type) of Boolean;
+
    type Program is tagged record
       GL_Program  : GL.Objects.Programs.Program;
       Subroutines : Subroutines_Array;
+      Stages      : Stages_Array;
       Has_Subroutines      : Boolean := False;
       Subroutines_Modified : Boolean := False;
    end record;
@@ -116,6 +119,6 @@ private
       Shader   : GL.Objects.Shaders.Shader_Type;
       Location : Uniform_Location;
       Index    : Subroutine_Index)
-   with Pre => Object.Has_Subroutines;
+   with Pre => Object.Has_Subroutines and then not Object.Subroutines (Shader).Is_Empty;
 
 end Orka.Rendering.Programs;
