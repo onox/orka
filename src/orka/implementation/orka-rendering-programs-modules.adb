@@ -60,7 +60,7 @@ package body Orka.Rendering.Programs.Modules is
       end if;
    end Set_And_Compile;
 
-   function Create_Module_From_Sources (VS, TCS, TES, GS, FS : String := "")
+   function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
      return Module
    is
       use GL.Objects.Shaders;
@@ -71,10 +71,11 @@ package body Orka.Rendering.Programs.Modules is
          Set_And_Compile (Result, Tess_Evaluation_Shader, TES);
          Set_And_Compile (Result, Geometry_Shader, GS);
          Set_And_Compile (Result, Fragment_Shader, FS);
+         Set_And_Compile (Result, Compute_Shader, CS);
       end return;
    end Create_Module_From_Sources;
 
-   function Create_Module (VS, TCS, TES, GS, FS : String := "")
+   function Create_Module (VS, TCS, TES, GS, FS, CS : String := "")
      return Module
    is
       use GL.Objects.Shaders;
@@ -85,6 +86,7 @@ package body Orka.Rendering.Programs.Modules is
          Load_And_Compile (Result, Tess_Evaluation_Shader, TES);
          Load_And_Compile (Result, Geometry_Shader, GS);
          Load_And_Compile (Result, Fragment_Shader, FS);
+         Load_And_Compile (Result, Compute_Shader, CS);
       end return;
    end Create_Module;
 
@@ -106,6 +108,7 @@ package body Orka.Rendering.Programs.Modules is
          Attach (Module, Tess_Evaluation_Shader);
          Attach (Module, Geometry_Shader);
          Attach (Module, Fragment_Shader);
+         Attach (Module, Compute_Shader);
       end loop;
    end Attach_Shaders;
 
@@ -125,6 +128,7 @@ package body Orka.Rendering.Programs.Modules is
          Detach (Module.Shaders (Tess_Evaluation_Shader));
          Detach (Module.Shaders (Geometry_Shader));
          Detach (Module.Shaders (Fragment_Shader));
+         Detach (Module.Shaders (Compute_Shader));
       end loop;
    end Detach_Shaders;
 

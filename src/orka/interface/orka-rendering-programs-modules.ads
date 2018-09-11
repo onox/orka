@@ -23,11 +23,11 @@ package Orka.Rendering.Programs.Modules is
 
    type Module_Array is array (Positive range <>) of aliased Module;
 
-   function Create_Module_From_Sources (VS, TCS, TES, GS, FS : String := "")
+   function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
      return Module;
    --  Create a module containing shaders that have a non-empty source text
 
-   function Create_Module (VS, TCS, TES, GS, FS : String := "")
+   function Create_Module (VS, TCS, TES, GS, FS, CS : String := "")
      return Module;
    --  Create a module containing shaders that have a non-empty file path
 
