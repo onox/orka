@@ -109,7 +109,7 @@ private
    type Program is tagged record
       GL_Program  : GL.Objects.Programs.Program;
       Subroutines : Subroutines_Array;
-      Stages      : Stages_Array;
+      Stages      : Stages_Array := (others => False);
       Has_Subroutines      : Boolean := False;
       Subroutines_Modified : Boolean := False;
    end record;
