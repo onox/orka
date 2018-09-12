@@ -51,4 +51,7 @@ private package Orka.Rendering.Buffers.Pointers is
    package Elements_Command is new GL.Objects.Buffers.Buffer_Pointers
      (Indirect.Elements_Indirect_Command_Pointers);
 
+   package Dispatch_Command is new GL.Objects.Buffers.Buffer_Pointers
+     (Indirect.Dispatch_Indirect_Command_Pointers);
+
 end Orka.Rendering.Buffers.Pointers;

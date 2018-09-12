@@ -65,6 +65,11 @@ package body Orka.Rendering.Buffers is
             return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
                Result.Length := Length;
             end return;
+         when Dispatch_Command_Type =>
+            Bytes := Indirect.Dispatch_Indirect_Command'Size / System.Storage_Unit;
+            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
+               Result.Length := Length;
+            end return;
       end case;
    end Create_Buffer;
 
@@ -150,6 +155,16 @@ package body Orka.Rendering.Buffers is
       end return;
    end Create_Buffer;
 
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer is
+   begin
+      return Result : Buffer do
+         Pointers.Dispatch_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
    -----------------------------------------------------------------------------
 
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
@@ -230,6 +245,14 @@ package body Orka.Rendering.Buffers is
       Offset : Natural := 0) is
    begin
       Pointers.Elements_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Indirect.Dispatch_Indirect_Command_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Dispatch_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    -----------------------------------------------------------------------------

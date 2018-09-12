@@ -93,6 +93,12 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Indirect.Dispatch_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
    -----------------------------------------------------------------------------
 
    procedure Write_Data
@@ -131,6 +137,12 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Dispatch_Indirect_Command;
+      Offset : Natural)
+   with Pre => Object.Mode = Write and Offset < Object.Length;
+
 private
 
    use Orka.Types;
@@ -153,6 +165,8 @@ private
             Pointer_AC : Pointers.Arrays_Command.Pointer;
          when Elements_Command_Type =>
             Pointer_EC : Pointers.Elements_Command.Pointer;
+         when Dispatch_Command_Type =>
+            Pointer_DC : Pointers.Dispatch_Command.Pointer;
       end case;
    end record;
 

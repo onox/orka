@@ -51,6 +51,9 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
             when Elements_Command_Type =>
                Pointers.Elements_Command.Map_Range
                  (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_EC);
+            when Dispatch_Command_Type =>
+               Pointers.Dispatch_Command.Map_Range
+                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_DC);
          end case;
       end return;
    end Create_Buffer;
@@ -125,6 +128,15 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
         (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Data);
    end Write_Data;
 
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Data   : Indirect.Dispatch_Indirect_Command_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Dispatch_Command.Set_Mapped_Data
+        (Object.Pointer_DC, Size (Object.Index_Offset + Offset), Data);
+   end Write_Data;
+
    -----------------------------------------------------------------------------
 
    procedure Write_Data
@@ -179,6 +191,15 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
    begin
       Pointers.Elements_Command.Set_Mapped_Data
         (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Value);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Persistent_Mapped_Buffer;
+      Value  : Indirect.Dispatch_Indirect_Command;
+      Offset : Natural) is
+   begin
+      Pointers.Dispatch_Command.Set_Mapped_Data
+        (Object.Pointer_DC, Size (Object.Index_Offset + Offset), Value);
    end Write_Data;
 
 end Orka.Rendering.Buffers.Persistent_Mapped;

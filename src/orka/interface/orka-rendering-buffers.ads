@@ -69,6 +69,10 @@ package Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer;
 
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer;
+
    -----------------------------------------------------------------------------
 
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
@@ -130,6 +134,12 @@ package Orka.Rendering.Buffers is
    procedure Set_Data
      (Object : Buffer;
       Data   : in out Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : in out Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 

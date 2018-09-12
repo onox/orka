@@ -27,7 +27,8 @@ package Orka.Types is
       Single_Matrix_Type,
       Double_Matrix_Type,
       Arrays_Command_Type,
-      Elements_Command_Type);
+      Elements_Command_Type,
+      Dispatch_Command_Type);
 
    package Singles is new Orka.Algebra (Orka.Transforms.Singles.Matrices);
 
