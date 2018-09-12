@@ -20,6 +20,9 @@ out vec4 out_Color;
 
 const float pi = 3.14159265358979323846264338327950288419716939937511;
 
+const float gamma = 2.2;
+const vec3 inverse_gamma = vec3(1.0 / gamma);
+
 struct Light {
     vec3 albedo;
     float radius;
@@ -34,7 +37,7 @@ struct Material {
 const Light light = {
     vec3(1.0, 1.0, 1.0),
     10.0,
-    5.0,
+    1.0,
 };
 
 const Material material = {
@@ -135,6 +138,9 @@ void main(void) {
 
     // Ordered dithering using a 8x8 Bayer pattern
     out_Color.xyz += vec3(texture(ditherTexture, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
+
+    // Apply gamma correction due to monitor's non-linear pixel response
+    out_Color.xyz = pow(out_Color.xyz, inverse_gamma);
 }
 
 // References:
