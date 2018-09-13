@@ -47,6 +47,10 @@ package Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Int_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : UInt_Array) return Buffer;
 
    function Create_Buffer
@@ -85,61 +89,61 @@ package Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Half_Array;
+      Data   : Half_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Single_Array;
+      Data   : Single_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Int_Array;
+      Data   : Int_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out UInt_Array;
+      Data   : UInt_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Colors.Basic_Color_Array;
+      Data   : Colors.Basic_Color_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Orka.Types.Singles.Matrix4_Array;
+      Data   : Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Arrays_Indirect_Command_Array;
+      Data   : Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Elements_Indirect_Command_Array;
+      Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Dispatch_Indirect_Command_Array;
+      Data   : Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 

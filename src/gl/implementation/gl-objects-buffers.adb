@@ -445,7 +445,7 @@ package body GL.Objects.Buffers is
 
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
-                              Data   : in out Pointers.Element_Array) is
+                              Data   : Pointers.Element_Array) is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin

@@ -97,6 +97,16 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Int_Array) return Buffer is
+   begin
+      return Result : Buffer do
+         Pointers.Int.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : UInt_Array) return Buffer is
    begin
       return Result : Buffer do
@@ -177,7 +187,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Half_Array;
+      Data   : Half_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Half.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -185,7 +195,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Single_Array;
+      Data   : Single_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -193,7 +203,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Int_Array;
+      Data   : Int_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -201,7 +211,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out UInt_Array;
+      Data   : UInt_Array;
       Offset : Natural := 0) is
    begin
       Pointers.UInt.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -209,7 +219,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Colors.Basic_Color_Array;
+      Data   : Colors.Basic_Color_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Color.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -217,7 +227,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single_Vector4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -225,7 +235,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Orka.Types.Singles.Matrix4_Array;
+      Data   : Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single_Matrix4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -233,7 +243,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Arrays_Indirect_Command_Array;
+      Data   : Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Arrays_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -241,7 +251,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Elements_Indirect_Command_Array;
+      Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Elements_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -249,7 +259,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : in out Indirect.Dispatch_Indirect_Command_Array;
+      Data   : Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Dispatch_Command.Set_Sub_Data (Object.Buffer, Int (Offset), Data);

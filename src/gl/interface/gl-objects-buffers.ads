@@ -170,7 +170,7 @@ package GL.Objects.Buffers is
 
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
-                              Data   : in out Pointers.Element_Array);
+                              Data   : Pointers.Element_Array);
 
       procedure Get_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
