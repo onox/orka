@@ -3,6 +3,10 @@
 #extension GL_ARB_compute_shader : require
 #extension GL_ARB_shader_storage_buffer_object : require
 
+// Used to write the sub-group size. Comment this line and the code below
+// if the extension is not available.
+#extension GL_ARB_shader_ballot : require
+
 uniform uint maxNumbers;
 
 layout(local_size_x = 1024) in;
@@ -42,7 +46,7 @@ void main(void) {
             sdata[tid] += sdata[tid + s];
         }
         barrier();
-    }*
+    }*/
 
     // Interleaved addressing with bank conflicts (slide 12 of [1]):
     // Only threads 0 to n / 2 - 1 are active, but memory access
@@ -57,17 +61,42 @@ void main(void) {
     }*/
 
     // Sequential addressing (slide 14 of [1]):
-    // For a group size with n threads, the left halve (n / 2 threads)
-    // threads (0 .. n / 2 - 1) add the right halve (n / 2 .. n) (due to
+    // For a group size with n threads, the left half (n / 2 threads)
+    // threads (0 .. n / 2 - 1) add the right half (n / 2 .. n) (due to
     // stride s) to themselves.
-    for (uint s = gl_WorkGroupSize.x / 2u; s > 0u; s >>= 1u) {
+    /*for (uint s = gl_WorkGroupSize.x / 2u; s > 0u; s >>= 1u) {
+        if (tid < s) {
+            sdata[tid] += sdata[tid + s];
+        }
+        barrier();
+    }*/
+
+    // Sequential addressing with unrolling last iterations:
+    // When s <= gl_SubGroupSizeARB / 2 then all active threads
+    // execute in lockstep. A memory barrier is then no longer
+    // needed.
+    for (uint s = gl_WorkGroupSize.x / 2u; s > 16u; s >>= 1u) {
         if (tid < s) {
             sdata[tid] += sdata[tid + s];
         }
         barrier();
     }
 
+    if (tid < 16u) {
+        sdata[tid] += sdata[tid + 16u];
+        sdata[tid] += sdata[tid + 8u];
+        sdata[tid] += sdata[tid + 4u];
+        sdata[tid] += sdata[tid + 2u];
+        sdata[tid] += sdata[tid + 1u];
+    }
+
     if (tid == 0u) {
         numbers[gl_WorkGroupID.x] = sdata[0];
+    }
+
+    // Write the sub-group size (number of invocations that execute in lockstep)
+    // The code above assumes this is >= 32
+    if (gl_NumWorkGroups.x == 1u && tid == 0u) {
+        numbers[1] = gl_SubGroupSizeARB;
     }
 }

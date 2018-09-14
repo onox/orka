@@ -146,11 +146,16 @@ begin
          end;
 
          declare
-            Output : Int_Array (1 .. 1) := (others => 0);
+            Output : Int_Array (1 .. 2) := (others => 0);
          begin
             Buffer_1.Get_Data (Output);
             Put_Line ("Expected Sum:" & Size'Image (Factor * 41));
             Put_Line ("Computed sum:" & Output (Output'First)'Image);
+
+            --  Print the number of shader invocations that execute in
+            --  lockstep. This requires the extension ARB_shader_ballot
+            --  in the shader.
+            Put_Line ("Sub-group size:" & Output (Output'Last)'Image);
          end;
          B := Ada.Real_Time.Clock;
          Put_Line (Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)) & " ms");
