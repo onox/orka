@@ -74,6 +74,8 @@ private
    type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
       Input     : Inputs.Pointer_Input_Ptr;
       Finalized : Boolean;
+      Position_X : GL.Types.Double := 0.0;
+      Position_Y : GL.Types.Double := 0.0;
       Scroll_X  : GL.Types.Double := 0.0;
       Scroll_Y  : GL.Types.Double := 0.0;
       Width, Height : Positive;
@@ -92,6 +94,11 @@ private
       Scancode : Standard.Glfw.Input.Keys.Scancode;
       Action   : Standard.Glfw.Input.Keys.Action;
       Mods     : Standard.Glfw.Input.Keys.Modifiers);
+
+   overriding
+   procedure Mouse_Position_Changed
+     (Object : not null access GLFW_Window;
+      X, Y   : Standard.Glfw.Input.Mouse.Coordinate);
 
    overriding
    procedure Mouse_Scrolled

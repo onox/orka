@@ -16,11 +16,11 @@ package body Orka.Inputs.GLFW is
 
    overriding
    function Position_X (Object : GLFW_Pointer_Input) return GL.Types.Single is
-     (Object.X);
+     (GL.Types.Single (Object.X));
 
    overriding
    function Position_Y (Object : GLFW_Pointer_Input) return GL.Types.Single is
-     (Object.Y);
+     (GL.Types.Single (Object.Y));
 
    overriding
    function Delta_X (Object : GLFW_Pointer_Input) return GL.Types.Single is
@@ -93,8 +93,8 @@ package body Orka.Inputs.GLFW is
    procedure Set_Position (Object : in out GLFW_Pointer_Input; X, Y : GL.Types.Double) is
    begin
       if not Object.Locked then
-         Object.X := GL.Types.Single (X);
-         Object.Y := GL.Types.Single (Y);
+         Object.X := X;
+         Object.Y := Y;
       end if;
       Object.Prev_X := Object.Last_X;
       Object.Prev_Y := Object.Last_Y;

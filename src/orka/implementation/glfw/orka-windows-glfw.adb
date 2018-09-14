@@ -97,6 +97,7 @@ package body Orka.Windows.GLFW is
             --  Callbacks
             Reference.Enable_Callback (Windows.Callbacks.Close);
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Button);
+            Reference.Enable_Callback (Windows.Callbacks.Mouse_Position);
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Scroll);
             Reference.Enable_Callback (Windows.Callbacks.Key);
             Reference.Enable_Callback (Windows.Callbacks.Framebuffer_Size);
@@ -139,14 +140,12 @@ package body Orka.Windows.GLFW is
 
    overriding
    procedure Process_Input (Object : in out GLFW_Window) is
-      X, Y   : Standard.Glfw.Input.Mouse.Coordinate;
    begin
       Standard.Glfw.Input.Poll_Events;
 
       --  Update position of mouse
-      Object.Get_Cursor_Pos (X, Y);
       Inputs.GLFW.GLFW_Pointer_Input (Object.Input.all).Set_Position
-        (GL.Types.Double (X), GL.Types.Double (Y));
+        (Object.Position_X, Object.Position_Y);
 
       --  Update scroll offset of mouse
       Inputs.GLFW.GLFW_Pointer_Input (Object.Input.all).Set_Scroll_Offset
@@ -181,6 +180,17 @@ package body Orka.Windows.GLFW is
       end if;
       --  TODO Add Button_Input object
    end Key_Changed;
+
+   overriding
+   procedure Mouse_Position_Changed
+     (Object : not null access GLFW_Window;
+      X, Y   : Standard.Glfw.Input.Mouse.Coordinate)
+   is
+      use type GL.Types.Double;
+   begin
+      Object.Position_X := GL.Types.Double (X);
+      Object.Position_Y := GL.Types.Double (Y);
+   end Mouse_Position_Changed;
 
    overriding
    procedure Mouse_Scrolled

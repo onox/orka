@@ -75,7 +75,7 @@ private
    type Button_Array is array (Button) of Boolean;
 
    type GLFW_Pointer_Input is new Pointer_Input with record
-      X, Y           : GL.Types.Single := 0.0;
+      X, Y           : GL.Types.Double := 0.0;
       Prev_X, Prev_Y : GL.Types.Double := 0.0;
       Last_X, Last_Y : GL.Types.Double := 0.0;
       Prev_Offset_X, Prev_Offset_Y : GL.Types.Double := 0.0;
