@@ -184,9 +184,7 @@ package body Orka.Windows.GLFW is
    overriding
    procedure Mouse_Position_Changed
      (Object : not null access GLFW_Window;
-      X, Y   : Standard.Glfw.Input.Mouse.Coordinate)
-   is
-      use type GL.Types.Double;
+      X, Y   : Standard.Glfw.Input.Mouse.Coordinate) is
    begin
       Object.Position_X := GL.Types.Double (X);
       Object.Position_Y := GL.Types.Double (Y);
