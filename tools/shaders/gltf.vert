@@ -1,12 +1,16 @@
 #version 330 core
 
 #extension GL_ARB_shader_draw_parameters : require
+#extension GL_ARB_shader_storage_buffer_object : require
 
 layout(location = 0) in vec3 in_Position;
 layout(location = 1) in vec3 in_Normal;
 layout(location = 2) in vec2 in_UV;
 
-uniform samplerBuffer matrixBuffer;
+layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
+    mat4 matrices[];
+};
+
 uniform int indexOffset;
 uniform mat4 view;
 uniform mat4 proj;
@@ -21,20 +25,11 @@ out VS_OUT {
 
 flat out uint var_InstanceID;
 
-mat4 get_matrix(samplerBuffer buffer, int index) {
-    int offset = index * 4;
-    vec4 v1 = texelFetch(buffer, offset + 0);
-    vec4 v2 = texelFetch(buffer, offset + 1);
-    vec4 v3 = texelFetch(buffer, offset + 2);
-    vec4 v4 = texelFetch(buffer, offset + 3);
-    return mat4(v1, v2, v3, v4);
-}
-
 void main(void) {
     int instanceID = gl_DrawIDARB;
 
     // Ideally pre-compute modelView and normalMatrix on CPU
-    mat4 world = get_matrix(matrixBuffer, indexOffset + instanceID);
+    mat4 world = matrices[indexOffset + instanceID];
     mat4 modelView = view * world;
     mat4 normalMatrix = transpose(inverse(modelView));
 

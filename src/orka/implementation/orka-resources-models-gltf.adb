@@ -358,7 +358,6 @@ package body Orka.Resources.Models.glTF is
 
    type GLTF_Loader is limited new Loaders.Loader with record
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
       Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager : Managers.Manager_Ptr;
    end record;
@@ -377,7 +376,6 @@ package body Orka.Resources.Models.glTF is
         (Jobs.Abstract_Job with
           Data     => Data,
           Format   => Object.Format,
-          Transforms   => Object.Transforms,
           Index_Offset => Object.Index_Offset,
           Manager  => Object.Manager,
           Location => Location);
@@ -387,12 +385,10 @@ package body Orka.Resources.Models.glTF is
 
    function Create_Loader
      (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Transforms   : not null access Rendering.Programs.Uniforms.Uniform_Sampler;
       Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
    is (new GLTF_Loader'
      (Format       => Format,
-      Transforms   => Transforms,
       Index_Offset => Index_Offset,
       Manager      => Manager));
 
@@ -420,7 +416,6 @@ package body Orka.Resources.Models.glTF is
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
-            Transforms   => Object.Transforms,
             Index_Offset => Object.Index_Offset,
             Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
@@ -637,7 +632,6 @@ package body Orka.Resources.Models.glTF is
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,
          Format => Data.Format,
-         Uniform_WT => Data.Transforms,
          Uniform_IO => Data.Index_Offset,
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices,

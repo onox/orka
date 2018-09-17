@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Pixels;
+with GL.Objects.Buffers;
 with GL.Types;
 
 with Orka.Transforms.Singles.Vectors;
@@ -29,17 +29,12 @@ package body Orka.Resources.Models is
       Transforms_Buffer : constant PMB.Persistent_Mapped_Buffer
         := PMB.Create_Buffer
             (Orka.Types.Single_Matrix_Type, Shapes_Count, PMB.Write);
-
-      TBO_WT : Buffer_Texture;
    begin
-      TBO_WT.Attach_Buffer (GL.Pixels.RGBA32F, Transforms_Buffer.GL_Buffer);
-
       --  Cannot use 'Access because we're returning a pointer to Model_Instance
       return new Model_Instance'
         (Model   => Object'Unchecked_Access,
          Scene   => Object.Scene.Scene,
          Transforms => Transforms_Buffer,
-         TBO_WT     => TBO_WT,
          Position   => Position);
    end Create_Instance;
 
@@ -78,8 +73,8 @@ package body Orka.Resources.Models is
    overriding
    procedure Render (Object : in out Model_Instance) is
    begin
-      Object.Model.Uniform_WT.Set_Texture (Object.TBO_WT, 0);
       Object.Model.Uniform_IO.Set_Int (GL.Types.Int (Object.Transforms.Index_Offset));
+      GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Object.Transforms.GL_Buffer, 0);
 
       --  TODO Only do this once per model, not for each instance
       Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);

@@ -179,7 +179,6 @@ begin
 
       Uni_Light : constant Uniforms.Uniform := P_1.Uniform ("lightPosition");
 
-      Uni_WT  : aliased Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("matrixBuffer");
       Uni_IO  : aliased Uniforms.Uniform := P_1.Uniform ("indexOffset");
 
       ----------------------------------------------------------------------
@@ -214,7 +213,7 @@ begin
          use Ada.Real_Time;
 
          Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
-           (VF_1, Uni_WT'Unchecked_Access, Uni_IO'Unchecked_Access, Manager);
+           (VF_1, Uni_IO'Unchecked_Access, Manager);
 
          Location_Models : constant Locations.Location_Ptr
            := Locations.Directories.Create_Location (Location_Path);
