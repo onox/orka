@@ -100,9 +100,9 @@ package GL.Objects.Queries is
 
    function Begin_Query
      (Object : in out Query;
-      Target : in     Async_Query_Type;
       Index  : in     Natural := 0) return Active_Query'Class
-   with Pre => (if Target not in Stream_Query_Type then Index = 0);
+   with Pre => Object.Target in Async_Query_Type and
+     (if Object.Target not in Stream_Query_Type then Index = 0);
    --  Start an asynchronous query. The value returned is of a controlled
    --  type, meaning you must assign it to some local variable, so that
    --  the query will be automatically ended when the variable goes out

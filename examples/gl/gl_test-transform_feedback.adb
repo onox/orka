@@ -141,7 +141,7 @@ begin
 
    Array_Input.Bind;
    declare
-      Q : Active_Query'Class := Query.Begin_Query (Transform_Feedback_Primitives_Written);
+      Q : Active_Query'Class := Query.Begin_Query;
       pragma Unreferenced (Q);
 
       F : Active_Feedback'Class := Feedback.Begin_Feedback (Triangles);

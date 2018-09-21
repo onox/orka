@@ -40,13 +40,12 @@ package body GL.Objects.Queries is
 
    function Begin_Query
      (Object : in out Query;
-      Target : in     Async_Query_Type;
       Index  : in     Natural := 0) return Active_Query'Class is
    begin
-      API.Begin_Query_Indexed (Target, UInt (Index), Object.Reference.GL_Id);
+      API.Begin_Query_Indexed (Object.Target, UInt (Index), Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
       return Active_Query'(Ada.Finalization.Limited_Controlled
-        with Target => Target, Index => Index, Finalized => False);
+        with Target => Object.Target, Index => Index, Finalized => False);
    end Begin_Query;
 
    overriding
