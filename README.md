@@ -30,8 +30,9 @@ Features
  * Thick OpenGL 4.6 bindings
  * Thick GLFW 3 bindings
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
- * Easy construction of shader programs and meshes
- * Transforms and scene tree (makes use of the x86 SIMD extensions)
+ * Transforms (vectors, quaternions, and matrices) and scene trees (uses the x86 SIMD extensions)
+ * Easy construction of shader programs, buffers, framebuffers, and vertex formats
+ * Job graph processing system for better utilization of all CPU cores
  * Game loop
  * Camera's
  * [glTF 2.0][url-gltf] loader (uses MDI)
