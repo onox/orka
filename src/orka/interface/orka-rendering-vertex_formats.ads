@@ -63,9 +63,13 @@ package Orka.Rendering.Vertex_Formats is
      (Object : in out Vertex_Format;
       Buffer : Buffers.Buffer);
 
+   -----------------------------------------------------------------------------
+
    procedure Draw (Object : Vertex_Format; Offset, Count : GL.Types.Size);
 
    procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer);
+
+   procedure Draw_Indirect (Object : Vertex_Format; Buffer, Count : Buffers.Buffer);
 
 private
 
