@@ -123,7 +123,9 @@ package body Orka.Rendering.Framebuffers is
       end if;
    end Use_Framebuffer;
 
-   procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer) is
+   procedure Resolve_To
+     (Object, Subject : Framebuffer;
+      Mask : GL.Buffers.Buffer_Bits := (Color => True, others => False)) is
    begin
       --  Note: simultaneously resolving and scaling requires
       --  GL_EXT_framebuffer_multisample_blit_scaled
@@ -131,7 +133,7 @@ package body Orka.Rendering.Framebuffers is
         (Object.GL_Framebuffer, Subject.GL_Framebuffer,
          0, 0, Object.Width, Object.Height,
          0, 0, Subject.Width, Subject.Height,
-         (Color => True, others => False), GL.Objects.Textures.Nearest);
+         Mask, GL.Objects.Textures.Nearest);
    end Resolve_To;
 
 end Orka.Rendering.Framebuffers;

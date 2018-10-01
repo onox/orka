@@ -14,6 +14,7 @@
 
 with Ada.Containers.Indefinite_Holders;
 
+with GL.Buffers;
 with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
 with GL.Types;
@@ -63,8 +64,10 @@ package Orka.Rendering.Framebuffers is
    --
    --  The viewport is adjusted to the size of the framebuffer.
 
-   procedure Resolve_To (Object : Framebuffer; Subject : Framebuffer)
-     with Pre => Object /= Subject;
+   procedure Resolve_To
+     (Object, Subject : Framebuffer;
+      Mask : GL.Buffers.Buffer_Bits := (Color => True, others => False))
+   with Pre => Object /= Subject;
 
    Framebuffer_Incomplete_Error : exception;
 
