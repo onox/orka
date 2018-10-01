@@ -24,14 +24,28 @@ private package Orka.Rendering.Buffers.Pointers is
    package Double is new GL.Objects.Buffers.Buffer_Pointers
      (Double_Pointers);
 
+   package Byte is new GL.Objects.Buffers.Buffer_Pointers
+     (Byte_Pointers);
+
+   package Short is new GL.Objects.Buffers.Buffer_Pointers
+     (Short_Pointers);
+
    package Int is new GL.Objects.Buffers.Buffer_Pointers
      (Int_Pointers);
+
+   package UByte is new GL.Objects.Buffers.Buffer_Pointers
+     (UByte_Pointers);
+
+   package UShort is new GL.Objects.Buffers.Buffer_Pointers
+     (UShort_Pointers);
 
    package UInt is new GL.Objects.Buffers.Buffer_Pointers
      (UInt_Pointers);
 
    package Color is new GL.Objects.Buffers.Buffer_Pointers
      (Colors.Basic_Color_Pointers);
+
+   -----------------------------------------------------------------------------
 
    package Single_Vector4 is new GL.Objects.Buffers.Buffer_Pointers
      (Orka.Types.Singles.Vector4_Pointers);
@@ -44,6 +58,8 @@ private package Orka.Rendering.Buffers.Pointers is
 
    package Double_Matrix4 is new GL.Objects.Buffers.Buffer_Pointers
      (Orka.Types.Doubles.Matrix4_Pointers);
+
+   -----------------------------------------------------------------------------
 
    package Arrays_Command is new GL.Objects.Buffers.Buffer_Pointers
      (Indirect.Arrays_Indirect_Command_Pointers);

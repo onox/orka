@@ -304,27 +304,29 @@ package body Orka.Rendering.Buffers is
    procedure Copy_Data
      (Object : Buffer;
       Target : Buffer;
-      Kind   : Numeric_Type) is
+      Kind   : Numeric_Type)
+   is
+      Length : constant Size := Size (Object.Length);
    begin
       case Kind is
          when Byte_Type =>
-            raise Program_Error with "Not implemented yet";
-         when UByte_Type =>
-            raise Program_Error with "Not implemented yet";
+            Pointers.Byte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Short_Type =>
-            raise Program_Error with "Not implemented yet";
-         when UShort_Type =>
-            raise Program_Error with "Not implemented yet";
+            Pointers.Short.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Int_Type =>
-            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when UByte_Type =>
+            Pointers.UByte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when UShort_Type =>
+            Pointers.UShort.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when UInt_Type =>
-            Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+            Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Half_Type =>
-            Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+            Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Single_Type =>
-            Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+            Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Double_Type =>
-            Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Size (Object.Length));
+            Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
       end case;
    end Copy_Data;
 

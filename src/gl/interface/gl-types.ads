@@ -47,10 +47,14 @@ package GL.Types is
    subtype Normalized_Single is Single range 0.0 .. 1.0;
 
    --  Array types
+   type Byte_Array   is array (Size range <>) of aliased Byte;
+   type Short_Array  is array (Size range <>) of aliased Short;
+   type Int_Array    is array (Size range <>) of aliased Int;
+
    type UByte_Array  is array (Size range <>) of aliased UByte;
    type UShort_Array is array (Size range <>) of aliased UShort;
-   type Int_Array    is array (Size range <>) of aliased Int;
    type UInt_Array   is array (Size range <>) of aliased UInt;
+
    type Half_Array   is array (Size range <>) of aliased Half;
    type Single_Array is array (Size range <>) of aliased Single;
    type Double_Array is array (Size range <>) of aliased Double;
@@ -138,14 +142,20 @@ package GL.Types is
                                       One_Value    => 1.0);
 
    --  Pointer types (for use with data transfer functions
+   package Byte_Pointers is new Interfaces.C.Pointers
+     (Size, Byte, Byte_Array, Byte'Last);
+
+   package Short_Pointers is new Interfaces.C.Pointers
+     (Size, Short, Short_Array, Short'Last);
+
+   package Int_Pointers is new Interfaces.C.Pointers
+     (Size, Int, Int_Array, Int'Last);
+
    package UByte_Pointers is new Interfaces.C.Pointers
      (Size, UByte, UByte_Array, UByte'Last);
 
    package UShort_Pointers is new Interfaces.C.Pointers
      (Size, UShort, UShort_Array, UShort'Last);
-
-   package Int_Pointers is new Interfaces.C.Pointers
-     (Size, Int, Int_Array, Int'Last);
 
    package UInt_Pointers is new Interfaces.C.Pointers
      (Size, UInt, UInt_Array, UInt'Last);
