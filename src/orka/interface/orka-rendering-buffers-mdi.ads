@@ -42,7 +42,7 @@ package Orka.Rendering.Buffers.MDI is
 
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
-      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
+      Format  : Rendering.Vertex_Formats.Vertex_Format;
       Flags   : GL.Objects.Buffers.Storage_Bits;
       Visible : Boolean := True) return Batch;
 

@@ -23,7 +23,6 @@ with JSON.Streams;
 
 with GL.Debug;
 with GL.Objects.Buffers;
-with GL.Pixels;
 with GL.Types.Indirect;
 
 with Orka.Types;
@@ -635,17 +634,14 @@ package body Orka.Resources.Models.glTF is
          Uniform_IO => Data.Index_Offset,
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices,
-            Format  => Object.Data.Format,
+            Format  => Data.Format.all,
             Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
             Visible => True),
+         --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => Storage_Bits'(others => False),
-            Data  => Bounds_List (Data.Accessors, Data.Meshes)),
-         others => <>);
+            Data  => Bounds_List (Data.Accessors, Data.Meshes)));
    begin
-      --  Bounding boxes for culling
-      Model_Data.TBO_BB.Attach_Buffer (GL.Pixels.RGBA32F, Model_Data.Bounds.GL_Buffer);
-
       Add_Parts (Data.Format, Model_Data.Batch, Data.Views, Data.Accessors, Data.Meshes);
 
       --  Register the model at the resource manager

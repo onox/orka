@@ -14,8 +14,6 @@
 
 with Ada.Containers.Indefinite_Holders;
 
-with GL.Objects.Textures;
-
 with Orka.Behaviors;
 with Orka.Rendering.Buffers.MDI;
 with Orka.Rendering.Buffers.Persistent_Mapped;
@@ -64,8 +62,6 @@ package Orka.Resources.Models is
 
 private
 
-   use GL.Objects.Textures;
-
    type Cursor_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
 
    package Cursor_Array_Holder is new Ada.Containers.Indefinite_Holders
@@ -81,9 +77,8 @@ private
    type Model is limited new Resource with record
       Scene   : Model_Scene_Ptr;
       Batch   : Rendering.Buffers.MDI.Batch;
-      Format  : not null access Rendering.Vertex_Formats.Vertex_Format;
+      Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Bounds  : Rendering.Buffers.Buffer;
-      TBO_BB  : Buffer_Texture;
       Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;
 

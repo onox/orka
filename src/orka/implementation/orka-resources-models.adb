@@ -25,7 +25,7 @@ package body Orka.Resources.Models is
    is
       Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
 
-      --  Set-up TBO for world transform matrices
+      --  Set-up a mapped buffer for world transform matrices
       Transforms_Buffer : constant PMB.Persistent_Mapped_Buffer
         := PMB.Create_Buffer
             (Orka.Types.Single_Matrix_Type, Shapes_Count, PMB.Write);
