@@ -182,6 +182,13 @@ package Orka.Rendering.Buffers is
    with Pre => Object.Length = Target.Length;
    --  TODO Remove Kind and add pre-condition Object.Kind = Target.Kind
 
+   procedure Copy_Data
+     (Object : Buffer;
+      Target : Buffer;
+      Kind   : Orka.Types.Composite_Type)
+   with Pre => Object.Length = Target.Length;
+   --  TODO Remove Kind and add pre-condition Object.Kind = Target.Kind
+
 private
 
    type Buffer is tagged record

@@ -330,4 +330,31 @@ package body Orka.Rendering.Buffers is
       end case;
    end Copy_Data;
 
+   procedure Copy_Data
+     (Object : Buffer;
+      Target : Buffer;
+      Kind   : Orka.Types.Composite_Type)
+   is
+      use Orka.Types;
+
+      Length : constant Size := Size (Object.Length);
+   begin
+      case Kind is
+         when Single_Vector_Type =>
+            Pointers.Single_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Double_Vector_Type =>
+            Pointers.Double_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Single_Matrix_Type =>
+            Pointers.Single_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Double_Matrix_Type =>
+            Pointers.Double_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Arrays_Command_Type =>
+            Pointers.Arrays_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Elements_Command_Type =>
+            Pointers.Elements_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Dispatch_Command_Type =>
+            Pointers.Dispatch_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+      end case;
+   end Copy_Data;
+
 end Orka.Rendering.Buffers;
