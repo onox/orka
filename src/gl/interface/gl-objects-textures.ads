@@ -126,6 +126,7 @@ package GL.Objects.Textures is
    function Maximum_LoD          (Object : Texture_Base) return Double;
    function Lowest_Mipmap_Level  (Object : Texture_Base) return Mipmap_Level;
    function Highest_Mipmap_Level (Object : Texture_Base) return Mipmap_Level;
+   --  TODO LoD_Bias (Double)
 
    procedure Set_Max_Anisotropy (Object : Texture_Base; Degree : Double)
      with Pre => Degree >= 1.0;
@@ -189,9 +190,13 @@ package GL.Objects.Textures is
    function Blue_Size  (Object : Texture_Base; Level : Mipmap_Level) return Size;
    function Alpha_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
    function Depth_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   --  TODO Stencil_Size, Shared_Size
 
    function Compressed (Object : Texture_Base; Level : Mipmap_Level) return Boolean;
    function Compressed_Image_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   --  TODO Pre => Object is compressed
+
+   --  TODO Samples (Size), Fixed_Sample_Locations (Boolean) (if Object is multisampled)
 
    function Buffer_Offset (Object : Texture_Base; Level : Mipmap_Level) return Size;
    function Buffer_Size   (Object : Texture_Base; Level : Mipmap_Level) return Size;

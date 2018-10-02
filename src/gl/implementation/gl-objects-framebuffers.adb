@@ -292,6 +292,7 @@ package body GL.Objects.Framebuffers is
    begin
       API.Clear_Named_Framebuffer_Color (Object.Reference.GL_Id,
                                          Low_Level.Enums.Color, Index, Value);
+      --  TODO Use *fv to clear fixed- and floating-point, *iv for signed int, *uiv for unsigned
       Raise_Exception_On_OpenGL_Error;
    end Clear_Color_Buffer;
 

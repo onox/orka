@@ -1156,4 +1156,6 @@ private package GL.API is
    procedure Viewport is new Loader.Procedure_With_4_Params
      ("glViewport", Int, Int, Size, Size);
 
+   --  TODO glViewportArray, glDepthRangeArray, glScissorArray
+
 end GL.API;
