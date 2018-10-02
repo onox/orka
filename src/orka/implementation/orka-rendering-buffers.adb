@@ -183,6 +183,20 @@ package body Orka.Rendering.Buffers is
    function Length (Object : Buffer) return Natural
      is (Object.Length);
 
+   procedure Bind_Base (Object : Buffer; Target : Buffer_Kind; Index : Natural) is
+   begin
+      case Target is
+         when Uniform =>
+            GL.Objects.Buffers.Uniform_Buffer.Bind_Base (Object.Buffer, Index);
+         when Transform_Feedback =>
+            GL.Objects.Buffers.Transform_Feedback_Buffer.Bind_Base (Object.Buffer, Index);
+         when Shader_Storage =>
+            GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Object.Buffer, Index);
+         when Atomic_Counter =>
+            GL.Objects.Buffers.Atomic_Counter_Buffer.Bind_Base (Object.Buffer, Index);
+      end case;
+   end Bind_Base;
+
    -----------------------------------------------------------------------------
 
    procedure Set_Data

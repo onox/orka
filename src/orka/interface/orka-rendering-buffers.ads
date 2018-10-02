@@ -85,6 +85,12 @@ package Orka.Rendering.Buffers is
    function Length (Object : Buffer) return Natural
      with Inline;
 
+   type Buffer_Kind is (Uniform, Transform_Feedback, Shader_Storage, Atomic_Counter);
+
+   procedure Bind_Base (Object : Buffer; Target : Buffer_Kind; Index : Natural);
+   --  Bind the buffer object to the index of the target as well as to
+   --  the target itself.
+
    -----------------------------------------------------------------------------
 
    procedure Set_Data
