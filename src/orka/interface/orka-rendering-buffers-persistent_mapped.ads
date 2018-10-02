@@ -35,6 +35,14 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
    --  of regions. Each region has an index (>= 0).
    --
    --  After writing or reading, you must call Advance_Index (once per frame).
+   --
+   --  If Mode = Write, then you must wait for a fence to complete before
+   --  writing and then set the fence after the drawing or dispatch commands
+   --  which uses the mapped buffer.
+   --
+   --  If Mode = Read, then you must set a fence after the drawing or
+   --  dispatch commands that write to the buffer and then wait for the
+   --  fence to complete before reading the data.
 
    function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
