@@ -34,6 +34,7 @@ void main(void) {
     else {
         sdata[tid] = 0u;
     }
+    groupMemoryBarrier();
     barrier();
 
     // Interleaved addressing with divergent branching (slide 8 of [1]):
@@ -45,6 +46,7 @@ void main(void) {
         if (tid % (2u * s) == 0u) {
             sdata[tid] += sdata[tid + s];
         }
+        groupMemoryBarrier();
         barrier();
     }*/
 
@@ -57,6 +59,7 @@ void main(void) {
         if (index < gl_WorkGroupSize.x) {
             sdata[index] += sdata[index + s];
         }
+        groupMemoryBarrier();
         barrier();
     }*/
 
@@ -68,6 +71,7 @@ void main(void) {
         if (tid < s) {
             sdata[tid] += sdata[tid + s];
         }
+        groupMemoryBarrier();
         barrier();
     }*/
 
@@ -79,6 +83,7 @@ void main(void) {
         if (tid < s) {
             sdata[tid] += sdata[tid + s];
         }
+        groupMemoryBarrier();
         barrier();
     }
 

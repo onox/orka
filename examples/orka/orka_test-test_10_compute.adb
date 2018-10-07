@@ -62,7 +62,7 @@ begin
       use Orka.Rendering.Programs;
 
       Program_1 : Program := Create_Program (Modules.Create_Module
-        (CS => "../examples/orka/shaders/test-10-module-1.cs"));
+        (CS => "../examples/orka/shaders/test-10-module-1.comp"));
 
       Uniform_1 : constant Uniforms.Uniform := Program_1.Uniform ("maxNumbers");
 
@@ -101,6 +101,12 @@ begin
 
          A, B : Ada.Real_Time.Time;
          use type Ada.Real_Time.Time;
+
+         procedure Memory_Barrier is
+         begin
+            GL.Barriers.Memory_Barrier
+              ((By_Region => False, Shader_Storage | Buffer_Update => True, others => False));
+         end Memory_Barrier;
       begin
          Put_Line ("Factor:" & Factor'Image);
 
@@ -108,6 +114,7 @@ begin
          for Index in 0 .. Factor - 1 loop
             Buffer_1.Set_Data (Data => Numbers, Offset => Numbers'Length * Natural (Index));
          end loop;
+
          GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Buffer_1.GL_Buffer, 0);
 
          A := Ada.Real_Time.Clock;
@@ -128,12 +135,10 @@ begin
             Uniform_1.Set_UInt (UInt (Count));
 
             while Groups > 0 loop
-               --  Dispatch the compute shader
-               GL.Compute.Dispatch_Compute (X => UInt (Groups));
-
                --  Add an SSBO barrier for the next iteration
-               GL.Barriers.Memory_Barrier
-                 ((By_Region => False, Shader_Storage => True, others => False));
+               --  and then dispatch the compute shader
+               Memory_Barrier;
+               GL.Compute.Dispatch_Compute (X => UInt (Groups));
 
                Uniform_1.Set_UInt (UInt (Groups));
                Ceiling := Groups + (Groups rem Local_Size);
@@ -142,8 +147,11 @@ begin
 
             --  Perform last iteration. Work groups in X dimension needs
             --  to be at least one.
+            Memory_Barrier;
             GL.Compute.Dispatch_Compute (X => UInt (Size'Max (1, Groups)));
          end;
+
+         Memory_Barrier;
 
          declare
             Output : Int_Array (1 .. 2) := (others => 0);
