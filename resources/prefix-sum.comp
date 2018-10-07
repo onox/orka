@@ -1,0 +1,138 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+//  Copyright (c) 2018 onox <denkpadje@gmail.com>
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+
+// A compute shader which computes the parallel prefix sum [1, 2] to
+// compute the indices for stream compaction.
+//
+// For example, if 'inputs' is:
+//
+// [0 1 0 0 1 1 0 1 0 0 1 1 1 0 1 0]
+//
+// Then the prefix sum is:
+//
+// [0 0 1 1 1 2 3 3 4 4 4 5 6 7 7 8] (exclusive)
+// [0 1 1 1 2 3 3 4 4 4 5 6 7 7 8 8] (inclusive)
+//
+// The parallel prefix sum algorithm consists of a up-sweep phase
+// (parallel reduction) and a down-sweep phase.
+//
+// In order to make the algorithm work over multiple work groups,
+// the sum after the up-sweep phase is stored in a separate array.
+// The prefix sum of this array is computed using the same algorithm.
+// This gives the offset for each work group. The offsets are added to
+// the results in a separate kernel (compute shader).
+//
+// References:
+//
+// [1] Blelloch, G. E. (1990). Prefix sums and their applications.
+//     Technical Report CMU-CS-90-190, School of Computer Science,
+//     Carnegie Mellon University.
+//     (https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf)
+// [2] Harris, M., Sengupta, S., & Owens, J. D. (2007). Parallel prefix
+//     sum (scan) with CUDA. GPU gems, 3(39), 851-876.
+
+layout(local_size_x = 64) in;
+// Must be a power of two
+
+layout(std430, binding = 0) restrict buffer inputBuffer {
+    uint inputs[];
+};
+
+layout(std430, binding = 1) writeonly restrict buffer sumBuffer {
+    uint sums[];
+};
+
+shared uint data[gl_WorkGroupSize.x];
+
+void main(void) {
+    const uint gid = gl_GlobalInvocationID.x;
+    const uint tid = gl_LocalInvocationID.x;
+
+    const uint count = uint(inputs.length());
+    // Must be a multiple of four
+
+    uint a = 0u;
+    uint b = 0u;
+    uint c = 0u;
+    uint d = 0u;
+
+    if (4u * gid < count) {
+        a =     inputs[4u * gid + 0u];
+        b = a + inputs[4u * gid + 1u];
+        c = b + inputs[4u * gid + 2u];
+        d = c + inputs[4u * gid + 3u];
+    }
+    const uint sum = d;
+
+    data[tid] = sum;
+    groupMemoryBarrier();
+    barrier();
+
+    // Up-sweep (parallel reduction)
+    for (uint s = 1u; s < gl_WorkGroupSize.x; s *= 2u) {
+        uint index = 2u * s * tid + s - 1u;
+        if (index < gl_WorkGroupSize.x) {
+            data[index + s] += data[index];
+        }
+        groupMemoryBarrier();
+        barrier();
+    }
+
+    // Copy the value of the root node (the sum of a work group) to a
+    // separate array (so that the algorithm can work with more than one
+    // work group) and then set it to zero (needed for the down-sweep
+    // phase)
+    if (tid == gl_WorkGroupSize.x - 1u) {
+        sums[gl_WorkGroupID.x] = data[tid];
+        data[tid] = 0u;
+    }
+    groupMemoryBarrier();
+    barrier();
+
+    // Down-sweep
+    for (uint s = gl_WorkGroupSize.x / 2u; s > 0u; s >>= 1u) {
+        const uint index = 2u * s * tid + s - 1u;
+        if (index < gl_WorkGroupSize.x) {
+            uint left = data[index];
+            data[index] = data[index + s];
+            data[index + s] += left;
+        }
+        groupMemoryBarrier();
+        barrier();
+    }
+
+    if (4u * gid < count) {
+        inputs[4u * gid + 1u] = a + data[tid];
+        inputs[4u * gid + 2u] = b + data[tid];
+        inputs[4u * gid + 3u] = c + data[tid];
+
+        // Don't overwrite the first element of the next work group
+        if (tid < gl_WorkGroupSize.x - 1u) {
+            inputs[4u * gid + 4u] = d + data[tid];
+        }
+    }
+
+    // Set the first element of each work group to zero. This and the
+    // indices above (1u, 2u, 3u) will make sure the prefix sum is
+    // exclusive and zero-based. This also makes it easier to add the
+    // offsets which are computed using the 'sums' array.
+    if (tid == 0u) {
+        inputs[4u * gid] = 0u;
+    }
+}
