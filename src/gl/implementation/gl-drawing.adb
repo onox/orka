@@ -12,8 +12,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System;
+
 with GL.API;
 with GL.Low_Level;
+with GL.Types.Indirect;
 
 package body GL.Drawing is
 
@@ -40,19 +43,35 @@ package body GL.Drawing is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays;
 
-   procedure Draw_Multiple_Arrays_Indirect (Mode : Connection_Mode; Count : Size) is
+   procedure Draw_Multiple_Arrays_Indirect
+     (Mode   : Connection_Mode;
+      Count  : Size;
+      Offset : Size := 0)
+   is
+      use GL.Types.Indirect;
+
+      Offset_In_Bytes : constant Size
+        := Offset * Arrays_Indirect_Command'Size / System.Storage_Unit;
    begin
-      API.Multi_Draw_Arrays_Indirect (Mode, 0, Count, 0);
+      API.Multi_Draw_Arrays_Indirect (Mode, Offset_In_Bytes, Count, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays_Indirect;
 
    procedure Draw_Multiple_Arrays_Indirect_Count
-     (Mode         : Connection_Mode;
-      Count_Offset : Natural;
-      Max_Count    : Size) is
+     (Mode      : Connection_Mode;
+      Max_Count : Size;
+      Offset, Count_Offset : Size := 0)
+   is
+      use GL.Types.Indirect;
+
+      Offset_In_Bytes : constant Size
+        := Offset * Arrays_Indirect_Command'Size / System.Storage_Unit;
+      Count_Offset_In_Bytes : constant Size
+        := Offset * Size'Size / System.Storage_Unit;
+      pragma Assert (Count_Offset_In_Bytes mod 4 = 0);
    begin
       API.Multi_Draw_Arrays_Indirect_Count
-        (Mode, 0, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
+        (Mode, Offset_In_Bytes, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays_Indirect_Count;
 
@@ -162,20 +181,36 @@ package body GL.Drawing is
    procedure Draw_Multiple_Elements_Indirect
      (Mode       : Connection_Mode;
       Index_Type : Unsigned_Numeric_Type;
-      Count      : Size) is
+      Count      : Size;
+      Offset     : Size := 0)
+   is
+      use GL.Types.Indirect;
+
+      Offset_In_Bytes : constant Size
+        := Offset * Elements_Indirect_Command'Size / System.Storage_Unit;
    begin
-      API.Multi_Draw_Elements_Indirect (Mode, Index_Type, 0, Count, 0);
+      API.Multi_Draw_Elements_Indirect
+        (Mode, Index_Type, Offset_In_Bytes, Count, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements_Indirect;
 
    procedure Draw_Multiple_Elements_Indirect_Count
      (Mode         : Connection_Mode;
       Index_Type   : Unsigned_Numeric_Type;
-      Count_Offset : Natural;
-      Max_Count    : Size) is
+      Max_Count    : Size;
+      Offset, Count_Offset : Size := 0)
+   is
+      use GL.Types.Indirect;
+
+      Offset_In_Bytes : constant Size
+        := Offset * Elements_Indirect_Command'Size / System.Storage_Unit;
+      Count_Offset_In_Bytes : constant Size
+        := Offset * Size'Size / System.Storage_Unit;
+      pragma Assert (Count_Offset_In_Bytes mod 4 = 0);
    begin
       API.Multi_Draw_Elements_Indirect_Count
-        (Mode, Index_Type, 0, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
+        (Mode, Index_Type, Offset_In_Bytes,
+         Low_Level.IntPtr (Count_Offset_In_Bytes), Max_Count, 0);
       Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements_Indirect_Count;
 
