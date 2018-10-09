@@ -114,18 +114,26 @@ package body Orka.Rendering.Vertex_Formats is
       Object.Vertex_Array.Bind_Element_Buffer (Buffer.GL_Buffer);
    end Set_Index_Buffer;
 
-   procedure Draw (Object : Vertex_Format; Offset, Count : GL.Types.Size) is
+   -----------------------------------------------------------------------------
+
+   procedure Draw (Object : Vertex_Format; Offset, Count : Natural) is
    begin
       Object.Vertex_Array.Bind;
-      GL.Drawing.Draw_Arrays (Object.Mode, Offset, Count);
+      GL.Drawing.Draw_Arrays (Object.Mode, Offset => Size (Offset), Count => Size (Count));
    end Draw;
 
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer) is
+   procedure Draw_Indirect
+     (Object : Vertex_Format; Buffer : Buffers.Buffer; Offset, Count : Natural) is
    begin
       Object.Vertex_Array.Bind;
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
       GL.Drawing.Draw_Multiple_Elements_Indirect
-        (Object.Mode, Object.Index_Kind, GL.Types.Size (Buffer.Length));
+        (Object.Mode, Object.Index_Kind, Count => Size (Count), Offset => Size (Offset));
+   end Draw_Indirect;
+
+   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer) is
+   begin
+      Object.Draw_Indirect (Buffer, Offset => 0, Count => Buffer.Length);
    end Draw_Indirect;
 
    procedure Draw_Indirect (Object : Vertex_Format; Buffer, Count : Buffers.Buffer) is
@@ -134,7 +142,7 @@ package body Orka.Rendering.Vertex_Formats is
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
       GL.Objects.Buffers.Parameter_Buffer.Bind (Count.GL_Buffer);
       GL.Drawing.Draw_Multiple_Elements_Indirect_Count
-        (Object.Mode, Object.Index_Kind, 0, GL.Types.Size (Buffer.Length));
+        (Object.Mode, Object.Index_Kind, GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
 
 end Orka.Rendering.Vertex_Formats;

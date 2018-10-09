@@ -65,11 +65,19 @@ package Orka.Rendering.Vertex_Formats is
 
    -----------------------------------------------------------------------------
 
-   procedure Draw (Object : Vertex_Format; Offset, Count : GL.Types.Size);
+   procedure Draw (Object : Vertex_Format; Offset, Count : Natural);
 
    procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer);
+   --  Draw all elements commands in the bound indirect buffer
 
    procedure Draw_Indirect (Object : Vertex_Format; Buffer, Count : Buffers.Buffer);
+   --  Draw multiple elements commands in the bound indirect buffer. The
+   --  number of commands is determined by the value in the Count buffer
+
+   procedure Draw_Indirect
+     (Object : Vertex_Format; Buffer : Buffers.Buffer; Offset, Count : Natural);
+   --  Draw multiple elements commands at the given offset in the bound
+   --  indirect buffer
 
 private
 
