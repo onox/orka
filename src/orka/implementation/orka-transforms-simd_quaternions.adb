@@ -117,9 +117,12 @@ package body Orka.Transforms.SIMD_Quaternions is
 
    procedure Rotate_At_Origin
      (Vector   : in out Vector4;
-      Elements : Quaternion) is
+      Elements : Quaternion)
+   is
+      Result : Vectors.Vector_Type;
    begin
-      Vector := Vectors.Vector_Type (Elements * Quaternion (Vector) * Conjugate (Elements));
+      Result := Vectors.Vector_Type (Elements * Quaternion (Vector) * Conjugate (Elements));
+      Vector := Result;
    end Rotate_At_Origin;
 
    function Lerp
