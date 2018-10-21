@@ -71,4 +71,6 @@ package Orka.Transforms.SIMD_Vectors is
 
    function Cross (Left, Right : Vector_Type) return Vector_Type renames Cross_Product;
 
+   function Image (Elements : Vector_Type) return String;
+
 end Orka.Transforms.SIMD_Vectors;

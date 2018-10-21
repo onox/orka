@@ -151,4 +151,7 @@ package body Orka.Transforms.SIMD_Quaternions is
       return Quaternion ((SL / SA) * Vector4 (Left) + (SR / SA) * Vector4 (Right));
    end Slerp;
 
+   function Image (Elements : Quaternion) return String is
+     (Vectors.Image (Vectors.Vector_Type (Elements)));
+
 end Orka.Transforms.SIMD_Quaternions;

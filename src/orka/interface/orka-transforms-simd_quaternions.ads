@@ -75,4 +75,6 @@ package Orka.Transforms.SIMD_Quaternions is
    --  Return the interpolated unit quaternion on the shortest arc
    --  between the Left and Right quaternions.
 
+   function Image (Elements : Quaternion) return String;
+
 end Orka.Transforms.SIMD_Quaternions;

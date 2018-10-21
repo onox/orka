@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Ada.Numerics.Generic_Elementary_Functions;
+with Ada.Strings.Fixed;
 
 package body Orka.Transforms.SIMD_Vectors is
 
@@ -71,5 +72,19 @@ package body Orka.Transforms.SIMD_Vectors is
 
    function Dot (Left, Right : Vector_Type) return Element_Type is
      (Sum (Left * Right));
+
+   function Image (Elements : Vector_Type) return String is
+      use all type SIMD.Index_Homogeneous;
+
+      package SF renames Ada.Strings.Fixed;
+      use Ada.Strings;
+   begin
+      return "(" &
+        SF.Trim (Elements (X)'Image, Left) & ", " &
+        SF.Trim (Elements (Y)'Image, Left) & ", " &
+        SF.Trim (Elements (Z)'Image, Left) & ", " &
+        SF.Trim (Elements (W)'Image, Left) &
+      ")";
+   end Image;
 
 end Orka.Transforms.SIMD_Vectors;
