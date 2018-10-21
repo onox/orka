@@ -35,7 +35,7 @@ package body Test_Transforms_Singles_Quaternions is
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
 
    function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
-      Epsilon : constant GL.Types.Single := 2.0 ** (1 - GL.Types.Single'Model_Mantissa);
+      Epsilon : constant GL.Types.Single := GL.Types.Single'Model_Epsilon;
    begin
       return Result in Expected - Epsilon .. Expected + Epsilon;
    end Is_Equivalent;
@@ -177,11 +177,19 @@ package body Test_Transforms_Singles_Quaternions is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
       Angle : constant GL.Types.Single := 90.0;
 
-      Expected : constant Quaternion := R (Axis, Angle);
-      Result   : constant Quaternion := R (Start_Vector, End_Vector);
+      Expected_1 : constant Quaternion := R (Axis, Angle);
+      Result_1   : constant Quaternion := R (Start_Vector, End_Vector);
+
+      Expected_2 : constant Quaternion := R (Axis, -Angle);
+      Result_2   : constant Quaternion := R (End_Vector, Start_Vector);
    begin
       for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
+         Assert (Is_Equivalent (Expected_1 (I), Result_1 (I)),
+           "Unexpected Single at " & Index_Homogeneous'Image (I));
+      end loop;
+
+      for I in Index_Homogeneous loop
+         Assert (Is_Equivalent (Expected_2 (I), Result_2 (I)),
            "Unexpected Single at " & Index_Homogeneous'Image (I));
       end loop;
    end Test_Rotate_Vectors;
