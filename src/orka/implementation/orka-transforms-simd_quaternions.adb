@@ -58,23 +58,10 @@ package body Orka.Transforms.SIMD_Quaternions is
      (Vectors.Magnitude (Vector4 (Elements)));
 
    function Normalize (Elements : Quaternion) return Quaternion is
-      Length : constant Vectors.Element_Type := Vectors.Magnitude (Vector4 (Elements));
-      Length_Vector : constant Vector4 := (Length, Length, Length, Length);
-   begin
-      return Quaternion (Vectors.Divide_Or_Zero (Vector4 (Elements), Length_Vector));
-   end Normalize;
+     (Quaternion (Vectors.Normalize (Vector4 (Elements))));
 
    function Normalized (Elements : Quaternion) return Boolean is
-      use type Vectors.Element_Type;
-
-      function Is_Equivalent (Expected, Result : Vectors.Element_Type) return Boolean is
-         Epsilon : constant Vectors.Element_Type := 2.0 ** (1 - Vectors.Element_Type'Model_Mantissa);
-      begin
-         return Result in Expected - Epsilon .. Expected + Epsilon;
-      end Is_Equivalent;
-   begin
-      return Is_Equivalent (1.0, Norm (Elements));
-   end Normalized;
+     (Vectors.Normalized (Vector4 (Elements)));
 
    function R
      (Axis  : Vector4;
