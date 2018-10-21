@@ -42,12 +42,12 @@ package body Orka.Transforms.SIMD_Vectors is
 
    function Normalized (Elements : Vector_Type) return Boolean is
       function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
-         Epsilon : constant Element_Type := 2.0 ** (1 - Element_Type'Model_Mantissa);
+         Epsilon : constant Element_Type := Element_Type'Model_Epsilon;
       begin
          return Result in Expected - Epsilon .. Expected + Epsilon;
       end Is_Equivalent;
    begin
-      return Is_Equivalent (1.0, Magnitude (Elements));
+      return Is_Equivalent (1.0, Magnitude2 (Elements));
    end Normalized;
 
    function Distance (Left, Right : Vector_Type) return Element_Type is
