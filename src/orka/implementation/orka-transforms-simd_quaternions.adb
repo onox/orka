@@ -95,14 +95,17 @@ package body Orka.Transforms.SIMD_Quaternions is
       if SRE /= 0.0 then
          --  Equation 4.53 from chapter 4.3 Quaternions from Real-Time Rendering
          --  (third edition, 2008)
-         return Result : Quaternion := Quaternion ((1.0 / SRE) * Vectors.Cross (S, T)) do
+         declare
+            Result : Quaternion := Quaternion ((1.0 / SRE) * Vectors.Cross (S, T));
+         begin
             Result (SIMD.W) := SRE / 2.0;
-         end return;
+            return Normalize (Result);
+         end;
       else
-         if abs Left (SIMD.Z) < abs Left (SIMD.X) then
-            return R ((Left (SIMD.Y), -Left (SIMD.X), 0.0, 0.0), 180.0);
+         if abs S (SIMD.Z) < abs S (SIMD.X) then
+            return R ((S (SIMD.Y), -S (SIMD.X), 0.0, 0.0), 180.0);
          else
-            return R ((0.0, -Left (SIMD.Z), Left (SIMD.Y), 0.0), 180.0);
+            return R ((0.0, -S (SIMD.Z), S (SIMD.Y), 0.0), 180.0);
          end if;
       end if;
    end R;

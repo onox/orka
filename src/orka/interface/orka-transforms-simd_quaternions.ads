@@ -27,8 +27,7 @@ package Orka.Transforms.SIMD_Quaternions is
      ((0.0, 0.0, 0.0, 1.0))
    with Inline;
 
-   function "*" (Left, Right : Quaternion) return Quaternion
-     with Post => Normalized ("*"'Result);
+   function "*" (Left, Right : Quaternion) return Quaternion;
 
    function Conjugate (Elements : Quaternion) return Quaternion;
 
