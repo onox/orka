@@ -314,6 +314,7 @@ private package GL.API is
      ("glPolygonOffsetClamp", Single, Single, Single);
 
    --  TODO glPointSize, glSampleCoverage, glSampleMaski, glPointParameter{if}[v]
+   --  TODO glGetMultisample, glGetInternalFormat, glGetGraphicsResetStatus
 
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --
