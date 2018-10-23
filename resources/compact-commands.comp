@@ -1,0 +1,72 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+//  Copyright (c) 2018 onox <denkpadje@gmail.com>
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+
+layout(local_size_x = 64) in;
+// Must be a power of two
+
+layout(std430, binding = 0) readonly restrict buffer offsetBuffer {
+    uint offsets[];
+};
+
+layout(std430, binding = 1) readonly restrict buffer visibleBuffer {
+    uint visibles[];
+};
+
+layout(std430, binding = 2) readonly restrict buffer matrixInputBuffer {
+    mat4 inputMatrices[];
+};
+
+layout(std430, binding = 3) writeonly restrict buffer matrixOutputBuffer {
+    mat4 outputMatrices[];
+};
+
+struct Command {
+    uint count;
+    uint instanceCount;
+    uint firstIndex;
+    uint baseVertex;
+    uint baseInstance;
+};
+
+layout(std430, binding = 4) restrict buffer commandBuffer {
+    Command commands[];
+};
+
+uniform uint indexOffset;
+uniform uint instances;
+
+void main(void) {
+    const uint gid = gl_GlobalInvocationID.x;
+    const uint totalPartsCount = uint(visibles.length());
+
+    if (gid < totalPartsCount && visibles[gid] == 1u) {
+        const uint part = uint(gid / instances);
+
+        // Copy the matrix to the calculated offset
+        outputMatrices[offsets[gid]] = inputMatrices[indexOffset + gid];
+
+        // Update the instances counter of the draw command
+        if (atomicAdd(commands[part].instanceCount, 1u) == 0u) {
+            commands[part].baseInstance = offsets[gid];
+        }
+    }
+
+    // Note: the total number of draw calls is:
+    // uint(offsets[totalPartsCount - 1u] + visibles[totalPartsCount - 1u])
+}
