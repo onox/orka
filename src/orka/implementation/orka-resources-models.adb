@@ -72,9 +72,9 @@ package body Orka.Resources.Models is
 
    overriding
    procedure Render (Object : in out Model_Instance) is
+      use all type Rendering.Buffers.Buffer_Target;
    begin
-      Object.Model.Uniform_IO.Set_Int (GL.Types.Int (Object.Transforms.Index_Offset));
-      GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Object.Transforms.GL_Buffer, 0);
+      Object.Transforms.Bind_Base (Shader_Storage, 0);
 
       --  TODO Only do this once per model, not for each instance
       Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);

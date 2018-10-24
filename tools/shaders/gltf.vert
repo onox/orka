@@ -11,7 +11,6 @@ layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 matrices[];
 };
 
-uniform int indexOffset;
 uniform mat4 view;
 uniform mat4 proj;
 uniform vec4 lightPosition;
@@ -29,7 +28,8 @@ void main(void) {
     int instanceID = gl_DrawIDARB;
 
     // Ideally pre-compute modelView and normalMatrix on CPU
-    mat4 world = matrices[indexOffset + instanceID];
+    mat4 world = matrices[instanceID];
+
     mat4 modelView = view * world;
     mat4 normalMatrix = transpose(inverse(modelView));
 

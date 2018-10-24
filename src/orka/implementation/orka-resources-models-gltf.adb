@@ -357,7 +357,6 @@ package body Orka.Resources.Models.glTF is
 
    type GLTF_Loader is limited new Loaders.Loader with record
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager : Managers.Manager_Ptr;
    end record;
 
@@ -375,7 +374,6 @@ package body Orka.Resources.Models.glTF is
         (Jobs.Abstract_Job with
           Data     => Data,
           Format   => Object.Format,
-          Index_Offset => Object.Index_Offset,
           Manager  => Object.Manager,
           Location => Location);
    begin
@@ -384,12 +382,8 @@ package body Orka.Resources.Models.glTF is
 
    function Create_Loader
      (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
-   is (new GLTF_Loader'
-     (Format       => Format,
-      Index_Offset => Index_Offset,
-      Manager      => Manager));
+   is (new GLTF_Loader'(Format => Format, Manager => Manager));
 
    -----------------------------------------------------------------------------
 
@@ -415,7 +409,6 @@ package body Orka.Resources.Models.glTF is
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
-            Index_Offset => Object.Index_Offset,
             Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
             others     => <>);
@@ -631,7 +624,6 @@ package body Orka.Resources.Models.glTF is
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,
          Format => Data.Format,
-         Uniform_IO => Data.Index_Offset,
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices,
             Format  => Data.Format.all,

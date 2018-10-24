@@ -79,7 +79,6 @@ private
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Bounds  : Rendering.Buffers.Buffer;
-      Uniform_IO : not null access Rendering.Programs.Uniforms.Uniform;
    end record;
 
    type Model_Instance (Model : access Orka.Resources.Models.Model) is

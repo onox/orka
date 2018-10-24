@@ -12,8 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-with Ada.Unchecked_Deallocation;
+private with Ada.Real_Time;
+private with Ada.Unchecked_Deallocation;
 
 private with Orka.glTF.Buffers;
 private with Orka.glTF.Accessors;
@@ -30,7 +30,6 @@ package Orka.Resources.Models.glTF is
 
    function Create_Loader
      (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
 private
@@ -63,7 +62,6 @@ private
       Times     : Times_Data := (others => Time_Span_Zero);
       Start_Time : Time;
       Format    : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager   : Managers.Manager_Ptr;
    end record;
 
@@ -75,7 +73,6 @@ private
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
       Data     : Loaders.Resource_Data;
       Format   : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Index_Offset : not null access Rendering.Programs.Uniforms.Uniform;
       Manager  : Managers.Manager_Ptr;
       Location : Locations.Location_Ptr;
    end record;
