@@ -48,7 +48,6 @@ layout(std430, binding = 2) writeonly restrict buffer outputBuffer {
     // Must be a multiple of four
 };
 
-uniform uint indexOffset;
 uniform uint instances;
 uniform mat4 viewProj;
 
@@ -90,7 +89,7 @@ void main(void) {
     if (gid < totalPartsCount) {
         const uint part = uint(gid / instances);
 
-        const mat4 world = matrices[indexOffset + gid];
+        const mat4 world = matrices[gid];
         const mat4 worldViewProj = viewProj * world;
 
         const vec4 bboxMin = bboxes[part].minimum;

@@ -28,8 +28,6 @@ package Orka.Culling is
 
    type Culler_Ptr is not null access Culler'Class;
 
-   procedure Pre_Cull (Object : in out Culler; Offset : Natural);
-
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4);
 
    function Create_Culler return Culler;
@@ -40,7 +38,8 @@ package Orka.Culling is
 
    procedure Cull
      (Object : in out Cull_Instance;
-      Transforms, Bounds, Commands : Rendering.Buffers.Buffer;
+      Transforms : Rendering.Buffers.Bindable_Buffer'Class;
+      Bounds, Commands : Rendering.Buffers.Buffer;
       Compacted_Transforms, Compacted_Commands : out Rendering.Buffers.Buffer;
       Instances : Natural);
 
@@ -58,9 +57,7 @@ private
       Program_Compact : Programs.Program;
       PS_Factory      : Algorithms.Prefix_Sums.Factory;
 
-      Uniform_CF_IO : Programs.Uniforms.Uniform (LE.UInt_Type);
-      Uniform_CC_IO : Programs.Uniforms.Uniform (LE.UInt_Type);
-      Uniform_VP    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_VP : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_CF_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
       Uniform_CC_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
    end record;

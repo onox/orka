@@ -37,11 +37,9 @@ package body Orka.Culling is
             PS_Factory => Algorithms.Prefix_Sums.Create_Factory,
             others => <>)
       do
-         Result.Uniform_CF_IO        := Result.Program_Frustum.Uniform ("indexOffset");
          Result.Uniform_CF_Instances := Result.Program_Frustum.Uniform ("instances");
          Result.Uniform_VP           := Result.Program_Frustum.Uniform ("viewProj");
 
-         Result.Uniform_CC_IO        := Result.Program_Compact.Uniform ("indexOffset");
          Result.Uniform_CC_Instances := Result.Program_Compact.Uniform ("instances");
       end return;
    end Create_Culler;
@@ -91,14 +89,6 @@ package body Orka.Culling is
       end return;
    end Create_Instance;
 
-   procedure Pre_Cull (Object : in out Culler; Offset : Natural) is
-      use GL.Types;
-   begin
-      --  TODO This should be done once, but we don't have easy access to the offset currently
-      Object.Uniform_CF_IO.Set_UInt (UInt (Offset));
-      Object.Uniform_CC_IO.Set_UInt (UInt (Offset));
-   end Pre_Cull;
-
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4) is
    begin
       Object.Uniform_VP.Set_Matrix (View_Projection);
@@ -116,8 +106,9 @@ package body Orka.Culling is
    use all type Rendering.Buffers.Buffer_Target;
 
    procedure Cull_Frustum
-     (Object : in out Cull_Instance;
-      Transforms, Bounds : Rendering.Buffers.Buffer) is
+     (Object     : in out Cull_Instance;
+      Transforms : Rendering.Buffers.Bindable_Buffer'Class;
+      Bounds     : Rendering.Buffers.Buffer) is
    begin
       Transforms.Bind_Base (Shader_Storage, 0);
       Bounds.Bind_Base (Shader_Storage, 1);
@@ -131,8 +122,9 @@ package body Orka.Culling is
    end Cull_Frustum;
 
    procedure Compact
-     (Object : in out Cull_Instance;
-      Transforms, Commands : Rendering.Buffers.Buffer) is
+     (Object     : in out Cull_Instance;
+      Transforms : Rendering.Buffers.Bindable_Buffer'Class;
+      Commands   : Rendering.Buffers.Buffer) is
    begin
       Object.Buffer_Indices.Bind_Base (Shader_Storage, 0);
       Object.Buffer_Visibles.Bind_Base (Shader_Storage, 1);
@@ -154,7 +146,8 @@ package body Orka.Culling is
 
    procedure Cull
      (Object : in out Cull_Instance;
-      Transforms, Bounds, Commands : Rendering.Buffers.Buffer;
+      Transforms : Rendering.Buffers.Bindable_Buffer'Class;
+      Bounds, Commands : Rendering.Buffers.Buffer;
       Compacted_Transforms, Compacted_Commands : out Rendering.Buffers.Buffer;
       Instances : Natural) is
    begin
