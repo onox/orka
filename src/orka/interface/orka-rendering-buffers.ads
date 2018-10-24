@@ -23,7 +23,20 @@ package Orka.Rendering.Buffers is
 
    use GL.Types;
 
-   type Buffer is tagged private;
+   -----------------------------------------------------------------------------
+
+   type Bindable_Buffer is interface;
+
+   type Buffer_Target is (Uniform, Transform_Feedback, Shader_Storage, Atomic_Counter);
+
+   procedure Bind_Base
+     (Object : Bindable_Buffer;
+      Target : Buffer_Target;
+      Index  : Natural) is abstract;
+
+   -----------------------------------------------------------------------------
+
+   type Buffer is new Bindable_Buffer with private;
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -85,9 +98,8 @@ package Orka.Rendering.Buffers is
    function Length (Object : Buffer) return Natural
      with Inline;
 
-   type Buffer_Kind is (Uniform, Transform_Feedback, Shader_Storage, Atomic_Counter);
-
-   procedure Bind_Base (Object : Buffer; Target : Buffer_Kind; Index : Natural);
+   overriding
+   procedure Bind_Base (Object : Buffer; Target : Buffer_Target; Index : Natural);
    --  Bind the buffer object to the index of the target as well as to
    --  the target itself.
 
@@ -197,7 +209,7 @@ package Orka.Rendering.Buffers is
 
 private
 
-   type Buffer is tagged record
+   type Buffer is new Bindable_Buffer with record
       Buffer : GL.Objects.Buffers.Buffer;
       Length : Natural;
    end record;

@@ -113,7 +113,7 @@ package body Orka.Culling is
    end Memory_Barrier;
 
    use GL.Types;
-   use all type Rendering.Buffers.Buffer_Kind;
+   use all type Rendering.Buffers.Buffer_Target;
 
    procedure Cull_Frustum
      (Object : in out Cull_Instance;

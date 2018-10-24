@@ -74,6 +74,55 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
 
    -----------------------------------------------------------------------------
 
+   overriding
+   procedure Bind_Base
+     (Object : Persistent_Mapped_Buffer;
+      Target : Buffer_Target;
+      Index  : Natural)
+   is
+      Buffer_Target : access constant GL.Objects.Buffers.Buffer_Target;
+
+      Offset : constant Size := Size (Object.Index_Offset);
+      Length : constant Size := Size (Object.Length);
+   begin
+      case Target is
+         when Uniform =>
+            Buffer_Target := GL.Objects.Buffers.Uniform_Buffer'Access;
+         when Transform_Feedback =>
+            Buffer_Target := GL.Objects.Buffers.Transform_Feedback_Buffer'Access;
+         when Shader_Storage =>
+            Buffer_Target := GL.Objects.Buffers.Shader_Storage_Buffer'Access;
+         when Atomic_Counter =>
+            Buffer_Target := GL.Objects.Buffers.Atomic_Counter_Buffer'Access;
+      end case;
+
+      case Object.Kind is
+         when Single_Vector_Type =>
+            Pointers.Single_Vector4.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Double_Vector_Type =>
+            Pointers.Double_Vector4.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Single_Matrix_Type =>
+            Pointers.Single_Matrix4.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Double_Matrix_Type =>
+            Pointers.Double_Matrix4.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Arrays_Command_Type =>
+            Pointers.Arrays_Command.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Elements_Command_Type =>
+            Pointers.Elements_Command.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+         when Dispatch_Command_Type =>
+            Pointers.Dispatch_Command.Bind_Range
+              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+      end case;
+   end Bind_Base;
+
+   -----------------------------------------------------------------------------
+
    procedure Write_Data
      (Object : Persistent_Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;

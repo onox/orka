@@ -184,16 +184,16 @@ package GL.Objects.Buffers is
    --  Array_Buffer, Element_Array_Buffer, Texture_Buffer,
    --  Copy_Read_Buffer, and Copy_Write_Buffer are no longer needed
    --  since the GL.Objects.* packages use DSA
-   Pixel_Pack_Buffer         : constant Buffer_Target;
-   Pixel_Unpack_Buffer       : constant Buffer_Target;
-   Uniform_Buffer            : constant Buffer_Target;
-   Transform_Feedback_Buffer : constant Buffer_Target;
-   Draw_Indirect_Buffer      : constant Buffer_Target;
-   Parameter_Buffer          : constant Buffer_Target;
-   Shader_Storage_Buffer     : constant Buffer_Target;
-   Dispatch_Indirect_Buffer  : constant Buffer_Target;
-   Query_Buffer              : constant Buffer_Target;
-   Atomic_Counter_Buffer     : constant Buffer_Target;
+   Pixel_Pack_Buffer         : aliased constant Buffer_Target;
+   Pixel_Unpack_Buffer       : aliased constant Buffer_Target;
+   Uniform_Buffer            : aliased constant Buffer_Target;
+   Transform_Feedback_Buffer : aliased constant Buffer_Target;
+   Draw_Indirect_Buffer      : aliased constant Buffer_Target;
+   Parameter_Buffer          : aliased constant Buffer_Target;
+   Shader_Storage_Buffer     : aliased constant Buffer_Target;
+   Dispatch_Indirect_Buffer  : aliased constant Buffer_Target;
+   Query_Buffer              : aliased constant Buffer_Target;
+   Atomic_Counter_Buffer     : aliased constant Buffer_Target;
 
 private
 
@@ -229,25 +229,25 @@ private
 
    type Buffer is new GL_Object with null record;
    
-   Pixel_Pack_Buffer         : constant Buffer_Target
+   Pixel_Pack_Buffer         : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Pack_Buffer);
-   Pixel_Unpack_Buffer       : constant Buffer_Target
+   Pixel_Unpack_Buffer       : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Unpack_Buffer);
-   Uniform_Buffer            : constant Buffer_Target
+   Uniform_Buffer            : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Uniform_Buffer);
-   Transform_Feedback_Buffer : constant Buffer_Target
+   Transform_Feedback_Buffer : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Transform_Feedback_Buffer);
-   Draw_Indirect_Buffer      : constant Buffer_Target
+   Draw_Indirect_Buffer      : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Draw_Indirect_Buffer);
-   Parameter_Buffer          : constant Buffer_Target
+   Parameter_Buffer          : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Parameter_Buffer);
-   Shader_Storage_Buffer     : constant Buffer_Target
+   Shader_Storage_Buffer     : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Shader_Storage_Buffer);
-   Dispatch_Indirect_Buffer  : constant Buffer_Target
+   Dispatch_Indirect_Buffer  : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Dispatch_Indirect_Buffer);
-   Query_Buffer              : constant Buffer_Target
+   Query_Buffer              : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Query_Buffer);
-   Atomic_Counter_Buffer     : constant Buffer_Target
+   Atomic_Counter_Buffer     : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Low_Level.Enums.Atomic_Counter_Buffer);
 
 end GL.Objects.Buffers;

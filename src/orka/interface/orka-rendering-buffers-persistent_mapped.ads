@@ -22,7 +22,8 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
    type IO_Mode is (Read, Write);
 
    type Persistent_Mapped_Buffer
-     (Kind : Orka.Types.Composite_Type; Mode : IO_Mode) is tagged private;
+     (Kind : Orka.Types.Composite_Type;
+      Mode : IO_Mode) is new Bindable_Buffer with private;
 
    function Create_Buffer
      (Kind   : Orka.Types.Composite_Type;
@@ -62,6 +63,16 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
    --  advanced.
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer);
+
+   -----------------------------------------------------------------------------
+
+   overriding
+   procedure Bind_Base
+     (Object : Persistent_Mapped_Buffer;
+      Target : Buffer_Target;
+      Index  : Natural);
+   --  Bind the buffer object to the index of the target as well as to
+   --  the target itself.
 
    -----------------------------------------------------------------------------
 
@@ -157,7 +168,7 @@ private
 
    type Persistent_Mapped_Buffer
      (Kind : Orka.Types.Composite_Type; Mode : IO_Mode)
-   is tagged record
+   is new Bindable_Buffer with record
       Buffer : Buffers.Buffer;
       Index  : Index_Type;
       case Kind is
