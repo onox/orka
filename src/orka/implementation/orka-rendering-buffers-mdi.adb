@@ -32,10 +32,10 @@ package body Orka.Rendering.Buffers.MDI is
    begin
       Commands (1) :=
         (Count         => UInt (Index_Count),
-         Instances     => (if Object.Visible then 1 else 0),
+         Instances     => 0,
          First_Index   => UInt (Object.Index_Offset),
          Base_Vertex   => UInt (Object.Vertex_Offset),
-         Base_Instance => UInt (Object.Index));
+         Base_Instance => 0);
 
       --  Upload attributes to VBO's
       Object.Positions.Set_Data (Positions.all, Offset => Object.Vertex_Offset * 3);

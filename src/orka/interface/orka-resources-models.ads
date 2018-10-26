@@ -15,6 +15,7 @@
 with Ada.Containers.Indefinite_Holders;
 
 with Orka.Behaviors;
+with Orka.Culling;
 with Orka.Rendering.Buffers.MDI;
 with Orka.Rendering.Buffers.Persistent_Mapped;
 with Orka.Rendering.Programs.Uniforms;
@@ -26,18 +27,12 @@ with Orka.Types;
 package Orka.Resources.Models is
    pragma Preelaborate;
 
-   package Trees renames Scenes.Singles.Trees;
-   package Transforms renames Orka.Transforms.Singles.Matrices;
-
-   type Buffer_Region_Type is mod 4;
-
-   package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Buffer_Region_Type);
-
    type Model is limited new Resource with private;
 
    function Create_Instance
      (Object   : in out Model;
-      Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr;
+      Position : Behaviors.Transforms.Vector4;
+      Culler   : Culling.Culler_Ptr) return Behaviors.Behavior_Ptr;
 
    type Model_Ptr is not null access all Model;
 
@@ -49,7 +44,10 @@ package Orka.Resources.Models is
    procedure After_Update
      (Object : in out Model_Instance;
       Delta_Time    : Duration;
-      View_Position : Transforms.Vector4);
+      View_Position : Behaviors.Transforms.Vector4);
+
+   overriding
+   procedure Cull (Object : in out Model_Instance);
 
    overriding
    procedure Render (Object : in out Model_Instance);
@@ -67,6 +65,9 @@ private
    package Cursor_Array_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Cursor_Array);
 
+   package Trees renames Scenes.Singles.Trees;
+   package Transforms renames Orka.Transforms.Singles.Matrices;
+
    type Model_Scene is limited record
       Scene  : Trees.Tree;
       Shapes : Cursor_Array_Holder.Holder;
@@ -81,6 +82,10 @@ private
       Bounds  : Rendering.Buffers.Buffer;
    end record;
 
+   type Buffer_Region_Type is mod 4;
+
+   package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Buffer_Region_Type);
+
    type Model_Instance (Model : access Orka.Resources.Models.Model) is
      limited new Behaviors.Behavior with record
       Scene      : Trees.Tree;
@@ -88,6 +93,12 @@ private
         (Kind => Orka.Types.Single_Matrix_Type,
          Mode => PMB.Write);
       Position   : Behaviors.Transforms.Vector4;
+
+      Culler        : Culling.Culler_Ptr;
+      Cull_Instance : Culling.Cull_Instance;
+
+      Compacted_Transforms : Rendering.Buffers.Buffer;
+      Compacted_Commands   : Rendering.Buffers.Buffer;
    end record;
 
 end Orka.Resources.Models;

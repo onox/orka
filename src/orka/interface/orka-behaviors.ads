@@ -21,6 +21,8 @@ package Orka.Behaviors is
 
    type Visibility is (Invisible, Visible);
 
+   -----------------------------------------------------------------------------
+
    type Behavior is limited interface;
 
    type Behavior_Ptr is not null access Behavior'Class;
@@ -47,9 +49,13 @@ package Orka.Behaviors is
 
    procedure Visibility_Changed (Object : in out Behavior; State : Visibility) is null;
 
+   procedure Cull (Object : in out Behavior) is null;
+
    procedure Render (Object : in out Behavior) is null;
 
    procedure After_Render (Object : in out Behavior) is null;
+
+   -----------------------------------------------------------------------------
 
    type Behavior_Array is array (Positive range <>) of Behaviors.Behavior_Ptr;
 

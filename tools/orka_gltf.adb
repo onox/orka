@@ -28,6 +28,7 @@ with GL.Types;
 with Orka.Behaviors;
 with Orka.Contexts;
 with Orka.Cameras;
+with Orka.Culling;
 with Orka.Debug;
 with Orka.Futures;
 with Orka.Jobs;
@@ -200,6 +201,9 @@ begin
       Current_Camera : constant Camera_Ptr
         := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
+      use Orka.Culling;
+      Culler_1 : constant Culler_Ptr := new Culler'Class'(Culler'Class (Create_Culler));
+
       ----------------------------------------------------------------------
 
       task Resource_Test;
@@ -251,7 +255,7 @@ begin
 
                   Create_Instance_Job : constant Orka.Jobs.Job_Ptr
                     := new Orka_Package_glTF.Create_Instance_Job'
-                        (Orka.Jobs.Abstract_Job with Model => Model_1);
+                        (Orka.Jobs.Abstract_Job with Model => Model_1, Culler => Culler_1);
                begin
                   Ada.Text_IO.Put_Line ("Adding resource to scene...");
                   Boss.Queue.Enqueue (Create_Instance_Job, Handle);
@@ -283,12 +287,24 @@ begin
             Camera : Orka.Cameras.Camera_Ptr) is
          begin
             Camera.FB.Use_Framebuffer;
-            P_1.Use_Program;
 
             GL.Buffers.Clear (GL.Buffers.Buffer_Bits'
               (Color => True, Depth => True, others => False));
 
             Uni_View.Set_Matrix (Camera.View_Matrix);
+
+            --  TODO Don't re-compute
+            declare
+               use Orka.Cameras.Transforms;
+            begin
+               Culler_1.Bind (Current_Camera.Projection_Matrix * Camera.View_Matrix);
+            end;
+
+            for Behavior of Scene.all loop
+               Behavior.Cull;
+            end loop;
+
+            P_1.Use_Program;
 
             --  Render objects in scene here
             for Behavior of Scene.all loop
@@ -297,6 +313,10 @@ begin
 
             --  Resolve the multiple samples in the FBO
             Camera.FB.Resolve_To (FB_D.all);
+
+            for Behavior of Scene.all loop
+               Behavior.After_Render;
+            end loop;
          end Render;
 
          package Loops is new Orka.Loops

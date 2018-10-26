@@ -19,7 +19,9 @@ package body Orka_Package_glTF is
      (Object  : Create_Instance_Job;
       Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr)) is
    begin
-      Add_Resource (Object.Model.Create_Instance ((0.0, 0.0, 0.0, 1.0)));
+      Add_Resource (Object.Model.Create_Instance
+        (Position => (0.0, 0.0, 0.0, 1.0),
+         Culler   => Object.Culler));
    end Execute;
 
 end Orka_Package_glTF;

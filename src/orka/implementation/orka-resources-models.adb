@@ -12,6 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Barriers;
 with GL.Objects.Buffers;
 with GL.Types;
 
@@ -21,7 +22,8 @@ package body Orka.Resources.Models is
 
    function Create_Instance
      (Object   : in out Model;
-      Position : Behaviors.Transforms.Vector4) return Behaviors.Behavior_Ptr
+      Position : Behaviors.Transforms.Vector4;
+      Culler   : Culling.Culler_Ptr) return Behaviors.Behavior_Ptr
    is
       Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
 
@@ -35,14 +37,18 @@ package body Orka.Resources.Models is
         (Model   => Object'Unchecked_Access,
          Scene   => Object.Scene.Scene,
          Transforms => Transforms_Buffer,
-         Position   => Position);
+         Position   => Position,
+
+         Culler        => Culler,
+         Cull_Instance => Culling.Create_Instance (Culler, Shapes_Count),
+         others => <>);
    end Create_Instance;
 
    overriding
    procedure After_Update
      (Object : in out Model_Instance;
       Delta_Time    : Duration;
-      View_Position : Transforms.Vector4)
+      View_Position : Behaviors.Transforms.Vector4)
    is
       use Transforms;
       use type GL.Types.Single;
@@ -55,7 +61,8 @@ package body Orka.Resources.Models is
       procedure Write_Transforms (Cursors : Cursor_Array) is
       begin
          for Index in Cursors'Range loop
-            Object.Transforms.Write_Data (Object.Scene.World_Transform (Cursors (Index)), Index - 1);
+            Object.Transforms.Write_Data
+              (Object.Scene.World_Transform (Cursors (Index)), Index - Cursors'First);
          end loop;
       end Write_Transforms;
    begin
@@ -71,15 +78,30 @@ package body Orka.Resources.Models is
    end After_Update;
 
    overriding
+   procedure Cull (Object : in out Model_Instance) is
+   begin
+      Object.Cull_Instance.Cull
+        (Transforms => Object.Transforms,
+         Bounds     => Object.Model.Bounds,
+         Commands   => Object.Model.Batch.Commands,
+         Compacted_Transforms => Object.Compacted_Transforms,
+         Compacted_Commands   => Object.Compacted_Commands,
+         Instances => 1);
+   end Cull;
+
+   overriding
    procedure Render (Object : in out Model_Instance) is
       use all type Rendering.Buffers.Buffer_Target;
    begin
-      Object.Transforms.Bind_Base (Shader_Storage, 0);
-
       --  TODO Only do this once per model, not for each instance
       Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);
 
-      Object.Model.Format.Draw_Indirect (Object.Model.Batch.Commands);
+      Object.Compacted_Transforms.Bind_Base (Shader_Storage, 0);
+
+      GL.Barriers.Memory_Barrier
+        ((By_Region => False, Shader_Storage | Command => True, others => False));
+
+      Object.Model.Format.Draw_Indirect (Object.Compacted_Commands);
    end Render;
 
    overriding

@@ -25,7 +25,7 @@ out VS_OUT {
 flat out uint var_InstanceID;
 
 void main(void) {
-    int instanceID = gl_DrawIDARB;
+    int instanceID = gl_BaseInstanceARB + gl_InstanceID;
 
     // Ideally pre-compute modelView and normalMatrix on CPU
     mat4 world = matrices[instanceID];

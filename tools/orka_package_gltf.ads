@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Orka.Behaviors;
+with Orka.Culling;
 with Orka.Jobs.Boss;
 with Orka.Resources.Loader;
 with Orka.Resources.Models;
@@ -30,7 +31,8 @@ package Orka_Package_glTF is
    Add_Resource : access procedure (Object : Orka.Behaviors.Behavior_Ptr);
 
    type Create_Instance_Job is new Orka.Jobs.Abstract_Job and Orka.Jobs.GPU_Job with record
-      Model : Orka.Resources.Models.Model_Ptr;
+      Model  : Orka.Resources.Models.Model_Ptr;
+      Culler : Orka.Culling.Culler_Ptr;
    end record;
 
    overriding
