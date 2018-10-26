@@ -43,7 +43,10 @@ package body Orka.Transforms.SIMD_Vectors is
 
    function Normalized (Elements : Vector_Type) return Boolean is
       function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
-         Epsilon : constant Element_Type := Element_Type'Model_Epsilon;
+         --  Because the square root is not computed, the bounds need
+         --  to be increased to +/- 2 * Epsilon + Epsilon ** 2. Since
+         --  Epsilon < 1, we can simply take +/- 3 * Epsilon
+         Epsilon : constant Element_Type := 3.0 * Element_Type'Model_Epsilon;
       begin
          return Result in Expected - Epsilon .. Expected + Epsilon;
       end Is_Equivalent;
