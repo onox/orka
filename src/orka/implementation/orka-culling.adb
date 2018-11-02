@@ -45,7 +45,7 @@ package body Orka.Culling is
    end Create_Culler;
 
    function Create_Instance
-     (Culler : Culler_Ptr; Count : Natural) return Cull_Instance
+     (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
    is
       use GL.Objects.Buffers;
       use GL.Types;
@@ -55,35 +55,37 @@ package body Orka.Culling is
         := Culler.Program_Frustum.GL_Program.Compute_Work_Group_Size;
 
       Local_Size : constant Natural := Natural (Work_Group_Size (GL.X));
-      Padding    : constant Boolean := Count rem Local_Size /= 0;
+      Padding    : constant Boolean := Transforms rem Local_Size /= 0;
 
       Work_Groups : constant Natural
-        := Count / Local_Size + (if Padding then 1 else 0);
+        := Transforms / Local_Size + (if Padding then 1 else 0);
       pragma Assert (Work_Groups <= 65_535);
    begin
       return Result : constant Cull_Instance
         := (Culler => Culler,
             Work_Groups => Work_Groups,
             Prefix_Sum  => Algorithms.Prefix_Sums.Prefix_Sum
-              (Culler.PS_Factory.Create_Prefix_Sum (Count)),
+              (Culler.PS_Factory.Create_Prefix_Sum (Transforms)),
             Buffer_Visibles => Create_Buffer
               (Flags  => (others => False),
                Kind   => UInt_Type,
-               Length => Count),
+               Length => Transforms),
             Buffer_Indices => Create_Buffer
               (Flags  => (others => False),
                Kind   => UInt_Type,
-               Length => Count),
+               Length => Transforms),
             Compacted_Transforms => Create_Buffer
               (Flags  => (others => False),
                Kind   => Types.Single_Matrix_Type,
-               Length => Count),
+               Length => Transforms),
             Compacted_Commands => Create_Buffer
               (Flags  => (others => False),
                Kind   => Types.Elements_Command_Type,
-               Length => Count))
+               Length => Commands))
       do
-         Messages.Insert (Notification, "Created culler for" & Count'Image & " transforms");
+         Messages.Insert (Notification, "Created culler for" &
+           Transforms'Image & " transforms and" &
+           Commands'Image & " commands");
          Messages.Insert (Notification, "  cull frustum:" &
            Work_Groups'Image & " groups x" & Local_Size'Image & " transforms");
       end return;

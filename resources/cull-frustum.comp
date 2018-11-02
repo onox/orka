@@ -28,7 +28,6 @@
 // output array in the same order as the input array.
 
 layout(local_size_x = 64) in;
-// Must be a power of two
 
 layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 matrices[];
@@ -83,8 +82,9 @@ vec3 bboxVertex(const in int n, const in vec4 bboxMin, const in vec4 bboxMax) {
 
 void main(void) {
     const uint gid = gl_GlobalInvocationID.x;
-    const uint totalPartsCount = uint(visibles.length());
-    // Note: totalPartsCount = instances * |bboxes|
+    const uint totalPartsCount = instances * uint(bboxes.length());
+
+    uint isVisible = 0u;
 
     if (gid < totalPartsCount) {
         const uint part = uint(gid / instances);
@@ -112,6 +112,8 @@ void main(void) {
 
         const bool e1 = all(lessThan(outsideNeg, ivec3(8, 8, 8)));
         const bool e2 = all(lessThan(outsidePos, ivec3(8, 8, 8)));
-        visibles[gid] = (e1 && e2) ? 1u : 0u;
+        isVisible = (e1 && e2) ? 1u : 0u;
     }
+
+    visibles[gid] = isVisible;
 }

@@ -44,8 +44,8 @@ package Orka.Culling is
       Instances : Natural);
 
    function Create_Instance
-     (Culler : Culler_Ptr; Count : Natural) return Cull_Instance
-   with Pre => Count mod 4 = 0;
+     (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
+   with Pre => Transforms mod 4 = 0;
 
 private
 
