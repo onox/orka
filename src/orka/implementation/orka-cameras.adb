@@ -167,11 +167,15 @@ package body Orka.Cameras is
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
       use Vector_Transforms;
+      use Transforms;
       use Orka.SIMD;
 
-      Forward : constant Vector4 := Normalize (Object.Target.Position - Object.Position);
-      Side    : constant Vector4 := Cross (Forward, Object.Up);
-      Up      : constant Vector4 := Cross (Side, Forward);
+      Rotate_To_GL : constant Matrix4 := Ry (-90.0) * Rx (-90.0);
+
+      Forward : constant Vector_Type
+        := Normalize (Rotate_To_GL * (Object.Target.Position - Object.Position));
+      Side    : constant Vector_Type := Cross (Forward, Object.Up);
+      Up      : constant Vector_Type := Cross (Side, Forward);
    begin
       return
         ((Side (X), Up (X), -Forward (X), 0.0),
