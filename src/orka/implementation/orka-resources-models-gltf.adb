@@ -621,6 +621,9 @@ package body Orka.Resources.Models.glTF is
 
       Start_Time : constant Time := Clock;
 
+      use Transforms;
+      use type GL.Types.Single;
+
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,
          Format => Data.Format,
@@ -632,7 +635,9 @@ package body Orka.Resources.Models.glTF is
          --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => Storage_Bits'(others => False),
-            Data  => Bounds_List (Data.Accessors, Data.Meshes)));
+            Data  => Bounds_List (Data.Accessors, Data.Meshes)),
+         Structural_Frame_To_GL => Ry (-90.0) * Rx (-90.0));
+         -- TODO Job GLTF_Finish_Processing_Job doesn't use Rx (-90.0)?
    begin
       Add_Parts (Data.Format, Model_Data.Batch, Data.Views, Data.Accessors, Data.Meshes);
 

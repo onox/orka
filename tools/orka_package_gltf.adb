@@ -16,12 +16,19 @@ package body Orka_Package_glTF is
 
    overriding
    procedure Execute
-     (Object  : Create_Instance_Job;
+     (Object  : Create_Group_Job;
       Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr)) is
    begin
-      Add_Resource (Object.Model.Create_Instance
-        (Position => (0.0, 0.0, 0.0, 1.0),
-         Culler   => Object.Culler));
+      Object.Group.all := Object.Model.Create_Group (Object.Culler, Capacity => 1);
    end Execute;
+
+   overriding
+   procedure After_Update
+     (Object        : in out No_Behavior;
+      Delta_Time    : Duration;
+      View_Position : Orka.Behaviors.Transforms.Vector4) is
+   begin
+      Object.Update_Transforms (View_Position);
+   end After_Update;
 
 end Orka_Package_glTF;

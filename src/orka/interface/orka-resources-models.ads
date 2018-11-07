@@ -16,57 +16,65 @@ with Ada.Containers.Indefinite_Holders;
 
 with Orka.Behaviors;
 with Orka.Culling;
+with Orka.Instances;
 with Orka.Rendering.Buffers.MDI;
-with Orka.Rendering.Buffers.Persistent_Mapped;
-with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
-with Orka.Types;
 
 package Orka.Resources.Models is
    pragma Preelaborate;
 
-   type Model is limited new Resource with private;
+   type Model_Instance is abstract limited new Behaviors.Behavior with private;
 
-   function Create_Instance
-     (Object   : in out Model;
-      Position : Behaviors.Transforms.Vector4;
-      Culler   : Culling.Culler_Ptr) return Behaviors.Behavior_Ptr;
+   type Model_Instance_Ptr is not null access all Model_Instance'Class;
+
+   procedure Update_Transforms
+     (Object : in out Model_Instance;
+      View_Position : Behaviors.Transforms.Vector4);
+
+   -----------------------------------------------------------------------------
+
+   type Model_Group is tagged limited private;
+
+   type Group_Access is access Model_Group;
+
+   procedure Add_Instance
+     (Object   : access Model_Group;
+      Instance : in out Model_Instance_Ptr);
+
+   procedure Remove_Instance
+     (Object   : in out Model_Group;
+      Instance : in out Model_Instance_Ptr);
+
+   procedure Cull (Object : in out Model_Group);
+
+   procedure Render (Object : in out Model_Group);
+
+   procedure After_Render (Object : in out Model_Group);
+
+   -----------------------------------------------------------------------------
+
+   type Model is limited new Resource with private;
 
    type Model_Ptr is not null access all Model;
 
+   function Create_Group
+     (Object   : aliased in out Model;
+      Culler   : Culling.Culler_Ptr;
+      Capacity : Positive) return Group_Access;
+
    Model_Load_Error : exception renames Resource_Load_Error;
-
-   type Model_Instance (<>) is limited new Behaviors.Behavior with private;
-
-   overriding
-   procedure After_Update
-     (Object : in out Model_Instance;
-      Delta_Time    : Duration;
-      View_Position : Behaviors.Transforms.Vector4);
-
-   overriding
-   procedure Cull (Object : in out Model_Instance);
-
-   overriding
-   procedure Render (Object : in out Model_Instance);
-
-   overriding
-   procedure After_Render (Object : in out Model_Instance);
-
-   overriding
-   function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4;
 
 private
 
-   type Cursor_Array is array (Positive range <>) of Scenes.Singles.Trees.Cursor;
+   package Trees renames Scenes.Singles.Trees;
+   package Transforms renames Orka.Transforms.Singles.Matrices;
+
+   type Cursor_Array is array (Positive range <>) of Trees.Cursor;
 
    package Cursor_Array_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Cursor_Array);
-
-   package Trees renames Scenes.Singles.Trees;
-   package Transforms renames Orka.Transforms.Singles.Matrices;
 
    type Model_Scene is limited record
       Scene  : Trees.Tree;
@@ -80,25 +88,26 @@ private
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Bounds  : Rendering.Buffers.Buffer;
+      Structural_Frame_To_GL : Trees.Matrix4;
    end record;
 
-   type Buffer_Region_Type is mod 4;
+   type Partition_Index_Type is mod 4;
+   package Model_Instances is new Orka.Instances (Partition_Index_Type);
 
-   package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Buffer_Region_Type);
+   type Model_Group is tagged limited record
+      Model     : access Orka.Resources.Models.Model;
+      Instances : Model_Instances.Manager;
 
-   type Model_Instance (Model : access Orka.Resources.Models.Model) is
-     limited new Behaviors.Behavior with record
-      Scene      : Trees.Tree;
-      Transforms : PMB.Persistent_Mapped_Buffer
-        (Kind => Orka.Types.Single_Matrix_Type,
-         Mode => PMB.Write);
-      Position   : Behaviors.Transforms.Vector4;
-
-      Culler        : Culling.Culler_Ptr;
       Cull_Instance : Culling.Cull_Instance;
 
       Compacted_Transforms : Rendering.Buffers.Buffer;
       Compacted_Commands   : Rendering.Buffers.Buffer;
+   end record;
+
+   type Model_Instance is abstract limited new Behaviors.Behavior with record
+      Group    : access Model_Group;
+      Scene    : Trees.Tree;
+      Instance : Model_Instances.Cursor;
    end record;
 
 end Orka.Resources.Models;

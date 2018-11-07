@@ -28,16 +28,33 @@ package Orka_Package_glTF is
    package Loader is new Orka.Resources.Loader
      (Boss.Queues, Boss.Queue'Unchecked_Access, Maximum_Requests => 10);
 
-   Add_Resource : access procedure (Object : Orka.Behaviors.Behavior_Ptr);
+   -----------------------------------------------------------------------------
 
-   type Create_Instance_Job is new Orka.Jobs.Abstract_Job and Orka.Jobs.GPU_Job with record
+   type Create_Group_Job is new Orka.Jobs.Abstract_Job and Orka.Jobs.GPU_Job with record
       Model  : Orka.Resources.Models.Model_Ptr;
       Culler : Orka.Culling.Culler_Ptr;
+      Group  : access Orka.Resources.Models.Group_Access;
    end record;
 
    overriding
    procedure Execute
-     (Object  : Create_Instance_Job;
+     (Object  : Create_Group_Job;
       Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
+
+   -----------------------------------------------------------------------------
+
+   type No_Behavior is new Orka.Resources.Models.Model_Instance with record
+      Position : Orka.Behaviors.Transforms.Vector4 := Orka.Behaviors.Null_Behavior.Position;
+   end record;
+
+   overriding
+   function Position (Object : No_Behavior) return Orka.Behaviors.Transforms.Vector4 is
+     (Object.Position);
+
+   overriding
+   procedure After_Update
+     (Object        : in out No_Behavior;
+      Delta_Time    : Duration;
+      View_Position : Orka.Behaviors.Transforms.Vector4);
 
 end Orka_Package_glTF;

@@ -25,7 +25,7 @@ package Orka.Behaviors is
 
    type Behavior is limited interface;
 
-   type Behavior_Ptr is not null access Behavior'Class;
+   type Behavior_Ptr is not null access all Behavior'Class;
 
    function Position (Object : Behavior) return Transforms.Vector4 is abstract;
 
@@ -48,8 +48,6 @@ package Orka.Behaviors is
    --  Called once per frame and after Update
 
    procedure Visibility_Changed (Object : in out Behavior; State : Visibility) is null;
-
-   procedure Cull (Object : in out Behavior) is null;
 
    procedure Render (Object : in out Behavior) is null;
 

@@ -211,6 +211,9 @@ begin
       use Orka.Resources;
       Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
 
+      Group : aliased Orka.Resources.Models.Group_Access := null;
+      use type Orka.Resources.Models.Group_Access;
+
       task body Resource_Test is
          use Ada.Real_Time;
 
@@ -254,8 +257,9 @@ begin
                   Handle : Orka.Futures.Pointers.Mutable_Pointer;
 
                   Create_Instance_Job : constant Orka.Jobs.Job_Ptr
-                    := new Orka_Package_glTF.Create_Instance_Job'
-                        (Orka.Jobs.Abstract_Job with Model => Model_1, Culler => Culler_1);
+                    := new Orka_Package_glTF.Create_Group_Job'
+                        (Orka.Jobs.Abstract_Job with Model => Model_1, Culler => Culler_1,
+                        Group => Group'Unchecked_Access);
                begin
                   Ada.Text_IO.Put_Line ("Adding resource to scene...");
                   Boss.Queue.Enqueue (Create_Instance_Job, Handle);
@@ -282,6 +286,10 @@ begin
       Uni_Light.Set_Vector (Light_Position);
 
       declare
+         Group_Added : Boolean := False;
+
+         procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr);
+
          procedure Render
            (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
             Camera : Orka.Cameras.Camera_Ptr) is
@@ -293,30 +301,43 @@ begin
 
             Uni_View.Set_Matrix (Camera.View_Matrix);
 
-            --  TODO Don't re-compute
             declare
                use Orka.Cameras.Transforms;
             begin
+               --  TODO Don't re-compute projection matrix every frame
                Culler_1.Bind (Current_Camera.Projection_Matrix * Camera.View_Matrix);
             end;
 
-            for Behavior of Scene.all loop
-               Behavior.Cull;
-            end loop;
+            if Group /= null then
+               if not Group_Added then
+                  Group_Added := True;
+                  declare
+                     Instance : Orka.Resources.Models.Model_Instance_Ptr :=
+                       new Orka_Package_glTF.No_Behavior'(Orka.Resources.Models.Model_Instance
+                         with Position => (0.0, 0.0, 0.0, 1.0));
+                  begin
+                     Group.Add_Instance (Instance);
+                     Add_Behavior (Orka.Behaviors.Behavior_Ptr (Instance));
+                  end;
+               end if;
 
-            P_1.Use_Program;
+               Group.Cull;
+               P_1.Use_Program;
 
-            --  Render objects in scene here
-            for Behavior of Scene.all loop
-               Behavior.Render;
-            end loop;
+               --  Render objects in scene here
+               for Behavior of Scene.all loop
+                  Behavior.Render;
+               end loop;
+               Group.Render;
 
-            --  Resolve the multiple samples in the FBO
-            Camera.FB.Resolve_To (FB_D.all);
+               --  Resolve the multiple samples in the FBO
+               Camera.FB.Resolve_To (FB_D.all);
 
-            for Behavior of Scene.all loop
-               Behavior.After_Render;
-            end loop;
+               Group.After_Render;
+               for Behavior of Scene.all loop
+                  Behavior.After_Render;
+               end loop;
+            end if;
          end Render;
 
          package Loops is new Orka.Loops
@@ -332,18 +353,17 @@ begin
             Loops.Scene.Add (Object);
          end Add_Behavior;
       begin
-         Orka_Package_glTF.Add_Resource := Add_Behavior'Unrestricted_Access;
          Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
          Ada.Text_IO.Put_Line ("Running render loop...");
          Loops.Run_Loop;
       end;
-      Ada.Text_IO.Put_Line ("Shutting down...");
-      Boss.Shutdown;
-      Loader.Shutdown;
    exception
       when Error : others =>
          Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));
    end;
+   Ada.Text_IO.Put_Line ("Shutting down...");
+   Boss.Shutdown;
+   Loader.Shutdown;
    Ada.Text_IO.Put_Line ("Shutdown job system and loader");
 exception
    when Error : others =>

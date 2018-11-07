@@ -13,89 +13,69 @@
 --  limitations under the License.
 
 with GL.Barriers;
-with GL.Objects.Buffers;
-with GL.Types;
 
 with Orka.Transforms.Singles.Vectors;
 
 package body Orka.Resources.Models is
 
-   function Create_Instance
-     (Object   : in out Model;
-      Position : Behaviors.Transforms.Vector4;
-      Culler   : Culling.Culler_Ptr) return Behaviors.Behavior_Ptr
+   function Create_Group
+     (Object   : aliased in out Model;
+      Culler   : Culling.Culler_Ptr;
+      Capacity : Positive) return Group_Access
    is
       Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
-
-      --  Set-up a mapped buffer for world transform matrices
-      Transforms_Buffer : constant PMB.Persistent_Mapped_Buffer
-        := PMB.Create_Buffer
-            (Orka.Types.Single_Matrix_Type, Shapes_Count, PMB.Write);
    begin
-      --  Cannot use 'Access because we're returning a pointer to Model_Instance
-      return new Model_Instance'
-        (Model   => Object'Unchecked_Access,
-         Scene   => Object.Scene.Scene,
-         Transforms => Transforms_Buffer,
-         Position   => Position,
-
-         Culler        => Culler,
-         Cull_Instance => Culling.Create_Instance (Culler, Shapes_Count),
+      return new Model_Group'
+        (Model     => Object'Access,
+         Instances => Model_Instances.Create_Manager
+           (Capacity => Capacity, Parts => Shapes_Count),
+         Cull_Instance => Culling.Create_Instance
+           (Culler, Transforms => Capacity * Shapes_Count, Commands => Shapes_Count),
          others => <>);
-   end Create_Instance;
+   end Create_Group;
 
-   overriding
-   procedure After_Update
-     (Object : in out Model_Instance;
-      Delta_Time    : Duration;
-      View_Position : Behaviors.Transforms.Vector4)
-   is
-      use Transforms;
-      use type GL.Types.Single;
-      Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0) * Rx (-90.0);
-      --  TODO Not efficient to re-compute this every frame (cannot put non-static
-      --  code in preelaborated package)
-
-      use Orka.Transforms.Singles.Vectors;
-
-      procedure Write_Transforms (Cursors : Cursor_Array) is
-      begin
-         for Index in Cursors'Range loop
-            Object.Transforms.Write_Data
-              (Object.Scene.World_Transform (Cursors (Index)), Index - Cursors'First);
-         end loop;
-      end Write_Transforms;
+   procedure Add_Instance
+     (Object   : access Model_Group;
+      Instance : in out Model_Instance_Ptr) is
    begin
-      --  Compute the world transforms by multiplying the local transform
-      --  of each node with the world transform of its parent. Also updates
-      --  the visibility of each node.
-      Object.Scene.Update_Tree (T (Structural_Frame_To_GL * (View_Position - Object.Position)));
+      if Instance.Group /= null then
+         raise Program_Error;
+      end if;
 
-      --  Write the world transform of the leaf nodes to the persistent mapped buffer
-      Object.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);
-      --  Note: This requires that the structure of the model's scene tree is
-      --  identical to the instance's scene so that we can re-use the cursors
-   end After_Update;
+      Instance.Group := Object;
+      Instance.Scene := Object.Model.Scene.Scene;
+      Instance.Instance := Object.Instances.Add_Instance;
+   end Add_Instance;
 
-   overriding
-   procedure Cull (Object : in out Model_Instance) is
+   procedure Remove_Instance
+     (Object   : in out Model_Group;
+      Instance : in out Model_Instance_Ptr) is
+   begin
+      if Instance.Group = null then
+         raise Program_Error;
+      end if;
+
+      Instance.Group := null;
+      Object.Instances.Remove_Instance (Instance.Instance);
+   end Remove_Instance;
+
+   -----------------------------------------------------------------------------
+
+   procedure Cull (Object : in out Model_Group) is
    begin
       Object.Cull_Instance.Cull
-        (Transforms => Object.Transforms,
+        (Transforms => Object.Instances.Transforms,
          Bounds     => Object.Model.Bounds,
          Commands   => Object.Model.Batch.Commands,
          Compacted_Transforms => Object.Compacted_Transforms,
          Compacted_Commands   => Object.Compacted_Commands,
-         Instances => 1);
+         Instances => Object.Instances.Length);
    end Cull;
 
-   overriding
-   procedure Render (Object : in out Model_Instance) is
+   procedure Render (Object : in out Model_Group) is
       use all type Rendering.Buffers.Buffer_Target;
    begin
-      --  TODO Only do this once per model, not for each instance
       Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);
-
       Object.Compacted_Transforms.Bind_Base (Shader_Storage, 0);
 
       GL.Barriers.Memory_Barrier
@@ -104,14 +84,45 @@ package body Orka.Resources.Models is
       Object.Model.Format.Draw_Indirect (Object.Compacted_Commands);
    end Render;
 
-   overriding
-   procedure After_Render (Object : in out Model_Instance) is
+   procedure After_Render (Object : in out Model_Group) is
    begin
-      Object.Transforms.Advance_Index;
+      Object.Instances.Complete_Frame;
    end After_Render;
 
-   overriding
-   function Position (Object : Model_Instance) return Behaviors.Transforms.Vector4 is
-     (Object.Position);
+   -----------------------------------------------------------------------------
+
+   procedure Update_Transforms
+     (Object : in out Model_Instance;
+      View_Position : Behaviors.Transforms.Vector4)
+   is
+      use Transforms;
+      use Orka.Transforms.Singles.Vectors;
+
+      pragma Assert (Object.Group /= null);
+      Rotate_To_GL : Trees.Matrix4 renames Object.Group.Model.Structural_Frame_To_GL;
+
+      Position : Behaviors.Transforms.Vector4
+        renames Behaviors.Behavior'Class (Object).Position;
+
+      procedure Write_Transforms (Cursors : Cursor_Array) is
+      begin
+         for Index in Cursors'Range loop
+            Object.Group.Instances.Set_Transform
+              (Value    => Object.Scene.World_Transform (Cursors (Index)),
+               Instance => Object.Instance,
+               Part     => Index - Cursors'First);
+         end loop;
+      end Write_Transforms;
+   begin
+      --  Compute the world transforms by multiplying the local transform
+      --  of each node with the world transform of its parent. Also updates
+      --  the visibility of each node.
+      Object.Scene.Update_Tree (T (Rotate_To_GL * (Position - View_Position)));
+
+      --  Write the world transform of the leaf nodes to the persistent mapped buffer
+      Object.Group.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);
+      --  Note: This requires that the structure of the model's scene tree is
+      --  identical to the instance's scene so that we can re-use the cursors
+   end Update_Transforms;
 
 end Orka.Resources.Models;
