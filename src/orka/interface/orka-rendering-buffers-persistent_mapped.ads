@@ -189,4 +189,10 @@ private
       end case;
    end record;
 
+   procedure Map
+     (Object : in out Persistent_Mapped_Buffer;
+      Kind   : Orka.Types.Composite_Type;
+      Length : Natural;
+      Access_Flags : GL.Objects.Buffers.Access_Bits);
+
 end Orka.Rendering.Buffers.Persistent_Mapped;

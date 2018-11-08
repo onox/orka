@@ -32,29 +32,7 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
          Result.Buffer := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
          Result.Index  := Index_Type'First;
 
-         case Kind is
-            when Single_Vector_Type =>
-               Pointers.Single_Vector4.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_SV);
-            when Double_Vector_Type =>
-               Pointers.Double_Vector4.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_DV);
-            when Single_Matrix_Type =>
-               Pointers.Single_Matrix4.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_SM);
-            when Double_Matrix_Type =>
-               Pointers.Double_Matrix4.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_DM);
-            when Arrays_Command_Type =>
-               Pointers.Arrays_Command.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_AC);
-            when Elements_Command_Type =>
-               Pointers.Elements_Command.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_EC);
-            when Dispatch_Command_Type =>
-               Pointers.Dispatch_Command.Map_Range
-                 (Result.Buffer.Buffer, Access_Flags, 0, Size (Total_Length), Result.Pointer_DC);
-         end case;
+         Result.Map (Kind, Total_Length, Access_Flags);
       end return;
    end Create_Buffer;
 
@@ -71,6 +49,37 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
    begin
       Object.Index := Object.Index + 1;
    end Advance_Index;
+
+   procedure Map
+     (Object : in out Persistent_Mapped_Buffer;
+      Kind   : Orka.Types.Composite_Type;
+      Length : Natural;
+      Access_Flags : GL.Objects.Buffers.Access_Bits) is
+   begin
+      case Kind is
+         when Single_Vector_Type =>
+            Pointers.Single_Vector4.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_SV);
+         when Double_Vector_Type =>
+            Pointers.Double_Vector4.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DV);
+         when Single_Matrix_Type =>
+            Pointers.Single_Matrix4.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_SM);
+         when Double_Matrix_Type =>
+            Pointers.Double_Matrix4.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DM);
+         when Arrays_Command_Type =>
+            Pointers.Arrays_Command.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_AC);
+         when Elements_Command_Type =>
+            Pointers.Elements_Command.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_EC);
+         when Dispatch_Command_Type =>
+            Pointers.Dispatch_Command.Map_Range
+              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DC);
+      end case;
+   end Map;
 
    -----------------------------------------------------------------------------
 
