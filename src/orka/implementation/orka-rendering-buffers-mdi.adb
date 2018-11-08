@@ -56,12 +56,9 @@ package body Orka.Rendering.Buffers.MDI is
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
       Format  : Rendering.Vertex_Formats.Vertex_Format;
-      Flags   : GL.Objects.Buffers.Storage_Bits;
-      Visible : Boolean := True) return Batch is
+      Flags   : GL.Objects.Buffers.Storage_Bits) return Batch is
    begin
       return Result : Batch do
-         Result.Visible := Visible;
-
          Result.Commands  := Buffers.Create_Buffer
            (Flags, Types.Elements_Command_Type, Parts);
 

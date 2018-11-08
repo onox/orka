@@ -630,11 +630,10 @@ package body Orka.Resources.Models.glTF is
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices,
             Format  => Data.Format.all,
-            Flags   => Storage_Bits'(Dynamic_Storage => True, others => False),
-            Visible => True),
+            Flags   => (Dynamic_Storage => True, others => False)),
          --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
-           (Flags => Storage_Bits'(others => False),
+           (Flags => (others => False),
             Data  => Bounds_List (Data.Accessors, Data.Meshes)),
          Structural_Frame_To_GL => Ry (-90.0) * Rx (-90.0));
          -- TODO Job GLTF_Finish_Processing_Job doesn't use Rx (-90.0)?

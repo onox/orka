@@ -67,6 +67,8 @@ private
 
    type GLTF_Data_Access is access GLTF_Data;
 
+   -----------------------------------------------------------------------------
+
    procedure Free_Data is new Ada.Unchecked_Deallocation
      (Object => GLTF_Data, Name => GLTF_Data_Access);
 
