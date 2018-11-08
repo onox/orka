@@ -14,61 +14,26 @@
 
 private with Orka.Rendering.Buffers.Pointers;
 
-generic
-   type Index_Type is mod <>;
-package Orka.Rendering.Buffers.Persistent_Mapped is
+package Orka.Rendering.Buffers.Mapped is
    pragma Preelaborate;
 
    type IO_Mode is (Read, Write);
 
-   type Persistent_Mapped_Buffer
+   type Mapped_Buffer
      (Kind : Orka.Types.Composite_Type;
-      Mode : IO_Mode) is new Bindable_Buffer with private;
+      Mode : IO_Mode) is abstract new Bindable_Buffer with private;
 
-   function Create_Buffer
-     (Kind   : Orka.Types.Composite_Type;
-      Length : Natural;
-      Mode   : IO_Mode) return Persistent_Mapped_Buffer
-   with Post => Create_Buffer'Result.Length = Length;
-   --  Create a persistent mapped buffer for only writes or only reads
-   --
-   --  The actual size of the buffer is n * Length where n is the number
-   --  of regions. Each region has an index (>= 0).
-   --
-   --  After writing or reading, you must call Advance_Index (once per frame).
-   --
-   --  If Mode = Write, then you must wait for a fence to complete before
-   --  writing and then set the fence after the drawing or dispatch commands
-   --  which uses the mapped buffer.
-   --
-   --  If Mode = Read, then you must set a fence after the drawing or
-   --  dispatch commands that write to the buffer and then wait for the
-   --  fence to complete before reading the data.
-
-   function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer
+   function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
 
-   function Length (Object : Persistent_Mapped_Buffer) return Natural
-     with Inline;
+   function Length (Object : Mapped_Buffer) return Natural;
    --  Number of elements in the buffer
-   --
-   --  Will be less than the actual size of the buffer due to triple
-   --  buffering.
-
-   function Index_Offset (Object : Persistent_Mapped_Buffer) return Natural
-     with Inline;
-   --  Offset in number of elements to the start of the buffer
-   --
-   --  Initially zero and incremented by Length whenever the index is
-   --  advanced.
-
-   procedure Advance_Index (Object : in out Persistent_Mapped_Buffer);
 
    -----------------------------------------------------------------------------
 
    overriding
    procedure Bind_Base
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Target : Buffer_Target;
       Index  : Natural);
    --  Bind the buffer object to the index of the target as well as to
@@ -77,43 +42,43 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
    -----------------------------------------------------------------------------
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Doubles.Vector4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
@@ -121,43 +86,43 @@ package Orka.Rendering.Buffers.Persistent_Mapped is
    -----------------------------------------------------------------------------
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Singles.Vector4;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Singles.Matrix4;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Doubles.Vector4;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Doubles.Matrix4;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Arrays_Indirect_Command;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Elements_Indirect_Command;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Dispatch_Indirect_Command;
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
@@ -166,11 +131,17 @@ private
 
    use Orka.Types;
 
-   type Persistent_Mapped_Buffer
+   type Mapped_Buffer
      (Kind : Orka.Types.Composite_Type; Mode : IO_Mode)
    is new Bindable_Buffer with record
       Buffer : Buffers.Buffer;
-      Index  : Index_Type;
+
+      Offset : Natural;
+      --  Offset in number of elements to the start of the buffer
+      --
+      --  Initially zero and incremented by Length whenever the index is
+      --  advanced if the buffer is mapped persistent.
+
       case Kind is
          when Single_Vector_Type =>
             Pointer_SV : Pointers.Single_Vector4.Pointer;
@@ -190,9 +161,9 @@ private
    end record;
 
    procedure Map
-     (Object : in out Persistent_Mapped_Buffer;
+     (Object : in out Mapped_Buffer;
       Kind   : Orka.Types.Composite_Type;
       Length : Natural;
-      Access_Flags : GL.Objects.Buffers.Access_Bits);
+      Flags  : GL.Objects.Buffers.Access_Bits);
 
-end Orka.Rendering.Buffers.Persistent_Mapped;
+end Orka.Rendering.Buffers.Mapped;

@@ -14,7 +14,7 @@
 
 with Ada.Containers.Indefinite_Holders;
 
-with Orka.Rendering.Buffers.Persistent_Mapped;
+with Orka.Rendering.Buffers.Mapped.Persistent;
 with Orka.Types;
 
 generic
@@ -60,7 +60,7 @@ package Orka.Instances is
 
 private
 
-   package PMB is new Orka.Rendering.Buffers.Persistent_Mapped (Partition_Index_Type);
+   package PMB is new Orka.Rendering.Buffers.Mapped.Persistent (Partition_Index_Type);
 
    type Cursor is new Positive;
 
@@ -123,7 +123,7 @@ private
 
       Transforms : PMB.Persistent_Mapped_Buffer
         (Kind => Orka.Types.Single_Matrix_Type,
-         Mode => PMB.Write);
+         Mode => Rendering.Buffers.Mapped.Write);
    end record;
 
 end Orka.Instances;

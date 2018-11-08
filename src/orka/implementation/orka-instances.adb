@@ -38,7 +38,7 @@ package body Orka.Instances is
 
          --  Set-up a mapped buffer for world transform matrices
          Result.Transforms := PMB.Create_Buffer
-           (Orka.Types.Single_Matrix_Type, Transforms, PMB.Write);
+           (Orka.Types.Single_Matrix_Type, Transforms, Rendering.Buffers.Mapped.Write);
 
          Messages.Insert (Notification, "Created group for" &
            Capacity'Image & " instances");

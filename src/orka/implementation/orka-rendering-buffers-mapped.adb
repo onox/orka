@@ -12,72 +12,42 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Rendering.Buffers.Persistent_Mapped is
+package body Orka.Rendering.Buffers.Mapped is
 
-   function Create_Buffer
-     (Kind   : Orka.Types.Composite_Type;
-      Length : Natural;
-      Mode   : IO_Mode) return Persistent_Mapped_Buffer
-   is
-      Storage_Flags : constant GL.Objects.Buffers.Storage_Bits :=
-        (Write => Mode = Write, Read => Mode = Read,
-         Persistent => True, Coherent => True, others => False);
-      Access_Flags : constant GL.Objects.Buffers.Access_Bits :=
-        (Write => Mode = Write, Read => Mode = Read,
-         Persistent => True, Coherent => True, others => False);
-
-      Total_Length : constant Natural := Length * Index_Type'Modulus;
-   begin
-      return Result : Persistent_Mapped_Buffer (Kind, Mode) do
-         Result.Buffer := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
-         Result.Index  := Index_Type'First;
-
-         Result.Map (Kind, Total_Length, Access_Flags);
-      end return;
-   end Create_Buffer;
-
-   function GL_Buffer (Object : Persistent_Mapped_Buffer) return GL.Objects.Buffers.Buffer is
+   function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer is
      (Object.Buffer.GL_Buffer);
 
-   function Length (Object : Persistent_Mapped_Buffer) return Natural is
-     (Object.Buffer.Length / Index_Type'Modulus);
-
-   function Index_Offset (Object : Persistent_Mapped_Buffer) return Natural is
-     (Object.Length * Natural (Object.Index));
-
-   procedure Advance_Index (Object : in out Persistent_Mapped_Buffer) is
-   begin
-      Object.Index := Object.Index + 1;
-   end Advance_Index;
+   function Length (Object : Mapped_Buffer) return Natural is
+     (Object.Buffer.Length);
 
    procedure Map
-     (Object : in out Persistent_Mapped_Buffer;
+     (Object : in out Mapped_Buffer;
       Kind   : Orka.Types.Composite_Type;
       Length : Natural;
-      Access_Flags : GL.Objects.Buffers.Access_Bits) is
+      Flags  : GL.Objects.Buffers.Access_Bits) is
    begin
       case Kind is
          when Single_Vector_Type =>
             Pointers.Single_Vector4.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_SV);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_SV);
          when Double_Vector_Type =>
             Pointers.Double_Vector4.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DV);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DV);
          when Single_Matrix_Type =>
             Pointers.Single_Matrix4.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_SM);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_SM);
          when Double_Matrix_Type =>
             Pointers.Double_Matrix4.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DM);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DM);
          when Arrays_Command_Type =>
             Pointers.Arrays_Command.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_AC);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_AC);
          when Elements_Command_Type =>
             Pointers.Elements_Command.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_EC);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_EC);
          when Dispatch_Command_Type =>
             Pointers.Dispatch_Command.Map_Range
-              (Object.Buffer.Buffer, Access_Flags, 0, Size (Length), Object.Pointer_DC);
+              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DC);
       end case;
    end Map;
 
@@ -85,13 +55,13 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
 
    overriding
    procedure Bind_Base
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Target : Buffer_Target;
       Index  : Natural)
    is
       Buffer_Target : access constant GL.Objects.Buffers.Buffer_Target;
 
-      Offset : constant Size := Size (Object.Index_Offset);
+      Offset : constant Size := Size (Object.Offset);
       Length : constant Size := Size (Object.Length);
    begin
       case Target is
@@ -133,131 +103,131 @@ package body Orka.Rendering.Buffers.Persistent_Mapped is
    -----------------------------------------------------------------------------
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single_Vector4.Set_Mapped_Data
-        (Object.Pointer_SV, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_SV, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single_Matrix4.Set_Mapped_Data
-        (Object.Pointer_SM, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_SM, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Doubles.Vector4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Double_Vector4.Set_Mapped_Data
-        (Object.Pointer_DV, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_DV, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Double_Matrix4.Set_Mapped_Data
-        (Object.Pointer_DM, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_DM, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Arrays_Command.Set_Mapped_Data
-        (Object.Pointer_AC, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_AC, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Elements_Command.Set_Mapped_Data
-        (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_EC, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Data   : Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Dispatch_Command.Set_Mapped_Data
-        (Object.Pointer_DC, Size (Object.Index_Offset + Offset), Data);
+        (Object.Pointer_DC, Size (Object.Offset + Offset), Data);
    end Write_Data;
 
    -----------------------------------------------------------------------------
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Singles.Vector4;
       Offset : Natural) is
    begin
       Pointers.Single_Vector4.Set_Mapped_Data
-        (Object.Pointer_SV, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_SV, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Singles.Matrix4;
       Offset : Natural) is
    begin
       Pointers.Single_Matrix4.Set_Mapped_Data
-        (Object.Pointer_SM, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_SM, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Doubles.Vector4;
       Offset : Natural) is
    begin
       Pointers.Double_Vector4.Set_Mapped_Data
-        (Object.Pointer_DV, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_DV, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Orka.Types.Doubles.Matrix4;
       Offset : Natural) is
    begin
       Pointers.Double_Matrix4.Set_Mapped_Data
-        (Object.Pointer_DM, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_DM, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Arrays_Indirect_Command;
       Offset : Natural) is
    begin
       Pointers.Arrays_Command.Set_Mapped_Data
-        (Object.Pointer_AC, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_AC, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Elements_Indirect_Command;
       Offset : Natural) is
    begin
       Pointers.Elements_Command.Set_Mapped_Data
-        (Object.Pointer_EC, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_EC, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
    procedure Write_Data
-     (Object : Persistent_Mapped_Buffer;
+     (Object : Mapped_Buffer;
       Value  : Indirect.Dispatch_Indirect_Command;
       Offset : Natural) is
    begin
       Pointers.Dispatch_Command.Set_Mapped_Data
-        (Object.Pointer_DC, Size (Object.Index_Offset + Offset), Value);
+        (Object.Pointer_DC, Size (Object.Offset + Offset), Value);
    end Write_Data;
 
-end Orka.Rendering.Buffers.Persistent_Mapped;
+end Orka.Rendering.Buffers.Mapped;
