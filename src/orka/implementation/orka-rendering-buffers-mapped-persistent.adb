@@ -33,7 +33,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
          Result.Index  := Index_Type'First;
          Result.Offset := Length * Natural (Result.Index);
 
-         Result.Map (Kind, Total_Length, Access_Flags);
+         Result.Map (Size (Total_Length), Access_Flags);
       end return;
    end Create_Buffer;
 

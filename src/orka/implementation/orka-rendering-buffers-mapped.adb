@@ -22,32 +22,31 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Map
      (Object : in out Mapped_Buffer;
-      Kind   : Orka.Types.Composite_Type;
-      Length : Natural;
+      Length : Size;
       Flags  : GL.Objects.Buffers.Access_Bits) is
    begin
-      case Kind is
+      case Object.Kind is
          when Single_Vector_Type =>
             Pointers.Single_Vector4.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_SV);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_SV);
          when Double_Vector_Type =>
             Pointers.Double_Vector4.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DV);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_DV);
          when Single_Matrix_Type =>
             Pointers.Single_Matrix4.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_SM);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_SM);
          when Double_Matrix_Type =>
             Pointers.Double_Matrix4.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DM);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_DM);
          when Arrays_Command_Type =>
             Pointers.Arrays_Command.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_AC);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_AC);
          when Elements_Command_Type =>
             Pointers.Elements_Command.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_EC);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_EC);
          when Dispatch_Command_Type =>
             Pointers.Dispatch_Command.Map_Range
-              (Object.Buffer.Buffer, Flags, 0, Size (Length), Object.Pointer_DC);
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_DC);
       end case;
    end Map;
 

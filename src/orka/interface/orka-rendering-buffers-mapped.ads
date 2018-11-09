@@ -162,8 +162,7 @@ private
 
    procedure Map
      (Object : in out Mapped_Buffer;
-      Kind   : Orka.Types.Composite_Type;
-      Length : Natural;
+      Length : Size;
       Flags  : GL.Objects.Buffers.Access_Bits);
 
 end Orka.Rendering.Buffers.Mapped;
