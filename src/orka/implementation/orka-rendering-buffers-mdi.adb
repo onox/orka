@@ -72,14 +72,7 @@ package body Orka.Rendering.Buffers.MDI is
          --  TODO Don't hardcode vector size factors
 
          --  Indices
-         case Format.Index_Kind is
-            when GL.Types.UByte_Type =>
-               Result.Indices := Buffers.Create_Buffer (Flags, UByte_Type, Indices);
-            when GL.Types.UShort_Type =>
-               Result.Indices := Buffers.Create_Buffer (Flags, UShort_Type, Indices);
-            when GL.Types.UInt_Type =>
-               Result.Indices := Buffers.Create_Buffer (Flags, UInt_Type, Indices);
-         end case;
+         Result.Indices := Buffers.Create_Buffer (Flags, Format.Index_Kind, Indices);
       end return;
    end Create_Batch;
 

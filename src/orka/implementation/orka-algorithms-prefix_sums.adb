@@ -36,8 +36,8 @@ package body Orka.Algorithms.Prefix_Sums is
       Length : Positive) return Prefix_Sum'Class
    is
       use GL.Objects.Buffers;
-      use all type GL.Types.Numeric_Type;
       use Rendering.Buffers;
+      use all type Types.Numeric_Type;
 
       Work_Group_Count : constant GL.Types.Compute.Dimension_Size_Array
         := GL.Compute.Max_Compute_Work_Group_Count;

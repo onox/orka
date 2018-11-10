@@ -14,11 +14,12 @@
 
 with GL.Buffers;
 with GL.Objects.Buffers;
-with GL.Types.Colors;
+with GL.Types;
 
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Types;
 
 with GL_Test.Display_Backend;
 
@@ -28,6 +29,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
    pragma Unreferenced (Initialized);
 
    use GL.Types;
+   use all type Orka.Types.Element_Type;
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Vertex_Formats;
@@ -39,16 +41,16 @@ procedure Orka_Test.Test_2_Two_Triangles is
             -0.8, -0.5, -1.0,
              0.2, -0.5, -1.0);
 
-      Color_Vertices : constant Colors.Basic_Color_Array
-        := ((1.0, 0.0, 0.0),
-            (0.0, 1.0, 0.0),
-            (0.0, 0.0, 1.0));
+      Color_Vertices : constant Single_Array
+        := (1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0);
 
       --  Upload vertices and color data to VBO's
       VBO_1 : constant Buffer := Create_Buffer
-        (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
+        ((others => False), Vertices);
       VBO_2 : constant Buffer := Create_Buffer
-        (GL.Objects.Buffers.Storage_Bits'(others => False), Color_Vertices);
+        ((others => False), Color_Vertices);
 
       procedure Add_Position_Attribute (Buffer : in out Attribute_Buffer) is
       begin
@@ -75,8 +77,8 @@ procedure Orka_Test.Test_2_Two_Triangles is
              0.3, -0.5, -1.0,
              0.8,  0.5, -1.0);
 
-      Color_Triangle : constant Colors.Basic_Color_Array
-        := (1 => (1.0, 0.0, 0.0));
+      Color_Triangle : constant Single_Array
+        := (1.0, 0.0, 0.0);
 
       --  Upload vertices data to VBO
       VBO_3 : constant Buffer := Create_Buffer
@@ -104,7 +106,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       end return;
    end Load_Mesh_2;
 
-   use GL.Buffers;
+   use all type GL.Buffers.Buffer_Bits;
 
    Program_1 : Program := Create_Program (Modules.Create_Module
      (VS => "../examples/gl/shaders/opengl3.vert",
@@ -116,7 +118,7 @@ begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+      Clear ((Color => True, Depth => True, others => False));
 
       Triangle_1.Draw (0, 3);
       Triangle_2.Draw (0, 3);

@@ -14,7 +14,6 @@
 
 with GL.Objects.Buffers;
 with GL.Types.Indirect;
-with GL.Types.Colors;
 
 with Orka.Types;
 
@@ -22,6 +21,7 @@ package Orka.Rendering.Buffers is
    pragma Preelaborate;
 
    use GL.Types;
+   use all type Orka.Types.Element_Type;
 
    -----------------------------------------------------------------------------
 
@@ -36,16 +36,11 @@ package Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
-   type Buffer is new Bindable_Buffer with private;
+   type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with private;
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Numeric_Type;
-      Length : Natural) return Buffer;
-
-   function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Orka.Types.Composite_Type;
+      Kind   : Types.Element_Type;
       Length : Natural) return Buffer;
 
    -----------------------------------------------------------------------------
@@ -60,6 +55,10 @@ package Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Double_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Int_Array) return Buffer;
 
    function Create_Buffer
@@ -68,15 +67,19 @@ package Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Data   : Colors.Basic_Color_Array) return Buffer;
-
-   function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Orka.Types.Singles.Vector4_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Orka.Types.Singles.Matrix4_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Doubles.Vector4_Array) return Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
@@ -119,6 +122,12 @@ package Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
+      Data   : Double_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
       Data   : Int_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
@@ -131,12 +140,6 @@ package Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Colors.Basic_Color_Array;
-      Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
-
-   procedure Set_Data
-     (Object : Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
@@ -144,6 +147,18 @@ package Orka.Rendering.Buffers is
    procedure Set_Data
      (Object : Buffer;
       Data   : Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
 
@@ -181,6 +196,12 @@ package Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
+      Data   : in out Double_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
       Data   : in out Int_Array;
       Offset : Natural := 0)
    with Pre => Offset + Data'Length <= Object.Length;
@@ -195,21 +216,12 @@ package Orka.Rendering.Buffers is
 
    procedure Copy_Data
      (Object : Buffer;
-      Target : Buffer;
-      Kind   : Numeric_Type)
-   with Pre => Object.Length = Target.Length;
-   --  TODO Remove Kind and add pre-condition Object.Kind = Target.Kind
-
-   procedure Copy_Data
-     (Object : Buffer;
-      Target : Buffer;
-      Kind   : Orka.Types.Composite_Type)
-   with Pre => Object.Length = Target.Length;
-   --  TODO Remove Kind and add pre-condition Object.Kind = Target.Kind
+      Target : Buffer)
+   with Pre => Object.Kind = Target.Kind and then Object.Length = Target.Length;
 
 private
 
-   type Buffer is new Bindable_Buffer with record
+   type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with record
       Buffer : GL.Objects.Buffers.Buffer;
       Length : Natural;
    end record;

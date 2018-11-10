@@ -19,6 +19,7 @@ with GL.Types;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Types;
 
 with GL_Test.Display_Backend;
 
@@ -33,6 +34,7 @@ procedure Orka_Test.Test_3_Module_Array is
 
    function Load_Mesh (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
       use GL.Types;
+      use all type Orka.Types.Element_Type;
 
       Vertices : constant Single_Array
         := (-0.5, -0.5,
@@ -41,7 +43,7 @@ procedure Orka_Test.Test_3_Module_Array is
 
       --  Upload Vertices data to VBO
       VBO : constant Buffer := Create_Buffer
-        (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
+        ((others => False), Vertices);
 
       procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
       begin
@@ -55,7 +57,7 @@ procedure Orka_Test.Test_3_Module_Array is
       end return;
    end Load_Mesh;
 
-   use GL.Buffers;
+   use all type GL.Buffers.Buffer_Bits;
 
    Program_1 : Program := Create_Program (Modules.Module_Array'(
      Modules.Create_Module
@@ -70,7 +72,7 @@ begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+      Clear ((Color => True, Depth => True, others => False));
 
       Triangle.Draw (0, 3);
 

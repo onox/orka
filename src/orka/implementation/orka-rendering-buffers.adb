@@ -20,57 +20,50 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Numeric_Type;
-      Length : Natural) return Buffer is
-   begin
-      return Result : Buffer do
-         Result.Buffer.Allocate (Long (Length), Kind, Flags);
-         Result.Length := Length;
-      end return;
-   end Create_Buffer;
-
-   function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Kind   : Orka.Types.Composite_Type;
+      Kind   : Types.Element_Type;
       Length : Natural) return Buffer
    is
-      use Orka.Types;
-
       Bytes : Natural;
+
+      Storage_Length : Natural;
+      Storage_Kind   : GL.Types.Numeric_Type;
    begin
-      case Kind is
-         when Single_Vector_Type =>
-            return Result : Buffer := Create_Buffer (Flags, Single_Type, Length * 4) do
-               Result.Length := Length;
-            end return;
-         when Double_Vector_Type =>
-            return Result : Buffer := Create_Buffer (Flags, Double_Type, Length * 4) do
-               Result.Length := Length;
-            end return;
-         when Single_Matrix_Type =>
-            return Result : Buffer := Create_Buffer (Flags, Single_Type, Length * 16) do
-               Result.Length := Length;
-            end return;
-         when Double_Matrix_Type =>
-            return Result : Buffer := Create_Buffer (Flags, Double_Type, Length * 16) do
-               Result.Length := Length;
-            end return;
-         when Arrays_Command_Type =>
-            Bytes := Indirect.Arrays_Indirect_Command'Size / System.Storage_Unit;
-            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
-               Result.Length := Length;
-            end return;
-         when Elements_Command_Type =>
-            Bytes := Indirect.Elements_Indirect_Command'Size / System.Storage_Unit;
-            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
-               Result.Length := Length;
-            end return;
-         when Dispatch_Command_Type =>
-            Bytes := Indirect.Dispatch_Indirect_Command'Size / System.Storage_Unit;
-            return Result : Buffer := Create_Buffer (Flags, Byte_Type, Length * Bytes) do
-               Result.Length := Length;
-            end return;
-      end case;
+      return Result : Buffer (Kind => Kind) do
+         case Kind is
+            --  Composite types
+            when Single_Vector_Type =>
+               Storage_Length := Length * 4;
+               Storage_Kind   := Single_Type;
+            when Double_Vector_Type =>
+               Storage_Length := Length * 4;
+               Storage_Kind   := Double_Type;
+            when Single_Matrix_Type =>
+               Storage_Length := Length * 16;
+               Storage_Kind   := Single_Type;
+            when Double_Matrix_Type =>
+               Storage_Length := Length * 16;
+               Storage_Kind   := Double_Type;
+            when Arrays_Command_Type =>
+               Bytes := Indirect.Arrays_Indirect_Command'Size / System.Storage_Unit;
+               Storage_Length := Length * Bytes;
+               Storage_Kind   := Byte_Type;
+            when Elements_Command_Type =>
+               Bytes := Indirect.Elements_Indirect_Command'Size / System.Storage_Unit;
+               Storage_Length := Length * Bytes;
+               Storage_Kind   := Byte_Type;
+            when Dispatch_Command_Type =>
+               Bytes := Indirect.Dispatch_Indirect_Command'Size / System.Storage_Unit;
+               Storage_Length := Length * Bytes;
+               Storage_Kind   := Byte_Type;
+            --  Numeric types
+            when others =>
+               Storage_Length := Length;
+               Storage_Kind   := Convert (Kind);
+         end case;
+
+         Result.Buffer.Allocate (Long (Storage_Length), Storage_Kind, Flags);
+         Result.Length := Length;
+      end return;
    end Create_Buffer;
 
    -----------------------------------------------------------------------------
@@ -79,7 +72,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Half_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Half_Type) do
          Pointers.Half.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -89,8 +82,18 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Single_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Single_Type) do
          Pointers.Single.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Double_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => Double_Type) do
+         Pointers.Double.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -99,7 +102,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Int_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Int_Type) do
          Pointers.Int.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -109,18 +112,8 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : UInt_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => UInt_Type) do
          Pointers.UInt.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
-         Result.Length := Data'Length;
-      end return;
-   end Create_Buffer;
-
-   function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
-      Data   : Colors.Basic_Color_Array) return Buffer is
-   begin
-      return Result : Buffer do
-         Pointers.Color.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -129,7 +122,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Orka.Types.Singles.Vector4_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Single_Vector_Type) do
          Pointers.Single_Vector4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -139,8 +132,28 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Orka.Types.Singles.Matrix4_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Single_Matrix_Type) do
          Pointers.Single_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Doubles.Vector4_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => Double_Vector_Type) do
+         Pointers.Double_Vector4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : GL.Objects.Buffers.Storage_Bits;
+      Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => Double_Matrix_Type) do
+         Pointers.Double_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -149,7 +162,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Arrays_Command_Type) do
          Pointers.Arrays_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -159,7 +172,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Elements_Command_Type) do
          Pointers.Elements_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -169,7 +182,7 @@ package body Orka.Rendering.Buffers is
      (Flags  : GL.Objects.Buffers.Storage_Bits;
       Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer is
    begin
-      return Result : Buffer do
+      return Result : Buffer (Kind => Dispatch_Command_Type) do
          Pointers.Dispatch_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
@@ -180,8 +193,7 @@ package body Orka.Rendering.Buffers is
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
      is (Object.Buffer);
 
-   function Length (Object : Buffer) return Natural
-     is (Object.Length);
+   function Length (Object : Buffer) return Natural is (Object.Length);
 
    overriding
    procedure Bind_Base (Object : Buffer; Target : Buffer_Target; Index : Natural) is
@@ -218,6 +230,14 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
+      Data   : Double_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
       Data   : Int_Array;
       Offset : Natural := 0) is
    begin
@@ -234,14 +254,6 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Colors.Basic_Color_Array;
-      Offset : Natural := 0) is
-   begin
-      Pointers.Color.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
-   end Set_Data;
-
-   procedure Set_Data
-     (Object : Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0) is
    begin
@@ -254,6 +266,22 @@ package body Orka.Rendering.Buffers is
       Offset : Natural := 0) is
    begin
       Pointers.Single_Matrix4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Vector4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Matrix4.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -300,6 +328,14 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
+      Data   : in out Double_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
       Data   : in out Int_Array;
       Offset : Natural := 0) is
    begin
@@ -318,43 +354,33 @@ package body Orka.Rendering.Buffers is
 
    procedure Copy_Data
      (Object : Buffer;
-      Target : Buffer;
-      Kind   : Numeric_Type)
+      Target : Buffer)
    is
+      use Orka.Types;
+
       Length : constant Size := Size (Object.Length);
    begin
-      case Kind is
-         when Byte_Type =>
-            Pointers.Byte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
-         when Short_Type =>
-            Pointers.Short.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
-         when Int_Type =>
-            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+      case Object.Kind is
+         --  Numeric types
          when UByte_Type =>
             Pointers.UByte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when UShort_Type =>
             Pointers.UShort.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when UInt_Type =>
             Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Byte_Type =>
+            Pointers.Byte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Short_Type =>
+            Pointers.Short.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+         when Int_Type =>
+            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Half_Type =>
             Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Single_Type =>
             Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Double_Type =>
             Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
-      end case;
-   end Copy_Data;
-
-   procedure Copy_Data
-     (Object : Buffer;
-      Target : Buffer;
-      Kind   : Orka.Types.Composite_Type)
-   is
-      use Orka.Types;
-
-      Length : constant Size := Size (Object.Length);
-   begin
-      case Kind is
+         --  Composite types
          when Single_Vector_Type =>
             Pointers.Single_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
          when Double_Vector_Type =>

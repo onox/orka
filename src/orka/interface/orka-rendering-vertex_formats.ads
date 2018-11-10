@@ -18,6 +18,7 @@ with GL.Objects.Vertex_Arrays;
 with GL.Types;
 
 with Orka.Rendering.Buffers;
+with Orka.Types;
 
 package Orka.Rendering.Vertex_Formats is
    pragma Preelaborate;
@@ -41,17 +42,17 @@ package Orka.Rendering.Vertex_Formats is
 
    function Create_Vertex_Format
      (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : GL.Types.Unsigned_Numeric_Type) return Vertex_Format;
+      Index_Kind : Types.Unsigned_Numeric_Type) return Vertex_Format;
 
-   function Index_Kind (Object : Vertex_Format) return GL.Types.Unsigned_Numeric_Type;
+   function Index_Kind (Object : Vertex_Format) return Types.Unsigned_Numeric_Type;
 
    function Attribute_Kind
      (Object : Vertex_Format;
-      Index  : Positive) return GL.Types.Numeric_Type;
+      Index  : Positive) return Types.Numeric_Type;
 
    procedure Add_Attribute_Buffer
      (Object  : in out Vertex_Format;
-      Kind    : GL.Types.Numeric_Type;
+      Kind    : Types.Numeric_Type;
       Process : not null access procedure (Buffer : in out Attribute_Buffer));
 
    procedure Set_Vertex_Buffer
@@ -83,7 +84,7 @@ private
 
    type Attribute_Buffer is tagged record
       Vertex_Array     : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
-      Kind             : GL.Types.Numeric_Type;
+      Kind             : Types.Numeric_Type;
       Attributes_Count : Natural;
       Binding_Index    : GL.Objects.Vertex_Arrays.Binding;
    end record;
@@ -92,7 +93,7 @@ private
 
    type Vertex_Format is tagged record
       Mode         : GL.Types.Connection_Mode;
-      Index_Kind   : GL.Types.Unsigned_Numeric_Type;
+      Index_Kind   : Types.Unsigned_Numeric_Type;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Attributes   : Attribute_Buffers.Vector;
    end record;

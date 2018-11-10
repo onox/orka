@@ -15,9 +15,11 @@
 private with GL.Low_Level.Enums;
 
 with Orka.Rendering.Buffers;
+with Orka.Transforms.Singles.Matrices;
+with Orka.Types;
+
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Algorithms.Prefix_Sums;
-with Orka.Transforms.Singles.Matrices;
 
 package Orka.Culling is
    pragma Preelaborate;
@@ -63,16 +65,16 @@ private
    end record;
 
    type Cull_Instance is tagged record
-      Buffer_Visibles : Rendering.Buffers.Buffer;
-      Buffer_Indices  : Rendering.Buffers.Buffer;
+      Buffer_Visibles : Rendering.Buffers.Buffer (Types.UInt_Type);
+      Buffer_Indices  : Rendering.Buffers.Buffer (Types.UInt_Type);
 
       Culler          : Culler_Ptr;
       Prefix_Sum      : Algorithms.Prefix_Sums.Prefix_Sum;
 
       Work_Groups : Natural;
 
-      Compacted_Transforms : Rendering.Buffers.Buffer;
-      Compacted_Commands   : Rendering.Buffers.Buffer;
+      Compacted_Transforms : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+      Compacted_Commands   : Rendering.Buffers.Buffer (Types.Elements_Command_Type);
    end record;
 
 end Orka.Culling;

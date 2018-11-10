@@ -22,6 +22,8 @@ with Orka.Rendering.Vertex_Formats;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Types;
+
 package Orka.Resources.Models is
    pragma Preelaborate;
 
@@ -87,7 +89,7 @@ private
       Scene   : Model_Scene_Ptr;
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Bounds  : Rendering.Buffers.Buffer;
+      Bounds  : Rendering.Buffers.Buffer (Types.Single_Vector_Type);
       Structural_Frame_To_GL : Trees.Matrix4;
    end record;
 
@@ -100,8 +102,8 @@ private
 
       Cull_Instance : Culling.Cull_Instance;
 
-      Compacted_Transforms : Rendering.Buffers.Buffer;
-      Compacted_Commands   : Rendering.Buffers.Buffer;
+      Compacted_Transforms : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+      Compacted_Commands   : Rendering.Buffers.Buffer (Types.Elements_Command_Type);
    end record;
 
    type Model_Instance is abstract limited new Behaviors.Behavior with record

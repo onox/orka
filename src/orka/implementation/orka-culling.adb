@@ -19,7 +19,6 @@ with GL.Objects.Buffers;
 with GL.Types.Compute;
 
 with Orka.Rendering.Programs.Modules;
-with Orka.Types;
 
 package body Orka.Culling is
 
@@ -48,8 +47,8 @@ package body Orka.Culling is
      (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
    is
       use GL.Objects.Buffers;
-      use GL.Types;
       use Rendering.Buffers;
+      use all type Types.Element_Type;
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
         := Culler.Program_Frustum.GL_Program.Compute_Work_Group_Size;
@@ -76,11 +75,11 @@ package body Orka.Culling is
                Length => Transforms),
             Compacted_Transforms => Create_Buffer
               (Flags  => (others => False),
-               Kind   => Types.Single_Matrix_Type,
+               Kind   => Single_Matrix_Type,
                Length => Transforms),
             Compacted_Commands => Create_Buffer
               (Flags  => (others => False),
-               Kind   => Types.Elements_Command_Type,
+               Kind   => Elements_Command_Type,
                Length => Commands))
       do
          Messages.Insert (Notification, "Created culler for" &
@@ -137,7 +136,7 @@ package body Orka.Culling is
       --  Buffer Commands acts as a template (with instanceCount = 0 for
       --  every draw call), copy it to Compacted_Commands so that the
       --  compute shader does not modify it
-      Commands.Copy_Data (Object.Compacted_Commands, Types.Elements_Command_Type);
+      Commands.Copy_Data (Object.Compacted_Commands);
       Object.Compacted_Commands.Bind_Base (Shader_Storage, 4);
 
       Object.Culler.Program_Compact.Use_Program;
@@ -162,7 +161,7 @@ package body Orka.Culling is
 
       --  Store the prefix sum of Buffer_Visibles in Buffer_Indices
       Memory_Barrier;
-      Object.Buffer_Visibles.Copy_Data (Object.Buffer_Indices, GL.Types.UInt_Type);
+      Object.Buffer_Visibles.Copy_Data (Object.Buffer_Indices);
       Object.Prefix_Sum.Compute_Prefix_Sum (Object.Buffer_Indices);
 
       --  Create a compacted array of transforms: if a part is visible

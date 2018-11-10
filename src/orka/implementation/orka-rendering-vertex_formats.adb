@@ -18,10 +18,11 @@ with GL.Objects.Buffers;
 package body Orka.Rendering.Vertex_Formats is
 
    use GL.Types;
+   use all type Orka.Types.Element_Type;
 
    function Create
      (Vertex_Array  : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
-      Kind          : Numeric_Type;
+      Kind          : Types.Numeric_Type;
       Binding_Index : GL.Objects.Vertex_Arrays.Binding) return Attribute_Buffer is
    begin
       return Attribute_Buffer'(Vertex_Array, Kind, 0, Binding_Index);
@@ -33,7 +34,7 @@ package body Orka.Rendering.Vertex_Formats is
       Count  : Component_Count) is
    begin
       Object.Vertex_Array.Enable_Attribute (Index);
-      Object.Vertex_Array.Set_Attribute_Format (Index, Count, Object.Kind,
+      Object.Vertex_Array.Set_Attribute_Format (Index, Count, Convert (Object.Kind),
                                                 UInt (Object.Attributes_Count));
       Object.Vertex_Array.Set_Attribute_Binding (Index, Object.Binding_Index);
       Object.Attributes_Count := Object.Attributes_Count + Natural (Count);
@@ -42,7 +43,7 @@ package body Orka.Rendering.Vertex_Formats is
    procedure Set_Buffer (Object : Attribute_Buffer; Buffer : Buffers.Buffer) is
    begin
       Object.Vertex_Array.Bind_Vertex_Buffer (Object.Binding_Index, Buffer.GL_Buffer,
-                                              Object.Kind, 0,
+                                              Convert (Object.Kind), 0,
                                               Int (Object.Attributes_Count));
    end Set_Buffer;
 
@@ -56,7 +57,7 @@ package body Orka.Rendering.Vertex_Formats is
 
    function Create_Vertex_Format
      (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : GL.Types.Unsigned_Numeric_Type) return Vertex_Format is
+      Index_Kind : Types.Unsigned_Numeric_Type) return Vertex_Format is
    begin
       return Result : Vertex_Format do
          Result.Mode       := Mode;
@@ -64,14 +65,14 @@ package body Orka.Rendering.Vertex_Formats is
       end return;
    end Create_Vertex_Format;
 
-   function Index_Kind (Object : Vertex_Format) return GL.Types.Unsigned_Numeric_Type is
+   function Index_Kind (Object : Vertex_Format) return Types.Unsigned_Numeric_Type is
      (Object.Index_Kind);
 
    function Attribute_Kind
      (Object : Vertex_Format;
-      Index  : Positive) return GL.Types.Numeric_Type
+      Index  : Positive) return Types.Numeric_Type
    is
-      Result : GL.Types.Numeric_Type;
+      Result : Types.Numeric_Type;
 
       procedure Query (Element : Attribute_Buffer) is
       begin
@@ -84,7 +85,7 @@ package body Orka.Rendering.Vertex_Formats is
 
    procedure Add_Attribute_Buffer
      (Object  : in out Vertex_Format;
-      Kind    : GL.Types.Numeric_Type;
+      Kind    : Types.Numeric_Type;
       Process : not null access procedure (Buffer : in out Attribute_Buffer))
    is
       use GL.Objects.Vertex_Arrays;
@@ -128,7 +129,8 @@ package body Orka.Rendering.Vertex_Formats is
       Object.Vertex_Array.Bind;
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
       GL.Drawing.Draw_Multiple_Elements_Indirect
-        (Object.Mode, Object.Index_Kind, Count => Size (Count), Offset => Size (Offset));
+        (Object.Mode, Convert (Object.Index_Kind),
+         Count => Size (Count), Offset => Size (Offset));
    end Draw_Indirect;
 
    procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer) is
@@ -142,7 +144,7 @@ package body Orka.Rendering.Vertex_Formats is
       GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
       GL.Objects.Buffers.Parameter_Buffer.Bind (Count.GL_Buffer);
       GL.Drawing.Draw_Multiple_Elements_Indirect_Count
-        (Object.Mode, Object.Index_Kind, GL.Types.Size (Buffer.Length));
+        (Object.Mode, Convert (Object.Index_Kind), GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
 
 end Orka.Rendering.Vertex_Formats;

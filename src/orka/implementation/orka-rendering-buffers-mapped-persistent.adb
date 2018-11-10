@@ -15,7 +15,7 @@
 package body Orka.Rendering.Buffers.Mapped.Persistent is
 
    function Create_Buffer
-     (Kind   : Orka.Types.Composite_Type;
+     (Kind   : Orka.Types.Element_Type;
       Length : Natural;
       Mode   : IO_Mode) return Persistent_Mapped_Buffer
    is

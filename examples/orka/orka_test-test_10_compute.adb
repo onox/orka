@@ -25,6 +25,7 @@ with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
+with Orka.Types;
 
 with Orka.Windows.GLFW;
 
@@ -92,6 +93,9 @@ begin
       end;
 
       declare
+         use all type Orka.Types.Element_Type;
+         use type Ada.Real_Time.Time;
+
          Factor : constant Size := (Max_Work_Groups * Local_Size) / Numbers'Length;
 
          Buffer_1 : constant Buffer := Create_Buffer
@@ -100,7 +104,6 @@ begin
             Length => Numbers'Length * Natural (Factor));
 
          A, B : Ada.Real_Time.Time;
-         use type Ada.Real_Time.Time;
 
          procedure Memory_Barrier is
          begin

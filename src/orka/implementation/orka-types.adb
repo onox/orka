@@ -19,6 +19,30 @@ package body Orka.Types is
 
    use SIMD.AVX.Singles;
 
+   function Convert
+     (Kind : Types.Numeric_Type) return GL.Types.Numeric_Type
+   is (case Kind is
+      when UByte_Type  => GL.Types.UByte_Type,
+      when UShort_Type => GL.Types.UShort_Type,
+      when UInt_Type   => GL.Types.UInt_Type,
+
+      when Byte_Type   => GL.Types.Byte_Type,
+      when Short_Type  => GL.Types.Short_Type,
+      when Int_Type    => GL.Types.Int_Type,
+
+      when Half_Type   => GL.Types.Half_Type,
+      when Single_Type => GL.Types.Single_Type,
+      when Double_Type => GL.Types.Double_Type);
+
+   function Convert
+     (Kind : Types.Unsigned_Numeric_Type) return GL.Types.Unsigned_Numeric_Type
+   is (case Kind is
+      when UByte_Type  => GL.Types.UByte_Type,
+      when UShort_Type => GL.Types.UShort_Type,
+      when UInt_Type   => GL.Types.UInt_Type);
+
+   -----------------------------------------------------------------------------
+
    generic
       Size : GL.Types.Int;
       type Source_Type is private;
@@ -83,8 +107,10 @@ package body Orka.Types is
      (m256'Length, GL.Types.Half, GL.Types.Single,
       GL.Types.Half_Array, GL.Types.Single_Array, Convert_Slice);
 
-   function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array renames Convert_Single;
-   function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array renames Convert_Half;
+   function Convert
+     (Elements : GL.Types.Single_Array) return GL.Types.Half_Array renames Convert_Single;
+   function Convert
+     (Elements : GL.Types.Half_Array) return GL.Types.Single_Array renames Convert_Half;
 
    -----------------------------------------------------------------------------
 

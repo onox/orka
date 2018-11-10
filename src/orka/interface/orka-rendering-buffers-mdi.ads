@@ -19,13 +19,13 @@ package Orka.Rendering.Buffers.MDI is
 
    type Batch is tagged record
       --  Attributes
-      Positions : Buffer;
-      Normals   : Buffer;
-      UVs       : Buffer;
+      Positions : Buffer (Types.Half_Type);
+      Normals   : Buffer (Types.Half_Type);
+      UVs       : Buffer (Types.Half_Type);
 
-      Indices   : Buffer;
+      Indices   : Buffer (Types.UInt_Type);
 
-      Commands  : Buffer;
+      Commands  : Buffer (Types.Elements_Command_Type);
 
       Index_Offset  : Natural := 0;
       Vertex_Offset : Natural := 0;

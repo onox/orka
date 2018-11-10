@@ -18,7 +18,7 @@ package Orka.Rendering.Buffers.Mapped.Unsynchronized is
    type Unsynchronized_Mapped_Buffer is new Mapped_Buffer with private;
 
    function Create_Buffer
-     (Kind   : Orka.Types.Composite_Type;
+     (Kind   : Orka.Types.Element_Type;
       Length : Natural;
       Mode   : IO_Mode) return Unsynchronized_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;

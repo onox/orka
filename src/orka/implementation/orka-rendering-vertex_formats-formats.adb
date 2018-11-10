@@ -16,7 +16,8 @@ with GL.Types;
 
 package body Orka.Rendering.Vertex_Formats.Formats is
 
-   use GL.Types;
+   use all type GL.Types.Connection_Mode;
+   use all type Orka.Types.Element_Type;
 
    function Interleaved_Position_Normal_UV return Vertex_Format is
       procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is

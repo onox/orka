@@ -272,6 +272,7 @@ package body Orka.Resources.Models.glTF is
       use GL.Types;
       use Orka.glTF.Accessors;
       use Orka.glTF.Buffers;
+      use all type Orka.Types.Element_Type;
 
       pragma Assert (Format.Index_Kind = UInt_Type);
       package Index_Conversions is new Buffer_View_Conversions (UInt, UInt_Array, Indirect.UInt_Array_Access);

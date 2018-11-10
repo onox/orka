@@ -36,6 +36,7 @@ with Orka.Resources.Loaders;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Managers;
 with Orka.Resources.Textures.KTX;
+with Orka.Types;
 with Orka.Windows.GLFW;
 
 with Orka_Package_glTF;
@@ -90,6 +91,7 @@ begin
       use Orka.Rendering.Framebuffers;
 
       use GL.Types;
+      use all type Orka.Types.Unsigned_Numeric_Type;
 
       P_1 : Program := Create_Program (Modules.Create_Module
         (VS => "../resources/oversized-triangle.vert",
@@ -105,7 +107,7 @@ begin
       --  Create an empty vertex format. Vertex shader contains the data needed
       --  to generate a quad
       VF_1 : constant Formats.Vertex_Format
-        := Formats.Create_Vertex_Format (GL.Types.Triangles, GL.Types.UInt_Type);
+        := Formats.Create_Vertex_Format (GL.Types.Triangles, UInt_Type);
 
       ----------------------------------------------------------------------
 

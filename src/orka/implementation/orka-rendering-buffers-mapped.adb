@@ -26,6 +26,35 @@ package body Orka.Rendering.Buffers.Mapped is
       Flags  : GL.Objects.Buffers.Access_Bits) is
    begin
       case Object.Kind is
+         --  Numeric types
+         when UByte_Type =>
+            Pointers.UByte.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_UByte);
+         when UShort_Type =>
+            Pointers.UShort.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_UShort);
+         when UInt_Type =>
+            Pointers.UInt.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_UInt);
+         when Byte_Type =>
+            Pointers.Byte.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Byte);
+         when Short_Type =>
+            Pointers.Short.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Short);
+         when Int_Type =>
+            Pointers.Int.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Int);
+         when Half_Type =>
+            Pointers.Half.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Half);
+         when Single_Type =>
+            Pointers.Single.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Single);
+         when Double_Type =>
+            Pointers.Double.Map_Range
+              (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_Double);
+         --  Composite types
          when Single_Vector_Type =>
             Pointers.Single_Vector4.Map_Range
               (Object.Buffer.Buffer, Flags, 0, Length, Object.Pointer_SV);
@@ -75,27 +104,56 @@ package body Orka.Rendering.Buffers.Mapped is
       end case;
 
       case Object.Kind is
+         --  Numeric types
+         when UByte_Type =>
+            Pointers.UByte.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when UShort_Type =>
+            Pointers.UShort.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when UInt_Type =>
+            Pointers.UInt.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Byte_Type =>
+            Pointers.Byte.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Short_Type =>
+            Pointers.Short.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Int_Type =>
+            Pointers.Int.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Half_Type =>
+            Pointers.Half.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Single_Type =>
+            Pointers.Single.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         when Double_Type =>
+            Pointers.Double.Bind_Range
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
+         --  Composite types
          when Single_Vector_Type =>
             Pointers.Single_Vector4.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Double_Vector_Type =>
             Pointers.Double_Vector4.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Single_Matrix_Type =>
             Pointers.Single_Matrix4.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Double_Matrix_Type =>
             Pointers.Double_Matrix4.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Arrays_Command_Type =>
             Pointers.Arrays_Command.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Elements_Command_Type =>
             Pointers.Elements_Command.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
          when Dispatch_Command_Type =>
             Pointers.Dispatch_Command.Bind_Range
-              (Buffer_Target.all, Object.GL_Buffer, Index, Offset, Length);
+              (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
       end case;
    end Bind_Base;
 

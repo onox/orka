@@ -21,14 +21,41 @@ with Orka.Transforms.Doubles.Matrices;
 package Orka.Types is
    pragma Preelaborate;
 
-   type Composite_Type is
-     (Single_Vector_Type,
+   type Element_Type is
+      --  Numeric types
+     (UByte_Type,
+      UShort_Type,
+      UInt_Type,
+      Byte_Type,
+      Short_Type,
+      Int_Type,
+      Half_Type,
+      Single_Type,
+      Double_Type,
+      --  Composite types
+      Single_Vector_Type,
       Double_Vector_Type,
       Single_Matrix_Type,
       Double_Matrix_Type,
       Arrays_Command_Type,
       Elements_Command_Type,
       Dispatch_Command_Type);
+
+   subtype Numeric_Type is Element_Type range UByte_Type .. Double_Type;
+
+   subtype Signed_Numeric_Type is Numeric_Type range Byte_Type .. Double_Type;
+
+   subtype Unsigned_Numeric_Type is Numeric_Type range UByte_Type .. UInt_Type;
+
+   subtype Composite_Type is Element_Type range Single_Vector_Type .. Dispatch_Command_Type;
+
+   function Convert
+     (Kind : Types.Numeric_Type) return GL.Types.Numeric_Type;
+
+   function Convert
+     (Kind : Types.Unsigned_Numeric_Type) return GL.Types.Unsigned_Numeric_Type;
+
+   -----------------------------------------------------------------------------
 
    package Singles is new Orka.Algebra (Orka.Transforms.Singles.Matrices);
 
@@ -38,6 +65,8 @@ package Orka.Types is
      with Post => Elements'Length = Convert'Result'Length;
    function Convert (Elements : GL.Types.Half_Array) return GL.Types.Single_Array
      with Post => Elements'Length = Convert'Result'Length;
+
+   -----------------------------------------------------------------------------
 
    generic
       type Source is digits <>;

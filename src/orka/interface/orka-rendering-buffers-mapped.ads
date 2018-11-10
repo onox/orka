@@ -20,7 +20,7 @@ package Orka.Rendering.Buffers.Mapped is
    type IO_Mode is (Read, Write);
 
    type Mapped_Buffer
-     (Kind : Orka.Types.Composite_Type;
+     (Kind : Orka.Types.Element_Type;
       Mode : IO_Mode) is abstract new Bindable_Buffer with private;
 
    function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer
@@ -132,9 +132,9 @@ private
    use Orka.Types;
 
    type Mapped_Buffer
-     (Kind : Orka.Types.Composite_Type; Mode : IO_Mode)
+     (Kind : Orka.Types.Element_Type; Mode : IO_Mode)
    is new Bindable_Buffer with record
-      Buffer : Buffers.Buffer;
+      Buffer : Buffers.Buffer (Kind);
 
       Offset : Natural;
       --  Offset in number of elements to the start of the buffer
@@ -143,6 +143,26 @@ private
       --  advanced if the buffer is mapped persistent.
 
       case Kind is
+         --  Numeric types
+         when UByte_Type =>
+            Pointer_UByte  : Pointers.UByte.Pointer;
+         when UShort_Type =>
+            Pointer_UShort : Pointers.UShort.Pointer;
+         when UInt_Type =>
+            Pointer_UInt   : Pointers.UInt.Pointer;
+         when Byte_Type =>
+            Pointer_Byte   : Pointers.Byte.Pointer;
+         when Short_Type =>
+            Pointer_Short  : Pointers.Short.Pointer;
+         when Int_Type =>
+            Pointer_Int    : Pointers.Int.Pointer;
+         when Half_Type =>
+            Pointer_Half   : Pointers.Half.Pointer;
+         when Single_Type =>
+            Pointer_Single : Pointers.Single.Pointer;
+         when Double_Type =>
+            Pointer_Double : Pointers.Double.Pointer;
+         --  Composite types
          when Single_Vector_Type =>
             Pointer_SV : Pointers.Single_Vector4.Pointer;
          when Double_Vector_Type =>

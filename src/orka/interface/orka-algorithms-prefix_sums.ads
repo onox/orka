@@ -13,7 +13,9 @@
 --  limitations under the License.
 
 with Orka.Rendering.Buffers;
+
 private with Orka.Rendering.Programs;
+private with Orka.Types;
 
 package Orka.Algorithms.Prefix_Sums is
    pragma Preelaborate;
@@ -49,7 +51,7 @@ private
       Programs : Factory;
 
       Length, Work_Groups, Sum_Work_Groups : Positive;
-      Buffer_2, Buffer_3, Buffer_4         : Rendering.Buffers.Buffer;
+      Buffer_2, Buffer_3, Buffer_4         : Rendering.Buffers.Buffer (Types.UInt_Type);
    end record;
 
    function Length (Object : Prefix_Sum) return Positive is (Object.Length);
