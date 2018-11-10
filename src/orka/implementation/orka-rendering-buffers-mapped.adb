@@ -161,6 +161,89 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
+      Data   : UByte_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UByte.Set_Mapped_Data
+        (Object.Pointer_UByte, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : UShort_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UShort.Set_Mapped_Data
+        (Object.Pointer_UShort, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : UInt_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UInt.Set_Mapped_Data
+        (Object.Pointer_UInt, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Byte_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Byte.Set_Mapped_Data
+        (Object.Pointer_Byte, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Short_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Short.Set_Mapped_Data
+        (Object.Pointer_Short, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Int_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Int.Set_Mapped_Data
+        (Object.Pointer_Int, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Half_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Half.Set_Mapped_Data
+        (Object.Pointer_Half, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Single_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Single.Set_Mapped_Data
+        (Object.Pointer_Single, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Double_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double.Set_Mapped_Data
+        (Object.Pointer_Double, Size (Object.Offset + Offset), Data);
+   end Write_Data;
+
+   -----------------------------------------------------------------------------
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0) is
    begin

@@ -43,6 +43,62 @@ package Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
+      Data   : UByte_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : UShort_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : UInt_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Byte_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Short_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Int_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Half_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Single_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
+      Data   : Double_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
+
+   -----------------------------------------------------------------------------
+
+   procedure Write_Data
+     (Object : Mapped_Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
