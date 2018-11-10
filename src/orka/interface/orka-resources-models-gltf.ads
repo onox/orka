@@ -67,10 +67,10 @@ private
 
    type GLTF_Data_Access is access GLTF_Data;
 
-   -----------------------------------------------------------------------------
-
    procedure Free_Data is new Ada.Unchecked_Deallocation
      (Object => GLTF_Data, Name => GLTF_Data_Access);
+
+   -----------------------------------------------------------------------------
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
       Data     : Loaders.Resource_Data;
@@ -79,46 +79,21 @@ private
       Location : Locations.Location_Ptr;
    end record;
 
-   overriding
-   procedure Execute
-     (Object  : GLTF_Parse_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
    type GLTF_Process_Buffers_Job is new Jobs.Abstract_Job with record
       Data : not null GLTF_Data_Access;
    end record;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Buffers_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
 
    type GLTF_Process_Accessors_Job is new Jobs.Abstract_Job with record
       Data : not null GLTF_Data_Access;
    end record;
 
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Accessors_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
    type GLTF_Process_Meshes_Job is new Jobs.Abstract_Job with record
       Data : not null GLTF_Data_Access;
    end record;
 
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Meshes_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
    type GLTF_Process_Nodes_Job is new Jobs.Abstract_Job with record
       Data : not null GLTF_Data_Access;
    end record;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Nodes_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
 
    type GLTF_Finish_Processing_Job is new Jobs.Abstract_Job with record
       Data : not null GLTF_Data_Access;
@@ -126,21 +101,73 @@ private
       Processing_Start_Time : Ada.Real_Time.Time;
    end record;
 
-   overriding
-   procedure Execute
-     (Object  : GLTF_Finish_Processing_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
-
-   type GLTF_Create_Buffers_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
+   type GLTF_Create_Model_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Data  : not null GLTF_Data_Access;
       Path  : SU.Unbounded_String;
       Scene : Model_Scene_Ptr;
       Vertices, Indices : Natural;
    end record;
 
+   type GLTF_Write_Buffers_Job is new Jobs.Abstract_Job with record
+      Data  : not null GLTF_Data_Access;
+      Model : Model_Ptr;
+   end record;
+
+   type GLTF_Finish_Loading_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
+      Data  : not null GLTF_Data_Access;
+      Path  : SU.Unbounded_String;
+      Model : Model_Ptr;
+      Parts, Vertices, Indices : Natural;
+      Start_Time : Ada.Real_Time.Time;
+   end record;
+
+   -----------------------------------------------------------------------------
+   --                            EXECUTE PROCEDURES                           --
+   -----------------------------------------------------------------------------
+
    overriding
    procedure Execute
-     (Object  : GLTF_Create_Buffers_Job;
+     (Object  : GLTF_Parse_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Process_Buffers_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Process_Accessors_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Process_Meshes_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Process_Nodes_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Finish_Processing_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Create_Model_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Write_Buffers_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Finish_Loading_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
 
 end Orka.Resources.Models.glTF;

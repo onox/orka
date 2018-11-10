@@ -66,7 +66,7 @@ package body Orka.Resources.Models is
       Object.Cull_Instance.Cull
         (Transforms => Object.Instances.Transforms,
          Bounds     => Object.Model.Bounds,
-         Commands   => Object.Model.Batch.Commands,
+         Commands   => Object.Model.Batch.Commands.Buffer,
          Compacted_Transforms => Object.Compacted_Transforms,
          Compacted_Commands   => Object.Compacted_Commands,
          Instances => Object.Instances.Length);

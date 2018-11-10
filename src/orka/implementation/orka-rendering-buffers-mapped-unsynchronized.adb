@@ -45,4 +45,7 @@ package body Orka.Rendering.Buffers.Mapped.Unsynchronized is
    function Mapped (Object : in out Unsynchronized_Mapped_Buffer) return Boolean is
      (Object.Buffer.Buffer.Mapped);
 
+   function Buffer (Object : in out Unsynchronized_Mapped_Buffer) return Buffers.Buffer is
+     (Object.Buffer);
+
 end Orka.Rendering.Buffers.Mapped.Unsynchronized;

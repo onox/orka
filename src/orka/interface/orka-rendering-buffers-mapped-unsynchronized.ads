@@ -33,6 +33,9 @@ package Orka.Rendering.Buffers.Mapped.Unsynchronized is
 
    function Mapped (Object : in out Unsynchronized_Mapped_Buffer) return Boolean;
 
+   function Buffer (Object : in out Unsynchronized_Mapped_Buffer) return Buffers.Buffer
+     with Pre => not Object.Mapped;
+
 private
 
    type Unsynchronized_Mapped_Buffer is new Mapped_Buffer with null record;

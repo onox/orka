@@ -12,20 +12,33 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Rendering.Buffers.Mapped.Unsynchronized;
 with Orka.Rendering.Vertex_Formats;
 
 package Orka.Rendering.Buffers.MDI is
    pragma Preelaborate;
 
+   package UB renames Mapped.Unsynchronized;
+
    type Batch is tagged record
       --  Attributes
-      Positions : Buffer (Types.Half_Type);
-      Normals   : Buffer (Types.Half_Type);
-      UVs       : Buffer (Types.Half_Type);
+      Positions : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Types.Half_Type,
+         Mode => Mapped.Write);
+      Normals   : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Types.Half_Type,
+         Mode => Mapped.Write);
+      UVs       : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Types.Half_Type,
+         Mode => Mapped.Write);
 
-      Indices   : Buffer (Types.UInt_Type);
+      Indices   : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Types.UInt_Type,
+         Mode => Mapped.Write);
 
-      Commands  : Buffer (Types.Elements_Command_Type);
+      Commands  : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Types.Elements_Command_Type,
+         Mode => Mapped.Write);
 
       Index_Offset  : Natural := 0;
       Vertex_Offset : Natural := 0;
@@ -41,8 +54,9 @@ package Orka.Rendering.Buffers.MDI is
 
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
-      Format  : Rendering.Vertex_Formats.Vertex_Format;
-      Flags   : GL.Objects.Buffers.Storage_Bits) return Batch;
+      Format  : Rendering.Vertex_Formats.Vertex_Format) return Batch;
+
+   procedure Finish_Batch (Object : in out Batch);
 
    procedure Bind_Buffers_To
      (Object : in out Batch;

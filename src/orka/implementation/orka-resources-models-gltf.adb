@@ -29,6 +29,9 @@ with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
+   use GL.Debug;
+   package Messages is new GL.Debug.Messages (Third_Party, Other);
+
    Default_Root_Name : constant String := "root";
 
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
@@ -186,12 +189,19 @@ package body Orka.Resources.Models.glTF is
          pragma Assert (View.Length / Bytes_Per_Element = Count);
          pragma Assert (Source_Type'Size / System.Storage_Unit = Bytes_Per_Element);
 
-         procedure Extract is new Orka.glTF.Buffers.Extract_From_Buffer (Source_Type, Source_Array);
+         procedure Extract is new Orka.glTF.Buffers.Extract_From_Buffer
+           (Source_Type, Source_Array);
 
-         Source : Source_Array (Target.all'Range);
+         type Source_Array_Access is access Source_Array;
+
+         procedure Free_Array is new Ada.Unchecked_Deallocation
+           (Object => Source_Array, Name => Source_Array_Access);
+
+         Source : Source_Array_Access := new Source_Array (Target.all'Range);
       begin
-         Extract (View, Source);
-         Target.all := Convert_Array (Source);
+         Extract (View, Source.all);
+         Target.all := Convert_Array (Source.all);
+         Free_Array (Source);
       end Get_Array;
 
    end Buffer_View_Conversions;
@@ -597,26 +607,22 @@ package body Orka.Resources.Models.glTF is
            Object.Data.Meshes, Vertices, Indices);
 
          declare
-            Buffers_Job : constant Jobs.Job_Ptr := new GLTF_Create_Buffers_Job'
+            Create_Job : constant Jobs.Job_Ptr := new GLTF_Create_Model_Job'
               (Jobs.Abstract_Job with Data => Object.Data, Path => Object.Path,
                 Scene => Scene_Data, Vertices => Vertices, Indices => Indices);
          begin
-            Enqueue (Buffers_Job);
+            Enqueue (Create_Job);
          end;
       end;
    end Execute;
 
    overriding
    procedure Execute
-     (Object  : GLTF_Create_Buffers_Job;
+     (Object  : GLTF_Create_Model_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      use GL.Debug;
       use GL.Objects.Buffers;
 
-      package Messages is new GL.Debug.Messages (Third_Party, Other);
-
-      Path  : String renames SU.To_String (Object.Path);
       Data  : GLTF_Data_Access renames Object.Data;
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
@@ -630,21 +636,50 @@ package body Orka.Resources.Models.glTF is
          Format => Data.Format,
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices,
-            Format  => Data.Format.all,
-            Flags   => (Dynamic_Storage => True, others => False)),
+            Format  => Data.Format.all),
          --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => (others => False),
             Data  => Bounds_List (Data.Accessors, Data.Meshes)),
          Structural_Frame_To_GL => Ry (-90.0) * Rx (-90.0));
          -- TODO Job GLTF_Finish_Processing_Job doesn't use Rx (-90.0)?
+
+      Buffers_Job : constant Jobs.Job_Ptr := new GLTF_Write_Buffers_Job'
+        (Jobs.Abstract_Job with Data => Object.Data, Model => Model_Data);
+
+      Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Loading_Job'
+        (Jobs.Abstract_Job with Data => Object.Data, Path => Object.Path,
+         Model => Model_Data, Start_Time => Start_Time,
+         Parts => Parts, Vertices => Object.Vertices, Indices => Object.Indices);
    begin
-      Add_Parts (Data.Format, Model_Data.Batch, Data.Views, Data.Accessors, Data.Meshes);
+      Orka.Jobs.Chain ((Buffers_Job, Finish_Job));
+      Enqueue (Buffers_Job);
+   end Execute;
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Write_Buffers_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+   is
+      Data : GLTF_Data_Access renames Object.Data;
+   begin
+      Add_Parts (Data.Format, Object.Model.Batch, Data.Views, Data.Accessors, Data.Meshes);
+   end Execute;
+
+   overriding
+   procedure Execute
+     (Object  : GLTF_Finish_Loading_Job;
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+   is
+      Data : GLTF_Data_Access renames Object.Data;
+      Path : String renames SU.To_String (Object.Path);
+   begin
+      Object.Model.Batch.Finish_Batch;
+
+      Data.Times.Buffers := Clock - Object.Start_Time;
 
       --  Register the model at the resource manager
-      Data.Manager.Add_Resource (Path, Resource_Ptr (Model_Data));
-
-      Data.Times.Buffers := Clock - Start_Time;
+      Data.Manager.Add_Resource (Path, Resource_Ptr (Object.Model));
 
       declare
          Read_Time    : constant Duration := 1e3 * To_Duration (Data.Times.Reading);
@@ -655,8 +690,8 @@ package body Orka.Resources.Models.glTF is
          Load_Time    : constant Duration := 1e3 * To_Duration (Clock - Data.Start_Time);
       begin
          Messages.Insert (Notification, "Loaded model " & Path);
-         Messages.Insert (Notification,
-           " " & Parts'Image & " parts," &
+         Messages.Insert (Notification, " " &
+           Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
          Messages.Insert (Notification, "  loaded in" & Load_Time'Image & " ms");

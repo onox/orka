@@ -38,15 +38,15 @@ package body Orka.Rendering.Buffers.MDI is
          Base_Instance => 0);
 
       --  Upload attributes to VBO's
-      Object.Positions.Set_Data (Positions.all, Offset => Object.Vertex_Offset * 3);
-      Object.Normals.Set_Data   (Normals.all,   Offset => Object.Vertex_Offset * 3);
-      Object.UVs.Set_Data       (UVs.all,       Offset => Object.Vertex_Offset * 2);
+      Object.Positions.Write_Data (Positions.all, Offset => Object.Vertex_Offset * 3);
+      Object.Normals.Write_Data   (Normals.all,   Offset => Object.Vertex_Offset * 3);
+      Object.UVs.Write_Data       (UVs.all,       Offset => Object.Vertex_Offset * 2);
 
       --  Upload indices to IBO
-      Object.Indices.Set_Data (Indices.all, Offset => Object.Index_Offset);
+      Object.Indices.Write_Data (Indices.all, Offset => Object.Index_Offset);
 
       --  Upload command to command buffer
-      Object.Commands.Set_Data (Commands, Offset => Object.Index);
+      Object.Commands.Write_Data (Commands, Offset => Object.Index);
 
       Object.Index_Offset  := Object.Index_Offset  + Index_Count;
       Object.Vertex_Offset := Object.Vertex_Offset + Vertex_Count;
@@ -55,36 +55,52 @@ package body Orka.Rendering.Buffers.MDI is
 
    function Create_Batch
      (Parts, Vertices, Indices : Positive;
-      Format  : Rendering.Vertex_Formats.Vertex_Format;
-      Flags   : GL.Objects.Buffers.Storage_Bits) return Batch is
+      Format  : Rendering.Vertex_Formats.Vertex_Format) return Batch
+   is
+      use all type Mapped.Unsynchronized.Unsynchronized_Mapped_Buffer;
    begin
       return Result : Batch do
-         Result.Commands  := Buffers.Create_Buffer
-           (Flags, Types.Elements_Command_Type, Parts);
+         Result.Commands  := Create_Buffer
+           (Types.Elements_Command_Type, Parts, Mapped.Write);
 
          --  Attributes
-         Result.Positions := Buffers.Create_Buffer
-           (Flags, Format.Attribute_Kind (1), Vertices * 3);
-         Result.Normals   := Buffers.Create_Buffer
-           (Flags, Format.Attribute_Kind (2), Vertices * 3);
-         Result.UVs       := Buffers.Create_Buffer
-           (Flags, Format.Attribute_Kind (3), Vertices * 2);
+         Result.Positions := Create_Buffer
+           (Format.Attribute_Kind (1), Vertices * 3, Mapped.Write);
+         Result.Normals   := Create_Buffer
+           (Format.Attribute_Kind (2), Vertices * 3, Mapped.Write);
+         Result.UVs       := Create_Buffer
+           (Format.Attribute_Kind (3), Vertices * 2, Mapped.Write);
          --  TODO Don't hardcode vector size factors
 
          --  Indices
-         Result.Indices := Buffers.Create_Buffer (Flags, Format.Index_Kind, Indices);
+         Result.Indices := Create_Buffer (Format.Index_Kind, Indices, Mapped.Write);
+
+         Result.Positions.Map;
+         Result.Normals.Map;
+         Result.UVs.Map;
+         Result.Indices.Map;
+         Result.Commands.Map;
       end return;
    end Create_Batch;
+
+   procedure Finish_Batch (Object : in out Batch) is
+   begin
+      Object.Positions.Unmap;
+      Object.Normals.Unmap;
+      Object.UVs.Unmap;
+      Object.Indices.Unmap;
+      Object.Commands.Unmap;
+   end Finish_Batch;
 
    procedure Bind_Buffers_To
      (Object : in out Batch;
       Format : in out Vertex_Formats.Vertex_Format) is
    begin
-      Format.Set_Vertex_Buffer (1, Object.Positions);
-      Format.Set_Vertex_Buffer (2, Object.Normals);
-      Format.Set_Vertex_Buffer (3, Object.UVs);
+      Format.Set_Vertex_Buffer (1, Object.Positions.Buffer);
+      Format.Set_Vertex_Buffer (2, Object.Normals.Buffer);
+      Format.Set_Vertex_Buffer (3, Object.UVs.Buffer);
 
-      Format.Set_Index_Buffer (Object.Indices);
+      Format.Set_Index_Buffer (Object.Indices.Buffer);
    end Bind_Buffers_To;
 
 end Orka.Rendering.Buffers.MDI;
