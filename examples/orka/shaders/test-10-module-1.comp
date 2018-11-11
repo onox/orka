@@ -76,10 +76,10 @@ void main(void) {
     }*/
 
     // Sequential addressing with unrolling last iterations:
-    // When s <= gl_SubGroupSizeARB / 2 then all active threads
+    // When s <= gl_SubGroupSizeARB then all active threads
     // execute in lockstep. A memory barrier is then no longer
     // needed.
-    for (uint s = gl_WorkGroupSize.x / 2u; s > 16u; s >>= 1u) {
+    for (uint s = gl_WorkGroupSize.x / 2u; s > 32u; s >>= 1u) {
         if (tid < s) {
             sdata[tid] += sdata[tid + s];
         }
@@ -87,7 +87,8 @@ void main(void) {
         barrier();
     }
 
-    if (tid < 16u) {
+    if (tid < 32u) {
+        sdata[tid] += sdata[tid + 32u];
         sdata[tid] += sdata[tid + 16u];
         sdata[tid] += sdata[tid + 8u];
         sdata[tid] += sdata[tid + 4u];
