@@ -18,7 +18,6 @@ with Ada.Real_Time;
 with Ada.Text_IO;
 
 with GL.Buffers;
-with GL.Debug.Logs;
 with GL.Objects.Textures;
 with GL.Types;
 
@@ -68,7 +67,7 @@ begin
    end if;
 
    declare
-      Messages : constant GL.Types.Size := GL.Debug.Logs.Logged_Messages;
+      Messages : constant Natural := Orka.Debug.Logged_Messages;
    begin
       Ada.Text_IO.Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
    end;

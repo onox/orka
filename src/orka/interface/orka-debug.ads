@@ -27,6 +27,9 @@ package Orka.Debug is
       Message : String) return String;
    --  Format and colorize the message so that it can be readily printed
 
+   function Logged_Messages return Natural;
+   --  Return number of messages currently in the log
+
    procedure Flush_Log;
    --  Print all messages currently in the log
 

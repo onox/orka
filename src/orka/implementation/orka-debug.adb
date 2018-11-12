@@ -90,6 +90,8 @@ package body Orka.Debug is
              ID_Image & ": " & Strip_Line_Term (Message);
    end Format_Message;
 
+   function Logged_Messages return Natural is (Natural (GL.Debug.Logs.Logged_Messages));
+
    procedure Flush_Log is
    begin
       for M of GL.Debug.Logs.Message_Log loop
