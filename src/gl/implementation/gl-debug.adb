@@ -76,6 +76,14 @@ package body GL.Debug is
       Raise_Exception_On_OpenGL_Error;
    end Set;
 
+   procedure Set (Level : Severity; Enabled : Boolean) is
+      Identifiers : Types.UInt_Array (1 .. 0);
+   begin
+      API.Debug_Message_Control
+        (Any, Any, Level, 0, Identifiers, Low_Level.Bool (Enabled));
+      Raise_Exception_On_OpenGL_Error;
+   end Set;
+
    procedure Set (From : Source; Kind : Message_Type; Identifiers : Types.UInt_Array;
                   Enabled : Boolean) is
    begin

@@ -108,6 +108,7 @@ package body Orka.Debug is
    procedure Enable_Print_Callback is
    begin
       GL.Debug.Set_Message_Callback (Print_Debug_Message'Access);
+      GL.Debug.Set (GL.Debug.Low, True);
    end Enable_Print_Callback;
 
 end Orka.Debug;

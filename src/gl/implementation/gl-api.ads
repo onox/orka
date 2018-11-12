@@ -1090,6 +1090,10 @@ private package GL.API is
      ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
       Low_Level.Enum, Size, UInt_Array, Low_Level.Bool);
 
+   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+     ("glDebugMessageControl", Low_Level.Enum, Low_Level.Enum,
+      Debug.Severity, Size, UInt_Array, Low_Level.Bool);
+
    procedure Debug_Message_Insert is new Loader.Procedure_With_6_Params
      ("glDebugMessageInsert", Debug.Source, Debug.Message_Type,
       UInt, Debug.Severity, Size, C.char_array);

@@ -58,8 +58,10 @@ package GL.Debug is
 
    procedure Set (From : Source; Kind : Message_Type; Level : Severity;
                   Enabled : Boolean);
-   --  TODO Support Any for From, Kind, and Level
    --  Enable or disable specific messages or groups of messages
+
+   procedure Set (Level : Severity; Enabled : Boolean);
+   --  Enable messages that have the given severity
 
    procedure Set (From : Source; Kind : Message_Type; Identifiers : UInt_Array;
                   Enabled : Boolean)
