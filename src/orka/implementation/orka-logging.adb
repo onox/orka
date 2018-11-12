@@ -14,6 +14,7 @@
 
 with Ada.Text_IO;
 
+with Orka.Atomics;
 with Orka.Terminals;
 
 package body Orka.Logging is
@@ -41,17 +42,18 @@ package body Orka.Logging is
    end Insert_Message;
 
    package body Messages is
-      Identifier : Natural := 0;
+      Identifier : Atomics.Counter (Initial_Value => 0);
 
       procedure Insert (Level : Severity; Message : String) is
       begin
-         Insert_Message (From, Level, Identifier, Message);
-         Identifier := Identifier + 1;
+         Insert_Message (From, Level, Identifier.Count, Message);
+         Identifier.Increment;
       end Insert;
 
       procedure Reset_Identifier (Value : Natural) is
       begin
-         Identifier := Value;
+         Identifier.Reset;
+         Identifier.Add (Value);
       end Reset_Identifier;
    end Messages;
 

@@ -22,6 +22,8 @@ package Orka.Atomics is
 
       procedure Decrement (Zero : out Boolean);
 
+      procedure Reset;
+
       function Count return Natural;
    private
       Value : Natural := Initial_Value;

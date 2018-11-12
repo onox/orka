@@ -31,6 +31,11 @@ package body Orka.Atomics is
          Zero  := Value = 0;
       end Decrement;
 
+      procedure Reset is
+      begin
+         Value := Initial_Value;
+      end Reset;
+
       function Count return Natural is (Value);
    end Counter;
 
