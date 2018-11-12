@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Terminals is
+private package Orka.Terminals is
    pragma Preelaborate;
 
    type Style is (Default, Bold, Dark, Italic, Underline, Blink, Reversed, Cross_Out);
