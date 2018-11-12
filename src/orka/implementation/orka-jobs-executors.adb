@@ -135,6 +135,8 @@ package body Orka.Jobs.Executors is
                --  and if it has reached zero then it can be scheduled
                if Job.Dependent.Decrement_Dependencies then
                   pragma Assert (Jobs.Empty);
+--                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing dependent " &
+--                    Ada.Tags.Expanded_Name (Job.Dependent'Tag));
                   Queue.Enqueue (Job.Dependent, Pair.Future);
                end if;
             elsif Jobs.Empty then
@@ -150,6 +152,8 @@ package body Orka.Jobs.Executors is
 
             if not Jobs.Empty then
                for Job of Jobs loop
+--                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing job " &
+--                    Ada.Tags.Expanded_Name (Job'Tag));
                   Queue.Enqueue (Job, Pair.Future);
                end loop;
             end if;
