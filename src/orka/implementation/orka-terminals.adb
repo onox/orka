@@ -12,6 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 
@@ -68,5 +69,43 @@ package body Orka.Terminals is
    begin
       return Reset & FG & BG & ST & Text & Reset;
    end Colorize;
+
+   function Time_Image return String is
+      use Ada.Calendar;
+      use Ada.Calendar.Formatting;
+
+      Hour       : Hour_Number;
+      Minute     : Minute_Number;
+      Second     : Second_Number;
+      Sub_Second : Second_Duration;
+   begin
+      Split (Seconds (Clock), Hour, Minute, Second, Sub_Second);
+
+      declare
+         --  Remove first character (space) from ' hhmmss' image and then pad it to six digits
+         Image1 : constant String := Natural'Image (Hour * 1e4 + Minute * 1e2 + Second);
+         Image2 : constant String := SF.Tail (Image1 (2 .. Image1'Last), 6, '0');
+
+         --  Insert ':' characters to get 'hh:mm:ss'
+         Image3 : constant String := SF.Insert (Image2, 5, ":");
+         Image4 : constant String := SF.Insert (Image3, 3, ":");
+
+         --  Take image without first character (space) and then pad it to six digits
+         Image5 : constant String := Natural'Image (Natural (Sub_Second * 1e6));
+         Image6 : constant String := SF.Tail (Image5 (2 .. Image5'Last), 6, '0');
+      begin
+         return Image4 & "." & Image6;
+      end;
+   end Time_Image;
+
+   function Strip_Line_Term (Value : String) return String is
+      Last_Index : Natural := Value'Last;
+   begin
+      for Index in reverse Value'Range loop
+         exit when Value (Index) not in L.LF | L.CR;
+         Last_Index := Last_Index - 1;
+      end loop;
+      return Value (Value'First .. Last_Index);
+   end Strip_Line_Term;
 
 end Orka.Terminals;

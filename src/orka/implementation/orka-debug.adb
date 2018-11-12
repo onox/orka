@@ -12,9 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Calendar.Formatting;
-with Ada.Characters.Latin_1;
-with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
 with GL.Debug.Logs;
@@ -22,48 +19,6 @@ with GL.Debug.Logs;
 with Orka.Terminals;
 
 package body Orka.Debug is
-
-   package SF renames Ada.Strings.Fixed;
-
-   package L renames Ada.Characters.Latin_1;
-
-   function Time_Image return String is
-      use Ada.Calendar;
-      use Ada.Calendar.Formatting;
-
-      Hour       : Hour_Number;
-      Minute     : Minute_Number;
-      Second     : Second_Number;
-      Sub_Second : Second_Duration;
-   begin
-      Split (Seconds (Clock), Hour, Minute, Second, Sub_Second);
-
-      declare
-         --  Remove first character (space) from ' hhmmss' image and then pad it to six digits
-         Image1 : constant String := Natural'Image (Hour * 1e4 + Minute * 1e2 + Second);
-         Image2 : constant String := SF.Tail (Image1 (2 .. Image1'Last), 6, '0');
-
-         --  Insert ':' characters to get 'hh:mm:ss'
-         Image3 : constant String := SF.Insert (Image2, 5, ":");
-         Image4 : constant String := SF.Insert (Image3, 3, ":");
-
-         --  Take image without first character (space) and then pad it to six digits
-         Image5 : constant String := Natural'Image (Natural (Sub_Second * 1e6));
-         Image6 : constant String := SF.Tail (Image5 (2 .. Image5'Last), 6, '0');
-      begin
-         return Image4 & "." & Image6;
-      end;
-   end Time_Image;
-
-   function Strip_Line_Term (Value : String) return String is
-      Last_Index : Natural := Value'Last;
-   begin
-      for Index in reverse Value'Range loop
-         exit when Value (Index) not in L.LF | L.CR;
-         Last_Index := Last_Index - 1;
-      end loop;
-      return Value (Value'First .. Last_Index);
-   end Strip_Line_Term;
 
    function Format_Message
      (From    : Source;
@@ -78,11 +33,13 @@ package body Orka.Debug is
                when Medium       => Terminals.Yellow,
                when Low          => Terminals.Blue,
                when Notification => Terminals.Green);
+
+      Time_Image : constant String := Terminals.Time_Image;
    begin
       return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
              " " &
              Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             ID'Image & ": " & Strip_Line_Term (Message);
+             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 
    function Logged_Messages return Natural is (Natural (GL.Debug.Logs.Logged_Messages));
