@@ -12,6 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Exceptions;
 with Ada.Real_Time;
 with Ada.Text_IO;
 
@@ -30,9 +31,10 @@ procedure Orka_Test.Test_9_Jobs is
    Job_3 : constant Orka.Jobs.Parallel_Job_Ptr := new Package_9_Jobs.Test_Parallel_Job;
    Job_4 : constant Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize (Job_3, 24, 6);
 
-   Future : Orka.Futures.Pointers.Mutable_Pointer;
+   Handle : Orka.Futures.Pointers.Mutable_Pointer;
    Status : Orka.Futures.Status;
 
+   use Ada.Exceptions;
    use Ada.Real_Time;
    use Ada.Text_IO;
 
@@ -41,17 +43,15 @@ procedure Orka_Test.Test_9_Jobs is
    package Boss renames Package_9_Jobs.Boss;
 begin
    --  Graph: Job_0 --> Job_1 --> Job_4 (4 slices) --> Job_2
-   Job_1.Set_Dependencies ((1 => Job_0));
-   Job_4.Set_Dependencies ((1 => Job_1));
-   Job_2.Set_Dependencies ((1 => Job_4));
+   Orka.Jobs.Chain ((Job_0, Job_1, Job_4, Job_2));
 
-   Package_9_Jobs.Boss.Queue.Enqueue (Job_0, Future);
-   Put_Line ("References (2): " & Future.References'Image);
+   Package_9_Jobs.Boss.Queue.Enqueue (Job_0, Handle);
+   Put_Line ("References (2): " & Handle.References'Image);
 
    T1 := Clock;
    declare
-      Reference : Orka.Futures.Pointers.Reference := Future.Get;
-      Future : constant Orka.Futures.Future_Access := Reference.Value;
+      Reference : constant Orka.Futures.Pointers.Reference := Handle.Get;
+      Future    : constant Orka.Futures.Future_Access      := Reference.Value;
    begin
       select
          Future.Wait_Until_Done (Status);
@@ -59,11 +59,14 @@ begin
          Put_Line ("   Status: " & Status'Image);
          Put_Line ("   Time:  " & Duration'Image (1e3 * To_Duration (T2 - T1)) & " ms");
       or
-         delay until Clock + Milliseconds (10);
+         delay until T1 + Milliseconds (10);
          Put_Line ("   Time out: " & Reference.Current_Status'Image);
       end select;
+   exception
+      when Error : others =>
+         Put_Line ("Error: " & Exception_Information (Error));
    end;
-   Put_Line ("References (1): " & Future.References'Image);
+   Put_Line ("References (1): " & Handle.References'Image);
 
    Boss.Shutdown;
 
