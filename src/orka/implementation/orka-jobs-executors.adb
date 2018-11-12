@@ -12,12 +12,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Exceptions;
 with Ada.Real_Time;
---  with Ada.Tags;
+with Ada.Tags;
 --  with Ada.Text_IO;
 
 with Orka.Containers.Bounded_Vectors;
 with Orka.Futures;
+with Orka.Logging;
 
 package body Orka.Jobs.Executors is
 
@@ -86,7 +88,7 @@ package body Orka.Jobs.Executors is
                Root_Dependents.Query (Set_Dependencies'Access);
             end Set_Root_Dependent;
 
---            Tag : String renames Ada.Tags.Expanded_Name (Job'Tag);
+            Tag : String renames Ada.Tags.Expanded_Name (Job'Tag);
          begin
 --            T1 := Ada.Real_Time.Clock;
 
@@ -100,6 +102,11 @@ package body Orka.Jobs.Executors is
             exception
                when Error : others =>
                   Promise.Set_Failed (Error);
+
+                  Logging.Insert_Message
+                    (Logging.Executor, Logging.Error, 0,
+                     Kind'Image & " job " & Tag & " " &
+                     Ada.Exceptions.Exception_Information (Error));
                   raise;
             end;
 

@@ -18,16 +18,17 @@ with Ada.Exceptions;
 with Ada.Real_Time;
 with Ada.Unchecked_Deallocation;
 
-with GL.Debug;
 with GL.Low_Level.Enums;
 with GL.Types;
 with GL.Pixels;
 
+with Orka.Logging;
 with Orka.KTX;
 
 package body Orka.Resources.Textures.KTX is
 
-   package Debug_Messages is new GL.Debug.Messages (GL.Debug.Third_Party, GL.Debug.Other);
+   use Orka.Logging;
+   package Messages is new Orka.Logging.Messages (Resource_Loader);
 
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Data    : Loaders.Resource_Data;
@@ -256,39 +257,28 @@ package body Orka.Resources.Textures.KTX is
 
             Loading_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T1);
          begin
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "Loaded texture " & Path);
-            Debug_Messages.Insert (GL.Debug.Notification,
+            Messages.Insert (Info, "Loaded texture " & Path);
+            Messages.Insert (Info,
                "  width:" & Header.Width'Image &
                " height:" & Header.Height'Image &
                " depth:" & Header.Depth'Image &
                " array length:" & Header.Array_Elements'Image &
                " mipmap levels:" & Levels'Image);
             if Header.Compressed then
-               Debug_Messages.Insert (GL.Debug.Notification,
-                  "  compressed format: " & Header.Compressed_Format'Image);
+               Messages.Insert (Info, "  compressed format: " & Header.Compressed_Format'Image);
             else
-               Debug_Messages.Insert (GL.Debug.Notification,
-                  "  internal: " & Header.Internal_Format'Image);
-               Debug_Messages.Insert (GL.Debug.Notification,
-                  "  format: " & Header.Format'Image);
-               Debug_Messages.Insert (GL.Debug.Notification,
-                  "  type: " & Header.Data_Type'Image);
+               Messages.Insert (Info, "  internal: " & Header.Internal_Format'Image);
+               Messages.Insert (Info, "  format: " & Header.Format'Image);
+               Messages.Insert (Info, "  type: " & Header.Data_Type'Image);
             end if;
 
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "  loaded in" & Loading_Time'Image & " ms");
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "    reading file:" & Reading_Time'Image & " ms");
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "    parsing header:" & Parsing_Time'Image & " ms");
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "    storage:" & Storage_Time'Image & " ms");
-            Debug_Messages.Insert (GL.Debug.Notification,
-               "    buffers:" & Buffers_Time'Image & " ms");
+            Messages.Insert (Info, "  loaded in" & Loading_Time'Image & " ms");
+            Messages.Insert (Info, "    reading file:" & Reading_Time'Image & " ms");
+            Messages.Insert (Info, "    parsing header:" & Parsing_Time'Image & " ms");
+            Messages.Insert (Info, "    storage:" & Storage_Time'Image & " ms");
+            Messages.Insert (Info, "    buffers:" & Buffers_Time'Image & " ms");
             if Header.Mipmap_Levels = 0 then
-               Debug_Messages.Insert (GL.Debug.Notification,
-                  "    generating mipmap:" & Mipmap_Time'Image & " ms");
+               Messages.Insert (Info, "    generating mipmap:" & Mipmap_Time'Image & " ms");
             end if;
          end;
       end;

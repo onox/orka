@@ -20,6 +20,7 @@ with Ada.Text_IO;
 with Ada.Exceptions;
 
 with Orka.Futures;
+with Orka.Logging;
 with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
@@ -215,7 +216,8 @@ package body Orka.Loops is
             Run_Game_Loop (Fence'Unchecked_Access);
          exception
             when Error : others =>
-               Ada.Text_IO.Put_Line ("Exception game loop: " & Exception_Information (Error));
+               Logging.Insert_Message
+                 (Logging.Game_Loop, Logging.Error, 0, Exception_Information (Error));
          end Simulation;
       begin
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);

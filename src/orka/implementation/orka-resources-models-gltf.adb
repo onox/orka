@@ -21,16 +21,16 @@ with Ada.Strings.Hash;
 with JSON.Parsers;
 with JSON.Streams;
 
-with GL.Debug;
 with GL.Objects.Buffers;
 with GL.Types.Indirect;
 
 with Orka.Types;
+with Orka.Logging;
 
 package body Orka.Resources.Models.glTF is
 
-   use GL.Debug;
-   package Messages is new GL.Debug.Messages (Third_Party, Other);
+   use Orka.Logging;
+   package Messages is new Orka.Logging.Messages (Resource_Loader);
 
    Default_Root_Name : constant String := "root";
 
@@ -689,17 +689,17 @@ package body Orka.Resources.Models.glTF is
          Buffers_Time : constant Duration := 1e3 * To_Duration (Data.Times.Buffers);
          Load_Time    : constant Duration := 1e3 * To_Duration (Clock - Data.Start_Time);
       begin
-         Messages.Insert (Notification, "Loaded model " & Path);
-         Messages.Insert (Notification, " " &
+         Messages.Insert (Info, "Loaded model " & Path);
+         Messages.Insert (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Messages.Insert (Notification, "  loaded in" & Load_Time'Image & " ms");
-         Messages.Insert (Notification, "    reading file:" & Read_Time'Image & " ms");
-         Messages.Insert (Notification, "    parsing JSON:" & Parse_Time'Image & " ms");
-         Messages.Insert (Notification, "    processing glTF:" & Process_Time'Image & " ms");
-         Messages.Insert (Notification, "    scene tree:" & Scene_Time'Image & " ms");
-         Messages.Insert (Notification, "    buffers:" & Buffers_Time'Image & " ms");
+         Messages.Insert (Info, "  loaded in" & Load_Time'Image & " ms");
+         Messages.Insert (Info, "    reading file:" & Read_Time'Image & " ms");
+         Messages.Insert (Info, "    parsing JSON:" & Parse_Time'Image & " ms");
+         Messages.Insert (Info, "    processing glTF:" & Process_Time'Image & " ms");
+         Messages.Insert (Info, "    scene tree:" & Scene_Time'Image & " ms");
+         Messages.Insert (Info, "    buffers:" & Buffers_Time'Image & " ms");
       end;
 
       --  TODO Deallocate Object.Data.JSON
