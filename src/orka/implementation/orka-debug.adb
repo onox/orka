@@ -78,16 +78,11 @@ package body Orka.Debug is
                when Medium       => Terminals.Yellow,
                when Low          => Terminals.Blue,
                when Notification => Terminals.Green);
-
-      Level_Image  : String renames Severity'Image (Level);
-      Type_Image   : String renames Message_Type'Image (Kind);
-      Source_Image : String renames Source'Image (From);
-      ID_Image     : String renames GL.Types.UInt'Image (ID);
    begin
-      return Terminals.Colorize ("[" & Time_Image & " " & Level_Image & "]", Level_Color) &
+      return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
              " " &
-             Terminals.Colorize ("[" & Source_Image & ":" & Type_Image & "]", Terminals.Magenta) &
-             ID_Image & ": " & Strip_Line_Term (Message);
+             Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
+             ID'Image & ": " & Strip_Line_Term (Message);
    end Format_Message;
 
    function Logged_Messages return Natural is (Natural (GL.Debug.Logs.Logged_Messages));
@@ -95,7 +90,8 @@ package body Orka.Debug is
    procedure Flush_Log is
    begin
       for M of GL.Debug.Logs.Message_Log loop
-         Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (M.From, M.Kind, M.ID, M.Level, M.Message.Element));
+         Ada.Text_IO.Put_Line
+           (Format_Message (M.From, M.Kind, M.ID, M.Level, M.Message.Element));
       end loop;
    end Flush_Log;
 
@@ -106,7 +102,7 @@ package body Orka.Debug is
       ID        : GL.Types.UInt;
       Message   : String) is
    begin
-      Ada.Text_IO.Put_Line (Orka.Debug.Format_Message (From, Kind, ID, Level, Message));
+      Ada.Text_IO.Put_Line (Format_Message (From, Kind, ID, Level, Message));
    end Print_Debug_Message;
 
    procedure Enable_Print_Callback is
