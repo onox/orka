@@ -121,6 +121,7 @@ package body Orka.Jobs.Executors is
                --  If another job depends on this job, decrement its dependencies counter
                --  and if it has reached zero then it can be scheduled
                if Job.Dependent.Decrement_Dependencies then
+                  pragma Assert (Jobs.Empty);
                   Queue.Enqueue (Job.Dependent, Pair.Future);
                end if;
             elsif Jobs.Empty then
