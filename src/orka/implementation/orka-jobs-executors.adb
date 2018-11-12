@@ -23,6 +23,9 @@ with Orka.Logging;
 
 package body Orka.Jobs.Executors is
 
+   use Orka.Logging;
+   package Messages is new Orka.Logging.Messages (Executor);
+
    function Get_Root_Dependent (Element : Job_Ptr) return Job_Ptr is
       Result : Job_Ptr := Element;
    begin
@@ -39,6 +42,7 @@ package body Orka.Jobs.Executors is
    is
       use type Ada.Real_Time.Time;
       use type Futures.Status;
+      use Ada.Exceptions;
 
       Pair : Queues.Pair;
       Stop : Boolean := False;
@@ -97,18 +101,20 @@ package body Orka.Jobs.Executors is
                Promise.Set_Status (Futures.Running);
             end if;
 
-            begin
-               Job.Execute (Enqueue'Access);
-            exception
-               when Error : others =>
-                  Promise.Set_Failed (Error);
+            if Future.Current_Status = Futures.Running then
+               begin
+                  Job.Execute (Enqueue'Access);
+               exception
+                  when Error : others =>
+                     Promise.Set_Failed (Error);
 
-                  Logging.Insert_Message
-                    (Logging.Executor, Logging.Error, 0,
-                     Kind'Image & " job " & Tag & " " &
-                     Ada.Exceptions.Exception_Information (Error));
-                  raise;
-            end;
+                     Messages.Insert (Logging.Error,
+                       Kind'Image & " job " & Tag & " " & Exception_Information (Error));
+               end;
+            else
+               Messages.Insert (Warning,
+                 Kind'Image & " job " & Tag & " already " & Future.Current_Status'Image);
+            end if;
 
 --            T2 := Ada.Real_Time.Clock;
 --            declare
@@ -155,6 +161,9 @@ package body Orka.Jobs.Executors is
          --  of references to the Future object
          Pair := Null_Pair;
       end loop;
+   exception
+      when Error : others =>
+         Messages.Insert (Logging.Error, Exception_Information (Error));
    end Execute_Jobs;
 
 end Orka.Jobs.Executors;
