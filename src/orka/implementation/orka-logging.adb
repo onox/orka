@@ -41,6 +41,11 @@ package body Orka.Logging is
          Identifier'Image & ": " & Terminals.Strip_Line_Term (Message));
    end Insert_Message;
 
+   function Image (Value : Ada.Real_Time.Time_Span) return String is
+     (Terminals.Image (Ada.Real_Time.To_Duration (Value)));
+
+   function Trim (Value : String) return String is (Terminals.Trim (Value));
+
    package body Messages is
       Identifier : Atomics.Counter (Initial_Value => 0);
 

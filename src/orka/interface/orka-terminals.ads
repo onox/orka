@@ -25,6 +25,12 @@ private package Orka.Terminals is
 
    function Time_Image return String;
 
+   function Image (Value : Duration) return String
+     with Pre => Value < 1000.0;
+   --  Return the image of the given duration with an appropriate suffix
+
+   function Trim (Value : String) return String;
+
    function Strip_Line_Term (Value : String) return String;
 
 end Orka.Terminals;

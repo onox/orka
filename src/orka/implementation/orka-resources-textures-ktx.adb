@@ -42,6 +42,8 @@ package body Orka.Resources.Textures.KTX is
 
    -----------------------------------------------------------------------------
 
+   use all type Ada.Real_Time.Time;
+
    overriding
    procedure Execute
      (Object  : KTX_Load_Job;
@@ -51,7 +53,7 @@ package body Orka.Resources.Textures.KTX is
       Path  : String renames SU.To_String (Object.Data.Path);
 
       T1 : Ada.Real_Time.Time renames Object.Data.Start_Time;
-      T2 : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+      T2 : constant Ada.Real_Time.Time := Clock;
 
       use Ada.Streams;
       use GL.Low_Level.Enums;
@@ -69,7 +71,7 @@ package body Orka.Resources.Textures.KTX is
 
          Resource : constant Texture_Ptr := new Texture'(others => <>);
       begin
-         T3 := Ada.Real_Time.Clock;
+         T3 := Clock;
 
          --  Allocate storage
          case Header.Kind is
@@ -137,7 +139,7 @@ package body Orka.Resources.Textures.KTX is
             when others =>
                raise Program_Error;
          end case;
-         T4 := Ada.Real_Time.Clock;
+         T4 := Clock;
 
          --  TODO Handle KTXorientation key value pair
 
@@ -235,52 +237,40 @@ package body Orka.Resources.Textures.KTX is
                end;
             end loop;
          end;
-         T5 := Ada.Real_Time.Clock;
+         T5 := Clock;
 
          --  Generate a full mipmap pyramid if Mipmap_Levels = 0
          if Header.Mipmap_Levels = 0 then
             Resource.Texture.Element.Generate_Mipmap;
          end if;
-         T6 := Ada.Real_Time.Clock;
+         T6 := Clock;
 
          --  Register resource at the resource manager
          Object.Manager.Add_Resource (Path, Resource_Ptr (Resource));
 
-         declare
-            use type Ada.Real_Time.Time;
+         Messages.Insert (Info, "Loaded texture " & Path & " in " &
+           Logging.Trim (Logging.Image (T6 - T1)));
+         Messages.Insert (Info,
+            "  dimensions:" & Header.Width'Image & " x " &
+            Header.Height'Image & " x " & Header.Depth'Image &
+            ", array length:" & Header.Array_Elements'Image &
+            ", mipmap levels:" & Levels'Image);
+         if Header.Compressed then
+            Messages.Insert (Info, "  compressed format: " & Header.Compressed_Format'Image);
+         else
+            Messages.Insert (Info, "  internal: " & Header.Internal_Format'Image);
+            Messages.Insert (Info, "  format: " & Header.Format'Image);
+            Messages.Insert (Info, "  type: " & Header.Data_Type'Image);
+         end if;
 
-            Reading_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T2 - T1);
-            Parsing_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T3 - T2);
-            Storage_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T4 - T3);
-            Buffers_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T5 - T4);
-            Mipmap_Time  : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T5);
-
-            Loading_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T6 - T1);
-         begin
-            Messages.Insert (Info, "Loaded texture " & Path);
-            Messages.Insert (Info,
-               "  width:" & Header.Width'Image &
-               " height:" & Header.Height'Image &
-               " depth:" & Header.Depth'Image &
-               " array length:" & Header.Array_Elements'Image &
-               " mipmap levels:" & Levels'Image);
-            if Header.Compressed then
-               Messages.Insert (Info, "  compressed format: " & Header.Compressed_Format'Image);
-            else
-               Messages.Insert (Info, "  internal: " & Header.Internal_Format'Image);
-               Messages.Insert (Info, "  format: " & Header.Format'Image);
-               Messages.Insert (Info, "  type: " & Header.Data_Type'Image);
-            end if;
-
-            Messages.Insert (Info, "  loaded in" & Loading_Time'Image & " ms");
-            Messages.Insert (Info, "    reading file:" & Reading_Time'Image & " ms");
-            Messages.Insert (Info, "    parsing header:" & Parsing_Time'Image & " ms");
-            Messages.Insert (Info, "    storage:" & Storage_Time'Image & " ms");
-            Messages.Insert (Info, "    buffers:" & Buffers_Time'Image & " ms");
-            if Header.Mipmap_Levels = 0 then
-               Messages.Insert (Info, "    generating mipmap:" & Mipmap_Time'Image & " ms");
-            end if;
-         end;
+         Messages.Insert (Info, "  statistics:");
+         Messages.Insert (Info, "    reading file:   " & Logging.Image (T2 - T1));
+         Messages.Insert (Info, "    parsing header: " & Logging.Image (T3 - T2));
+         Messages.Insert (Info, "    storage:        " & Logging.Image (T4 - T3));
+         Messages.Insert (Info, "    buffers:        " & Logging.Image (T5 - T4));
+         if Header.Mipmap_Levels = 0 then
+            Messages.Insert (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
+         end if;
       end;
    exception
       when Error : Orka.KTX.Invalid_Enum_Error =>

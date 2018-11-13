@@ -682,24 +682,20 @@ package body Orka.Resources.Models.glTF is
       Data.Manager.Add_Resource (Path, Resource_Ptr (Object.Model));
 
       declare
-         Read_Time    : constant Duration := 1e3 * To_Duration (Data.Times.Reading);
-         Parse_Time   : constant Duration := 1e3 * To_Duration (Data.Times.Parsing);
-         Process_Time : constant Duration := 1e3 * To_Duration (Data.Times.Processing);
-         Scene_Time   : constant Duration := 1e3 * To_Duration (Data.Times.Scene);
-         Buffers_Time : constant Duration := 1e3 * To_Duration (Data.Times.Buffers);
-         Load_Time    : constant Duration := 1e3 * To_Duration (Clock - Data.Start_Time);
+         Times : Times_Data renames Data.Times;
       begin
-         Messages.Insert (Info, "Loaded model " & Path);
+         Messages.Insert (Info, "Loaded model " & Path & " in " &
+           Logging.Trim (Logging.Image (Clock - Data.Start_Time)));
          Messages.Insert (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Messages.Insert (Info, "  loaded in" & Load_Time'Image & " ms");
-         Messages.Insert (Info, "    reading file:" & Read_Time'Image & " ms");
-         Messages.Insert (Info, "    parsing JSON:" & Parse_Time'Image & " ms");
-         Messages.Insert (Info, "    processing glTF:" & Process_Time'Image & " ms");
-         Messages.Insert (Info, "    scene tree:" & Scene_Time'Image & " ms");
-         Messages.Insert (Info, "    buffers:" & Buffers_Time'Image & " ms");
+         Messages.Insert (Info, "  statistics:");
+         Messages.Insert (Info, "    reading file:    " & Logging.Image (Times.Reading));
+         Messages.Insert (Info, "    parsing JSON:    " & Logging.Image (Times.Parsing));
+         Messages.Insert (Info, "    processing glTF: " & Logging.Image (Times.Processing));
+         Messages.Insert (Info, "    scene tree:      " & Logging.Image (Times.Scene));
+         Messages.Insert (Info, "    buffers:         " & Logging.Image (Times.Buffers));
       end;
 
       --  TODO Deallocate Object.Data.JSON

@@ -15,6 +15,7 @@
 with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
+with Ada.Text_IO;
 
 package body Orka.Terminals is
 
@@ -70,6 +71,8 @@ package body Orka.Terminals is
       return Reset & FG & BG & ST & Text & Reset;
    end Colorize;
 
+   -----------------------------------------------------------------------------
+
    function Time_Image return String is
       use Ada.Calendar;
       use Ada.Calendar.Formatting;
@@ -97,6 +100,32 @@ package body Orka.Terminals is
          return Image4 & "." & Image6;
       end;
    end Time_Image;
+
+   package Duration_IO is new Ada.Text_IO.Fixed_IO (Duration);
+
+   type String_Access is not null access String;
+
+   Suffices : constant array (1 .. 3) of String_Access
+     := (new String'("s"),
+         new String'("ms"),
+         new String'("us"));
+
+   function Image (Value : Duration) return String is
+      Result : String   := "999.999";
+      Number : Duration := Value;
+
+      Suffix : String_Access := Suffices (Suffices'First);
+   begin
+      for S of Suffices loop
+         Suffix := S;
+         exit when Number > 1.0;
+         Number := Number * 1e3;
+      end loop;
+      Duration_IO.Put (Result, Item => Number, Aft => 3);
+      return Result & " " & Suffix.all;
+   end Image;
+
+   function Trim (Value : String) return String is (SF.Trim (Value, Ada.Strings.Both));
 
    function Strip_Line_Term (Value : String) return String is
       Last_Index : Natural := Value'Last;

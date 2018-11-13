@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Real_Time;
+
 package Orka.Logging is
 
    type Source is (Executor, Game_Loop, Resource_Loader, Other);
@@ -29,6 +31,11 @@ package Orka.Logging is
    --  print multiple messages with the same source.
    --
    --  The generated messages will be printed in the terminal.
+
+   function Image (Value : Ada.Real_Time.Time_Span) return String;
+   --  Return the image of the given duration with an appropriate suffix
+
+   function Trim (Value : String) return String;
 
    generic
       From : Source;
