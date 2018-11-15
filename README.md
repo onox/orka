@@ -4,10 +4,12 @@ Orka
 ====
 
 Orka is the OpenGL 4.6 Rendering Kernel in Ada. It is written in Ada 2012
-and provides an object-oriented API for modern OpenGL. Orka makes it easy
-to construct OpenGL programs and meshes and to use them in a scene tree.
-Orka and the OpenGL bindings require and use OpenGL 4.5's Direct State
-Access (DSA) extension.
+and provides an object-oriented API for modern OpenGL. Orka and the OpenGL
+bindings require and use OpenGL 4.5's Direct State Access (DSA) extension.
+
+Orka makes it easy to construct OpenGL objects like programs, buffers, and
+framebuffers. A job graph processing system provides flexible multi tasking
+and the ability to load resources asynchronously.
 
 Orka builds upon and provides thick bindings for OpenGL 4.6. These bindings
 are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
@@ -67,6 +69,7 @@ In order to build Orka you need to have:
     | ARB\_clip\_control                   | 4.5    | Reversed Z  |
     | ARB\_buffer\_storage                 | 4.4    |             |
     | KHR\_debug                           | 4.3    | Debugging   |
+    | ARB\_compute\_shader                 | 4.3    | glTF        |
     | ARB\_multi\_draw\_indirect           | 4.3    | glTF        |
     | ARB\_shader\_storage\_buffer\_object | 4.3    | glTF        |
     | ARB\_program\_interface\_query       | 4.3    | Subroutines |
@@ -127,18 +130,18 @@ A Makefile is provided to build the source code, examples, and tools.
 Use `make` to build the source code:
 
 ```sh
-$ MODE=release make
+$ make
 ```
 
 You can override CFLAGS if desired. The Makefile determines which
 system-dependent API ([EGL][url-egl], GLX, or WGL) to use for fetching OpenGL
 function pointers. Adjust the Makefile if necessary.
 
-If you want to check after each call to OpenGL whether an error flag was set
-and raise a corresponding exception, then use the `development` mode:
+To disable assertions and avoid checking after each call to OpenGL whether
+an error flag was set and raise a corresponding exception, use the `release` mode:
 
 ```sh
-$ MODE=development make
+$ MODE=release make
 ```
 
 The default mode is `development`. Both `release` and `development` enable general
