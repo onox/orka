@@ -191,7 +191,7 @@ private
                                            RGB32I   => 16#8D83#,
                                            RGBA16I  => 16#8D88#,
                                            RGBA8I   => 16#8D8E#);
-   for Internal_Format_Buffer_Texture'Size use Types.Int'Size;
+   for Internal_Format_Buffer_Texture'Size use Low_Level.Enum'Size;
 
    for Internal_Format use (R3_G3_B2 => 16#2A10#,
 
@@ -271,7 +271,7 @@ private
                             RGB16_SNorm => 16#8F9A#,
 
                             RGB10_A2UI => 16#906F#);
-   for Internal_Format'Size use Types.Int'Size;
+   for Internal_Format'Size use Low_Level.Enum'Size;
 
    for Compressed_Format use
      (Compressed_Red_RGTC1                      => 16#8DBB#,
@@ -294,7 +294,7 @@ private
       Compressed_SRGB8_Punchthrough_Alpha1_ETC2 => 16#9277#,
       Compressed_RGBA8_ETC2_EAC                 => 16#9278#,
       Compressed_SRGB8_Alpha8_ETC2_EAC          => 16#9279#);
-   for Compressed_Format'Size use Types.Int'Size;
+   for Compressed_Format'Size use Low_Level.Enum'Size;
 
    for Format use (Stencil_Index   => 16#1901#,
                    Depth_Component => 16#1902#,

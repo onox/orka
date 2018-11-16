@@ -56,8 +56,7 @@ package GL.Low_Level is
    subtype IntPtr is C.long;
    subtype SizeIPtr is C.long;
 
-   type IntPtr_Array is array (Size range <>) of aliased IntPtr
-     with Convention => C;
+   type IntPtr_Array is array (Size range <>) of aliased IntPtr;
 
    subtype Sync is C.long;
 
@@ -66,14 +65,22 @@ package GL.Low_Level is
    -- used in API calls
    type Size_Access is access all Types.Size;
    type Bool_Access is access all Bool;
+
 private
+
    for Bool use (False => 0, True => 1);
    for Bool'Size use C.unsigned_char'Size;
 
    pragma Convention (C, Single_Array);
    pragma Convention (C, Double_Array);
+
    pragma Convention (C, Int_Array);
    pragma Convention (C, UInt_Array);
+
+   pragma Convention (C, IntPtr_Array);
+   pragma Convention (C, CharPtr_Array);
+
    pragma Convention (C, Size_Access);
    pragma Convention (C, Bool_Access);
+
 end GL.Low_Level;

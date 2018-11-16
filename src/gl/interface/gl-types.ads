@@ -20,10 +20,10 @@ with GL.Algebra;
 package GL.Types is
    pragma Preelaborate;
 
-   -- These are the types you can and should use with OpenGL functions
-   -- (particularly when dealing with buffer objects).
-   -- Types that are only used internally, but may be needed when interfacing
-   -- with OpenGL-related library APIs can be found in GL.Low_Level.
+   --  These are the types you can and should use with OpenGL functions
+   --  (particularly when dealing with buffer objects).
+   --  Types that are only used internally, but may be needed when interfacing
+   --  with OpenGL-related library APIs can be found in GL.Low_Level.
 
    --  Signed integer types
    type Byte  is new C.signed_char;
@@ -59,16 +59,21 @@ package GL.Types is
    type Single_Array is array (Size range <>) of aliased Single;
    type Double_Array is array (Size range <>) of aliased Double;
 
+   type Size_Array is array (Size range <>) of aliased Size;
+
+   pragma Convention (C, Byte_Array);
+   pragma Convention (C, Short_Array);
+   pragma Convention (C, Int_Array);
+
    pragma Convention (C, UByte_Array);
    pragma Convention (C, UShort_Array);
-   pragma Convention (C, Int_Array);
    pragma Convention (C, UInt_Array);
+
    pragma Convention (C, Half_Array);
    pragma Convention (C, Single_Array);
    pragma Convention (C, Double_Array);
 
-   type Size_Array is array (Size range <>) of aliased Size
-     with Convention => C;
+   pragma Convention (C, Size_Array);
 
    --  Type descriptors
    type Numeric_Type is (Byte_Type, UByte_Type, Short_Type,
