@@ -21,6 +21,7 @@ with GL.Culling;
 with GL.Debug;
 with GL.Debug_Types;
 with GL.Enums.Getter;
+with GL.Enums.Internalformat;
 with GL.Enums.Textures;
 with GL.Errors;
 with GL.Fences;
@@ -34,7 +35,7 @@ with GL.Objects.Shaders;
 with GL.Objects.Textures;
 with GL.Objects.Transform_Feedbacks;
 with GL.Objects.Vertex_Arrays;
-with GL.Pixels;
+with GL.Pixels.Queries;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types.Colors;
@@ -314,7 +315,7 @@ private package GL.API is
      ("glPolygonOffsetClamp", Single, Single, Single);
 
    --  TODO glPointSize, glSampleCoverage, glSampleMaski, glPointParameter{if}[v]
-   --  TODO glGetMultisample, glGetInternalFormat, glGetGraphicsResetStatus
+   --  TODO glGetMultisample, glGetGraphicsResetStatus
 
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --
@@ -535,6 +536,26 @@ private package GL.API is
 
    procedure Bind_Texture_Unit is new Loader.Procedure_With_2_Params
      ("glBindTextureUnit", Objects.Textures.Texture_Unit, UInt);
+
+   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+     ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
+      Enums.Internalformat.Parameter, Size, Size_Array);
+
+   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+     ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
+      Enums.Internalformat.Parameter, Size, Size);
+
+   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+     ("glGetInternalformati64v", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
+      Enums.Internalformat.Parameter, Size, Long_Size);
+
+   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+     ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Compressed_Format,
+      Enums.Internalformat.Parameter, Size, Size);
+
+   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+     ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
+      Enums.Internalformat.Parameter, Size, Pixels.Queries.Support);
 
    -----------------------------------------------------------------------------
    --                                 Images                                  --
