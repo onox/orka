@@ -69,10 +69,11 @@ In order to build Orka you need to have:
     | ARB\_clip\_control                   | 4.5    | Reversed Z  |
     | ARB\_buffer\_storage                 | 4.4    |             |
     | KHR\_debug                           | 4.3    | Debugging   |
-    | ARB\_compute\_shader                 | 4.3    | glTF        |
+    | ARB\_compute\_shader                 | 4.3    | Culling     |
     | ARB\_multi\_draw\_indirect           | 4.3    | glTF        |
     | ARB\_shader\_storage\_buffer\_object | 4.3    | glTF        |
     | ARB\_program\_interface\_query       | 4.3    | Subroutines |
+    | ARB\_internalformat\_query2          | 4.3    | KTX writer  |
     | ARB\_vertex\_attrib\_binding         | 4.3    |             |
     | ARB\_texture\_storage\_multisample   | 4.3    | Textures    |
     | ARB\_texture\_storage                | 4.2    | Textures    |
