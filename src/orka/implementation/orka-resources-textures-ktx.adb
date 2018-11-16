@@ -20,7 +20,7 @@ with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
 with GL.Types;
-with GL.Pixels;
+with GL.Pixels.Queries;
 
 with Orka.Logging;
 with Orka.KTX;
@@ -323,12 +323,12 @@ package body Orka.Resources.Textures.KTX is
       package Textures renames GL.Objects.Textures;
       package Pointers is new Textures.Texture_Pointers (Byte_Pointers);
 
-      Format    : constant GL.Pixels.Format    := GL.Pixels.RGBA;
-      Data_Type : constant GL.Pixels.Data_Type := GL.Pixels.Float;
-      --  FIXME Determine format and type using ARB_internalformat_query2
+      Format    : GL.Pixels.Format    := GL.Pixels.RGBA;
+      Data_Type : GL.Pixels.Data_Type := GL.Pixels.Float;
+      --  Note: unused if texture is compressed
 
       use Ada.Streams;
-      use GL.Low_Level.Enums;
+      use all type GL.Low_Level.Enums.Texture_Kind;
       use type GL.Types.Size;
 
       Compressed : constant Boolean := Texture.Compressed (0);
@@ -442,9 +442,17 @@ package body Orka.Resources.Textures.KTX is
       if Compressed then
          Header.Compressed_Format := Texture.Compressed_Format (0);
       else
-         Header.Internal_Format := Texture.Internal_Format (0);
-         Header.Format    := Format;
-         Header.Data_Type := Data_Type;
+         declare
+            Internal_Format : constant GL.Pixels.Internal_Format
+              := Texture.Internal_Format (0);
+         begin
+            Format := GL.Pixels.Queries.Get_Texture_Format (Internal_Format, Texture.Kind);
+            Data_Type := GL.Pixels.Queries.Get_Texture_Type (Internal_Format, Texture.Kind);
+
+            Header.Internal_Format := Internal_Format;
+            Header.Format    := Format;
+            Header.Data_Type := Data_Type;
+         end;
       end if;
 
       declare
