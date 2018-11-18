@@ -73,7 +73,7 @@ package GL.Pixels.Queries is
 
    function Preferred
      (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Boolean;
+      Kind   : LE.Texture_Kind) return Internal_Format;
 
    --  Note: the size and type of components (R, G, B, A, depth, and stencil)
    --  can be retrieved via the function *_Type and *_Size in GL.Objects.Textures

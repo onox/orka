@@ -102,8 +102,20 @@ package body GL.Pixels.Queries is
 
    function Preferred
      (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Boolean
-   is (Get_Boolean (Format, Kind, Internalformat_Preferred));
+      Kind   : LE.Texture_Kind) return Internal_Format
+   is
+      Result : Size := 0;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => GL.Types.Int, Target => Pixels.Internal_Format);
+   begin
+      API.Get_Internal_Format (Kind, Format, Internalformat_Preferred, 1, Result);
+      Raise_Exception_On_OpenGL_Error;
+      if Result = 0 then
+         raise Constraint_Error with "Invalid internal format";
+      end if;
+      return Convert (GL.Types.Int (Result));
+   end Preferred;
 
    -----------------------------------------------------------------------------
 
