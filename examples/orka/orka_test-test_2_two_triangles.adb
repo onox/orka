@@ -47,10 +47,8 @@ procedure Orka_Test.Test_2_Two_Triangles is
             0.0, 0.0, 1.0);
 
       --  Upload vertices and color data to VBO's
-      VBO_1 : constant Buffer := Create_Buffer
-        ((others => False), Vertices);
-      VBO_2 : constant Buffer := Create_Buffer
-        ((others => False), Color_Vertices);
+      VBO_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
+      VBO_2 : constant Buffer := Create_Buffer ((others => False), Color_Vertices);
 
       procedure Add_Position_Attribute (Buffer : in out Attribute_Buffer) is
       begin
@@ -81,10 +79,8 @@ procedure Orka_Test.Test_2_Two_Triangles is
         := (1.0, 0.0, 0.0);
 
       --  Upload vertices data to VBO
-      VBO_3 : constant Buffer := Create_Buffer
-        (GL.Objects.Buffers.Storage_Bits'(others => False), Vertices);
-      VBO_4 : constant Buffer := Create_Buffer
-        (GL.Objects.Buffers.Storage_Bits'(others => False), Color_Triangle);
+      VBO_3 : constant Buffer := Create_Buffer ((others => False), Vertices);
+      VBO_4 : constant Buffer := Create_Buffer ((others => False), Color_Triangle);
 
       procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
       begin
@@ -118,7 +114,7 @@ begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear ((Color => True, Depth => True, others => False));
+      Clear ((Color | Depth => True, others => False));
 
       Triangle_1.Draw (0, 3);
       Triangle_2.Draw (0, 3);

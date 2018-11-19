@@ -42,8 +42,7 @@ procedure Orka_Test.Test_1_Triangle is
              0.0,  0.5,     0.0, 0.0, 1.0);
 
       --  Upload Vertices data to VBO
-      VBO : constant Buffer := Create_Buffer
-        ((others => False), Vertices);
+      VBO : constant Buffer := Create_Buffer ((others => False), Vertices);
 
       procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
       begin
@@ -69,7 +68,7 @@ begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear ((Color => True, Depth => True, others => False));
+      Clear ((Color | Depth => True, others => False));
 
       Triangle.Draw (0, 3);
 

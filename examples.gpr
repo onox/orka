@@ -12,10 +12,7 @@ project Examples is
      "examples/gl" & "examples/orka" & "examples/glfw";
 
    OpenGL_Examples := (
-      "gl_test-opengl3",
       "gl_test-vbo",
-      "gl_test-instancing",
-      "gl_test-buffers",
       "gl_test-geometry",
       "gl_test-transform_feedback",
       "gl_test-subroutines",
@@ -30,7 +27,9 @@ project Examples is
       "orka_test-test_5_scene_tree",
       "orka_test-test_7_half",
       "orka_test-test_9_jobs",
-      "orka_test-test_10_compute.adb"
+      "orka_test-test_10_compute",
+      "orka_test-test_11_instancing",
+      "orka_test-test_12_stencil"
    );
 
    GLFW_Examples := (

@@ -80,6 +80,10 @@ package Orka.Rendering.Vertex_Formats is
    --  Draw multiple elements commands at the given offset in the bound
    --  indirect buffer
 
+   function GL_Vertex_Array (Object : Vertex_Format)
+     return GL.Objects.Vertex_Arrays.Vertex_Array_Object
+   with Inline;
+
 private
 
    type Attribute_Buffer is tagged record

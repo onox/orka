@@ -147,4 +147,8 @@ package body Orka.Rendering.Vertex_Formats is
         (Object.Mode, Convert (Object.Index_Kind), GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
 
+   function GL_Vertex_Array (Object : Vertex_Format)
+     return GL.Objects.Vertex_Arrays.Vertex_Array_Object
+   is (Object.Vertex_Array);
+
 end Orka.Rendering.Vertex_Formats;
