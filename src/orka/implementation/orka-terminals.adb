@@ -111,17 +111,23 @@ package body Orka.Terminals is
          new String'("us"));
 
    function Image (Value : Duration) return String is
-      Result : String   := "999.999";
+      Result : String   := "-9999.999";
       Number : Duration := Value;
 
       Suffix : String_Access := Suffices (Suffices'First);
    begin
       for S of Suffices loop
          Suffix := S;
-         exit when Number > 1.0;
+         exit when Number not in -1.0 .. 1.0;
          Number := Number * 1e3;
       end loop;
-      Duration_IO.Put (Result, Item => Number, Aft => 3);
+
+      begin
+         Duration_IO.Put (Result, Item => Number, Aft => 3);
+      exception
+         when others =>
+            return Number'Image & " " & Suffix.all;
+      end;
       return Result & " " & Suffix.all;
    end Image;
 
