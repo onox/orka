@@ -341,7 +341,7 @@ begin
 
          package Loops is new Orka.Loops
            (Time_Step   => Ada.Real_Time.Microseconds (2_083),
-            Frame_Limit => Ada.Real_Time.Microseconds (2_083),
+            Frame_Limit => Ada.Real_Time.Microseconds (8_334),
             Window      => W_Ptr,
             Camera      => Current_Camera,
             Render      => Render'Unrestricted_Access,
@@ -353,6 +353,7 @@ begin
          end Add_Behavior;
       begin
          Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
+         Loops.Handler.Enable_Limit (False);
          Ada.Text_IO.Put_Line ("Running render loop...");
          Loops.Run_Loop;
       end;

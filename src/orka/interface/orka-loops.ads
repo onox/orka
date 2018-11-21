@@ -44,10 +44,15 @@ package Orka.Loops is
 
       function Frame_Limit return Time_Span;
 
+      procedure Enable_Limit (Enable : Boolean);
+
+      function Limit_Enabled return Boolean;
+
       function Should_Stop return Boolean;
    private
       Limit : Time_Span := Orka.Loops.Frame_Limit;
-      Stop_Flag : Boolean := False;
+      Stop_Flag  : Boolean := False;
+      Limit_Flag : Boolean := False;
    end Handler;
 
    use type Behaviors.Behavior_Ptr;

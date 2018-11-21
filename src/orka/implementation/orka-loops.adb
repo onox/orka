@@ -16,7 +16,6 @@ with System.Multiprocessors.Dispatching_Domains;
 
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
-with Ada.Text_IO;
 with Ada.Exceptions;
 
 with Orka.Futures;
@@ -24,6 +23,9 @@ with Orka.Logging;
 with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
+
+   use Orka.Logging;
+   package Messages is new Orka.Logging.Messages (Game_Loop);
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
@@ -46,11 +48,16 @@ package body Orka.Loops is
          Limit := Value;
       end Set_Frame_Limit;
 
-      function Frame_Limit return Time_Span is
-        (Limit);
+      function Frame_Limit return Time_Span is (Limit);
 
-      function Should_Stop return Boolean is
-        (Stop_Flag);
+      procedure Enable_Limit (Enable : Boolean) is
+      begin
+         Limit_Flag := Enable;
+      end Enable_Limit;
+
+      function Limit_Enabled return Boolean is (Limit_Flag);
+
+      function Should_Stop return Boolean is (Stop_Flag);
    end Handler;
 
    protected body Scene is
@@ -112,8 +119,20 @@ package body Orka.Loops is
 
       Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
       Batch_Length : constant := 10;
+
+      One_Second  : constant Time_Span := Seconds (1);
+
+      Frame_Counter          : Natural := 0;
+      Exceeded_Frame_Counter : Natural := 0;
+      Clock_FPS_Start : Time := Clock;
+
+      Stat_Sum : Time_Span := Time_Span_Zero;
+      Stat_Min : Duration  := To_Duration (One_Second);
+      Stat_Max : Duration  := To_Duration (-One_Second);
    begin
       Scene.Replace_Array (Scene_Array);
+
+      Messages.Insert (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
 
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -165,13 +184,9 @@ package body Orka.Loops is
                         Frame_Future.Wait_Until_Done (Status);
                      or
                         delay until Current_Time + Maximum_Frame_Time;
-                        declare
-                           Frame_Time : constant Duration
-                             := 1e3 * To_Duration (Maximum_Frame_Time);
-                        begin
-                           raise Program_Error with
-                             "Maximum frame time of " & Frame_Time'Image & " ms exceeded";
-                        end;
+                        raise Program_Error with
+                          "Maximum frame time of " & Trim (Image (Maximum_Frame_Time)) &
+                          " exceeded";
                      end select;
                   end;
                end;
@@ -182,15 +197,61 @@ package body Orka.Loops is
             end if;
 
             declare
-               New_Elapsed : constant Time_Span := Clock - Current_Time;
+               Total_Elapsed  : constant Time_Span := Clock - Clock_FPS_Start;
+               Limit_Exceeded : constant Time_Span := Elapsed - Handler.Frame_Limit;
             begin
-               if New_Elapsed > Handler.Frame_Limit then
+               Frame_Counter := Frame_Counter + 1;
+
+               if Limit_Exceeded > Time_Span_Zero then
+                  Stat_Sum := Stat_Sum + Limit_Exceeded;
+                  Stat_Min := Duration'Min (Stat_Min, To_Duration (Limit_Exceeded));
+                  Stat_Max := Duration'Max (Stat_Max, To_Duration (Limit_Exceeded));
+                  Exceeded_Frame_Counter := Exceeded_Frame_Counter + 1;
+               end if;
+
+               if Total_Elapsed > One_Second then
+                  declare
+                     FPS : constant Duration
+                       := Duration (Frame_Counter) / To_Duration (Total_Elapsed);
+                  begin
+                     Messages.Insert (Debug, "FPS: " & Trim (FPS'Image));
+                  end;
+
+                  if Exceeded_Frame_Counter > 0 then
+                     declare
+                        Avg : constant Time_Span := Stat_Sum / Exceeded_Frame_Counter;
+                     begin
+                        Messages.Insert (Debug, "Frame time limit (" &
+                          Trim (Image (Handler.Frame_Limit)) & ") exceeded " &
+                          Trim (Exceeded_Frame_Counter'Image) & " times by:");
+                        Messages.Insert (Debug, "  avg: " & Image (Avg));
+                        Messages.Insert (Debug, "  min: " & Image (To_Time_Span (Stat_Min)));
+                        Messages.Insert (Debug, "  max: " & Image (To_Time_Span (Stat_Max)));
+                     end;
+                  end if;
+
+                  Clock_FPS_Start := Clock;
+                  Frame_Counter          := 0;
+                  Exceeded_Frame_Counter := 0;
+
+                  Stat_Sum := Time_Span_Zero;
+                  Stat_Min := To_Duration (One_Second);
+                  Stat_Max := To_Duration (Time_Span_Zero);
+               end if;
+            end;
+
+            if Handler.Limit_Enabled then
+               --  Do not sleep if Next_Time fell behind more than one frame
+               --  due to high workload (FPS dropping below limit), otherwise
+               --  the FPS will be exceeded during a subsequent low workload
+               --  until Next_Time has catched up
+               if Next_Time < Current_Time - Handler.Frame_Limit then
                   Next_Time := Current_Time;
                else
                   Next_Time := Next_Time + Handler.Frame_Limit;
                   delay until Next_Time;
                end if;
-            end;
+            end if;
          end;
       end loop;
 
@@ -213,6 +274,7 @@ package body Orka.Loops is
 
          task body Simulation is
          begin
+            System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
             Run_Game_Loop (Fence'Unchecked_Access);
          exception
             when Error : others =>
