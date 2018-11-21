@@ -26,7 +26,8 @@ private package Orka.Terminals is
    function Time_Image return String;
 
    function Image (Value : Duration) return String
-     with Pre => Value in -1000.0 .. 1000.0;
+     with Pre => Value in -1000.0 .. 1000.0 or else
+       raise Constraint_Error with Value'Image & " not within +/- 1000.0";
    --  Return the image of the given duration with an appropriate suffix
 
    function Trim (Value : String) return String;

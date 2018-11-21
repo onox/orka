@@ -109,6 +109,7 @@ package body Orka.Terminals is
      := (new String'("s"),
          new String'("ms"),
          new String'("us"));
+   Last_Suffix : constant String_Access := Suffices (Suffices'Last);
 
    function Image (Value : Duration) return String is
       Result : String   := "-9999.999";
@@ -118,7 +119,7 @@ package body Orka.Terminals is
    begin
       for S of Suffices loop
          Suffix := S;
-         exit when Number not in -1.0 .. 1.0;
+         exit when Number >= 1.0 or else Number <= -1.0 or else S = Last_Suffix;
          Number := Number * 1e3;
       end loop;
 
