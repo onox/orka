@@ -24,7 +24,14 @@ package Glfw.Errors is
                  Version_Unavailable,
                  Platform_Error,
                  Format_Unavailable);
-   for Kind use (Not_Initialized => 16#00010001#,
+
+   type Callback is access procedure (Error : Kind; Description : String);
+
+   procedure Set_Callback (Handler : Callback);
+
+private
+
+   for Kind use (Not_Initialized     => 16#00010001#,
                  No_Current_Context  => 16#00010002#,
                  Invalid_Enum        => 16#00010003#,
                  Invalid_Value       => 16#00010004#,
@@ -35,7 +42,4 @@ package Glfw.Errors is
                  Format_Unavailable  => 16#00010009#);
    for Kind'Size use Interfaces.C.int'Size;
 
-   type Callback is access procedure (Error : Kind; Description : String);
-
-   procedure Set_Callback (Handler : Callback);
 end Glfw.Errors;
