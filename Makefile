@@ -20,9 +20,6 @@ GPRBUILD = gprbuild $(GNAT_FLAGS) -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X
 GPRCLEAN = gprclean -q $(X_WINDOWING_SYSTEM)
 GPRINSTALL = gprinstall -q $(X_WINDOWING_SYSTEM)
 
-SRC_DIR = src
-LIB_DIR = lib
-
 PREFIX ?= /usr
 
 includedir = $(PREFIX)/include
@@ -30,54 +27,35 @@ gprdir     = $(PREFIX)/share/gpr
 libdir     = $(PREFIX)/lib
 alidir     = $(libdir)
 
-build_src:
+.PHONY: build examples tools test run_unit_tests clean install
+
+build:
 	$(GPRBUILD) -P orka-glfw.gpr -largs $(LDFLAGS)
 
-build_examples:
+examples:
 	$(GPRBUILD) -P examples.gpr -largs $(LDFLAGS)
 
-build_tools:
+tools:
 	$(GPRBUILD) -P tools.gpr -largs $(LDFLAGS)
 
-build_unit_tests:
+test:
 	$(GPRBUILD) -P test/unit/orka/unit_tests.gpr
-
-clean_unit_tests:
-	$(GPRCLEAN) -P test/unit/orka/unit_tests.gpr
-	rmdir test/unit/orka/obj
-	rmdir test/unit/orka/bin
 
 run_unit_tests:
 	./test/unit/orka/bin/run_unit_tests
 
-clean_src:
+clean:
 	$(GPRCLEAN) -r -P orka-glfw.gpr
+	$(GPRCLEAN) -P test/unit/orka/unit_tests.gpr
+	$(GPRCLEAN) -P examples.gpr
+	$(GPRCLEAN) -P tools.gpr
 	rmdir lib/glfw
 	rmdir lib/orka
 	rmdir lib
 	rmdir obj/glfw
 	rmdir obj/orka
 	rmdir obj
-
-clean_examples:
-	$(GPRCLEAN) -P examples.gpr
 	rmdir bin
-
-clean_tools:
-	$(GPRCLEAN) -P tools.gpr
-	rmdir bin
-
-all: build
-
-build: build_src
-
-examples: build_examples
-
-tools: build_tools
-
-test: build_unit_tests
-
-clean: clean_examples clean_tools clean_src clean_unit_tests
 
 install:
 	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka' \
