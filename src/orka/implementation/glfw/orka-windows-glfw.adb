@@ -40,6 +40,7 @@ package body Orka.Windows.GLFW is
       --  Initialize OpenGL context
       Standard.Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
       Standard.Glfw.Windows.Hints.Set_Forward_Compat (True);
+      Standard.Glfw.Windows.Hints.Set_Client_API (Standard.Glfw.Windows.Context.OpenGL);
       Standard.Glfw.Windows.Hints.Set_Profile (Standard.Glfw.Windows.Context.Core_Profile);
       Standard.Glfw.Windows.Hints.Set_Debug_Context (Debug);
 
@@ -79,7 +80,8 @@ package body Orka.Windows.GLFW is
         with Input => Inputs.GLFW.Create_Pointer_Input, Finalized => False, others => <>)
       do
          declare
-            Reference : constant Windows.Window_Reference := Windows.Window (Window'Class (Result))'Access;
+            Reference : constant Windows.Window_Reference
+              := Windows.Window (Window'Class (Result))'Access;
          begin
             Windows.Hints.Set_Visible (Visible);
             Windows.Hints.Set_Resizable (Resizable);
