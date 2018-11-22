@@ -12,19 +12,21 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
-
 with Glfw.Errors;
 with Glfw.Windows.Context;
 with Glfw.Windows.Hints;
 
 with Orka.Inputs.GLFW;
+with Orka.Logging;
 
 package body Orka.Windows.GLFW is
 
+   use Orka.Logging;
+   package Messages is new Orka.Logging.Messages (Other);
+
    procedure Print_Error (Code : Standard.Glfw.Errors.Kind; Description : String) is
    begin
-      Ada.Text_IO.Put_Line ("Error occured (" & Standard.Glfw.Errors.Kind'Image (Code) & "): " & Description);
+      Messages.Insert (Error, "GLFW " & Code'Image & ": " & Trim (Description));
    end Print_Error;
 
    function Initialize
@@ -50,7 +52,7 @@ package body Orka.Windows.GLFW is
    begin
       if not Object.Finalized then
          if Object.Debug then
-            Ada.Text_IO.Put_Line ("Shutting down GLFW");
+            Messages.Insert (Debug, "Shutting down GLFW");
          end if;
          Standard.Glfw.Shutdown;
          Object.Finalized := True;
