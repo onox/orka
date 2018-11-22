@@ -13,7 +13,7 @@
 --  limitations under the License.
 
 with Ada.Exceptions;
-with Ada.Real_Time;
+--  with Ada.Real_Time;
 with Ada.Tags;
 --  with Ada.Text_IO;
 
@@ -40,7 +40,7 @@ package body Orka.Jobs.Executors is
       Kind  : Queues.Executor_Kind;
       Queue : Queues.Queue_Ptr)
    is
-      use type Ada.Real_Time.Time;
+--      use type Ada.Real_Time.Time;
       use type Futures.Status;
       use Ada.Exceptions;
 

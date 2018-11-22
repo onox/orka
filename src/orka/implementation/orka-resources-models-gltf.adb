@@ -21,7 +21,6 @@ with Ada.Strings.Hash;
 with JSON.Parsers;
 with JSON.Streams;
 
-with GL.Objects.Buffers;
 with GL.Types.Indirect;
 
 with Orka.Types;
@@ -621,8 +620,6 @@ package body Orka.Resources.Models.glTF is
      (Object  : GLTF_Create_Model_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      use GL.Objects.Buffers;
-
       Data  : GLTF_Data_Access renames Object.Data;
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
