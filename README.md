@@ -22,7 +22,7 @@ functionality for capturing user input on keyboard, mouse and joystick.
 Having a window with an OpenGL context is the prerequisite for using any
 OpenGL functionality.
 
-Orka is supported on Linux and Windows. Support for OS X has been removed
+Orka is supported on Linux and Windows. Support for macOS has been removed
 due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
 extensions have not been implemented in their drivers).
 
@@ -135,7 +135,7 @@ $ make
 ```
 
 You can override CFLAGS if desired. The Makefile determines which
-system-dependent API ([EGL][url-egl], GLX, or WGL) to use for fetching OpenGL
+system-dependent API ([EGL][url-egl] or WGL) to use for fetching OpenGL
 function pointers. Adjust the Makefile if necessary.
 
 To disable assertions and avoid checking after each call to OpenGL whether

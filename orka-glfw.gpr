@@ -30,7 +30,7 @@ library project Orka.Glfw is
       case Config.Windowing_System is
          when "windows" =>
             for Linker_Options use ("-lglfw3");
-         when "x11" | "egl" =>
+         when "egl" =>
             for Linker_Options use ("-lglfw");
       end case;
    end Linker;

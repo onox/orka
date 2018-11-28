@@ -2,14 +2,7 @@ abstract project Config is
 
    Version := "0.1";
 
-   -- Different operating systems need different linker
-   -- flags. Moreover, some features (such as WGL and GLX)
-   -- are only available on one specific platform.
-   -- Supported values:
-   --  * windows : Microsoft Windows
-   --  * x11     : X Window System
-   --  * egl     : EGL (Wayland)
-   type Windowing_System_Type is ("windows", "x11", "egl");
+   type Windowing_System_Type is ("windows", "egl");
    Windowing_System : Windowing_System_Type := external ("Windowing_System");
 
    type Mode_Type is ("debug", "development", "release");
