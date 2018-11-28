@@ -13,12 +13,12 @@
 --  limitations under the License.
 
 with System;
-with Interfaces.C.Strings;
+with Interfaces.C;
 
 package GL.Loader is
    pragma Preelaborate;
 
-   function Get_Proc_Address (Name : Interfaces.C.Strings.chars_ptr)
+   function Get_Proc_Address (Name : Interfaces.C.char_array)
      return System.Address
    with Import, Convention => C, External_Name => "glXGetProcAddress";
 
