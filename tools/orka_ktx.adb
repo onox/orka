@@ -88,13 +88,18 @@ begin
 
       use Orka.Rendering.Programs;
       use Orka.Rendering.Framebuffers;
+      use Orka.Resources;
 
       use GL.Types;
       use all type Orka.Types.Unsigned_Numeric_Type;
 
+      Location_Shaders : constant Locations.Location_Ptr
+        := Locations.Directories.Create_Location ("../resources");
+
       P_1 : Program := Create_Program (Modules.Create_Module
-        (VS => "../resources/oversized-triangle.vert",
-         FS => "../tools/shaders/ktx.frag"));
+        (Location_Shaders,
+         VS => "oversized-triangle.vert",
+         FS => "shaders/tools/ktx.frag"));
 
       Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("colorTexture");
 
@@ -125,7 +130,6 @@ begin
 
       task Load_Resource;
 
-      use Orka.Resources;
       use Ada.Real_Time;
 
       Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;

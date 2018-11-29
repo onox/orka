@@ -162,6 +162,11 @@ begin
       Location_Path : constant String := Ada.Command_Line.Argument (1);
       Model_Path    : constant String := Ada.Command_Line.Argument (2);
 
+      use Orka.Resources;
+
+      Location_Resources : constant Locations.Location_Ptr
+        := Locations.Directories.Create_Location ("../resources");
+
       package Formats renames Orka.Rendering.Vertex_Formats;
 
       VF_1 : constant Formats.Vertex_Format_Ptr
@@ -171,8 +176,9 @@ begin
       use Orka.Rendering.Framebuffers;
 
       P_1 : Program := Create_Program (Modules.Create_Module
-        (VS => "../tools/shaders/gltf.vert",
-         FS => "../tools/shaders/gltf.frag"));
+        (Location_Resources,
+         VS => "shaders/tools/gltf.vert",
+         FS => "shaders/tools/gltf.frag"));
 
       Uni_View  : constant Uniforms.Uniform := P_1.Uniform ("view");
       Uni_Proj  : constant Uniforms.Uniform := P_1.Uniform ("proj");
@@ -201,13 +207,13 @@ begin
         := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_1));
 
       use Orka.Culling;
-      Culler_1 : constant Culler_Ptr := new Culler'Class'(Culler'Class (Create_Culler));
+      Culler_1 : constant Culler_Ptr
+        := new Culler'Class'(Culler'Class (Create_Culler (Location_Resources)));
 
       ----------------------------------------------------------------------
 
       task Resource_Test;
 
-      use Orka.Resources;
       Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
 
       Group : aliased Orka.Resources.Models.Group_Access := null;
