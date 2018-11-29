@@ -13,12 +13,12 @@
 --  limitations under the License.
 
 with GL.Buffers;
-with GL.Objects.Buffers;
 with GL.Types;
 
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Resources.Locations.Directories;
 with Orka.Types;
 
 with GL_Test.Display_Backend;
@@ -58,10 +58,13 @@ procedure Orka_Test.Test_1_Triangle is
    end Load_Mesh;
 
    use all type GL.Buffers.Buffer_Bits;
+   use Orka.Resources;
+
+   Location_Shaders : constant Locations.Location_Ptr
+     := Locations.Directories.Create_Location ("../examples/gl/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
-     (VS => "../examples/gl/shaders/opengl3.vert",
-      FS => "../examples/gl/shaders/opengl3.frag"));
+     (Location_Shaders, VS => "opengl3.vert", FS => "opengl3.frag"));
 
    Triangle : constant Vertex_Format := Load_Mesh (Program_1);
 begin

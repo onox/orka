@@ -23,6 +23,7 @@ with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
@@ -129,10 +130,13 @@ procedure Orka_Test.Test_11_Instancing is
    end Load_Mesh;
 
    use all type GL.Buffers.Buffer_Bits;
+   use Orka.Resources;
+
+   Location_Shaders : constant Locations.Location_Ptr
+     := Locations.Directories.Create_Location ("../examples/gl/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
-     (VS => "../examples/gl/shaders/instancing.vert",
-      FS => "../examples/gl/shaders/instancing.frag"));
+     (Location_Shaders, VS => "instancing.vert", FS => "instancing.frag"));
 
    Uni_View  : constant Uniforms.Uniform := Program_1.Uniform ("view");
    Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");

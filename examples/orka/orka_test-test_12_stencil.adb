@@ -27,6 +27,7 @@ with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
@@ -184,13 +185,16 @@ procedure Orka_Test.Test_12_Stencil is
 
    Scene_Texture, Color_Texture : GL.Objects.Textures.Texture_2D (GL.Low_Level.Enums.Texture_2D);
 
+   use Orka.Resources;
+
+   Location_Shaders : constant Locations.Location_Ptr
+     := Locations.Directories.Create_Location ("../examples/gl/shaders");
+
    Program_Scene : Program := Create_Program (Modules.Create_Module
-     (VS => "../examples/gl/shaders/buffers_scene.vert",
-      FS => "../examples/gl/shaders/buffers_scene.frag"));
+     (Location_Shaders, VS => "buffers_scene.vert", FS => "buffers_scene.frag"));
 
    Program_Screen : Program := Create_Program (Modules.Create_Module
-     (VS => "../examples/gl/shaders/buffers_screen.vert",
-      FS => "../examples/gl/shaders/buffers_screen.frag"));
+     (Location_Shaders, VS => "buffers_screen.vert", FS => "buffers_screen.frag"));
 
    Uni_Model  : constant Uniforms.Uniform := Program_Scene.Uniform ("model");
    Uni_View   : constant Uniforms.Uniform := Program_Scene.Uniform ("view");

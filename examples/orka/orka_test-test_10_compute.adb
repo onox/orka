@@ -25,6 +25,7 @@ with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
+with Orka.Resources.Locations.Directories;
 with Orka.Types;
 
 with Orka.Windows.GLFW;
@@ -61,9 +62,13 @@ begin
    declare
       use Orka.Rendering.Buffers;
       use Orka.Rendering.Programs;
+      use Orka.Resources;
+
+      Location_Shaders : constant Locations.Location_Ptr
+        := Locations.Directories.Create_Location ("../examples/orka/shaders");
 
       Program_1 : Program := Create_Program (Modules.Create_Module
-        (CS => "../examples/orka/shaders/test-10-module-1.comp"));
+        (Location_Shaders, CS => "test-10-module-1.comp"));
 
       Uniform_1 : constant Uniforms.Uniform := Program_1.Uniform ("maxNumbers");
 
