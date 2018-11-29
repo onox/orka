@@ -16,6 +16,8 @@ with Ada.Containers.Indefinite_Holders;
 
 with GL.Objects.Shaders;
 
+with Orka.Resources.Locations;
+
 package Orka.Rendering.Programs.Modules is
    pragma Preelaborate;
 
@@ -27,8 +29,9 @@ package Orka.Rendering.Programs.Modules is
      return Module;
    --  Create a module containing shaders that have a non-empty source text
 
-   function Create_Module (VS, TCS, TES, GS, FS, CS : String := "")
-     return Module;
+   function Create_Module
+     (Location : Resources.Locations.Location_Ptr;
+      VS, TCS, TES, GS, FS, CS : String := "") return Module;
    --  Create a module containing shaders that have a non-empty file path
 
    procedure Attach_Shaders (Modules : Module_Array; Program : in out Programs.Program);

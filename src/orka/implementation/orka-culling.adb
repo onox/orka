@@ -25,15 +25,17 @@ package body Orka.Culling is
    use GL.Debug;
    package Messages is new GL.Debug.Messages (Third_Party, Other);
 
-   function Create_Culler return Culler is
+   function Create_Culler
+     (Location : Resources.Locations.Location_Ptr) return Culler
+   is
       use Rendering.Programs;
    begin
       return Result : Culler
         := (Program_Frustum => Create_Program (Modules.Create_Module
-              (CS => "../resources/cull-frustum.comp")),
+              (Location, CS => "cull-frustum.comp")),
             Program_Compact => Create_Program (Modules.Create_Module
-              (CS => "../resources/compact-commands.comp")),
-            PS_Factory => Algorithms.Prefix_Sums.Create_Factory,
+              (Location, CS => "compact-commands.comp")),
+            PS_Factory => Algorithms.Prefix_Sums.Create_Factory (Location),
             others => <>)
       do
          Result.Uniform_CF_Instances := Result.Program_Frustum.Uniform ("instances");

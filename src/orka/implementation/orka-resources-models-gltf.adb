@@ -470,10 +470,10 @@ package body Orka.Resources.Models.glTF is
             end;
             raise;
       end;
-      Free_Byte_Array (Bytes);
+      Free (Bytes);
    exception
       when others =>
-         Free_Byte_Array (Bytes);
+         Free (Bytes);
          raise;
    end Execute;
 

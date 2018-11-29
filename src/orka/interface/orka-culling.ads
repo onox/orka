@@ -15,6 +15,7 @@
 private with GL.Low_Level.Enums;
 
 with Orka.Rendering.Buffers;
+with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
@@ -32,7 +33,8 @@ package Orka.Culling is
 
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4);
 
-   function Create_Culler return Culler;
+   function Create_Culler
+     (Location : Resources.Locations.Location_Ptr) return Culler;
 
    -----------------------------------------------------------------------------
 

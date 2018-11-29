@@ -21,14 +21,16 @@ with Orka.Rendering.Programs.Modules;
 
 package body Orka.Algorithms.Prefix_Sums is
 
-   function Create_Factory return Factory is
+   function Create_Factory
+     (Location : Resources.Locations.Location_Ptr) return Factory
+   is
       use Rendering.Programs;
    begin
       return
         (Program_Prefix_Sum => Create_Program (Modules.Create_Module
-           (CS => "../resources/prefix-sum.comp")),
+           (Location, CS => "prefix-sum.comp")),
          Program_Add        => Create_Program (Modules.Create_Module
-           (CS => "../resources/prefix-sum-add.comp")));
+           (Location, CS => "prefix-sum-add.comp")));
    end Create_Factory;
 
    function Create_Prefix_Sum

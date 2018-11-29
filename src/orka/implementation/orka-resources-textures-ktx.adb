@@ -463,8 +463,8 @@ package body Orka.Resources.Textures.KTX is
          Bytes : Byte_Array_Access := Orka.KTX.Create_KTX_Bytes (Header, Data);
       begin
          Location.Write_Data (Path, Bytes);
-         Free_Byte_Array (Data);
-         Free_Byte_Array (Bytes);
+         Free (Data);
+         Free (Bytes);
       end;
    end Write_Texture;
 

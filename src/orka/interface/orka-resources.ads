@@ -31,7 +31,9 @@ package Orka.Resources is
 
    type Byte_Array_Access is access Byte_Array;
 
-   procedure Free_Byte_Array is new Ada.Unchecked_Deallocation
+   function Convert (Bytes : Byte_Array_Access) return String;
+
+   procedure Free is new Ada.Unchecked_Deallocation
      (Object => Byte_Array, Name => Byte_Array_Access);
 
    Resource_Load_Error : exception;

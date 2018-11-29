@@ -13,6 +13,7 @@
 --  limitations under the License.
 
 with Orka.Rendering.Buffers;
+with Orka.Resources.Locations;
 
 private with Orka.Rendering.Programs;
 private with Orka.Types;
@@ -22,7 +23,8 @@ package Orka.Algorithms.Prefix_Sums is
 
    type Factory is tagged private;
 
-   function Create_Factory return Factory;
+   function Create_Factory
+     (Location : Resources.Locations.Location_Ptr) return Factory;
 
    -----------------------------------------------------------------------------
 

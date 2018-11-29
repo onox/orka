@@ -12,25 +12,26 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Files;
-
 package body Orka.Rendering.Programs.Modules is
 
    procedure Load_And_Compile
-     (Object : in out Module;
+     (Object      : in out Module;
       Shader_Kind : GL.Objects.Shaders.Shader_Type;
-      File_Name : String) is
+      Location    : Resources.Locations.Location_Ptr;
+      Path        : String) is
    begin
-      if File_Name /= "" then
+      if Path /= "" then
          pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
          declare
             Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
+            Source : Resources.Byte_Array_Access := Location.Read_Data (Path);
          begin
-            GL.Files.Load_Shader_Source_From_File (Shader, File_Name);
+            Shader.Set_Source (Resources.Convert (Source));
+            Resources.Free (Source);
 
             Shader.Compile;
             if not Shader.Compile_Status then
-               raise Shader_Compile_Error with File_Name & ":" & Shader.Info_Log;
+               raise Shader_Compile_Error with Path & ":" & Shader.Info_Log;
             end if;
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
@@ -39,9 +40,9 @@ package body Orka.Rendering.Programs.Modules is
    end Load_And_Compile;
 
    procedure Set_And_Compile
-     (Object : in out Module;
+     (Object      : in out Module;
       Shader_Kind : GL.Objects.Shaders.Shader_Type;
-      Source : String) is
+      Source      : String) is
    begin
       if Source /= "" then
          pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
@@ -75,18 +76,19 @@ package body Orka.Rendering.Programs.Modules is
       end return;
    end Create_Module_From_Sources;
 
-   function Create_Module (VS, TCS, TES, GS, FS, CS : String := "")
-     return Module
+   function Create_Module
+     (Location : Resources.Locations.Location_Ptr;
+      VS, TCS, TES, GS, FS, CS : String := "") return Module
    is
       use GL.Objects.Shaders;
    begin
       return Result : Module do
-         Load_And_Compile (Result, Vertex_Shader, VS);
-         Load_And_Compile (Result, Tess_Control_Shader, TCS);
-         Load_And_Compile (Result, Tess_Evaluation_Shader, TES);
-         Load_And_Compile (Result, Geometry_Shader, GS);
-         Load_And_Compile (Result, Fragment_Shader, FS);
-         Load_And_Compile (Result, Compute_Shader, CS);
+         Load_And_Compile (Result, Vertex_Shader, Location, VS);
+         Load_And_Compile (Result, Tess_Control_Shader, Location, TCS);
+         Load_And_Compile (Result, Tess_Evaluation_Shader, Location, TES);
+         Load_And_Compile (Result, Geometry_Shader, Location, GS);
+         Load_And_Compile (Result, Fragment_Shader, Location, FS);
+         Load_And_Compile (Result, Compute_Shader, Location, CS);
       end return;
    end Create_Module;
 

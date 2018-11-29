@@ -49,7 +49,7 @@ package body Orka.Resources.Locations.Directories is
       return Raw_Contents;
    exception
       when others =>
-         Free_Byte_Array (Raw_Contents);
+         Free (Raw_Contents);
          raise;
    end Read_File;
 
