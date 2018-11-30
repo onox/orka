@@ -52,19 +52,6 @@ package body Glfw.Windows.Hints is
       API.Window_Hint (Enums.Stencil_Bits, Interfaces.C.int (Value));
    end Set_Stencil_Bits;
 
-   procedure Set_Accumulation_Bits (Red, Green, Blue, Alpha : Natural) is
-   begin
-      API.Window_Hint (Enums.Accum_Red_Bits, Interfaces.C.int (Red));
-      API.Window_Hint (Enums.Accum_Green_Bits, Interfaces.C.int (Green));
-      API.Window_Hint (Enums.Accum_Blue_Bits, Interfaces.C.int (Blue));
-      API.Window_Hint (Enums.Accum_Alpha_Bits, Interfaces.C.int (Alpha));
-   end Set_Accumulation_Bits;
-
-   procedure Set_Aux_Buffers (Value : Natural) is
-   begin
-      API.Window_Hint (Enums.Aux_Buffers, Interfaces.C.int (Value));
-   end Set_Aux_Buffers;
-
    procedure Set_Stereo (Value : Boolean) is
    begin
       API.Window_Hint (Enums.Stereo, Bool (Value));

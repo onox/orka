@@ -19,9 +19,7 @@ private package Glfw.Enums is
 
    type Window_Info is (Focused, Iconified, Resizable, Visible, Decorated,
                         Red_Bits, Green_Bits, Blue_Bits, Alpha_Bits, Depth_Bits,
-                        Stencil_Bits, Accum_Red_Bits,
-                        Accum_Green_Bits, Accum_Blue_Bits, Accum_Alpha_Bits,
-                        Aux_Buffers, Stereo, Samples, SRGB_Capable,
+                        Stencil_Bits, Stereo, Samples, SRGB_Capable,
                         Refresh_Rate, Client_API, Context_Version_Major,
                         Context_Version_Minor, Context_Revision,
                         Context_Robustness, OpenGL_Forward_Compat,
@@ -39,11 +37,6 @@ private package Glfw.Enums is
                         Depth_Bits   => 16#21005#,
                         Stencil_Bits => 16#21006#,
 
-                        Accum_Red_Bits   => 16#21007#,
-                        Accum_Green_Bits => 16#21008#,
-                        Accum_Blue_Bits  => 16#21009#,
-                        Accum_Alpha_Bits => 16#2100A#,
-                        Aux_Buffers      => 16#2100B#,
                         Stereo           => 16#2100C#,
                         Samples          => 16#2100D#,
                         SRGB_Capable     => 16#2100E#,

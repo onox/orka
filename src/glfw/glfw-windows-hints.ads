@@ -36,10 +36,6 @@ package Glfw.Windows.Hints is
    procedure Set_Depth_Bits   (Value : Natural);
    procedure Set_Stencil_Bits (Value : Natural);
 
-   procedure Set_Accumulation_Bits (Red, Green, Blue, Alpha : Natural);
-
-   procedure Set_Aux_Buffers (Value : Natural);
-
    procedure Set_Stereo (Value : Boolean);
 
    procedure Set_Samples (Value : Natural);
