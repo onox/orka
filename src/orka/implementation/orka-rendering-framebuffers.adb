@@ -90,14 +90,13 @@ package body Orka.Rendering.Framebuffers is
 
    function Create_Default_Framebuffer (Width, Height : Size) return Framebuffer is
    begin
-      return Result : Framebuffer
+      return
         (Default => True,
          Width   => Width,
          Height  => Height,
-         Samples => 0)
-      do
-         Result.GL_Framebuffer := GL.Objects.Framebuffers.Default_Framebuffer;
-      end return;
+         Samples => 0,
+         GL_Framebuffer => GL.Objects.Framebuffers.Default_Framebuffer,
+         others  => <>);
    end Create_Default_Framebuffer;
 
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
