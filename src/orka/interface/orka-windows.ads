@@ -38,4 +38,12 @@ package Orka.Windows is
 
    procedure Swap_Buffers (Object : in out Window) is abstract;
 
+   procedure Enable_Vertical_Sync (Object : in out Window; Enable : Boolean) is abstract;
+   --  Request the vertical retrace synchronization or vsync to be enabled
+   --  or disabled
+   --
+   --  Vsync causes the video driver to wait for a screen update before
+   --  swapping the buffers. The video driver may ignore the request.
+   --  Enablng vsync avoids tearing.
+
 end Orka.Windows;

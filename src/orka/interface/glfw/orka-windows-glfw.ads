@@ -61,6 +61,9 @@ package Orka.Windows.GLFW is
    overriding
    procedure Swap_Buffers (Object : in out GLFW_Window);
 
+   overriding
+   procedure Enable_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean);
+
 private
 
    type Active_GLFW is limited new Ada.Finalization.Limited_Controlled with record
