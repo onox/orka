@@ -86,7 +86,8 @@ package body GL.Objects.Framebuffers is
    procedure Invalidate_Data (Object : Framebuffer;
                               Attachments : Attachment_List) is
    begin
-      API.Invalidate_Named_Framebuffer_Data (Object.Reference.GL_Id, Attachments'Length, Attachments);
+      API.Invalidate_Named_Framebuffer_Data
+        (Object.Reference.GL_Id, Attachments'Length, Attachments);
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
 
@@ -104,13 +105,15 @@ package body GL.Objects.Framebuffers is
                    Src_X0, Src_Y0, Src_X1, Src_Y1,
                    Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;
                    Mask : Buffers.Buffer_Bits;
-                   Filter : Textures.Magnifying_Function) is
+                   Filter : Textures.Magnifying_Function)
+   is
       use type Low_Level.Bitfield;
+
       function Convert is new Ada.Unchecked_Conversion
         (Buffers.Buffer_Bits, Low_Level.Bitfield);
+
       Raw_Bits : constant Low_Level.Bitfield
         := Convert (Mask) and 2#0100010100000000#;
-
    begin
       API.Blit_Named_Framebuffer (Read_Object.Reference.GL_Id,
                                   Draw_Object.Reference.GL_Id,
@@ -324,8 +327,19 @@ package body GL.Objects.Framebuffers is
       Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_And_Stencil_Buffer;
 
-   Default_FB : constant Framebuffer := Framebuffer'(GL_Object with null record);
+   -----------------------------------------------------------------------------
 
-   function Default_Framebuffer return Framebuffer is (Default_FB);
+   type Default_Framebuffer_Type is new Framebuffer with null record;
+
+   overriding
+   procedure Initialize_Id (Object : in out Default_Framebuffer_Type) is null;
+
+   overriding
+   procedure Delete_Id (Object : in out Default_Framebuffer_Type) is null;
+
+   Default_FB : constant Default_Framebuffer_Type
+     := Default_Framebuffer_Type'(GL_Object with null record);
+
+   function Default_Framebuffer return Framebuffer is (Framebuffer (Default_FB));
 
 end GL.Objects.Framebuffers;

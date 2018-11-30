@@ -165,8 +165,19 @@ package body GL.Objects.Renderbuffers is
       Object.Reference.Initialized := False;
    end Delete_Id;
 
-   No_RB : constant Renderbuffer := Renderbuffer'(GL_Object with null record);
+   -----------------------------------------------------------------------------
 
-   function No_Renderbuffer return Renderbuffer is (No_RB);
+   type No_Renderbuffer_Type is new Renderbuffer with null record;
+
+   overriding
+   procedure Initialize_Id (Object : in out No_Renderbuffer_Type) is null;
+
+   overriding
+   procedure Delete_Id (Object : in out No_Renderbuffer_Type) is null;
+
+   No_RB : constant No_Renderbuffer_Type
+     := No_Renderbuffer_Type'(GL_Object with null record);
+
+   function No_Renderbuffer return Renderbuffer is (Renderbuffer (No_RB));
 
 end GL.Objects.Renderbuffers;

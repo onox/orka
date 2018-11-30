@@ -26,18 +26,27 @@ package body GL.Objects.Vertex_Arrays is
 
    Current_Vertex_Array : Vertex_Array_Holder.Holder;
 
-   No_VAO : constant Vertex_Array_Object
-     := Vertex_Array_Object'(Ada.Finalization.Controlled with Reference => null);
+   -----------------------------------------------------------------------------
 
-   function No_Vertex_Array_Object return Vertex_Array_Object is (No_VAO);
+   type No_VAO_Type is new Vertex_Array_Object with null record;
+
+   overriding
+   procedure Initialize_Id (Object : in out No_VAO_Type) is null;
+
+   overriding
+   procedure Delete_Id (Object : in out No_VAO_Type) is null;
+
+   No_VAO : constant No_VAO_Type
+     := No_VAO_Type'(GL_Object with null record);
+
+   function No_Vertex_Array_Object return Vertex_Array_Object is
+     (Vertex_Array_Object (No_VAO));
+
+   -----------------------------------------------------------------------------
 
    procedure Bind (Object : Vertex_Array_Object) is
    begin
-      if Object = No_Vertex_Array_Object then
-         API.Bind_Vertex_Array (0);
-         Raise_Exception_On_OpenGL_Error;
-         Current_Vertex_Array.Replace_Element (No_Vertex_Array_Object);
-      elsif Current_Vertex_Array.Is_Empty or else Object /= Current_Vertex_Array.Element then
+      if Current_Vertex_Array.Is_Empty or else Object /= Current_Vertex_Array.Element then
          API.Bind_Vertex_Array (Object.Reference.GL_Id);
          Raise_Exception_On_OpenGL_Error;
          Current_Vertex_Array.Replace_Element (Object);

@@ -152,8 +152,19 @@ package body GL.Objects.Transform_Feedbacks is
       end if;
    end Finalize;
 
-   No_FO : constant Feedback_Object := Feedback_Object'(GL_Object with null record);
+   -----------------------------------------------------------------------------
 
-   function No_Feedback_Object return Feedback_Object is (No_FO);
+   type No_Feedback_Object_Type is new Feedback_Object with null record;
+
+   overriding
+   procedure Initialize_Id (Object : in out No_Feedback_Object_Type) is null;
+
+   overriding
+   procedure Delete_Id (Object : in out No_Feedback_Object_Type) is null;
+
+   No_FO : constant No_Feedback_Object_Type
+     := No_Feedback_Object_Type'(GL_Object with null record);
+
+   function No_Feedback_Object return Feedback_Object is (Feedback_Object (No_FO));
 
 end GL.Objects.Transform_Feedbacks;
