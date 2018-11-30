@@ -18,8 +18,6 @@ with Interfaces.C;
 package GL.Loader is
    pragma Preelaborate;
 
-   function Get_Proc_Address (Name : Interfaces.C.char_array)
-     return System.Address
-   with Import, Convention => StdCall, External_Name => "wglGetProcAddress";
+   function Get_Proc_Address (Name : Interfaces.C.char_array) return System.Address;
 
 end GL.Loader;

@@ -1,8 +1,4 @@
-WINDOWING_BACKEND := windows
-UNAME := $(shell uname)
-ifeq ($(UNAME), Linux)
-  WINDOWING_BACKEND := egl
-endif
+WINDOWING_BACKEND := egl
 
 LIBRARY_TYPE ?= relocatable
 MODE ?= development

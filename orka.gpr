@@ -49,7 +49,7 @@ library project Orka is
    package Linker is
       case Config.Windowing_System is
          when "windows" =>
-            for Linker_Options use ("-lopengl32");
+            for Linker_Options use ("-lkernel32", "-lopengl32");
          when "egl" =>
             for Linker_Options use ("-lEGL");
       end case;
