@@ -28,7 +28,7 @@ procedure Glfw_Test.Monitors is
          else
             Put (",");
          end if;
-         Put (Value'Img);
+         Put (Value'Image);
       end loop;
       Put_Line ("]");
    end Print_Gamma_Value_Array;
@@ -43,9 +43,9 @@ procedure Glfw_Test.Monitors is
    begin
       Put_Line ("Monitor """ & M.Name & """");
       M.Get_Position (Param1, Param2);
-      Put_Line ("Position: (" & Param1'Img & "," & Param2'Img & ")");
+      Put_Line ("Position: (" & Param1'Image & "," & Param2'Image & ")");
       M.Get_Physical_Size (Param1, Param2);
-      Put_Line ("Dimensions: " & Param1'Img & " x " & Param2'Img);
+      Put_Line ("Dimensions: " & Param1'Image & " x " & Param2'Image);
 
       Put_Line ("Video modes: ");
       for Mode of VM_List loop
@@ -55,10 +55,10 @@ procedure Glfw_Test.Monitors is
          else
             Put (" ");
          end if;
-         Put ("] dim(" & Mode.Width'Img & " x" & Mode.Height'Img);
-         Put ("), rgb(" & Mode.Red_Bits'Img & "," &
-                Mode.Green_Bits'Img & "," & Mode.Blue_Bits'Img);
-         Put_Line ("), refresh(" & Mode.Refresh_Rate'Img & ")");
+         Put ("] dim(" & Mode.Width'Image & " x" & Mode.Height'Image);
+         Put ("), rgb(" & Mode.Red_Bits'Image & "," &
+                Mode.Green_Bits'Image & "," & Mode.Blue_Bits'Image);
+         Put_Line ("), refresh(" & Mode.Refresh_Rate'Image & ")");
       end loop;
 
       Put_Line ("Gamma ramp:");

@@ -69,7 +69,7 @@ begin
       Ada.Text_IO.Put_Line (Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)));
    end loop;
 
-   Ada.Text_IO.Put_Line ("Depth: " & T.Depth'Img);
+   Ada.Text_IO.Put_Line ("Depth: " & T.Depth'Image);
    for Level_Index in 1 .. T.Depth loop
       Ada.Text_IO.Put_Line ("Width: " & Natural'Image (T.Width (Level_Index)));
    end loop;

@@ -19,7 +19,7 @@ package body Glfw_Test is
 
    procedure Print_Error (Code : Glfw.Errors.Kind; Description : String) is
    begin
-      Ada.Text_IO.Put_Line ("Error occured (" & Code'Img & "): " & Description);
+      Ada.Text_IO.Put_Line ("Error occured (" & Code'Image & "): " & Description);
    end Print_Error;
 
    procedure Enable_Print_Errors is
