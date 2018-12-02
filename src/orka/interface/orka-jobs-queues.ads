@@ -62,6 +62,4 @@ package Orka.Jobs.Queues is
 
    package Slots is new Orka.Futures.Slots (Count => Maximum_Graphs);
 
-   procedure Release_Future (Value : in out Futures.Future_Access);
-
 end Orka.Jobs.Queues;

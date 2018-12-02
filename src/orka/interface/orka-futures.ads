@@ -35,7 +35,11 @@ package Orka.Futures is
 
    type Future_Access is access all Future'Class;
 
-   package Pointers is new Orka.Smart_Pointers (Future'Class, Future_Access);
+   procedure Internal_Release (Value : in out Future_Access);
+   --  This is an internal subprogram and must not be called
+
+   package Pointers is new Orka.Smart_Pointers
+     (Future'Class, Future_Access, Internal_Release);
 
    -----------------------------------------------------------------------------
 
@@ -50,5 +54,13 @@ package Orka.Futures is
      (Object : in out Promise;
       Reason : Ada.Exceptions.Exception_Occurrence) is abstract
    with Synchronization => By_Protected_Procedure;
+
+private
+
+   type Releasable_Future is limited interface;
+
+   procedure Release
+     (Object : Releasable_Future;
+      Slot   : not null Future_Access) is abstract;
 
 end Orka.Futures;

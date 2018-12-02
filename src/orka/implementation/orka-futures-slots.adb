@@ -57,6 +57,12 @@ package body Orka.Futures.Slots is
       end Set_Location;
    end Future_Object;
 
+   overriding
+   procedure Release (Object : Future_Object; Slot : not null Future_Access) is
+   begin
+      Manager.Release (Slot);
+   end Release;
+
    function Make_Handles return Handle_Array is
    begin
       return Result : Handle_Array do

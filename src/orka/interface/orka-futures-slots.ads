@@ -84,7 +84,7 @@ package Orka.Futures.Slots is
 
 private
 
-   protected type Future_Object is new Futures.Promise with
+   protected type Future_Object is new Futures.Promise and Futures.Releasable_Future with
       overriding
       function Current_Status return Futures.Status;
 
@@ -107,6 +107,14 @@ private
 
       Occurrence : Ada.Exceptions.Exception_Occurrence;
    end Future_Object;
+
+   overriding
+   procedure Release (Object : Future_Object; Slot : not null Future_Access);
+   --  Ask the manager to release the slot
+   --
+   --  This procedure needs to be unsynchronized because Manager may call
+   --  synchronized subprograms of Future_Object (which would result in a
+   --  dead lock).
 
    type Future_Array is array (Future_Handle) of aliased Future_Object;
 

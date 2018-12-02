@@ -202,7 +202,7 @@ package body Orka.Resources.Loader is
       declare
          Pointer : Futures.Pointers.Mutable_Pointer;
       begin
-         Pointer.Set (Slot, Queues.Release_Future'Unrestricted_Access);
+         Pointer.Set (Slot);
          Queue.Enqueue
            ((Path   => SU.To_Unbounded_String (Path),
              Future => Pointer,

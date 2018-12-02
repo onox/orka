@@ -14,11 +14,6 @@
 
 package body Orka.Jobs.Queues is
 
-   procedure Release_Future (Value : in out Futures.Future_Access) is
-   begin
-      Slots.Manager.Release (Value);
-   end Release_Future;
-
    protected body Queue is
 
       function Can_Schedule_Job (Kind : Executor_Kind) return Boolean is
@@ -47,7 +42,7 @@ package body Orka.Jobs.Queues is
                Slot : Futures.Future_Access;
             begin
                Slots.Manager.Acquire_Or_Fail (Slot);
-               Future.Set (Slot, Release_Future'Unrestricted_Access);
+               Future.Set (Slot);
             exception
                when Program_Error =>
                   raise Program_Error with Executor_Kind'Image (Kind) & " queue full";
