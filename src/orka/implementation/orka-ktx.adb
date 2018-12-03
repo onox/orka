@@ -21,8 +21,6 @@ with Ada.Unchecked_Conversion;
 
 with GL.Pixels.Extensions;
 
-with Orka.Resources;
-
 package body Orka.KTX is
 
    package ICE renames Interfaces.C.Extensions;
@@ -61,10 +59,10 @@ package body Orka.KTX is
 
    Endianness_Reference : constant := 16#04030201#;
 
-   function Valid_Identifier (Bytes : Resources.Byte_Array_Access) return Boolean is
-     (Identifier = Bytes (Bytes'First .. Bytes'First + Identifier'Length - 1));
+   function Valid_Identifier (Bytes : Bytes_Reference) return Boolean is
+     (Identifier = Bytes (Bytes.Value'First .. Bytes.Value'First + Identifier'Length - 1));
 
-   function Get_Header (Bytes : Resources.Byte_Array_Access) return Header is
+   function Get_Header (Bytes : Bytes_Reference) return Header is
       use type ICE.Unsigned_32;
 
       function Convert is new Ada.Unchecked_Conversion
@@ -79,7 +77,7 @@ package body Orka.KTX is
       function Convert_To_Compressed_Format is new Ada.Unchecked_Conversion
         (Source => ICE.Unsigned_32, Target => GL.Pixels.Compressed_Format);
 
-      Offset : constant Stream_Element_Offset := Bytes'First + Identifier'Length;
+      Offset : constant Stream_Element_Offset := Bytes.Value'First + Identifier'Length;
       File_Header : constant Internal_Header := Convert (Header_Array
         (Bytes (Offset .. Offset + Header_Array'Length - 1)));
 
@@ -146,7 +144,8 @@ package body Orka.KTX is
 
             --  Format / Internal format
             begin
-               Result.Compressed_Format := Convert_To_Compressed_Format (File_Header.Internal_Format);
+               Result.Compressed_Format
+                 := Convert_To_Compressed_Format (File_Header.Internal_Format);
             exception
                when Constraint_Error =>
                   raise Invalid_Enum_Error with "invalid internal format (" &
@@ -173,7 +172,8 @@ package body Orka.KTX is
 
             --  Internal format
             begin
-               Result.Internal_Format := Convert_To_Internal_Format (File_Header.Internal_Format);
+               Result.Internal_Format
+                 := Convert_To_Internal_Format (File_Header.Internal_Format);
             exception
                when Constraint_Error =>
                   raise Invalid_Enum_Error with "invalid internal format (" &
@@ -184,16 +184,16 @@ package body Orka.KTX is
    end Get_Header;
 
    function Get_Key_Value_Map
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Length : GL.Types.Size) return KTX.String_Maps.Map
    is
       Result : KTX.String_Maps.Map;
 
       Non_Header_Index : constant Stream_Element_Offset
-        := Bytes'First + Identifier'Length + Header_Array'Length;
+        := Bytes.Value'First + Identifier'Length + Header_Array'Length;
       Data_Index : constant Stream_Element_Offset
         := Non_Header_Index + Stream_Element_Offset (Length);
-      pragma Assert (Data_Index <= Bytes'Last);
+      pragma Assert (Data_Index <= Bytes.Value'Last);
 
       Bytes_Remaining : Natural := Natural (Length);
       Pair_Index : Stream_Element_Offset := Non_Header_Index;
@@ -241,7 +241,7 @@ package body Orka.KTX is
    end Get_Key_Value_Map;
 
    function Get_Length
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Offset : Stream_Element_Offset) return Natural
    is
       Size_Bytes : constant Four_Bytes_Array := Four_Bytes_Array
@@ -251,13 +251,14 @@ package body Orka.KTX is
    end Get_Length;
 
    function Get_Data_Offset
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Bytes_Key_Value : GL.Types.Size) return Stream_Element_Offset
-   is (Bytes'First + Identifier'Length + Header_Array'Length + Stream_Element_Offset (Bytes_Key_Value));
+   is (Bytes.Value'First + Identifier'Length + Header_Array'Length
+        + Stream_Element_Offset (Bytes_Key_Value));
 
    function Create_KTX_Bytes
      (KTX_Header : Header;
-      Data       : Resources.Byte_Array_Access) return Resources.Byte_Array_Access
+      Data       : Bytes_Reference) return Resources.Byte_Array_Pointers.Pointer
    is
       pragma Assert (KTX_Header.Mipmap_Levels = 1);
       --  TODO Data is 1 pointer to a Byte_Array, so only supporting 1 mipmap
@@ -282,7 +283,7 @@ package body Orka.KTX is
 
       Compressed : Boolean renames KTX_Header.Compressed;
 
-      pragma Assert (if not Compressed then Data'Length mod 4 = 0);
+      pragma Assert (if not Compressed then Data.Value'Length mod 4 = 0);
       --  Data must be a multiple of 4 bytes because of the requirement
       --  of GL.Pixels.Unpack_Alignment = Words (= 4)
       --  Note: assertion is not precise because length of a row might
@@ -319,12 +320,17 @@ package body Orka.KTX is
             Bytes_Key_Value_Data => 0);
       --  TODO Support key value map?
 
-      Result : constant Resources.Byte_Array_Access := new Resources.Byte_Array
-        (1 .. Identifier'Length + Header_Array'Length + 4 + Data'Length);
+      Pointer : Resources.Byte_Array_Pointers.Pointer;
+
+      Result : constant not null Resources.Byte_Array_Access := new Resources.Byte_Array
+        (1 .. Identifier'Length + Header_Array'Length + 4 + Data.Value'Length);
       --  TODO Supports just 1 level at the moment
 
       Image_Size : constant ICE.Unsigned_32
-        := (if KTX_Header.Kind = Texture_Cube_Map then Data'Length / 6 else Data'Length);
+        := (if KTX_Header.Kind = Texture_Cube_Map then
+              Data.Value'Length / 6
+            else
+              Data.Value'Length);
 
       Header_Offset : constant Stream_Element_Offset := Result'First + Identifier'Length;
       Size_Offset   : constant Stream_Element_Offset := Header_Offset + Header_Array'Length;
@@ -333,8 +339,9 @@ package body Orka.KTX is
       Result (Result'First .. Header_Offset - 1) := Identifier;
       Result (Header_Offset .. Size_Offset - 1)  := Stream_Element_Array (Convert (File_Header));
       Result (Size_Offset .. Data_Offset - 1)    := Stream_Element_Array (Convert (Image_Size));
-      Result (Data_Offset .. Result'Last)        := Data.all;
-      return Result;
+      Result (Data_Offset .. Result'Last)        := Data;
+      Pointer.Set (Result);
+      return Pointer;
    end Create_KTX_Bytes;
 
 end Orka.KTX;

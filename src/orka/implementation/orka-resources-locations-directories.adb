@@ -37,7 +37,7 @@ package body Orka.Resources.Locations.Directories is
       end if;
    end Finalize;
 
-   function Read_File (Object : Byte_Array_File) return Byte_Array_Access is
+   function Read_File (Object : Byte_Array_File) return not null Byte_Array_Access is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Integer (Stream_IO.Size (Object.File));
 
@@ -63,14 +63,14 @@ package body Orka.Resources.Locations.Directories is
       end return;
    end Create_File;
 
-   procedure Write_Data (Object : Byte_Array_File; Data : Byte_Array_Access) is
+   procedure Write_Data (Object : Byte_Array_File; Data : Byte_Array) is
       File_Stream : Stream_IO.Stream_Access;
       File_Size   : constant Integer := Data'Length;
 
       subtype File_Byte_Array is Byte_Array (1 .. Stream_Element_Offset (File_Size));
    begin
       File_Stream := Stream_IO.Stream (Object.File);
-      File_Byte_Array'Write (File_Stream, Data.all);
+      File_Byte_Array'Write (File_Stream, Data);
    end Write_Data;
 
    -----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ package body Orka.Resources.Locations.Directories is
    overriding
    function Read_Data
      (Object : Directory_Location;
-      Path   : String) return not null Byte_Array_Access
+      Path   : String) return Byte_Array_Pointers.Pointer
    is
       Directory : String renames SU.To_String (Object.Full_Path);
       Full_Path : constant String := Directory & Path_Separator & Path;
@@ -103,8 +103,10 @@ package body Orka.Resources.Locations.Directories is
 
       declare
          File : constant Byte_Array_File := Open_File (Full_Path);
+         Pointer : Byte_Array_Pointers.Pointer;
       begin
-         return File.Read_File;
+         Pointer.Set (File.Read_File);
+         return Pointer;
       end;
    end Read_Data;
 
@@ -112,7 +114,7 @@ package body Orka.Resources.Locations.Directories is
    procedure Write_Data
      (Object : Writable_Directory_Location;
       Path   : String;
-      Data   : Byte_Array_Access)
+      Data   : Byte_Array)
    is
       Directory : String renames SU.To_String (Object.Full_Path);
       Full_Path : constant String := Directory & Path_Separator & Path;

@@ -22,22 +22,27 @@ package body Orka.glTF.Buffers is
    function Create_Buffer
      (Object    : Types.JSON_Value'Class;
       Load_Path : not null access function (Path : String)
-                    return not null Byte_Array_Access) return Buffer
-   with Post => Create_Buffer'Result.Data'Length = Create_Buffer'Result.Length;
+                    return Byte_Array_Pointers.Pointer) return Buffer
+   with Post => Create_Buffer'Result.Data.Get.Value'Length = Create_Buffer'Result.Length;
 
    function Create_Buffer
      (Object    : Types.JSON_Value'Class;
       Load_Path : not null access function (Path : String)
-                    return not null Byte_Array_Access) return Buffer
+                    return Byte_Array_Pointers.Pointer) return Buffer
    is
       URI    : constant String := Object.Get ("uri").Value;
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
 
-      function Load_Data (URI : String) return not null Byte_Array_Access is
+      function Load_Data (URI : String) return Byte_Array_Pointers.Pointer is
          Encoded_Data : String renames URI (Base64.Data_Prefix'Last + 1 .. URI'Last);
       begin
          if Base64.Base64_Encoded (URI) then
-            return new Byte_Array'(Base64.Decode (Encoded_Data));
+            declare
+               Pointer : Byte_Array_Pointers.Pointer;
+            begin
+               Pointer.Set (new Byte_Array'(Base64.Decode (Encoded_Data)));
+               return Pointer;
+            end;
          else
             return Load_Path (URI);
          end if;
@@ -64,7 +69,7 @@ package body Orka.glTF.Buffers is
    begin
       return Result : Buffer_View (Packed => Packed) do
          Result.Buffer := Buffers (Natural (Buffer)).Data;
-         pragma Assert (Offset + Length <= Result.Buffer.all'Length);
+         pragma Assert (Offset + Length <= Result.Buffer.Get.Value'Length);
 
          Result.Offset := Natural (Offset);
          Result.Length := Natural (Length);
@@ -95,13 +100,13 @@ package body Orka.glTF.Buffers is
       function Convert is new Ada.Unchecked_Conversion
         (Source => Byte_Array, Target => Counted_Element_Array);
    begin
-      Data := Convert (Byte_Array'(View.Buffer (Offset + 1 .. Offset + Length)));
+      Data := Convert (Byte_Array'(View.Buffer.Get (Offset + 1 .. Offset + Length)));
    end Extract_From_Buffer;
 
    function Get_Buffers
      (Buffers   : Types.JSON_Array_Value;
       Load_Path : not null access function (Path : String)
-                    return not null Byte_Array_Access) return Buffer_Vectors.Vector
+                    return Byte_Array_Pointers.Pointer) return Buffer_Vectors.Vector
    is
       Result : Buffer_Vectors.Vector;
    begin

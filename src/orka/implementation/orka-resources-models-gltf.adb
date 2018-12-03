@@ -406,14 +406,14 @@ package body Orka.Resources.Models.glTF is
 
       package Parsers is new JSON.Parsers (Orka.glTF.Types);
 
-      Bytes : Byte_Array_Access := Object.Data.Bytes;
       Path  : String renames SU.To_String (Object.Data.Path);
    begin
       declare
          T1 : constant Time := Clock;
 
          --  Tokenize and parse JSON data
-         Stream : JSON.Streams.Stream'Class := JSON.Streams.Create_Stream (Bytes);
+         Stream : JSON.Streams.Stream'Class
+           := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
          Data : constant GLTF_Data_Access := new GLTF_Data'
            (JSON       => new JSON_Value'Class'(Parsers.Parse (Stream)),
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
@@ -470,11 +470,6 @@ package body Orka.Resources.Models.glTF is
             end;
             raise;
       end;
-      Free (Bytes);
-   exception
-      when others =>
-         Free (Bytes);
-         raise;
    end Execute;
 
    overriding
@@ -486,7 +481,7 @@ package body Orka.Resources.Models.glTF is
       Buffers : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("buffers"));
       Views   : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("bufferViews"));
 
-      function Load_Data (Path : String) return not null Byte_Array_Access is
+      function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
          Directory     : String renames SU.To_String (Object.Data.Directory);
          Relative_Path : constant String := Directory & Locations.Path_Separator & Path;
       begin

@@ -25,7 +25,7 @@ package Orka.Resources.Locations.Directories is
    overriding
    function Read_Data
      (Object : Directory_Location;
-      Path   : String) return not null Byte_Array_Access;
+      Path   : String) return Byte_Array_Pointers.Pointer;
 
    type Writable_Directory_Location is limited new Writable_Location with private;
 
@@ -33,7 +33,7 @@ package Orka.Resources.Locations.Directories is
    procedure Write_Data
      (Object : Writable_Directory_Location;
       Path   : String;
-      Data   : Byte_Array_Access);
+      Data   : Byte_Array);
 
    function Create_Location (Path : String) return Location_Ptr;
 

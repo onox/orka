@@ -24,10 +24,10 @@ package body Orka.Rendering.Programs.Modules is
          pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
          declare
             Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
-            Source : Resources.Byte_Array_Access := Location.Read_Data (Path);
+            Source : constant Resources.Byte_Array_Pointers.Pointer
+              := Location.Read_Data (Path);
          begin
-            Shader.Set_Source (Resources.Convert (Source));
-            Resources.Free (Source);
+            Shader.Set_Source (Resources.Convert (Source.Get));
 
             Shader.Compile;
             if not Shader.Compile_Status then

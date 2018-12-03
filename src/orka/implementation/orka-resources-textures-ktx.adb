@@ -49,7 +49,7 @@ package body Orka.Resources.Textures.KTX is
      (Object  : KTX_Load_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      Bytes : Byte_Array_Access renames Object.Data.Bytes;
+      Bytes : Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
       Path  : String renames SU.To_String (Object.Data.Path);
 
       T1 : Ada.Real_Time.Time renames Object.Data.Start_Time;
@@ -167,7 +167,8 @@ package body Orka.Resources.Textures.KTX is
                   Mipmap_Size : constant Natural := 4 + Image_Size + Mip_Padding;
 
                   Offset : constant Stream_Element_Offset := Image_Size_Index + 4;
-                  pragma Assert (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes'Last);
+                  pragma Assert
+                    (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes.Value'Last);
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
                   --  TODO Unpack_Alignment must be 4, but Load_From_Data wants 1 | 2 | 4
                   --  depending on Header.Data_Type
@@ -337,9 +338,10 @@ package body Orka.Resources.Textures.KTX is
       Header : Orka.KTX.Header (Compressed);
 
       function Convert
-        (Bytes : in out GL.Types.UByte_Array_Access) return Byte_Array_Access
+        (Bytes : in out GL.Types.UByte_Array_Access) return Byte_Array_Pointers.Pointer
       is
-         Result : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
+         Pointer : Byte_Array_Pointers.Pointer;
+         Result  : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
 
          procedure Free is new Ada.Unchecked_Deallocation
            (Object => GL.Types.UByte_Array, Name => GL.Types.UByte_Array_Access);
@@ -353,20 +355,25 @@ package body Orka.Resources.Textures.KTX is
             end;
          end loop;
          Free (Bytes);
-         return Result;
+         Pointer.Set (Result);
+         return Pointer;
       end Convert;
 
       function Convert
-        (Bytes : in out Pointers.Element_Array_Access) return Byte_Array_Access
+        (Bytes : in out Pointers.Element_Array_Access) return Byte_Array_Pointers.Pointer
       is
-         Result : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
+         Pointer : Byte_Array_Pointers.Pointer;
+         Result  : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
       begin
          Result.all := Bytes.all;
          Pointers.Free (Bytes);
-         return Result;
+         Pointer.Set (Result);
+         return Pointer;
       end Convert;
 
-      function Get_Data (Level : Textures.Mipmap_Level) return Byte_Array_Access is
+      function Get_Data
+        (Level : Textures.Mipmap_Level) return Byte_Array_Pointers.Pointer
+      is
          Data : Pointers.Element_Array_Access;
       begin
          case Texture.Kind is
@@ -388,7 +395,9 @@ package body Orka.Resources.Textures.KTX is
          return Convert (Data);
       end Get_Data;
 
-      function Get_Compressed_Data (Level : Textures.Mipmap_Level) return Byte_Array_Access is
+      function Get_Compressed_Data
+        (Level : Textures.Mipmap_Level) return Byte_Array_Pointers.Pointer
+      is
          Data : GL.Types.UByte_Array_Access;
       begin
          case Texture.Kind is
@@ -457,14 +466,13 @@ package body Orka.Resources.Textures.KTX is
       end if;
 
       declare
-         Data : Byte_Array_Access
+         Data : constant Byte_Array_Pointers.Pointer
            := (if Compressed then Get_Compressed_Data (0) else Get_Data (0));
 
-         Bytes : Byte_Array_Access := Orka.KTX.Create_KTX_Bytes (Header, Data);
+         Bytes : constant Byte_Array_Pointers.Pointer
+           := Orka.KTX.Create_KTX_Bytes (Header, Data.Get);
       begin
-         Location.Write_Data (Path, Bytes);
-         Free (Data);
-         Free (Bytes);
+         Location.Write_Data (Path, Bytes.Get);
       end;
    end Write_Texture;
 

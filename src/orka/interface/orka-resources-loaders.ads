@@ -20,7 +20,7 @@ with Orka.Resources.Locations;
 package Orka.Resources.Loaders is
 
    type Resource_Data is record
-      Bytes        : Byte_Array_Access;
+      Bytes        : Byte_Array_Pointers.Pointer;
       Reading_Time : Ada.Real_Time.Time_Span;
       Start_Time   : Ada.Real_Time.Time;
       Path         : SU.Unbounded_String;

@@ -250,7 +250,7 @@ package body Orka.Resources.Loader is
 
                Location : constant Locations.Location_Ptr
                  := Resource_Locations.Location (Loader, Path);
-               Bytes : constant Byte_Array_Access := Location.Read_Data (Path);
+               Bytes : constant Byte_Array_Pointers.Pointer := Location.Read_Data (Path);
 
                Time_End : constant Time := Clock;
 

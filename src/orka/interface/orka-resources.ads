@@ -18,6 +18,8 @@ with Ada.Streams;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Deallocation;
 
+with Orka.Smart_Pointers;
+
 package Orka.Resources is
    pragma Preelaborate;
 
@@ -31,10 +33,13 @@ package Orka.Resources is
 
    type Byte_Array_Access is access Byte_Array;
 
-   function Convert (Bytes : Byte_Array_Access) return String;
+   function Convert (Bytes : Byte_Array) return String;
 
    procedure Free is new Ada.Unchecked_Deallocation
      (Object => Byte_Array, Name => Byte_Array_Access);
+
+   package Byte_Array_Pointers is new Orka.Smart_Pointers
+     (Byte_Array, Byte_Array_Access, Free);
 
    Resource_Load_Error : exception;
 

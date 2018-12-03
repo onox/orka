@@ -21,7 +21,7 @@ with GL.Objects.Textures;
 with GL.Pixels;
 with GL.Types;
 
-limited with Orka.Resources;
+with Orka.Resources;
 
 private package Orka.KTX is
    pragma Preelaborate;
@@ -68,26 +68,28 @@ private package Orka.KTX is
               when Texture_Cube_Map_Array => Header.Width = Header.Height and Header.Depth = 0,
               when others => raise Constraint_Error);
 
-   function Valid_Identifier (Bytes : Resources.Byte_Array_Access) return Boolean;
+   subtype Bytes_Reference is Resources.Byte_Array_Pointers.Constant_Reference;
 
-   function Get_Header (Bytes : Resources.Byte_Array_Access) return Header;
+   function Valid_Identifier (Bytes : Bytes_Reference) return Boolean;
+
+   function Get_Header (Bytes : Bytes_Reference) return Header;
 
    function Get_Key_Value_Map
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Length : GL.Types.Size) return String_Maps.Map;
 
    function Get_Length
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Offset : Ada.Streams.Stream_Element_Offset) return Natural;
 
    function Get_Data_Offset
-     (Bytes  : Resources.Byte_Array_Access;
+     (Bytes  : Bytes_Reference;
       Bytes_Key_Value : GL.Types.Size) return Ada.Streams.Stream_Element_Offset;
 
    Invalid_Enum_Error : exception;
 
    function Create_KTX_Bytes
      (KTX_Header : Header;
-      Data       : Resources.Byte_Array_Access) return Resources.Byte_Array_Access;
+      Data       : Bytes_Reference) return Resources.Byte_Array_Pointers.Pointer;
 
 end Orka.KTX;

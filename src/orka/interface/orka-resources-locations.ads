@@ -23,7 +23,7 @@ package Orka.Resources.Locations is
 
    function Read_Data
      (Object : Location;
-      Path   : String) return not null Byte_Array_Access is abstract;
+      Path   : String) return Byte_Array_Pointers.Pointer is abstract;
    --  Return the data of the file at the given path in the location if
    --  Path identifies an existing file, otherwise the exception Name_Error
    --  is raised
@@ -36,7 +36,7 @@ package Orka.Resources.Locations is
    procedure Write_Data
      (Object : Writable_Location;
       Path   : String;
-      Data   : Byte_Array_Access) is abstract;
+      Data   : Byte_Array) is abstract;
    --  Write data to a non-existing file at the given path in the location
    --
    --  If the file at the given path could not be created or written to

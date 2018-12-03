@@ -32,7 +32,7 @@ package Orka.glTF.Buffers is
       34963 => Buffer_Kind (GL.Low_Level.Enums.Element_Array_Buffer));
 
    type Buffer is record
-      Data   : Byte_Array_Access;
+      Data   : Byte_Array_Pointers.Pointer;
       Length : Positive;  --  Length in bytes
    end record;
 
@@ -41,12 +41,12 @@ package Orka.glTF.Buffers is
    function Get_Buffers
      (Buffers   : Types.JSON_Array_Value;
       Load_Path : not null access function (Path : String)
-                    return not null Byte_Array_Access) return Buffer_Vectors.Vector;
+                    return Byte_Array_Pointers.Pointer) return Buffer_Vectors.Vector;
 
    subtype Stride_Natural is Natural range 4 .. 252;
 
    type Buffer_View (Packed : Boolean) is record
-      Buffer : Byte_Array_Access;
+      Buffer : Byte_Array_Pointers.Pointer;
       Offset : Natural;   --  Offset in bytes
       Length : Positive;  --  Length in bytes
       Target : Buffer_Kind;

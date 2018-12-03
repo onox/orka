@@ -16,13 +16,13 @@ with Ada.Unchecked_Conversion;
 
 package body Orka.Resources is
 
-   function Convert (Bytes : Byte_Array_Access) return String is
+   function Convert (Bytes : Byte_Array) return String is
       subtype Bytes_String is String (1 .. Bytes'Length);
 
       function Convert is new Ada.Unchecked_Conversion
         (Source => Resources.Byte_Array, Target => Bytes_String);
    begin
-      return Convert (Bytes.all);
+      return Convert (Bytes);
    end Convert;
 
 end Orka.Resources;
