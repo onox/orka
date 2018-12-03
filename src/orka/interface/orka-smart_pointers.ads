@@ -43,7 +43,7 @@ package Orka.Smart_Pointers is
 
    procedure Set
      (Object : in out Abstract_Pointer;
-      Value  : Object_Access)
+      Value  : not null Object_Access)
    with Post => not Object.Is_Null and then Object.References = 1;
 
    type Mutable_Pointer is new Abstract_Pointer with private;

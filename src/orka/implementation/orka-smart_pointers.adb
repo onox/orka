@@ -25,7 +25,7 @@ package body Orka.Smart_Pointers is
 
    procedure Set
      (Object : in out Abstract_Pointer;
-      Value  : Object_Access) is
+      Value  : not null Object_Access) is
    begin
       if Object.Data /= null then
          --  Decrement old reference count
