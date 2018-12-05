@@ -45,7 +45,7 @@ procedure Orka_KTX is
    Height  : constant := 720;
 
    Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
-     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
    pragma Unreferenced (Initialized);
 
    W : constant Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window

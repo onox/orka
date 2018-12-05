@@ -22,7 +22,7 @@ with Orka.Windows.GLFW;
 
 procedure Orka_Info is
    Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
-     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2);
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
    pragma Unreferenced (Initialized);
 
    W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
@@ -37,12 +37,11 @@ procedure Orka_Info is
       Put_Line ("Major version: " & GL.Types.Int'Image (GL.Context.Major_Version));
       Put_Line ("Minor version: " & GL.Types.Int'Image (GL.Context.Minor_Version));
 
-      Put_Line ("Vendor: "   & GL.Context.Vendor);
+      Put_Line ("  Vendor: " & GL.Context.Vendor);
       Put_Line ("Renderer: " & GL.Context.Renderer);
 
       Put_Line ("OpenGL version: " & GL.Context.Version_String);
-      Put_Line ("  GLSL version: " &
-                GL.Context.Primary_Shading_Language_Version);
+      Put_Line ("  GLSL version: " & GL.Context.Primary_Shading_Language_Version);
 
       Put_Line ("Extensions: ");
 
@@ -55,27 +54,22 @@ procedure Orka_Info is
          end;
       end loop;
 
+      Put_Line ("Supported shading language versions:");
+
       begin
-         declare
-            List : constant GL.Context.String_List :=
-              GL.Context.Supported_Shading_Language_Versions;
-         begin
-            Put_Line ("Supported shading language versions:");
-            for US_Version of List loop
-               declare
-                  Version : constant String := To_String (US_Version);
-               begin
-                  Put_Line ("  " & Version);
-                  pragma Assert (GL.Context.Supports_Shading_Language_Version (Version));
-               end;
-            end loop;
-         end;
+         for US_Version of GL.Context.Supported_Shading_Language_Versions loop
+            declare
+               Version : constant String := To_String (US_Version);
+            begin
+               Put_Line ("  " & Version);
+               pragma Assert (GL.Context.Supports_Shading_Language_Version (Version));
+            end;
+         end loop;
       exception
          when others =>
             Put_Line ("OpenGL version too old for querying supported versions");
       end;
    end Display_Context_Information;
 begin
-   Put_Line ("Getting information with requested OpenGL version 3.2:");
    Display_Context_Information;
 end Orka_Info;

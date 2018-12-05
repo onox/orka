@@ -58,7 +58,7 @@ procedure Orka_GLTF is
    ----------------------------------------------------------------------
 
    Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
-     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
    pragma Unreferenced (Initialized);
 
    W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window

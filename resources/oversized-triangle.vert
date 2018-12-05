@@ -1,4 +1,4 @@
-#version 330 core
+#version 420 core
 
 #extension GL_ARB_shading_language_420pack : require
 
