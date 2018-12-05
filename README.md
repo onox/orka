@@ -45,8 +45,7 @@ Build status
 
 |                    | Linux   | Windows     |
 |--------------------|---------|-------------|
-| **GNAT GPL 2017**  | failing | failing     |
-| **GNAT CE 2018**   | unknown | unknown     |
+| **GNAT CE 2018**   |         | passing     |
 | **GNAT FSF 7.3**   | passing |             |
 | **GNAT FSF 8.2**   | passing |             |
 
