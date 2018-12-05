@@ -5,6 +5,8 @@ library project Orka is
 
    for Languages use ("ada");
 
+   for Create_Missing_Dirs use "True";
+
    for Library_Name use "orka";
    for Library_Version use "liborka.so." & Config.Version;
    for Library_Dir use "lib";
