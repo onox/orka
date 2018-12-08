@@ -3,9 +3,10 @@
 Orka
 ====
 
-Orka is the OpenGL 4.6 Rendering Kernel in Ada. It is written in Ada 2012
-and provides an object-oriented API for modern OpenGL. Orka and the OpenGL
-bindings require and use OpenGL 4.5's Direct State Access (DSA) extension.
+Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
+an object-oriented API for modern OpenGL and implements various [AZDO][url-azdo]
+techniques to allow multi-threaded buffer updates and batched draw calls
+for high performance rendering.
 
 Orka makes it easy to construct OpenGL objects like programs, buffers, and
 framebuffers. A job graph processing system provides flexible multi tasking
@@ -22,26 +23,25 @@ functionality for capturing user input on keyboard, mouse and joystick.
 Having a window with an OpenGL context is the prerequisite for using any
 OpenGL functionality.
 
-Orka is supported on Linux and Windows. Support for macOS has been removed
-due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
-extensions have not been implemented in their drivers).
-
 Features
 --------
 
- * Thick OpenGL 4.6 bindings
- * Thick GLFW 3 bindings
+ * Thick bindings for OpenGL 4.6 and GLFW 3
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
  * Transforms (vectors, quaternions, and matrices) and scene trees (uses the x86 SIMD extensions)
  * Easy construction of shader programs, buffers, framebuffers, and vertex formats
  * Job graph processing system for better utilization of all CPU cores
  * Game loop
  * Camera's
- * [glTF 2.0][url-gltf] loader (uses MDI)
+ * [glTF 2.0][url-gltf] loader
  * [KTX][url-ktx] loader and writer
 
 Build status
 ------------
+
+Orka is supported on Linux and Windows. Support for macOS has been removed
+due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
+extensions have not been implemented in their drivers).
 
 |                    | Linux   | Windows     |
 |--------------------|---------|-------------|
@@ -237,4 +237,4 @@ of the [Apache License 2.0][url-apache].
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-egl]: https://www.khronos.org/egl
-
+  [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
