@@ -75,6 +75,6 @@ package Orka.glTF.Accessors is
    package Accessor_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Accessor);
 
    function Get_Accessors
-     (Accessors : Types.JSON_Array_Value) return Accessor_Vectors.Vector;
+     (Accessors : Types.JSON_Value) return Accessor_Vectors.Vector;
 
 end Orka.glTF.Accessors;

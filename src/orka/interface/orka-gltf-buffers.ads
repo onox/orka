@@ -39,7 +39,7 @@ package Orka.glTF.Buffers is
    package Buffer_Vectors is new Ada.Containers.Vectors (Natural, Buffer);
 
    function Get_Buffers
-     (Buffers   : Types.JSON_Array_Value;
+     (Buffers   : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer_Vectors.Vector;
 
@@ -69,6 +69,6 @@ package Orka.glTF.Buffers is
 
    function Get_Buffer_Views
      (Buffers : Buffer_Vectors.Vector;
-      Views   : Types.JSON_Array_Value) return Buffer_View_Vectors.Vector;
+      Views   : Types.JSON_Value) return Buffer_View_Vectors.Vector;
 
 end Orka.glTF.Buffers;

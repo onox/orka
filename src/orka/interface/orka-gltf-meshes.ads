@@ -47,6 +47,6 @@ package Orka.glTF.Meshes is
    package Mesh_Vectors is new Ada.Containers.Vectors (Natural, Mesh);
 
    function Get_Meshes
-     (Meshes : Types.JSON_Array_Value) return Mesh_Vectors.Vector;
+     (Meshes : Types.JSON_Value) return Mesh_Vectors.Vector;
 
 end Orka.glTF.Meshes;

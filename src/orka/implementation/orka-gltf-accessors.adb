@@ -30,7 +30,7 @@ package body Orka.glTF.Accessors is
       end case;
    end Unsigned_Type;
 
-   function Create_Bounds (Bounds : Types.JSON_Array_Value) return Transforms.Vector4 is
+   function Create_Bounds (Bounds : Types.JSON_Value) return Transforms.Vector4 is
       Key : constant array (Positive range 1 .. 4) of SIMD.Index_Homogeneous :=
         (1 => SIMD.X, 2 => SIMD.Y, 3 => SIMD.Z, 4 => SIMD.W);
    begin
@@ -42,10 +42,10 @@ package body Orka.glTF.Accessors is
    end Create_Bounds;
 
    function Create_Accessor
-     (Object : Types.JSON_Value'Class) return Accessor
+     (Object : Types.JSON_Value) return Accessor
    is
       View   : constant Long_Integer := Object.Get ("bufferView").Value;
-      Offset : constant Long_Integer := Object.Get_Value_Or_Default ("byteOffset", 0).Value;
+      Offset : constant Long_Integer := Object.Get ("byteOffset", 0).Value;
       pragma Assert (Offset mod 4 = 0);
 
       Component_Type : constant Long_Integer := Object.Get ("componentType").Value;
@@ -94,15 +94,15 @@ package body Orka.glTF.Accessors is
          Result.Offset     := Natural (Offset);
          Result.Component  := Component;
          Result.Kind       := Kind;
-         Result.Normalized := Object.Get_Value_Or_Default ("normalized", False).Value;
+         Result.Normalized := Object.Get ("normalized", False).Value;
          Result.Count      := Positive (Long_Integer'(Object.Get ("count").Value));
-         Result.Min_Bounds := Create_Bounds (Object.Get_Array ("min"));
-         Result.Max_Bounds := Create_Bounds (Object.Get_Array ("max"));
+         Result.Min_Bounds := Create_Bounds (Object.Get ("min"));
+         Result.Max_Bounds := Create_Bounds (Object.Get ("max"));
       end return;
    end Create_Accessor;
 
    function Get_Accessors
-     (Accessors : Types.JSON_Array_Value) return Accessor_Vectors.Vector
+     (Accessors : Types.JSON_Value) return Accessor_Vectors.Vector
    is
       Result : Accessor_Vectors.Vector;
    begin

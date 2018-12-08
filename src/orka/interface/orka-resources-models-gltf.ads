@@ -36,10 +36,10 @@ private
 
    use Ada.Real_Time;
 
-   type JSON_Value_Access is access Orka.glTF.Types.JSON_Value'Class;
+   type JSON_Value_Access is access Orka.glTF.Types.JSON_Value;
 
    procedure Free_JSON is new Ada.Unchecked_Deallocation
-     (Object => Orka.glTF.Types.JSON_Value'Class, Name => JSON_Value_Access);
+     (Object => Orka.glTF.Types.JSON_Value, Name => JSON_Value_Access);
 
    type Times_Data is record
       Reading    : Time_Span;

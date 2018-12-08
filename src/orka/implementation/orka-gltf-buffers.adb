@@ -20,13 +20,13 @@ with Orka.Base64;
 package body Orka.glTF.Buffers is
 
    function Create_Buffer
-     (Object    : Types.JSON_Value'Class;
+     (Object    : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer
    with Post => Create_Buffer'Result.Data.Get.Value'Length = Create_Buffer'Result.Length;
 
    function Create_Buffer
-     (Object    : Types.JSON_Value'Class;
+     (Object    : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer
    is
@@ -56,10 +56,10 @@ package body Orka.glTF.Buffers is
 
    function Create_Buffer_View
      (Buffers : Buffer_Vectors.Vector;
-      Object  : Types.JSON_Value'Class) return Buffer_View
+      Object  : Types.JSON_Value) return Buffer_View
    is
       Buffer : constant Long_Integer := Object.Get ("buffer").Value;
-      Offset : constant Long_Integer := Object.Get_Value_Or_Default ("byteOffset", 0).Value;
+      Offset : constant Long_Integer := Object.Get ("byteOffset", 0).Value;
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
       Target : constant Long_Integer := Object.Get ("target").Value;
       --  TODO target is optional: infer from accessors
@@ -104,7 +104,7 @@ package body Orka.glTF.Buffers is
    end Extract_From_Buffer;
 
    function Get_Buffers
-     (Buffers   : Types.JSON_Array_Value;
+     (Buffers   : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer_Vectors.Vector
    is
@@ -118,7 +118,7 @@ package body Orka.glTF.Buffers is
 
    function Get_Buffer_Views
      (Buffers : Buffer_Vectors.Vector;
-      Views   : Types.JSON_Array_Value) return Buffer_View_Vectors.Vector
+      Views   : Types.JSON_Value) return Buffer_View_Vectors.Vector
    is
       Result : Buffer_View_Vectors.Vector;
    begin

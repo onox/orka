@@ -415,7 +415,7 @@ package body Orka.Resources.Models.glTF is
          Stream : JSON.Streams.Stream'Class
            := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
          Data : constant GLTF_Data_Access := new GLTF_Data'
-           (JSON       => new JSON_Value'Class'(Parsers.Parse (Stream)),
+           (JSON       => new JSON_Value'(Parsers.Parse (Stream)),
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
@@ -425,7 +425,7 @@ package body Orka.Resources.Models.glTF is
 
          T2 : constant Time := Clock;
 
-         Asset : constant JSON_Object_Value := Data.JSON.Get_Object ("asset");
+         Asset : constant JSON_Value := Data.JSON.Get ("asset");
       begin
          --  Require glTF 2.x
          if Asset.Get ("version").Value /= "2.0" then
@@ -478,8 +478,8 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      Buffers : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("buffers"));
-      Views   : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("bufferViews"));
+      Buffers : JSON_Value renames Object.Data.JSON.Get ("buffers");
+      Views   : JSON_Value renames Object.Data.JSON.Get ("bufferViews");
 
       function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
          Directory     : String renames SU.To_String (Object.Data.Directory);
@@ -498,7 +498,7 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      Accessors : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("accessors"));
+      Accessors : JSON_Value renames Object.Data.JSON.Get ("accessors");
    begin
       Object.Data.Accessors := Orka.glTF.Accessors.Get_Accessors (Accessors);
    end Execute;
@@ -509,7 +509,7 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      Meshes : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("meshes"));
+      Meshes : JSON_Value renames Object.Data.JSON.Get ("meshes");
    begin
       Object.Data.Meshes := Orka.glTF.Meshes.Get_Meshes (Meshes);
    end Execute;
@@ -520,8 +520,8 @@ package body Orka.Resources.Models.glTF is
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
       use Orka.glTF.Types;
-      Nodes  : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("nodes"));
-      Scenes : JSON_Array_Value renames JSON_Array_Value (Object.Data.JSON.Get ("scenes"));
+      Nodes  : JSON_Value renames Object.Data.JSON.Get ("nodes");
+      Scenes : JSON_Value renames Object.Data.JSON.Get ("scenes");
    begin
       Object.Data.Nodes  := Orka.glTF.Scenes.Get_Nodes (Nodes);
       Object.Data.Scenes := Orka.glTF.Scenes.Get_Scenes (Scenes);
@@ -543,7 +543,6 @@ package body Orka.Resources.Models.glTF is
 
       Path : String renames SU.To_String (Object.Path);
    begin
-      --  TODO Deallocate any byte arrays allocated in Orka.glTF.Buffers
       if Default_Scene.Nodes.Is_Empty then
          raise Model_Load_Error with "glTF file '" & Path & "' has an empty scene";
       end if;

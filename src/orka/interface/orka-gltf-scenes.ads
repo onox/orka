@@ -43,7 +43,7 @@ package Orka.glTF.Scenes is
    package Node_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Node);
 
    function Get_Nodes
-     (Nodes : Types.JSON_Array_Value) return Node_Vectors.Vector;
+     (Nodes : Types.JSON_Value) return Node_Vectors.Vector;
 
    type Scene is record
       Name  : SU.Unbounded_String;
@@ -53,6 +53,6 @@ package Orka.glTF.Scenes is
    package Scene_Vectors is new Ada.Containers.Vectors (Natural, Scene);
 
    function Get_Scenes
-     (Scenes : Types.JSON_Array_Value) return Scene_Vectors.Vector;
+     (Scenes : Types.JSON_Value) return Scene_Vectors.Vector;
 
 end Orka.glTF.Scenes;

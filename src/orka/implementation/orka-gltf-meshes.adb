@@ -15,13 +15,13 @@
 package body Orka.glTF.Meshes is
 
    function Create_Primitive
-     (Object : Types.JSON_Value'Class) return Primitive
+     (Object : Types.JSON_Value) return Primitive
    is
-      Attributes : constant Types.JSON_Object_Value := Object.Get_Object ("attributes");
+      Attributes : constant Types.JSON_Value := Object.Get ("attributes");
 
-      Indices  : constant Long_Integer := Object.Get_Value_Or_Default ("indices", Undefined).Value;
-      Material : constant Long_Integer := Object.Get_Value_Or_Default ("material", Undefined).Value;
-      Mode     : constant Long_Integer := Object.Get_Value_Or_Default ("mode", 4).Value;
+      Indices  : constant Long_Integer := Object.Get ("indices", Undefined).Value;
+      Material : constant Long_Integer := Object.Get ("material", Undefined).Value;
+      Mode     : constant Long_Integer := Object.Get ("mode", 4).Value;
 
       Mode_Kind : Primitive_Mode;
       Attribute_Accessors : Attribute_Maps.Map;
@@ -46,7 +46,8 @@ package body Orka.glTF.Meshes is
       end case;
 
       for Attribute of Attributes loop
-         Attribute_Accessors.Insert (Attribute, Natural (Long_Integer'(Attributes.Get (Attribute).Value)));
+         Attribute_Accessors.Insert (Attribute.Value,
+           Natural (Long_Integer'(Attributes.Get (Attribute.Value).Value)));
       end loop;
 
       --  TODO primitive.indices: When defined, the accessor must contain
@@ -62,7 +63,7 @@ package body Orka.glTF.Meshes is
    end Create_Primitive;
 
    function Create_Primitives
-     (Primitives : Types.JSON_Array_Value) return Primitive_Vectors.Vector
+     (Primitives : Types.JSON_Value) return Primitive_Vectors.Vector
    is
       Result : Primitive_Vectors.Vector;
    begin
@@ -73,16 +74,16 @@ package body Orka.glTF.Meshes is
    end Create_Primitives;
 
    function Create_Mesh
-     (Object : Types.JSON_Value'Class) return Mesh is
+     (Object : Types.JSON_Value) return Mesh is
    begin
       return Result : Mesh do
-         Result.Primitives := Create_Primitives (Object.Get_Array ("primitives"));
+         Result.Primitives := Create_Primitives (Object.Get ("primitives"));
          Result.Name       := Object.Get ("name").Value;
       end return;
    end Create_Mesh;
 
    function Get_Meshes
-     (Meshes : Types.JSON_Array_Value) return Mesh_Vectors.Vector
+     (Meshes : Types.JSON_Value) return Mesh_Vectors.Vector
    is
       Result : Mesh_Vectors.Vector;
    begin
