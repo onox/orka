@@ -14,8 +14,6 @@
 
 with Ada.Iterator_Interfaces;
 
-private with Ada.Finalization;
-
 generic
    type Object_Type (<>) is new GL_Object with private;
    with function Generate_From_Id (Id : UInt) return Object_Type;
@@ -59,9 +57,7 @@ private
 
    No_Element : constant Cursor := Cursor'(null, 0);
 
-   use Ada.Finalization;
-
-   type Iterator is new Limited_Controlled and
+   type Iterator is limited new
      List_Iterator_Interfaces.Reversible_Iterator with
    record
       Container : List_Access;

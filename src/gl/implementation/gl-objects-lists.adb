@@ -87,7 +87,7 @@ package body GL.Objects.Lists is
    function Iterate (Container : List)
      return List_Iterator_Interfaces.Reversible_Iterator'Class is
    begin
-      return Iterator'(Limited_Controlled with Container => Container'Unchecked_Access);
+      return Iterator'(Container => Container'Unchecked_Access);
    end Iterate;
 
 end GL.Objects.Lists;

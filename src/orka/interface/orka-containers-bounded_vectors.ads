@@ -13,7 +13,6 @@
 --  limitations under the License.
 
 private with Ada.Iterator_Interfaces;
-private with Ada.Finalization;
 
 generic
    type Element_Type is private;
@@ -81,9 +80,7 @@ private
 
    -----------------------------------------------------------------------------
 
-   use Ada.Finalization;
-
-   type Iterator is new Limited_Controlled and
+   type Iterator is limited new
      Vector_Iterator_Interfaces.Reversible_Iterator with
    record
       Container : Vector_Access;
