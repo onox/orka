@@ -407,25 +407,35 @@ package body Orka.Resources.Models.glTF is
       package Parsers is new JSON.Parsers (Orka.glTF.Types);
 
       Path  : String renames SU.To_String (Object.Data.Path);
+
+      Stream : constant JSON.Streams.Stream'class
+        := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
+      Allocator : Orka.glTF.Types.Memory_Allocator (Maximum_Depth => 10);
    begin
       declare
          T1 : constant Time := Clock;
 
+         JSON : constant Orka.glTF.Types.JSON_Value := Parsers.Parse (Stream, Allocator);
+
+         T2 : constant Time := Clock;
+
          --  Tokenize and parse JSON data
-         Stream : JSON.Streams.Stream'Class
-           := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
          Data : constant GLTF_Data_Access := new GLTF_Data'
-           (JSON       => new JSON_Value'(Parsers.Parse (Stream)),
-            Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
+           (Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
             Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
             others     => <>);
 
-         T2 : constant Time := Clock;
+         Asset : constant JSON_Value := JSON ("asset");
 
-         Asset : constant JSON_Value := Data.JSON.Get ("asset");
+         function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
+            Directory     : String renames SU.To_String (Data.Directory);
+            Relative_Path : constant String := Directory & Locations.Path_Separator & Path;
+         begin
+            return Data.Location.Read_Data (Relative_Path);
+         end Load_Data;
       begin
          --  Require glTF 2.x
          if Asset.Get ("version").Value /= "2.0" then
@@ -433,98 +443,29 @@ package body Orka.Resources.Models.glTF is
          end if;
          --  TODO Check minVersion
 
+         --  Process buffers, nodes, meshes, and scenes
+         Data.Buffers := Orka.glTF.Buffers.Get_Buffers (JSON ("buffers"), Load_Data'Access);
+         Data.Views   := Orka.glTF.Buffers.Get_Buffer_Views (Data.Buffers, JSON ("bufferViews"));
+
+         Data.Accessors := Orka.glTF.Accessors.Get_Accessors (JSON ("accessors"));
+         Data.Meshes    := Orka.glTF.Meshes.Get_Meshes (JSON ("meshes"));
+
+         Data.Nodes  := Orka.glTF.Scenes.Get_Nodes (JSON ("nodes"));
+         Data.Scenes := Orka.glTF.Scenes.Get_Scenes (JSON ("scenes"));
+
+         Data.Default_Scene := JSON ("scene").Value;
+
+         Data.Times.Reading    := Object.Data.Reading_Time;
+         Data.Times.Parsing    := T2 - T1;
+         Data.Times.Processing := Clock - T2;
+
          declare
             Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Processing_Job'
-              (Jobs.Abstract_Job with Data => Data, Path => Object.Data.Path,
-                Processing_Start_Time => T2);
-
-            Process_1_Job : constant Jobs.Job_Ptr := new GLTF_Process_Buffers_Job'
-              (Jobs.Abstract_Job with Data => Data);
-            Process_2_Job : constant Jobs.Job_Ptr := new GLTF_Process_Accessors_Job'
-              (Jobs.Abstract_Job with Data => Data);
-            Process_3_Job : constant Jobs.Job_Ptr := new GLTF_Process_Meshes_Job'
-              (Jobs.Abstract_Job with Data => Data);
-            Process_4_Job : constant Jobs.Job_Ptr := new GLTF_Process_Nodes_Job'
-              (Jobs.Abstract_Job with Data => Data);
+              (Jobs.Abstract_Job with Data => Data, Path => Object.Data.Path);
          begin
-            Finish_Job.Set_Dependencies
-              ((Process_1_Job, Process_2_Job, Process_3_Job, Process_4_Job));
-
-            Data.Times.Reading := Object.Data.Reading_Time;
-            Data.Times.Parsing := T2 - T1;
-
-            Enqueue (Process_1_Job);
-            Enqueue (Process_2_Job);
-            Enqueue (Process_3_Job);
-            Enqueue (Process_4_Job);
+            Enqueue (Finish_Job);
          end;
-      exception
-         when others =>
-            --  TODO Ugly
-            declare
-               JSON2 : JSON_Value_Access := Data.JSON;
-               Data2 : GLTF_Data_Access  := Data;
-            begin
-               Free_JSON (JSON2);
-               Free_Data (Data2);
-            end;
-            raise;
       end;
-   end Execute;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Buffers_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
-   is
-      use Orka.glTF.Types;
-      Buffers : JSON_Value renames Object.Data.JSON.Get ("buffers");
-      Views   : JSON_Value renames Object.Data.JSON.Get ("bufferViews");
-
-      function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
-         Directory     : String renames SU.To_String (Object.Data.Directory);
-         Relative_Path : constant String := Directory & Locations.Path_Separator & Path;
-      begin
-         return Object.Data.Location.Read_Data (Relative_Path);
-      end Load_Data;
-   begin
-      Object.Data.Buffers := Orka.glTF.Buffers.Get_Buffers (Buffers, Load_Data'Access);
-      Object.Data.Views   := Orka.glTF.Buffers.Get_Buffer_Views (Object.Data.Buffers, Views);
-   end Execute;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Accessors_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
-   is
-      use Orka.glTF.Types;
-      Accessors : JSON_Value renames Object.Data.JSON.Get ("accessors");
-   begin
-      Object.Data.Accessors := Orka.glTF.Accessors.Get_Accessors (Accessors);
-   end Execute;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Meshes_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
-   is
-      use Orka.glTF.Types;
-      Meshes : JSON_Value renames Object.Data.JSON.Get ("meshes");
-   begin
-      Object.Data.Meshes := Orka.glTF.Meshes.Get_Meshes (Meshes);
-   end Execute;
-
-   overriding
-   procedure Execute
-     (Object  : GLTF_Process_Nodes_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
-   is
-      use Orka.glTF.Types;
-      Nodes  : JSON_Value renames Object.Data.JSON.Get ("nodes");
-      Scenes : JSON_Value renames Object.Data.JSON.Get ("scenes");
-   begin
-      Object.Data.Nodes  := Orka.glTF.Scenes.Get_Nodes (Nodes);
-      Object.Data.Scenes := Orka.glTF.Scenes.Get_Scenes (Scenes);
    end Execute;
 
    overriding
@@ -536,7 +477,7 @@ package body Orka.Resources.Models.glTF is
 
       --  TODO Textures, Images, Samplers, Materials, Cameras
 
-      Default_Scene_Index : constant Long_Integer := Object.Data.JSON.Get ("scene").Value;
+      Default_Scene_Index : constant Long_Integer := Object.Data.Default_Scene;
       Default_Scene : constant Orka.glTF.Scenes.Scene
         := Object.Data.Scenes (Natural (Default_Scene_Index));
       --  Cannot be "renames" because freeing Object.Data results in cursor tampering
@@ -546,8 +487,6 @@ package body Orka.Resources.Models.glTF is
       if Default_Scene.Nodes.Is_Empty then
          raise Model_Load_Error with "glTF file '" & Path & "' has an empty scene";
       end if;
-
-      Object.Data.Times.Processing := Clock - Object.Processing_Start_Time;
 
       declare
          Scene_Data : constant Model_Scene_Ptr := new Model_Scene'
@@ -689,7 +628,6 @@ package body Orka.Resources.Models.glTF is
          Messages.Insert (Info, "    buffers:         " & Logging.Image (Times.Buffers));
       end;
 
-      --  TODO Deallocate Object.Data.JSON
       --  TODO Deallocate Object.Data
    end Execute;
 

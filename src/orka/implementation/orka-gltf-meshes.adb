@@ -78,7 +78,7 @@ package body Orka.glTF.Meshes is
    begin
       return Result : Mesh do
          Result.Primitives := Create_Primitives (Object.Get ("primitives"));
-         Result.Name       := Object.Get ("name").Value;
+         Result.Name       := SU.To_Unbounded_String (Object.Get ("name").Value);
       end return;
    end Create_Mesh;
 

@@ -61,7 +61,7 @@ package body Orka.glTF.Scenes is
         := (if Object.Contains ("matrix") then Matrix else TRS);
    begin
       return Result : Node (Transform) do
-         Result.Name := Object.Get ("name").Value;
+         Result.Name := SU.To_Unbounded_String (Object.Get ("name").Value);
          Result.Children := Create_Nodes (Object.Get_Array_Or_Empty ("children"));
          Result.Mesh := Natural_Optional (Long_Integer'(Object.Get ("mesh", Undefined).Value));
 
@@ -105,7 +105,7 @@ package body Orka.glTF.Scenes is
      (Object : Types.JSON_Value) return Scene is
    begin
       return Result : Scene do
-         Result.Name  := Object.Get ("name").Value;
+         Result.Name  := SU.To_Unbounded_String (Object.Get ("name").Value);
          Result.Nodes := Create_Nodes (Object.Get ("nodes"));
       end return;
    end Create_Scene;
