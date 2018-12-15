@@ -436,6 +436,8 @@ package body Orka.Resources.Models.glTF is
          begin
             return Data.Location.Read_Data (Relative_Path);
          end Load_Data;
+
+         Pointer : GLTF_Data_Pointers.Mutable_Pointer;
       begin
          --  Require glTF 2.x
          if Asset.Get ("version").Value /= "2.0" then
@@ -459,9 +461,11 @@ package body Orka.Resources.Models.glTF is
          Data.Times.Parsing    := T2 - T1;
          Data.Times.Processing := Clock - T2;
 
+         Pointer.Set (Data);
+
          declare
             Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Processing_Job'
-              (Jobs.Abstract_Job with Data => Data, Path => Object.Data.Path);
+              (Jobs.Abstract_Job with Data => Pointer, Path => Object.Data.Path);
          begin
             Enqueue (Finish_Job);
          end;
@@ -475,11 +479,13 @@ package body Orka.Resources.Models.glTF is
    is
       use Orka.glTF.Types;
 
+      Data  : GLTF_Data renames Object.Data.Get;
+
       --  TODO Textures, Images, Samplers, Materials, Cameras
 
-      Default_Scene_Index : constant Long_Integer := Object.Data.Default_Scene;
+      Default_Scene_Index : constant Long_Integer := Data.Default_Scene;
       Default_Scene : constant Orka.glTF.Scenes.Scene
-        := Object.Data.Scenes (Natural (Default_Scene_Index));
+        := Data.Scenes (Natural (Default_Scene_Index));
       --  Cannot be "renames" because freeing Object.Data results in cursor tampering
 
       Path : String renames SU.To_String (Object.Path);
@@ -517,9 +523,9 @@ package body Orka.Resources.Models.glTF is
          --  Link the nodes in the default scene to the root node and
          --  then add all the other nodes that are reachable
          for Node_Index of Default_Scene.Nodes loop
-            Scene.Add_Node (Object.Data.Nodes (Node_Index).Name, Scene.Root_Name);
+            Scene.Add_Node (Data.Nodes (Node_Index).Name, Scene.Root_Name);
          end loop;
-         Add_Nodes (Scene, Parts, Object.Data.Nodes, Default_Scene.Nodes);
+         Add_Nodes (Scene, Parts, Data.Nodes, Default_Scene.Nodes);
 
          --  Collect an array of cursors to nodes in the scene for nodes
          --  that have a corresponding mesh part. This is needed so that,
@@ -532,11 +538,11 @@ package body Orka.Resources.Models.glTF is
             raise Model_Load_Error with "glTF file '" & Path & "' has no mesh parts";
          end if;
 
-         Object.Data.Times.Scene := Clock - Start_Time;
+         Data.Times.Scene := Clock - Start_Time;
 
          --  Count total number of vertices and indices
-         Count_Parts (GL.Types.UInt_Type, Object.Data.Accessors,
-           Object.Data.Meshes, Vertices, Indices);
+         Count_Parts (GL.Types.UInt_Type, Data.Accessors,
+           Data.Meshes, Vertices, Indices);
 
          declare
             Create_Job : constant Jobs.Job_Ptr := new GLTF_Create_Model_Job'
@@ -553,7 +559,7 @@ package body Orka.Resources.Models.glTF is
      (Object  : GLTF_Create_Model_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      Data  : GLTF_Data_Access renames Object.Data;
+      Data  : GLTF_Data renames Object.Data.Get;
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
       Start_Time : constant Time := Clock;
@@ -591,7 +597,7 @@ package body Orka.Resources.Models.glTF is
      (Object  : GLTF_Write_Buffers_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      Data : GLTF_Data_Access renames Object.Data;
+      Data : GLTF_Data renames Object.Data.Get;
    begin
       Add_Parts (Data.Format, Object.Model.Batch, Data.Views, Data.Accessors, Data.Meshes);
    end Execute;
@@ -601,7 +607,7 @@ package body Orka.Resources.Models.glTF is
      (Object  : GLTF_Finish_Loading_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      Data : GLTF_Data_Access renames Object.Data;
+      Data : GLTF_Data renames Object.Data.Get;
       Path : String renames SU.To_String (Object.Path);
    begin
       Object.Model.Batch.Finish_Batch;
@@ -627,8 +633,6 @@ package body Orka.Resources.Models.glTF is
          Messages.Insert (Info, "    scene tree:      " & Logging.Image (Times.Scene));
          Messages.Insert (Info, "    buffers:         " & Logging.Image (Times.Buffers));
       end;
-
-      --  TODO Deallocate Object.Data
    end Execute;
 
 end Orka.Resources.Models.glTF;

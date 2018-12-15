@@ -65,6 +65,9 @@ private
    procedure Free_Data is new Ada.Unchecked_Deallocation
      (Object => GLTF_Data, Name => GLTF_Data_Access);
 
+   package GLTF_Data_Pointers is new Orka.Smart_Pointers
+     (GLTF_Data, GLTF_Data_Access, Free_Data);
+
    -----------------------------------------------------------------------------
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
@@ -75,24 +78,24 @@ private
    end record;
 
    type GLTF_Finish_Processing_Job is new Jobs.Abstract_Job with record
-      Data : not null GLTF_Data_Access;
+      Data : GLTF_Data_Pointers.Mutable_Pointer;
       Path : SU.Unbounded_String;
    end record;
 
    type GLTF_Create_Model_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
-      Data  : not null GLTF_Data_Access;
+      Data : GLTF_Data_Pointers.Mutable_Pointer;
       Path  : SU.Unbounded_String;
       Scene : Model_Scene_Ptr;
       Vertices, Indices : Natural;
    end record;
 
    type GLTF_Write_Buffers_Job is new Jobs.Abstract_Job with record
-      Data  : not null GLTF_Data_Access;
+      Data : GLTF_Data_Pointers.Mutable_Pointer;
       Model : Model_Ptr;
    end record;
 
    type GLTF_Finish_Loading_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
-      Data  : not null GLTF_Data_Access;
+      Data : GLTF_Data_Pointers.Mutable_Pointer;
       Path  : SU.Unbounded_String;
       Model : Model_Ptr;
       Parts, Vertices, Indices : Natural;
