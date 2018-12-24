@@ -36,13 +36,6 @@ package body GL.Drawing is
       Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
-   procedure Draw_Multiple_Arrays (Mode : Connection_Mode;
-                                   Offsets, Counts : Size_Array) is
-   begin
-      API.Multi_Draw_Arrays (Mode, Offsets, Counts, Counts'Length);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Multiple_Arrays;
-
    procedure Draw_Multiple_Arrays_Indirect
      (Mode   : Connection_Mode;
       Count  : Size;
@@ -131,52 +124,6 @@ package body GL.Drawing is
          Instances, Int (Vertex_Offset), UInt (Base_Instance));
       Raise_Exception_On_OpenGL_Error;
    end Draw_Elements_Base_Vertex_Base_Instance;
-
-   procedure Draw_Multiple_Elements (Mode : Connection_Mode;
-                                     Index_Type : Unsigned_Numeric_Type;
-                                     Counts, Index_Offsets : Size_Array)
-   is
-      Element_Bytes : Natural;
-   begin
-      case Index_Type is
-         when UByte_Type  => Element_Bytes := 1;
-         when UShort_Type => Element_Bytes := 2;
-         when UInt_Type   => Element_Bytes := 4;
-      end case;
-      declare
-         Indices : Low_Level.IntPtr_Array (Index_Offsets'Range);
-      begin
-         for I in Index_Offsets'Range loop
-            Indices (I) := Low_Level.IntPtr (Element_Bytes * Natural (Index_Offsets (I)));
-         end loop;
-         API.Multi_Draw_Elements (Mode, Counts, Index_Type, Indices, Counts'Length);
-         Raise_Exception_On_OpenGL_Error;
-      end;
-   end Draw_Multiple_Elements;
-
-   procedure Draw_Multiple_Elements_Base_Vertex
-     (Mode : Connection_Mode;
-      Index_Type : Unsigned_Numeric_Type;
-      Counts, Vertex_Offsets, Index_Offsets : Size_Array)
-   is
-      Element_Bytes : Natural;
-   begin
-      case Index_Type is
-         when UByte_Type  => Element_Bytes := 1;
-         when UShort_Type => Element_Bytes := 2;
-         when UInt_Type   => Element_Bytes := 4;
-      end case;
-      declare
-         Indices : Low_Level.IntPtr_Array (Index_Offsets'Range);
-      begin
-         for I in Index_Offsets'Range loop
-            Indices (I) := Low_Level.IntPtr (Element_Bytes * Natural (Index_Offsets (I)));
-         end loop;
-         API.Multi_Draw_Elements_Base_Vertex (Mode, Counts, Index_Type,
-           Indices, Counts'Length, Vertex_Offsets);
-         Raise_Exception_On_OpenGL_Error;
-      end;
-   end Draw_Multiple_Elements_Base_Vertex;
 
    procedure Draw_Multiple_Elements_Indirect
      (Mode       : Connection_Mode;
