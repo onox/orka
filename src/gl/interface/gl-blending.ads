@@ -30,15 +30,11 @@ package GL.Blending is
 
    type Equation is (Func_Add, Min, Max, Func_Subtract, Func_Reverse_Substract);
 
-   procedure Set_Blend_Func (Src_Factor, Dst_Factor : Blend_Factor);
-   procedure Set_Blend_Func (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                             Src_Factor, Dst_Factor : Blend_Factor);
-
-   procedure Set_Blend_Func_Separate (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha
-                                      : Blend_Factor);
-   procedure Set_Blend_Func_Separate (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                                      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha
-                                      : Blend_Factor);
+   procedure Set_Blend_Func
+     (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor);
+   procedure Set_Blend_Func
+     (Draw_Buffer : Buffers.Draw_Buffer_Index;
+      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor);
 
    function Blend_Func_Src_RGB return Blend_Factor;
    function Blend_Func_Src_Alpha return Blend_Factor;
@@ -48,12 +44,8 @@ package GL.Blending is
    procedure Set_Blend_Color (Value : Types.Colors.Color);
    function Blend_Color return Types.Colors.Color;
 
-   procedure Set_Blend_Equation (Value : Equation);
-   procedure Set_Blend_Equation (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                                 Value : Equation);
-
-   procedure Set_Blend_Equation_Separate (RGB, Alpha : Equation);
-   procedure Set_Blend_Equation_Separate
+   procedure Set_Blend_Equation (RGB, Alpha : Equation);
+   procedure Set_Blend_Equation
      (Draw_Buffer : Buffers.Draw_Buffer_Index; RGB, Alpha : Equation);
 
    function Blend_Equation_RGB return Equation;

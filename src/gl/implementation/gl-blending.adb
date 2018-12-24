@@ -17,34 +17,21 @@ with GL.Enums.Getter;
 
 package body GL.Blending is
 
-   procedure Set_Blend_Func (Src_Factor, Dst_Factor : Blend_Factor) is
-   begin
-      API.Blend_Func (Src_Factor, Dst_Factor);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Func;
-
-   procedure Set_Blend_Func (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                             Src_Factor, Dst_Factor : Blend_Factor) is
-   begin
-      API.Blend_Func_I (Draw_Buffer, Src_Factor, Dst_Factor);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Func;
-
-   procedure Set_Blend_Func_Separate (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha
-                                      : Blend_Factor) is
+   procedure Set_Blend_Func
+     (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor) is
    begin
       API.Blend_Func_Separate (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha);
       Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Func_Separate;
+   end Set_Blend_Func;
 
-   procedure Set_Blend_Func_Separate (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                                      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha
-                                      : Blend_Factor) is
+   procedure Set_Blend_Func
+     (Draw_Buffer : Buffers.Draw_Buffer_Index;
+      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor) is
    begin
       API.Blend_Func_Separate_I (Draw_Buffer, Src_RGB, Dst_RGB,
                                  Src_Alpha, Dst_Alpha);
       Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Func_Separate;
+   end Set_Blend_Func;
 
    function Blend_Func_Src_RGB return Blend_Factor is
       Ret : Blend_Factor := One;
@@ -92,31 +79,18 @@ package body GL.Blending is
       return Ret;
    end Blend_Color;
 
-   procedure Set_Blend_Equation (Value : Equation) is
-   begin
-      API.Blend_Equation (Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Equation;
-
-   procedure Set_Blend_Equation (Draw_Buffer : Buffers.Draw_Buffer_Index;
-                                 Value : Equation) is
-   begin
-      API.Blend_Equation_I (Draw_Buffer, Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Equation;
-
-   procedure Set_Blend_Equation_Separate (RGB, Alpha : Equation) is
+   procedure Set_Blend_Equation (RGB, Alpha : Equation) is
    begin
       API.Blend_Equation_Separate (RGB, Alpha);
       Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Equation_Separate;
+   end Set_Blend_Equation;
 
-   procedure Set_Blend_Equation_Separate
+   procedure Set_Blend_Equation
      (Draw_Buffer : Buffers.Draw_Buffer_Index; RGB, Alpha : Equation) is
    begin
       API.Blend_Equation_Separate_I (Draw_Buffer, RGB, Alpha);
       Raise_Exception_On_OpenGL_Error;
-   end Set_Blend_Equation_Separate;
+   end Set_Blend_Equation;
 
    function Blend_Equation_RGB return Equation is
       Ret : Equation := Equation'First;

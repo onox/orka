@@ -269,36 +269,23 @@ private package GL.API is
    --                                Blending                                 --
    -----------------------------------------------------------------------------
 
-   procedure Blend_Func is new Loader.Procedure_With_2_Params
-     ("glBlendFunc", Blending.Blend_Factor, Blending.Blend_Factor);
-
-   procedure Blend_Func_I is new Loader.Procedure_With_3_Params
-     ("glBlendFunci", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
-      Blending.Blend_Factor);
-
    procedure Blend_Func_Separate is new Loader.Procedure_With_4_Params
      ("glBlendFuncSeparate", Blending.Blend_Factor, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor);
 
    procedure Blend_Func_Separate_I is new Loader.Procedure_With_5_Params
-     ("glBlendFuncSeparate", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
+     ("glBlendFuncSeparatei", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor, Blending.Blend_Factor);
 
    procedure Blend_Color is new Loader.Procedure_With_4_Params
      ("glBlendColor", Colors.Component, Colors.Component, Colors.Component, 
       Colors.Component);
 
-   procedure Blend_Equation is new Loader.Procedure_With_1_Param
-     ("glBlendEquation", Blending.Equation);
-
-   procedure Blend_Equation_I is new Loader.Procedure_With_2_Params
-     ("glBlendEquationi", Buffers.Draw_Buffer_Index, Blending.Equation);
-
    procedure Blend_Equation_Separate is new Loader.Procedure_With_2_Params
      ("glBlendEquationSeparate", Blending.Equation, Blending.Equation);
 
    procedure Blend_Equation_Separate_I is new Loader.Procedure_With_3_Params
-     ("glBlendEquationi", Buffers.Draw_Buffer_Index, Blending.Equation,
+     ("glBlendEquationSeparatei", Buffers.Draw_Buffer_Index, Blending.Equation,
       Blending.Equation);
 
    -----------------------------------------------------------------------------
