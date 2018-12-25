@@ -14,10 +14,10 @@
 
 with Ada.Text_IO;
 
-with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
 with GL.Objects.Buffers;
+with GL.Objects.Framebuffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
@@ -30,7 +30,6 @@ procedure GL_Test.VBO is
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
    pragma Unreferenced (Initialized);
 
-   use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
 
@@ -116,6 +115,9 @@ procedure GL_Test.VBO is
 
    Vector_Buffer1 : GL.Objects.Buffers.Buffer;
    Array1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+
+   Default_Framebuffer : constant GL.Objects.Framebuffers.Framebuffer
+     := GL.Objects.Framebuffers.Default_Framebuffer;
 begin
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
    Ada.Text_IO.Put_Line ("Loaded shaders");
@@ -124,7 +126,8 @@ begin
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
-      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+      Default_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_Framebuffer.Clear_Depth_Buffer (1.0);
 
       Array1.Bind;
       GL.Drawing.Draw_Arrays (Triangles, 0, 3);

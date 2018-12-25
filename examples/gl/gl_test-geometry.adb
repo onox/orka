@@ -16,12 +16,12 @@ with Ada.Text_IO;
 
 with GL.Drawing;
 with GL.Files;
-with GL.Buffers;
 with GL.Objects.Shaders;
 with GL.Objects.Buffers;
+with GL.Objects.Framebuffers;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
-with GL.Types.Colors;
+with GL.Types;
 
 with GL_Test.Display_Backend;
 
@@ -31,8 +31,6 @@ procedure GL_Test.Geometry is
    pragma Unreferenced (Initialized);
 
    use GL.Types;
-   use GL.Buffers;
-   use GL.Types.Colors;
    use GL.Objects.Vertex_Arrays;
 
    procedure Load_Shaders (Vertex_Source, Geometry_Source, Fragment_Source : String;
@@ -129,6 +127,9 @@ procedure GL_Test.Geometry is
    Vertex_Source    : constant String := "../examples/gl/shaders/geometry.vert";
    Geometry_Source  : constant String := "../examples/gl/shaders/geometry.geom";
    Fragment_Source  : constant String := "../examples/gl/shaders/geometry.frag";
+
+   Default_Framebuffer : constant GL.Objects.Framebuffers.Framebuffer
+     := GL.Objects.Framebuffers.Default_Framebuffer;
 begin
    -- Compile shaders and attach them to the programs
    Load_Shaders (Vertex_Source, Geometry_Source, Fragment_Source,
@@ -141,8 +142,7 @@ begin
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
-      Set_Color_Clear_Value (Color'(0.0, 0.0, 0.0, 1.0));
-      Clear (Buffer_Bits'(Color => True, others => False));
+      Default_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
 
       Array_Points.Bind;
       GL.Drawing.Draw_Arrays (Points, 0, 4);

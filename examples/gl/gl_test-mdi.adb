@@ -14,10 +14,10 @@
 
 with Ada.Text_IO;
 
-with GL.Buffers;
 with GL.Drawing;
 with GL.Files;
 with GL.Objects.Buffers;
+with GL.Objects.Framebuffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
@@ -30,7 +30,6 @@ procedure GL_Test.MDI is
      (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
    pragma Unreferenced (Initialized);
 
-   use GL.Buffers;
    use GL.Types;
    use GL.Objects.Vertex_Arrays;
 
@@ -143,6 +142,9 @@ procedure GL_Test.MDI is
    Vertex_Buffer, Index_Buffer     : GL.Objects.Buffers.Buffer;
    Command_Buffer, Instance_Buffer : GL.Objects.Buffers.Buffer;
    Array1 : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+
+   Default_Framebuffer : constant GL.Objects.Framebuffers.Framebuffer
+     := GL.Objects.Framebuffers.Default_Framebuffer;
 begin
    Load_Shaders (Vertex_Shader, Fragment_Shader, Program);
    Ada.Text_IO.Put_Line ("Loaded shaders");
@@ -154,7 +156,8 @@ begin
    GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Command_Buffer);
 
    while not Display_Backend.Get_Window.Should_Close loop
-      Clear (Buffer_Bits'(Color => True, Depth => True, others => False));
+      Default_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_Framebuffer.Clear_Depth_Buffer (1.0);
 
       GL.Drawing.Draw_Multiple_Elements_Indirect (Triangles, UInt_Type, Commands'Length);
 

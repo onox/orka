@@ -14,12 +14,12 @@
 
 with Ada.Text_IO;
 
-with GL.Buffers;
 with GL.Drawing;
 with GL.Types;
 with GL.Toggles;
 
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
@@ -37,6 +37,7 @@ procedure Orka_Test.Test_11_Instancing is
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
    use Orka.Rendering.Buffers;
+   use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Vertex_Formats;
    use Orka.Rendering.Programs;
    use GL.Types;
@@ -129,7 +130,6 @@ procedure Orka_Test.Test_11_Instancing is
       end return;
    end Load_Mesh;
 
-   use all type GL.Buffers.Buffer_Bits;
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
@@ -142,6 +142,8 @@ procedure Orka_Test.Test_11_Instancing is
    Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
    Triangle : constant Vertex_Format := Load_Mesh (Program_1);
+
+   Default_FB : constant Framebuffer := Create_Default_Framebuffer (500, 500);
 
    Mouse_X, Mouse_Y, Mouse_Z, Distance_Center : Single;
 begin
@@ -162,7 +164,8 @@ begin
    Triangle.GL_Vertex_Array.Bind;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear ((Color | Depth => True, others => False));
+      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
       Mouse_X := Single (GL_Test.Display_Backend.Get_Mouse_X);
       Mouse_Y := Single (GL_Test.Display_Backend.Get_Mouse_Y);

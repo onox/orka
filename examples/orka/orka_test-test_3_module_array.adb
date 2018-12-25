@@ -12,10 +12,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Buffers;
 with GL.Types;
 
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
@@ -29,6 +29,7 @@ procedure Orka_Test.Test_3_Module_Array is
    pragma Unreferenced (Initialized);
 
    use Orka.Rendering.Buffers;
+   use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Vertex_Formats;
    use Orka.Rendering.Programs;
 
@@ -56,7 +57,6 @@ procedure Orka_Test.Test_3_Module_Array is
       end return;
    end Load_Mesh;
 
-   use all type GL.Buffers.Buffer_Bits;
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
@@ -71,11 +71,14 @@ procedure Orka_Test.Test_3_Module_Array is
    ));
 
    Triangle : constant Vertex_Format := Load_Mesh (Program_1);
+
+   Default_FB : constant Framebuffer := Create_Default_Framebuffer (500, 500);
 begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Clear ((Color | Depth => True, others => False));
+      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 0.0));
+      Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
       Triangle.Draw (0, 3);
 

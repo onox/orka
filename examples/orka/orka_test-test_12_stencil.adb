@@ -19,7 +19,7 @@ with GL.Drawing;
 with GL.Low_Level.Enums;
 with GL.Pixels;
 with GL.Objects.Textures;
-with GL.Types.Colors;
+with GL.Types;
 with GL.Toggles;
 
 with Orka.Rendering.Buffers;
@@ -45,7 +45,6 @@ procedure Orka_Test.Test_12_Stencil is
 
    use GL.Buffers;
    use GL.Types;
-   use GL.Types.Colors;
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Programs;
@@ -256,14 +255,11 @@ begin
 
          Uni_Effect.Set_Int (Int (GL_Test.Display_Backend.Get_Effect (5)));
 
-         FB_D.Use_Framebuffer;
-         Set_Color_Clear_Value (Color'(1.0, 0.0, 0.0, 1.0));
-         Clear (Buffer_Bits'(Color | Depth => True, others => False));
-
          --  Bind frame buffer and draw 3D scene
          FB_1.Use_Framebuffer;
-         Set_Color_Clear_Value (Color'(0.0, 0.0, 0.0, 1.0));
-         Clear (Buffer_Bits'(Color | Depth => True, others => False));
+
+         FB_1.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+         FB_1.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
          VAO_Scene.GL_Vertex_Array.Bind;
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
@@ -288,7 +284,7 @@ begin
          -- Disable writing to the depth buffer in order to prevent the
          -- floor from hiding the reflection cube
          Depth_Mask (False);
-         Clear (Buffer_Bits'(Stencil => True, others => False));
+         FB_1.GL_Framebuffer.Clear_Stencil_Buffer (0);
          GL.Drawing.Draw_Arrays (Triangles, 30, 6);
 
          Set_Stencil_Function (Equal, 1, 16#FF#);  -- Pass test if stencil value is 1
@@ -317,6 +313,11 @@ begin
 
          --  Bind default frame buffer
          FB_D.Use_Framebuffer;
+
+         --  Clear color buffer to red in order to verify it gets fully
+         --  overwritten in the fullscreen pass
+         FB_D.GL_Framebuffer.Clear_Color_Buffer (0, (1.0, 0.0, 0.0, 1.0));
+         FB_D.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
          VAO_Screen.GL_Vertex_Array.Bind;
          GL.Toggles.Disable (GL.Toggles.Depth_Test);
