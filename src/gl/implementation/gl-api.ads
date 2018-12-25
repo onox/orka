@@ -304,19 +304,6 @@ private package GL.API is
    --                                 Buffers                                 --
    -----------------------------------------------------------------------------
 
-   procedure Clear is new Loader.Procedure_With_1_Param
-     ("glClear", Low_Level.Bitfield);
-
-   procedure Clear_Color is new Loader.Procedure_With_4_Params
-     ("glClearColor", Colors.Component, Colors.Component, Colors.Component,
-      Colors.Component);
-
-   procedure Clear_Depth is new Loader.Procedure_With_1_Param
-     ("glClearDepth", Buffers.Depth);
-
-   procedure Clear_Stencil is new Loader.Procedure_With_1_Param
-     ("glClearStencil", Buffers.Stencil_Index);
-
    procedure Color_Mask is new Loader.Procedure_With_4_Params
      ("glColorMask", Low_Level.Bool, Low_Level.Bool, Low_Level.Bool, Low_Level.Bool);
 
@@ -757,19 +744,25 @@ private package GL.API is
    procedure Get_Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Bool_Access);
 
-   procedure Clear_Named_Framebuffer_Color is new Loader.Procedure_With_4_Params
+   procedure Clear_Named_Framebuffer_Color_Real is new Loader.Procedure_With_4_Params
      ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
-   type Depth_Pointer is access constant Buffers.Depth;
-   procedure Clear_Named_Framebuffer_Depth is new Loader.Procedure_With_4_Params
-     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Depth_Buffer,
-      Zero, Depth_Pointer);
+   procedure Clear_Named_Framebuffer_Color_Signed_Int is new Loader.Procedure_With_4_Params
+     ("glClearNamedFramebufferiv", UInt, Low_Level.Enums.Only_Color_Buffer,
+      Buffers.Draw_Buffer_Index, Colors.Color);
 
-   type Stencil_Pointer is access constant Buffers.Stencil_Index;
-   procedure Clear_Named_Framebuffer_Stencil is new Loader.Procedure_With_4_Params
+   procedure Clear_Named_Framebuffer_Color_Unsigned_Int is new Loader.Procedure_With_4_Params
+     ("glClearNamedFramebufferuiv", UInt, Low_Level.Enums.Only_Color_Buffer,
+      Buffers.Draw_Buffer_Index, Colors.Color);
+
+   procedure Clear_Named_Framebuffer_Depth is new Loader.Getter_With_4_Params
+     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Depth_Buffer,
+      Zero, Buffers.Depth);
+
+   procedure Clear_Named_Framebuffer_Stencil is new Loader.Getter_With_4_Params
      ("glClearNamedFramebufferiv", UInt, Low_Level.Enums.Only_Stencil_Buffer,
-      Zero, Stencil_Pointer);
+      Zero, Buffers.Stencil_Index);
 
    procedure Clear_Named_Framebuffer_Depth_Stencil is new Loader.Procedure_With_5_Params
      ("glClearNamedFramebufferfi", UInt, Low_Level.Enums.Only_Depth_Stencil_Buffer,

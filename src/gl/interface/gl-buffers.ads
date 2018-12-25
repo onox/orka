@@ -20,15 +20,15 @@ package GL.Buffers is
    pragma Preelaborate;
    
    use GL.Types;
-   
+
    type Buffer_Bits is record
       Depth   : Boolean := False;
       Stencil : Boolean := False;
       Color   : Boolean := False;
    end record;
-   
-   subtype Depth is Double range 0.0 .. 1.0;
-   
+
+   subtype Depth is Single range 0.0 .. 1.0;
+
    subtype Stencil_Index is Int;
 
    type Stencil_Action is (Zero, Invert, Keep, Replace,
@@ -97,17 +97,6 @@ package GL.Buffers is
    subtype Single_Face_Selector is Culling.Face_Selector
      range Culling.Front .. Culling.Back;
 
-   procedure Clear (Bits : Buffer_Bits);
-   
-   procedure Set_Color_Clear_Value (Value : Colors.Color);
-   function Color_Clear_Value return Colors.Color;
-   
-   procedure Set_Depth_Clear_Value (Value : Depth);
-   function Depth_Clear_Value return Depth;
-   
-   procedure Set_Stencil_Clear_Value (Value : Stencil_Index);
-   function Stencil_Clear_Value return Stencil_Index;
-   
    procedure Set_Depth_Function (Func : Compare_Function);
    function Depth_Function return Compare_Function;
 
@@ -147,9 +136,12 @@ package GL.Buffers is
                                     Depth_Fail   : Buffers.Stencil_Action;
                                     Depth_Pass   : Buffers.Stencil_Action);
 
-   function Stencil_Operation_Stencil_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action;
-   function Stencil_Operation_Depth_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action;
-   function Stencil_Operation_Depth_Pass (Face : Single_Face_Selector) return Buffers.Stencil_Action;
+   function Stencil_Operation_Stencil_Fail
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action;
+   function Stencil_Operation_Depth_Fail
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action;
+   function Stencil_Operation_Depth_Pass
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action;
 
    procedure Set_Stencil_Mask (Value : UInt);
 
@@ -159,6 +151,7 @@ package GL.Buffers is
    function Stencil_Mask (Face : Single_Face_Selector) return UInt;
 
 private
+
    for Buffer_Bits use record
       Depth   at 0 range 8 .. 8;
       Stencil at 0 range 10 .. 10;

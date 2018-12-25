@@ -20,6 +20,8 @@ package Orka.Contexts is
    type Context is tagged limited private;
 
    procedure Enable (Object : in out Context; Subject : Feature);
+   --  Note: If enabling Reversed_Z, the depth must be cleared with the
+   --  value 0.0
 
    function Enabled (Object : Context; Subject : Feature) return Boolean;
 

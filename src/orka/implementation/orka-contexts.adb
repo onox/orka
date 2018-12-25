@@ -28,8 +28,8 @@ package body Orka.Contexts is
             --  See https://developer.nvidia.com/content/depth-precision-visualized
             --  for a visualization
             GL.Clipping.Set_Clipping (GL.Clipping.Lower_Left, GL.Clipping.Zero_To_One);
-            GL.Buffers.Set_Depth_Clear_Value (0.0);
             GL.Buffers.Set_Depth_Function (GL.Types.Greater);
+            --  When clearing the depth buffer, the value 0.0 must be used
          when Multisample =>
             --  Enable MSAA
             GL.Toggles.Enable (GL.Toggles.Multisample);

@@ -21,32 +21,6 @@ package body GL.Buffers is
 
    use type Culling.Face_Selector;
 
-   procedure Clear (Bits : Buffer_Bits) is
-      use type Low_Level.Bitfield;
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Buffer_Bits, Target => Low_Level.Bitfield);
-      Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Bits) and 2#0100010100000000#;
-   begin
-      API.Clear (Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear;
-
-   procedure Set_Color_Clear_Value (Value : Colors.Color) is
-   begin
-      API.Clear_Color (Value (Colors.R), Value (Colors.G), Value (Colors.B),
-                       Value (Colors.A));
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Color_Clear_Value;
-
-   function Color_Clear_Value return Colors.Color is
-      Value : Colors.Color;
-   begin
-      API.Get_Color (Enums.Getter.Color_Clear_Value, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Value;
-   end Color_Clear_Value;
-
    procedure Color_Mask (Value : Colors.Enabled_Color) is
    begin
       API.Color_Mask
@@ -73,34 +47,6 @@ package body GL.Buffers is
       Raise_Exception_On_OpenGL_Error;
       return Value;
    end Color_Mask;
-
-   procedure Set_Depth_Clear_Value (Value : Depth) is
-   begin
-      API.Clear_Depth (Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Depth_Clear_Value;
-
-   function Depth_Clear_Value return Depth is
-      Value : Double := 1.0;
-   begin
-      API.Get_Double (Enums.Getter.Depth_Clear_Value, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Value;
-   end Depth_Clear_Value;
-
-   procedure Set_Stencil_Clear_Value (Value : Stencil_Index) is
-   begin
-      API.Clear_Stencil (Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Stencil_Clear_Value;
-
-   function Stencil_Clear_Value return Stencil_Index is
-      Value : Stencil_Index := Stencil_Index'First;
-   begin
-      API.Get_Integer (Enums.Getter.Stencil_Clear_Value, Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Value;
-   end Stencil_Clear_Value;
 
    procedure Set_Depth_Function (Func : Compare_Function) is
    begin
@@ -200,7 +146,9 @@ package body GL.Buffers is
       Raise_Exception_On_OpenGL_Error;
    end Set_Stencil_Operation;
 
-   function Stencil_Operation_Stencil_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action is
+   function Stencil_Operation_Stencil_Fail
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action
+   is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then
@@ -212,7 +160,9 @@ package body GL.Buffers is
       return Value;
    end Stencil_Operation_Stencil_Fail;
 
-   function Stencil_Operation_Depth_Fail (Face : Single_Face_Selector) return Buffers.Stencil_Action is
+   function Stencil_Operation_Depth_Fail
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action
+   is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then
@@ -224,7 +174,9 @@ package body GL.Buffers is
       return Value;
    end Stencil_Operation_Depth_Fail;
 
-   function Stencil_Operation_Depth_Pass (Face : Single_Face_Selector) return Buffers.Stencil_Action is
+   function Stencil_Operation_Depth_Pass
+     (Face : Single_Face_Selector) return Buffers.Stencil_Action
+   is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
       if Face = Culling.Front then

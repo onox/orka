@@ -293,27 +293,27 @@ package body GL.Objects.Framebuffers is
                                  Index  : Buffers.Draw_Buffer_Index;
                                  Value  : Colors.Color) is
    begin
-      API.Clear_Named_Framebuffer_Color (Object.Reference.GL_Id,
-                                         Low_Level.Enums.Color, Index, Value);
+      API.Clear_Named_Framebuffer_Color_Real
+        (Object.Reference.GL_Id, Low_Level.Enums.Color, Index, Value);
       --  TODO Use *fv to clear fixed- and floating-point, *iv for signed int, *uiv for unsigned
       Raise_Exception_On_OpenGL_Error;
    end Clear_Color_Buffer;
 
    procedure Clear_Depth_Buffer (Object : Framebuffer; Value : Buffers.Depth) is
-      Aliased_Value : aliased constant Buffers.Depth := Value;
+      Aliased_Value : aliased Buffers.Depth := Value;
    begin
       API.Clear_Named_Framebuffer_Depth (Object.Reference.GL_Id,
                                          Low_Level.Enums.Depth_Buffer, 0,
-                                         Aliased_Value'Unchecked_Access);
+                                         Aliased_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_Buffer;
 
    procedure Clear_Stencil_Buffer (Object : Framebuffer; Value : Buffers.Stencil_Index) is
-      Aliased_Value : aliased constant Buffers.Stencil_Index := Value;
+      Aliased_Value : aliased Buffers.Stencil_Index := Value;
    begin
       API.Clear_Named_Framebuffer_Stencil (Object.Reference.GL_Id,
                                            Low_Level.Enums.Stencil, 0,
-                                           Aliased_Value'Unchecked_Access);
+                                           Aliased_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Stencil_Buffer;
 
