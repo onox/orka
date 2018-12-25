@@ -17,7 +17,6 @@ with Ada.Exceptions;
 with Ada.Real_Time;
 with Ada.Text_IO;
 
-with GL.Buffers;
 with GL.Objects.Textures;
 with GL.Types;
 
@@ -183,8 +182,9 @@ begin
            (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
             Camera : Orka.Cameras.Camera_Ptr) is
          begin
-            GL.Buffers.Clear (GL.Buffers.Buffer_Bits'
-              (Color => True, Depth => True, others => False));
+            --  Clear color to black and depth to 0.0 (because of reversed Z)
+            Camera.FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 0.0));
+            Camera.FB.GL_Framebuffer.Clear_Depth_Buffer (0.0);
 
             Camera.FB.Use_Framebuffer;
             P_1.Use_Program;
