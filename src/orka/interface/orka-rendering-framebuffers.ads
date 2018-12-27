@@ -21,6 +21,7 @@ with GL.Types;
 
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Windows;
 
 package Orka.Rendering.Framebuffers is
    pragma Preelaborate;
@@ -52,9 +53,13 @@ package Orka.Rendering.Framebuffers is
    with Pre  => Samples > 0 and Context.Enabled (Contexts.Multisample),
         Post => not Create_Framebuffer'Result.Default;
 
-   function Create_Default_Framebuffer (Width, Height : Size) return Framebuffer
-     with Inline, Post => Create_Default_Framebuffer'Result.Default
-       and Create_Default_Framebuffer'Result.GL_Framebuffer = GL.Objects.Framebuffers.Default_Framebuffer;
+   function Get_Default_Framebuffer
+     (Window : Orka.Windows.Window'Class) return Framebuffer
+   with Post => Get_Default_Framebuffer'Result.Default;
+
+   function Create_Default_Framebuffer
+     (Width, Height : Size) return Framebuffer
+   with Post => Create_Default_Framebuffer'Result.Default;
 
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
      with Inline;

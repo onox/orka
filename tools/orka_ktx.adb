@@ -115,7 +115,7 @@ begin
       ----------------------------------------------------------------------
 
       FB_D : constant Framebuffer_Ptr
-        := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
+        := new Framebuffer'(Get_Default_Framebuffer (W));
 
       --  The camera provides a view and projection matrices, but are unused
       --  in the shaders. The object is created because package Loops needs it

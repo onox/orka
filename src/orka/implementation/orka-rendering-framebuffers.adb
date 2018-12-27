@@ -88,7 +88,12 @@ package body Orka.Rendering.Framebuffers is
       end return;
    end Create_Framebuffer;
 
-   function Create_Default_Framebuffer (Width, Height : Size) return Framebuffer is
+   function Get_Default_Framebuffer
+     (Window : Orka.Windows.Window'Class) return Framebuffer
+   is (Create_Default_Framebuffer (Size (Window.Width), Size (Window.Height)));
+
+   function Create_Default_Framebuffer
+     (Width, Height : Size) return Framebuffer is
    begin
       return
         (Default => True,

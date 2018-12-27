@@ -197,7 +197,7 @@ begin
       FB_1 : constant Framebuffer_Ptr
         := new Framebuffer'(Create_Framebuffer (Width, Height, Samples, Context));
       FB_D : constant Framebuffer_Ptr
-        := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
+        := new Framebuffer'(Get_Default_Framebuffer (W));
 
       use Orka.Cameras;
       Lens : constant Lens_Ptr
