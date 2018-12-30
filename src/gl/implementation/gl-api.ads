@@ -650,7 +650,7 @@ private package GL.API is
      ("glCreateRenderbuffers", Size, UInt);
 
    procedure Delete_Renderbuffers is new Loader.Array_Proc_With_2_Params
-     ("glDeleteBuffers", Size, UInt, Low_Level.UInt_Array);
+     ("glDeleteRenderbuffers", Size, UInt, Low_Level.UInt_Array);
 
    procedure Named_Renderbuffer_Storage_Multisample is new Loader.Procedure_With_5_Params
      ("glNamedRenderbufferStorageMultisample", UInt, Size,
