@@ -121,7 +121,7 @@ package body Orka.Rendering.Framebuffers is
             Status : constant Framebuffer_Status := Object.GL_Framebuffer.Status (Draw_Target);
          begin
             if Status /= Complete then
-               raise Framebuffer_Incomplete_Error with Framebuffer_Status'Image (Status);
+               raise Framebuffer_Incomplete_Error with Status'Image;
             end if;
          end;
       end if;

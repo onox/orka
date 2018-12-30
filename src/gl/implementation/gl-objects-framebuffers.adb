@@ -282,8 +282,7 @@ package body GL.Objects.Framebuffers is
       Holder : constant Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with
-           GL.Low_Level.Enums.Framebuffer_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with Target.Kind'Image;
       else
          return Holder.Element;
       end if;

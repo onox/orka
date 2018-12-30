@@ -131,7 +131,7 @@ package body GL.Objects.Buffers is
       Holder : constant Buffer_Holder.Holder := Current_Buffers (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with GL.Low_Level.Enums.Buffer_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with Target.Kind'Image;
       else
          return Holder.Element;
       end if;

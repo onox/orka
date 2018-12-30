@@ -52,8 +52,7 @@ package body GL.Objects.Transform_Feedbacks is
       Holder : constant Feedback_Object_Holder.Holder := Current_Feedback_Objects (Target.Kind);
    begin
       if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with
-           GL.Low_Level.Enums.Transform_Feedback_Kind'Image (Target.Kind);
+         raise No_Object_Bound_Exception with Target.Kind'Image;
       else
          return Holder.Element;
       end if;

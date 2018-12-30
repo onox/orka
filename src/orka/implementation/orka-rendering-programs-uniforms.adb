@@ -186,7 +186,6 @@ package body Orka.Rendering.Programs.Uniforms is
       Name   : String) return Uniform_Sampler
    is
       Sampler_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
-      Kind_Image : String renames LE.Resource_Type'Image (Sampler_Kind);
    begin
       --  TODO Or store Sampler_Kind?
       return Uniform_Sampler'
@@ -194,7 +193,8 @@ package body Orka.Rendering.Programs.Uniforms is
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
    exception
       when Constraint_Error =>
-         raise Uniform_Type_Error with "Uniform " & Name & " has unexpected sampler type " & Kind_Image;
+         raise Uniform_Type_Error with
+           "Uniform " & Name & " has unexpected sampler type " & Sampler_Kind'Image;
    end Create_Uniform_Sampler;
 
    function Create_Uniform_Image
@@ -202,14 +202,14 @@ package body Orka.Rendering.Programs.Uniforms is
       Name   : String) return Uniform_Image
    is
       Image_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
-      Kind_Image : String renames LE.Resource_Type'Image (Image_Kind);
    begin
       return Uniform_Image'
         (Kind       => Texture_Image_Kind (Image_Kind),
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
    exception
       when Constraint_Error =>
-         raise Uniform_Type_Error with "Uniform " & Name & " has unexpected image type " & Kind_Image;
+         raise Uniform_Type_Error with
+           "Uniform " & Name & " has unexpected image type " & Image_Kind'Image;
    end Create_Uniform_Image;
 
    function Create_Uniform_Subroutine

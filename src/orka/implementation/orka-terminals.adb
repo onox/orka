@@ -57,7 +57,7 @@ package body Orka.Terminals is
    Reset : constant String := L.ESC & "[0m";
 
    function Sequence (Code : Natural) return String is
-      Image : constant String := SF.Trim (Natural'Image (Code), Ada.Strings.Both);
+      Image : constant String := SF.Trim (Code'Image, Ada.Strings.Both);
    begin
       return (if Code /= 0 then L.ESC & "[" & Image & "m" else "");
    end Sequence;

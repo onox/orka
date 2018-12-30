@@ -259,8 +259,7 @@ package body Orka.Resources.Models.glTF is
             pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Index_Kind,
               "Index of mesh " & Mesh_Name & " has type " &
               GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
-              " but expected " &
-              GL.Types.Unsigned_Numeric_Type'Image (Index_Kind) & " or lower");
+              " but expected " & Index_Kind'Image & " or lower");
          begin
             Count_Vertices := Count_Vertices + Accessor_Position.Count;
             Count_Indices  := Count_Indices + Accessor_Index.Count;

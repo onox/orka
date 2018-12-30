@@ -28,7 +28,7 @@ package body Orka.Jobs.Workers is
 
       use type SM.CPU;
 
-      ID   : constant String := Positive'Image (Data.ID);
+      ID   : constant String := Data.ID'Image;
       Name : constant String := Task_Name & " #" & SF.Trim (ID, Ada.Strings.Left);
    begin
       --  Set the CPU affinity of the task to its corresponding CPU core

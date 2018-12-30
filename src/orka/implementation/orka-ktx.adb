@@ -148,8 +148,8 @@ package body Orka.KTX is
                  := Convert_To_Compressed_Format (File_Header.Internal_Format);
             exception
                when Constraint_Error =>
-                  raise Invalid_Enum_Error with "invalid internal format (" &
-                    ICE.Unsigned_32'Image (File_Header.Internal_Format) & ")";
+                  raise Invalid_Enum_Error with
+                    "invalid internal format (" & File_Header.Internal_Format'Image & ")";
             end;
          else
             --  Data type
@@ -157,8 +157,8 @@ package body Orka.KTX is
                Result.Data_Type := Convert_To_Data_Type (File_Header.Data_Type);
             exception
                when Constraint_Error =>
-                  raise Invalid_Enum_Error with "invalid data type (" &
-                    ICE.Unsigned_32'Image (File_Header.Data_Type) & ")";
+                  raise Invalid_Enum_Error with
+                    "invalid data type (" & File_Header.Data_Type'Image & ")";
             end;
 
             --  Format
@@ -166,8 +166,8 @@ package body Orka.KTX is
                Result.Format := Convert_To_Format (File_Header.Format);
             exception
                when Constraint_Error =>
-                  raise Invalid_Enum_Error with "invalid format (" &
-                    ICE.Unsigned_32'Image (File_Header.Format) & ")";
+                  raise Invalid_Enum_Error with
+                    "invalid format (" & File_Header.Format'Image & ")";
             end;
 
             --  Internal format
@@ -176,8 +176,8 @@ package body Orka.KTX is
                  := Convert_To_Internal_Format (File_Header.Internal_Format);
             exception
                when Constraint_Error =>
-                  raise Invalid_Enum_Error with "invalid internal format (" &
-                    ICE.Unsigned_32'Image (File_Header.Internal_Format) & ")";
+                  raise Invalid_Enum_Error with
+                    "invalid internal format (" & File_Header.Internal_Format'Image & ")";
             end;
          end if;
       end return;
