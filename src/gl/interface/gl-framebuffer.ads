@@ -42,10 +42,22 @@ package GL.Framebuffer is
    procedure Read_Pixels (X, Y : Int; Width, Height : Size;
                           Format : Pixels.Format;
                           Data_Type : Pixels.Data_Type; Data : Array_Type);
+   --  Reads pixels from the framebuffer currently bound to the read target
+   --
+   --  A framebuffer must be bound by calling:
+   --
+   --  GL.Objects.Framebuffers.Read_Target.Bind (FBO)
+   --
+   --  The actual color buffer of the framebuffer that is read can by
+   --  changed by calling:
+   --
+   --  FBO.Set_Read_Buffer (Some_Buffer_Selector)
 
    procedure Set_Logic_Op_Mode (Value : Logic_Op);
    function Logic_Op_Mode return Logic_Op;
+
 private
+
    for Logic_Op use (Clear         => 16#1500#,
                      And_Op        => 16#1501#,
                      And_Reverse   => 16#1502#,
@@ -63,4 +75,5 @@ private
                      Nand          => 16#150E#,
                      Set           => 16#150F#);
    for Logic_Op'Size use Low_Level.Enum'Size;
+
 end GL.Framebuffer;

@@ -90,9 +90,11 @@ package GL.Buffers is
 
    subtype Default_Color_Buffer_Selector is Color_Buffer_Selector
      range None .. Front_And_Back;
+   --  Table 17.4 of the OpenGL specification
 
    subtype Explicit_Color_Buffer_Selector is Color_Buffer_Selector
      range Color_Attachment0 .. Color_Attachment15;
+   --  Table 17.5 of the OpenGL specification
 
    subtype Single_Face_Selector is Culling.Face_Selector
      range Culling.Front .. Culling.Back;
