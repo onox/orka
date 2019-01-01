@@ -194,7 +194,7 @@ begin
                   T_1 : constant Textures.Texture_Ptr
                     := Textures.Texture_Ptr (Manager.Resource (Texture_Path));
 
-                  T_2 : constant GL.Objects.Textures.Texture_Base'Class := T_1.Element;
+                  T_2 : constant GL.Objects.Textures.Texture := T_1.Element;
                   --  TODO Handle non-Texture_2D textures
                begin
                   T_2.Set_X_Wrapping (Clamp_To_Edge);

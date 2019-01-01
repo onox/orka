@@ -70,7 +70,7 @@ procedure Orka_GLTF is
 
    use GL.Objects.Textures;
 
-   procedure Load_Texture (Texture : in out Texture_3D) is
+   procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
       Pixels : aliased constant GL.Types.Single_Array
             --  White
         := (0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,
@@ -189,8 +189,8 @@ begin
       Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("diffuseTexture");
       Uni_Dither  : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("ditherTexture");
 
-      Texture_1 : Texture_3D (GL.Low_Level.Enums.Texture_2D_Array);
-      Texture_2 : constant Texture_2D := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
+      Texture_1 : Texture (GL.Low_Level.Enums.Texture_2D_Array);
+      Texture_2 : constant Texture := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
 
       ----------------------------------------------------------------------
 

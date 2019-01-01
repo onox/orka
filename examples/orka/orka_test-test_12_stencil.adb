@@ -148,7 +148,7 @@ procedure Orka_Test.Test_12_Stencil is
       end return;
    end Load_Screen_Data;
 
-   procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture_2D) is
+   procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
       use GL.Objects.Textures;
 
       Pixels : aliased constant Single_Array
@@ -166,11 +166,12 @@ procedure Orka_Test.Test_12_Stencil is
       Texture.Set_Magnifying_Filter (Nearest);
 
       --  Load texture data
-      Texture.Allocate_Storage (1, GL.Pixels.RGB32F, 4, 4);
-      Texture.Load_From_Data (0, 0, 0, 4, 4, GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
+      Texture.Allocate_Storage (1, GL.Pixels.RGB32F, 4, 4, 1);
+      Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 1,
+        GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   procedure Load_Color_Texture (Texture : in out GL.Objects.Textures.Texture_2D) is
+   procedure Load_Color_Texture (Texture : in out GL.Objects.Textures.Texture) is
       use GL.Objects.Textures;
    begin
       Texture.Bind_Texture_Unit (0);
@@ -178,11 +179,10 @@ procedure Orka_Test.Test_12_Stencil is
       Texture.Set_Minifying_Filter (Nearest);
       Texture.Set_Magnifying_Filter (Nearest);
 
-      Texture.Allocate_Storage (1, GL.Pixels.RGB8, 500, 500);
-      Texture.Load_Empty_Texture (0, 0, 0, 500, 500);
+      Texture.Allocate_Storage (1, GL.Pixels.RGB8, 500, 500, 1);
    end Load_Color_Texture;
 
-   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture_2D (GL.Low_Level.Enums.Texture_2D);
+   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
 
    use Orka.Resources;
 
