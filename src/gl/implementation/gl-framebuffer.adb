@@ -17,11 +17,6 @@ with GL.Enums.Getter;
 
 package body GL.Framebuffer is
 
-   procedure Set_Clamp_Read_Color (Enabled : Boolean) is
-   begin
-      API.Clamp_Color (Enums.Clamp_Read_Color, Low_Level.Bool (Enabled));
-   end Set_Clamp_Read_Color;
-
    function Read_Buffer return Buffers.Color_Buffer_Selector is
       Ret : Buffers.Color_Buffer_Selector := Buffers.Color_Buffer_Selector'First;
    begin
@@ -29,17 +24,6 @@ package body GL.Framebuffer is
       Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Read_Buffer;
-
-   procedure Read_Pixels (X, Y : Int;
-                          Width, Height : Size;
-                          Format : Pixels.Format;
-                          Data_Type : Pixels.Data_Type;
-                          Data : Array_Type) is
-   begin
-      API.Read_Pixels
-        (X, Y, Width, Height, Format, Data_Type, Data (Data'First)'Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Read_Pixels;
 
    procedure Set_Logic_Op_Mode (Value : Logic_Op) is
    begin

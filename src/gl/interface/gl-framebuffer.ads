@@ -31,27 +31,7 @@ package GL.Framebuffer is
    -- framebuffer. for working with framebuffer objects,
    -- see GL.Objects.Framebuffers.
 
-   procedure Set_Clamp_Read_Color (Enabled : Boolean);
-
    function Read_Buffer return Buffers.Color_Buffer_Selector;
-
-   generic
-      type Element_Type is private;
-      type Index_Type is (<>);
-      type Array_Type is array (Index_Type range <>) of aliased Element_Type;
-   procedure Read_Pixels (X, Y : Int; Width, Height : Size;
-                          Format : Pixels.Format;
-                          Data_Type : Pixels.Data_Type; Data : Array_Type);
-   --  Reads pixels from the framebuffer currently bound to the read target
-   --
-   --  A framebuffer must be bound by calling:
-   --
-   --  GL.Objects.Framebuffers.Read_Target.Bind (FBO)
-   --
-   --  The actual color buffer of the framebuffer that is read can by
-   --  changed by calling:
-   --
-   --  FBO.Set_Read_Buffer (Some_Buffer_Selector)
 
    procedure Set_Logic_Op_Mode (Value : Logic_Op);
    function Logic_Op_Mode return Logic_Op;

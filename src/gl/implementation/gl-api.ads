@@ -212,13 +212,6 @@ private package GL.API is
      ("glPixelStorei", Enums.Pixel_Store_Param, Pixels.Alignment);
 
    -----------------------------------------------------------------------------
-   --                         Framebuffer operations                          --
-   -----------------------------------------------------------------------------
-
-   procedure Clamp_Color is new Loader.Procedure_With_2_Params
-     ("glClampColor", Enums.Clamp_Color_Param, Low_Level.Bool);
-
-   -----------------------------------------------------------------------------
    --                                 Drawing                                 --
    -----------------------------------------------------------------------------
 
@@ -671,12 +664,6 @@ private package GL.API is
    -----------------------------------------------------------------------------
    --                    Framebuffer objects and handling                     --
    -----------------------------------------------------------------------------
-
-   procedure Read_Pixels (X, Y : Int; Width, Height : Size;
-                          Format : Pixels.Format; Data_Type : Pixels.Data_Type;
-                          Data : System.Address);
-   pragma Import (Convention => StdCall, Entity => Read_Pixels,
-                  External_Name => "glReadPixels");
 
    procedure Logic_Op is new Loader.Procedure_With_1_Param
      ("glLogicOp", Framebuffer.Logic_Op);
