@@ -13,15 +13,11 @@
 --  limitations under the License.
 
 with GL.Buffers;
-with GL.Pixels;
-with GL.Types;
 
 private with GL.Low_Level;
 
 package GL.Framebuffer is
    pragma Preelaborate;
-
-   use GL.Types;
 
    type Logic_Op is (Clear, And_Op, And_Reverse, Copy, And_Inverted, Noop,
                      Xor_Op, Or_Op, Nor, Equiv, Invert, Or_Reverse,

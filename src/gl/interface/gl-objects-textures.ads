@@ -302,13 +302,20 @@ package GL.Objects.Textures is
       Source        : System.Address)
    with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level);
 
-   procedure Load_From_Buffer
-     (Object : Texture;
-      Level  : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size := 0;
-      X, Y          : Types.Size;
-      Width, Height : Types.Size)
-   with Pre => Object.Allocated;
+   procedure Copy_Data
+     (Object  : Texture;
+      Subject : Texture;
+      Source_Level, Target_Level : Mipmap_Level)
+   with Pre => Object.Allocated and Subject.Allocated;
+
+   procedure Copy_Sub_Data
+     (Object  : Texture;
+      Subject : Texture;
+      Source_Level, Target_Level : Mipmap_Level;
+      Source_X, Source_Y, Source_Z : Types.Size := 0;
+      Target_X, Target_Y, Target_Z : Types.Size := 0;
+      Width, Height, Depth : Types.Size)
+   with Pre => Object.Allocated and Subject.Allocated;
 
    procedure Clear_Using_Data
      (Object : Texture;

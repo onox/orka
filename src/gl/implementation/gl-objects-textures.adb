@@ -745,31 +745,33 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Load_From_Data;
 
-   procedure Load_From_Buffer
-     (Object : Texture;
-      Level  : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size := 0;
-      X, Y          : Types.Size;
-      Width, Height : Types.Size) is
+   procedure Copy_Data
+     (Object  : Texture;
+      Subject : Texture;
+      Source_Level, Target_Level : Mipmap_Level) is
    begin
-      case Object.Dimensions is
-         when One =>
-            --  Offset_Y, Offset_Z, and Height are unused
-            API.Copy_Texture_Sub_Image_1D
-              (Object.Reference.GL_Id, Level,
-               Offset_X, X, Y, Width);
-         when Two =>
-            --  Offset_Z is unused
-            API.Copy_Texture_Sub_Image_2D
-              (Object.Reference.GL_Id, Level,
-               Offset_X, Offset_Y, X, Y, Width, Height);
-         when Three =>
-            API.Copy_Texture_Sub_Image_3D
-              (Object.Reference.GL_Id, Level,
-               Offset_X, Offset_Y, Offset_Z, X, Y, Width, Height);
-      end case;
+      Object.Copy_Sub_Data
+        (Subject, Source_Level, Target_Level, 0, 0, 0, 0, 0, 0,
+         Object.Width (Source_Level), Object.Height (Source_Level),
+         Object.Depth (Source_Level));
+   end Copy_Data;
+
+   procedure Copy_Sub_Data
+     (Object  : Texture;
+      Subject : Texture;
+      Source_Level, Target_Level : Mipmap_Level;
+      Source_X, Source_Y, Source_Z : Types.Size := 0;
+      Target_X, Target_Y, Target_Z : Types.Size := 0;
+      Width, Height, Depth : Types.Size) is
+   begin
+      API.Copy_Image_Sub_Data
+        (Object.Reference.GL_Id, Object.Kind, Source_Level,
+         Source_X, Source_Y, Source_Z,
+         Subject.Reference.GL_Id, Subject.Kind, Target_Level,
+         Target_X, Target_Y, Target_Z,
+         Width, Height, Depth);
       Raise_Exception_On_OpenGL_Error;
-   end Load_From_Buffer;
+   end Copy_Sub_Data;
 
    procedure Clear_Using_Data
      (Object : Texture;

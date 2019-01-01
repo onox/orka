@@ -449,17 +449,12 @@ private package GL.API is
       Int, Int, Int, Size, Size, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
-   procedure Copy_Texture_Sub_Image_1D is new Loader.Procedure_With_6_Params
-     ("glCopyTextureSubImage1D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Int, Size);
-
-   procedure Copy_Texture_Sub_Image_2D is new Loader.Procedure_With_8_Params
-     ("glCopyTextureSubImage2D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Int, Int, Size, Size);
-
-   procedure Copy_Texture_Sub_Image_3D is new Loader.Procedure_With_9_Params
-     ("glCopyTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Int, Int, Int, Size, Size);
+   procedure Copy_Image_Sub_Data is new Loader.Procedure_With_15_Params
+     ("glCopyImageSubData", UInt, Low_Level.Enums.Texture_Kind,
+      Objects.Textures.Mipmap_Level, Int, Int, Int,
+      UInt, Low_Level.Enums.Texture_Kind,
+      Objects.Textures.Mipmap_Level, Int, Int, Int,
+      Size, Size, Size);
 
    procedure Clear_Tex_Image is new Loader.Procedure_With_5_Params
      ("glClearTexImage", UInt, Objects.Textures.Mipmap_Level,
