@@ -20,9 +20,28 @@ with GL.Enums.Textures;
 
 package body GL.Objects.Textures is
 
-   function Allocated (Object : Texture_Base) return Boolean is (Object.Allocated);
+   function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count is
+      use LE;
+   begin
+      case Kind is
+         when Texture_1D =>
+            return One;
+         when Texture_2D | Texture_2D_Multisample | Texture_1D_Array |
+           Texture_Rectangle | Texture_Cube_Map =>
+            return Two;
+         when Texture_3D | Texture_2D_Array | Texture_2D_Multisample_Array |
+           Texture_Cube_Map_Array =>
+            return Three;
+         when Texture_Buffer =>
+            raise Constraint_Error;
+      end case;
+   end Get_Dimensions;
 
-   function Width (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Dimensions (Object : Texture) return Dimension_Count is (Object.Dimensions);
+
+   function Allocated (Object : Texture) return Boolean is (Object.Allocated);
+
+   function Width (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -31,7 +50,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Width;
 
-   function Height (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Height (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -40,7 +59,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Height;
 
-   function Depth (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Depth (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -49,7 +68,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth;
 
-   function Internal_Format (Object : Texture_Base; Level : Mipmap_Level)
+   function Internal_Format (Object : Texture; Level : Mipmap_Level)
      return Pixels.Internal_Format is
       Ret : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
@@ -59,7 +78,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Internal_Format;
 
-   function Compressed_Format (Object : Texture_Base; Level : Mipmap_Level)
+   function Compressed_Format (Object : Texture; Level : Mipmap_Level)
      return Pixels.Compressed_Format is
       Ret : Pixels.Compressed_Format := Pixels.Compressed_Format'First;
    begin
@@ -69,7 +88,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Compressed_Format;
 
-   function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Red_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -79,7 +98,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Red_Type;
 
-   function Green_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Green_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -89,7 +108,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Green_Type;
 
-   function Blue_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Blue_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -99,7 +118,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Blue_Type;
 
-   function Alpha_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -109,7 +128,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Alpha_Type;
 
-   function Depth_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Depth_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type is
       Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
@@ -119,7 +138,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth_Type;
 
-   function Red_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Red_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -128,7 +147,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Red_Size;
 
-   function Green_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -137,7 +156,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Green_Size;
 
-   function Blue_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Blue_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -146,7 +165,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Blue_Size;
 
-   function Alpha_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -155,7 +174,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Alpha_Size;
 
-   function Depth_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -164,7 +183,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Depth_Size;
 
-   function Compressed (Object : Texture_Base; Level : Mipmap_Level) return Boolean is
+   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean is
       Ret : Low_Level.Bool := Low_Level.Bool'First;
    begin
       API.Get_Texture_Level_Parameter_Bool (Object.Reference.GL_Id, Level,
@@ -173,7 +192,7 @@ package body GL.Objects.Textures is
       return Boolean (Ret);
    end Compressed;
 
-   function Compressed_Image_Size (Object : Texture_Base; Level : Mipmap_Level) return Size is
+   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
@@ -183,7 +202,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Compressed_Image_Size;
 
-   function Buffer_Offset (Object : Texture_Base;
+   function Buffer_Offset (Object : Texture;
                            Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
@@ -193,7 +212,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Buffer_Offset;
 
-   function Buffer_Size (Object : Texture_Base;
+   function Buffer_Size (Object : Texture;
                          Level : Mipmap_Level) return Size is
       Ret : Size := 0;
    begin
@@ -203,13 +222,13 @@ package body GL.Objects.Textures is
       return Ret;
    end Buffer_Size;
 
-   procedure Bind_Texture_Unit (Object : Texture; Unit : Texture_Unit) is
+   procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
    begin
       API.Bind_Texture_Unit (Unit, Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
    end Bind_Texture_Unit;
 
-   procedure Bind_Image_Texture (Object : Texture; Unit : Image_Unit) is
+   procedure Bind_Image_Texture (Object : Texture_Base; Unit : Image_Unit) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Bind_Image_Textures (Unit, 1, Arr);
@@ -217,7 +236,7 @@ package body GL.Objects.Textures is
    end Bind_Image_Texture;
 
    overriding
-   procedure Initialize_Id (Object : in out Texture) is
+   procedure Initialize_Id (Object : in out Texture_Base) is
       New_Id : UInt := 0;
    begin
       API.Create_Textures (Object.Kind, 1, New_Id);
@@ -227,7 +246,7 @@ package body GL.Objects.Textures is
    end Initialize_Id;
 
    overriding
-   procedure Delete_Id (Object : in out Texture) is
+   procedure Delete_Id (Object : in out Texture_Base) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Delete_Textures (1, Arr);
@@ -236,13 +255,13 @@ package body GL.Objects.Textures is
       Object.Reference.Initialized := False;
    end Delete_Id;
    
-   procedure Invalidate_Image (Object : Texture; Level : Mipmap_Level) is
+   procedure Invalidate_Image (Object : Texture_Base; Level : Mipmap_Level) is
    begin
       API.Invalidate_Tex_Image (Object.Reference.GL_Id, Level);
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Image;
    
-   procedure Invalidate_Sub_Image (Object : Texture; Level : Mipmap_Level;
+   procedure Invalidate_Sub_Image (Object : Texture_Base; Level : Mipmap_Level;
                                    X, Y, Z : Int; Width, Height, Depth : Size)
    is
    begin
@@ -251,7 +270,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Image;
 
-   procedure Set_Minifying_Filter (Object : Texture_Base;
+   procedure Set_Minifying_Filter (Object : Texture;
                                    Filter : Minifying_Function) is
    begin
       API.Texture_Parameter_Min_Filter (Object.Reference.GL_Id,
@@ -259,7 +278,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Minifying_Filter;
 
-   function Minifying_Filter (Object : Texture_Base)
+   function Minifying_Filter (Object : Texture)
                               return Minifying_Function is
       Ret : Minifying_Function := Minifying_Function'First;
    begin
@@ -269,7 +288,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Minifying_Filter;
 
-   procedure Set_Magnifying_Filter (Object : Texture_Base;
+   procedure Set_Magnifying_Filter (Object : Texture;
                                     Filter : Magnifying_Function) is
    begin
       API.Texture_Parameter_Mag_Filter (Object.Reference.GL_Id,
@@ -277,7 +296,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Magnifying_Filter;
 
-   function Magnifying_Filter (Object : Texture_Base)
+   function Magnifying_Filter (Object : Texture)
                                return Magnifying_Function is
       Ret : Magnifying_Function := Magnifying_Function'First;
    begin
@@ -287,14 +306,14 @@ package body GL.Objects.Textures is
       return Ret;
    end Magnifying_Filter;
 
-   procedure Set_Minimum_LoD (Object : Texture_Base; Level : Double) is
+   procedure Set_Minimum_LoD (Object : Texture; Level : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Min_LoD, Single (Level));
       Raise_Exception_On_OpenGL_Error;
    end Set_Minimum_LoD;
 
-   function Minimum_LoD (Object : Texture_Base) return Double is
+   function Minimum_LoD (Object : Texture) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -303,14 +322,14 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Minimum_LoD;
 
-   procedure Set_Maximum_LoD (Object : Texture_Base; Level : Double) is
+   procedure Set_Maximum_LoD (Object : Texture; Level : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_LoD, Single (Level));
       Raise_Exception_On_OpenGL_Error;
    end Set_Maximum_LoD;
 
-   function Maximum_LoD (Object : Texture_Base) return Double is
+   function Maximum_LoD (Object : Texture) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -319,14 +338,14 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Maximum_LoD;
 
-   procedure Set_Lowest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level) is
+   procedure Set_Lowest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Base_Level, Level);
       Raise_Exception_On_OpenGL_Error;
    end Set_Lowest_Mipmap_Level;
 
-   function Lowest_Mipmap_Level (Object : Texture_Base) return Mipmap_Level is
+   function Lowest_Mipmap_Level (Object : Texture) return Mipmap_Level is
       Ret : Mipmap_Level := Mipmap_Level'First;
    begin
       API.Get_Texture_Parameter_Int (Object.Reference.GL_Id,
@@ -335,14 +354,14 @@ package body GL.Objects.Textures is
       return Ret;
    end Lowest_Mipmap_Level;
 
-   procedure Set_Highest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level) is
+   procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Max_Level, Level);
       Raise_Exception_On_OpenGL_Error;
    end Set_Highest_Mipmap_Level;
 
-   function Highest_Mipmap_Level (Object : Texture_Base)
+   function Highest_Mipmap_Level (Object : Texture)
                                   return Mipmap_Level is
       Ret : Mipmap_Level := Mipmap_Level'First;
    begin
@@ -352,7 +371,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Highest_Mipmap_Level;
 
-   procedure Set_Max_Anisotropy (Object : Texture_Base; Degree : Double) is
+   procedure Set_Max_Anisotropy (Object : Texture; Degree : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_Anisotropy,
@@ -360,7 +379,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Max_Anisotropy;
 
-   function Max_Anisotropy (Object : Texture_Base) return Double is
+   function Max_Anisotropy (Object : Texture) return Double is
       Ret : Low_Level.Single_Array (1 .. 1);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -369,7 +388,7 @@ package body GL.Objects.Textures is
       return Double (Ret (1));
    end Max_Anisotropy;
 
-   procedure Set_X_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
+   procedure Set_X_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_S,
@@ -377,7 +396,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_X_Wrapping;
 
-   function X_Wrapping (Object : Texture_Base) return Wrapping_Mode is
+   function X_Wrapping (Object : Texture) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -386,7 +405,7 @@ package body GL.Objects.Textures is
       return Ret;
    end X_Wrapping;
 
-   procedure Set_Y_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
+   procedure Set_Y_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_T,
@@ -394,7 +413,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Y_Wrapping;
 
-   function Y_Wrapping (Object : Texture_Base) return Wrapping_Mode is
+   function Y_Wrapping (Object : Texture) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -403,7 +422,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Y_Wrapping;
 
-   procedure Set_Z_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode) is
+   procedure Set_Z_Wrapping (Object : Texture; Mode : Wrapping_Mode) is
    begin
       API.Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
                                        Enums.Textures.Wrap_R,
@@ -411,7 +430,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Z_Wrapping;
 
-   function Z_Wrapping (Object : Texture_Base) return Wrapping_Mode is
+   function Z_Wrapping (Object : Texture) return Wrapping_Mode is
       Ret : Wrapping_Mode := Wrapping_Mode'First;
    begin
       API.Get_Texture_Parameter_Wrap_Mode (Object.Reference.GL_Id,
@@ -420,7 +439,7 @@ package body GL.Objects.Textures is
       return Ret;
    end Z_Wrapping;
 
-   procedure Set_Border_Color (Object : Texture_Base; Color : Colors.Color) is
+   procedure Set_Border_Color (Object : Texture; Color : Colors.Color) is
 
       Raw : constant Low_Level.Single_Array := Helpers.Float_Array (Color);
    begin
@@ -430,7 +449,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Border_Color;
 
-   function Border_Color (Object : Texture_Base) return Colors.Color is
+   function Border_Color (Object : Texture) return Colors.Color is
       Raw : Low_Level.Single_Array (1 .. 4);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
@@ -439,7 +458,7 @@ package body GL.Objects.Textures is
       return Helpers.Color (Raw);
    end Border_Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture_Base;
+   procedure Toggle_Compare_X_To_Texture (Object : Texture;
                                           Enabled : Boolean) is
       Value : Enums.Textures.Compare_Kind;
    begin
@@ -454,7 +473,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Toggle_Compare_X_To_Texture;
 
-   function Compare_X_To_Texture_Enabled (Object : Texture_Base)
+   function Compare_X_To_Texture_Enabled (Object : Texture)
                                           return Boolean is
       use type Enums.Textures.Compare_Kind;
 
@@ -466,7 +485,7 @@ package body GL.Objects.Textures is
       return Value = Enums.Textures.Compare_R_To_Texture;
    end Compare_X_To_Texture_Enabled;
 
-   procedure Set_Compare_Function (Object : Texture_Base;
+   procedure Set_Compare_Function (Object : Texture;
                                    Func   : Compare_Function) is
    begin
       API.Texture_Parameter_Compare_Func (Object.Reference.GL_Id,
@@ -475,7 +494,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Compare_Function;
 
-   function Current_Compare_Function (Object : Texture_Base)
+   function Current_Compare_Function (Object : Texture)
                                      return Compare_Function is
       Value : Compare_Function := Compare_Function'First;
    begin
@@ -487,7 +506,7 @@ package body GL.Objects.Textures is
    end Current_Compare_Function;
 
    procedure Clear_Using_Data
-     (Object : Texture_Base; Level : Mipmap_Level;
+     (Object : Texture; Level : Mipmap_Level;
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address) is
@@ -498,7 +517,7 @@ package body GL.Objects.Textures is
    end Clear_Using_Data;
 
    procedure Clear_Using_Zeros
-     (Object : Texture_Base; Level : Mipmap_Level) is
+     (Object : Texture; Level : Mipmap_Level) is
    begin
       API.Clear_Tex_Image
         (Object.Reference.GL_Id, Level, Pixels.Format'First,
@@ -506,7 +525,7 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Zeros;
 
-   procedure Generate_Mipmap (Object : Texture_Base) is
+   procedure Generate_Mipmap (Object : Texture) is
    begin
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
@@ -570,352 +589,222 @@ package body GL.Objects.Textures is
    end Attach_Buffer;
 
    -----------------------------------------------------------------------------
-   --                          Texture 1D Loading                             --
+   --                           Texture Loading                               --
    -----------------------------------------------------------------------------
 
-   procedure Allocate_Storage (Object : in out Texture_1D; Levels : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width : Types.Size) is
+   procedure Allocate_Storage
+     (Object : in out Texture;
+      Levels : Types.Size;
+      Format : Pixels.Internal_Format;
+      Width, Height, Depth : Types.Size) is
    begin
-      API.Texture_Storage_1D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width);
+      case Object.Dimensions is
+         when One =>
+            API.Texture_Storage_1D
+              (Object.Reference.GL_Id, Levels, Format, Width);
+         when Two =>
+            API.Texture_Storage_2D
+              (Object.Reference.GL_Id, Levels, Format, Width, Height);
+         when Three =>
+            API.Texture_Storage_3D
+              (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
+      end case;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
 
-   procedure Load_Empty_Texture (Object : Texture_1D;
-                                 Level  : Mipmap_Level;
-                                 Offset_X, Width : Types.Size) is
+   procedure Allocate_Storage
+     (Object : in out Texture;
+      Levels : Types.Size;
+      Format : Pixels.Compressed_Format;
+      Width, Height, Depth : Types.Size) is
    begin
-      API.Texture_Sub_Image_1D (Object.Reference.GL_Id, Level,
-                                Offset_X, Width, Pixels.Format'First,
-                                Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_Empty_Texture;
-
-   procedure Load_From_Data (Object : Texture_1D;
-                             Level  : Mipmap_Level;
-                             Offset_X, Width : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
-   is
-      --  Data is considered to be packed. When loading it to a texture,
-      --  it will be unpacked. Therefore, each row must be a multiple of the
-      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
-      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
-      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
-   begin
-      API.Texture_Sub_Image_1D (Object.Reference.GL_Id, Level,
-                                Offset_X, Width, Source_Format,
-                                Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Data;
-
-   procedure Load_From_Buffer (Object : Texture_1D; Level : Mipmap_Level;
-                               Offset_X : Types.Size;
-                               X, Y  : Types.Size;
-                               Width : Types.Size) is
-   begin
-      API.Copy_Texture_Sub_Image_1D (Object.Reference.GL_Id, Level,
-                                     Offset_X, X, Y, Width);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Buffer;
-
-   procedure Clear_Using_Data
-     (Object : Texture_1D; Level : Mipmap_Level;
-      Offset_X : Types.Size;
-      Width    : Types.Size;
-      Source_Format : Pixels.Format;
-      Source_Type   : Pixels.Data_Type;
-      Source        : System.Address) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, 0, 0,
-         Width, 1, 1, Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Data;
-
-   procedure Clear_Using_Zeros
-     (Object : Texture_1D; Level : Mipmap_Level;
-      Offset_X : Types.Size;
-      Width    : Types.Size) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, 0, 0,
-         Width, 1, 1, Pixels.Format'First,
-         Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Zeros;
-
-   -----------------------------------------------------------------------------
-   --                          Texture 2D Loading                             --
-   -----------------------------------------------------------------------------
-
-   procedure Allocate_Storage (Object : in out Texture_2D; Levels : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width, Height : Types.Size) is
-   begin
-      API.Texture_Storage_2D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width, Height);
+      case Object.Dimensions is
+         when One =>
+            raise Program_Error;
+         when Two =>
+            API.Texture_Storage_2D
+              (Object.Reference.GL_Id, Levels, Format, Width, Height);
+         when Three =>
+            API.Texture_Storage_3D
+              (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
+      end case;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
 
-   procedure Allocate_Storage (Object : in out Texture_2D; Levels : Types.Size;
-                               Internal_Format : Pixels.Compressed_Format;
-                               Width, Height : Types.Size) is
+   procedure Allocate_Storage_Multisample
+     (Object : in out Texture;
+      Format : Pixels.Internal_Format;
+      Width, Height, Depth : Types.Size;
+      Samples         : Types.Size;
+      Fixed_Locations : Boolean) is
    begin
-      API.Texture_Storage_2D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width, Height);
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage;
-
-   procedure Allocate_Storage_Multisample (Object : in out Texture_2D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Internal_Format;
-                                           Width, Height : Types.Size;
-                                           Fixed_Locations : Boolean) is
-   begin
-      API.Texture_Storage_2D_Multisample (Object.Reference.GL_Id, Samples,
-                                          Internal_Format, Width, Height,
-                                          Low_Level.Bool (Fixed_Locations));
+      case Object.Dimensions is
+         when One =>
+            raise Program_Error;
+         when Two =>
+            API.Texture_Storage_2D_Multisample
+              (Object.Reference.GL_Id, Samples,
+               Format, Width, Height, Low_Level.Bool (Fixed_Locations));
+         when Three =>
+            API.Texture_Storage_3D_Multisample
+              (Object.Reference.GL_Id, Samples,
+               Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
+      end case;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage_Multisample;
 
-   procedure Allocate_Storage_Multisample (Object : in out Texture_2D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Compressed_Format;
-                                           Width, Height : Types.Size;
-                                           Fixed_Locations : Boolean) is
+   procedure Allocate_Storage_Multisample
+     (Object  : in out Texture;
+      Format  : Pixels.Compressed_Format;
+      Width, Height, Depth : Types.Size;
+      Samples         : Types.Size;
+      Fixed_Locations : Boolean) is
    begin
-      API.Texture_Storage_2D_Multisample (Object.Reference.GL_Id, Samples,
-                                          Internal_Format, Width, Height,
-                                          Low_Level.Bool (Fixed_Locations));
+      case Object.Dimensions is
+         when One =>
+            raise Program_Error;
+         when Two =>
+            API.Texture_Storage_2D_Multisample
+              (Object.Reference.GL_Id, Samples,
+               Format, Width, Height, Low_Level.Bool (Fixed_Locations));
+         when Three =>
+            API.Texture_Storage_3D_Multisample
+              (Object.Reference.GL_Id, Samples,
+               Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
+      end case;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage_Multisample;
 
-   procedure Load_Empty_Texture (Object : Texture_2D;
-                                 Level  : Mipmap_Level;
-                                 Offset_X, Offset_Y : Types.Size;
-                                 Width, Height   : Types.Size) is
-   begin
-      API.Texture_Sub_Image_2D (Object.Reference.GL_Id, Level,
-                                Offset_X, Offset_Y, Width, Height,
-                                Pixels.Format'First, Pixels.Data_Type'First,
-                                System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_Empty_Texture;
-
-   procedure Load_From_Data (Object : Texture_2D;
-                             Level  : Mipmap_Level;
-                             Offset_X, Offset_Y : Types.Size;
-                             Width, Height : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
-   is
-      --  Data is considered to be packed. When loading it to a texture,
-      --  it will be unpacked. Therefore, each row must be a multiple of the
-      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
-      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
-      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
-   begin
-      API.Texture_Sub_Image_2D (Object.Reference.GL_Id, Level,
-                                Offset_X, Offset_Y, Width, Height,
-                                Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Data;
-
-   procedure Load_From_Compressed_Data (Object : Texture_2D; Level : Mipmap_Level;
-                                        Offset_X, Offset_Y : Types.Size;
-                                        Width, Height      : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size    : Types.Size;
-                                        Source        : System.Address) is
-   begin
-      API.Compressed_Texture_Sub_Image_2D (Object.Reference.GL_Id, Level,
-                                           Offset_X, Offset_Y, Width, Height,
-                                           Source_Format, Image_Size, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Compressed_Data;
-
-   procedure Load_From_Buffer (Object : Texture_2D; Level : Mipmap_Level;
-                               Offset_X, Offset_Y : Types.Size;
-                               X, Y          : Types.Size;
-                               Width, Height : Types.Size) is
-   begin
-      API.Copy_Texture_Sub_Image_2D (Object.Reference.GL_Id, Level,
-                                     Offset_X, Offset_Y, X, Y, Width, Height);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Buffer;
-
-   procedure Clear_Using_Data
-     (Object : Texture_2D; Level : Mipmap_Level;
-      Offset_X, Offset_Y : Types.Size;
-      Width, Height      : Types.Size;
-      Source_Format : Pixels.Format;
-      Source_Type   : Pixels.Data_Type;
-      Source        : System.Address) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, 0,
-         Width, Height, 1, Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Data;
-
-   procedure Clear_Using_Zeros
-     (Object : Texture_2D; Level : Mipmap_Level;
-      Offset_X, Offset_Y : Types.Size;
-      Width, Height      : Types.Size) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, 0,
-         Width, Height, 1, Pixels.Format'First,
-         Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Zeros;
-
-   -----------------------------------------------------------------------------
-   --                          Texture 3D Loading                             --
-   -----------------------------------------------------------------------------
-
-   procedure Allocate_Storage (Object : in out Texture_3D; Levels : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width, Height, Depth : Types.Size) is
-   begin
-      API.Texture_Storage_3D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width, Height, Depth);
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage;
-
-   procedure Allocate_Storage (Object : in out Texture_3D; Levels : Types.Size;
-                               Internal_Format : Pixels.Compressed_Format;
-                               Width, Height, Depth : Types.Size) is
-   begin
-      API.Texture_Storage_3D (Object.Reference.GL_Id, Levels,
-                              Internal_Format, Width, Height, Depth);
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage;
-
-   procedure Allocate_Storage_Multisample (Object : in out Texture_3D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Internal_Format;
-                                           Width, Height, Depth : Types.Size;
-                                           Fixed_Locations : Boolean) is
-   begin
-      API.Texture_Storage_3D_Multisample (Object.Reference.GL_Id, Samples,
-                                          Internal_Format, Width, Height, Depth,
-                                          Low_Level.Bool (Fixed_Locations));
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage_Multisample;
-
-   procedure Allocate_Storage_Multisample (Object : in out Texture_3D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Compressed_Format;
-                                           Width, Height, Depth : Types.Size;
-                                           Fixed_Locations : Boolean) is
-   begin
-      API.Texture_Storage_3D_Multisample (Object.Reference.GL_Id, Samples,
-                                          Internal_Format, Width, Height, Depth,
-                                          Low_Level.Bool (Fixed_Locations));
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage_Multisample;
-
-   procedure Load_Empty_Texture (Object : Texture_3D;
-                                 Level  : Mipmap_Level;
-                                 Offset_X, Offset_Y, Offset_Z : Types.Size;
-                                 Width, Height, Depth : Types.Size) is
-   begin
-      API.Texture_Sub_Image_3D (Object.Reference.GL_Id, Level,
-                                Offset_X, Offset_Y, Offset_Z,
-                                Width, Height, Depth,
-                                Pixels.Format'First, Pixels.Data_Type'First,
-                                System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_Empty_Texture;
-
-   procedure Load_From_Data (Object : Texture_3D;
-                             Level  : Mipmap_Level;
-                             Offset_X, Offset_Y, Offset_Z : Types.Size;
-                             Width, Height, Depth : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
-   is
-      --  Data is considered to be packed. When loading it to a texture,
-      --  it will be unpacked. Therefore, each row must be a multiple of the
-      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
-      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
-      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
-   begin
-      API.Texture_Sub_Image_3D (Object.Reference.GL_Id, Level,
-                                Offset_X, Offset_Y, Offset_Z,
-                                Width, Height, Depth,
-                                Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Data;
-
-   procedure Load_From_Compressed_Data (Object : Texture_3D; Level : Mipmap_Level;
-                                        Offset_X, Offset_Y, Offset_Z : Types.Size;
-                                        Width, Height, Depth         : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size    : Types.Size;
-                                        Source        : System.Address) is
-   begin
-      API.Compressed_Texture_Sub_Image_3D (Object.Reference.GL_Id, Level,
-                                           Offset_X, Offset_Y, Offset_Z,
-                                           Width, Height, Depth,
-                                           Source_Format, Image_Size, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Compressed_Data;
-
-   procedure Load_From_Buffer (Object : Texture_3D; Level : Mipmap_Level;
-                               Offset_X, Offset_Y, Offset_Z : Types.Size;
-                               X, Y          : Types.Size;
-                               Width, Height : Types.Size) is
-   begin
-      API.Copy_Texture_Sub_Image_3D (Object.Reference.GL_Id, Level,
-                                     Offset_X, Offset_Y, Offset_Z,
-                                     X, Y, Width, Height);
-      Raise_Exception_On_OpenGL_Error;
-   end Load_From_Buffer;
-
-   procedure Clear_Using_Data
-     (Object : Texture_3D; Level : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size;
-      Width, Height, Depth         : Types.Size;
-      Source_Format : Pixels.Format;
-      Source_Type   : Pixels.Data_Type;
-      Source        : System.Address) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, Offset_Z,
-         Width, Height, Depth, Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Data;
-
-   procedure Clear_Using_Zeros
-     (Object : Texture_3D; Level : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size;
-      Width, Height, Depth         : Types.Size) is
-   begin
-      API.Clear_Tex_Sub_Image
-        (Object.Reference.GL_Id, Level, Offset_X, Offset_Y, Offset_Z,
-         Width, Height, Depth, Pixels.Format'First,
-         Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
-   end Clear_Using_Zeros;
-
-   -----------------------------------------------------------------------------
-
-   function Get_Compressed_Texture_Data
-     (Object : Texture_Base'Class;
+   procedure Load_From_Data
+     (Object : Texture;
       Level  : Mipmap_Level;
-      X, Y, Z, Width, Height, Depth : Types.Size;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
+   is
+      --  Data is considered to be packed. When loading it to a texture,
+      --  it will be unpacked. Therefore, each row must be a multiple of the
+      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
+      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
+      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
+
+      --  Texture_Cube_Map uses 2D storage, but 3D load operation
+      --  according to table 8.15 of the OpenGL specification
+      Dimensions : constant Dimension_Count
+        := (if Object.Kind = LE.Texture_Cube_Map then Three else Object.Dimensions);
+   begin
+      case Dimensions is
+         when One =>
+            API.Texture_Sub_Image_1D
+              (Object.Reference.GL_Id, Level, X, Width, Source_Format,
+               Source_Type, Source);
+         when Two =>
+            API.Texture_Sub_Image_2D
+              (Object.Reference.GL_Id, Level, X, Y, Width, Height,
+               Source_Format, Source_Type, Source);
+         when Three =>
+            API.Texture_Sub_Image_3D
+              (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+               Source_Format, Source_Type, Source);
+      end case;
+      Raise_Exception_On_OpenGL_Error;
+   end Load_From_Data;
+
+   procedure Load_From_Data
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
+      Source_Format : Pixels.Compressed_Format;
+      Image_Size    : Types.Size;
+      Source        : System.Address)
+   is
+      --  Texture_Cube_Map uses 2D storage, but 3D load operation
+      --  according to table 8.15 of the OpenGL specification
+      Dimensions : constant Dimension_Count
+        := (if Object.Kind = LE.Texture_Cube_Map then Three else Object.Dimensions);
+   begin
+      case Dimensions is
+         when One =>
+            raise Program_Error;
+         when Two =>
+            API.Compressed_Texture_Sub_Image_2D
+              (Object.Reference.GL_Id, Level, X, Y, Width, Height,
+               Source_Format, Image_Size, Source);
+         when Three =>
+            API.Compressed_Texture_Sub_Image_3D
+              (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+               Source_Format, Image_Size, Source);
+      end case;
+      Raise_Exception_On_OpenGL_Error;
+   end Load_From_Data;
+
+   procedure Load_From_Buffer
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size := 0;
+      X, Y          : Types.Size;
+      Width, Height : Types.Size) is
+   begin
+      case Object.Dimensions is
+         when One =>
+            --  Offset_Y, Offset_Z, and Height are unused
+            API.Copy_Texture_Sub_Image_1D
+              (Object.Reference.GL_Id, Level,
+               Offset_X, X, Y, Width);
+         when Two =>
+            --  Offset_Z is unused
+            API.Copy_Texture_Sub_Image_2D
+              (Object.Reference.GL_Id, Level,
+               Offset_X, Offset_Y, X, Y, Width, Height);
+         when Three =>
+            API.Copy_Texture_Sub_Image_3D
+              (Object.Reference.GL_Id, Level,
+               Offset_X, Offset_Y, Offset_Z, X, Y, Width, Height);
+      end case;
+      Raise_Exception_On_OpenGL_Error;
+   end Load_From_Buffer;
+
+   procedure Clear_Using_Data
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+         Source_Format, Source_Type, Source);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Data;
+
+   procedure Clear_Using_Zeros
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size) is
+   begin
+      API.Clear_Tex_Sub_Image
+        (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+         Pixels.Format'First, Pixels.Data_Type'First, System.Null_Address);
+      Raise_Exception_On_OpenGL_Error;
+   end Clear_Using_Zeros;
+
+   -----------------------------------------------------------------------------
+
+   function Get_Compressed_Data
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
       Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
    is
       Blocks : constant Int := ((Width + 3) / 4) * ((Height + 3) / 4) * Depth;
@@ -925,25 +814,11 @@ package body GL.Objects.Textures is
         := new UByte_Array (1 .. Number_Of_Bytes);
    begin
       API.Get_Compressed_Texture_Sub_Image
-        (Object.Reference.GL_Id, Level, X, Y, Z,
-         Width, Height, Depth, Number_Of_Bytes, Result);
+        (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+         Number_Of_Bytes, Result);
       Raise_Exception_On_OpenGL_Error;
       return Result;
-   end Get_Compressed_Texture_Data;
-
-   function Get_Compressed_Data
-     (Object : Texture_2D;
-      Level  : Mipmap_Level;
-      X, Y, Width, Height : Types.Size;
-      Format : Pixels.Compressed_Format) return not null UByte_Array_Access
-   is (Get_Compressed_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format));
-
-   function Get_Compressed_Data
-     (Object : Texture_3D;
-      Level  : Mipmap_Level;
-      X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return not null UByte_Array_Access
-   is (Get_Compressed_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format));
+   end Get_Compressed_Data;
 
    package body Texture_Pointers is
 
@@ -952,10 +827,11 @@ package body GL.Objects.Textures is
          Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
          Size, Element_Array_Access);
 
-      function Get_Texture_Data
-        (Object    : Texture_Base'Class;
+      function Get_Data
+        (Object    : Texture;
          Level     : Mipmap_Level;
-         X, Y, Z, Width, Height, Depth : Types.Size;
+         X, Y, Z              : Types.Size := 0;
+         Width, Height, Depth : Types.Positive_Size;
          Format    : Pixels.Format;
          Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       is
@@ -984,35 +860,11 @@ package body GL.Objects.Textures is
          pragma Assert (Result'Length > 0);
       begin
          Get_Texture_Sub_Image
-           (Object.Reference.GL_Id, Level, X, Y, Z,
-            Width, Height, Depth, Format, Data_Type, Number_Of_Bytes, Result);
+           (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+            Format, Data_Type, Number_Of_Bytes, Result);
          Raise_Exception_On_OpenGL_Error;
          return Result;
-      end Get_Texture_Data;
-
-      function Get_Data
-        (Object    : Texture_1D;
-         Level     : Mipmap_Level;
-         X, Width  : Types.Size;
-         Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
-      is (Get_Texture_Data (Object, Level, X, 0, 0, Width, 1, 1, Format, Data_Type));
-
-      function Get_Data
-        (Object : Texture_2D;
-         Level  : Mipmap_Level;
-         X, Y, Width, Height : Types.Size;
-         Format : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
-      is (Get_Texture_Data (Object, Level, X, Y, 0, Width, Height, 1, Format, Data_Type));
-
-      function Get_Data
-        (Object : Texture_3D;
-         Level  : Mipmap_Level;
-         X, Y, Z, Width, Height, Depth : Types.Size;
-         Format : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
-      is (Get_Texture_Data (Object, Level, X, Y, Z, Width, Height, Depth, Format, Data_Type));
+      end Get_Data;
 
    end Texture_Pointers;
 

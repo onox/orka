@@ -70,75 +70,46 @@ package body Orka.Resources.Textures.KTX is
          Levels : constant GL.Types.Size   := GL.Types.Size'Max (1, Header.Mipmap_Levels);
 
          Resource : constant Texture_Ptr := new Texture'(others => <>);
+         Texture  : GL.Objects.Textures.Texture (Header.Kind);
+
+         Width  : constant GL.Types.Size := Header.Width;
+         Height :          GL.Types.Size := Header.Height;
+         Depth  :          GL.Types.Size := Header.Depth;
       begin
          T3 := Clock;
 
          --  Allocate storage
          case Header.Kind is
-            when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array =>
-               declare
-                  Texture : GL.Objects.Textures.Texture_3D (Header.Kind);
-                  Depth   : GL.Types.Size;
-               begin
-                  case Header.Kind is
-                     when Texture_2D_Array =>
-                        Depth := Header.Array_Elements;
-                     when Texture_Cube_Map_Array =>
-                        --  For a cube map array, depth is the number of layer-faces
-                        Depth := Header.Array_Elements * 6;
-                     when Texture_3D =>
-                        Depth := Header.Depth;
-                     when others =>
-                        raise Program_Error;
-                  end case;
-
-                  if Header.Compressed then
-                     Texture.Allocate_Storage (Levels, Header.Compressed_Format,
-                       Header.Width, Header.Height, Depth);
-                  else
-                     Texture.Allocate_Storage (Levels, Header.Internal_Format,
-                       Header.Width, Header.Height, Depth);
-                  end if;
-                  Resource.Texture.Replace_Element (Texture);
-               end;
-            when Texture_2D | Texture_1D_Array | Texture_Cube_Map =>
-               declare
-                  Texture : GL.Objects.Textures.Texture_2D (Header.Kind);
-                  Height  : GL.Types.Size;
-               begin
-                  case Header.Kind is
-                     when Texture_1D_Array =>
-                        Height := Header.Array_Elements;
-                     when Texture_2D | Texture_Cube_Map =>
-                        Height := Header.Height;
-                     when others =>
-                        raise Program_Error;
-                  end case;
-
-                  if Header.Compressed then
-                     Texture.Allocate_Storage (Levels, Header.Compressed_Format,
-                       Header.Width, Height);
-                  else
-                     Texture.Allocate_Storage (Levels, Header.Internal_Format,
-                       Header.Width, Height);
-                  end if;
-                  Resource.Texture.Replace_Element (Texture);
-               end;
+            when Texture_2D_Array =>
+               Depth := Header.Array_Elements;
+            when Texture_1D_Array =>
+               Height := Header.Array_Elements;
+               pragma Assert (Depth = 0);
+            when Texture_Cube_Map_Array =>
+               --  For a cube map array, depth is the number of layer-faces
+               Depth := Header.Array_Elements * 6;
+            when Texture_3D =>
+               null;
+            when Texture_2D | Texture_Cube_Map =>
+               pragma Assert (Depth = 0);
             when Texture_1D =>
-               declare
-                  Texture : GL.Objects.Textures.Texture_1D (Header.Kind);
-               begin
-                  if Header.Compressed then
-                     raise Texture_Load_Error with Path & " has unknown 1D compressed format";
-                  else
-                     Texture.Allocate_Storage (Levels, Header.Internal_Format,
-                       Header.Width);
-                  end if;
-                  Resource.Texture.Replace_Element (Texture);
-               end;
+               if Header.Compressed then
+                  raise Texture_Load_Error with Path & " has unknown 1D compressed format";
+               end if;
+               pragma Assert (Height = 0);
+               pragma Assert (Depth = 0);
             when others =>
                raise Program_Error;
          end case;
+
+         if Header.Compressed then
+            Texture.Allocate_Storage (Levels, Header.Compressed_Format,
+              Width, Height, Depth);
+         else
+            Texture.Allocate_Storage (Levels, Header.Internal_Format,
+              Width, Height, Depth);
+         end if;
+
          T4 := Clock;
 
          --  TODO Handle KTXorientation key value pair
@@ -149,8 +120,6 @@ package body Orka.Resources.Textures.KTX is
               := Orka.KTX.Get_Data_Offset (Bytes, Header.Bytes_Key_Value);
 
             Cube_Map : constant Boolean := Header.Kind = Texture_Cube_Map;
-
-            package Textures renames GL.Objects.Textures;
          begin
             for Level in 0 .. Levels - 1 loop
                declare
@@ -172,68 +141,34 @@ package body Orka.Resources.Textures.KTX is
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
                   --  TODO Unpack_Alignment must be 4, but Load_From_Data wants 1 | 2 | 4
                   --  depending on Header.Data_Type
-
-                  procedure Load_1D (Element : Textures.Texture_Base'Class) is
-                     Texture : Textures.Texture_1D renames Textures.Texture_1D (Element);
-                  begin
-                     if Header.Compressed then
-                        raise Texture_Load_Error with Path & " has unknown 1D compressed format";
-                     else
-                        Texture.Load_From_Data (Level, 0, Header.Width,
-                          Header.Format, Header.Data_Type, Image_Data);
-                     end if;
-                  end Load_1D;
-
-                  procedure Load_2D (Element : Textures.Texture_Base'Class) is
-                     Texture : Textures.Texture_2D renames Textures.Texture_2D (Element);
-                  begin
-                     if Header.Compressed then
-                        Texture.Load_From_Compressed_Data (Level, 0, 0,
-                          Header.Width, Header.Height, Header.Compressed_Format,
-                          GL.Types.Int (Image_Size), Image_Data);
-                     else
-                        Texture.Load_From_Data (Level, 0, 0,
-                          Header.Width, Header.Height, Header.Format,
-                          Header.Data_Type, Image_Data);
-                     end if;
-                  end Load_2D;
-
-                  procedure Load_3D (Element : Textures.Texture_Base'Class) is
-                     Texture : Textures.Texture_3D renames Textures.Texture_3D (Element);
-                     Depth   : GL.Types.Size := Header.Depth;
-                  begin
-                     --  For a cube map, depth is the number of faces, for
-                     --  a cube map array, depth is the number of layer-faces
-                     if Header.Kind in Texture_Cube_Map | Texture_Cube_Map_Array then
-                        Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
-                     end if;
-
-                     if Header.Compressed then
-                        Texture.Load_From_Compressed_Data (Level, 0, 0, 0,
-                          Header.Width, Header.Height, Depth,
-                          Header.Compressed_Format, GL.Types.Int (Image_Size),
-                          Image_Data);
-                     else
-                        Texture.Load_From_Data (Level, 0, 0, 0,
-                          Header.Width, Header.Height, Depth, Header.Format,
-                          Header.Data_Type, Image_Data);
-                     end if;
-                  end Load_3D;
                begin
                   case Header.Kind is
-                     when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array =>
-                        Resource.Texture.Query_Element (Load_3D'Access);
-                     when Texture_Cube_Map =>
+                     when Texture_1D =>
+                        Height := 1;
+                        Depth  := 1;
+                     when Texture_1D_Array | Texture_2D =>
+                        Depth := 1;
+                     when Texture_2D_Array | Texture_3D =>
+                        null;
+                     when Texture_Cube_Map | Texture_Cube_Map_Array =>
                         --  Texture_Cube_Map uses 2D storage, but 3D load operation
                         --  according to table 8.15 of the OpenGL specification
-                        Resource.Texture.Query_Element (Load_3D'Access);
-                     when Texture_2D | Texture_1D_Array =>
-                        Resource.Texture.Query_Element (Load_2D'Access);
-                     when Texture_1D =>
-                        Resource.Texture.Query_Element (Load_1D'Access);
+
+                        --  For a cube map, depth is the number of faces, for
+                        --  a cube map array, depth is the number of layer-faces
+                        Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
                      when others =>
                         raise Program_Error;
                   end case;
+
+                  if Header.Compressed then
+                     Texture.Load_From_Data (Level, 0, 0, 0, Width, Height, Depth,
+                       Header.Compressed_Format, GL.Types.Int (Image_Size), Image_Data);
+                  else
+                     Texture.Load_From_Data (Level, 0, 0, 0, Width, Height, Depth,
+                       Header.Format, Header.Data_Type, Image_Data);
+                  end if;
+
                   Image_Size_Index := Image_Size_Index + Stream_Element_Offset (Mipmap_Size);
                end;
             end loop;
@@ -242,9 +177,11 @@ package body Orka.Resources.Textures.KTX is
 
          --  Generate a full mipmap pyramid if Mipmap_Levels = 0
          if Header.Mipmap_Levels = 0 then
-            Resource.Texture.Element.Generate_Mipmap;
+            Texture.Generate_Mipmap;
          end if;
          T6 := Clock;
+
+         Resource.Texture.Replace_Element (Texture);
 
          --  Register resource at the resource manager
          Object.Manager.Add_Resource (Path, Resource_Ptr (Resource));
@@ -257,6 +194,7 @@ package body Orka.Resources.Textures.KTX is
             Logging.Trim (Header.Depth'Image) &
             ", array length:" & Header.Array_Elements'Image &
             ", mipmap levels:" & Levels'Image);
+         Messages.Insert (Info, "  kind: " & Header.Kind'Image);
          if Header.Compressed then
             Messages.Insert (Info, "  compressed format: " & Header.Compressed_Format'Image);
          else
@@ -318,7 +256,7 @@ package body Orka.Resources.Textures.KTX is
    -----------------------------------------------------------------------------
 
    procedure Write_Texture
-     (Texture  : GL.Objects.Textures.Texture_Base'Class;
+     (Texture  : GL.Objects.Textures.Texture;
       Location : Locations.Writable_Location_Ptr;
       Path     : String)
    is
@@ -376,22 +314,9 @@ package body Orka.Resources.Textures.KTX is
       is
          Data : Pointers.Element_Array_Access;
       begin
-         case Texture.Kind is
-            when Texture_3D | Texture_2D_Array | Texture_Cube_Map_Array | Texture_Cube_Map =>
-               Data := Pointers.Get_Data (Textures.Texture_3D (Texture), Level, 0, 0, 0,
-                 Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
-                 Format, Data_Type);
-            when Texture_2D | Texture_1D_Array =>
-               Data := Pointers.Get_Data (Textures.Texture_2D (Texture), Level, 0, 0,
-                 Texture.Width (Level), Texture.Height (Level),
-                 Format, Data_Type);
-            when Texture_1D =>
-               Data := Pointers.Get_Data (Textures.Texture_1D (Texture), Level, 0,
-                 Texture.Width (Level),
-                 Format, Data_Type);
-            when others =>
-               raise Program_Error;
-         end case;
+         Data := Pointers.Get_Data (Texture, Level, 0, 0, 0,
+           Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
+           Format, Data_Type);
          return Convert (Data);
       end Get_Data;
 
@@ -400,19 +325,9 @@ package body Orka.Resources.Textures.KTX is
       is
          Data : GL.Types.UByte_Array_Access;
       begin
-         case Texture.Kind is
-            when Texture_3D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array =>
-               Data := Textures.Get_Compressed_Data
-                 (Textures.Texture_3D (Texture), Level, 0, 0, 0,
-                  Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
-                  Texture.Compressed_Format (0));
-            when Texture_2D | Texture_1D_Array =>
-               Data := Textures.Get_Compressed_Data
-                 (Textures.Texture_2D (Texture), Level, 0, 0,
-                  Texture.Width (Level), Texture.Height (Level), Texture.Compressed_Format (0));
-            when others =>
-               raise Program_Error;
-         end case;
+         Data := Textures.Get_Compressed_Data (Texture, Level, 0, 0, 0,
+           Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
+           Texture.Compressed_Format (0));
          return Convert (Data);
       end Get_Compressed_Data;
    begin

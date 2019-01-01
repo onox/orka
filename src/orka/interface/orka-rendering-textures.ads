@@ -17,7 +17,10 @@ with GL.Objects.Textures;
 package Orka.Rendering.Textures is
    pragma Preelaborate;
 
-   function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture_2D;
+   use all type GL.Objects.Textures.Dimension_Count;
+
+   function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture
+     with Post => Bayer_Dithering_Pattern'Result.Dimensions = Two;
    --  Return a texture that contains the Bayer ordered dithering pattern
    --
    --  The texture can be used in a fragment shader as follows:

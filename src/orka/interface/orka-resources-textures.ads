@@ -21,7 +21,7 @@ package Orka.Resources.Textures is
 
    type Texture is limited new Resource with private;
 
-   function Element (Object : Texture) return GL.Objects.Textures.Texture_Base'Class;
+   function Element (Object : Texture) return GL.Objects.Textures.Texture;
 
    type Texture_Ptr is not null access all Texture;
 
@@ -30,7 +30,7 @@ package Orka.Resources.Textures is
 private
 
    package Texture_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => GL.Objects.Textures.Texture_Base'Class,
+     (Element_Type => GL.Objects.Textures.Texture,
       "=" => GL.Objects.Textures."=");
 
    type Texture is limited new Resource with record

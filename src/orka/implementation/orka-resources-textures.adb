@@ -14,7 +14,7 @@
 
 package body Orka.Resources.Textures is
 
-   function Element (Object : Texture) return GL.Objects.Textures.Texture_Base'Class is
+   function Element (Object : Texture) return GL.Objects.Textures.Texture is
      (Object.Texture.Element);
 
 end Orka.Resources.Textures;

@@ -26,7 +26,7 @@ package Orka.Resources.Textures.KTX is
      (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
    procedure Write_Texture
-     (Texture  : GL.Objects.Textures.Texture_Base'Class;
+     (Texture  : GL.Objects.Textures.Texture;
       Location : Locations.Writable_Location_Ptr;
       Path     : String);
 

@@ -29,6 +29,10 @@ package GL.Objects.Textures is
    package LE renames Low_Level.Enums;
    package PE renames Pixels.Extensions;
 
+   type Dimension_Count is (One, Two, Three);
+
+   function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count;
+
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
 
@@ -40,7 +44,7 @@ package GL.Objects.Textures is
                                Linear_Mipmap_Nearest, Nearest_Mipmap_Linear,
                                Linear_Mipmap_Linear);
 
-   -- has to be defined here because of following subtype declaration.
+   --  Has to be defined here because of following subtype declaration.
    for Minifying_Function use (Nearest                => 16#2600#,
                                Linear                 => 16#2601#,
                                Nearest_Mipmap_Nearest => 16#2700#,
@@ -54,10 +58,11 @@ package GL.Objects.Textures is
    type Wrapping_Mode is (Repeat, Clamp_To_Border, Clamp_To_Edge,
                           Mirrored_Repeat);
 
-   -- Actual range is implementation-defined.
-   --  OpenGL 2.x: At least 2
-   --  OpenGL 3.x: At least 48
-   --  OpenGL 4.x: At least 80
+   --  Actual range is implementation-defined
+   --
+   --  - OpenGL 2.x: At least 2
+   --  - OpenGL 3.x: At least 48
+   --  - OpenGL 4.x: At least 80
    subtype Texture_Unit is UInt;
 
    subtype Image_Unit is UInt;
@@ -68,67 +73,78 @@ package GL.Objects.Textures is
    --                          Texture Objects                                --
    -----------------------------------------------------------------------------
 
-   type Texture (Kind : LE.Texture_Kind)
+   type Texture_Base (Kind : LE.Texture_Kind)
      is abstract new GL_Object with private;
 
    use type LE.Texture_Kind;
 
-   overriding
-   procedure Initialize_Id (Object : in out Texture);
+   function Has_Levels (Object : Texture_Base) return Boolean is
+     (Object.Kind not in LE.Texture_Buffer | LE.Texture_Rectangle |
+        LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array)
+   with Inline;
 
    overriding
-   procedure Delete_Id (Object : in out Texture);
+   procedure Initialize_Id (Object : in out Texture_Base);
 
    overriding
-   function Identifier (Object : Texture) return Types.Debug.Identifier is
+   procedure Delete_Id (Object : in out Texture_Base);
+
+   overriding
+   function Identifier (Object : Texture_Base) return Types.Debug.Identifier is
      (Types.Debug.Texture);
 
-   procedure Invalidate_Image (Object : Texture; Level : Mipmap_Level);
+   procedure Invalidate_Image (Object : Texture_Base; Level : Mipmap_Level)
+     with Pre  => (if not Object.Has_Levels then Level = 0);
 
-   procedure Invalidate_Sub_Image (Object : Texture; Level : Mipmap_Level;
-                                   X, Y, Z : Int; Width, Height, Depth : Size);
+   procedure Invalidate_Sub_Image (Object : Texture_Base; Level : Mipmap_Level;
+                                   X, Y, Z : Int; Width, Height, Depth : Size)
+   with Pre  => (if not Object.Has_Levels then Level = 0);
 
-   procedure Bind_Texture_Unit (Object : Texture; Unit : Texture_Unit);
+   procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit);
 
-   procedure Bind_Image_Texture (Object : Texture; Unit : Image_Unit);
+   procedure Bind_Image_Texture (Object : Texture_Base; Unit : Image_Unit);
 
-   type Texture_Base is abstract new Texture with private;
+   -----------------------------------------------------------------------------
 
-   function Allocated (Object : Texture_Base) return Boolean;
+   type Texture is new Texture_Base with private;
+
+   function Dimensions (Object : Texture) return Dimension_Count;
+
+   function Allocated (Object : Texture) return Boolean;
 
    procedure Clear_Using_Data
-     (Object : Texture_Base; Level : Mipmap_Level;
+     (Object : Texture; Level : Mipmap_Level;
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
    with Pre => not Object.Compressed (Level);
 
    procedure Clear_Using_Zeros
-     (Object : Texture_Base; Level : Mipmap_Level)
+     (Object : Texture; Level : Mipmap_Level)
    with Pre => not Object.Compressed (Level);
 
-   procedure Generate_Mipmap (Object : Texture_Base);
+   procedure Generate_Mipmap (Object : Texture);
 
    -----------------------------------------------------------------------------
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 
-   procedure Set_Minifying_Filter     (Object : Texture_Base; Filter : Minifying_Function);
-   procedure Set_Magnifying_Filter    (Object : Texture_Base; Filter : Magnifying_Function);
-   procedure Set_Minimum_LoD          (Object : Texture_Base; Level : Double);
-   procedure Set_Maximum_LoD          (Object : Texture_Base; Level : Double);
-   procedure Set_Lowest_Mipmap_Level  (Object : Texture_Base; Level : Mipmap_Level);
-   procedure Set_Highest_Mipmap_Level (Object : Texture_Base; Level : Mipmap_Level);
+   procedure Set_Minifying_Filter     (Object : Texture; Filter : Minifying_Function);
+   procedure Set_Magnifying_Filter    (Object : Texture; Filter : Magnifying_Function);
+   procedure Set_Minimum_LoD          (Object : Texture; Level : Double);
+   procedure Set_Maximum_LoD          (Object : Texture; Level : Double);
+   procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
+   procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
-   function Minifying_Filter     (Object : Texture_Base) return Minifying_Function;
-   function Magnifying_Filter    (Object : Texture_Base) return Magnifying_Function;
-   function Minimum_LoD          (Object : Texture_Base) return Double;
-   function Maximum_LoD          (Object : Texture_Base) return Double;
-   function Lowest_Mipmap_Level  (Object : Texture_Base) return Mipmap_Level;
-   function Highest_Mipmap_Level (Object : Texture_Base) return Mipmap_Level;
+   function Minifying_Filter     (Object : Texture) return Minifying_Function;
+   function Magnifying_Filter    (Object : Texture) return Magnifying_Function;
+   function Minimum_LoD          (Object : Texture) return Double;
+   function Maximum_LoD          (Object : Texture) return Double;
+   function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
+   function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
    --  TODO LoD_Bias (Double)
 
-   procedure Set_Max_Anisotropy (Object : Texture_Base; Degree : Double)
+   procedure Set_Max_Anisotropy (Object : Texture; Degree : Double)
      with Pre => Degree >= 1.0;
    --  Set the maximum amount of anisotropy filtering to reduce the blurring
    --  of textures (caused by mipmap filtering) that are viewed at an
@@ -138,68 +154,68 @@ package GL.Objects.Textures is
    --  a Linear_Mipmap_Linear minification filter and a Linear maxification
    --  filter.
 
-   function Max_Anisotropy (Object : Texture_Base) return Double
+   function Max_Anisotropy (Object : Texture) return Double
      with Post => Max_Anisotropy'Result >= 1.0;
 
-   procedure Set_X_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
-   procedure Set_Y_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
-   procedure Set_Z_Wrapping (Object : Texture_Base; Mode : Wrapping_Mode);
+   procedure Set_X_Wrapping (Object : Texture; Mode : Wrapping_Mode);
+   procedure Set_Y_Wrapping (Object : Texture; Mode : Wrapping_Mode);
+   procedure Set_Z_Wrapping (Object : Texture; Mode : Wrapping_Mode);
 
-   function X_Wrapping (Object : Texture_Base) return Wrapping_Mode;
-   function Y_Wrapping (Object : Texture_Base) return Wrapping_Mode;
-   function Z_Wrapping (Object : Texture_Base) return Wrapping_Mode;
+   function X_Wrapping (Object : Texture) return Wrapping_Mode;
+   function Y_Wrapping (Object : Texture) return Wrapping_Mode;
+   function Z_Wrapping (Object : Texture) return Wrapping_Mode;
 
-   procedure Set_Border_Color         (Object : Texture_Base; Color : Colors.Color);
-   function Border_Color              (Object : Texture_Base) return Colors.Color;
+   procedure Set_Border_Color         (Object : Texture; Color : Colors.Color);
+   function Border_Color              (Object : Texture) return Colors.Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture_Base; Enabled : Boolean);
-   procedure Set_Compare_Function        (Object : Texture_Base; Func : Compare_Function);
+   procedure Toggle_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
+   procedure Set_Compare_Function        (Object : Texture; Func : Compare_Function);
 
-   function Compare_X_To_Texture_Enabled (Object : Texture_Base) return Boolean;
-   function Current_Compare_Function     (Object : Texture_Base) return Compare_Function;
+   function Compare_X_To_Texture_Enabled (Object : Texture) return Boolean;
+   function Current_Compare_Function     (Object : Texture) return Compare_Function;
 
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --
    -----------------------------------------------------------------------------
 
-   function Width  (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Height (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Depth  (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Width  (Object : Texture; Level : Mipmap_Level) return Size;
+   function Height (Object : Texture; Level : Mipmap_Level) return Size;
+   function Depth  (Object : Texture; Level : Mipmap_Level) return Size;
 
-   function Internal_Format (Object : Texture_Base; Level : Mipmap_Level)
+   function Internal_Format (Object : Texture; Level : Mipmap_Level)
      return Pixels.Internal_Format
    with Pre => Object.Allocated and not Object.Compressed (Level);
 
-   function Compressed_Format (Object : Texture_Base; Level : Mipmap_Level)
+   function Compressed_Format (Object : Texture; Level : Mipmap_Level)
      return Pixels.Compressed_Format
    with Pre => Object.Allocated and Object.Compressed (Level);
 
-   function Red_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Red_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Green_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Green_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Blue_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Blue_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Alpha_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
-   function Depth_Type (Object : Texture_Base; Level : Mipmap_Level)
+   function Depth_Type (Object : Texture; Level : Mipmap_Level)
      return Pixels.Channel_Data_Type;
 
-   function Red_Size   (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Green_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Blue_Size  (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Alpha_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Depth_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Red_Size   (Object : Texture; Level : Mipmap_Level) return Size;
+   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size;
+   function Blue_Size  (Object : Texture; Level : Mipmap_Level) return Size;
+   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size;
+   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size;
    --  TODO Stencil_Size, Shared_Size
 
-   function Compressed (Object : Texture_Base; Level : Mipmap_Level) return Boolean;
-   function Compressed_Image_Size (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean;
+   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size;
    --  TODO Pre => Object is compressed
 
    --  TODO Samples (Size), Fixed_Sample_Locations (Boolean) (if Object is multisampled)
 
-   function Buffer_Offset (Object : Texture_Base; Level : Mipmap_Level) return Size;
-   function Buffer_Size   (Object : Texture_Base; Level : Mipmap_Level) return Size;
+   function Buffer_Offset (Object : Texture; Level : Mipmap_Level) return Size;
+   function Buffer_Size   (Object : Texture; Level : Mipmap_Level) return Size;
 
    -----------------------------------------------------------------------------
    --                            Texture Units                                --
@@ -213,7 +229,7 @@ package GL.Objects.Textures is
    --                        Buffer Texture Loading                           --
    -----------------------------------------------------------------------------
 
-   type Buffer_Texture is new Texture (Kind => LE.Texture_Buffer) with private;
+   type Buffer_Texture is new Texture_Base (Kind => LE.Texture_Buffer) with private;
 
    procedure Attach_Buffer (Object : Buffer_Texture;
                             Internal_Format : Pixels.Internal_Format_Buffer_Texture;
@@ -225,224 +241,102 @@ package GL.Objects.Textures is
                             Offset, Size : Types.Size);
 
    -----------------------------------------------------------------------------
-   --                          Texture 1D Loading                             --
+   --                           Texture Loading                               --
    -----------------------------------------------------------------------------
 
-   type Texture_1D is new Texture_Base with private
-     with Static_Predicate => Texture_1D.Kind = LE.Texture_1D;
-
-   procedure Allocate_Storage (Object : in out Texture_1D; Levels : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width : Types.Size)
-   with Pre  => not Object.Allocated,
-        Post => Object.Allocated;
-
-   procedure Load_Empty_Texture (Object : Texture_1D; Level : Mipmap_Level;
-                                 Offset_X : Types.Size;
-                                 Width    : Types.Size)
-   with Pre => Object.Allocated;
-
-   procedure Load_From_Data (Object : Texture_1D; Level : Mipmap_Level;
-                             Offset_X : Types.Size;
-                             Width    : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
-   with Pre => Object.Allocated and not Object.Compressed (Level);
-
-   procedure Load_From_Buffer (Object : Texture_1D; Level : Mipmap_Level;
-                               Offset_X : Types.Size;
-                               X, Y  : Types.Size;
-                               Width : Types.Size)
-   with Pre => Object.Allocated;
-
-   procedure Clear_Using_Data
-     (Object : Texture_1D; Level : Mipmap_Level;
-      Offset_X : Types.Size;
-      Width    : Types.Size;
-      Source_Format : Pixels.Format;
-      Source_Type   : Pixels.Data_Type;
-      Source        : System.Address)
-   with Pre => not Object.Compressed (Level);
-
-   procedure Clear_Using_Zeros
-     (Object : Texture_1D; Level : Mipmap_Level;
-      Offset_X : Types.Size;
-      Width    : Types.Size)
-   with Pre => not Object.Compressed (Level);
-
-   -----------------------------------------------------------------------------
-   --                          Texture 2D Loading                             --
-   -----------------------------------------------------------------------------
-
-   type Texture_2D is new Texture_Base with private
-     with Static_Predicate => Texture_2D.Kind in
-       LE.Texture_2D | LE.Texture_1D_Array | LE.Texture_Cube_Map | LE.Texture_Rectangle |
-       LE.Texture_2D_Multisample;
-
-   procedure Allocate_Storage (Object : in out Texture_2D; Levels : Types.Size;
-                               Internal_Format : Pixels.Internal_Format;
-                               Width, Height   : Types.Size)
-   with Pre  => not Object.Allocated and Object.Kind /= LE.Texture_2D_Multisample,
-        Post => Object.Allocated;
-
-   procedure Allocate_Storage (Object : in out Texture_2D; Levels : Types.Size;
-                               Internal_Format : Pixels.Compressed_Format;
-                               Width, Height   : Types.Size)
+   procedure Allocate_Storage
+     (Object : in out Texture;
+      Levels : Types.Size;
+      Format : Pixels.Internal_Format;
+      Width, Height, Depth : Types.Size)
    with Pre  => not Object.Allocated and
-                  Object.Kind not in LE.Texture_Rectangle | LE.Texture_2D_Multisample,
+                  Object.Kind not in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
         Post => Object.Allocated;
 
-   procedure Allocate_Storage_Multisample (Object : in out Texture_2D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Internal_Format;
-                                           Width, Height   : Types.Size;
-                                           Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and Object.Kind = LE.Texture_2D_Multisample,
-        Post => Object.Allocated;
-
-   procedure Allocate_Storage_Multisample (Object : in out Texture_2D; Samples : Types.Size;
-                                           Internal_Format : Pixels.Compressed_Format;
-                                           Width, Height   : Types.Size;
-                                           Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and Object.Kind = LE.Texture_2D_Multisample,
-        Post => Object.Allocated;
-
-   procedure Load_Empty_Texture (Object : Texture_2D; Level : Mipmap_Level;
-                                 Offset_X, Offset_Y : Types.Size;
-                                 Width, Height      : Types.Size)
-   with Pre => Object.Allocated;
-
-   procedure Load_From_Data (Object : Texture_2D; Level : Mipmap_Level;
-                             Offset_X, Offset_Y : Types.Size;
-                             Width, Height      : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
-   with Pre => Object.Allocated and not Object.Compressed (Level);
-
-   procedure Load_From_Compressed_Data (Object : Texture_2D; Level : Mipmap_Level;
-                                        Offset_X, Offset_Y : Types.Size;
-                                        Width, Height      : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size    : Types.Size;
-                                        Source        : System.Address)
-   with Pre => Object.Allocated and Object.Compressed (Level);
-
-   procedure Load_From_Buffer (Object : Texture_2D; Level : Mipmap_Level;
-                               Offset_X, Offset_Y : Types.Size;
-                               X, Y          : Types.Size;
-                               Width, Height : Types.Size)
-   with Pre => Object.Allocated;
-
-   procedure Clear_Using_Data
-     (Object : Texture_2D; Level : Mipmap_Level;
-      Offset_X, Offset_Y : Types.Size;
-      Width, Height      : Types.Size;
-      Source_Format : Pixels.Format;
-      Source_Type   : Pixels.Data_Type;
-      Source        : System.Address)
-   with Pre => not Object.Compressed (Level);
-
-   procedure Clear_Using_Zeros
-     (Object : Texture_2D; Level : Mipmap_Level;
-      Offset_X, Offset_Y : Types.Size;
-      Width, Height      : Types.Size)
-   with Pre => not Object.Compressed (Level);
-
-   -----------------------------------------------------------------------------
-   --                          Texture 3D Loading                             --
-   -----------------------------------------------------------------------------
-
-   type Texture_3D is new Texture_Base with private
-     with Static_Predicate => Texture_3D.Kind in
-       LE.Texture_3D | LE.Texture_2D_Array | LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array |
-       LE.Texture_2D_Multisample_Array;
-
-   procedure Allocate_Storage (Object : in out Texture_3D; Levels : Types.Size;
-                               Internal_Format      : Pixels.Internal_Format;
-                               Width, Height, Depth : Types.Size)
-   with Pre  => not Object.Allocated and Object.Kind /= LE.Texture_2D_Multisample_Array,
-        Post => Object.Allocated;
-
-   procedure Allocate_Storage (Object : in out Texture_3D; Levels : Types.Size;
-                               Internal_Format      : Pixels.Compressed_Format;
-                               Width, Height, Depth : Types.Size)
+   procedure Allocate_Storage
+     (Object : in out Texture;
+      Levels : Types.Size;
+      Format : Pixels.Compressed_Format;
+      Width, Height, Depth : Types.Size)
    with Pre  => not Object.Allocated and
-                  Object.Kind not in LE.Texture_Rectangle | LE.Texture_2D_Multisample_Array,
+                  Object.Kind not in LE.Texture_Rectangle | LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
         Post => Object.Allocated;
 
-   procedure Allocate_Storage_Multisample (Object : in out Texture_3D; Samples : Types.Size;
-                                           Internal_Format      : Pixels.Internal_Format;
-                                           Width, Height, Depth : Types.Size;
-                                           Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and Object.Kind = LE.Texture_2D_Multisample_Array,
+   procedure Allocate_Storage_Multisample
+     (Object : in out Texture;
+      Format : Pixels.Internal_Format;
+      Width, Height, Depth : Types.Size;
+      Samples         : Types.Size;
+      Fixed_Locations : Boolean)
+   with Pre  => not Object.Allocated and
+                  Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
         Post => Object.Allocated;
 
-   procedure Allocate_Storage_Multisample (Object : in out Texture_3D; Samples : Types.Size;
-                                           Internal_Format      : Pixels.Compressed_Format;
-                                           Width, Height, Depth : Types.Size;
-                                           Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and Object.Kind = LE.Texture_2D_Multisample_Array,
+   procedure Allocate_Storage_Multisample
+     (Object : in out Texture;
+      Format : Pixels.Compressed_Format;
+      Width, Height, Depth : Types.Size;
+      Samples         : Types.Size;
+      Fixed_Locations : Boolean)
+   with Pre  => not Object.Allocated and
+                  Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
         Post => Object.Allocated;
 
-   procedure Load_Empty_Texture (Object : Texture_3D; Level  : Mipmap_Level;
-                                 Offset_X, Offset_Y, Offset_Z : Types.Size;
-                                 Width, Height, Depth         : Types.Size);
-
-   procedure Load_From_Data (Object : Texture_3D; Level : Mipmap_Level;
-                             Offset_X, Offset_Y, Offset_Z : Types.Size;
-                             Width, Height, Depth         : Types.Size;
-                             Source_Format : Pixels.Format;
-                             Source_Type   : Pixels.Data_Type;
-                             Source        : System.Address)
+   procedure Load_From_Data
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
+      Source_Format : Pixels.Format;
+      Source_Type   : Pixels.Data_Type;
+      Source        : System.Address)
    with Pre => Object.Allocated and not Object.Compressed (Level);
 
-   procedure Load_From_Compressed_Data (Object : Texture_3D; Level : Mipmap_Level;
-                                        Offset_X, Offset_Y, Offset_Z : Types.Size;
-                                        Width, Height, Depth         : Types.Size;
-                                        Source_Format : Pixels.Compressed_Format;
-                                        Image_Size    : Types.Size;
-                                        Source        : System.Address)
-   with Pre => Object.Allocated and Object.Compressed (Level);
+   procedure Load_From_Data
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
+      Source_Format : Pixels.Compressed_Format;
+      Image_Size    : Types.Size;
+      Source        : System.Address)
+   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level);
 
-   procedure Load_From_Buffer (Object : Texture_3D; Level : Mipmap_Level;
-                               Offset_X, Offset_Y, Offset_Z : Types.Size;
-                               X, Y          : Types.Size;
-                               Width, Height : Types.Size)
+   procedure Load_From_Buffer
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      Offset_X, Offset_Y, Offset_Z : Types.Size := 0;
+      X, Y          : Types.Size;
+      Width, Height : Types.Size)
    with Pre => Object.Allocated;
 
    procedure Clear_Using_Data
-     (Object : Texture_3D; Level : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size;
-      Width, Height, Depth         : Types.Size;
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
    with Pre => not Object.Compressed (Level);
 
    procedure Clear_Using_Zeros
-     (Object : Texture_3D; Level : Mipmap_Level;
-      Offset_X, Offset_Y, Offset_Z : Types.Size;
-      Width, Height, Depth         : Types.Size)
+     (Object : Texture;
+      Level  : Mipmap_Level;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size)
    with Pre => not Object.Compressed (Level);
 
    -----------------------------------------------------------------------------
 
    function Get_Compressed_Data
-     (Object : Texture_2D;
+     (Object : Texture;
       Level  : Mipmap_Level;
-      X, Y, Width, Height : Types.Size;
+      X, Y, Z              : Types.Size := 0;
+      Width, Height, Depth : Types.Positive_Size;
       Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
-   with Pre => Object.Allocated and Object.Compressed (Level)
-     and Object.Kind /= LE.Texture_2D_Multisample;
-
-   function Get_Compressed_Data
-     (Object : Texture_3D;
-      Level  : Mipmap_Level;
-      X, Y, Z, Width, Height, Depth : Types.Size;
-      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
-   with Pre => Object.Allocated and Object.Compressed (Level)
-     and Object.Kind /= LE.Texture_2D_Multisample_Array;
+   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level)
+     and Object.Kind not in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array;
 
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
@@ -454,27 +348,10 @@ package GL.Objects.Textures is
         (Object => Pointers.Element_Array, Name => Element_Array_Access);
 
       function Get_Data
-        (Object : Texture_1D;
+        (Object : Texture;
          Level  : Mipmap_Level;
-         X, Width  : Types.Size;
-         Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
-      with Pre => Object.Allocated and
-                    not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
-
-      function Get_Data
-        (Object : Texture_2D;
-         Level  : Mipmap_Level;
-         X, Y, Width, Height : Types.Size;
-         Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
-      with Pre => Object.Allocated and
-                    not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
-
-      function Get_Data
-        (Object : Texture_3D;
-         Level  : Mipmap_Level;
-         X, Y, Z, Width, Height, Depth : Types.Size;
+         X, Y, Z              : Types.Size := 0;
+         Width, Height, Depth : Types.Positive_Size;
          Format    : Pixels.Format;
          Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
@@ -490,17 +367,14 @@ private
                           Mirrored_Repeat => 16#8370#);
    for Wrapping_Mode'Size use Int'Size;
 
-   type Texture (Kind : LE.Texture_Kind)
+   type Texture_Base (Kind : LE.Texture_Kind)
      is new GL_Object with null record;
 
-   type Texture_Base is new Texture with record
-      Allocated : Boolean := False;
+   type Texture is new Texture_Base with record
+      Allocated  : Boolean := False;
+      Dimensions : Dimension_Count := Get_Dimensions (Texture.Kind);
    end record;
 
-   type Buffer_Texture is new Texture (Kind => LE.Texture_Buffer) with null record;
-
-   type Texture_1D is new Texture_Base with null record;
-   type Texture_2D is new Texture_Base with null record;
-   type Texture_3D is new Texture_Base with null record;
+   type Buffer_Texture is new Texture_Base (Kind => LE.Texture_Buffer) with null record;
 
 end GL.Objects.Textures;

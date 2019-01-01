@@ -20,7 +20,7 @@ package body Orka.Rendering.Textures is
 
    use GL.Objects.Textures;
 
-   function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture_2D is
+   function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture is
       Pixels : aliased constant GL.Types.UByte_Array
         := (0, 32,  8, 40,  2, 34, 10, 42,
            48, 16, 56, 24, 50, 18, 58, 26,
@@ -35,16 +35,23 @@ package body Orka.Rendering.Textures is
       --    (Vol. 26, pp. 11-15).
       --  * http://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
    begin
-      return Result : Texture_2D (GL.Low_Level.Enums.Texture_2D) do
+      return Result : Texture (GL.Low_Level.Enums.Texture_2D) do
          Result.Set_X_Wrapping (Repeat);
          Result.Set_Y_Wrapping (Repeat);
 
          Result.Set_Minifying_Filter (Nearest);
          Result.Set_Magnifying_Filter (Nearest);
 
-         Result.Allocate_Storage (1, GL.Pixels.R8, 8, 8);
-         Result.Load_From_Data (0, 0, 0, 8, 8, GL.Pixels.Red,
-           GL.Pixels.Unsigned_Byte, Pixels'Address);
+         Result.Allocate_Storage
+           (Levels => 1,
+            Format => GL.Pixels.R8,
+            Width => 8, Height => 8, Depth => 1);
+         Result.Load_From_Data
+           (Level => 0,
+            Width => 8, Height => 8, Depth => 1,
+            Source_Format => GL.Pixels.Red,
+            Source_Type   => GL.Pixels.Unsigned_Byte,
+            Source        => Pixels'Address);
       end return;
    end Bayer_Dithering_Pattern;
 

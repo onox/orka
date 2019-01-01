@@ -36,16 +36,19 @@ package Orka.Rendering.Framebuffers is
    type Framebuffer_Ptr is not null access Framebuffer;
 
    use type GL.Objects.Framebuffers.Framebuffer;
+   use all type GL.Objects.Textures.Dimension_Count;
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
-   with Post => not Create_Framebuffer'Result.Default;
+      Color_Texture : GL.Objects.Textures.Texture) return Framebuffer
+   with Pre  => Color_Texture.Dimensions = Two,
+        Post => not Create_Framebuffer'Result.Default;
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
-   with Post => not Create_Framebuffer'Result.Default;
+      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture) return Framebuffer
+   with Pre  => Color_Texture.Dimensions = Two and Depth_Texture.Dimensions = Two,
+        Post => not Create_Framebuffer'Result.Default;
 
    function Create_Framebuffer
      (Width, Height, Samples : Size;

@@ -58,7 +58,7 @@ package body GL.Objects.Framebuffers is
 
    procedure Attach_Texture (Object : Framebuffer;
                              Attachment : Attachment_Point;
-                             Texture_Object : Textures.Texture_Base'Class;
+                             Texture_Object : Textures.Texture;
                              Level : Textures.Mipmap_Level) is
    begin
       API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment,
@@ -68,7 +68,7 @@ package body GL.Objects.Framebuffers is
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
                                    Attachment : Attachment_Point;
-                                   Texture_Object : Textures.Texture_Base'Class;
+                                   Texture_Object : Textures.Texture;
                                    Level : Textures.Mipmap_Level;
                                    Layer : Natural) is
    begin

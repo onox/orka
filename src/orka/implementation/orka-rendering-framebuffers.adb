@@ -20,7 +20,7 @@ package body Orka.Rendering.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
+      Color_Texture : GL.Objects.Textures.Texture) return Framebuffer
    is
       package FB renames GL.Objects.Framebuffers;
 
@@ -44,7 +44,7 @@ package body Orka.Rendering.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture_2D) return Framebuffer
+      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture) return Framebuffer
    is
       package FB renames GL.Objects.Framebuffers;
    begin
