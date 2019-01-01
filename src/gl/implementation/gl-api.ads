@@ -690,9 +690,6 @@ private package GL.API is
    procedure Bind_Framebuffer is new Loader.Procedure_With_2_Params
      ("glBindFramebuffer", Low_Level.Enums.Framebuffer_Kind, UInt);
 
-   procedure Named_Framebuffer_Draw_Buffer is new Loader.Procedure_With_2_Params
-     ("glNamedFramebufferDrawBuffer", UInt, Buffers.Color_Buffer_Selector);
-
    procedure Named_Framebuffer_Draw_Buffers is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferDrawBuffers", UInt, Size, Buffers.Color_Buffer_List);
 

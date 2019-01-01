@@ -89,7 +89,7 @@ package GL.Buffers is
      of Color_Buffer_Selector;
 
    subtype Default_Color_Buffer_Selector is Color_Buffer_Selector
-     range None .. Front_And_Back;
+     range Front_Left .. Back_Right;
    --  Table 17.4 of the OpenGL specification
 
    subtype Explicit_Color_Buffer_Selector is Color_Buffer_Selector

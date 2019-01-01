@@ -53,23 +53,27 @@ package GL.Objects.Framebuffers is
    function Identifier (Object : Framebuffer) return Types.Debug.Identifier is
      (Types.Debug.Framebuffer);
 
-   procedure Set_Active_Buffer (Object   : Framebuffer;
-                                Selector : Buffers.Color_Buffer_Selector)
-     with Pre => (if Object = Default_Framebuffer then
-                    Selector in Buffers.Default_Color_Buffer_Selector
-                  else
-                    Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
+   procedure Set_Draw_Buffer
+     (Object   : Framebuffer;
+      Selector : Buffers.Color_Buffer_Selector)
+   with Pre => (if Object = Default_Framebuffer then
+                  Selector in Buffers.Default_Color_Buffer_Selector | Buffers.None
+                else
+                  Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
 
-   procedure Set_Active_Buffers (Object : Framebuffer;
-                                 List   : Buffers.Color_Buffer_List)
-     with Pre => (if Object = Default_Framebuffer then
-                    (for all S of List => S in Buffers.Default_Color_Buffer_Selector)
-                  else
-                    (for all S of List => S in Buffers.Explicit_Color_Buffer_Selector | Buffers.None));
+   procedure Set_Draw_Buffers
+     (Object : Framebuffer;
+      List   : Buffers.Color_Buffer_List)
+   with Pre => (if Object = Default_Framebuffer then
+                  (for all S of List =>
+                     S in Buffers.Default_Color_Buffer_Selector | Buffers.None)
+                else
+                  (for all S of List =>
+                     S in Buffers.Explicit_Color_Buffer_Selector | Buffers.None));
 
    procedure Set_Read_Buffer (Object : Framebuffer; Selector : Buffers.Color_Buffer_Selector)
      with Pre => (if Object = Default_Framebuffer then
-                    Selector in Buffers.Default_Color_Buffer_Selector
+                    Selector in Buffers.Default_Color_Buffer_Selector | Buffers.None
                   else
                     Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
 

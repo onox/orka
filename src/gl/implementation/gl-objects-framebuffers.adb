@@ -27,19 +27,20 @@ package body GL.Objects.Framebuffers is
       return API.Check_Named_Framebuffer_Status (Object.Reference.GL_Id, Target.Kind);
    end Status;
 
-   procedure Set_Active_Buffer (Object   : Framebuffer;
-                                Selector : Buffers.Color_Buffer_Selector) is
+   procedure Set_Draw_Buffer
+     (Object   : Framebuffer;
+      Selector : Buffers.Color_Buffer_Selector) is
    begin
-      API.Named_Framebuffer_Draw_Buffer (Object.Reference.GL_Id, Selector);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Active_Buffer;
+      Object.Set_Draw_Buffers ((1 => Selector));
+   end Set_Draw_Buffer;
 
-   procedure Set_Active_Buffers (Object : Framebuffer;
-                                 List   : Buffers.Color_Buffer_List) is
+   procedure Set_Draw_Buffers
+     (Object : Framebuffer;
+      List   : Buffers.Color_Buffer_List) is
    begin
       API.Named_Framebuffer_Draw_Buffers (Object.Reference.GL_Id, List'Length, List);
       Raise_Exception_On_OpenGL_Error;
-   end Set_Active_Buffers;
+   end Set_Draw_Buffers;
 
    procedure Set_Read_Buffer (Object : Framebuffer; Selector : Buffers.Color_Buffer_Selector) is
    begin
