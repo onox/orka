@@ -53,8 +53,7 @@ private package Orka.KTX is
       end case;
    end record
      with Dynamic_Predicate => Header.Width > 0
-       and (if Header.Depth > 0  then Header.Height > 0)
-       and (if Header.Height = 0 then Header.Depth = 0)
+       and not (Header.Height = 0 and Header.Depth > 0)
        and (if Header.Compressed then Header.Mipmap_Levels > 0)
        and (case Header.Kind is
               when Texture_1D | Texture_2D | Texture_3D => Header.Array_Elements = 0,
