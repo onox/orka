@@ -104,7 +104,6 @@ package body Orka.KTX is
 
             if File_Header.Array_Elements > 0 then
                Result.Kind := Texture_Cube_Map_Array;
-               Result.Depth := GL.Types.Size (File_Header.Array_Elements * File_Header.Faces);
             else
                Result.Kind := Texture_Cube_Map;
             end if;
@@ -114,10 +113,8 @@ package body Orka.KTX is
                   raise Constraint_Error with "OpenGL does not support 3D texture arrays";
                elsif File_Header.Height > 0 then
                   Result.Kind := Texture_2D_Array;
-                  Result.Depth := GL.Types.Size (File_Header.Array_Elements);
                else
                   Result.Kind := Texture_1D_Array;
-                  Result.Height := GL.Types.Size (File_Header.Array_Elements);
                end if;
             else
                if File_Header.Depth > 0 then
