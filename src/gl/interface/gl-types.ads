@@ -12,7 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C.Extensions;
 with Interfaces.C.Pointers;
 
 with GL.Algebra;
@@ -25,11 +24,17 @@ package GL.Types is
    --  Types that are only used internally, but may be needed when interfacing
    --  with OpenGL-related library APIs can be found in GL.Low_Level.
 
+   type long_long_int is range -(2 ** 63) .. +(2 ** 63 - 1);
+   --  Based on C99 long long int
+
+   type unsigned_long_long is mod 2 ** 64;
+   --  Based on C99 unsigned long long int
+
    --  Signed integer types
    type Byte  is new C.signed_char;
    type Short is new C.short;
    type Int   is new C.int;
-   type Long  is new C.Extensions.long_long;
+   type Long  is new long_long_int;
 
    subtype Size is Int range 0 .. Int'Last;
    subtype Long_Size is Long range 0 .. Long'Last;

@@ -12,8 +12,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C.Extensions;
-
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 with Ada.Strings.Maps;
@@ -23,33 +21,34 @@ with GL.Pixels.Extensions;
 
 package body Orka.KTX is
 
-   package ICE renames Interfaces.C.Extensions;
-
    use Ada.Streams;
+
+   type Unsigned_32 is mod 2 ** 32
+     with Size => 32;
 
    type Four_Bytes_Array is array (Positive range 1 .. 4) of Stream_Element
      with Size => 32, Pack;
 
    function Convert_Size is new Ada.Unchecked_Conversion
-     (Source => Four_Bytes_Array, Target => ICE.Unsigned_32);
+     (Source => Four_Bytes_Array, Target => Unsigned_32);
 
    type Header_Array is array (Positive range 1 .. 13 * 4) of Stream_Element
      with Size => 32 * 13, Pack;
 
    type Internal_Header is record
-      Endianness           : ICE.Unsigned_32;
-      Data_Type            : ICE.Unsigned_32;
-      Type_Size            : ICE.Unsigned_32;
-      Format               : ICE.Unsigned_32;
-      Internal_Format      : ICE.Unsigned_32;
-      Base_Internal_Format : ICE.Unsigned_32;
-      Width                : ICE.Unsigned_32;
-      Height               : ICE.Unsigned_32;
-      Depth                : ICE.Unsigned_32;
-      Array_Elements       : ICE.Unsigned_32;
-      Faces                : ICE.Unsigned_32;
-      Mipmap_Levels        : ICE.Unsigned_32;
-      Bytes_Key_Value_Data : ICE.Unsigned_32;
+      Endianness           : Unsigned_32;
+      Data_Type            : Unsigned_32;
+      Type_Size            : Unsigned_32;
+      Format               : Unsigned_32;
+      Internal_Format      : Unsigned_32;
+      Base_Internal_Format : Unsigned_32;
+      Width                : Unsigned_32;
+      Height               : Unsigned_32;
+      Depth                : Unsigned_32;
+      Array_Elements       : Unsigned_32;
+      Faces                : Unsigned_32;
+      Mipmap_Levels        : Unsigned_32;
+      Bytes_Key_Value_Data : Unsigned_32;
    end record
      with Size => 32 * 13, Pack;
 
@@ -63,19 +62,17 @@ package body Orka.KTX is
      (Identifier = Bytes (Bytes.Value'First .. Bytes.Value'First + Identifier'Length - 1));
 
    function Get_Header (Bytes : Bytes_Reference) return Header is
-      use type ICE.Unsigned_32;
-
       function Convert is new Ada.Unchecked_Conversion
         (Source => Header_Array, Target => Internal_Header);
 
       function Convert_To_Data_Type is new Ada.Unchecked_Conversion
-        (Source => ICE.Unsigned_32, Target => GL.Pixels.Data_Type);
+        (Source => Unsigned_32, Target => GL.Pixels.Data_Type);
       function Convert_To_Format is new Ada.Unchecked_Conversion
-        (Source => ICE.Unsigned_32, Target => GL.Pixels.Format);
+        (Source => Unsigned_32, Target => GL.Pixels.Format);
       function Convert_To_Internal_Format is new Ada.Unchecked_Conversion
-        (Source => ICE.Unsigned_32, Target => GL.Pixels.Internal_Format);
+        (Source => Unsigned_32, Target => GL.Pixels.Internal_Format);
       function Convert_To_Compressed_Format is new Ada.Unchecked_Conversion
-        (Source => ICE.Unsigned_32, Target => GL.Pixels.Compressed_Format);
+        (Source => Unsigned_32, Target => GL.Pixels.Compressed_Format);
 
       Offset : constant Stream_Element_Offset := Bytes.Value'First + Identifier'Length;
       File_Header : constant Internal_Header := Convert (Header_Array
@@ -264,19 +261,18 @@ package body Orka.KTX is
       function Convert is new Ada.Unchecked_Conversion
         (Source => Internal_Header, Target => Header_Array);
       function Convert is new Ada.Unchecked_Conversion
-        (Source => ICE.Unsigned_32, Target => Four_Bytes_Array);
+        (Source => Unsigned_32, Target => Four_Bytes_Array);
 
       function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Pixels.Data_Type,         Target => ICE.Unsigned_32);
+        (Source => GL.Pixels.Data_Type,         Target => Unsigned_32);
       function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Pixels.Format,            Target => ICE.Unsigned_32);
+        (Source => GL.Pixels.Format,            Target => Unsigned_32);
       function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Pixels.Internal_Format,   Target => ICE.Unsigned_32);
+        (Source => GL.Pixels.Internal_Format,   Target => Unsigned_32);
       function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Pixels.Compressed_Format, Target => ICE.Unsigned_32);
+        (Source => GL.Pixels.Compressed_Format, Target => Unsigned_32);
 
       package PE renames GL.Pixels.Extensions;
-      use type ICE.Unsigned_32;
 
       Compressed : Boolean renames KTX_Header.Compressed;
 
@@ -290,13 +286,13 @@ package body Orka.KTX is
       Type_Size : constant GL.Types.Size
         := (if Compressed then 1 else PE.Bytes (KTX_Header.Data_Type));
 
-      Faces : constant ICE.Unsigned_32
+      Faces : constant Unsigned_32
         := (if KTX_Header.Kind in Texture_Cube_Map | Texture_Cube_Map_Array then 6 else 1);
 
       File_Header : constant Internal_Header
         := (Endianness           => Endianness_Reference,
             Data_Type            => (if Compressed then 0 else Convert (KTX_Header.Data_Type)),
-            Type_Size            => ICE.Unsigned_32 (if Compressed then 1 else Type_Size),
+            Type_Size            => Unsigned_32 (if Compressed then 1 else Type_Size),
             Format               => (if Compressed then 0 else Convert (KTX_Header.Format)),
             Internal_Format      =>
               (if Compressed then
@@ -308,12 +304,12 @@ package body Orka.KTX is
                  Convert (KTX_Header.Compressed_Format)
                else
                  Convert (KTX_Header.Format)),
-            Width                => ICE.Unsigned_32 (KTX_Header.Width),
-            Height               => ICE.Unsigned_32 (KTX_Header.Height),
-            Depth                => ICE.Unsigned_32 (if Faces = 6 then 0 else KTX_Header.Depth),
-            Array_Elements       => ICE.Unsigned_32 (KTX_Header.Array_Elements),
+            Width                => Unsigned_32 (KTX_Header.Width),
+            Height               => Unsigned_32 (KTX_Header.Height),
+            Depth                => Unsigned_32 (if Faces = 6 then 0 else KTX_Header.Depth),
+            Array_Elements       => Unsigned_32 (KTX_Header.Array_Elements),
             Faces                => Faces,
-            Mipmap_Levels        => ICE.Unsigned_32 (KTX_Header.Mipmap_Levels),
+            Mipmap_Levels        => Unsigned_32 (KTX_Header.Mipmap_Levels),
             Bytes_Key_Value_Data => 0);
       --  TODO Support key value map?
 
@@ -323,7 +319,7 @@ package body Orka.KTX is
         (1 .. Identifier'Length + Header_Array'Length + 4 + Data.Value'Length);
       --  TODO Supports just 1 level at the moment
 
-      Image_Size : constant ICE.Unsigned_32
+      Image_Size : constant Unsigned_32
         := (if KTX_Header.Kind = Texture_Cube_Map then
               Data.Value'Length / 6
             else

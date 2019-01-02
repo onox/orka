@@ -1,4 +1,4 @@
-pragma Assertion_Policy (Pre => Check);
+pragma Assertion_Policy (Pre => Check, Pre'Class => Check);
 pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
 
 pragma Restrictions (No_Implicit_Aliasing);
@@ -18,4 +18,4 @@ pragma Restrictions (No_Relative_Delay);
 --  pragma Restrictions (No_Implementation_Attributes);
 pragma Restrictions (No_Implementation_Identifiers);
 --  pragma Restrictions (No_Implementation_Pragmas);
---  pragma Restrictions (No_Implementation_Units);
+pragma Restrictions (No_Implementation_Units);

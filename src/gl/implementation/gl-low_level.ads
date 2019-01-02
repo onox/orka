@@ -14,7 +14,6 @@
 
 with GL.Types;
 
-with Interfaces.C.Extensions;
 with Interfaces.C.Strings;
 
 package GL.Low_Level is
@@ -44,7 +43,7 @@ package GL.Low_Level is
    -- breaks linking on Windows with StdCall convention (possibly a GNAT bug).
    subtype Bitfield is C.unsigned;
 
-   type UInt64 is new C.Extensions.unsigned_long_long;
+   type UInt64 is new unsigned_long_long;
 
    type Single_Array is array (Positive range <>) of aliased Single;
    type Double_Array is array (Positive range <>) of aliased Double;
