@@ -476,8 +476,6 @@ package body Orka.Resources.Models.glTF is
      (Object  : GLTF_Finish_Processing_Job;
       Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
    is
-      use Orka.glTF.Types;
-
       Data  : GLTF_Data renames Object.Data.Get;
 
       --  TODO Textures, Images, Samplers, Materials, Cameras
