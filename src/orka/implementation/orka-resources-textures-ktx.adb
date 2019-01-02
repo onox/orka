@@ -188,19 +188,16 @@ package body Orka.Resources.Textures.KTX is
 
          Messages.Insert (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
-         Messages.Insert (Info, "  dimensions: " &
-            Logging.Trim (Header.Width'Image) & " x " &
-            Logging.Trim (Header.Height'Image) & " x " &
-            Logging.Trim (Header.Depth'Image) &
-            ", array length:" & Header.Array_Elements'Image &
+         Messages.Insert (Info, "  size:   " &
+            Logging.Trim (Width'Image) & " x " &
+            Logging.Trim (Height'Image) & " x " &
+            Logging.Trim (Depth'Image) &
             ", mipmap levels:" & Levels'Image);
-         Messages.Insert (Info, "  kind: " & Header.Kind'Image);
+         Messages.Insert (Info, "  kind:   " & Header.Kind'Image);
          if Header.Compressed then
-            Messages.Insert (Info, "  compressed format: " & Header.Compressed_Format'Image);
+            Messages.Insert (Info, "  format: " & Header.Compressed_Format'Image);
          else
-            Messages.Insert (Info, "  internal: " & Header.Internal_Format'Image);
-            Messages.Insert (Info, "  format: " & Header.Format'Image);
-            Messages.Insert (Info, "  type: " & Header.Data_Type'Image);
+            Messages.Insert (Info, "  format: " & Header.Internal_Format'Image);
          end if;
 
          Messages.Insert (Info, "  statistics:");
