@@ -13,7 +13,6 @@
 --  limitations under the License.
 
 with GL.Buffers;
-with GL.Objects.Renderbuffers;
 with GL.Objects.Textures;
 with GL.Types.Colors;
 
@@ -76,10 +75,6 @@ package GL.Objects.Framebuffers is
                     Selector in Buffers.Default_Color_Buffer_Selector | Buffers.None
                   else
                     Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
-
-   procedure Attach_Renderbuffer (Object : Framebuffer; Attachment : Attachment_Point;
-                                  Render_Object : Renderbuffers.Renderbuffer'Class)
-     with Pre => Object /= Default_Framebuffer;
 
    procedure Attach_Texture (Object : Framebuffer;
                              Attachment : Attachment_Point;

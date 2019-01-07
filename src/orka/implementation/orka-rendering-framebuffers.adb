@@ -12,19 +12,20 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Objects.Renderbuffers;
 with GL.Pixels;
 with GL.Window;
+with GL.Low_Level.Enums;
 
 package body Orka.Rendering.Framebuffers is
+
+   package FB renames GL.Objects.Framebuffers;
+   package Textures renames GL.Objects.Textures;
 
    function Create_Framebuffer
      (Width, Height : Size;
       Color_Texture : GL.Objects.Textures.Texture) return Framebuffer
    is
-      package FB renames GL.Objects.Framebuffers;
-
-      Depth_Buffer : GL.Objects.Renderbuffers.Renderbuffer;
+      Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D_Multisample);
    begin
       return Result : Framebuffer
         (Default => False,
@@ -32,10 +33,10 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => 0)
       do
-         Depth_Buffer.Allocate (GL.Pixels.Depth32F_Stencil8, Width, Height);
+         Depth_Buffer.Allocate_Storage (1, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
 
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
-         Result.GL_Framebuffer.Attach_Renderbuffer (FB.Depth_Stencil_Attachment, Depth_Buffer);
+         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);
@@ -44,9 +45,7 @@ package body Orka.Rendering.Framebuffers is
 
    function Create_Framebuffer
      (Width, Height : Size;
-      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture) return Framebuffer
-   is
-      package FB renames GL.Objects.Framebuffers;
+      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture) return Framebuffer is
    begin
       return Result : Framebuffer
         (Default => False,
@@ -66,9 +65,7 @@ package body Orka.Rendering.Framebuffers is
      (Width, Height, Samples : Size;
       Context : Contexts.Context) return Framebuffer
    is
-      package FB renames GL.Objects.Framebuffers;
-
-      Color_Buffer, Depth_Buffer : GL.Objects.Renderbuffers.Renderbuffer;
+      Color_Buffer, Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D_Multisample);
    begin
       return Result : Framebuffer
         (Default => False,
@@ -76,12 +73,14 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => Samples)
       do
-         --  Allocate and attach multisampled render buffers
-         Color_Buffer.Allocate (GL.Pixels.RGBA8, Width, Height, Samples);
-         Depth_Buffer.Allocate (GL.Pixels.Depth32F_Stencil8, Width, Height, Samples);
+         --  Allocate and attach multisampled textures
+         Color_Buffer.Allocate_Storage_Multisample
+           (GL.Pixels.RGBA8, Width, Height, 1, Samples, True);
+         Depth_Buffer.Allocate_Storage_Multisample
+           (GL.Pixels.Depth32F_Stencil8, Width, Height, 1, Samples, True);
 
-         Result.GL_Framebuffer.Attach_Renderbuffer (FB.Color_Attachment_0, Color_Buffer);
-         Result.GL_Framebuffer.Attach_Renderbuffer (FB.Depth_Stencil_Attachment, Depth_Buffer);
+         Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Buffer, 0);
+         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Buffer);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);

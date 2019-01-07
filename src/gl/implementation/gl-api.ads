@@ -631,32 +631,6 @@ private package GL.API is
      ("glDisableVertexArrayAttrib", UInt, Attribute);
 
    -----------------------------------------------------------------------------
-   --                           Renderbuffer objects                          --
-   -----------------------------------------------------------------------------
-
-   procedure Create_Renderbuffers is new Loader.Getter_With_2_Params
-     ("glCreateRenderbuffers", Size, UInt);
-
-   procedure Delete_Renderbuffers is new Loader.Array_Proc_With_2_Params
-     ("glDeleteRenderbuffers", Size, UInt, Low_Level.UInt_Array);
-
-   procedure Named_Renderbuffer_Storage_Multisample is new Loader.Procedure_With_5_Params
-     ("glNamedRenderbufferStorageMultisample", UInt, Size,
-      Pixels.Internal_Format, Size, Size);
-
-   procedure Bind_Renderbuffer is new Loader.Procedure_With_2_Params
-     ("glBindRenderbuffer", Low_Level.Enums.Renderbuffer_Kind, UInt);
-
-   procedure Get_Named_Renderbuffer_Parameter_Int is new Loader.Getter_With_3_Params
-     ("glGetNamedRenderbufferParameteriv", UInt,
-      Enums.Getter.Renderbuffer_Parameter, Int);
-
-   procedure Get_Named_Renderbuffer_Parameter_Internal_Format is new
-     Loader.Getter_With_3_Params ("glGetNamedRenderbufferParameteriv",
-                                  UInt, Enums.Getter.Renderbuffer_Parameter,
-                                  Pixels.Internal_Format);
-
-   -----------------------------------------------------------------------------
    --                    Framebuffer objects and handling                     --
    -----------------------------------------------------------------------------
 
@@ -681,10 +655,6 @@ private package GL.API is
    function Check_Named_Framebuffer_Status is new Loader.Function_With_2_Params
      ("glCheckNamedFramebufferStatus", UInt, Low_Level.Enums.Framebuffer_Kind,
       Objects.Framebuffers.Framebuffer_Status);
-
-   procedure Named_Framebuffer_Renderbuffer is new Loader.Procedure_With_4_Params
-     ("glNamedFramebufferRenderbuffer", UInt, Objects.Framebuffers.Attachment_Point,
-      Low_Level.Enums.Renderbuffer_Kind, UInt);
 
    procedure Named_Framebuffer_Texture is new Loader.Procedure_With_4_Params
      ("glNamedFramebufferTexture", UInt, Objects.Framebuffers.Attachment_Point,

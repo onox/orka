@@ -24,8 +24,6 @@ package GL.Low_Level.Enums is
                          Texture_Buffer, Texture_Cube_Map_Array,
                          Texture_2D_Multisample, Texture_2D_Multisample_Array);
 
-   type Renderbuffer_Kind is (Renderbuffer);
-
    type Framebuffer_Kind is (Read, Draw);
 
    type Transform_Feedback_Kind is (Transform_Feedback);
@@ -174,9 +172,6 @@ private
                          Texture_2D_Multisample       => 16#9100#,
                          Texture_2D_Multisample_Array => 16#9102#);
    for Texture_Kind'Size use Enum'Size;
-
-   for Renderbuffer_Kind use (Renderbuffer => 16#8D41#);
-   for Renderbuffer_Kind'Size use Enum'Size;
 
    for Framebuffer_Kind use (Read      => 16#8CA8#,
                              Draw      => 16#8CA9#);

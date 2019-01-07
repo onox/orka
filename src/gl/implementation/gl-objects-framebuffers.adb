@@ -48,15 +48,6 @@ package body GL.Objects.Framebuffers is
       Raise_Exception_On_OpenGL_Error;
    end Set_Read_Buffer;
 
-   procedure Attach_Renderbuffer (Object : Framebuffer; Attachment : Attachment_Point;
-                                  Render_Object : Renderbuffers.Renderbuffer'Class) is
-   begin
-      API.Named_Framebuffer_Renderbuffer (Object.Reference.GL_Id, Attachment,
-                                          Low_Level.Enums.Renderbuffer,
-                                          Render_Object.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
-   end Attach_Renderbuffer;
-
    procedure Attach_Texture (Object : Framebuffer;
                              Attachment : Attachment_Point;
                              Texture_Object : Textures.Texture;
