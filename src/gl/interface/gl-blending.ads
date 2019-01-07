@@ -27,6 +27,7 @@ package GL.Blending is
                          Constant_Alpha, One_Minus_Constant_Alpha, Src1_Alpha,
                          Src1_Color, One_Minus_Src1_Color,
                          One_Minus_Src1_Alpha);
+   --  Table 17.2 of the OpenGL specification
 
    type Equation is (Func_Add, Min, Max, Func_Subtract, Func_Reverse_Substract);
 
