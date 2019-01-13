@@ -67,10 +67,6 @@ package GL.Objects.Programs is
    --  Raises the Uniform_Inactive_Error exception if the name
    --  does not exist or is unused.
 
-   procedure Bind_Attrib_Location (Subject : Program;
-                                   Index : Attribute;
-                                   Name : String);
-
    function Attrib_Location (Subject : Program; Name : String)
      return Attribute;
    --  Return an Attribute given its name

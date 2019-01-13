@@ -89,8 +89,6 @@ procedure GL_Test.VBO is
       --  Set up program
       Program.Attach (Vertex_Shader);
       Program.Attach (Fragment_Shader);
-      Program.Bind_Attrib_Location (0, "in_Position");
-      Program.Bind_Attrib_Location (1, "in_Color");
       Program.Link;
       if not Program.Link_Status then
          Ada.Text_IO.Put_Line ("Program linking failed. Log:");

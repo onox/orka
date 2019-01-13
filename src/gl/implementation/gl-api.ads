@@ -795,9 +795,6 @@ private package GL.API is
    function Get_Uniform_Location is new Loader.Function_With_2_Params
      ("glGetUniformLocation", UInt, C.char_array, Int);
 
-   procedure Bind_Attrib_Location is new Loader.Procedure_With_3_Params
-     ("glBindAttribLocation", UInt, Attribute, C.char_array);
-
    function Get_Attached_Shaders is new Loader.Array_Getter_With_4_Params
      ("glGetAttachedShaders", UInt, UInt, UInt_Array);
 

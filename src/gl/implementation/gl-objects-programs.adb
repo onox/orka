@@ -195,15 +195,6 @@ package body GL.Objects.Programs is
       end;
    end Uniform_Type;
 
-   procedure Bind_Attrib_Location (Subject : Program;
-                                   Index : Attribute;
-                                   Name : String) is
-   begin
-      API.Bind_Attrib_Location (Subject.Reference.GL_Id, Index,
-                               Interfaces.C.To_C (Name));
-      Raise_Exception_On_OpenGL_Error;
-   end Bind_Attrib_Location;
-
    function Attrib_Location (Subject : Program; Name : String)
      return Attribute is
       Location : constant Int := API.Get_Program_Resource_Location

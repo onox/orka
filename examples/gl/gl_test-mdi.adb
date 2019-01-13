@@ -64,7 +64,7 @@ procedure GL_Test.MDI is
       Instances_IDs : constant UInt_Array
         := (2, 3);
 
-      Attrib_Pos   : constant Attribute := Program.Attrib_Location ("in_Position");
+      Attrib_Position : constant Attribute := Program.Attrib_Location ("in_Position");
       Attrib_Instance : constant Attribute := Program.Attrib_Location ("in_InstanceID");
    begin
       --  Upload vertices to Buffer1
@@ -83,13 +83,13 @@ procedure GL_Test.MDI is
       UInt_Pointers.Load_To_Immutable_Buffer (Buffer4, Instances_IDs, Storage_Bits'(others => False));
 
       --  Enable and set attributes for the VAO
-      VAO.Enable_Attribute (Attrib_Pos);
+      VAO.Enable_Attribute (Attrib_Position);
       VAO.Enable_Attribute (Attrib_Instance);
 
-      VAO.Set_Attribute_Format (Attrib_Pos, 3, Single_Type, 0);
+      VAO.Set_Attribute_Format (Attrib_Position, 3, Single_Type, 0);
       VAO.Set_Attribute_Format (Attrib_Instance, 1, UInt_Type, 0);
 
-      VAO.Set_Attribute_Binding (Attrib_Pos, 0);
+      VAO.Set_Attribute_Binding (Attrib_Position, 0);
       VAO.Set_Attribute_Binding (Attrib_Instance, 1);
 
       VAO.Set_Attribute_Binding_Divisor (1, 1);
@@ -122,7 +122,6 @@ procedure GL_Test.MDI is
       --  Set up program
       Program.Attach (Vertex_Shader);
       Program.Attach (Fragment_Shader);
-      Program.Bind_Attrib_Location (0, "in_Position");
 
       Program.Link;
       if not Program.Link_Status then
