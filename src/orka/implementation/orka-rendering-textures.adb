@@ -42,10 +42,7 @@ package body Orka.Rendering.Textures is
          Result.Set_Minifying_Filter (Nearest);
          Result.Set_Magnifying_Filter (Nearest);
 
-         Result.Allocate_Storage
-           (Levels => 1,
-            Format => GL.Pixels.R8,
-            Width => 8, Height => 8, Depth => 1);
+         Result.Allocate_Storage (1, 1, GL.Pixels.R8, Width => 8, Height => 8, Depth => 1);
          Result.Load_From_Data
            (Level => 0,
             Width => 8, Height => 8, Depth => 1,

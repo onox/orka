@@ -246,40 +246,20 @@ package GL.Objects.Textures is
 
    procedure Allocate_Storage
      (Object : in out Texture;
-      Levels : Types.Size;
+      Levels, Samples : Types.Size;
       Format : Pixels.Internal_Format;
-      Width, Height, Depth : Types.Size)
-   with Pre  => not Object.Allocated and
-                  Object.Kind not in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
+      Width, Height, Depth : Types.Size;
+      Fixed_Locations : Boolean := True)
+   with Pre  => not Object.Allocated,
         Post => Object.Allocated;
 
    procedure Allocate_Storage
      (Object : in out Texture;
-      Levels : Types.Size;
-      Format : Pixels.Compressed_Format;
-      Width, Height, Depth : Types.Size)
-   with Pre  => not Object.Allocated and
-                  Object.Kind not in LE.Texture_Rectangle | LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
-        Post => Object.Allocated;
-
-   procedure Allocate_Storage_Multisample
-     (Object : in out Texture;
-      Format : Pixels.Internal_Format;
-      Width, Height, Depth : Types.Size;
-      Samples         : Types.Size;
-      Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and
-                  Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
-        Post => Object.Allocated;
-
-   procedure Allocate_Storage_Multisample
-     (Object : in out Texture;
+      Levels, Samples : Types.Size;
       Format : Pixels.Compressed_Format;
       Width, Height, Depth : Types.Size;
-      Samples         : Types.Size;
-      Fixed_Locations : Boolean)
-   with Pre  => not Object.Allocated and
-                  Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array,
+      Fixed_Locations : Boolean := True)
+   with Pre  => not Object.Allocated and Object.Kind /= LE.Texture_Rectangle,
         Post => Object.Allocated;
 
    procedure Load_From_Data

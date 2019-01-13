@@ -103,10 +103,10 @@ package body Orka.Resources.Textures.KTX is
          end case;
 
          if Header.Compressed then
-            Texture.Allocate_Storage (Levels, Header.Compressed_Format,
+            Texture.Allocate_Storage (Levels, 1, Header.Compressed_Format,
               Width, Height, Depth);
          else
-            Texture.Allocate_Storage (Levels, Header.Internal_Format,
+            Texture.Allocate_Storage (Levels, 1, Header.Internal_Format,
               Width, Height, Depth);
          end if;
 

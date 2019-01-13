@@ -166,7 +166,7 @@ procedure Orka_Test.Test_12_Stencil is
       Texture.Set_Magnifying_Filter (Nearest);
 
       --  Load texture data
-      Texture.Allocate_Storage (1, GL.Pixels.RGB32F, 4, 4, 1);
+      Texture.Allocate_Storage (1, 1, GL.Pixels.RGB32F, 4, 4, 1);
       Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 1,
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
@@ -179,7 +179,7 @@ procedure Orka_Test.Test_12_Stencil is
       Texture.Set_Minifying_Filter (Nearest);
       Texture.Set_Magnifying_Filter (Nearest);
 
-      Texture.Allocate_Storage (1, GL.Pixels.RGB8, 500, 500, 1);
+      Texture.Allocate_Storage (1, 1, GL.Pixels.RGB8, 500, 500, 1);
    end Load_Color_Texture;
 
    Scene_Texture, Color_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);

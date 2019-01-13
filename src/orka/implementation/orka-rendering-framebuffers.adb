@@ -25,7 +25,7 @@ package body Orka.Rendering.Framebuffers is
      (Width, Height : Size;
       Color_Texture : GL.Objects.Textures.Texture) return Framebuffer
    is
-      Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D_Multisample);
+      Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D);
    begin
       return Result : Framebuffer
         (Default => False,
@@ -33,7 +33,7 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => 0)
       do
-         Depth_Buffer.Allocate_Storage (1, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
+         Depth_Buffer.Allocate_Storage (1, 1, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
 
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
          Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
@@ -74,10 +74,10 @@ package body Orka.Rendering.Framebuffers is
          Samples => Samples)
       do
          --  Allocate and attach multisampled textures
-         Color_Buffer.Allocate_Storage_Multisample
-           (GL.Pixels.RGBA8, Width, Height, 1, Samples, True);
-         Depth_Buffer.Allocate_Storage_Multisample
-           (GL.Pixels.Depth32F_Stencil8, Width, Height, 1, Samples, True);
+         Color_Buffer.Allocate_Storage
+           (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
+         Depth_Buffer.Allocate_Storage
+           (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
 
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Buffer, 0);
          Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);

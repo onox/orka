@@ -121,7 +121,7 @@ procedure Orka_GLTF is
       Texture.Set_Magnifying_Filter (Nearest);
 
       --  Load texture data
-      Texture.Allocate_Storage (1, GL.Pixels.RGBA8, 4, 4, 7);
+      Texture.Allocate_Storage (1, 1, GL.Pixels.RGBA8, 4, 4, 7);
       Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 7,
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;

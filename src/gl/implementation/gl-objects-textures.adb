@@ -594,90 +594,76 @@ package body GL.Objects.Textures is
 
    procedure Allocate_Storage
      (Object : in out Texture;
-      Levels : Types.Size;
+      Levels, Samples : Types.Size;
       Format : Pixels.Internal_Format;
-      Width, Height, Depth : Types.Size) is
+      Width, Height, Depth : Types.Size;
+      Fixed_Locations : Boolean := True) is
    begin
-      case Object.Dimensions is
-         when One =>
-            API.Texture_Storage_1D
-              (Object.Reference.GL_Id, Levels, Format, Width);
-         when Two =>
-            API.Texture_Storage_2D
-              (Object.Reference.GL_Id, Levels, Format, Width, Height);
-         when Three =>
-            API.Texture_Storage_3D
-              (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
-      end case;
+      if Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array then
+         case Object.Dimensions is
+            when One =>
+               raise Program_Error;
+            when Two =>
+               API.Texture_Storage_2D_Multisample
+                 (Object.Reference.GL_Id, Samples,
+                  Format, Width, Height, Low_Level.Bool (Fixed_Locations));
+            when Three =>
+               API.Texture_Storage_3D_Multisample
+                 (Object.Reference.GL_Id, Samples,
+                  Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
+         end case;
+      else
+         case Object.Dimensions is
+            when One =>
+               API.Texture_Storage_1D
+                 (Object.Reference.GL_Id, Levels, Format, Width);
+            when Two =>
+               API.Texture_Storage_2D
+                 (Object.Reference.GL_Id, Levels, Format, Width, Height);
+            when Three =>
+               API.Texture_Storage_3D
+                 (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
+         end case;
+      end if;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
 
    procedure Allocate_Storage
      (Object : in out Texture;
-      Levels : Types.Size;
+      Levels, Samples : Types.Size;
       Format : Pixels.Compressed_Format;
-      Width, Height, Depth : Types.Size) is
+      Width, Height, Depth : Types.Size;
+      Fixed_Locations : Boolean := True) is
    begin
-      case Object.Dimensions is
-         when One =>
-            raise Program_Error;
-         when Two =>
-            API.Texture_Storage_2D
-              (Object.Reference.GL_Id, Levels, Format, Width, Height);
-         when Three =>
-            API.Texture_Storage_3D
-              (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
-      end case;
+      if Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array then
+         case Object.Dimensions is
+            when One =>
+               raise Program_Error;
+            when Two =>
+               API.Texture_Storage_2D_Multisample
+                 (Object.Reference.GL_Id, Samples,
+                  Format, Width, Height, Low_Level.Bool (Fixed_Locations));
+            when Three =>
+               API.Texture_Storage_3D_Multisample
+                 (Object.Reference.GL_Id, Samples,
+                  Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
+         end case;
+      else
+         case Object.Dimensions is
+            when One =>
+               raise Program_Error;
+            when Two =>
+               API.Texture_Storage_2D
+                 (Object.Reference.GL_Id, Levels, Format, Width, Height);
+            when Three =>
+               API.Texture_Storage_3D
+                 (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
+         end case;
+      end if;
       Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
-
-   procedure Allocate_Storage_Multisample
-     (Object : in out Texture;
-      Format : Pixels.Internal_Format;
-      Width, Height, Depth : Types.Size;
-      Samples         : Types.Size;
-      Fixed_Locations : Boolean) is
-   begin
-      case Object.Dimensions is
-         when One =>
-            raise Program_Error;
-         when Two =>
-            API.Texture_Storage_2D_Multisample
-              (Object.Reference.GL_Id, Samples,
-               Format, Width, Height, Low_Level.Bool (Fixed_Locations));
-         when Three =>
-            API.Texture_Storage_3D_Multisample
-              (Object.Reference.GL_Id, Samples,
-               Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
-      end case;
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage_Multisample;
-
-   procedure Allocate_Storage_Multisample
-     (Object  : in out Texture;
-      Format  : Pixels.Compressed_Format;
-      Width, Height, Depth : Types.Size;
-      Samples         : Types.Size;
-      Fixed_Locations : Boolean) is
-   begin
-      case Object.Dimensions is
-         when One =>
-            raise Program_Error;
-         when Two =>
-            API.Texture_Storage_2D_Multisample
-              (Object.Reference.GL_Id, Samples,
-               Format, Width, Height, Low_Level.Bool (Fixed_Locations));
-         when Three =>
-            API.Texture_Storage_3D_Multisample
-              (Object.Reference.GL_Id, Samples,
-               Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
-      end case;
-      Raise_Exception_On_OpenGL_Error;
-      Object.Allocated := True;
-   end Allocate_Storage_Multisample;
 
    procedure Load_From_Data
      (Object : Texture;
