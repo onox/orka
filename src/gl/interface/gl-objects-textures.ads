@@ -56,7 +56,7 @@ package GL.Objects.Textures is
    subtype Magnifying_Function is Minifying_Function range Nearest .. Linear;
 
    type Wrapping_Mode is (Repeat, Clamp_To_Border, Clamp_To_Edge,
-                          Mirrored_Repeat);
+                          Mirrored_Repeat, Mirror_Clamp_To_Edge);
 
    --  Actual range is implementation-defined
    --
@@ -348,10 +348,12 @@ package GL.Objects.Textures is
 
 private
 
-   for Wrapping_Mode use (Repeat          => 16#2901#,
-                          Clamp_To_Border => 16#812D#,
-                          Clamp_To_Edge   => 16#812F#,
-                          Mirrored_Repeat => 16#8370#);
+   for Wrapping_Mode use
+     (Repeat               => 16#2901#,
+      Clamp_To_Border      => 16#812D#,
+      Clamp_To_Edge        => 16#812F#,
+      Mirrored_Repeat      => 16#8370#,
+      Mirror_Clamp_To_Edge => 16#8743#);
    for Wrapping_Mode'Size use Int'Size;
 
    type Texture_Base (Kind : LE.Texture_Kind)
