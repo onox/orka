@@ -136,6 +136,14 @@ package GL.Objects.Textures is
    procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
+   procedure Set_Seamless_Filtering   (Object : Texture; Enable : Boolean)
+     with Pre => Object.Kind in LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array;
+   --  Enable seamless cubemap filtering
+   --
+   --  Note: this procedure requires the ARB_seamless_cubemap_per_texture
+   --  extension. If this extension is not available, you can enable seamless
+   --  filtering globally via GL.Toggles.
+
    function Minifying_Filter     (Object : Texture) return Minifying_Function;
    function Magnifying_Filter    (Object : Texture) return Magnifying_Function;
    function Minimum_LoD          (Object : Texture) return Double;
@@ -143,6 +151,9 @@ package GL.Objects.Textures is
    function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
    function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
    --  TODO LoD_Bias (Double)
+
+   function Seamless_Filtering   (Object : Texture) return Boolean
+     with Pre => Object.Kind in LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array;
 
    procedure Set_Max_Anisotropy (Object : Texture; Degree : Double)
      with Pre => Degree >= 1.0;

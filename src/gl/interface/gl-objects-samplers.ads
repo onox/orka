@@ -75,6 +75,17 @@ package GL.Objects.Samplers is
    --  Return the LOD bias for the selection of a mipmap.
    --  By default this is 0.0.
 
+   procedure Set_Seamless_Filtering (Object : Sampler; Enable : Boolean);
+   --  Enable seamless cubemap filtering
+   --
+   --  Note: this procedure requires the ARB_seamless_cubemap_per_texture
+   --  extension. If this extension is not available, you can enable seamless
+   --  filtering globally via GL.Toggles.
+
+   function Seamless_Filtering (Object : Sampler) return Boolean;
+   --  Return whether seamless filtering is enabled for cube map
+   --  textures. By default this is False.
+
    procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double)
      with Pre => Degree >= 1.0;
    --  Set the maximum amount of anisotropy filtering to reduce the blurring

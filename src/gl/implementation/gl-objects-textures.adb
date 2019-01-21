@@ -371,6 +371,23 @@ package body GL.Objects.Textures is
       return Ret;
    end Highest_Mipmap_Level;
 
+   procedure Set_Seamless_Filtering (Object : Texture; Enable : Boolean) is
+   begin
+      API.Texture_Parameter_Bool
+        (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless,
+         Low_Level.Bool (Enable));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Seamless_Filtering;
+
+   function Seamless_Filtering   (Object : Texture) return Boolean is
+      Result : Low_Level.Bool := Low_Level.Bool'First;
+   begin
+      API.Get_Texture_Parameter_Bool
+        (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Boolean (Result);
+   end Seamless_Filtering;
+
    procedure Set_Max_Anisotropy (Object : Texture; Degree : Double) is
    begin
       API.Texture_Parameter_Float (Object.Reference.GL_Id,

@@ -23,7 +23,7 @@ package GL.Enums.Textures is
    type Parameter is (Border_Color, Mag_Filter, Min_Filter, Wrap_S,
                       Wrap_T, Wrap_R, Min_LoD, Max_LoD,
                       Base_Level, Max_Level, Max_Anisotropy,
-                      LoD_Bias, Compare_Mode, Compare_Func);
+                      LoD_Bias, Compare_Mode, Compare_Func, Cube_Map_Seamless);
 
    -- needs to be declared here because of subtypes
    for Parameter use (Border_Color    => 16#1004#,
@@ -39,7 +39,8 @@ package GL.Enums.Textures is
                       Max_Anisotropy  => 16#84FE#,
                       LoD_Bias        => 16#8501#,
                       Compare_Mode    => 16#884C#,
-                      Compare_Func    => 16#884D#);
+                      Compare_Func    => 16#884D#,
+                      Cube_Map_Seamless => 16#884F#);
    for Parameter'Size use Low_Level.Enum'Size;
 
    subtype LoD is Parameter range Min_LoD .. Max_Level;

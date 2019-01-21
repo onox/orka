@@ -140,6 +140,23 @@ package body GL.Objects.Samplers is
       return Double (Ret (1));
    end LoD_Bias;
 
+   procedure Set_Seamless_Filtering (Object : Sampler; Enable : Boolean) is
+   begin
+      API.Sampler_Parameter_Bool
+        (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless,
+         Low_Level.Bool (Enable));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Seamless_Filtering;
+
+   function Seamless_Filtering (Object : Sampler) return Boolean is
+      Result : Low_Level.Bool := Low_Level.Bool'First;
+   begin
+      API.Get_Sampler_Parameter_Bool
+        (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Boolean (Result);
+   end Seamless_Filtering;
+
    procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double) is
    begin
       API.Sampler_Parameter_Float (Object.Reference.GL_Id,
