@@ -133,7 +133,7 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Texture
      (Object  : Uniform_Sampler;
-      Texture : GL.Objects.Textures.Texture'Class;
+      Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural) is
    begin
       Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));
@@ -143,7 +143,7 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Image
      (Object  : Uniform_Image;
-      Texture : GL.Objects.Textures.Texture'Class;
+      Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural) is
    begin
       Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));

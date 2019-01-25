@@ -57,7 +57,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Texture
      (Object  : Uniform_Sampler;
-      Texture : GL.Objects.Textures.Texture'Class;
+      Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural)
    with Pre => Texture.Kind = Object.Kind;
    --  TODO Add pre condition to check Texture.Format matches Sampler_Kind
@@ -71,7 +71,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Image
      (Object  : Uniform_Image;
-      Texture : GL.Objects.Textures.Texture'Class;
+      Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural)
    with Pre => Texture.Kind = Object.Kind;
 
