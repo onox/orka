@@ -29,6 +29,8 @@ package GL.Objects.Textures is
    package LE renames Low_Level.Enums;
    package PE renames Pixels.Extensions;
 
+   use all type LE.Texture_Kind;
+
    type Dimension_Count is (One, Two, Three);
 
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count;
@@ -76,11 +78,9 @@ package GL.Objects.Textures is
    type Texture_Base (Kind : LE.Texture_Kind)
      is abstract new GL_Object with private;
 
-   use type LE.Texture_Kind;
-
    function Has_Levels (Object : Texture_Base) return Boolean is
-     (Object.Kind not in LE.Texture_Buffer | LE.Texture_Rectangle |
-        LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array)
+     (Object.Kind not in Texture_Buffer | Texture_Rectangle |
+        Texture_2D_Multisample | Texture_2D_Multisample_Array)
    with Inline;
 
    overriding
@@ -137,7 +137,7 @@ package GL.Objects.Textures is
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
    procedure Set_Seamless_Filtering   (Object : Texture; Enable : Boolean)
-     with Pre => Object.Kind in LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array;
+     with Pre => Object.Kind in Texture_Cube_Map | Texture_Cube_Map_Array;
    --  Enable seamless cubemap filtering
    --
    --  Note: this procedure requires the ARB_seamless_cubemap_per_texture
@@ -153,7 +153,7 @@ package GL.Objects.Textures is
    --  TODO LoD_Bias (Double)
 
    function Seamless_Filtering   (Object : Texture) return Boolean
-     with Pre => Object.Kind in LE.Texture_Cube_Map | LE.Texture_Cube_Map_Array;
+     with Pre => Object.Kind in Texture_Cube_Map | Texture_Cube_Map_Array;
 
    procedure Set_Max_Anisotropy (Object : Texture; Degree : Double)
      with Pre => Degree >= 1.0;
@@ -240,7 +240,7 @@ package GL.Objects.Textures is
    --                        Buffer Texture Loading                           --
    -----------------------------------------------------------------------------
 
-   type Buffer_Texture is new Texture_Base (Kind => LE.Texture_Buffer) with private;
+   type Buffer_Texture is new Texture_Base (Kind => Texture_Buffer) with private;
 
    procedure Attach_Buffer (Object : Buffer_Texture;
                             Internal_Format : Pixels.Internal_Format_Buffer_Texture;
@@ -270,7 +270,7 @@ package GL.Objects.Textures is
       Format : Pixels.Compressed_Format;
       Width, Height, Depth : Types.Size;
       Fixed_Locations : Boolean := True)
-   with Pre  => not Object.Allocated and Object.Kind /= LE.Texture_Rectangle,
+   with Pre  => not Object.Allocated and Object.Kind /= Texture_Rectangle,
         Post => Object.Allocated;
 
    procedure Load_From_Data
@@ -334,7 +334,7 @@ package GL.Objects.Textures is
       Width, Height, Depth : Types.Positive_Size;
       Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
    with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level)
-     and Object.Kind not in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array;
+     and Object.Kind not in Texture_2D_Multisample | Texture_2D_Multisample_Array;
 
    generic
       with package Pointers is new Interfaces.C.Pointers (<>);
@@ -375,6 +375,6 @@ private
       Dimensions : Dimension_Count := Get_Dimensions (Texture.Kind);
    end record;
 
-   type Buffer_Texture is new Texture_Base (Kind => LE.Texture_Buffer) with null record;
+   type Buffer_Texture is new Texture_Base (Kind => Texture_Buffer) with null record;
 
 end GL.Objects.Textures;

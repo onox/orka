@@ -21,7 +21,6 @@ with GL.Enums.Textures;
 package body GL.Objects.Textures is
 
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count is
-      use LE;
    begin
       case Kind is
          when Texture_1D =>
@@ -616,7 +615,7 @@ package body GL.Objects.Textures is
       Width, Height, Depth : Types.Size;
       Fixed_Locations : Boolean := True) is
    begin
-      if Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array then
+      if Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array then
          case Object.Dimensions is
             when One =>
                raise Program_Error;
@@ -653,7 +652,7 @@ package body GL.Objects.Textures is
       Width, Height, Depth : Types.Size;
       Fixed_Locations : Boolean := True) is
    begin
-      if Object.Kind in LE.Texture_2D_Multisample | LE.Texture_2D_Multisample_Array then
+      if Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array then
          case Object.Dimensions is
             when One =>
                raise Program_Error;
@@ -700,7 +699,7 @@ package body GL.Objects.Textures is
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
       --  according to table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
-        := (if Object.Kind = LE.Texture_Cube_Map then Three else Object.Dimensions);
+        := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
    begin
       case Dimensions is
          when One =>
@@ -731,7 +730,7 @@ package body GL.Objects.Textures is
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
       --  according to table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
-        := (if Object.Kind = LE.Texture_Cube_Map then Three else Object.Dimensions);
+        := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
    begin
       case Dimensions is
          when One =>
