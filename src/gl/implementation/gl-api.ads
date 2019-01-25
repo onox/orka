@@ -526,13 +526,13 @@ private package GL.API is
       ("glDeleteBuffers", Size, UInt, Low_Level.UInt_Array);
 
    procedure Bind_Buffer is new Loader.Procedure_With_2_Params
-      ("glBindBuffer", Low_Level.Enums.Buffer_Kind, UInt);
+      ("glBindBuffer", Enums.Buffer_Kind, UInt);
 
    procedure Bind_Buffer_Base is new Loader.Procedure_With_3_Params
-      ("glBindBufferBase", Low_Level.Enums.Buffer_Kind, UInt, UInt);
+      ("glBindBufferBase", Enums.Buffer_Kind, UInt, UInt);
 
    procedure Bind_Buffer_Range is new Loader.Procedure_With_5_Params
-      ("glBindBufferRange", Low_Level.Enums.Buffer_Kind, UInt, UInt,
+      ("glBindBufferRange", Enums.Buffer_Kind, UInt, UInt,
        Low_Level.IntPtr, Low_Level.SizeIPtr);
 
    procedure Named_Buffer_Sub_Data is new Loader.Procedure_With_4_Params
@@ -644,7 +644,7 @@ private package GL.API is
      ("glDeleteFramebuffers", Size, UInt, Low_Level.UInt_Array);
 
    procedure Bind_Framebuffer is new Loader.Procedure_With_2_Params
-     ("glBindFramebuffer", Low_Level.Enums.Framebuffer_Kind, UInt);
+     ("glBindFramebuffer", Enums.Framebuffer_Kind, UInt);
 
    procedure Named_Framebuffer_Draw_Buffers is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferDrawBuffers", UInt, Size, Buffers.Color_Buffer_List);
@@ -653,7 +653,7 @@ private package GL.API is
      ("glNamedFramebufferReadBuffer", UInt, Buffers.Color_Buffer_Selector);
 
    function Check_Named_Framebuffer_Status is new Loader.Function_With_2_Params
-     ("glCheckNamedFramebufferStatus", UInt, Low_Level.Enums.Framebuffer_Kind,
+     ("glCheckNamedFramebufferStatus", UInt, Enums.Framebuffer_Kind,
       Objects.Framebuffers.Framebuffer_Status);
 
    procedure Named_Framebuffer_Texture is new Loader.Procedure_With_4_Params
@@ -690,27 +690,27 @@ private package GL.API is
      ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Bool_Access);
 
    procedure Clear_Named_Framebuffer_Color_Real is new Loader.Procedure_With_4_Params
-     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Color_Buffer,
+     ("glClearNamedFramebufferfv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
    procedure Clear_Named_Framebuffer_Color_Signed_Int is new Loader.Procedure_With_4_Params
-     ("glClearNamedFramebufferiv", UInt, Low_Level.Enums.Only_Color_Buffer,
+     ("glClearNamedFramebufferiv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
    procedure Clear_Named_Framebuffer_Color_Unsigned_Int is new Loader.Procedure_With_4_Params
-     ("glClearNamedFramebufferuiv", UInt, Low_Level.Enums.Only_Color_Buffer,
+     ("glClearNamedFramebufferuiv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
    procedure Clear_Named_Framebuffer_Depth is new Loader.Getter_With_4_Params
-     ("glClearNamedFramebufferfv", UInt, Low_Level.Enums.Only_Depth_Buffer,
+     ("glClearNamedFramebufferfv", UInt, Enums.Only_Depth_Buffer,
       Zero, Buffers.Depth);
 
    procedure Clear_Named_Framebuffer_Stencil is new Loader.Getter_With_4_Params
-     ("glClearNamedFramebufferiv", UInt, Low_Level.Enums.Only_Stencil_Buffer,
+     ("glClearNamedFramebufferiv", UInt, Enums.Only_Stencil_Buffer,
       Zero, Buffers.Stencil_Index);
 
    procedure Clear_Named_Framebuffer_Depth_Stencil is new Loader.Procedure_With_5_Params
-     ("glClearNamedFramebufferfi", UInt, Low_Level.Enums.Only_Depth_Stencil_Buffer,
+     ("glClearNamedFramebufferfi", UInt, Enums.Only_Depth_Stencil_Buffer,
       Zero, Buffers.Depth, Buffers.Stencil_Index);
 
    -----------------------------------------------------------------------------
@@ -986,7 +986,7 @@ private package GL.API is
      ("glResumeTransformFeedback");
 
    procedure Bind_Transform_Feedback is new Loader.Procedure_With_2_Params
-     ("glBindTransformFeedback", Low_Level.Enums.Transform_Feedback_Kind, UInt);
+     ("glBindTransformFeedback", Enums.Transform_Feedback_Kind, UInt);
 
    procedure Transform_Feedback_Buffer_Base is new Loader.Procedure_With_3_Params
       ("glTransformFeedbackBufferBase", UInt, UInt, UInt);

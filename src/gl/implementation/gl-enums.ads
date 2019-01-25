@@ -116,6 +116,24 @@ private package GL.Enums is
    type Framebuffer_Param is (Default_Width, Default_Height, Default_Layers,
                               Default_Samples, Default_Fixed_Sample_Locations);
 
+   -----------------------------------------------------------------------------
+
+   type Framebuffer_Kind is (Read, Draw);
+
+   type Transform_Feedback_Kind is (Transform_Feedback);
+
+   type Buffer_Kind is (Parameter_Buffer, Array_Buffer, Element_Array_Buffer,
+                        Pixel_Pack_Buffer, Pixel_Unpack_Buffer, Uniform_Buffer,
+                        Texture_Buffer, Transform_Feedback_Buffer, Copy_Read_Buffer,
+                        Copy_Write_Buffer, Draw_Indirect_Buffer,
+                        Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
+                        Query_Buffer, Atomic_Counter_Buffer);
+
+   type Only_Depth_Buffer is (Depth_Buffer);
+   type Only_Stencil_Buffer is (Stencil_Buffer);
+   type Only_Depth_Stencil_Buffer is (Depth_Stencil_Buffer);
+   type Only_Color_Buffer is (Color_Buffer);
+
 private
 
    for Shader_Param use (Shader_Type          => 16#8B4F#,
@@ -271,5 +289,43 @@ private
                               Default_Samples                => 16#9313#,
                               Default_Fixed_Sample_Locations => 16#9314#);
    for Framebuffer_Param'Size use Low_Level.Enum'Size;
+
+   -----------------------------------------------------------------------------
+
+   for Framebuffer_Kind use (Read => 16#8CA8#,
+                             Draw => 16#8CA9#);
+   for Framebuffer_Kind'Size use Low_Level.Enum'Size;
+
+   for Transform_Feedback_Kind use (Transform_Feedback => 16#8E22#);
+   for Transform_Feedback_Kind'Size use Low_Level.Enum'Size;
+
+   for Buffer_Kind use (Parameter_Buffer          => 16#80EE#,
+                        Array_Buffer              => 16#8892#,
+                        Element_Array_Buffer      => 16#8893#,
+                        Pixel_Pack_Buffer         => 16#88EB#,
+                        Pixel_Unpack_Buffer       => 16#88EC#,
+                        Uniform_Buffer            => 16#8A11#,
+                        Texture_Buffer            => 16#8C2A#,
+                        Transform_Feedback_Buffer => 16#8C8E#,
+                        Copy_Read_Buffer          => 16#8F36#,
+                        Copy_Write_Buffer         => 16#8F37#,
+                        Draw_Indirect_Buffer      => 16#8F3F#,
+                        Shader_Storage_Buffer     => 16#90D2#,
+                        Dispatch_Indirect_Buffer  => 16#90EE#,
+                        Query_Buffer              => 16#9192#,
+                        Atomic_Counter_Buffer     => 16#92C0#);
+   for Buffer_Kind'Size use Low_Level.Enum'Size;
+
+   for Only_Depth_Buffer use (Depth_Buffer => 16#1801#);
+   for Only_Depth_Buffer'Size use Low_Level.Enum'Size;
+
+   for Only_Stencil_Buffer use (Stencil_Buffer => 16#1802#);
+   for Only_Stencil_Buffer'Size use Low_Level.Enum'Size;
+
+   for Only_Depth_Stencil_Buffer use (Depth_Stencil_Buffer => 16#84F9#);
+   for Only_Depth_Stencil_Buffer'Size use Low_Level.Enum'Size;
+
+   for Only_Color_Buffer use (Color_Buffer => 16#1800#);
+   for Only_Color_Buffer'Size use Low_Level.Enum'Size;
 
 end GL.Enums;

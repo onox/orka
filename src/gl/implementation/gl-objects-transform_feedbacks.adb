@@ -23,7 +23,7 @@ package body GL.Objects.Transform_Feedbacks is
    package Feedback_Object_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Feedback_Object'Class);
 
-   type Feedback_Object_Target_Array is array (Low_Level.Enums.Transform_Feedback_Kind)
+   type Feedback_Object_Target_Array is array (Enums.Transform_Feedback_Kind)
      of Feedback_Object_Holder.Holder;
 
    Current_Feedback_Objects : Feedback_Object_Target_Array;

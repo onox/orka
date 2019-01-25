@@ -15,7 +15,7 @@
 with Ada.Containers.Indefinite_Vectors;
 with Ada.Containers.Vectors;
 
-with GL.Low_Level.Enums;
+with GL.Low_Level;
 
 with Orka.Resources;
 
@@ -24,12 +24,14 @@ package Orka.glTF.Buffers is
 
    use Orka.Resources;
 
-   type Buffer_Kind is new GL.Low_Level.Enums.Buffer_Kind
-     range GL.Low_Level.Enums.Array_Buffer .. GL.Low_Level.Enums.Element_Array_Buffer;
+   type Buffer_Kind is (Array_Buffer, Element_Array_Buffer);
+
+   for Buffer_Kind use (Array_Buffer         => 16#8892#,
+                        Element_Array_Buffer => 16#8893#);
+   for Buffer_Kind'Size use GL.Low_Level.Enum'Size;
 
    Target_Kinds : constant array (Integer range <>) of Buffer_Kind :=
-     (34962 => Buffer_Kind (GL.Low_Level.Enums.Array_Buffer),
-      34963 => Buffer_Kind (GL.Low_Level.Enums.Element_Array_Buffer));
+     (34962 => Array_Buffer, 34963 => Element_Array_Buffer);
 
    type Buffer is record
       Data   : Byte_Array_Pointers.Pointer;

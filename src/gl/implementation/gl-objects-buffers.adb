@@ -31,7 +31,7 @@ package body GL.Objects.Buffers is
       return Ret;
    end Minimum_Alignment;
 
-   use type Low_Level.Enums.Buffer_Kind;
+   use type Enums.Buffer_Kind;
 
    type Format_Data is record
       Internal_Format : GL.Pixels.Internal_Format_Buffer_Texture;
@@ -104,7 +104,7 @@ package body GL.Objects.Buffers is
    package Buffer_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Buffer'Class);
 
-   type Buffer_Target_Array is array (Low_Level.Enums.Buffer_Kind) of Buffer_Holder.Holder;
+   type Buffer_Target_Array is array (Enums.Buffer_Kind) of Buffer_Holder.Holder;
    Current_Buffers : Buffer_Target_Array;
 
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class) is

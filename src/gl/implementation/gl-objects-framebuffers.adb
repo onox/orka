@@ -255,7 +255,7 @@ package body GL.Objects.Framebuffers is
      (Element_Type => Framebuffer'Class);
 
    type Framebuffer_Target_Array is
-     array (Low_Level.Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
+     array (Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
 
    Current_Framebuffers : Framebuffer_Target_Array;
 
@@ -285,7 +285,7 @@ package body GL.Objects.Framebuffers is
                                  Value  : Colors.Color) is
    begin
       API.Clear_Named_Framebuffer_Color_Real
-        (Object.Reference.GL_Id, Low_Level.Enums.Color, Index, Value);
+        (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
       --  TODO Use *fv to clear fixed- and floating-point, *iv for signed int, *uiv for unsigned
       Raise_Exception_On_OpenGL_Error;
    end Clear_Color_Buffer;
@@ -293,18 +293,16 @@ package body GL.Objects.Framebuffers is
    procedure Clear_Depth_Buffer (Object : Framebuffer; Value : Buffers.Depth) is
       Aliased_Value : aliased Buffers.Depth := Value;
    begin
-      API.Clear_Named_Framebuffer_Depth (Object.Reference.GL_Id,
-                                         Low_Level.Enums.Depth_Buffer, 0,
-                                         Aliased_Value);
+      API.Clear_Named_Framebuffer_Depth
+        (Object.Reference.GL_Id, Enums.Depth_Buffer, 0, Aliased_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_Buffer;
 
    procedure Clear_Stencil_Buffer (Object : Framebuffer; Value : Buffers.Stencil_Index) is
       Aliased_Value : aliased Buffers.Stencil_Index := Value;
    begin
-      API.Clear_Named_Framebuffer_Stencil (Object.Reference.GL_Id,
-                                           Low_Level.Enums.Stencil, 0,
-                                           Aliased_Value);
+      API.Clear_Named_Framebuffer_Stencil
+        (Object.Reference.GL_Id, Enums.Stencil_Buffer, 0, Aliased_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Stencil_Buffer;
 
@@ -312,9 +310,8 @@ package body GL.Objects.Framebuffers is
                                              Depth_Value   : Buffers.Depth;
                                              Stencil_Value : Buffers.Stencil_Index) is
    begin
-      API.Clear_Named_Framebuffer_Depth_Stencil (Object.Reference.GL_Id,
-                                                 Low_Level.Enums.Depth_Stencil, 0,
-                                                 Depth_Value, Stencil_Value);
+      API.Clear_Named_Framebuffer_Depth_Stencil
+        (Object.Reference.GL_Id, Enums.Depth_Stencil_Buffer, 0, Depth_Value, Stencil_Value);
       Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_And_Stencil_Buffer;
 

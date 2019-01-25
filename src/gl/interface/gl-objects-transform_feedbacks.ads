@@ -14,7 +14,8 @@
 
 with GL.Objects.Buffers;
 
-private with GL.Low_Level.Enums;
+private with GL.Enums;
+private with GL.Low_Level;
 
 package GL.Objects.Transform_Feedbacks is
    pragma Preelaborate;
@@ -111,11 +112,11 @@ private
 
    type Feedback_Object is new GL_Object with null record;
 
-   type Feedback_Target (Kind : Low_Level.Enums.Transform_Feedback_Kind) is
+   type Feedback_Target (Kind : Enums.Transform_Feedback_Kind) is
      tagged limited null record;
 
    Active_Transform_Feedback : constant Feedback_Target
-     := Feedback_Target'(Kind => Low_Level.Enums.Transform_Feedback);
+     := Feedback_Target'(Kind => Enums.Transform_Feedback);
 
    type Active_Feedback (Mode : Feedback_Connection_Mode) is
      limited new Ada.Finalization.Limited_Controlled with record

@@ -16,7 +16,8 @@ with GL.Buffers;
 with GL.Objects.Textures;
 with GL.Types.Colors;
 
-private with GL.Low_Level.Enums;
+private with GL.Enums;
+private with GL.Low_Level;
 
 package GL.Objects.Framebuffers is
    pragma Preelaborate;
@@ -199,12 +200,12 @@ private
 
    type Framebuffer is new GL_Object with null record;
 
-   type Framebuffer_Target (Kind : Low_Level.Enums.Framebuffer_Kind) is
+   type Framebuffer_Target (Kind : Enums.Framebuffer_Kind) is
      tagged limited null record;
 
    Read_Target  : constant Framebuffer_Target :=
-     Framebuffer_Target'(Kind => Low_Level.Enums.Read);
+     Framebuffer_Target'(Kind => Enums.Read);
    Draw_Target : constant Framebuffer_Target :=
-     Framebuffer_Target'(Kind => Low_Level.Enums.Draw);
+     Framebuffer_Target'(Kind => Enums.Draw);
 
 end GL.Objects.Framebuffers;

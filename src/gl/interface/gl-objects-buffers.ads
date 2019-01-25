@@ -14,7 +14,8 @@
 
 with Interfaces.C.Pointers;
 
-private with GL.Low_Level.Enums;
+private with GL.Enums;
+private with GL.Low_Level;
 
 package GL.Objects.Buffers is
    pragma Preelaborate;
@@ -224,30 +225,30 @@ private
    end record;
    for Storage_Bits'Size use Low_Level.Bitfield'Size;
 
-   type Buffer_Target (Kind : Low_Level.Enums.Buffer_Kind) is
+   type Buffer_Target (Kind : Enums.Buffer_Kind) is
      tagged limited null record;
 
    type Buffer is new GL_Object with null record;
    
    Pixel_Pack_Buffer         : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Pack_Buffer);
+     := Buffer_Target'(Kind => Enums.Pixel_Pack_Buffer);
    Pixel_Unpack_Buffer       : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Pixel_Unpack_Buffer);
+     := Buffer_Target'(Kind => Enums.Pixel_Unpack_Buffer);
    Uniform_Buffer            : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Uniform_Buffer);
+     := Buffer_Target'(Kind => Enums.Uniform_Buffer);
    Transform_Feedback_Buffer : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Transform_Feedback_Buffer);
+     := Buffer_Target'(Kind => Enums.Transform_Feedback_Buffer);
    Draw_Indirect_Buffer      : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Draw_Indirect_Buffer);
+     := Buffer_Target'(Kind => Enums.Draw_Indirect_Buffer);
    Parameter_Buffer          : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Parameter_Buffer);
+     := Buffer_Target'(Kind => Enums.Parameter_Buffer);
    Shader_Storage_Buffer     : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Shader_Storage_Buffer);
+     := Buffer_Target'(Kind => Enums.Shader_Storage_Buffer);
    Dispatch_Indirect_Buffer  : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Dispatch_Indirect_Buffer);
+     := Buffer_Target'(Kind => Enums.Dispatch_Indirect_Buffer);
    Query_Buffer              : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Query_Buffer);
+     := Buffer_Target'(Kind => Enums.Query_Buffer);
    Atomic_Counter_Buffer     : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Low_Level.Enums.Atomic_Counter_Buffer);
+     := Buffer_Target'(Kind => Enums.Atomic_Counter_Buffer);
 
 end GL.Objects.Buffers;
