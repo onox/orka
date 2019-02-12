@@ -33,11 +33,21 @@ package Orka.Containers.Bounded_Vectors is
           Post => Container.Length = Container'Old.Length + 1;
    --  Add the element to the end of the vector
 
+   procedure Remove_Last (Container : in out Vector; Element : out Element_Type)
+     with Pre  => Container.Length > 0,
+          Post => Container.Length = Container'Old.Length - 1;
+
    type Element_Array is array (Positive range <>) of Element_Type;
 
    procedure Query
      (Container : Vector;
       Process   : not null access procedure (Elements : Element_Array));
+
+   procedure Update
+     (Container : in out Vector;
+      Index     : Positive;
+      Process   : not null access procedure (Element : in out Element_Type))
+   with Pre => Index <= Container.Length;
 
    function Element (Container : Vector; Index : Positive) return Element_Type;
 

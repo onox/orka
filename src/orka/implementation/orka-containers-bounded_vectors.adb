@@ -29,12 +29,27 @@ package body Orka.Containers.Bounded_Vectors is
       Container.Elements (Container.Length) := Element;
    end Append;
 
+   procedure Remove_Last (Container : in out Vector; Element : out Element_Type) is
+   begin
+      Element := Container.Elements (Container.Length);
+      Container.Elements (Container.Length .. Container.Length) := (others => <>);
+      Container.Length := Container.Length - 1;
+   end Remove_Last;
+
    procedure Query
      (Container : Vector;
       Process   : not null access procedure (Elements : Element_Array)) is
    begin
       Process (Container.Elements (1 .. Container.Length));
    end Query;
+
+   procedure Update
+     (Container : in out Vector;
+      Index     : Positive;
+      Process   : not null access procedure (Element : in out Element_Type)) is
+   begin
+      Process (Container.Elements (Index));
+   end Update;
 
    function Element (Container : Vector; Index : Positive) return Element_Type is
      (Container.Elements (Index));
