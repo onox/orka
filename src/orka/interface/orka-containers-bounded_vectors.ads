@@ -20,11 +20,13 @@ package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
 
    type Cursor is private;
+   pragma Preelaborable_Initialization (Cursor);
 
    No_Element : constant Cursor;
 
    type Vector (Capacity : Positive) is tagged private
      with Constant_Indexing => Element;
+   pragma Preelaborable_Initialization (Vector);
 
    procedure Append (Container : in out Vector; Element : Element_Type)
      with Pre  => Container.Length < Container.Capacity,
@@ -43,11 +45,14 @@ package Orka.Containers.Bounded_Vectors is
      (Container : aliased Vector;
       Position  : Cursor) return Element_Type;
 
-   function Length (Container : Vector) return Natural;
+   function Length (Container : Vector) return Natural
+     with Inline;
 
-   function Empty (Container : Vector) return Boolean;
+   function Empty (Container : Vector) return Boolean
+     with Inline;
 
-   function Full (Container : Vector) return Boolean;
+   function Full (Container : Vector) return Boolean
+     with Inline;
 
 private
 
@@ -65,6 +70,7 @@ private
    end record
      with Default_Iterator  => Iterate,
           Iterator_Element  => Element_Type;
+   pragma Preelaborable_Initialization (Vector);
 
    -----------------------------------------------------------------------------
 

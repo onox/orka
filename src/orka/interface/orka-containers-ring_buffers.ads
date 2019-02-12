@@ -18,6 +18,7 @@ package Orka.Containers.Ring_Buffers is
    pragma Preelaborate;
 
    type Buffer (Capacity : Positive) is tagged private;
+   pragma Preelaborable_Initialization (Buffer);
 
    procedure Add_Last (Container : in out Buffer; Element : Element_Type)
      with Pre  => Container.Length < Container.Capacity,
@@ -29,11 +30,14 @@ package Orka.Containers.Ring_Buffers is
           Post => Container.Length = Container'Old.Length - 1;
    --  Remove and return the first element in the buffer (at index 1)
 
-   function Length (Container : Buffer) return Natural;
+   function Length (Container : Buffer) return Natural
+     with Inline;
 
-   function Empty (Container : Buffer) return Boolean;
+   function Empty (Container : Buffer) return Boolean
+     with Inline;
 
-   function Full (Container : Buffer) return Boolean;
+   function Full (Container : Buffer) return Boolean
+     with Inline;
 
 private
 
@@ -44,5 +48,6 @@ private
       Head, Tail : Positive := 1;
       Count      : Natural  := 0;
    end record;
+   pragma Preelaborable_Initialization (Buffer);
 
 end Orka.Containers.Ring_Buffers;
