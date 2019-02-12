@@ -144,10 +144,7 @@ package body Orka.Resources.Loader is
 
    Null_Request : constant Read_Request := (others => <>);
 
-   function Get_Null_Request return Read_Request is (Null_Request);
-
-   package Buffers is new Orka.Containers.Ring_Buffers
-     (Read_Request, Get_Null_Request);
+   package Buffers is new Orka.Containers.Ring_Buffers (Read_Request);
 
    protected Queue is
       entry Enqueue (Element : Read_Request);

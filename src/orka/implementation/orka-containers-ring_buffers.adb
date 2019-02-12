@@ -36,7 +36,7 @@ package body Orka.Containers.Ring_Buffers is
    begin
       --  Make position in buffer null to fix references in case Element_Type
       --  is/contains a controlled type
-      Container.Elements (Container.Tail) := Null_Element;
+      Container.Elements (Container.Tail .. Container.Tail) := (others => <>);
 
       Container.Tail  := (Container.Tail mod Container.Capacity) + 1;
       Container.Count := Container.Count - 1;

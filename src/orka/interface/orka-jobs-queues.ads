@@ -29,9 +29,7 @@ package Orka.Jobs.Queues is
       Future : Futures.Pointers.Mutable_Pointer;
    end record;
 
-   function Get_Null_Pair return Pair is (others => <>);
-
-   package Buffers is new Orka.Containers.Ring_Buffers (Pair, Get_Null_Pair);
+   package Buffers is new Orka.Containers.Ring_Buffers (Pair);
 
    type Buffer_Array is array (Executor_Kind) of Buffers.Buffer (Capacity);
 
