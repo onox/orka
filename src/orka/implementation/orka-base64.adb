@@ -14,8 +14,6 @@
 
 with Ada.Unchecked_Conversion;
 
-with System;
-
 package body Orka.Base64 is
 
    type Input_Value is mod 2**6
@@ -26,15 +24,11 @@ package body Orka.Base64 is
 
    type Input_Group is record
       V1, V2, V3, V4 : Input_Value;
-   end record
-     with Bit_Order            => System.Low_Order_First,
-          Scalar_Storage_Order => System.Low_Order_First;
+   end record;
 
    type Output_Group is record
       B1, B2, B3 : Output_Value;
-   end record
-     with Bit_Order            => System.Low_Order_First,
-          Scalar_Storage_Order => System.Low_Order_First;
+   end record;
 
    for Input_Group use record
       V4 at 0 range 0 .. 5;
