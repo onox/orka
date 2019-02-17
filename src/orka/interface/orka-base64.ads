@@ -19,19 +19,8 @@ private package Orka.Base64 is
 
    use Ada.Streams;
 
-   Data_Prefix : constant String;
-
-   function Base64_Encoded (Text : String) return Boolean is
-     (Text'Length >= Data_Prefix'Length
-        and then Text (Text'First .. Text'First + Data_Prefix'Length - 1) = Data_Prefix)
-     with Inline;
-
    function Decode (Input : String) return Stream_Element_Array;
 
    Encoding_Error : exception;
-
-private
-
-   Data_Prefix : constant String := "data:text/plain;base64,";
 
 end Orka.Base64;

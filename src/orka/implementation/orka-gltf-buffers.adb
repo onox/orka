@@ -19,6 +19,13 @@ with Orka.Base64;
 
 package body Orka.glTF.Buffers is
 
+   Data_Prefix : constant String := "data:application/octet-stream;base64,";
+
+   function Base64_Encoded (Text : String) return Boolean is
+     (Text'Length >= Data_Prefix'Length
+        and then Text (Text'First .. Text'First + Data_Prefix'Length - 1) = Data_Prefix)
+     with Inline;
+
    function Create_Buffer
      (Object    : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
@@ -34,9 +41,9 @@ package body Orka.glTF.Buffers is
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
 
       function Load_Data (URI : String) return Byte_Array_Pointers.Pointer is
-         Encoded_Data : String renames URI (Base64.Data_Prefix'Last + 1 .. URI'Last);
+         Encoded_Data : String renames URI (URI'First - 1 + Data_Prefix'Last + 1 .. URI'Last);
       begin
-         if Base64.Base64_Encoded (URI) then
+         if Base64_Encoded (URI) then
             declare
                Pointer : Byte_Array_Pointers.Pointer;
             begin
