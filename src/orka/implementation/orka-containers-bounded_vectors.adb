@@ -23,6 +23,19 @@ package body Orka.Containers.Bounded_Vectors is
    function Full (Container : Vector) return Boolean is
      (Length (Container) = Container.Capacity);
 
+   procedure Append (Container : in out Vector; Elements : Vector) is
+      Start_Index : constant Positive := Container.Length + 1;
+      Stop_Index  : constant Positive := Container.Length + Elements.Length;
+
+      procedure Copy_Elements (Elements : Element_Array) is
+      begin
+         Container.Elements (Start_Index .. Stop_Index) := Elements;
+      end Copy_Elements;
+   begin
+      Elements.Query (Copy_Elements'Access);
+      Container.Length := Stop_Index;
+   end Append;
+
    procedure Append (Container : in out Vector; Element : Element_Type) is
    begin
       Container.Length := Container.Length + 1;

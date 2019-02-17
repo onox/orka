@@ -28,6 +28,10 @@ package Orka.Containers.Bounded_Vectors is
      with Constant_Indexing => Element;
    pragma Preelaborable_Initialization (Vector);
 
+   procedure Append (Container : in out Vector; Elements : Vector)
+     with Pre  => Container.Length + Elements.Length <= Container.Capacity,
+          Post => Container.Length = Container'Old.Length + Elements.Length;
+
    procedure Append (Container : in out Vector; Element : Element_Type)
      with Pre  => Container.Length < Container.Capacity,
           Post => Container.Length = Container'Old.Length + 1;
