@@ -103,35 +103,25 @@ package body Glfw.Monitors is
    function Current_Gamma_Ramp (Object : Monitor) return Gamma_Ramp is
       Raw : constant access constant API.Raw_Gamma_Ramp
         := API.Get_Gamma_Ramp (Object.Handle);
-
-      procedure UShort_To_Gamma_List (Source : API.Unsigned_Short_List;
-                                      Target : in out Gamma_Value_Array) is
-      begin
-         for I in Source'Range loop
-            Target (I) := Source (I);
-         end loop;
-      end UShort_To_Gamma_List;
    begin
       return Ret : Gamma_Ramp (Integer (Raw.Size)) do
-         UShort_To_Gamma_List (API.Unsigned_Short_List_Pointers.Value
-                               (Raw.Red, Interfaces.C.ptrdiff_t (Raw.Size)),
-                               Ret.Red);
-         UShort_To_Gamma_List (API.Unsigned_Short_List_Pointers.Value
-                               (Raw.Green, Interfaces.C.ptrdiff_t (Raw.Size)),
-                               Ret.Green);
-         UShort_To_Gamma_List (API.Unsigned_Short_List_Pointers.Value
-                               (Raw.Blue, Interfaces.C.ptrdiff_t (Raw.Size)),
-                               Ret.Blue);
+         Ret.Red := API.Unsigned_Short_List_Pointers.Value
+           (Raw.Red, Interfaces.C.ptrdiff_t (Raw.Size));
+         Ret.Green := API.Unsigned_Short_List_Pointers.Value
+           (Raw.Green, Interfaces.C.ptrdiff_t (Raw.Size));
+         Ret.Blue := API.Unsigned_Short_List_Pointers.Value
+           (Raw.Blue, Interfaces.C.ptrdiff_t (Raw.Size));
       end return;
    end Current_Gamma_Ramp;
 
    procedure Set_Gamma_Ramp (Object : Monitor; Value : Gamma_Ramp) is
       Raw : aliased API.Raw_Gamma_Ramp;
+      Ramp : Gamma_Ramp := Value;
    begin
-      Raw.Size  := Interfaces.C.unsigned (Value.Size);
-      Raw.Red   := Value.Red   (1)'Unrestricted_Access;
-      Raw.Green := Value.Green (1)'Unrestricted_Access;
-      Raw.Blue  := Value.Blue  (1)'Unrestricted_Access;
+      Raw.Size  := Interfaces.C.unsigned (Ramp.Size);
+      Raw.Red   := Ramp.Red   (Ramp.Red'First)'Unchecked_Access;
+      Raw.Green := Ramp.Green (Ramp.Green'First)'Unchecked_Access;
+      Raw.Blue  := Ramp.Blue  (Ramp.Blue'First)'Unchecked_Access;
 
       API.Set_Gamma_Ramp (Object.Handle, Raw'Access);
    end Set_Gamma_Ramp;

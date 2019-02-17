@@ -48,11 +48,8 @@ private package Glfw.API is
      (Positive, Input.Joysticks.Joystick_Button_State,
       Input.Joysticks.Joystick_Button_States, Input.Joysticks.Released);
 
-   type Unsigned_Short_List is array (Positive range <>) of aliased
-     Interfaces.C.unsigned_short;
-
    package Unsigned_Short_List_Pointers is new Interfaces.C.Pointers
-     (Positive, Interfaces.C.unsigned_short, Unsigned_Short_List, 0);
+     (Positive, Interfaces.C.unsigned_short, Glfw.Monitors.Gamma_Value_Array, 0);
 
    type Raw_Gamma_Ramp is record
       Red, Green, Blue : Unsigned_Short_List_Pointers.Pointer;
