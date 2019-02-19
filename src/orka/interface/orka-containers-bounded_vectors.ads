@@ -20,7 +20,8 @@ package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
 
    type Vector (Capacity : Positive) is tagged private
-     with Constant_Indexing => Element;
+     with Constant_Indexing => Element,
+          Variable_Indexing => Reference;
    pragma Preelaborable_Initialization (Vector);
 
    procedure Append (Container : in out Vector; Elements : Vector)
@@ -36,7 +37,7 @@ package Orka.Containers.Bounded_Vectors is
      with Pre  => Container.Length > 0,
           Post => Container.Length = Container'Old.Length - 1;
 
-   type Element_Array is array (Positive range <>) of Element_Type;
+   type Element_Array is array (Positive range <>) of aliased Element_Type;
 
    procedure Query
      (Container : Vector;
@@ -50,9 +51,12 @@ package Orka.Containers.Bounded_Vectors is
 
    function Element (Container : Vector; Index : Positive) return Element_Type;
 
-   function Element
-     (Container : aliased Vector;
-      Position  : Cursor) return Element_Type;
+   type Reference_Type (Value : not null access Element_Type) is limited private
+     with Implicit_Dereference => Value;
+
+   function Reference
+     (Container : in out Vector;
+      Index     : Positive) return Reference_Type;
 
    function Length (Container : Vector) return Natural
      with Inline;
@@ -73,6 +77,18 @@ private
    end record;
 
    No_Element : constant Cursor := Cursor'(null, 0);
+
+   -----------------------------------------------------------------------------
+
+   function Element
+     (Container : aliased Vector;
+      Position  : Cursor) return Element_Type;
+
+   type Reference_Type (Value : not null access Element_Type) is limited null record;
+
+   function Reference
+     (Container : aliased in out Vector;
+      Position  : Cursor) return Reference_Type;
 
    -----------------------------------------------------------------------------
 

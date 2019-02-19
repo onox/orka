@@ -74,9 +74,29 @@ package body Orka.Containers.Bounded_Vectors is
       elsif Position.Object /= Container'Access then
          raise Program_Error;
       else
-         return Element (Position.Object.all, Position.Index);
+         return Element (Container, Position.Index);
       end if;
    end Element;
+
+   function Reference
+     (Container : in out Vector;
+      Index     : Positive) return Reference_Type is
+   begin
+      return Reference_Type'(Value => Container.Elements (Index)'Access);
+   end Reference;
+
+   function Reference
+     (Container : aliased in out Vector;
+      Position  : Cursor) return Reference_Type is
+   begin
+      if Position = No_Element then
+         raise Constraint_Error;
+      elsif Position.Object /= Container'Access then
+         raise Program_Error;
+      else
+         return Reference (Container, Position.Index);
+      end if;
+   end Reference;
 
    function Iterate (Container : Vector)
      return Vector_Iterator_Interfaces.Reversible_Iterator'Class is
