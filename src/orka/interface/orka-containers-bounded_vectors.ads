@@ -19,11 +19,6 @@ generic
 package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
 
-   type Cursor is private;
-   pragma Preelaborable_Initialization (Cursor);
-
-   No_Element : constant Cursor;
-
    type Vector (Capacity : Positive) is tagged private
      with Constant_Indexing => Element;
    pragma Preelaborable_Initialization (Vector);
@@ -70,6 +65,17 @@ package Orka.Containers.Bounded_Vectors is
 
 private
 
+   type Vector_Access is access constant Vector;
+
+   type Cursor is record
+      Object : Vector_Access;
+      Index  : Natural;
+   end record;
+
+   No_Element : constant Cursor := Cursor'(null, 0);
+
+   -----------------------------------------------------------------------------
+
    function Has_Element (Position : Cursor) return Boolean is
      (Position /= No_Element);
 
@@ -85,17 +91,6 @@ private
      with Default_Iterator  => Iterate,
           Iterator_Element  => Element_Type;
    pragma Preelaborable_Initialization (Vector);
-
-   -----------------------------------------------------------------------------
-
-   type Vector_Access is access constant Vector;
-
-   type Cursor is record
-      Object : Vector_Access;
-      Index  : Natural;
-   end record;
-
-   No_Element : constant Cursor := Cursor'(null, 0);
 
    -----------------------------------------------------------------------------
 
