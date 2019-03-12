@@ -1,0 +1,20 @@
+language: none
+
+build:
+  pre_ci_boot:
+    image_name: tomekw/ada-gnat
+    image_tag: 7.3.0
+    pull: true
+  ci:
+    - apt install -y --no-install-recommends gprbuild make libahven6-dev lcov
+    - make test
+    - make coverage
+
+integrations:
+  notifications:
+    - integrationName: email
+      type: email
+      on_success: never
+      on_failure: never
+      on_cancel: never
+      on_pull_request: never
