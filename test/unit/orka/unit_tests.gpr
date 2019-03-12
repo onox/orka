@@ -15,11 +15,11 @@
 with "ahven";
 
 with "../../../config";
-with "../../../orka";
+with "../../../orka-base";
 
 project Unit_Tests is
 
-   for Languages use ("Ada");
+   for Languages use ("ada");
 
    for Create_Missing_Dirs use "True";
 
@@ -29,9 +29,17 @@ project Unit_Tests is
 
    for Main use ("run_unit_tests");
 
-   package Ide renames Config.Ide;
    package Builder renames Config.Builder;
    package Binder renames Config.Binder;
    package Compiler renames Config.Compiler;
+
+   package Linker is
+      case Config.Mode is
+         when "coverage" =>
+            for Switches ("ada") use ("-lgcov");
+         when others =>
+            null;
+      end case;
+   end Linker;
 
 end Unit_Tests;

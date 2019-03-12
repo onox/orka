@@ -7,7 +7,7 @@ project Examples is
 
    for Create_Missing_Dirs use "True";
 
-   for Object_Dir use "obj";
+   for Object_Dir use "obj/examples";
    for Exec_Dir use "bin";
 
    for Source_Dirs use Orka.Glfw.Shared_Example_Sources &
@@ -42,7 +42,6 @@ project Examples is
 
    for Main use OpenGL_Examples & Orka_Examples;  --  & GLFW_Examples;
 
-   package Ide renames Config.Ide;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
    package Builder renames Config.Builder;

@@ -1,7 +1,6 @@
 [![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
 
-Orka
-====
+# Orka
 
 Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
 an object-oriented API for modern OpenGL and implements various [AZDO][url-azdo]
@@ -23,8 +22,7 @@ functionality for capturing user input on keyboard, mouse and joystick.
 Having a window with an OpenGL context is the prerequisite for using any
 OpenGL functionality.
 
-Features
---------
+## Features
 
  * Thick bindings for OpenGL 4.6 and GLFW 3
  * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
@@ -36,8 +34,7 @@ Features
  * [glTF 2.0][url-gltf] loader
  * [KTX][url-ktx] loader and writer
 
-Build status
-------------
+## Build status
 
 Orka is supported on Linux and Windows. Support for macOS has been removed
 due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
@@ -49,13 +46,14 @@ extensions have not been implemented in their drivers).
 | **GNAT FSF 7.3**   | passing |             |
 | **GNAT FSF 8.2**   | passing |             |
 
-Dependencies
-------------
+## Dependencies
 
 In order to build Orka you need to have:
 
- * A GNAT Ada 2012 compiler with GPRBuild (Either [GNAT FSF][url-fsf] from
+ * A GNAT Ada 2012 compiler (Either [GNAT FSF][url-fsf] from
    your Linux distribution or [GNAT CE][url-ce])
+
+ * GPRBuild and `make`
 
  * [json-ada][url-json-ada]
 
@@ -89,20 +87,20 @@ Optional dependencies:
 
  * [Ahven 2][url-ahven] if you want to build and run the unit tests
 
-Installing dependencies on Ubuntu 18.04 LTS
--------------------------------------------
+ * `lcov` to generate a coverage report for the unit tests
+
+## Installing dependencies on Ubuntu 18.04 LTS
 
 Install the dependencies using apt:
 
 ```sh
-$ sudo apt install gnat-7 gprbuild libahven6-dev
+$ sudo apt install gnat-7 gprbuild make libahven6-dev lcov
 $ sudo apt install libglfw3 libglfw3-dev libegl1-mesa-dev
 ```
 
 Compile and install [json-ada][url-json-ada].
 
-Installing dependencies on Arch Linux
--------------------------------------
+## Installing dependencies on Arch Linux
 
 Install the dependencies using pacman and makepkg:
 
@@ -113,19 +111,19 @@ $ sudo pacman -S gcc-ada glfw-x11
 You also need to compile and install GPRBuild:
 
 ```sh
-$ sudo pacman -S --needed base-devel
+$ sudo pacman -S --needed base-devel git
 $ git clone https://aur.archlinux.org/gprbuild-bootstrap.git
 $ git clone https://aur.archlinux.org/xmlada.git
+$ git clone https://aur.archlinux.org/libgpr.git
 $ git clone https://aur.archlinux.org/gprbuild.git
 ```
 
-Go to each folder (`gprbuild-bootstrap`, then `xmlada`, then `gprbuild`),
+Go to each folder (`gprbuild-bootstrap`, then `xmlada`, `libgpr`, and `gprbuild`),
 inspect the content of the files and then execute `makepkg -si`.
 
 Compile and install [json-ada][url-json-ada].
 
-Compilation
------------
+## Compilation
 
 A Makefile is provided to build the source code, examples, and tools.
 Use `make` to build the source code:
@@ -142,7 +140,7 @@ To disable assertions and avoid checking after each call to OpenGL whether
 an error flag was set and raise a corresponding exception, use the `release` mode:
 
 ```sh
-$ MODE=release make
+$ make MODE=release
 ```
 
 The default mode is `development`. Both `release` and `development` enable general
@@ -156,8 +154,7 @@ debugging symbols, use the `debug` mode. See the following table:
 | OpenGL exceptions | No      | Yes         | Yes   |
 | Debugging symbols | No      | No          | Yes   |
 
-Tools
------
+## Tools
 
 The project provides tools to view glTF models, KTX textures, and to
 display the OpenGL version and list the available extensions.
@@ -170,8 +167,7 @@ You can execute them in the `bin` directory. Some tools load shader
 files from the source directory by using relative paths, so they only work
 with `bin` as the current directory.
 
-Examples
---------
+## Examples
 
 The project contains some examples that demonstrate the basic usage of
 the library. Build the example programs as follows:
@@ -184,23 +180,17 @@ You can execute them in the `bin` directory. Some examples load shader
 files from the source directory by using relative paths, so they only work
 with `bin` as the current directory.
 
-Tests
------
+## Tests
 
-The project contains a set of unit tests. Use `make test` to build the unit tests:
+The project contains a set of unit tests. Use `make test` to build and
+run the unit tests. A coverage report can be generated with `make coverage`:
 
 ```sh
 $ make test
+$ make coverage
 ```
 
-After having build the tests, run the unit tests:
-
-```sh
-$ make run_unit_tests
-```
-
-Installation
-------------
+## Installation
 
 After having compiled the source code, the library can be installed by executing:
 
@@ -210,8 +200,7 @@ $ make PREFIX=/usr install
 
 Change `PREFIX` to the preferred destination folder.
 
-Using Orka in your project
---------------------------
+## Using Orka in your project
 
 Specify the dependency in your \*.gpr project file:
 
@@ -221,8 +210,12 @@ with "orka-glfw";
 
 If you do not want to use GLFW, refer to `orka` instead.
 
-License
--------
+## Contributing
+
+Read the [contributing guidelines][url-contributing] if you want to add
+a bugfix or an improvement.
+
+## License
 
 The OpenGL and GLFW bindings and Orka are distributed under the terms
 of the [Apache License 2.0][url-apache].
@@ -238,3 +231,4 @@ of the [Apache License 2.0][url-apache].
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-egl]: https://www.khronos.org/egl
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
+  [url-contributing]: /CONTRIBUTING.md

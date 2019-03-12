@@ -1,5 +1,5 @@
 with "config";
-with "orka";
+with "orka-lib";
 
 library project Orka.Glfw is
 
@@ -23,7 +23,6 @@ library project Orka.Glfw is
    for Source_Dirs use GLFW_Sources & Orka_Sources;
    for Object_Dir use "obj/glfw";
 
-   package Ide renames Config.Ide;
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
    package Builder renames Config.Builder;

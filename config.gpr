@@ -5,7 +5,7 @@ abstract project Config is
    type Windowing_System_Type is ("windows", "egl");
    Windowing_System : Windowing_System_Type := external ("Windowing_System");
 
-   type Mode_Type is ("debug", "development", "release");
+   type Mode_Type is ("debug", "development", "release", "coverage");
    Mode : Mode_Type := external ("Mode", "development");
 
    type Library_Type is ("static", "relocatable");
@@ -13,8 +13,6 @@ abstract project Config is
 
    type Compiler_Type is ("gnat");
    Compiler_Name : Compiler_Type := external ("Compiler", "gnat");
-
-   Compiler_Flags := external_as_list ("Compiler_Flags", " ");
 
    Compiler_Switches := (
       "-fstack-check",  --  Stack overflow checking
@@ -26,16 +24,12 @@ abstract project Config is
       "-gnaty",         --  Default style checks
       "-gnatyAdOSux-msbc",
       "-gnat2012"       --  Use Ada 2012
-   ) & Compiler_Flags;
+   );
 
    Dev_Switches := (
       "-gnato13",       --  Numeric overflow checking
       "-gnata"          --  Enable assertions
    );
-
-   package Ide is
-      for Vcs_Kind use "Git";
-   end Ide;
 
    package Builder is
       case Mode is
@@ -56,6 +50,9 @@ abstract project Config is
          when "release" =>
             for Switches ("ada") use Compiler_Switches &
               ("-gnatn2", "-fomit-frame-pointer", "-gnato0");
+         when "coverage" =>
+            for Switches ("ada") use Compiler_Switches & Dev_Switches &
+              ("-fprofile-arcs", "-ftest-coverage");
       end case;
 
       for Local_Configuration_Pragmas use "gnat.adc";

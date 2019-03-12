@@ -146,7 +146,7 @@ and making backporting fixes harder.
 
 * In general, try to follow the coding style of the surrounding code.
 
-## License
+## Developer Certificate of Origin
 
 By making a contribution to this project, I certify that:
 
@@ -168,5 +168,7 @@ public and that a record of the contribution (including all personal
 information I submit with it, including my sign-off) is maintained
 indefinitely and may be redistributed consistent with this project or
 the open source license(s) involved.
+
+## License
 
 This project is licensed under the Apache License 2.0.

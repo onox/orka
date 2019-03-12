@@ -3,6 +3,7 @@
 /bin/
 /test/unit/orka/bin/
 /test/unit/orka/obj/
+/test/cov/
 /auto.cgpr
 *.swp
 .DS_Store
