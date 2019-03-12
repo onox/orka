@@ -1,4 +1,8 @@
 [![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
+[![Shippable](https://api.shippable.com/projects/5c87f0065329800700799d31/badge?branch=master)](https://app.shippable.com/github/onox/orka)
+[![GitHub release](https://img.shields.io/github/release/onox/orka.svg)](https://github.com/onox/orka/releases/latest)
+[![IRC](https://img.shields.io/badge/IRC-%23ada%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=ada)
+
 
 # Orka
 
