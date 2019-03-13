@@ -6,7 +6,10 @@ build:
     image_tag: 7.3.0
     pull: true
   ci:
-    - apt install -y --no-install-recommends gprbuild make libahven6-dev lcov
+    - apt update
+    - apt install -y --no-install-recommends gprbuild make libahven6-dev lcov git ca-certificates libegl1-mesa-dev
+    - git clone https://github.com/onox/json-ada.git
+    - cd json-ada; make install; cd ..
     - make test
     - make coverage
 
