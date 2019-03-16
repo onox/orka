@@ -1,44 +1,53 @@
-[![License](https://img.shields.io/:license-Apache_License_2.0-blue.svg)](https://github.com/onox/orka/blob/master/LICENSE.md)
-[![Shippable](https://api.shippable.com/projects/5c87f0065329800700799d31/badge?branch=master)](https://app.shippable.com/github/onox/orka)
+<h1 align="center">Orka</h1>
+
+<h4 align="center">The OpenGL 4.6 Rendering Kernel in Ada 2012</h4>
+
+<div align="center">
+
+[![License](https://img.shields.io/github/license/onox/orka.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
+[![Build status](https://img.shields.io/shippable/5c87f0065329800700799d31/master.svg)](https://app.shippable.com/github/onox/orka)
 [![GitHub release](https://img.shields.io/github/release/onox/orka.svg)](https://github.com/onox/orka/releases/latest)
 [![IRC](https://img.shields.io/badge/IRC-%23ada%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=ada)
 
-
-# Orka
+</div>
 
 Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
 an object-oriented API for modern OpenGL and implements various [AZDO][url-azdo]
-techniques to allow multi-threaded buffer updates and batched draw calls
+techniques to allow multithreaded buffer updates and batched draw calls
 for high performance rendering.
 
-Orka makes it easy to construct OpenGL objects like programs, buffers, and
-framebuffers. A job graph processing system provides flexible multi tasking
-and the ability to load resources asynchronously.
+- **Object-oriented API**. Renderer objects like shader programs, vertex
+formats, (mapped) buffers, and framebuffers, can be operated via an
+object-oriented API that is easy to use. Any arithmetic that you might
+need to perform when writing or reading data from buffers or other objects
+is done for you automatically.
 
-Orka builds upon and provides thick bindings for OpenGL 4.6. These bindings
-are based on the original [OpenGLAda][url-openglada] bindings. Bindings for
-the fixed function functionality have been removed and bindings for various
-extensions of OpenGL 4.x have been added.
+- **Job graph processing system**. A job graph processing system provides
+flexible multitasking by allowing work to be split into multiple small jobs
+which are then processed by any available task from a task pool. Jobs can be
+processed in parallel as well as sequentially.
 
-Additionally, it provides bindings for [GLFW 3.x][url-glfw]. This is a library
-for creating windows with an OpenGL context on them. It also provides
-functionality for capturing user input on keyboard, mouse and joystick.
-Having a window with an OpenGL context is the prerequisite for using any
-OpenGL functionality.
+- **Asynchronous resource loading**. Resources like [KTX][url-ktx] textures
+and [glTF 2.0][url-gltf] models are loaded asynchronously using the job graph
+processing system.
 
-## Features
+- **Quaternions and matrices**. Packages for applying common transformations
+to vectors, quaternions, and matrices using x86 SIMD instructions are provided.
+The various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
+can also be used directly in your own code.
 
- * Thick bindings for OpenGL 4.6 and GLFW 3
- * Various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
- * Transforms (vectors, quaternions, and matrices) and scene trees (uses the x86 SIMD extensions)
- * Easy construction of shader programs, buffers, framebuffers, and vertex formats
- * Job graph processing system for better utilization of all CPU cores
- * Game loop
- * Camera's
- * [glTF 2.0][url-gltf] loader
- * [KTX][url-ktx] loader and writer
+- **OpenGL 4.6 bindings**. Thick bindings are provided for the modern parts
+of OpenGL 4.6. No bindings are provided for deprecated fixed function
+functionality or functions that have been superseded by newer extensions.
 
-## Build status
+- **GLFW 3 bindings**. Provides bindings for [GLFW 3.x][url-glfw]. This
+is a library for creating windows with an OpenGL context on them. It also
+provides functionality for capturing user input on keyboard, mouse, and
+joystick. Having a window with an OpenGL context is the prerequisite for
+using any OpenGL functionality. Libraries like SDL can be used by implementing
+the `Window` interface in the `Orka.Windows` package.
+
+## 🏗 Build status
 
 Orka is supported on Linux and Windows. Support for macOS has been removed
 due to its very outdated OpenGL drivers (most of the required OpenGL 4.x
@@ -50,11 +59,11 @@ extensions have not been implemented in their drivers).
 | **GNAT FSF 7.3**   | passing |             |
 | **GNAT FSF 8.2**   | passing |             |
 
-## Dependencies
+## 📦 Dependencies
 
-In order to build Orka you need to have:
+In order to build and use Orka you need to have:
 
- * A GNAT Ada 2012 compiler (Either [GNAT FSF][url-fsf] from
+ * An Ada 2012 compiler (Either [GNAT FSF][url-fsf] from
    your Linux distribution or [GNAT CE][url-ce])
 
  * GPRBuild and `make`
@@ -127,7 +136,7 @@ inspect the content of the files and then execute `makepkg -si`.
 
 Compile and install [json-ada][url-json-ada].
 
-## Compilation
+## ⚙ Installation
 
 A Makefile is provided to build the source code, examples, and tools.
 Use `make` to build the source code:
@@ -138,7 +147,7 @@ $ make
 
 You can override CFLAGS if desired. The Makefile determines which
 system-dependent API ([EGL][url-egl] or WGL) to use for fetching OpenGL
-function pointers. Adjust the Makefile if necessary.
+function pointers.
 
 To disable assertions and avoid checking after each call to OpenGL whether
 an error flag was set and raise a corresponding exception, use the `release` mode:
@@ -158,7 +167,23 @@ debugging symbols, use the `debug` mode. See the following table:
 | OpenGL exceptions | No      | Yes         | Yes   |
 | Debugging symbols | No      | No          | Yes   |
 
-## Tools
+After having compiled the source code, the library can be installed by
+executing:
+
+```sh
+$ make PREFIX=/usr install
+```
+
+Change `PREFIX` to the preferred destination folder. Specify the dependency
+in your \*.gpr project file:
+
+```ada
+with "orka-glfw";
+```
+
+If you do not want to use GLFW, refer to `orka` instead.
+
+## 🛠 Tools
 
 The project provides tools to view glTF models, KTX textures, and to
 display the OpenGL version and list the available extensions.
@@ -184,7 +209,7 @@ You can execute them in the `bin` directory. Some examples load shader
 files from the source directory by using relative paths, so they only work
 with `bin` as the current directory.
 
-## Tests
+## 🔬 Tests
 
 The project contains a set of unit tests. Use `make test` to build and
 run the unit tests. A coverage report can be generated with `make coverage`:
@@ -194,37 +219,15 @@ $ make test
 $ make coverage
 ```
 
-## Installation
-
-After having compiled the source code, the library can be installed by executing:
-
-```sh
-$ make PREFIX=/usr install
-```
-
-Change `PREFIX` to the preferred destination folder.
-
-## Using Orka in your project
-
-Specify the dependency in your \*.gpr project file:
-
-```ada
-with "orka-glfw";
-```
-
-If you do not want to use GLFW, refer to `orka` instead.
-
-## Contributing
+## 👏 Contributing
 
 Read the [contributing guidelines][url-contributing] if you want to add
 a bugfix or an improvement.
 
-## License
+## 📄 License
 
-The OpenGL and GLFW bindings and Orka are distributed under the terms
-of the [Apache License 2.0][url-apache].
+Orka is distributed under the terms of the [Apache License 2.0][url-apache].
 
-  [url-openglada]: https://github.com/flyx/OpenGLAda
   [url-json-ada]: https://github.com/onox/json-ada
   [url-glfw]: http://www.glfw.org/
   [url-ce]: http://libre.adacore.com/
