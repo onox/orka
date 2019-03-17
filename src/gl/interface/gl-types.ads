@@ -86,8 +86,6 @@ package GL.Types is
    type Numeric_Type is (Byte_Type, UByte_Type, Short_Type,
                          UShort_Type, Int_Type, UInt_Type,
                          Single_Type, Double_Type, Half_Type);
-   type Signed_Numeric_Type is (Byte_Type, Short_Type, Int_Type,
-                                Single_Type, Double_Type, Half_Type);
    type Unsigned_Numeric_Type is (UByte_Type, UShort_Type, UInt_Type);
 
    --  Doesn't really fit here, but there's no other place it fits better
@@ -172,14 +170,6 @@ private
                          Double_Type => 16#140A#,
                          Half_Type   => 16#140B#);
    for Numeric_Type'Size use UInt'Size;
-
-   for Signed_Numeric_Type use (Byte_Type   => 16#1400#,
-                                Short_Type  => 16#1402#,
-                                Int_Type    => 16#1404#,
-                                Single_Type => 16#1406#,
-                                Double_Type => 16#140A#,
-                                Half_Type   => 16#140B#);
-   for Signed_Numeric_Type'Size use UInt'Size;
 
    for Unsigned_Numeric_Type use (UByte_Type  => 16#1401#,
                                   UShort_Type => 16#1403#,

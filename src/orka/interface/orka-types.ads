@@ -43,8 +43,6 @@ package Orka.Types is
 
    subtype Numeric_Type is Element_Type range UByte_Type .. Double_Type;
 
-   subtype Signed_Numeric_Type is Numeric_Type range Byte_Type .. Double_Type;
-
    subtype Unsigned_Numeric_Type is Numeric_Type range UByte_Type .. UInt_Type;
 
    subtype Composite_Type is Element_Type range Single_Vector_Type .. Dispatch_Command_Type;
