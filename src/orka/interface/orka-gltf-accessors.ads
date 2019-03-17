@@ -52,7 +52,7 @@ package Orka.glTF.Accessors is
       Unsigned_Int   => GL.Types.UInt_Type,
       Float          => GL.Types.Single_Type);
 
-   function Unsigned_Type (Value : Component_Kind) return GL.Types.Unsigned_Numeric_Type;
+   function Unsigned_Type (Value : Component_Kind) return GL.Types.Index_Type;
 
    package Transforms renames Orka.Transforms.Singles.Vectors;
 

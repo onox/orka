@@ -43,15 +43,15 @@ package Orka.Types is
 
    subtype Numeric_Type is Element_Type range UByte_Type .. Double_Type;
 
-   subtype Unsigned_Numeric_Type is Numeric_Type range UByte_Type .. UInt_Type;
+   subtype Index_Type is Numeric_Type range UShort_Type .. UInt_Type;
 
    subtype Composite_Type is Element_Type range Single_Vector_Type .. Dispatch_Command_Type;
 
    function Convert
-     (Kind : Types.Numeric_Type) return GL.Types.Numeric_Type;
+     (Kind : Numeric_Type) return GL.Types.Numeric_Type;
 
    function Convert
-     (Kind : Types.Unsigned_Numeric_Type) return GL.Types.Unsigned_Numeric_Type;
+     (Kind : Index_Type) return GL.Types.Index_Type;
 
    -----------------------------------------------------------------------------
 

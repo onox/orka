@@ -86,7 +86,8 @@ package GL.Types is
    type Numeric_Type is (Byte_Type, UByte_Type, Short_Type,
                          UShort_Type, Int_Type, UInt_Type,
                          Single_Type, Double_Type, Half_Type);
-   type Unsigned_Numeric_Type is (UByte_Type, UShort_Type, UInt_Type);
+
+   type Index_Type is (UShort_Type, UInt_Type);
 
    --  Doesn't really fit here, but there's no other place it fits better
    type Attribute is new UInt;
@@ -171,10 +172,9 @@ private
                          Half_Type   => 16#140B#);
    for Numeric_Type'Size use UInt'Size;
 
-   for Unsigned_Numeric_Type use (UByte_Type  => 16#1401#,
-                                  UShort_Type => 16#1403#,
-                                  UInt_Type   => 16#1405#);
-   for Unsigned_Numeric_Type'Size use UInt'Size;
+   for Index_Type use (UShort_Type => 16#1403#,
+                       UInt_Type   => 16#1405#);
+   for Index_Type'Size use UInt'Size;
 
    for Connection_Mode use (Points                   => 16#0000#,
                             Lines                    => 16#0001#,

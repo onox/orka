@@ -206,14 +206,14 @@ package body Orka.Resources.Models.glTF is
    end Buffer_View_Conversions;
 
    procedure Count_Parts
-     (Index_Kind : GL.Types.Unsigned_Numeric_Type;
+     (Index_Kind : GL.Types.Index_Type;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Vertices, Indices : out Natural)
    is
       use type Ada.Containers.Count_Type;
       use type Orka.glTF.Accessors.Component_Kind;
-      use type GL.Types.Unsigned_Numeric_Type;
+      use type GL.Types.Index_Type;
       use Orka.glTF.Accessors;
 
       Count_Vertices : Natural := 0;
@@ -258,7 +258,7 @@ package body Orka.Resources.Models.glTF is
 
             pragma Assert (Unsigned_Type (Accessor_Index.Component) <= Index_Kind,
               "Index of mesh " & Mesh_Name & " has type " &
-              GL.Types.Unsigned_Numeric_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
+              GL.Types.Index_Type'Image (Unsigned_Type (Accessor_Index.Component)) &
               " but expected " & Index_Kind'Image & " or lower");
          begin
             Count_Vertices := Count_Vertices + Accessor_Position.Count;
@@ -289,15 +289,12 @@ package body Orka.Resources.Models.glTF is
       package Vertex_Conversions is new Buffer_View_Conversions (Half, Half_Array, Indirect.Half_Array_Access);
       procedure Get_Singles is new Vertex_Conversions.Get_Array (Single, Single_Array, Orka.Types.Convert);
 
-      function Cast (Value : UByte)  return UInt is (UInt (Value));
       function Cast (Value : UShort) return UInt is (UInt (Value));
       function Cast (Value : UInt)   return UInt is (Value);
 
-      function Convert is new Index_Conversions.Convert_Array (UByte, UByte_Array, Cast);
       function Convert is new Index_Conversions.Convert_Array (UShort, UShort_Array, Cast);
       function Convert is new Index_Conversions.Convert_Array (UInt, UInt_Array, Cast);
 
-      procedure Get_UBytes  is new Index_Conversions.Get_Array (UByte, UByte_Array, Convert);
       procedure Get_UShorts is new Index_Conversions.Get_Array (UShort, UShort_Array, Convert);
       procedure Get_UInts   is new Index_Conversions.Get_Array (UInt, UInt_Array, Convert);
    begin
@@ -341,8 +338,6 @@ package body Orka.Resources.Models.glTF is
 
             --  Convert indices
             case Unsigned_Type (Accessor_Index.Component) is
-               when GL.Types.UByte_Type =>
-                  Get_UBytes (Accessor_Index, View_Index, Indices);
                when GL.Types.UShort_Type =>
                   Get_UShorts (Accessor_Index, View_Index, Indices);
                when GL.Types.UInt_Type =>

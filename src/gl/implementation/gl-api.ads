@@ -228,23 +228,23 @@ private package GL.API is
      ("glMultiDrawArraysIndirectCount", Connection_Mode, Int, Low_Level.IntPtr, Size, Size);
 
    procedure Draw_Elements is new Loader.Procedure_With_4_Params
-     ("glDrawElements", Connection_Mode, Size, Unsigned_Numeric_Type, Low_Level.IntPtr);
+     ("glDrawElements", Connection_Mode, Size, Index_Type, Low_Level.IntPtr);
 
    procedure Draw_Elements_Instanced_Base_Instance is new Loader.Procedure_With_6_Params
      ("glDrawElementsInstancedBaseInstance", Connection_Mode, Size,
-      Unsigned_Numeric_Type, Low_Level.IntPtr, Size, UInt);
+      Index_Type, Low_Level.IntPtr, Size, UInt);
 
    procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance
      is new Loader.Procedure_With_7_Params
      ("glDrawElementsInstancedBaseVertexBaseInstance", Connection_Mode, Size,
-      Unsigned_Numeric_Type, Low_Level.IntPtr, Size, Int, UInt);
+      Index_Type, Low_Level.IntPtr, Size, Int, UInt);
 
    procedure Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
-     ("glMultiDrawElementsIndirect", Connection_Mode, Unsigned_Numeric_Type,
+     ("glMultiDrawElementsIndirect", Connection_Mode, Index_Type,
       Int, Size, Size);
 
    procedure Multi_Draw_Elements_Indirect_Count is new Loader.Procedure_With_6_Params
-     ("glMultiDrawElementsIndirectCount", Connection_Mode, Unsigned_Numeric_Type,
+     ("glMultiDrawElementsIndirectCount", Connection_Mode, Index_Type,
       Int, Low_Level.IntPtr, Size, Size);
 
    -----------------------------------------------------------------------------

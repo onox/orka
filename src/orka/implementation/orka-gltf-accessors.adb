@@ -16,17 +16,16 @@ with Orka.SIMD;
 
 package body Orka.glTF.Accessors is
 
-   function Unsigned_Type (Value : Component_Kind) return GL.Types.Unsigned_Numeric_Type is
+   function Unsigned_Type (Value : Component_Kind) return GL.Types.Index_Type is
    begin
       case Value is
-         when Unsigned_Byte =>
-            return GL.Types.UByte_Type;
          when Unsigned_Short =>
             return GL.Types.UShort_Type;
          when Unsigned_Int =>
             return GL.Types.UInt_Type;
          when others =>
-            raise Constraint_Error with "accessor.componentType is not of unsigned type";
+            --  Note: Unsigned_Byte is not supported for commonality with Vulkan
+            raise Constraint_Error with "accessor.componentType is not ushort or uint";
       end case;
    end Unsigned_Type;
 

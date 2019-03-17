@@ -20,7 +20,7 @@ package body Orka.Types is
    use SIMD.AVX.Singles;
 
    function Convert
-     (Kind : Types.Numeric_Type) return GL.Types.Numeric_Type
+     (Kind : Numeric_Type) return GL.Types.Numeric_Type
    is (case Kind is
       when UByte_Type  => GL.Types.UByte_Type,
       when UShort_Type => GL.Types.UShort_Type,
@@ -35,11 +35,10 @@ package body Orka.Types is
       when Double_Type => GL.Types.Double_Type);
 
    function Convert
-     (Kind : Types.Unsigned_Numeric_Type) return GL.Types.Unsigned_Numeric_Type
+     (Kind : Index_Type) return GL.Types.Index_Type
    is (case Kind is
-      when UByte_Type  => GL.Types.UByte_Type,
-      when UShort_Type => GL.Types.UShort_Type,
-      when UInt_Type   => GL.Types.UInt_Type);
+         when UShort_Type => GL.Types.UShort_Type,
+         when UInt_Type   => GL.Types.UInt_Type);
 
    -----------------------------------------------------------------------------
 

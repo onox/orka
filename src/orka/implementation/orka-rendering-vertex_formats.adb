@@ -57,7 +57,7 @@ package body Orka.Rendering.Vertex_Formats is
 
    function Create_Vertex_Format
      (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Unsigned_Numeric_Type) return Vertex_Format is
+      Index_Kind : Types.Index_Type) return Vertex_Format is
    begin
       return Result : Vertex_Format do
          Result.Mode       := Mode;
@@ -65,7 +65,7 @@ package body Orka.Rendering.Vertex_Formats is
       end return;
    end Create_Vertex_Format;
 
-   function Index_Kind (Object : Vertex_Format) return Types.Unsigned_Numeric_Type is
+   function Index_Kind (Object : Vertex_Format) return Types.Index_Type is
      (Object.Index_Kind);
 
    function Attribute_Kind

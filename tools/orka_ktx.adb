@@ -90,7 +90,7 @@ begin
       use Orka.Resources;
 
       use GL.Types;
-      use all type Orka.Types.Unsigned_Numeric_Type;
+      use all type Orka.Types.Index_Type;
 
       Location_Shaders : constant Locations.Location_Ptr
         := Locations.Directories.Create_Location ("../resources");

@@ -42,9 +42,9 @@ package Orka.Rendering.Vertex_Formats is
 
    function Create_Vertex_Format
      (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Unsigned_Numeric_Type) return Vertex_Format;
+      Index_Kind : Types.Index_Type) return Vertex_Format;
 
-   function Index_Kind (Object : Vertex_Format) return Types.Unsigned_Numeric_Type;
+   function Index_Kind (Object : Vertex_Format) return Types.Index_Type;
 
    function Attribute_Kind
      (Object : Vertex_Format;
@@ -97,7 +97,7 @@ private
 
    type Vertex_Format is tagged record
       Mode         : GL.Types.Connection_Mode;
-      Index_Kind   : Types.Unsigned_Numeric_Type;
+      Index_Kind   : Types.Index_Type;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Attributes   : Attribute_Buffers.Vector;
    end record;

@@ -38,32 +38,32 @@ package GL.Drawing is
 
    procedure Draw_Elements
      (Mode       : Connection_Mode; Count : Size;
-      Index_Type : Unsigned_Numeric_Type;
+      Index_Kind : Index_Type;
       Index_Offset : Natural);
 
    procedure Draw_Elements
      (Mode       : Connection_Mode; Count : Size;
-      Index_Type : Unsigned_Numeric_Type;
+      Index_Kind : Index_Type;
       Instances  : Size;
       Index_Offset  : Natural;
       Base_Instance : Size := 0);
 
    procedure Draw_Elements_Base_Vertex_Base_Instance
      (Mode       : Connection_Mode; Count : Size;
-      Index_Type : Unsigned_Numeric_Type;
+      Index_Kind : Index_Type;
       Instances  : Size;
       Vertex_Offset, Index_Offset : Natural;
       Base_Instance : Size := 0);
 
    procedure Draw_Multiple_Elements_Indirect
      (Mode       : Connection_Mode;
-      Index_Type : Unsigned_Numeric_Type;
+      Index_Kind : Index_Type;
       Count      : Size;
       Offset     : Size := 0);
 
    procedure Draw_Multiple_Elements_Indirect_Count
      (Mode         : Connection_Mode;
-      Index_Type   : Unsigned_Numeric_Type;
+      Index_Kind   : Index_Type;
       Max_Count    : Size;
       Offset, Count_Offset : Size := 0);
 
