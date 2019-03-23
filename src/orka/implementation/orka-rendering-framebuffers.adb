@@ -55,6 +55,8 @@ package body Orka.Rendering.Framebuffers is
       do
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
          Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Texture, 0);
+         --  TODO What if a Depth or Stencil-only attachment is needed?
+         --    --> check format of Depth_Texture
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Texture);
@@ -78,9 +80,12 @@ package body Orka.Rendering.Framebuffers is
            (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
          Depth_Buffer.Allocate_Storage
            (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
+         --  TODO What if a different format is needed?
+         --  TODO What if a Depth or Stencil-only format is needed?
 
          Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Buffer, 0);
          Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
+         --  TODO Make sure attachment matches format of Depth_Buffer
 
          Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Buffer);
          Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);

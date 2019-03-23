@@ -83,6 +83,7 @@ package GL.Objects.Framebuffers is
                              Level : Textures.Mipmap_Level)
      with Pre => Object /= Default_Framebuffer;
    --  TODO If Texture_Object is of MSAA kind, then Level must be 0
+   --  TODO Attachment = Depth_Stencil iff Texture_Object.Format = Depth_Stencil
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
                                    Attachment : Attachment_Point;
@@ -90,6 +91,7 @@ package GL.Objects.Framebuffers is
                                    Level : Textures.Mipmap_Level;
                                    Layer : Natural)
      with Pre => Object /= Default_Framebuffer;
+   --  TODO Attachment = Depth_Stencil iff Texture_Object.Format = Depth_Stencil
 
    procedure Detach (Object : Framebuffer; Attachment : Attachment_Point)
      with Pre => Object /= Default_Framebuffer;

@@ -23,7 +23,11 @@ struct Vertex {
 
 // Use 1 oversized triangle instead of 2 triangles forming a quad
 // This prevents overshading along the diagonal and better cache
-// efficiency on certain hardware architectures
+// efficiency on certain hardware architectures [1]
+//
+// References:
+//
+// [1] https://michaldrobot.com/2014/04/01/gcn-execution-patterns-in-full-screen-passes/
 const Vertex vertices[] = {
     {vec2(-1.0, -1.0), vec2(0.0, 0.0)},
     {vec2( 3.0, -1.0), vec2(2.0, 0.0)},
