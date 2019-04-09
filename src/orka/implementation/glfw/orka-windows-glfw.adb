@@ -64,6 +64,7 @@ package body Orka.Windows.GLFW is
    procedure Finalize (Object : in out GLFW_Window) is
    begin
       if not Object.Finalized then
+         Messages.Insert (Debug, "Closing GLFW window");
          Object.Destroy;
          Object.Finalized := True;
       end if;
@@ -96,6 +97,12 @@ package body Orka.Windows.GLFW is
             begin
                Reference.Get_Framebuffer_Size (Width, Height);
                Result.Framebuffer_Size_Changed (Natural (Width), Natural (Height));
+
+               Messages.Insert (Debug, "Created GLFW window and GL context");
+               Messages.Insert (Debug, "  size:      " &
+                 Trim (Width'Image) & " x " & Trim (Height'Image));
+               Messages.Insert (Debug, "  visible:   " & (if Visible then "yes" else "no"));
+               Messages.Insert (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
             end;
 
             --  Callbacks
@@ -113,7 +120,7 @@ package body Orka.Windows.GLFW is
 
    overriding
    function Pointer_Input
-     (Object : GLFW_Window) return Inputs.Pointer_Input_Ptr
+     (Object : GLFW_Window) return Inputs.Pointers.Pointer_Input_Ptr
    is (Object.Input);
 
    overriding

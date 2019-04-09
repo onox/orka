@@ -38,7 +38,7 @@ package Orka.Windows.GLFW is
 
    overriding
    function Pointer_Input
-     (Object : GLFW_Window) return Inputs.Pointer_Input_Ptr;
+     (Object : GLFW_Window) return Inputs.Pointers.Pointer_Input_Ptr;
 
    overriding
    function Width (Object : GLFW_Window) return Positive;
@@ -75,12 +75,12 @@ private
    procedure Finalize (Object : in out Active_GLFW);
 
    type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
-      Input     : Inputs.Pointer_Input_Ptr;
+      Input     : Inputs.Pointers.Pointer_Input_Ptr;
       Finalized : Boolean;
       Position_X : GL.Types.Double := 0.0;
       Position_Y : GL.Types.Double := 0.0;
-      Scroll_X  : GL.Types.Double := 0.0;
-      Scroll_Y  : GL.Types.Double := 0.0;
+      Scroll_X   : GL.Types.Double := 0.0;
+      Scroll_Y   : GL.Types.Double := 0.0;
       Width, Height : Positive;
    end record;
 

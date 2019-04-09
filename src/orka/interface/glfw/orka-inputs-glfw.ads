@@ -15,49 +15,17 @@
 with Glfw.Input.Mouse;
 with Glfw.Windows;
 
+with Orka.Inputs.Pointers.Default;
+
 package Orka.Inputs.GLFW is
    pragma Preelaborate;
 
-   type GLFW_Pointer_Input is new Pointer_Input with private;
+   type GLFW_Pointer_Input is new Pointers.Default.Abstract_Pointer_Input with private;
 
    overriding
-   function Position_X (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Position_Y (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Delta_X (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Delta_Y (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Scroll_X (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Scroll_Y (Object : GLFW_Pointer_Input) return GL.Types.Single;
-
-   overriding
-   function Locked (Object : GLFW_Pointer_Input) return Boolean;
-
-   overriding
-   function Visible (Object : GLFW_Pointer_Input) return Boolean;
-
-   overriding
-   procedure Lock_Pointer (Object : in out GLFW_Pointer_Input; Locked : Boolean);
-
-   overriding
-   procedure Set_Visible (Object : in out GLFW_Pointer_Input; Visible : Boolean);
-
-   overriding
-   function Button_Pressed
-     (Object  : GLFW_Pointer_Input;
-      Subject : Button) return Boolean;
-
-   procedure Set_Position (Object : in out GLFW_Pointer_Input; X, Y : GL.Types.Double);
-
-   procedure Set_Scroll_Offset (Object : in out GLFW_Pointer_Input; X, Y : GL.Types.Double);
+   procedure Set_Cursor_Mode
+     (Object  : in out GLFW_Pointer_Input;
+      Mode    : Pointers.Default.Cursor_Mode);
 
    procedure Set_Button_State
      (Object  : in out GLFW_Pointer_Input;
@@ -68,21 +36,11 @@ package Orka.Inputs.GLFW is
      (Object  : in out GLFW_Pointer_Input;
       Window  : Standard.Glfw.Windows.Window_Reference);
 
-   function Create_Pointer_Input return Pointer_Input_Ptr;
+   function Create_Pointer_Input return Inputs.Pointers.Pointer_Input_Ptr;
 
 private
 
-   type Button_Array is array (Button) of Boolean;
-
-   type GLFW_Pointer_Input is new Pointer_Input with record
-      X, Y           : GL.Types.Double := 0.0;
-      Prev_X, Prev_Y : GL.Types.Double := 0.0;
-      Last_X, Last_Y : GL.Types.Double := 0.0;
-      Prev_Offset_X, Prev_Offset_Y : GL.Types.Double := 0.0;
-      Last_Offset_X, Last_Offset_Y : GL.Types.Double := 0.0;
-      Buttons : Button_Array := (others => False);
-      Locked  : Boolean := False;
-      Visible : Boolean := True;
+   type GLFW_Pointer_Input is new Pointers.Default.Abstract_Pointer_Input with record
       Window  : access Standard.Glfw.Windows.Window;
    end record;
 

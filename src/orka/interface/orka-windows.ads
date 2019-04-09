@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Inputs;
+with Orka.Inputs.Pointers;
 
 package Orka.Windows is
    pragma Preelaborate;
@@ -22,7 +22,7 @@ package Orka.Windows is
    type Window_Ptr is not null access all Window'Class;
 
    function Pointer_Input
-     (Object : Window) return Inputs.Pointer_Input_Ptr is abstract;
+     (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;
 
    function Width (Object : Window) return Positive is abstract;
 

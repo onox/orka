@@ -16,7 +16,7 @@ with GL.Types;
 
 with Orka.Behaviors;
 with Orka.Contexts;
-with Orka.Inputs;
+with Orka.Inputs.Pointers;
 with Orka.Rendering.Framebuffers;
 with Orka.Transforms.Singles.Matrices;
 
@@ -52,7 +52,7 @@ package Orka.Cameras is
    -----------------------------------------------------------------------------
 
    type Camera
-     (Input : Inputs.Pointer_Input_Ptr;
+     (Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
       FB    : Rendering.Framebuffers.Framebuffer_Ptr) is abstract tagged private;
 
@@ -70,7 +70,7 @@ package Orka.Cameras is
    with Inline;
 
    type Parameter_Record is record
-      Input : Inputs.Pointer_Input_Ptr;
+      Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
       FB    : Rendering.Framebuffers.Framebuffer_Ptr;
    end record;
@@ -82,7 +82,7 @@ package Orka.Cameras is
 
    function Create_Camera
      (Kind  : Camera_Kind;
-      Input : Inputs.Pointer_Input_Ptr;
+      Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
       FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera'Class;
 
@@ -210,7 +210,7 @@ private
    end record;
 
    type Camera
-     (Input : Inputs.Pointer_Input_Ptr;
+     (Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
       FB    : Rendering.Framebuffers.Framebuffer_Ptr) is abstract tagged null record;
 

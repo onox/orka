@@ -118,7 +118,7 @@ package body Orka.Cameras is
 
    overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
+      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Inputs.Pointers.Right);
    begin
       Object.Input.Lock_Pointer (Using_Camera);
 
@@ -134,7 +134,7 @@ package body Orka.Cameras is
 
    overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
+      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Inputs.Pointers.Right);
    begin
       Object.Input.Lock_Pointer (Using_Camera);
 
@@ -148,7 +148,7 @@ package body Orka.Cameras is
 
    overriding
    procedure Update (Object : in out Follow_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Orka.Inputs.Right);
+      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Inputs.Pointers.Right);
    begin
       Object.Input.Lock_Pointer (Using_Camera);
 
@@ -270,7 +270,7 @@ package body Orka.Cameras is
 
    function Create_Camera
      (Kind  : Camera_Kind;
-      Input : Inputs.Pointer_Input_Ptr;
+      Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
       FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera'Class
    is
