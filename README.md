@@ -44,8 +44,11 @@ functionality or functions that have been superseded by newer extensions.
 is a library for creating windows with an OpenGL context on them. It also
 provides functionality for capturing user input on keyboard, mouse, and
 joystick. Having a window with an OpenGL context is the prerequisite for
-using any OpenGL functionality. Libraries like SDL can be used by implementing
-the `Window` interface in the `Orka.Windows` package.
+using any OpenGL functionality. Alternatively, libraries like SDL can be
+used instead to create windows and process input.
+
+- **SDL 2 support**. Windows and input can be managed via [SDL][url-sdl]
+instead of GLFW if desired.
 
 ## 🏗 Build status
 
@@ -94,7 +97,9 @@ In order to build and use Orka you need to have:
 
 Recommended dependencies:
 
- * [GLFW 3][url-glfw] for the GLFW bindings
+ * [GLFW 3][url-glfw] for the GLFW bindings, tools, and examples
+
+ * [SDLAda][url-sdlada] for managing windows and input via SDL 2
 
 Optional dependencies:
 
@@ -174,14 +179,12 @@ executing:
 $ make PREFIX=/usr install
 ```
 
-Change `PREFIX` to the preferred destination folder. Specify the dependency
-in your \*.gpr project file:
+Change `PREFIX` to the preferred destination folder. Import `orka-glfw` (or
+`orka-sdl`) in your \*.gpr project file:
 
 ```ada
 with "orka-glfw";
 ```
-
-If you do not want to use GLFW, refer to `orka` instead.
 
 ## 🛠 Tools
 
@@ -230,6 +233,8 @@ Orka is distributed under the terms of the [Apache License 2.0][url-apache].
 
   [url-json-ada]: https://github.com/onox/json-ada
   [url-glfw]: http://www.glfw.org/
+  [url-sdl]: http://www.libsdl.org/
+  [url-sdlada]: https://github.com/Lucretia/sdlada
   [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-ahven]: http://ahven.stronglytyped.org
