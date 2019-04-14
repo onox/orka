@@ -29,4 +29,5 @@ void main(void) {
 
     const vec2 image_uv = clamp((fs_in.uv - begin_uv) / (end_uv - begin_uv), 0.0, 1.0);
     out_color.rgb = float(e1 && e2) * vec3(texture(colorTexture, image_uv));
+    out_color.a = 1.0;
 }
