@@ -19,10 +19,47 @@ package GL.Window is
 
    use GL.Types;
 
-   procedure Set_Viewport (X, Y : Int; Width, Height : Size);
-   procedure Get_Viewport (X, Y : out Int; Width, Height : out Size);
+   type Viewport is record
+      X, Y, Width, Height : Single;
+   end record;
 
-   procedure Set_Depth_Range (Near, Far : Double);
-   procedure Get_Depth_Range (Near, Far : out Double);
+   type Depth_Range is record
+      Near, Far : Double;
+   end record;
+
+   type Scissor_Rectangle is record
+      Left, Bottom  : Int;
+      Width, Height : Size;
+   end record;
+
+   type Viewport_List is array (UInt range <>) of Viewport
+     with Convention => C;
+
+   type Depth_Range_List is array (UInt range <>) of Depth_Range
+     with Convention => C;
+
+   type Scissor_Rectangle_List is array (UInt range <>) of Scissor_Rectangle
+     with Convention => C;
+
+   function Maximum_Viewports return Size
+     with Post => Maximum_Viewports'Result >= 16;
+
+   function Viewport_Subpixel_Bits return Size;
+
+   function Origin_Range return Singles.Vector2;
+   --  Return the minimum and maximum X and Y of the origin (lower left
+   --  corner) of a viewport
+
+   function Maximum_Extent return Singles.Vector2;
+   --  Return the maximum width and height of a viewport
+
+   procedure Set_Viewports (List : Viewport_List);
+   function Get_Viewport (Index : UInt) return Viewport;
+
+   procedure Set_Depth_Ranges (List : Depth_Range_List);
+   function Get_Depth_Range (Index : UInt) return Depth_Range;
+
+   procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List);
+   function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle;
 
 end GL.Window;

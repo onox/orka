@@ -41,6 +41,7 @@ with GL.Toggles;
 with GL.Types.Colors;
 with GL.Types.Compute;
 with GL.Types.Debug;
+with GL.Window;
 
 with Interfaces.C.Strings;
 
@@ -83,14 +84,17 @@ private package GL.API is
    procedure Get_Double is new Loader.Getter_With_2_Params
      ("glGetDoublev", Enums.Getter.Parameter, Double);
 
-   procedure Get_Double_Vec2 is new Loader.Getter_With_2_Params
-     ("glGetDoublev", Enums.Getter.Parameter, Doubles.Vector2);
+   procedure Get_Double_Vec2_I is new Loader.Getter_With_3_Params
+     ("glGetDoublei_v", Enums.Getter.Parameter, UInt, Doubles.Vector2);
 
    procedure Get_Single is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Single);
 
    procedure Get_Single_Vec2 is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
+
+   procedure Get_Single_Vec4_I is new Loader.Getter_With_3_Params
+     ("glGetFloati_v", Enums.Getter.Parameter, UInt, Singles.Vector4);
 
    procedure Get_Color is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Colors.Color);
@@ -105,9 +109,6 @@ private package GL.API is
    procedure Get_Integer is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Int);
 
-   procedure Get_Int_Vec4 is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Ints.Vector4);
-
    procedure Get_Unsigned_Integer is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, UInt);
 
@@ -116,6 +117,9 @@ private package GL.API is
 
    procedure Get_Size_I is new Loader.Getter_With_3_Params
      ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Size);
+
+   procedure Get_Int_Vec4_I is new Loader.Getter_With_3_Params
+     ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Ints.Vector4);
 
    procedure Get_Blend_Factor is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Blend_Factor);
@@ -1093,12 +1097,13 @@ private package GL.API is
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
 
-   procedure Depth_Range is new Loader.Procedure_With_2_Params
-     ("glDepthRange", Double, Double);
+   procedure Depth_Range_Array is new Loader.Procedure_With_3_Params
+     ("glDepthRangeArrayv", UInt, Size, Window.Depth_Range_List);
 
-   procedure Viewport is new Loader.Procedure_With_4_Params
-     ("glViewport", Int, Int, Size, Size);
+   procedure Viewport_Array is new Loader.Procedure_With_3_Params
+     ("glViewportArrayv", UInt, Size, Window.Viewport_List);
 
-   --  TODO glViewportArray, glDepthRangeArray, glScissorArray
+   procedure Scissor_Array is new Loader.Procedure_With_3_Params
+     ("glScissorArrayv", UInt, Size, Window.Scissor_Rectangle_List);
 
 end GL.API;

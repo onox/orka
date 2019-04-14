@@ -117,7 +117,12 @@ package body Orka.Rendering.Framebuffers is
       GL.Objects.Framebuffers.Draw_Target.Bind (Object.GL_Framebuffer);
 
       --  Adjust viewport
-      GL.Window.Set_Viewport (0, 0, Object.Width, Object.Height);
+      GL.Window.Set_Viewports
+        ((0 => (X      => 0.0,
+                Y      => 0.0,
+                Width  => Single (Object.Width),
+                Height => Single (Object.Height))
+        ));
 
       --  Check attachments
       if not Object.Default then
