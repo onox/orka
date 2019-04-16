@@ -20,6 +20,8 @@ with Orka.Inputs.Pointers;
 with Orka.Rendering.Framebuffers;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Types;
+
 package Orka.Cameras is
    pragma Preelaborate;
 
@@ -69,22 +71,10 @@ package Orka.Cameras is
      (Object.Lens.Projection_Matrix)
    with Inline;
 
-   type Parameter_Record is record
-      Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr;
-      FB    : Rendering.Framebuffers.Framebuffer_Ptr;
-   end record;
-
    function Create_Camera
-     (Parameters : not null access Parameter_Record) return Camera is abstract;
-
-   type Camera_Kind is (Look_From, Look_At, Rotate_Around, Follow);
-
-   function Create_Camera
-     (Kind  : Camera_Kind;
-      Input : Inputs.Pointers.Pointer_Input_Ptr;
+     (Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera'Class;
+      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Camera is abstract;
 
    type Observing_Camera is interface;
 
@@ -106,38 +96,6 @@ package Orka.Cameras is
    overriding
    function View_Position (Object : First_Person_Camera) return Transforms.Vector4;
 
-   type Look_From_Camera is new First_Person_Camera with private;
-
-   procedure Set_Orientation
-     (Object : in out Look_From_Camera;
-      Roll, Pitch, Yaw : Angle);
-
-   overriding
-   function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4;
-
-   overriding
-   procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration);
-
-   type Look_At_Camera is new First_Person_Camera and Observing_Camera with private;
-
-   overriding
-   procedure Look_At
-     (Object : in out Look_At_Camera;
-      Target : Behaviors.Behavior_Ptr);
-
-   procedure Set_Up_Direction
-     (Object    : in out Look_At_Camera;
-      Direction : Transforms.Vector4);
-
-   overriding
-   function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
-
-   overriding
-   procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration) is null;
-   --  Look_At camera does not need to implement Update because the
-   --  view matrix does not depend on the pointer (it is computed using
-   --  the camera's and target's positions)
-
    -----------------------------------------------------------------------------
    --                          Third person camera's                          --
    -----------------------------------------------------------------------------
@@ -151,57 +109,6 @@ package Orka.Cameras is
 
    overriding
    function View_Position (Object : Third_Person_Camera) return Transforms.Vector4;
-
-   type Rotate_Around_Camera is new Third_Person_Camera with private;
-
-   procedure Set_Angles
-     (Object : in out Rotate_Around_Camera;
-      Alpha  : Angle;
-      Beta   : Angle);
-
-   procedure Set_Radius
-     (Object : in out Rotate_Around_Camera;
-      Radius : Distance);
-
-   overriding
-   function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4;
-
-   overriding
-   procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration);
-
-   type Follow_Camera is new Third_Person_Camera with private;
-
-   procedure Set_Radius (Object : in out Follow_Camera; Radius : Distance);
-
-   procedure Set_Height (Object : in out Follow_Camera; Height : Distance);
-
-   procedure Set_Direction
-     (Object    : in out Follow_Camera;
-      Direction : Angle);
-
-   overriding
-   function View_Matrix (Object : Follow_Camera) return Transforms.Matrix4;
-
-   overriding
-   procedure Update (Object : in out Follow_Camera; Delta_Time : Duration);
-
-   -----------------------------------------------------------------------------
-
-   overriding
-   function Create_Camera
-     (Parameters : not null access Parameter_Record) return Look_From_Camera;
-
-   overriding
-   function Create_Camera
-     (Parameters : not null access Parameter_Record) return Look_At_Camera;
-
-   overriding
-   function Create_Camera
-     (Parameters : not null access Parameter_Record) return Rotate_Around_Camera;
-
-   overriding
-   function Create_Camera
-     (Parameters : not null access Parameter_Record) return Follow_Camera;
 
 private
 
@@ -218,28 +125,11 @@ private
       Position : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
    end record;
 
-   type Look_From_Camera is new First_Person_Camera with record
-      Roll, Pitch, Yaw : Angle := 0.0;
-   end record;
-
-   type Look_At_Camera is new First_Person_Camera and Observing_Camera with record
-      Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
-      Up     : Transforms.Vector4 := (0.0, 1.0, 0.0, 0.0);
-   end record;
-
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record
       Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
    end record;
 
-   type Rotate_Around_Camera is new Third_Person_Camera with record
-      Alpha  : Angle := 0.0;
-      Beta   : Angle := 0.0;
-      Radius : Distance := 1.0;
-   end record;
-
-   type Follow_Camera is new Third_Person_Camera with record
-      Height, Radius : Distance := 1.0;
-      Direction      : Angle := 0.0;
-   end record;
+   function Clamp_Distance is new Orka.Types.Clamp (GL.Types.Single, Distance);
+   function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Single, Angle);
 
 end Orka.Cameras;

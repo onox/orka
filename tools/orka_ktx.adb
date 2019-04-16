@@ -22,7 +22,7 @@ with GL.Types;
 
 with Orka.Behaviors;
 with Orka.Contexts;
-with Orka.Cameras;
+with Orka.Cameras.Rotate_Around_Cameras;
 with Orka.Loops;
 with Orka.Debug;
 with Orka.Futures;
@@ -123,7 +123,8 @@ begin
       Lens : constant Lens_Ptr
         := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
       Current_Camera : constant Camera_Ptr
-        := new Camera'Class'(Create_Camera (Rotate_Around, W.Pointer_Input, Lens, FB_D));
+           := new Camera'Class'(Camera'Class
+                (Rotate_Around_Cameras.Create_Camera (W.Pointer_Input, Lens, FB_D)));
 
       ----------------------------------------------------------------------
 
