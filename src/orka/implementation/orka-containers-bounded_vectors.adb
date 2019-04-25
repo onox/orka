@@ -24,8 +24,8 @@ package body Orka.Containers.Bounded_Vectors is
      (Length (Container) = Container.Capacity);
 
    procedure Append (Container : in out Vector; Elements : Vector) is
-      Start_Index : constant Positive := Container.Length + 1;
-      Stop_Index  : constant Positive := Container.Length + Elements.Length;
+      Start_Index : constant Index_Type := Container.Length + 1;
+      Stop_Index  : constant Index_Type := Container.Length + Elements.Length;
 
       procedure Copy_Elements (Elements : Element_Array) is
       begin
@@ -58,13 +58,13 @@ package body Orka.Containers.Bounded_Vectors is
 
    procedure Update
      (Container : in out Vector;
-      Index     : Positive;
+      Index     : Index_Type;
       Process   : not null access procedure (Element : in out Element_Type)) is
    begin
       Process (Container.Elements (Index));
    end Update;
 
-   function Element (Container : Vector; Index : Positive) return Element_Type is
+   function Element (Container : Vector; Index : Index_Type) return Element_Type is
      (Container.Elements (Index));
 
    function Element (Container : aliased Vector; Position : Cursor) return Element_Type is
@@ -80,7 +80,7 @@ package body Orka.Containers.Bounded_Vectors is
 
    function Reference
      (Container : in out Vector;
-      Index     : Positive) return Reference_Type is
+      Index     : Index_Type) return Reference_Type is
    begin
       return Reference_Type'(Value => Container.Elements (Index)'Access);
    end Reference;

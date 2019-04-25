@@ -19,6 +19,8 @@ generic
 package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
 
+   subtype Index_Type is Positive;
+
    type Vector (Capacity : Positive) is tagged private
      with Constant_Indexing => Element,
           Variable_Indexing => Reference;
@@ -37,7 +39,7 @@ package Orka.Containers.Bounded_Vectors is
      with Pre  => Container.Length > 0,
           Post => Container.Length = Container'Old.Length - 1;
 
-   type Element_Array is array (Positive range <>) of aliased Element_Type;
+   type Element_Array is array (Index_Type range <>) of aliased Element_Type;
 
    procedure Query
      (Container : Vector;
@@ -45,18 +47,18 @@ package Orka.Containers.Bounded_Vectors is
 
    procedure Update
      (Container : in out Vector;
-      Index     : Positive;
+      Index     : Index_Type;
       Process   : not null access procedure (Element : in out Element_Type))
    with Pre => Index <= Container.Length;
 
-   function Element (Container : Vector; Index : Positive) return Element_Type;
+   function Element (Container : Vector; Index : Index_Type) return Element_Type;
 
    type Reference_Type (Value : not null access Element_Type) is limited private
      with Implicit_Dereference => Value;
 
    function Reference
      (Container : in out Vector;
-      Index     : Positive) return Reference_Type;
+      Index     : Index_Type) return Reference_Type;
 
    function Length (Container : Vector) return Natural
      with Inline;
