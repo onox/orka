@@ -13,14 +13,16 @@
 --  limitations under the License.
 
 with GL.Buffers;
+with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 with GL.Types.Colors;
 
 private with GL.Enums;
-private with GL.Low_Level;
 
 package GL.Objects.Framebuffers is
    pragma Preelaborate;
+
+   use all type GL.Low_Level.Enums.Texture_Kind;
 
    type Framebuffer_Status is (Undefined, Complete, Incomplete_Attachment,
                                Incomplete_Missing_Attachment,
@@ -40,6 +42,11 @@ package GL.Objects.Framebuffers is
                              Depth_Attachment, Stencil_Attachment);
 
    type Attachment_List is array (Positive range <>) of Attachment_Point;
+
+   function Valid_Attachment
+     (Attachment : Attachment_Point;
+      Texture    : Textures.Texture) return Boolean
+   with Pre => not Texture.Compressed (Level => 0);
 
    type Framebuffer is new GL_Object with private;
 
@@ -81,17 +88,19 @@ package GL.Objects.Framebuffers is
                              Attachment : Attachment_Point;
                              Texture_Object : Textures.Texture;
                              Level : Textures.Mipmap_Level)
-     with Pre => Object /= Default_Framebuffer;
-   --  TODO If Texture_Object is of MSAA kind, then Level must be 0
-   --  TODO Attachment = Depth_Stencil iff Texture_Object.Format = Depth_Stencil
+     with Pre => Object /= Default_Framebuffer and
+                   Valid_Attachment (Attachment, Texture_Object) and
+                   (if Texture_Object.Kind in
+                      Texture_2D_Multisample | Texture_2D_Multisample_Array
+                    then Level = 0);
 
    procedure Attach_Texture_Layer (Object : Framebuffer;
                                    Attachment : Attachment_Point;
                                    Texture_Object : Textures.Texture;
                                    Level : Textures.Mipmap_Level;
                                    Layer : Natural)
-     with Pre => Object /= Default_Framebuffer;
-   --  TODO Attachment = Depth_Stencil iff Texture_Object.Format = Depth_Stencil
+     with Pre => Object /= Default_Framebuffer and
+                   Valid_Attachment (Attachment, Texture_Object);
 
    procedure Detach (Object : Framebuffer; Attachment : Attachment_Point)
      with Pre => Object /= Default_Framebuffer;
@@ -127,6 +136,7 @@ package GL.Objects.Framebuffers is
      with Post => Max_Framebuffer_Samples'Result >= 4;
 
    procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
+
    function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;
 
    procedure Blit (Read_Object, Draw_Object : Framebuffer;
@@ -142,6 +152,7 @@ package GL.Objects.Framebuffers is
                                  Value  : Colors.Color);
 
    procedure Clear_Depth_Buffer   (Object : Framebuffer; Value : Buffers.Depth);
+
    procedure Clear_Stencil_Buffer (Object : Framebuffer; Value : Buffers.Stencil_Index);
 
    procedure Clear_Depth_And_Stencil_Buffer (Object : Framebuffer;
