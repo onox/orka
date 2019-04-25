@@ -50,9 +50,13 @@ package body GL.Objects.Framebuffers is
 
    procedure Set_Draw_Buffer
      (Object   : Framebuffer;
-      Selector : Buffers.Color_Buffer_Selector) is
+      Selector : Buffers.Color_Buffer_Selector)
+   is
+      subtype Index_Type is Buffers.Draw_Buffer_Index;
    begin
-      Object.Set_Draw_Buffers ((1 => Selector));
+      Object.Set_Draw_Buffers
+        ((Index_Type'First => Selector,
+          Index_Type'First + 1 .. Index_Type'Last => Buffers.None));
    end Set_Draw_Buffer;
 
    procedure Set_Draw_Buffers
