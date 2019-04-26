@@ -370,6 +370,15 @@ package body GL.Objects.Textures is
       return Ret;
    end Highest_Mipmap_Level;
 
+   function Mipmap_Levels (Object : Texture) return Mipmap_Level is
+      Result : Mipmap_Level := Mipmap_Level'First;
+   begin
+      API.Get_Texture_Parameter_Int
+        (Object.Reference.GL_Id, Enums.Textures.Immutable_Levels, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Mipmap_Levels;
+
    procedure Set_Seamless_Filtering (Object : Texture; Enable : Boolean) is
    begin
       API.Texture_Parameter_Bool
