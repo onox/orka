@@ -27,7 +27,7 @@ package body GL.Objects.Framebuffers is
    is
       use all type GL.Pixels.Internal_Format;
 
-      Format : GL.Pixels.Internal_Format renames Texture.Internal_Format (Level => 0);
+      Format : GL.Pixels.Internal_Format renames Texture.Internal_Format;
    begin
       case Attachment is
          when Depth_Stencil_Attachment =>

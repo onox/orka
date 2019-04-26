@@ -264,11 +264,13 @@ package body Orka.Resources.Textures.KTX is
       Data_Type : GL.Pixels.Data_Type := GL.Pixels.Float;
       --  Note: unused if texture is compressed
 
+      Base_Level : constant := 0;
+
       use Ada.Streams;
       use all type GL.Low_Level.Enums.Texture_Kind;
       use type GL.Types.Size;
 
-      Compressed : constant Boolean := Texture.Compressed (0);
+      Compressed : constant Boolean := Texture.Compressed;
 
       Header : Orka.KTX.Header (Compressed);
 
@@ -324,19 +326,19 @@ package body Orka.Resources.Textures.KTX is
       begin
          Data := Textures.Get_Compressed_Data (Texture, Level, 0, 0, 0,
            Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
-           Texture.Compressed_Format (0));
+           Texture.Compressed_Format);
          return Convert (Data);
       end Get_Compressed_Data;
    begin
       Header.Kind := Texture.Kind;
 
-      Header.Width := Texture.Width (0);
+      Header.Width := Texture.Width (Base_Level);
       case Texture.Kind is
          when Texture_3D =>
-            Header.Height := Texture.Height (0);
-            Header.Depth  := Texture.Depth (0);
+            Header.Height := Texture.Height (Base_Level);
+            Header.Depth  := Texture.Depth (Base_Level);
          when Texture_2D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array =>
-            Header.Height := Texture.Height (0);
+            Header.Height := Texture.Height (Base_Level);
             Header.Depth  := 0;
          when Texture_1D | Texture_1D_Array =>
             Header.Height := 0;
@@ -347,26 +349,27 @@ package body Orka.Resources.Textures.KTX is
 
       case Texture.Kind is
          when Texture_1D_Array =>
-            Header.Array_Elements := Texture.Height (0);
+            Header.Array_Elements := Texture.Height (Base_Level);
          when Texture_2D_Array =>
-            Header.Array_Elements := Texture.Depth (0);
+            Header.Array_Elements := Texture.Depth (Base_Level);
          when Texture_Cube_Map_Array =>
-            Header.Array_Elements := Texture.Depth (0) / 6;
+            Header.Array_Elements := Texture.Depth (Base_Level) / 6;
          when Texture_1D | Texture_2D | Texture_3D | Texture_Cube_Map =>
             Header.Array_Elements := 0;
          when others =>
             raise Program_Error;
       end case;
 
+      --  TODO Handle multiple levels
       Header.Mipmap_Levels   := 1;
       Header.Bytes_Key_Value := 0;
 
       if Compressed then
-         Header.Compressed_Format := Texture.Compressed_Format (0);
+         Header.Compressed_Format := Texture.Compressed_Format;
       else
          declare
             Internal_Format : constant GL.Pixels.Internal_Format
-              := Texture.Internal_Format (0);
+              := Texture.Internal_Format;
          begin
             Format := GL.Pixels.Queries.Get_Texture_Format (Internal_Format, Texture.Kind);
             Data_Type := GL.Pixels.Queries.Get_Texture_Type (Internal_Format, Texture.Kind);
@@ -379,7 +382,7 @@ package body Orka.Resources.Textures.KTX is
 
       declare
          Data : constant Byte_Array_Pointers.Pointer
-           := (if Compressed then Get_Compressed_Data (0) else Get_Data (0));
+           := (if Compressed then Get_Compressed_Data (Base_Level) else Get_Data (Base_Level));
 
          Bytes : constant Byte_Array_Pointers.Pointer
            := Orka.KTX.Create_KTX_Bytes (Header, Data.Get);

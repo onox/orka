@@ -46,7 +46,7 @@ package GL.Objects.Framebuffers is
    function Valid_Attachment
      (Attachment : Attachment_Point;
       Texture    : Textures.Texture) return Boolean
-   with Pre => not Texture.Compressed (Level => 0);
+   with Pre => not Texture.Compressed;
 
    type Framebuffer is new GL_Object with private;
 

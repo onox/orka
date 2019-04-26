@@ -20,6 +20,8 @@ with GL.Enums.Textures;
 
 package body GL.Objects.Textures is
 
+   Base_Level : constant := 0;
+
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count is
    begin
       case Kind is
@@ -41,154 +43,147 @@ package body GL.Objects.Textures is
    function Allocated (Object : Texture) return Boolean is (Object.Allocated);
 
    function Width (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+      Result : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Width, Ret);
+                                            Enums.Textures.Width, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Width;
 
    function Height (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+      Result : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Height, Ret);
+                                            Enums.Textures.Height, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Height;
 
    function Depth (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+      Result : Size := 0;
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Depth, Ret);
+                                            Enums.Textures.Depth, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Depth;
 
-   function Internal_Format (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Internal_Format is
-      Ret : Pixels.Internal_Format := Pixels.Internal_Format'First;
+   function Internal_Format (Object : Texture) return Pixels.Internal_Format is
+      Result : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
-      API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Level,
-                                              Enums.Textures.Internal_Format, Ret);
+      API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Base_Level,
+                                              Enums.Textures.Internal_Format, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Internal_Format;
 
-   function Compressed_Format (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Compressed_Format is
-      Ret : Pixels.Compressed_Format := Pixels.Compressed_Format'First;
+   function Compressed_Format (Object : Texture) return Pixels.Compressed_Format is
+      Result : Pixels.Compressed_Format := Pixels.Compressed_Format'First;
    begin
-      API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Level,
-                                              Enums.Textures.Internal_Format, Ret);
+      API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Base_Level,
+                                              Enums.Textures.Internal_Format, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Compressed_Format;
 
-   function Red_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type is
-      Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
+   function Red_Type (Object : Texture) return Pixels.Channel_Data_Type is
+      Result : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
-      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Red_Type, Ret);
+      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Red_Type, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Red_Type;
 
-   function Green_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type is
-      Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
+   function Green_Type (Object : Texture) return Pixels.Channel_Data_Type is
+      Result : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
-      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Green_Type, Ret);
+      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Green_Type, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Green_Type;
 
-   function Blue_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type is
-      Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
+   function Blue_Type (Object : Texture) return Pixels.Channel_Data_Type is
+      Result : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
-      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Blue_Type, Ret);
+      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Blue_Type, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Blue_Type;
 
-   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type is
-      Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
+   function Alpha_Type (Object : Texture) return Pixels.Channel_Data_Type is
+      Result : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
-      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Alpha_Type, Ret);
+      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Alpha_Type, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Alpha_Type;
 
-   function Depth_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type is
-      Ret : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
+   function Depth_Type (Object : Texture) return Pixels.Channel_Data_Type is
+      Result : Pixels.Channel_Data_Type := Pixels.Channel_Data_Type'First;
    begin
-      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Depth_Type, Ret);
+      API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Depth_Type, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Depth_Type;
 
-   function Red_Size (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Red_Size (Object : Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Red_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Red_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Red_Size;
 
-   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Green_Size (Object : Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Green_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Green_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Green_Size;
 
-   function Blue_Size (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Blue_Size (Object : Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Blue_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Blue_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Blue_Size;
 
-   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Alpha_Size (Object : Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Alpha_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Alpha_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Alpha_Size;
 
-   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Depth_Size (Object : Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Depth_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Depth_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Depth_Size;
 
-   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean is
-      Ret : Low_Level.Bool := Low_Level.Bool'First;
+   function Compressed (Object : Texture) return Boolean is
+      Result : Low_Level.Bool := Low_Level.Bool'First;
    begin
-      API.Get_Texture_Level_Parameter_Bool (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Compressed, Ret);
+      API.Get_Texture_Level_Parameter_Bool (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Compressed, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Boolean (Ret);
+      return Boolean (Result);
    end Compressed;
 
    function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size is
@@ -201,24 +196,22 @@ package body GL.Objects.Textures is
       return Ret;
    end Compressed_Image_Size;
 
-   function Buffer_Offset (Object : Texture;
-                           Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Buffer_Offset (Object : Buffer_Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Buffer_Offset, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Buffer_Offset, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Buffer_Offset;
 
-   function Buffer_Size (Object : Texture;
-                         Level : Mipmap_Level) return Size is
-      Ret : Size := 0;
+   function Buffer_Size (Object : Buffer_Texture) return Size is
+      Result : Size := 0;
    begin
-      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
-                                            Enums.Textures.Buffer_Size, Ret);
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Buffer_Size, Result);
       Raise_Exception_On_OpenGL_Error;
-      return Ret;
+      return Result;
    end Buffer_Size;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
@@ -483,20 +476,14 @@ package body GL.Objects.Textures is
       return Helpers.Color (Raw);
    end Border_Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture;
-                                          Enabled : Boolean) is
-      Value : Enums.Textures.Compare_Kind;
+   procedure Set_Compare_X_To_Texture (Object : Texture; Enabled : Boolean) is
+      Value : constant Enums.Textures.Compare_Kind
+        := (if Enabled then Enums.Textures.Compare_R_To_Texture else Enums.Textures.None);
    begin
-      if Enabled then
-         Value := Enums.Textures.Compare_R_To_Texture;
-      else
-         Value := Enums.Textures.None;
-      end if;
-      API.Texture_Parameter_Compare_Mode (Object.Reference.GL_Id,
-                                          Enums.Textures.Compare_Mode,
-                                          Value);
+      API.Texture_Parameter_Compare_Mode
+        (Object.Reference.GL_Id, Enums.Textures.Compare_Mode, Value);
       Raise_Exception_On_OpenGL_Error;
-   end Toggle_Compare_X_To_Texture;
+   end Set_Compare_X_To_Texture;
 
    function Compare_X_To_Texture_Enabled (Object : Texture)
                                           return Boolean is

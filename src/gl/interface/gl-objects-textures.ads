@@ -117,11 +117,11 @@ package GL.Objects.Textures is
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
-   with Pre => not Object.Compressed (Level);
+   with Pre => not Object.Compressed;
 
    procedure Clear_Using_Zeros
      (Object : Texture; Level : Mipmap_Level)
-   with Pre => not Object.Compressed (Level);
+   with Pre => not Object.Compressed;
 
    procedure Generate_Mipmap (Object : Texture)
      with Pre => Object.Has_Levels;
@@ -185,11 +185,35 @@ package GL.Objects.Textures is
    procedure Set_Border_Color         (Object : Texture; Color : Colors.Color);
    function Border_Color              (Object : Texture) return Colors.Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
-   procedure Set_Compare_Function        (Object : Texture; Func : Compare_Function);
+   procedure Set_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
+   procedure Set_Compare_Function     (Object : Texture; Func : Compare_Function);
 
    function Compare_X_To_Texture_Enabled (Object : Texture) return Boolean;
    function Current_Compare_Function     (Object : Texture) return Compare_Function;
+
+   -----------------------------------------------------------------------------
+
+   function Internal_Format (Object : Texture) return Pixels.Internal_Format
+     with Pre => Object.Allocated and not Object.Compressed;
+
+   function Compressed_Format (Object : Texture) return Pixels.Compressed_Format
+     with Pre => Object.Allocated and Object.Compressed;
+
+   function Compressed (Object : Texture) return Boolean;
+
+   function Red_Type   (Object : Texture) return Pixels.Channel_Data_Type;
+   function Green_Type (Object : Texture) return Pixels.Channel_Data_Type;
+   function Blue_Type  (Object : Texture) return Pixels.Channel_Data_Type;
+   function Alpha_Type (Object : Texture) return Pixels.Channel_Data_Type;
+   function Depth_Type (Object : Texture) return Pixels.Channel_Data_Type;
+
+   function Red_Size   (Object : Texture) return Size;
+   function Green_Size (Object : Texture) return Size;
+   function Blue_Size  (Object : Texture) return Size;
+   function Alpha_Size (Object : Texture) return Size;
+   function Depth_Size (Object : Texture) return Size;
+   --  TODO Stencil_Size, Shared_Size
+   --  TODO Samples (Size), Fixed_Sample_Locations (Boolean) (if Object is multisampled)
 
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --
@@ -199,40 +223,8 @@ package GL.Objects.Textures is
    function Height (Object : Texture; Level : Mipmap_Level) return Size;
    function Depth  (Object : Texture; Level : Mipmap_Level) return Size;
 
-   function Internal_Format (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Internal_Format
-   with Pre => Object.Allocated and not Object.Compressed (Level);
-
-   function Compressed_Format (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Compressed_Format
-   with Pre => Object.Allocated and Object.Compressed (Level);
-
-   function Red_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type;
-   function Green_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type;
-   function Blue_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type;
-   function Alpha_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type;
-   function Depth_Type (Object : Texture; Level : Mipmap_Level)
-     return Pixels.Channel_Data_Type;
-
-   function Red_Size   (Object : Texture; Level : Mipmap_Level) return Size;
-   function Green_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   function Blue_Size  (Object : Texture; Level : Mipmap_Level) return Size;
-   function Alpha_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   function Depth_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   --  TODO Stencil_Size, Shared_Size
-
-   function Compressed (Object : Texture; Level : Mipmap_Level) return Boolean;
-   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size;
-   --  TODO Pre => Object is compressed
-
-   --  TODO Samples (Size), Fixed_Sample_Locations (Boolean) (if Object is multisampled)
-
-   function Buffer_Offset (Object : Texture; Level : Mipmap_Level) return Size;
-   function Buffer_Size   (Object : Texture; Level : Mipmap_Level) return Size;
+   function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size
+     with Pre => Object.Compressed;
 
    -----------------------------------------------------------------------------
    --                            Texture Units                                --
@@ -256,6 +248,9 @@ package GL.Objects.Textures is
                             Internal_Format : Pixels.Internal_Format_Buffer_Texture;
                             Buffer : Objects.Buffers.Buffer;
                             Offset, Size : Types.Size);
+
+   function Buffer_Offset (Object : Buffer_Texture) return Size;
+   function Buffer_Size   (Object : Buffer_Texture) return Size;
 
    -----------------------------------------------------------------------------
    --                           Texture Loading                               --
@@ -287,7 +282,7 @@ package GL.Objects.Textures is
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
-   with Pre => Object.Allocated and not Object.Compressed (Level);
+   with Pre => Object.Allocated and not Object.Compressed;
 
    procedure Load_From_Data
      (Object : Texture;
@@ -297,7 +292,7 @@ package GL.Objects.Textures is
       Source_Format : Pixels.Compressed_Format;
       Image_Size    : Types.Size;
       Source        : System.Address)
-   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level);
+   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed;
 
    procedure Copy_Data
      (Object  : Texture;
@@ -322,14 +317,14 @@ package GL.Objects.Textures is
       Source_Format : Pixels.Format;
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
-   with Pre => not Object.Compressed (Level);
+   with Pre => not Object.Compressed;
 
    procedure Clear_Using_Zeros
      (Object : Texture;
       Level  : Mipmap_Level;
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size)
-   with Pre => not Object.Compressed (Level);
+   with Pre => not Object.Compressed;
 
    -----------------------------------------------------------------------------
 
@@ -339,7 +334,7 @@ package GL.Objects.Textures is
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size;
       Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
-   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed (Level)
+   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed
      and Object.Kind not in Texture_2D_Multisample | Texture_2D_Multisample_Array;
 
    generic
@@ -359,7 +354,7 @@ package GL.Objects.Textures is
          Format    : Pixels.Format;
          Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
-                    not Object.Compressed (Level) and PE.Compatible (Format, Data_Type);
+                    not Object.Compressed and PE.Compatible (Format, Data_Type);
 
    end Texture_Pointers;
 
