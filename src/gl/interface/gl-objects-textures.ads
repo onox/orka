@@ -123,13 +123,16 @@ package GL.Objects.Textures is
      (Object : Texture; Level : Mipmap_Level)
    with Pre => not Object.Compressed (Level);
 
-   procedure Generate_Mipmap (Object : Texture);
+   procedure Generate_Mipmap (Object : Texture)
+     with Pre => Object.Has_Levels;
 
    -----------------------------------------------------------------------------
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 
-   procedure Set_Minifying_Filter     (Object : Texture; Filter : Minifying_Function);
+   procedure Set_Minifying_Filter     (Object : Texture; Filter : Minifying_Function)
+     with Pre => (if Object.Kind = Texture_Rectangle then Filter in Nearest | Linear);
+
    procedure Set_Magnifying_Filter    (Object : Texture; Filter : Magnifying_Function);
    procedure Set_Minimum_LoD          (Object : Texture; Level : Double);
    procedure Set_Maximum_LoD          (Object : Texture; Level : Double);
