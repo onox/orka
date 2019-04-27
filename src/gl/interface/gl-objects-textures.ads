@@ -136,6 +136,7 @@ package GL.Objects.Textures is
    procedure Set_Magnifying_Filter    (Object : Texture; Filter : Magnifying_Function);
    procedure Set_Minimum_LoD          (Object : Texture; Level : Double);
    procedure Set_Maximum_LoD          (Object : Texture; Level : Double);
+   procedure Set_LoD_Bias             (Object : Texture; Level : Double);
    procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
@@ -151,9 +152,9 @@ package GL.Objects.Textures is
    function Magnifying_Filter    (Object : Texture) return Magnifying_Function;
    function Minimum_LoD          (Object : Texture) return Double;
    function Maximum_LoD          (Object : Texture) return Double;
+   function LoD_Bias             (Object : Texture) return Double;
    function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
    function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
-   --  TODO LoD_Bias (Double)
 
    function Mipmap_Levels (Object : Texture) return Mipmap_Level
      with Pre => Object.Allocated;
@@ -201,6 +202,11 @@ package GL.Objects.Textures is
 
    function Compressed (Object : Texture) return Boolean;
 
+   function Samples (Object : Texture) return Size;
+
+   function Fixed_Sample_Locations (Object : Texture) return Boolean
+     with Pre => Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array;
+
    function Red_Type   (Object : Texture) return Pixels.Channel_Data_Type;
    function Green_Type (Object : Texture) return Pixels.Channel_Data_Type;
    function Blue_Type  (Object : Texture) return Pixels.Channel_Data_Type;
@@ -212,8 +218,8 @@ package GL.Objects.Textures is
    function Blue_Size  (Object : Texture) return Size;
    function Alpha_Size (Object : Texture) return Size;
    function Depth_Size (Object : Texture) return Size;
-   --  TODO Stencil_Size, Shared_Size
-   --  TODO Samples (Size), Fixed_Sample_Locations (Boolean) (if Object is multisampled)
+   function Stencil_Size (Object : Texture) return Size;
+   function Shared_Size  (Object : Texture) return Size;
 
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --

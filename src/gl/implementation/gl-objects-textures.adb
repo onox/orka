@@ -177,6 +177,24 @@ package body GL.Objects.Textures is
       return Result;
    end Depth_Size;
 
+   function Stencil_Size (Object : Texture) return Size is
+      Result : Size := 0;
+   begin
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Stencil_Size, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Stencil_Size;
+
+   function Shared_Size  (Object : Texture) return Size is
+      Result : Size := 0;
+   begin
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Shared_Size, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Shared_Size;
+
    function Compressed (Object : Texture) return Boolean is
       Result : Low_Level.Bool := Low_Level.Bool'First;
    begin
@@ -213,6 +231,25 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Buffer_Size;
+
+   function Samples (Object : Texture) return Size is
+      Result : Size := 0;
+   begin
+      API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
+                                            Enums.Textures.Samples, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Samples;
+
+   function Fixed_Sample_Locations (Object : Texture) return Boolean is
+      Result : Low_Level.Bool := Low_Level.Bool'First;
+   begin
+      API.Get_Texture_Level_Parameter_Bool
+        (Object.Reference.GL_Id, Base_Level,
+         Enums.Textures.Fixed_Sample_Locations, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Boolean (Result);
+   end Fixed_Sample_Locations;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
    begin
@@ -329,6 +366,22 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
       return Double (Ret (1));
    end Maximum_LoD;
+
+   procedure Set_LoD_Bias (Object : Texture; Level : Double) is
+   begin
+      API.Texture_Parameter_Float (Object.Reference.GL_Id,
+                                   Enums.Textures.LoD_Bias, Single (Level));
+      Raise_Exception_On_OpenGL_Error;
+   end Set_LoD_Bias;
+
+   function LoD_Bias (Object : Texture) return Double is
+      Result : Low_Level.Single_Array (1 .. 1);
+   begin
+      API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
+                                        Enums.Textures.LoD_Bias, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Double (Result (1));
+   end LoD_Bias;
 
    procedure Set_Lowest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
    begin

@@ -56,6 +56,7 @@ package GL.Enums.Textures is
                             Depth_Size, Stencil_Size,
                             Red_Type, Green_Type, Blue_Type,
                             Alpha_Type, Depth_Type, Shared_Size,
+                            Samples, Fixed_Sample_Locations,
                             Buffer_Offset, Buffer_Size);
 
    Texture_Unit_Start_Rep : constant := 16#84C0#;
@@ -87,6 +88,8 @@ private
                             Alpha_Type      => 16#8C13#,
                             Depth_Type      => 16#8C16#,
                             Shared_Size     => 16#8C3F#,
+                            Samples         => 16#9106#,
+                            Fixed_Sample_Locations => 16#9107#,
                             Buffer_Offset   => 16#919D#,
                             Buffer_Size     => 16#919E#);
    for Level_Parameter'Size use Low_Level.Enum'Size;

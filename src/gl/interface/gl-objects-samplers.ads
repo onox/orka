@@ -120,8 +120,7 @@ package GL.Objects.Samplers is
    procedure Set_Border_Color (Object : Sampler; Color : Colors.Color);
    function Border_Color (Object : Sampler) return Colors.Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object  : Sampler;
-                                          Enabled : Boolean);
+   procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean);
 
    function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean;
    --  Return whether to enable comparing. By default this is false.

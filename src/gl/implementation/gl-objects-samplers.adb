@@ -239,7 +239,7 @@ package body GL.Objects.Samplers is
       return Helpers.Color (Raw);
    end Border_Color;
 
-   procedure Toggle_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean) is
+   procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean) is
       Value : Enums.Textures.Compare_Kind;
    begin
       if Enabled then
@@ -250,7 +250,7 @@ package body GL.Objects.Samplers is
       API.Sampler_Parameter_Compare_Kind (Object.Reference.GL_Id,
                                           Enums.Textures.Compare_Mode, Value);
       Raise_Exception_On_OpenGL_Error;
-   end Toggle_Compare_X_To_Texture;
+   end Set_Compare_X_To_Texture;
 
    function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean is
       use type Enums.Textures.Compare_Kind;
