@@ -89,6 +89,8 @@ private package Orka.KTX is
 
    function Create_KTX_Bytes
      (KTX_Header : Header;
-      Data       : Bytes_Reference) return Resources.Byte_Array_Pointers.Pointer;
+      Get_Data   : not null access function (Level : GL.Objects.Textures.Mipmap_Level)
+                                     return Resources.Byte_Array_Pointers.Pointer)
+   return Resources.Byte_Array_Pointers.Pointer;
 
 end Orka.KTX;

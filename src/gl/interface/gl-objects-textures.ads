@@ -157,7 +157,8 @@ package GL.Objects.Textures is
    function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
 
    function Mipmap_Levels (Object : Texture) return Mipmap_Level
-     with Pre => Object.Allocated;
+     with Pre  => Object.Allocated,
+          Post => Mipmap_Levels'Result >= 1;
 
    function Seamless_Filtering   (Object : Texture) return Boolean
      with Pre => Object.Kind in Texture_Cube_Map | Texture_Cube_Map_Array;

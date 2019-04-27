@@ -110,6 +110,24 @@ package body Orka.Resources.Textures.KTX is
               Width, Height, Depth);
          end if;
 
+         case Header.Kind is
+            when Texture_1D =>
+               Height := 1;
+               Depth  := 1;
+            when Texture_1D_Array | Texture_2D =>
+               Depth := 1;
+            when Texture_2D_Array | Texture_3D =>
+               null;
+            when Texture_Cube_Map | Texture_Cube_Map_Array =>
+               --  Texture_Cube_Map uses 2D storage, but 3D load operation
+               --  according to table 8.15 of the OpenGL specification
+
+               --  For a cube map, depth is the number of faces, for
+               --  a cube map array, depth is the number of layer-faces
+               Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
+            when others =>
+               raise Program_Error;
+         end case;
          T4 := Clock;
 
          --  TODO Handle KTXorientation key value pair
@@ -141,31 +159,16 @@ package body Orka.Resources.Textures.KTX is
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
                   --  TODO Unpack_Alignment must be 4, but Load_From_Data wants 1 | 2 | 4
                   --  depending on Header.Data_Type
+
+                  Level_Width  : constant GL.Types.Size := Texture.Width  (Level);
+                  Level_Height :          GL.Types.Size := Texture.Height (Level);
+                  Level_Depth  :          GL.Types.Size := Texture.Depth  (Level);
                begin
-                  case Header.Kind is
-                     when Texture_1D =>
-                        Height := 1;
-                        Depth  := 1;
-                     when Texture_1D_Array | Texture_2D =>
-                        Depth := 1;
-                     when Texture_2D_Array | Texture_3D =>
-                        null;
-                     when Texture_Cube_Map | Texture_Cube_Map_Array =>
-                        --  Texture_Cube_Map uses 2D storage, but 3D load operation
-                        --  according to table 8.15 of the OpenGL specification
-
-                        --  For a cube map, depth is the number of faces, for
-                        --  a cube map array, depth is the number of layer-faces
-                        Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
-                     when others =>
-                        raise Program_Error;
-                  end case;
-
                   if Header.Compressed then
-                     Texture.Load_From_Data (Level, 0, 0, 0, Width, Height, Depth,
+                     Texture.Load_From_Data (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
                        Header.Compressed_Format, GL.Types.Int (Image_Size), Image_Data);
                   else
-                     Texture.Load_From_Data (Level, 0, 0, 0, Width, Height, Depth,
+                     Texture.Load_From_Data (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
                        Header.Format, Header.Data_Type, Image_Data);
                   end if;
 
@@ -360,8 +363,7 @@ package body Orka.Resources.Textures.KTX is
             raise Program_Error;
       end case;
 
-      --  TODO Handle multiple levels
-      Header.Mipmap_Levels   := 1;
+      Header.Mipmap_Levels   := Texture.Mipmap_Levels;
       Header.Bytes_Key_Value := 0;
 
       if Compressed then
@@ -381,11 +383,12 @@ package body Orka.Resources.Textures.KTX is
       end if;
 
       declare
-         Data : constant Byte_Array_Pointers.Pointer
-           := (if Compressed then Get_Compressed_Data (Base_Level) else Get_Data (Base_Level));
+         function Get_Level_Data
+           (Level : Textures.Mipmap_Level) return Byte_Array_Pointers.Pointer
+         is (if Compressed then Get_Compressed_Data (Level) else Get_Data (Level));
 
          Bytes : constant Byte_Array_Pointers.Pointer
-           := Orka.KTX.Create_KTX_Bytes (Header, Data.Get);
+           := Orka.KTX.Create_KTX_Bytes (Header, Get_Level_Data'Access);
       begin
          Location.Write_Data (Path, Bytes.Get);
       end;
