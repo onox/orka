@@ -746,7 +746,7 @@ package body GL.Objects.Textures is
       pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
 
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
-      --  according to table 8.15 of the OpenGL specification
+      --  according to Table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
         := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
    begin
@@ -777,7 +777,7 @@ package body GL.Objects.Textures is
       Source        : System.Address)
    is
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
-      --  according to table 8.15 of the OpenGL specification
+      --  according to Table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
         := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
    begin
@@ -897,7 +897,7 @@ package body GL.Objects.Textures is
 
          Bytes_Per_Element : constant Int := Pointers.Element'Size / System.Storage_Unit;
          Bytes_Per_Texel   : constant Int := PE.Components (Format) * PE.Bytes (Data_Type);
-         --  TODO Handle packed data types and depth/stenil formats
+         --  TODO Handle packed data types and depth/stencil formats (see Table 8.5)
          pragma Assert (Bytes_Per_Texel rem Bytes_Per_Element = 0);
 
          Texels : constant Size := Width * Height * Depth;

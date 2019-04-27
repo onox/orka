@@ -40,7 +40,7 @@ package GL.Pixels.Extensions is
       Data_Type : Pixels.Data_Type) return Boolean
    is (not (Format in Integer_Format and Data_Type in Floating_Point_Data_Type));
    --  Floating point types are incompatible with integer formats according
-   --  to table 8.2 of the OpenGL specification
+   --  to Table 8.2 of the OpenGL specification
 
    function Components (Format : Pixels.Format) return Component_Count is
      (case Format is
@@ -48,13 +48,39 @@ package GL.Pixels.Extensions is
         when RG | RG_Integer => 2,
         when RGB  | BGR  | RGB_Integer  | BGR_Integer  => 3,
         when RGBA | BGRA | RGBA_Integer | BGRA_Integer => 4,
-        when others => raise Constraint_Error);
+        when others => raise Constraint_Error with "Unexpected format " & Format'Image);
 
    function Bytes (Data_Type : Non_Packed_Data_Type) return Byte_Count is
      (case Data_Type is
         when Byte  | Unsigned_Byte               => 1,
         when Short | Unsigned_Short | Half_Float => 2,
         when Int   | Unsigned_Int   | Float      => 4);
+
+   function Packed_Bytes (Data_Type : Packed_Data_Type) return Byte_Count is
+     (case Data_Type is
+        --  Unsigned_Byte formats (Table 8.6)
+        when Unsigned_Byte_3_3_2            => 1,
+        when Unsigned_Byte_2_3_3_Rev        => 1,
+
+        --  Unsigned_Short formats (Table 8.7)
+        when Unsigned_Short_5_6_5           => 2,
+        when Unsigned_Short_5_6_5_Rev       => 2,
+        when Unsigned_Short_4_4_4_4         => 2,
+        when Unsigned_Short_4_4_4_4_Rev     => 2,
+        when Unsigned_Short_5_5_5_1         => 2,
+        when Unsigned_Short_1_5_5_5_Rev     => 2,
+
+        --  Unsigned_Int formats (Table 8.8)
+        when Unsigned_Int_8_8_8_8           => 4,
+        when Unsigned_Int_8_8_8_8_Rev       => 4,
+        when Unsigned_Int_10_10_10_2        => 4,
+        when Unsigned_Int_2_10_10_10_Rev    => 4,
+        when Unsigned_Int_24_8              => 4,
+        when Unsigned_Int_10F_11F_11F_Rev   => 4,
+        when Unsigned_Int_5_9_9_9_Rev       => 4,
+
+        --  Float_Unsigned_Int formats (Table 8.9)
+        when Float_32_Unsigned_Int_24_8_Rev => raise Constraint_Error);
 
    function Byte_Alignment (Value : Alignment) return Byte_Count;
 

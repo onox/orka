@@ -64,7 +64,7 @@ package GL.Pixels is
       Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
       Compressed_RGBA8_ETC2_EAC,
       Compressed_SRGB8_Alpha8_ETC2_EAC);
-   --  Specific compressed internal formats of table 8.14 of the OpenGL specification
+   --  Specific compressed internal formats of Table 8.14 of the OpenGL specification
 
    type Format is (Stencil_Index, Depth_Component, Red, Green, Blue,
                    RGB, RGBA, BGR, BGRA, RG, RG_Integer, Depth_Stencil,
