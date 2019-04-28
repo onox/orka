@@ -18,44 +18,6 @@ with GL.Enums.Getter;
 
 package body GL.Rasterization is
 
-   procedure Set_Line_Width (Value : Single) is
-   begin
-      API.Line_Width (Value);
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Line_Width;
-
-   function Line_Width return Single is
-      Ret : aliased Single := 1.0;
-   begin
-      API.Get_Single (Enums.Getter.Line_Width, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Line_Width;
-
-   function Aliased_Line_Width_Range return Line_Width_Range is
-      Ret : Singles.Vector2 := (others => 0.0);
-   begin
-      API.Get_Single_Vec2 (Enums.Getter.Aliased_Line_Width_Range, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Aliased_Line_Width_Range;
-
-   function Smooth_Line_Width_Range  return Line_Width_Range is
-      Ret : Singles.Vector2 := (others => 0.0);
-   begin
-      API.Get_Single_Vec2 (Enums.Getter.Smooth_Line_Width_Range, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Smooth_Line_Width_Range;
-
-   function Smooth_Line_Width_Granularity return Single is
-      Ret : Single := 0.0;
-   begin
-      API.Get_Single (Enums.Getter.Smooth_Line_Width_Granularity, Ret);
-      Raise_Exception_On_OpenGL_Error;
-      return Ret;
-   end Smooth_Line_Width_Granularity;
-
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type) is
    begin
       API.Polygon_Mode (Culling.Front_And_Back, Value);

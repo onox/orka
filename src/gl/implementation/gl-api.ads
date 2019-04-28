@@ -278,9 +278,6 @@ private package GL.API is
    --                              Rasterization                              --
    -----------------------------------------------------------------------------
 
-   procedure Line_Width is new Loader.Procedure_With_1_Param
-     ("glLineWidth", Single);
-
    procedure Polygon_Mode is new Loader.Procedure_With_2_Params
      ("glPolygonMode", Culling.Face_Selector, Rasterization.Polygon_Mode_Type);
 

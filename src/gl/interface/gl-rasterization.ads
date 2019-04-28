@@ -21,16 +21,7 @@ package GL.Rasterization is
 
    use GL.Types;
 
-   subtype Line_Width_Range is Singles.Vector2;
-
    type Polygon_Mode_Type is (Point, Line, Fill);
-
-   procedure Set_Line_Width (Value : Single);
-   function Line_Width return Single;
-
-   function Aliased_Line_Width_Range return Line_Width_Range;
-   function Smooth_Line_Width_Range  return Line_Width_Range;
-   function Smooth_Line_Width_Granularity return Single;
 
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type);
    function Polygon_Mode return Polygon_Mode_Type;
