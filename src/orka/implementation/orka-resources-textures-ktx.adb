@@ -161,8 +161,8 @@ package body Orka.Resources.Textures.KTX is
                   --  depending on Header.Data_Type
 
                   Level_Width  : constant GL.Types.Size := Texture.Width  (Level);
-                  Level_Height :          GL.Types.Size := Texture.Height (Level);
-                  Level_Depth  :          GL.Types.Size := Texture.Depth  (Level);
+                  Level_Height : constant GL.Types.Size := Texture.Height (Level);
+                  Level_Depth  : constant GL.Types.Size := Texture.Depth  (Level);
                begin
                   if Header.Compressed then
                      Texture.Load_From_Data (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
