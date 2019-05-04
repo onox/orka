@@ -217,7 +217,7 @@ private
                              Color_Attachment_14      => 16#8CEE#,
                              Color_Attachment_15      => 16#8CEF#,
                              Depth_Attachment         => 16#8D00#,
-                             Stencil_Attachment       => 16#8D01#);
+                             Stencil_Attachment       => 16#8D20#);
    for Attachment_Point'Size use Low_Level.Enum'Size;
 
    pragma Convention (C, Attachment_List);
