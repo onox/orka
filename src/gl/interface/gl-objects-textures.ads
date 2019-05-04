@@ -189,8 +189,8 @@ package GL.Objects.Textures is
    function Y_Wrapping (Object : Texture) return Wrapping_Mode;
    function Z_Wrapping (Object : Texture) return Wrapping_Mode;
 
-   procedure Set_Border_Color         (Object : Texture; Color : Colors.Color);
-   function Border_Color              (Object : Texture) return Colors.Color;
+   procedure Set_Border_Color (Object : Texture; Color : Colors.Border_Color);
+   function Border_Color      (Object : Texture) return Colors.Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
    procedure Set_Compare_Function     (Object : Texture; Func : Compare_Function);

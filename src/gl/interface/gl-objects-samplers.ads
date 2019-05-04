@@ -117,8 +117,8 @@ package GL.Objects.Samplers is
    --  Return the wrapping mode for the Z direction. By default this
    --  is Repeat.
 
-   procedure Set_Border_Color (Object : Sampler; Color : Colors.Color);
-   function Border_Color (Object : Sampler) return Colors.Color;
+   procedure Set_Border_Color (Object : Sampler; Color : Colors.Border_Color);
+   function Border_Color (Object : Sampler) return Colors.Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean);
 

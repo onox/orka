@@ -510,9 +510,9 @@ package body GL.Objects.Textures is
       return Ret;
    end Z_Wrapping;
 
-   procedure Set_Border_Color (Object : Texture; Color : Colors.Color) is
-
-      Raw : constant Low_Level.Single_Array := Helpers.Float_Array (Color);
+   procedure Set_Border_Color (Object : Texture; Color : Colors.Border_Color) is
+      Raw : constant Low_Level.Single_Array
+        := Helpers.Float_Array (Colors.Vulkan_To_OpenGL (Color));
    begin
       API.Texture_Parameter_Floats (Object.Reference.GL_Id,
                                     Enums.Textures.Border_Color,
@@ -520,13 +520,13 @@ package body GL.Objects.Textures is
       Raise_Exception_On_OpenGL_Error;
    end Set_Border_Color;
 
-   function Border_Color (Object : Texture) return Colors.Color is
+   function Border_Color (Object : Texture) return Colors.Border_Color is
       Raw : Low_Level.Single_Array (1 .. 4);
    begin
       API.Get_Texture_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.Border_Color, Raw);
       Raise_Exception_On_OpenGL_Error;
-      return Helpers.Color (Raw);
+      return Colors.OpenGL_To_Vulkan (Helpers.Color (Raw));
    end Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Texture; Enabled : Boolean) is
