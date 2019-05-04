@@ -83,6 +83,11 @@ package GL.Objects.Textures is
         Texture_2D_Multisample | Texture_2D_Multisample_Array)
    with Inline;
 
+   function Layered (Object : Texture_Base) return Boolean is
+     (Object.Kind in Texture_1D_Array | Texture_2D_Array | Texture_3D |
+        Texture_Cube_Map | Texture_Cube_Map_Array | Texture_2D_Multisample_Array)
+   with Inline;
+
    overriding
    procedure Initialize_Id (Object : in out Texture_Base);
 

@@ -15,6 +15,7 @@
 with GL.Buffers;
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
+with GL.Pixels;
 with GL.Types.Colors;
 
 private with GL.Enums;
@@ -46,7 +47,7 @@ package GL.Objects.Framebuffers is
    function Valid_Attachment
      (Attachment : Attachment_Point;
       Texture    : Textures.Texture) return Boolean
-   with Pre => not Texture.Compressed;
+   with Pre => not Texture.Compressed and Texture.Allocated;
 
    type Framebuffer is new GL_Object with private;
 
@@ -84,34 +85,42 @@ package GL.Objects.Framebuffers is
                   else
                     Selector in Buffers.Explicit_Color_Buffer_Selector | Buffers.None);
 
-   procedure Attach_Texture (Object : Framebuffer;
-                             Attachment : Attachment_Point;
-                             Texture_Object : Textures.Texture;
-                             Level : Textures.Mipmap_Level)
-     with Pre => Object /= Default_Framebuffer and
-                   Valid_Attachment (Attachment, Texture_Object) and
-                   (if Texture_Object.Kind in
-                      Texture_2D_Multisample | Texture_2D_Multisample_Array
-                    then Level = 0);
+   procedure Attach_Texture
+     (Object     : Framebuffer;
+      Attachment : Attachment_Point;
+      Texture    : Textures.Texture;
+      Level      : Textures.Mipmap_Level)
+   with Pre => Object /= Default_Framebuffer and
+                 Valid_Attachment (Attachment, Texture) and
+                 (if Texture.Kind in
+                    Texture_2D_Multisample | Texture_2D_Multisample_Array
+                  then Level = 0);
 
-   procedure Attach_Texture_Layer (Object : Framebuffer;
-                                   Attachment : Attachment_Point;
-                                   Texture_Object : Textures.Texture;
-                                   Level : Textures.Mipmap_Level;
-                                   Layer : Natural)
-     with Pre => Object /= Default_Framebuffer and
-                   Valid_Attachment (Attachment, Texture_Object);
+   procedure Attach_Texture_Layer
+     (Object     : Framebuffer;
+      Attachment : Attachment_Point;
+      Texture    : Textures.Texture;
+      Level      : Textures.Mipmap_Level;
+      Layer      : Natural)
+   with Pre => Object /= Default_Framebuffer and
+                 Valid_Attachment (Attachment, Texture) and
+                 Texture.Layered;
 
    procedure Detach (Object : Framebuffer; Attachment : Attachment_Point)
      with Pre => Object /= Default_Framebuffer;
 
-   procedure Invalidate_Data (Object : Framebuffer;
-                              Attachments : Attachment_List);
+   procedure Invalidate_Data
+     (Object      : Framebuffer;
+      Attachments : Attachment_List)
+   with Pre => Object /= Default_Framebuffer;
+   --  TODO Add Invalidate_Data for default framebuffer using Default_Color_Buffer_Selector
 
-   procedure Invalidate_Sub_Data (Object        : Framebuffer;
-                                  Attachments   : Attachment_List;
-                                  X, Y          : Int;
-                                  Width, Height : Size);
+   procedure Invalidate_Sub_Data
+     (Object        : Framebuffer;
+      Attachments   : Attachment_List;
+      X, Y          : Int;
+      Width, Height : Size);
+   --  TODO Add Invalidate_Data for default framebuffer using Default_Color_Buffer_Selector
 
    procedure Set_Default_Width   (Object : Framebuffer; Value : Size);
    procedure Set_Default_Height  (Object : Framebuffer; Value : Size);
@@ -147,9 +156,11 @@ package GL.Objects.Framebuffers is
    --  Copy a rectangle of pixels in Read_Object framebuffer to a region
    --  in Draw_Object framebuffer
 
-   procedure Clear_Color_Buffer (Object : Framebuffer;
-                                 Index  : Buffers.Draw_Buffer_Index;
-                                 Value  : Colors.Color);
+   procedure Clear_Color_Buffer
+     (Object    : Framebuffer;
+      Index     : Buffers.Draw_Buffer_Index;
+      Data_Type : Pixels.Channel_Data_Type;
+      Value     : Colors.Color);
 
    procedure Clear_Depth_Buffer   (Object : Framebuffer; Value : Buffers.Depth);
 

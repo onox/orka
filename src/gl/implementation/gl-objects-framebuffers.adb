@@ -73,24 +73,26 @@ package body GL.Objects.Framebuffers is
       Raise_Exception_On_OpenGL_Error;
    end Set_Read_Buffer;
 
-   procedure Attach_Texture (Object : Framebuffer;
-                             Attachment : Attachment_Point;
-                             Texture_Object : Textures.Texture;
-                             Level : Textures.Mipmap_Level) is
+   procedure Attach_Texture
+     (Object     : Framebuffer;
+      Attachment : Attachment_Point;
+      Texture    : Textures.Texture;
+      Level      : Textures.Mipmap_Level) is
    begin
       API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment,
-                                     Texture_Object.Raw_Id, Level);
+                                     Texture.Raw_Id, Level);
       Raise_Exception_On_OpenGL_Error;
    end Attach_Texture;
 
-   procedure Attach_Texture_Layer (Object : Framebuffer;
-                                   Attachment : Attachment_Point;
-                                   Texture_Object : Textures.Texture;
-                                   Level : Textures.Mipmap_Level;
-                                   Layer : Natural) is
+   procedure Attach_Texture_Layer
+     (Object     : Framebuffer;
+      Attachment : Attachment_Point;
+      Texture    : Textures.Texture;
+      Level      : Textures.Mipmap_Level;
+      Layer      : Natural) is
    begin
       API.Named_Framebuffer_Texture_Layer (Object.Reference.GL_Id, Attachment,
-                                           Texture_Object.Raw_Id, Level, Int (Layer));
+                                           Texture.Raw_Id, Level, Int (Layer));
       Raise_Exception_On_OpenGL_Error;
    end Attach_Texture_Layer;
 
@@ -305,13 +307,27 @@ package body GL.Objects.Framebuffers is
       end if;
    end Current;
 
-   procedure Clear_Color_Buffer (Object : Framebuffer;
-                                 Index  : Buffers.Draw_Buffer_Index;
-                                 Value  : Colors.Color) is
+   procedure Clear_Color_Buffer
+     (Object    : Framebuffer;
+      Index     : Buffers.Draw_Buffer_Index;
+      Data_Type : Pixels.Channel_Data_Type;
+      Value     : Colors.Color)
+   is
+      use all type GL.Pixels.Channel_Data_Type;
    begin
-      API.Clear_Named_Framebuffer_Color_Real
-        (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
-      --  TODO Use *fv to clear fixed- and floating-point, *iv for signed int, *uiv for unsigned
+      case Data_Type is
+         when Float_Type | Signed_Normalized | Unsigned_Normalized =>
+            API.Clear_Named_Framebuffer_Color_Real
+              (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
+         when Int_Type =>
+            API.Clear_Named_Framebuffer_Color_Signed_Int
+              (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
+         when Unsigned_Int_Type =>
+            API.Clear_Named_Framebuffer_Color_Unsigned_Int
+              (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
+         when None =>
+            raise Constraint_Error;
+      end case;
       Raise_Exception_On_OpenGL_Error;
    end Clear_Color_Buffer;
 

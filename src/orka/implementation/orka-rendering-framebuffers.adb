@@ -14,60 +14,15 @@
 
 with GL.Pixels;
 with GL.Window;
-with GL.Low_Level.Enums;
+
+with Orka.Containers.Bounded_Vectors;
 
 package body Orka.Rendering.Framebuffers is
 
-   package FB renames GL.Objects.Framebuffers;
-   package Textures renames GL.Objects.Textures;
+   package Attachment_Vectors is new Containers.Bounded_Vectors (FB.Attachment_Point);
 
    function Create_Framebuffer
-     (Width, Height : Size;
-      Color_Texture : GL.Objects.Textures.Texture) return Framebuffer
-   is
-      Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D);
-   begin
-      return Result : Framebuffer
-        (Default => False,
-         Width   => Width,
-         Height  => Height,
-         Samples => 0)
-      do
-         Depth_Buffer.Allocate_Storage (1, 1, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
-
-         Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
-         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
-
-         Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
-         Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);
-      end return;
-   end Create_Framebuffer;
-
-   function Create_Framebuffer
-     (Width, Height : Size;
-      Color_Texture, Depth_Texture : GL.Objects.Textures.Texture) return Framebuffer is
-   begin
-      return Result : Framebuffer
-        (Default => False,
-         Width   => Width,
-         Height  => Height,
-         Samples => 0)
-      do
-         Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Texture, 0);
-         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Texture, 0);
-         --  TODO What if a Depth or Stencil-only attachment is needed?
-         --    --> check format of Depth_Texture
-
-         Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Texture);
-         Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Texture);
-      end return;
-   end Create_Framebuffer;
-
-   function Create_Framebuffer
-     (Width, Height, Samples : Size;
-      Context : Contexts.Context) return Framebuffer
-   is
-      Color_Buffer, Depth_Buffer : Textures.Texture (GL.Low_Level.Enums.Texture_2D_Multisample);
+     (Width, Height, Samples : Size) return Framebuffer is
    begin
       return Result : Framebuffer
         (Default => False,
@@ -75,41 +30,53 @@ package body Orka.Rendering.Framebuffers is
          Height  => Height,
          Samples => Samples)
       do
-         --  Allocate and attach multisampled textures
-         Color_Buffer.Allocate_Storage
-           (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
-         Depth_Buffer.Allocate_Storage
-           (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
-         --  TODO What if a different format is needed?
-         --  TODO What if a Depth or Stencil-only format is needed?
+         Result.GL_Framebuffer.Set_Default_Width (Width);
+         Result.GL_Framebuffer.Set_Default_Height (Height);
 
-         Result.GL_Framebuffer.Attach_Texture (FB.Color_Attachment_0, Color_Buffer, 0);
-         Result.GL_Framebuffer.Attach_Texture (FB.Depth_Stencil_Attachment, Depth_Buffer, 0);
-         --  TODO Make sure attachment matches format of Depth_Buffer
+         Result.GL_Framebuffer.Set_Default_Samples (Samples);
 
-         Result.Color_Attachment := Attachment_Holder.To_Holder (Color_Buffer);
-         Result.Depth_Attachment := Attachment_Holder.To_Holder (Depth_Buffer);
+         Result.Set_Draw_Buffers ((0 => GL.Buffers.Color_Attachment0));
       end return;
    end Create_Framebuffer;
+
+   function Create_Framebuffer
+     (Width, Height, Samples : Size;
+      Context : Contexts.Context) return Framebuffer
+   is (Create_Framebuffer (Width, Height, Samples => Samples));
+
+   function Create_Framebuffer
+     (Width, Height : Size) return Framebuffer
+   is (Create_Framebuffer (Width, Height, Samples => 0));
+
+   -----------------------------------------------------------------------------
 
    function Get_Default_Framebuffer
      (Window : Orka.Windows.Window'Class) return Framebuffer
    is (Create_Default_Framebuffer (Size (Window.Width), Size (Window.Height)));
+   --  TODO Or store a Window_Ptr so we can adjust viewport when window gets resized?
 
    function Create_Default_Framebuffer
      (Width, Height : Size) return Framebuffer is
    begin
-      return
+      return Result : Framebuffer :=
         (Default => True,
          Width   => Width,
          Height  => Height,
          Samples => 0,
          GL_Framebuffer => GL.Objects.Framebuffers.Default_Framebuffer,
-         others  => <>);
+         others  => <>)
+      do
+         --  Assumes a double-buffered context (Front_Left for single-buffered)
+         Result.Set_Draw_Buffers ((0 => GL.Buffers.Back_Left));
+      end return;
    end Create_Default_Framebuffer;
+
+   -----------------------------------------------------------------------------
 
    function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
      is (Object.GL_Framebuffer);
+
+   -----------------------------------------------------------------------------
 
    procedure Use_Framebuffer (Object : Framebuffer) is
       use GL.Objects.Framebuffers;
@@ -136,17 +103,182 @@ package body Orka.Rendering.Framebuffers is
       end if;
    end Use_Framebuffer;
 
+   procedure Set_Default_Values (Object : in out Framebuffer; Values : Buffer_Values) is
+   begin
+      Object.Defaults := Values;
+   end Set_Default_Values;
+
+   function Default_Values (Object : Framebuffer) return Buffer_Values is (Object.Defaults);
+
+   procedure Set_Read_Buffer
+     (Object : Framebuffer;
+      Buffer : GL.Buffers.Color_Buffer_Selector) is
+   begin
+      Object.GL_Framebuffer.Set_Read_Buffer (Buffer);
+   end Set_Read_Buffer;
+
+   procedure Set_Draw_Buffers
+     (Object  : in out Framebuffer;
+      Buffers : GL.Buffers.Color_Buffer_List) is
+   begin
+      Object.GL_Framebuffer.Set_Draw_Buffers (Buffers);
+      Object.Draw_Buffers.Replace_Element (Buffers);
+   end Set_Draw_Buffers;
+
+   procedure Clear
+     (Object : Framebuffer;
+      Mask   : GL.Buffers.Buffer_Bits := (others => True))
+   is
+      Depth_Stencil : constant Boolean := Object.Has_Attachment (FB.Depth_Stencil_Attachment);
+      Depth         : constant Boolean := Object.Has_Attachment (FB.Depth_Attachment);
+      Stencil       : constant Boolean := Object.Has_Attachment (FB.Stencil_Attachment);
+   begin
+      if Mask.Depth or Mask.Stencil then
+         if Mask.Depth and Mask.Stencil and Depth_Stencil then
+            --  This procedure is used because it may be faster for
+            --  combined depth/stencil textures
+            Object.GL_Framebuffer.Clear_Depth_And_Stencil_Buffer
+              (Depth_Value   => Object.Defaults.Depth,
+               Stencil_Value => Object.Defaults.Stencil);
+         else
+            if Mask.Depth and (Depth_Stencil or Depth) then
+               Object.GL_Framebuffer.Clear_Depth_Buffer (Object.Defaults.Depth);
+            end if;
+
+            if Mask.Stencil and (Depth_Stencil or Stencil) then
+               Object.GL_Framebuffer.Clear_Stencil_Buffer (Object.Defaults.Stencil);
+            end if;
+         end if;
+      end if;
+
+      if Mask.Color then
+         declare
+            procedure Clear_Attachments (List : GL.Buffers.Color_Buffer_List) is
+               use all type GL.Buffers.Color_Buffer_Selector;
+
+               Index     : GL.Buffers.Draw_Buffer_Index := GL.Buffers.Draw_Buffer_Index'First;
+               Data_Type : GL.Pixels.Channel_Data_Type;
+            begin
+               for Buffer of List loop
+                  if Buffer /= None then
+                     if Object.Default then
+                        Data_Type := GL.Pixels.Float_Type;
+                     else
+                        Data_Type := Object.Attachments (Color_Attachment_Point'Val
+                          (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
+                             - GL.Buffers.Color_Buffer_Selector'Pos (GL.Buffers.Color_Attachment0)
+                             + Color_Attachment_Point'Pos (Color_Attachment_Point'First)
+                          )).Element.Red_Type;
+                     end if;
+                     Object.GL_Framebuffer.Clear_Color_Buffer
+                       (Index, Data_Type, Object.Defaults.Color);
+                  end if;
+                  Index := Index + 1;
+               end loop;
+            end Clear_Attachments;
+         begin
+            Object.Draw_Buffers.Query_Element (Clear_Attachments'Access);
+         end;
+      end if;
+   end Clear;
+
+   procedure Invalidate
+     (Object : Framebuffer;
+      Mask   : GL.Buffers.Buffer_Bits)
+   is
+      Attachments : Attachment_Vectors.Vector (Capacity => Attachment_Array'Length);
+
+      Depth_Stencil : constant Boolean := Object.Has_Attachment (FB.Depth_Stencil_Attachment);
+      Depth         : constant Boolean := Object.Has_Attachment (FB.Depth_Attachment);
+      Stencil       : constant Boolean := Object.Has_Attachment (FB.Stencil_Attachment);
+
+      procedure Invalidate_Attachments (Elements : Attachment_Vectors.Element_Array) is
+      begin
+         Object.GL_Framebuffer.Invalidate_Data (FB.Attachment_List (Elements));
+      end Invalidate_Attachments;
+   begin
+      if Mask.Depth or Mask.Stencil then
+         if Mask.Depth and Mask.Stencil and Depth_Stencil then
+            Attachments.Append (FB.Depth_Stencil_Attachment);
+         else
+            if Mask.Depth and (Depth_Stencil or Depth) then
+               Attachments.Append (FB.Depth_Attachment);
+            end if;
+
+            if Mask.Stencil and (Depth_Stencil or Stencil) then
+               Attachments.Append (FB.Stencil_Attachment);
+            end if;
+         end if;
+      end if;
+
+      if Mask.Color then
+         for Attachment in Color_Attachment_Point loop
+            if Object.Has_Attachment (Attachment) then
+               Attachments.Append (Attachment);
+            end if;
+         end loop;
+      end if;
+
+      Attachments.Query (Invalidate_Attachments'Access);
+   end Invalidate;
+
    procedure Resolve_To
      (Object, Subject : Framebuffer;
       Mask : GL.Buffers.Buffer_Bits := (Color => True, others => False)) is
    begin
-      --  Note: simultaneously resolving and scaling requires
-      --  GL_EXT_framebuffer_multisample_blit_scaled
-      GL.Objects.Framebuffers.Blit
+      FB.Blit
         (Object.GL_Framebuffer, Subject.GL_Framebuffer,
          0, 0, Object.Width, Object.Height,
          0, 0, Subject.Width, Subject.Height,
          Mask, GL.Objects.Textures.Nearest);
    end Resolve_To;
+
+   procedure Attach
+     (Object     : in out Framebuffer;
+      Attachment : FB.Attachment_Point;
+      Texture    : Textures.Texture;
+      Level      : Textures.Mipmap_Level := 0;
+      Layer      : Natural := 0) is
+   begin
+      if not Texture.Layered then
+         Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
+      else
+         Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture, Level, Layer => Layer);
+      end if;
+      Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
+   end Attach;
+
+   procedure Attach
+     (Object  : in out Framebuffer;
+      Texture : Textures.Texture;
+      Level   : Textures.Mipmap_Level := 0;
+      Layer   : Natural := 0)
+   is
+      use all type GL.Pixels.Internal_Format;
+   begin
+      case Texture.Internal_Format is
+         when Depth24_Stencil8 | Depth32F_Stencil8 =>
+            Object.Attach (FB.Depth_Stencil_Attachment, Texture, Level, Layer);
+         when Depth_Component16 | Depth_Component24 | Depth_Component32F =>
+            Object.Attach (FB.Depth_Attachment, Texture, Level, Layer);
+         when Stencil_Index8 =>
+            Object.Attach (FB.Stencil_Attachment, Texture, Level, Layer);
+         when others =>
+            Object.Attach (FB.Color_Attachment_0, Texture, Level, Layer);
+      end case;
+   end Attach;
+
+   procedure Detach
+     (Object     : in out Framebuffer;
+      Attachment : FB.Attachment_Point) is
+   begin
+      Object.GL_Framebuffer.Detach (Attachment);
+      Object.Attachments (Attachment).Clear;
+   end Detach;
+
+   function Has_Attachment
+     (Object     : Framebuffer;
+      Attachment : FB.Attachment_Point) return Boolean
+   is (not Object.Attachments (Attachment).Is_Empty);
 
 end Orka.Rendering.Framebuffers;
