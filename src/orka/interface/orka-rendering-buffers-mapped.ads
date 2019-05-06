@@ -183,6 +183,106 @@ package Orka.Rendering.Buffers.Mapped is
       Offset : Natural)
    with Pre => Object.Mode = Write and Offset < Object.Length;
 
+   -----------------------------------------------------------------------------
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UByte_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UShort_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UInt_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Byte_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Short_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Int_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Half_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Single_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Double_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   -----------------------------------------------------------------------------
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Arrays_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Dispatch_Indirect_Command_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
+
 private
 
    use Orka.Types;

@@ -326,10 +326,8 @@ package body GL.Objects.Buffers is
       is
          package IC renames Interfaces.C;
          use type Pointers.Pointer;
-
-         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
       begin
-         return Pointers.Value (Pointer + IC.ptrdiff_t (Offset_In_Bytes), IC.ptrdiff_t (Length));
+         return Pointers.Value (Pointer + IC.ptrdiff_t (Offset), IC.ptrdiff_t (Length));
       end Get_Mapped_Data;
 
       procedure Set_Mapped_Data

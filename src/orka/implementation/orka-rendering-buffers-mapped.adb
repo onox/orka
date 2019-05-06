@@ -90,7 +90,7 @@ package body Orka.Rendering.Buffers.Mapped is
       Buffer_Target : access constant GL.Objects.Buffers.Buffer_Target;
 
       Offset : constant Size := Size (Object.Offset);
-      Length : constant Size := Size (Object.Length);
+      Length : constant Size := Size (Mapped_Buffer'Class (Object).Length);
    begin
       case Target is
          when Uniform =>
@@ -369,5 +369,153 @@ package body Orka.Rendering.Buffers.Mapped is
       Pointers.Dispatch_Command.Set_Mapped_Data
         (Object.Pointer_DC, Size (Object.Offset + Offset), Value);
    end Write_Data;
+
+   -----------------------------------------------------------------------------
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UByte_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.UByte.Get_Mapped_Data
+        (Object.Pointer_UByte, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UShort_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.UShort.Get_Mapped_Data
+        (Object.Pointer_UShort, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out UInt_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.UInt.Get_Mapped_Data
+        (Object.Pointer_UInt, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Byte_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Byte.Get_Mapped_Data
+        (Object.Pointer_Byte, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Short_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Short.Get_Mapped_Data
+        (Object.Pointer_Short, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Int_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Int.Get_Mapped_Data
+        (Object.Pointer_Int, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Half_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Half.Get_Mapped_Data
+        (Object.Pointer_Half, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Single_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Single.Get_Mapped_Data
+        (Object.Pointer_Single, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Double_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Double.Get_Mapped_Data
+        (Object.Pointer_Double, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   -----------------------------------------------------------------------------
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Single_Vector4.Get_Mapped_Data
+        (Object.Pointer_SV, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Single_Matrix4.Get_Mapped_Data
+        (Object.Pointer_SM, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Double_Vector4.Get_Mapped_Data
+        (Object.Pointer_DV, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Double_Matrix4.Get_Mapped_Data
+        (Object.Pointer_DM, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Arrays_Indirect_Command_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Arrays_Command.Get_Mapped_Data
+        (Object.Pointer_AC, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Elements_Indirect_Command_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Elements_Command.Get_Mapped_Data
+        (Object.Pointer_EC, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
+
+   procedure Read_Data
+     (Object : Mapped_Buffer;
+      Data   : out Indirect.Dispatch_Indirect_Command_Array;
+      Offset : Natural := 0) is
+   begin
+      Data := Pointers.Dispatch_Command.Get_Mapped_Data
+        (Object.Pointer_DC, Size (Object.Offset + Offset), Data'Length);
+   end Read_Data;
 
 end Orka.Rendering.Buffers.Mapped;
