@@ -1,4 +1,5 @@
 with "config";
+with "dcf_ada";
 with "json_ada";
 
 abstract project Orka is

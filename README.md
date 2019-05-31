@@ -71,7 +71,9 @@ In order to build and use Orka you need to have:
 
  * GPRBuild and `make`
 
- * [json-ada][url-json-ada]
+ * [json-ada 3.0.2][url-json-ada] (for glTF)
+
+ * [dcf-ada 1.0.0][url-dcf-ada] (for loading resources in Zip archives)
 
  * OpenGL 4.0 core profile and the following extensions:
 
@@ -232,6 +234,7 @@ a bugfix or an improvement.
 Orka is distributed under the terms of the [Apache License 2.0][url-apache].
 
   [url-json-ada]: https://github.com/onox/json-ada
+  [url-dcf-ada]: https://github.com/onox/dcf-ada
   [url-glfw]: http://www.glfw.org/
   [url-sdl]: http://www.libsdl.org/
   [url-sdlada]: https://github.com/Lucretia/sdlada

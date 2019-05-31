@@ -36,8 +36,10 @@ package Orka.Resources.Locations.Directories is
       Data   : Byte_Array);
 
    function Create_Location (Path : String) return Location_Ptr;
+   --  Return a location that is represented by a directory
 
    function Create_Location (Path : String) return Writable_Location_Ptr;
+   --  Return a writable location that is represented by a directory
 
 private
 
