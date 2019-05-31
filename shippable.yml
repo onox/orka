@@ -9,7 +9,9 @@ build:
     - apt update
     - apt install -y --no-install-recommends gprbuild make libahven6-dev lcov git ca-certificates libegl1-mesa-dev
     - git clone https://github.com/onox/json-ada.git
-    - cd json-ada; make install; cd ..
+    - git clone https://github.com/onox/dcf-ada.git
+    - cd json-ada; make; make install; cd ..
+    - cd dcf-ada; make tools; make install; cd ..
     - make test
     - make coverage
 
