@@ -26,20 +26,23 @@ package body Orka.Rendering.Fences is
       end return;
    end Create_Buffer_Fence;
 
-   procedure Prepare_Index (Object : in out Buffer_Fence) is
+   procedure Prepare_Index (Object : in out Buffer_Fence; Status : out Fence_Status) is
       use GL.Fences;
    begin
       if not Object.Fences (Object.Index).Initialized then
+         Status := Not_Initialized;
          return;
       end if;
 
       case Object.Fences (Object.Index).Client_Wait (Maximum_Wait) is
          when Condition_Satisfied =>
             Messages.Insert (Medium, "Fence not already signalled");
+            Status := Signaled;
          when Timeout_Expired | Wait_Failed =>
             Messages.Insert (High, "Fence timed out or failed");
-         when others =>
-            null;
+            Status := Not_Signaled;
+         when Already_Signaled =>
+            Status := Signaled;
       end case;
    end Prepare_Index;
 

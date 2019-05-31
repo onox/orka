@@ -21,9 +21,11 @@ package Orka.Rendering.Fences is
 
    type Buffer_Fence is tagged private;
 
+   type Fence_Status is (Not_Initialized, Signaled, Not_Signaled);
+
    function Create_Buffer_Fence return Buffer_Fence;
 
-   procedure Prepare_Index (Object : in out Buffer_Fence);
+   procedure Prepare_Index (Object : in out Buffer_Fence; Status : out Fence_Status);
    --  Perform a client wait sync for the fence corresponding to the
    --  current index
 

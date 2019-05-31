@@ -204,9 +204,11 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Start_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is
+      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+   is
+      Status : Fences.Fence_Status;
    begin
-      Object.Fence.Prepare_Index;
+      Object.Fence.Prepare_Index (Status);
       Object.Window.Process_Input;
    end Execute;
 
