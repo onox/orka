@@ -4,7 +4,6 @@ pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
 pragma Restrictions (No_Implicit_Aliasing);
 
 pragma Restrictions (No_Obsolescent_Features);
-pragma Restrictions (No_Recursion);
 
 pragma Restrictions (No_Anonymous_Allocators);
 pragma Restrictions (No_Access_Parameter_Allocators);
