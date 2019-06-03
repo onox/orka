@@ -17,6 +17,7 @@ with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Enums.Getter;
+with GL.Pixels.Extensions;
 with GL.Pixels.Queries;
 
 package body GL.Objects.Framebuffers is
@@ -31,11 +32,11 @@ package body GL.Objects.Framebuffers is
    begin
       case Attachment is
          when Depth_Stencil_Attachment =>
-            return Format in Depth24_Stencil8 | Depth32F_Stencil8;
+            return GL.Pixels.Extensions.Depth_Stencil_Format (Format);
          when Depth_Attachment =>
-            return Format in Depth_Component16 | Depth_Component24 | Depth_Component32F;
+            return GL.Pixels.Extensions.Depth_Format (Format);
          when Stencil_Attachment =>
-            return Format in Stencil_Index8;
+            return GL.Pixels.Extensions.Stencil_Format (Format);
          when others =>
             return GL.Pixels.Queries.Color_Renderable (Format, Texture.Kind);
       end case;
