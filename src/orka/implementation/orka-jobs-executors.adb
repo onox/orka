@@ -49,7 +49,7 @@ package body Orka.Jobs.Executors is
 
       Null_Pair : constant Queues.Pair := (others => <>);
 
-      package Vectors is new Orka.Containers.Bounded_Vectors (Job_Ptr);
+      package Vectors is new Orka.Containers.Bounded_Vectors (Positive, Job_Ptr);
 
 --      T0, T1, T2 : Ada.Real_Time.Time;
    begin

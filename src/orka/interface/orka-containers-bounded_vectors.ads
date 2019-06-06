@@ -15,13 +15,14 @@
 private with Ada.Iterator_Interfaces;
 
 generic
+   type Index_Type is new Positive;
    type Element_Type is private;
 package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
 
-   subtype Index_Type is Positive;
+   subtype Length_Type is Index_Type'Base range 0 .. Index_Type'Last;
 
-   type Vector (Capacity : Positive) is tagged private
+   type Vector (Capacity : Length_Type) is tagged private
      with Constant_Indexing => Constant_Reference,
           Variable_Indexing => Reference;
    pragma Preelaborable_Initialization (Vector);
@@ -71,7 +72,7 @@ package Orka.Containers.Bounded_Vectors is
 
    -----------------------------------------------------------------------------
 
-   function Length (Container : Vector) return Natural
+   function Length (Container : Vector) return Length_Type
      with Inline;
 
    function Empty (Container : Vector) return Boolean
@@ -86,7 +87,7 @@ private
 
    type Cursor is record
       Object : Vector_Access;
-      Index  : Natural;
+      Index  : Length_Type;
    end record;
 
    No_Element : constant Cursor := Cursor'(null, 0);
@@ -120,9 +121,9 @@ private
    function Iterate (Container : Vector)
      return Vector_Iterator_Interfaces.Reversible_Iterator'Class;
 
-   type Vector (Capacity : Positive) is tagged record
+   type Vector (Capacity : Length_Type) is tagged record
       Elements : Element_Array (1 .. Capacity) := (others => <>);
-      Length   : Natural  := 0;
+      Length   : Length_Type := 0;
    end record
      with Default_Iterator  => Iterate,
           Iterator_Element  => Reference_Type;

@@ -14,7 +14,7 @@
 
 package body Orka.Containers.Bounded_Vectors is
 
-   function Length (Container : Vector) return Natural is
+   function Length (Container : Vector) return Length_Type is
      (Container.Length);
 
    function Empty (Container : Vector) return Boolean is

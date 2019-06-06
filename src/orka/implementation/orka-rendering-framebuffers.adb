@@ -19,7 +19,7 @@ with Orka.Containers.Bounded_Vectors;
 
 package body Orka.Rendering.Framebuffers is
 
-   package Attachment_Vectors is new Containers.Bounded_Vectors (FB.Attachment_Point);
+   package Attachment_Vectors is new Containers.Bounded_Vectors (Positive, FB.Attachment_Point);
 
    function Create_Framebuffer
      (Width, Height, Samples : Size) return Framebuffer is
