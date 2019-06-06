@@ -22,7 +22,7 @@ package Orka.Containers.Bounded_Vectors is
    subtype Index_Type is Positive;
 
    type Vector (Capacity : Positive) is tagged private
-     with Constant_Indexing => Element,
+     with Constant_Indexing => Constant_Reference,
           Variable_Indexing => Reference;
    pragma Preelaborable_Initialization (Vector);
 
@@ -51,14 +51,25 @@ package Orka.Containers.Bounded_Vectors is
       Process   : not null access procedure (Element : in out Element_Type))
    with Pre => Index <= Container.Length;
 
+   -----------------------------------------------------------------------------
+
    function Element (Container : Vector; Index : Index_Type) return Element_Type;
+
+   type Constant_Reference_Type (Value : not null access constant Element_Type) is limited private
+     with Implicit_Dereference => Value;
 
    type Reference_Type (Value : not null access Element_Type) is limited private
      with Implicit_Dereference => Value;
 
+   function Constant_Reference
+     (Container : Vector;
+      Index     : Index_Type) return Constant_Reference_Type;
+
    function Reference
      (Container : in out Vector;
       Index     : Index_Type) return Reference_Type;
+
+   -----------------------------------------------------------------------------
 
    function Length (Container : Vector) return Natural
      with Inline;
@@ -86,7 +97,14 @@ private
      (Container : aliased Vector;
       Position  : Cursor) return Element_Type;
 
+   type Constant_Reference_Type
+     (Value : not null access constant Element_Type) is limited null record;
+
    type Reference_Type (Value : not null access Element_Type) is limited null record;
+
+   function Constant_Reference
+     (Container : aliased Vector;
+      Position  : Cursor) return Constant_Reference_Type;
 
    function Reference
      (Container : aliased in out Vector;
@@ -107,7 +125,7 @@ private
       Length   : Natural  := 0;
    end record
      with Default_Iterator  => Iterate,
-          Iterator_Element  => Element_Type;
+          Iterator_Element  => Reference_Type;
    pragma Preelaborable_Initialization (Vector);
 
    -----------------------------------------------------------------------------

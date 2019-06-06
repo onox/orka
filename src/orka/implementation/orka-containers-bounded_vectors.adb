@@ -78,6 +78,26 @@ package body Orka.Containers.Bounded_Vectors is
       end if;
    end Element;
 
+   function Constant_Reference
+     (Container : Vector;
+      Index     : Index_Type) return Constant_Reference_Type is
+   begin
+      return Constant_Reference_Type'(Value => Container.Elements (Index)'Access);
+   end Constant_Reference;
+
+   function Constant_Reference
+     (Container : aliased Vector;
+      Position  : Cursor) return Constant_Reference_Type is
+   begin
+      if Position = No_Element then
+         raise Constraint_Error;
+      elsif Position.Object /= Container'Access then
+         raise Program_Error;
+      else
+         return Constant_Reference (Container, Position.Index);
+      end if;
+   end Constant_Reference;
+
    function Reference
      (Container : in out Vector;
       Index     : Index_Type) return Reference_Type is
