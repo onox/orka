@@ -12,7 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
+private with Ada.Containers.Indefinite_Holders;
 
 with GL.Buffers;
 with GL.Objects.Framebuffers;
@@ -33,6 +33,9 @@ package Orka.Rendering.Framebuffers is
 
    subtype Color_Attachment_Point is FB.Attachment_Point
      range FB.Color_Attachment_0 .. FB.Color_Attachment_15;
+
+   type Use_Point_Array is array (Rendering.Framebuffers.Color_Attachment_Point) of Boolean;
+   --  TODO Use as formal parameter in procedure Invalidate
 
    type Buffer_Values is record
       Color   : Colors.Color             := (0.0, 0.0, 0.0, 0.0);

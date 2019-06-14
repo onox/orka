@@ -12,17 +12,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
 with Ada.Strings.Bounded;
 
-with GL.Buffers;
 with GL.Low_Level.Enums;
 with GL.Pixels;
 
+with Orka.Rendering.Framebuffers;
 with Orka.Resources.Locations;
 
+private with Ada.Containers.Indefinite_Holders;
+
+private with GL.Buffers;
+
 private with Orka.Containers.Bounded_Vectors;
-private with Orka.Rendering.Framebuffers;
 
 package Orka.Frame_Graphs is
    pragma Preelaborate;
@@ -31,8 +33,6 @@ package Orka.Frame_Graphs is
 
    package Name_Strings is new Ada.Strings.Bounded.Generic_Bounded_Length
      (Max => Maximum_Name_Length);
-
-   type Handle_Type is new Positive;
 
    type Resource_Version is private;
 
@@ -90,20 +90,30 @@ package Orka.Frame_Graphs is
      (Object  : Render_Pass;
       Subject : Resource;
       Read    : Read_Mode);
+   --  Add the given resource as an input to the render pass, so that it
+   --  can be read as a texture, an image texture, or attached to the
+   --  framebuffer
 
    procedure Add_Output
      (Object  : Render_Pass;
       Subject : Resource;
       Write   : Write_Mode);
+   --  Add the given resource as an output to the render pass, so that it
+   --  can be written as an image texture or attached to the framebuffer
 
    function Add_Input_Output
      (Object  : Render_Pass;
       Subject : Resource;
       Read    : Read_Mode;
       Write   : Write_Mode) return Resource
-   with Pre => (if Read = Framebuffer_Attachment then Write = Framebuffer_Attachment);
+   with Pre => not (Read = Framebuffer_Attachment xor Write = Framebuffer_Attachment);
+   --  Add the given resource as an input and an output to the render pass,
+   --  indicating that the resource will be modified by the pass. The modified
+   --  resource is returned and may be used as an input for other render passes.
 
    ----------------------------------------------------------------------
+
+   type Handle_Type is new Positive;
 
    type Builder
      (Maximum_Passes, Maximum_Handles : Positive;
@@ -112,10 +122,6 @@ package Orka.Frame_Graphs is
    type Render_Pass_Data is private;
 
    function Name (Pass : Render_Pass_Data) return String;
-
-   function Clear_Mask (Pass : Render_Pass_Data) return GL.Buffers.Buffer_Bits;
-
-   function Invalidate_Mask (Pass : Render_Pass_Data) return GL.Buffers.Buffer_Bits;
 
    type Execute_Callback is access procedure (Pass : Render_Pass_Data);
 
@@ -128,7 +134,10 @@ package Orka.Frame_Graphs is
 
    type Graph (<>) is tagged limited private;
 
-   function Cull (Object : Builder) return Graph'Class;
+   function Cull
+     (Object  : Builder;
+      Default : Rendering.Framebuffers.Framebuffer_Ptr) return Graph'Class
+   with Pre => Default.Default;
 
    function Input_Resources
      (Object : Graph;
@@ -168,29 +177,21 @@ private
       Read_Offset, Write_Offset : Positive := 1;
       Read_Count, Write_Count   : Natural  := 0;
 
-      Clear_Mask      : GL.Buffers.Buffer_Bits := (others => False);
-      Invalidate_Mask : GL.Buffers.Buffer_Bits := (others => True);
-
-      --  If Clear_Buffers = Render_Buffers then we only need to call
-      --  Set_Draw_Buffers once in procedure Cull. If the buffers are
-      --  different then a performance warning is logged
-      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7)
-        := (others => GL.Buffers.None);
-      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7)
-        := (others => GL.Buffers.None);
-      Buffers_Equal   : Boolean;
-      --  TODO Use Draw_Buffer_Index as index type and drop some in Set_Draw_Buffers
+      Has_Depth   : Boolean := False;
+      Has_Stencil : Boolean := False;
    end record;
 
    type Resource_Version is record
-      Version : Positive := 1;
+      Version : Natural := 1;  --  Version will be 0 if added as implicit input
    end record;
 
    type Resource_Data is record
       Description : Resource;
+      Modified    : Boolean    := False;  --  True if there is a next version of this resource
+      Implicit    : Boolean    := False;  --  Internally added for framebuffer attachments
       Input_Mode  : Read_Mode  := Not_Used;
       Output_Mode : Write_Mode := Not_Used;
-      Render_Pass : Natural := 0;
+      Render_Pass : Natural := 0;  --  The render pass that writes to this resource, 0 if none
       Read_Count  : Natural := 0;
       References  : Natural := 0;
    end record;
@@ -205,8 +206,27 @@ private
    record
       Passes        : Pass_Vectors.Vector (Maximum_Passes);
       Resources     : Resource_Vectors.Vector (Maximum_Resources);
+      --  Restriction 1: The method used by a render pass to read or write
+      --  to a resource is stored in the resource itself. This means that
+      --  a resource can only be read or written using one method.
+
       Read_Handles  : Handle_Vectors.Vector (Maximum_Handles);
       Write_Handles : Handle_Vectors.Vector (Maximum_Handles);
+      --  An array of slices of handles to resources read or written by
+      --  render passes. These describe the links between render passes
+      --  and resources in the frame graph.
+      --
+      --  Each render pass has a slice of resources it reads and a slice of
+      --  resources it writes. A slice is formed by a contiguous number of
+      --  handles so that a render pass only needs to record the start
+      --  offset and length of the slice.
+      --
+      --  Restriction 2: Because a slice is a contiguous number of handles,
+      --  the recording of inputs and outputs of different render passes
+      --  cannot be interleaved.
+      --
+      --  This restriction allows the graph to be implemented using just
+      --  four simple arrays and the arrays should provide good data locality.
    end record;
 
    -----------------------------------------------------------------------------
@@ -217,6 +237,15 @@ private
    type Framebuffer_Pass is record
       Index       : Positive;
       Framebuffer : Framebuffer_Holders.Holder;
+
+      Clear_Mask      : GL.Buffers.Buffer_Bits;
+      Invalidate_Mask : GL.Buffers.Buffer_Bits;
+
+      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7);
+      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7);
+      Buffers_Equal   : Boolean;
+
+      Invalidate_Points : Rendering.Framebuffers.Use_Point_Array;
    end record;
 
    package Framebuffer_Pass_Vectors is new Containers.Bounded_Vectors
