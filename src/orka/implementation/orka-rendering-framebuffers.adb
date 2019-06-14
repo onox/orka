@@ -157,21 +157,26 @@ package body Orka.Rendering.Framebuffers is
                use all type GL.Buffers.Color_Buffer_Selector;
 
                Index     : GL.Buffers.Draw_Buffer_Index := GL.Buffers.Draw_Buffer_Index'First;
-               Data_Type : GL.Pixels.Channel_Data_Type;
             begin
                for Buffer of List loop
                   if Buffer /= None then
                      if Object.Default then
-                        Data_Type := GL.Pixels.Float_Type;
+                        Object.GL_Framebuffer.Clear_Color_Buffer
+                          (Index, GL.Pixels.Float_Type, Object.Defaults.Color);
                      else
-                        Data_Type := Object.Attachments (Color_Attachment_Point'Val
-                          (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
-                             - GL.Buffers.Color_Buffer_Selector'Pos (GL.Buffers.Color_Attachment0)
-                             + Color_Attachment_Point'Pos (Color_Attachment_Point'First)
-                          )).Element.Red_Type;
+                        declare
+                           Point : constant FB.Attachment_Point := Color_Attachment_Point'Val
+                             (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
+                                - GL.Buffers.Color_Buffer_Selector'Pos (GL.Buffers.Color_Attachment0)
+                                + Color_Attachment_Point'Pos (Color_Attachment_Point'First));
+                        begin
+                           if Object.Has_Attachment (Point) then
+                              Object.GL_Framebuffer.Clear_Color_Buffer
+                                (Index, Object.Attachments (Point).Element.Red_Type,
+                                 Object.Defaults.Color);
+                           end if;
+                        end;
                      end if;
-                     Object.GL_Framebuffer.Clear_Color_Buffer
-                       (Index, Data_Type, Object.Defaults.Color);
                   end if;
                   Index := Index + 1;
                end loop;
