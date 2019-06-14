@@ -240,7 +240,7 @@ package body Orka.Frame_Graphs is
                      begin
                         Resource.References := Resource.References - 1;
 
-                        if Resource.References = 0 then
+                        if Resource.References = 0 and Resource.Render_Pass /= 0 then
                            Stack.Append (Resource_Handle);
                         end if;
                      end;
