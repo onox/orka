@@ -102,7 +102,7 @@ package GL.Buffers is
    procedure Set_Depth_Function (Func : Compare_Function);
    function Depth_Function return Compare_Function;
 
-   procedure Depth_Mask (Enabled : Boolean);
+   procedure Set_Depth_Mask (Enabled : Boolean);
    function Depth_Mask return Boolean;
 
    procedure Color_Mask (Value : Colors.Enabled_Color);

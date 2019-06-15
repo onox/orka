@@ -62,11 +62,11 @@ package body GL.Buffers is
       return Value;
    end Depth_Function;
 
-   procedure Depth_Mask (Enabled : Boolean) is
+   procedure Set_Depth_Mask (Enabled : Boolean) is
    begin
       API.Depth_Mask (Low_Level.Bool (Enabled));
       Raise_Exception_On_OpenGL_Error;
-   end Depth_Mask;
+   end Set_Depth_Mask;
 
    function Depth_Mask return Boolean is
       Value : Low_Level.Bool := Low_Level.Bool (True);
