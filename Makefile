@@ -53,7 +53,7 @@ clean:
 	$(GPRCLEAN) -P tools.gpr
 	rm -rf bin lib obj test/unit/orka/obj test/unit/orka/bin test/cov
 
-install: build
+install:
 	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka' \
 		--sources-subdir=$(includedir) \
 		--project-subdir=$(gprdir) \
