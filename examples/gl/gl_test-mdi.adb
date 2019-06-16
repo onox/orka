@@ -21,6 +21,7 @@ with GL.Objects.Framebuffers;
 with GL.Objects.Shaders;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
+with GL.Pixels;
 with GL.Types.Indirect;
 
 with GL_Test.Display_Backend;
@@ -155,7 +156,7 @@ begin
    GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Command_Buffer);
 
    while not Display_Backend.Get_Window.Should_Close loop
-      Default_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
       Default_Framebuffer.Clear_Depth_Buffer (1.0);
 
       GL.Drawing.Draw_Multiple_Elements_Indirect (Triangles, UInt_Type, Commands'Length);

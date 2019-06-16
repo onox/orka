@@ -12,6 +12,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Pixels;
 with GL.Types;
 
 with Orka.Rendering.Buffers;
@@ -119,7 +120,7 @@ begin
    Program_1.Use_Program;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 0.0));
+      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 0.0));
       Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
       Triangle_1.Draw (0, 3);

@@ -21,6 +21,7 @@ with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
 with GL.Objects.Programs;
 with GL.Objects.Vertex_Arrays;
+with GL.Pixels;
 with GL.Types;
 
 with GL_Test.Display_Backend;
@@ -142,7 +143,7 @@ begin
    Ada.Text_IO.Put_Line ("Loaded data");
 
    while not Display_Backend.Get_Window.Should_Close loop
-      Default_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
 
       Array_Points.Bind;
       GL.Drawing.Draw_Arrays (Points, 0, 4);

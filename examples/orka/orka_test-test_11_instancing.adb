@@ -15,6 +15,7 @@
 with Ada.Text_IO;
 
 with GL.Drawing;
+with GL.Pixels;
 with GL.Types;
 with GL.Toggles;
 
@@ -164,7 +165,7 @@ begin
    Triangle.GL_Vertex_Array.Bind;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
       Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
       Mouse_X := Single (GL_Test.Display_Backend.Get_Mouse_X);

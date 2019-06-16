@@ -17,8 +17,8 @@ with Ada.Text_IO;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Low_Level.Enums;
-with GL.Pixels;
 with GL.Objects.Textures;
+with GL.Pixels;
 with GL.Types;
 with GL.Toggles;
 
@@ -207,13 +207,15 @@ procedure Orka_Test.Test_12_Stencil is
    VAO_Screen : constant Vertex_Format := Load_Screen_Data (Program_Screen);
 
    FB_1 : constant Framebuffer_Ptr
-     := new Framebuffer'(Create_Framebuffer (Width, Height, Color_Texture));
+     := new Framebuffer'(Create_Framebuffer (Width, Height));
    FB_D : constant Framebuffer_Ptr
      := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
 begin
    --  Load checkerboard texture
    Load_Texture (Scene_Texture);
    Load_Color_Texture (Color_Texture);
+
+   FB_1.Attach (Color_Texture);
 
    --  Use post-processing program
    Uni_FB.Set_Int (0);
@@ -258,7 +260,7 @@ begin
          --  Bind frame buffer and draw 3D scene
          FB_1.Use_Framebuffer;
 
-         FB_1.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 1.0));
+         FB_1.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
          FB_1.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
          VAO_Scene.GL_Vertex_Array.Bind;
@@ -283,13 +285,13 @@ begin
 
          -- Disable writing to the depth buffer in order to prevent the
          -- floor from hiding the reflection cube
-         Depth_Mask (False);
+         Set_Depth_Mask (False);
          FB_1.GL_Framebuffer.Clear_Stencil_Buffer (0);
          GL.Drawing.Draw_Arrays (Triangles, 30, 6);
 
          Set_Stencil_Function (Equal, 1, 16#FF#);  -- Pass test if stencil value is 1
          Set_Stencil_Mask (16#00#);  -- Don't write anything to stencil buffer
-         Depth_Mask (True);
+         Set_Depth_Mask (True);
 
          --  Start drawing reflection cube
          declare
@@ -316,7 +318,7 @@ begin
 
          --  Clear color buffer to red in order to verify it gets fully
          --  overwritten in the fullscreen pass
-         FB_D.GL_Framebuffer.Clear_Color_Buffer (0, (1.0, 0.0, 0.0, 1.0));
+         FB_D.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (1.0, 0.0, 0.0, 1.0));
          FB_D.GL_Framebuffer.Clear_Depth_Buffer (1.0);
 
          VAO_Screen.GL_Vertex_Array.Bind;
