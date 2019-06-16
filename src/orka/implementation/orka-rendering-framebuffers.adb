@@ -21,6 +21,9 @@ package body Orka.Rendering.Framebuffers is
 
    package Attachment_Vectors is new Containers.Bounded_Vectors (Positive, FB.Attachment_Point);
 
+   package Default_Attachment_Vectors is new Containers.Bounded_Vectors
+     (Positive, FB.Default_Attachment_Point);
+
    function Create_Framebuffer
      (Width, Height, Samples : Size) return Framebuffer is
    begin
@@ -129,7 +132,8 @@ package body Orka.Rendering.Framebuffers is
      (Object : Framebuffer;
       Mask   : GL.Buffers.Buffer_Bits := (others => True))
    is
-      Depth_Stencil : constant Boolean := Object.Has_Attachment (FB.Depth_Stencil_Attachment);
+      Depth_Stencil : constant Boolean
+        := Object.Default or else Object.Has_Attachment (FB.Depth_Stencil_Attachment);
       Depth         : constant Boolean := Object.Has_Attachment (FB.Depth_Attachment);
       Stencil       : constant Boolean := Object.Has_Attachment (FB.Stencil_Attachment);
    begin
@@ -187,7 +191,7 @@ package body Orka.Rendering.Framebuffers is
       end if;
    end Clear;
 
-   procedure Invalidate
+   procedure Invalidate_Non_Default
      (Object : Framebuffer;
       Mask   : GL.Buffers.Buffer_Bits)
    is
@@ -225,6 +229,44 @@ package body Orka.Rendering.Framebuffers is
       end if;
 
       Attachments.Query (Invalidate_Attachments'Access);
+   end Invalidate_Non_Default;
+
+   procedure Invalidate_Default
+     (Object : Framebuffer;
+      Mask   : GL.Buffers.Buffer_Bits)
+   is
+      Attachments : Default_Attachment_Vectors.Vector (Capacity => 3);
+
+      procedure Invalidate_Attachments (Elements : Default_Attachment_Vectors.Element_Array) is
+      begin
+         Object.GL_Framebuffer.Invalidate_Data (FB.Default_Attachment_List (Elements));
+      end Invalidate_Attachments;
+   begin
+      if Mask.Depth then
+         Attachments.Append (FB.Depth);
+      end if;
+
+      if Mask.Stencil then
+         Attachments.Append (FB.Stencil);
+      end if;
+
+      if Mask.Color then
+         --  Assumes a double-buffered context (Front_Left for single-buffered)
+         Attachments.Append (FB.Back_Left);
+      end if;
+
+      Attachments.Query (Invalidate_Attachments'Access);
+   end Invalidate_Default;
+
+   procedure Invalidate
+     (Object : Framebuffer;
+      Mask   : GL.Buffers.Buffer_Bits) is
+   begin
+      if Object.Default then
+         Object.Invalidate_Default (Mask);
+      else
+         Object.Invalidate_Non_Default (Mask);
+      end if;
    end Invalidate;
 
    procedure Resolve_To

@@ -121,8 +121,7 @@ package Orka.Rendering.Framebuffers is
 
    procedure Invalidate
      (Object : Framebuffer;
-      Mask   : GL.Buffers.Buffer_Bits)
-   with Pre  => not Object.Default;  -- TODO Remove when GL.Objects.Framebuffer supports default
+      Mask   : GL.Buffers.Buffer_Bits);
    --  Invalidate the attached textures for which the mask is True
 
    procedure Resolve_To

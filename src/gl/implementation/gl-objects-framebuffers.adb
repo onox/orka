@@ -103,21 +103,43 @@ package body GL.Objects.Framebuffers is
       Raise_Exception_On_OpenGL_Error;
    end Detach;
 
-   procedure Invalidate_Data (Object : Framebuffer;
-                              Attachments : Attachment_List) is
+   procedure Invalidate_Data
+     (Object      : Framebuffer;
+      Attachments : Attachment_List) is
    begin
       API.Invalidate_Named_Framebuffer_Data
         (Object.Reference.GL_Id, Attachments'Length, Attachments);
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
 
-   procedure Invalidate_Sub_Data (Object        : Framebuffer;
-                                  Attachments   : Attachment_List;
-                                  X, Y          : Int;
-                                  Width, Height : Size) is
+   procedure Invalidate_Sub_Data
+     (Object        : Framebuffer;
+      Attachments   : Attachment_List;
+      X, Y          : Int;
+      Width, Height : Size) is
    begin
-      API.Invalidate_Named_Framebuffer_Sub_Data (Object.Reference.GL_Id, Attachments'Length,
-                                                 Attachments, X, Y, Width, Height);
+      API.Invalidate_Named_Framebuffer_Sub_Data
+        (Object.Reference.GL_Id, Attachments'Length, Attachments, X, Y, Width, Height);
+      Raise_Exception_On_OpenGL_Error;
+   end Invalidate_Sub_Data;
+
+   procedure Invalidate_Data
+     (Object : Framebuffer;
+      Attachments : Default_Attachment_List) is
+   begin
+      API.Invalidate_Named_Framebuffer_Data
+        (Object.Reference.GL_Id, Attachments'Length, Attachments);
+      Raise_Exception_On_OpenGL_Error;
+   end Invalidate_Data;
+
+   procedure Invalidate_Sub_Data
+     (Object        : Framebuffer;
+      Attachments   : Default_Attachment_List;
+      X, Y          : Int;
+      Width, Height : Size) is
+   begin
+      API.Invalidate_Named_Framebuffer_Sub_Data
+        (Object.Reference.GL_Id, Attachments'Length, Attachments, X, Y, Width, Height);
       Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Data;
 

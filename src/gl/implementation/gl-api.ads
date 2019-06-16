@@ -678,6 +678,15 @@ private package GL.API is
      ("glInvalidateNamedFramebufferSubData", UInt, Size,
       Objects.Framebuffers.Attachment_List, Int, Int, Size, Size);
 
+   procedure Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
+     ("glInvalidateNamedFramebufferData", UInt, Size,
+      Objects.Framebuffers.Default_Attachment_Point,
+      Objects.Framebuffers.Default_Attachment_List);
+
+   procedure Invalidate_Named_Framebuffer_Sub_Data is new Loader.Procedure_With_7_Params
+     ("glInvalidateNamedFramebufferSubData", UInt, Size,
+      Objects.Framebuffers.Default_Attachment_List, Int, Int, Size, Size);
+
    procedure Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Size);
 

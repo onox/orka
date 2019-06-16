@@ -42,7 +42,12 @@ package GL.Objects.Framebuffers is
                              Color_Attachment_14, Color_Attachment_15,
                              Depth_Attachment, Stencil_Attachment);
 
+   type Default_Attachment_Point is
+     (Front_Left, Front_Right, Back_Left, Back_Right, Depth, Stencil);
+
    type Attachment_List is array (Positive range <>) of Attachment_Point;
+
+   type Default_Attachment_List is array (Positive range <>) of Default_Attachment_Point;
 
    function Valid_Attachment
      (Attachment : Attachment_Point;
@@ -113,14 +118,25 @@ package GL.Objects.Framebuffers is
      (Object      : Framebuffer;
       Attachments : Attachment_List)
    with Pre => Object /= Default_Framebuffer;
-   --  TODO Add Invalidate_Data for default framebuffer using Default_Color_Buffer_Selector
 
    procedure Invalidate_Sub_Data
      (Object        : Framebuffer;
       Attachments   : Attachment_List;
       X, Y          : Int;
-      Width, Height : Size);
-   --  TODO Add Invalidate_Data for default framebuffer using Default_Color_Buffer_Selector
+      Width, Height : Size)
+   with Pre => Object /= Default_Framebuffer;
+
+   procedure Invalidate_Data
+     (Object      : Framebuffer;
+      Attachments : Default_Attachment_List)
+   with Pre => Object = Default_Framebuffer;
+
+   procedure Invalidate_Sub_Data
+     (Object        : Framebuffer;
+      Attachments   : Default_Attachment_List;
+      X, Y          : Int;
+      Width, Height : Size)
+   with Pre => Object = Default_Framebuffer;
 
    procedure Set_Default_Width   (Object : Framebuffer; Value : Size);
    procedure Set_Default_Height  (Object : Framebuffer; Value : Size);
@@ -220,7 +236,17 @@ private
                              Stencil_Attachment       => 16#8D20#);
    for Attachment_Point'Size use Low_Level.Enum'Size;
 
+   for Default_Attachment_Point use
+     (Front_Left  => 16#0400#,
+      Front_Right => 16#0401#,
+      Back_Left   => 16#0402#,
+      Back_Right  => 16#0403#,
+      Depth       => 16#1801#,
+      Stencil     => 16#1802#);
+   for Default_Attachment_Point'Size use Low_Level.Enum'Size;
+
    pragma Convention (C, Attachment_List);
+   pragma Convention (C, Default_Attachment_List);
 
    type Framebuffer is new GL_Object with null record;
 
