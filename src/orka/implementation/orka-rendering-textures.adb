@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Fixed;
+
 with GL.Low_Level.Enums;
 with GL.Pixels;
 with GL.Types;
@@ -51,5 +53,20 @@ package body Orka.Rendering.Textures is
             Source        => Pixels'Address);
       end return;
    end Bayer_Dithering_Pattern;
+
+   function Image
+     (Texture : GL.Objects.Textures.Texture;
+      Level   : GL.Objects.Textures.Mipmap_Level := 0) return String
+   is
+      function Trim (Value : String) return String is
+        (Ada.Strings.Fixed.Trim (Value, Ada.Strings.Both));
+
+      Width  : constant String := Trim (Texture.Width  (Level)'Image);
+      Height : constant String := Trim (Texture.Height (Level)'Image);
+      Depth  : constant String := Trim (Texture.Depth  (Level)'Image);
+   begin
+      return (if Texture.Allocated then "allocated" else "unallocated") &
+        " " & Width & " x " & Height & " x " & Depth & " texture";
+   end Image;
 
 end Orka.Rendering.Textures;

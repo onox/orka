@@ -12,6 +12,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Fixed;
+
 with GL.Pixels;
 with GL.Window;
 
@@ -80,6 +82,18 @@ package body Orka.Rendering.Framebuffers is
      is (Object.GL_Framebuffer);
 
    -----------------------------------------------------------------------------
+
+   function Image (Object : Framebuffer) return String is
+      function Trim (Value : String) return String is
+        (Ada.Strings.Fixed.Trim (Value, Ada.Strings.Both));
+
+      Width  : constant String := Trim (Object.Width'Image);
+      Height : constant String := Trim (Object.Height'Image);
+
+      Default : constant String := (if Object.Default then " default" else "");
+   begin
+      return Width & " x " & Height & Default & " framebuffer";
+   end Image;
 
    procedure Use_Framebuffer (Object : Framebuffer) is
       use GL.Objects.Framebuffers;

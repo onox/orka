@@ -28,4 +28,9 @@ package Orka.Rendering.Textures is
    --  uniform sampler2D dither;
    --  color.xyz += vec3(texture(dither, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
 
+   function Image
+     (Texture : GL.Objects.Textures.Texture;
+      Level   : GL.Objects.Textures.Mipmap_Level := 0) return String;
+   --  Return a description of the texture
+
 end Orka.Rendering.Textures;

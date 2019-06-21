@@ -21,6 +21,7 @@ with GL.Types.Colors;
 
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Textures;
 with Orka.Windows;
 
 package Orka.Rendering.Framebuffers is
@@ -75,6 +76,9 @@ package Orka.Rendering.Framebuffers is
      with Inline;
 
    -----------------------------------------------------------------------------
+
+   function Image (Object : Framebuffer) return String;
+   --  Return a description of the given framebuffer
 
    procedure Use_Framebuffer (Object : Framebuffer);
    --  Use the framebuffer during rendering
@@ -151,11 +155,14 @@ package Orka.Rendering.Framebuffers is
       Texture    : Textures.Texture;
       Level      : Textures.Mipmap_Level := 0;
       Layer      : Natural := 0)
-   with Pre  => not Object.Default and Texture.Allocated and
+   with Pre  => (not Object.Default and Texture.Allocated and
                   (if Attachment in Color_Attachment_Point then
                     (Object.Width  = Texture.Width  (Level) and
                      Object.Height = Texture.Height (Level))) and
-                  (if not Texture.Layered then Layer = 0),
+                  (if not Texture.Layered then Layer = 0))
+                or else raise Constraint_Error with
+                  "Cannot attach " & Rendering.Textures.Image (Texture, Level) &
+                  " to " & Object.Image,
         Post => Object.Has_Attachment (Attachment);
    --  Attach the texture to the attachment point
    --
