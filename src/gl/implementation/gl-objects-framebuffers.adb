@@ -26,8 +26,6 @@ package body GL.Objects.Framebuffers is
      (Attachment : Attachment_Point;
       Texture    : Textures.Texture) return Boolean
    is
-      use all type GL.Pixels.Internal_Format;
-
       Format : GL.Pixels.Internal_Format renames Texture.Internal_Format;
    begin
       case Attachment is
