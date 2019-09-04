@@ -210,10 +210,6 @@ package body Orka.Resources.Loader is
       end;
    end Load;
 
-   function Load (Path : String) return Futures.Pointers.Reference is
-     (Load (Path).Get);
-   --  A helper function to avoid raising a Storage_Error
-
    procedure Shutdown is
    begin
       Queue.Shutdown;

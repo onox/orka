@@ -235,7 +235,7 @@ begin
             T1 : constant Time := Clock;
             T2 : Time;
 
-            Future_Ref : Orka.Futures.Pointers.Reference := Loader.Load (Model_Path);
+            Future_Ref : Orka.Futures.Pointers.Reference := Loader.Load (Model_Path).Get;
 
             use type Orka.Futures.Status;
             Resource_Status : Orka.Futures.Status;

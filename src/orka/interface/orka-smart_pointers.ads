@@ -58,7 +58,7 @@ package Orka.Smart_Pointers is
 
 private
 
-   type Data_Record is record
+   type Data_Record is limited record
       References : Atomics.Counter (Initial_Value => 1);
       Object     : Object_Access;
    end record;

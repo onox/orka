@@ -40,7 +40,7 @@ package Orka.Resources.Loader is
    --  A loader can only load resources that have a specific extension.
    --  The extension can be queried by calling the Loader.Extension function.
 
-   function Load (Path : String) return Futures.Pointers.Reference;
+   function Load (Path : String) return Futures.Pointers.Mutable_Pointer;
    --  Load the given resource from a file system or archive and return
    --  a handle for querying the processing status of the resource. Calling
    --  this function may block until there is a free slot available for
