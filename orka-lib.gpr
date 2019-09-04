@@ -15,4 +15,9 @@ library project Orka.Lib extends "orka" is
    for Source_Dirs use OpenGL_Sources & Orka_Sources;
    for Object_Dir use "obj/orka";
 
+   package Builder renames Orka.Builder;
+   package Compiler renames Orka.Compiler;
+   package Binder renames Orka.Binder;
+   package Linker renames Orka.Linker;
+
 end Orka.Lib;
