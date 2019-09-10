@@ -1,4 +1,5 @@
 --  Copyright (c) 2013 Felix Krause <contact@flyx.org>
+--  Copyright (c) 2017 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -16,6 +17,10 @@ with GL.API;
 with GL.Enums.Getter;
 
 package body GL.Viewports is
+
+   -----------------------------------------------------------------------------
+   --                                Viewports                                --
+   -----------------------------------------------------------------------------
 
    function Maximum_Viewports return Size is
       Result : Size := 16;
@@ -100,5 +105,31 @@ package body GL.Viewports is
          Width  => Result (Z),
          Height => Result (W));
    end Get_Scissor_Rectangle;
+
+   -----------------------------------------------------------------------------
+   --                                 Clipping                                --
+   -----------------------------------------------------------------------------
+
+   procedure Set_Clipping (Origin : Viewport_Origin; Depth : Depth_Mode) is
+   begin
+      API.Clip_Control (Origin, Depth);
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Clipping;
+
+   function Origin return Viewport_Origin is
+      Result : Viewport_Origin := Viewport_Origin'First;
+   begin
+      API.Get_Clip_Origin (Enums.Getter.Clip_Origin, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Origin;
+
+   function Depth return Depth_Mode is
+      Result : Depth_Mode := Depth_Mode'First;
+   begin
+      API.Get_Clip_Depth_Mode (Enums.Getter.Clip_Depth_Mode, Result);
+      Raise_Exception_On_OpenGL_Error;
+      return Result;
+   end Depth;
 
 end GL.Viewports;

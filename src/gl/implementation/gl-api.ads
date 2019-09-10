@@ -16,7 +16,6 @@ with GL.Runtime_Loading;
 
 with GL.Blending;
 with GL.Buffers;
-with GL.Clipping;
 with GL.Culling;
 with GL.Debug;
 with GL.Debug_Types;
@@ -131,10 +130,10 @@ private package GL.API is
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Equation);
 
    procedure Get_Clip_Origin is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Clipping.Viewport_Origin);
+     ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Viewport_Origin);
 
    procedure Get_Clip_Depth_Mode is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Clipping.Depth_Mode);
+     ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Depth_Mode);
 
    procedure Get_Compare_Function is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
@@ -190,7 +189,7 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Clip_Control is new Loader.Procedure_With_2_Params
-     ("glClipControl", Clipping.Viewport_Origin, Clipping.Depth_Mode);
+     ("glClipControl", Viewports.Viewport_Origin, Viewports.Depth_Mode);
 
    -----------------------------------------------------------------------------
    --                                 Culling                                 --

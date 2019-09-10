@@ -13,10 +13,10 @@
 --  limitations under the License.
 
 with GL.Buffers;
-with GL.Clipping;
 with GL.Shading;
 with GL.Toggles;
 with GL.Types;
+with GL.Viewports;
 
 package body Orka.Contexts is
 
@@ -27,7 +27,7 @@ package body Orka.Contexts is
             --  Enable reversed Z for better depth precision at great distances
             --  See https://developer.nvidia.com/content/depth-precision-visualized
             --  for a visualization
-            GL.Clipping.Set_Clipping (GL.Clipping.Lower_Left, GL.Clipping.Zero_To_One);
+            GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
             GL.Buffers.Set_Depth_Function (GL.Types.Greater);
             --  When clearing the depth buffer, the value 0.0 must be used
          when Multisample =>

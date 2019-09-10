@@ -1,4 +1,5 @@
 --  Copyright (c) 2013 Felix Krause <contact@flyx.org>
+--  Copyright (c) 2017 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,10 +15,16 @@
 
 with GL.Types;
 
+private with GL.Low_Level;
+
 package GL.Viewports is
    pragma Preelaborate;
 
    use GL.Types;
+
+   -----------------------------------------------------------------------------
+   --                                Viewports                                --
+   -----------------------------------------------------------------------------
 
    type Viewport is record
       X, Y, Width, Height : Single;
@@ -61,5 +68,40 @@ package GL.Viewports is
 
    procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List);
    function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle;
+
+   -----------------------------------------------------------------------------
+   --                                 Clipping                                --
+   -----------------------------------------------------------------------------
+
+   type Viewport_Origin is (Lower_Left, Upper_Left);
+
+   type Depth_Mode is (Negative_One_To_One, Zero_To_One);
+
+   procedure Set_Clipping (Origin : Viewport_Origin; Depth : Depth_Mode);
+   --  Set the origin of the viewport and the range of the clip planes
+   --
+   --  Controls how clip space is mapped to window space. Both Direct3D and
+   --  OpenGL expect a vertex position of (-1, -1) to map to the lower-left
+   --  corner of the viewport.
+   --
+   --  Direct3D expects the UV coordinate of (0, 0) to correspond to the
+   --  upper-left corner of a randered image, while OpenGL expects it in
+   --  the lower-left corner.
+
+   function Origin return Viewport_Origin;
+
+   function Depth return Depth_Mode;
+
+private
+
+   for Viewport_Origin use
+     (Lower_Left => 16#8CA1#,
+      Upper_Left => 16#8CA2#);
+   for Viewport_Origin'Size use Low_Level.Enum'Size;
+
+   for Depth_Mode use
+     (Negative_One_To_One => 16#935E#,
+      Zero_To_One         => 16#935F#);
+   for Depth_Mode'Size use Low_Level.Enum'Size;
 
 end GL.Viewports;
