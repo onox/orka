@@ -76,18 +76,11 @@ package body GL.Buffers is
       return Boolean (Value);
    end Depth_Mask;
 
-   procedure Set_Stencil_Function (Func : Compare_Function;
-                                   Ref  : Int;
-                                   Mask : UInt) is
-      Face : constant Culling.Face_Selector := Culling.Front_And_Back;
-   begin
-      Set_Stencil_Function (Face, Func, Ref, Mask);
-   end Set_Stencil_Function;
-
-   procedure Set_Stencil_Function (Face : Culling.Face_Selector;
-                                   Func : Compare_Function;
-                                   Ref  : Int;
-                                   Mask : UInt) is
+   procedure Set_Stencil_Function
+     (Face : Culling.Face_Selector;
+      Func : Compare_Function;
+      Ref  : Int;
+      Mask : UInt) is
    begin
       API.Stencil_Func_Separate (Face, Func, Ref, Mask);
       Raise_Exception_On_OpenGL_Error;
@@ -129,18 +122,11 @@ package body GL.Buffers is
       return Value;
    end Stencil_Value_Mask;
 
-   procedure Set_Stencil_Operation (Stencil_Fail : Buffers.Stencil_Action;
-                                    Depth_Fail   : Buffers.Stencil_Action;
-                                    Depth_Pass   : Buffers.Stencil_Action) is
-      Face : constant Culling.Face_Selector := Culling.Front_And_Back;
-   begin
-      Set_Stencil_Operation (Face, Stencil_Fail, Depth_Fail, Depth_Pass);
-   end Set_Stencil_Operation;
-
-   procedure Set_Stencil_Operation (Face : Culling.Face_Selector;
-                                    Stencil_Fail : Buffers.Stencil_Action;
-                                    Depth_Fail   : Buffers.Stencil_Action;
-                                    Depth_Pass   : Buffers.Stencil_Action) is
+   procedure Set_Stencil_Operation
+     (Face         : Culling.Face_Selector;
+      Stencil_Fail : Buffers.Stencil_Action;
+      Depth_Fail   : Buffers.Stencil_Action;
+      Depth_Pass   : Buffers.Stencil_Action) is
    begin
       API.Stencil_Op_Separate (Face, Stencil_Fail, Depth_Fail, Depth_Pass);
       Raise_Exception_On_OpenGL_Error;

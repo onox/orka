@@ -116,27 +116,21 @@ package GL.Buffers is
    function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color;
    --  Return the color mask of a particular draw buffer
 
-   procedure Set_Stencil_Function (Func : Compare_Function;
-                                   Ref  : Int;
-                                   Mask : UInt);
-
-   procedure Set_Stencil_Function (Face : Culling.Face_Selector;
-                                   Func : Compare_Function;
-                                   Ref  : Int;
-                                   Mask : UInt);
+   procedure Set_Stencil_Function
+     (Face : Culling.Face_Selector;
+      Func : Compare_Function;
+      Ref  : Int;
+      Mask : UInt);
 
    function Stencil_Function (Face : Single_Face_Selector) return Compare_Function;
    function Stencil_Reference_Value (Face : Single_Face_Selector) return Int;
    function Stencil_Value_Mask (Face : Single_Face_Selector) return UInt;
 
-   procedure Set_Stencil_Operation (Stencil_Fail : Buffers.Stencil_Action;
-                                    Depth_Fail   : Buffers.Stencil_Action;
-                                    Depth_Pass   : Buffers.Stencil_Action);
-
-   procedure Set_Stencil_Operation (Face : Culling.Face_Selector;
-                                    Stencil_Fail : Buffers.Stencil_Action;
-                                    Depth_Fail   : Buffers.Stencil_Action;
-                                    Depth_Pass   : Buffers.Stencil_Action);
+   procedure Set_Stencil_Operation
+     (Face         : Culling.Face_Selector;
+      Stencil_Fail : Buffers.Stencil_Action;
+      Depth_Fail   : Buffers.Stencil_Action;
+      Depth_Pass   : Buffers.Stencil_Action);
 
    function Stencil_Operation_Stencil_Fail
      (Face : Single_Face_Selector) return Buffers.Stencil_Action;
