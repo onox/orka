@@ -41,7 +41,7 @@ with GL.Toggles;
 with GL.Types.Colors;
 with GL.Types.Compute;
 with GL.Types.Debug;
-with GL.Window;
+with GL.Viewports;
 
 with Interfaces.C.Strings;
 
@@ -1094,12 +1094,12 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Depth_Range_Array is new Loader.Procedure_With_3_Params
-     ("glDepthRangeArrayv", UInt, Size, Window.Depth_Range_List);
+     ("glDepthRangeArrayv", UInt, Size, Viewports.Depth_Range_List);
 
    procedure Viewport_Array is new Loader.Procedure_With_3_Params
-     ("glViewportArrayv", UInt, Size, Window.Viewport_List);
+     ("glViewportArrayv", UInt, Size, Viewports.Viewport_List);
 
    procedure Scissor_Array is new Loader.Procedure_With_3_Params
-     ("glScissorArrayv", UInt, Size, Window.Scissor_Rectangle_List);
+     ("glScissorArrayv", UInt, Size, Viewports.Scissor_Rectangle_List);
 
 end GL.API;

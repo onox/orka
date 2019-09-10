@@ -15,7 +15,7 @@
 with GL.API;
 with GL.Enums.Getter;
 
-package body GL.Window is
+package body GL.Viewports is
 
    function Maximum_Viewports return Size is
       Result : Size := 16;
@@ -101,4 +101,4 @@ package body GL.Window is
          Height => Result (W));
    end Get_Scissor_Rectangle;
 
-end GL.Window;
+end GL.Viewports;

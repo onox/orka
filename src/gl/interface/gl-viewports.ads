@@ -14,7 +14,7 @@
 
 with GL.Types;
 
-package GL.Window is
+package GL.Viewports is
    pragma Preelaborate;
 
    use GL.Types;
@@ -62,4 +62,4 @@ package GL.Window is
    procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List);
    function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle;
 
-end GL.Window;
+end GL.Viewports;

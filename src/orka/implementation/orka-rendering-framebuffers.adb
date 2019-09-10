@@ -15,7 +15,7 @@
 with Ada.Strings.Fixed;
 
 with GL.Pixels;
-with GL.Window;
+with GL.Viewports;
 
 with Orka.Containers.Bounded_Vectors;
 
@@ -101,7 +101,7 @@ package body Orka.Rendering.Framebuffers is
       GL.Objects.Framebuffers.Draw_Target.Bind (Object.GL_Framebuffer);
 
       --  Adjust viewport
-      GL.Window.Set_Viewports
+      GL.Viewports.Set_Viewports
         ((0 => (X      => 0.0,
                 Y      => 0.0,
                 Width  => Single (Object.Width),
