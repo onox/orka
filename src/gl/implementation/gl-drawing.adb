@@ -20,15 +20,10 @@ with GL.Types.Indirect;
 
 package body GL.Drawing is
 
-   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size) is
-   begin
-      API.Draw_Arrays (Mode, Offset, Count);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Arrays;
-
    procedure Draw_Arrays
-     (Mode : Connection_Mode;
-      Offset, Count, Instances : Size;
+     (Mode          : Connection_Mode;
+      Offset, Count : Size;
+      Instances     : Size := 1;
       Base_Instance : Size := 0) is
    begin
       API.Draw_Arrays_Instanced_Base_Instance
@@ -69,46 +64,13 @@ package body GL.Drawing is
    end Draw_Multiple_Arrays_Indirect_Count;
 
    procedure Draw_Elements
-     (Mode       : Connection_Mode; Count : Types.Size;
-      Index_Kind : Index_Type;
-      Index_Offset : Natural)
-   is
-      Element_Bytes : Natural;
-   begin
-      case Index_Kind is
-         when UShort_Type => Element_Bytes := 2;
-         when UInt_Type   => Element_Bytes := 4;
-      end case;
-      API.Draw_Elements (Mode, Count, Index_Kind,
-        Low_Level.IntPtr (Element_Bytes * Index_Offset));
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Elements;
-
-   procedure Draw_Elements
-     (Mode       : Connection_Mode; Count : Size;
-      Index_Kind : Index_Type;
-      Instances  : Size;
+     (Mode          : Connection_Mode;
+      Count         : Size;
+      Index_Kind    : Index_Type;
       Index_Offset  : Natural;
-      Base_Instance : Size := 0)
-   is
-      Element_Bytes : Natural;
-   begin
-      case Index_Kind is
-         when UShort_Type => Element_Bytes := 2;
-         when UInt_Type   => Element_Bytes := 4;
-      end case;
-      API.Draw_Elements_Instanced_Base_Instance (Mode, Count, Index_Kind,
-        Low_Level.IntPtr (Element_Bytes * Index_Offset),
-        Instances, UInt (Base_Instance));
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Elements;
-
-   procedure Draw_Elements_Base_Vertex_Base_Instance
-     (Mode       : Connection_Mode; Count : Size;
-      Index_Kind : Index_Type;
-      Instances  : Size;
-      Vertex_Offset, Index_Offset : Natural;
-      Base_Instance : Size := 0)
+      Instances     : Size := 1;
+      Base_Instance : Size := 0;
+      Base_Vertex   : Size := 0)
    is
       Element_Bytes : Natural;
    begin
@@ -118,9 +80,9 @@ package body GL.Drawing is
       end case;
       API.Draw_Elements_Instanced_Base_Vertex_Base_Instance
         (Mode, Count, Index_Kind, Low_Level.IntPtr (Element_Bytes * Index_Offset),
-         Instances, Int (Vertex_Offset), UInt (Base_Instance));
+         Instances, Int (Base_Vertex), UInt (Base_Instance));
       Raise_Exception_On_OpenGL_Error;
-   end Draw_Elements_Base_Vertex_Base_Instance;
+   end Draw_Elements;
 
    procedure Draw_Multiple_Elements_Indirect
      (Mode       : Connection_Mode;

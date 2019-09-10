@@ -19,11 +19,10 @@ package GL.Drawing is
 
    use GL.Types;
 
-   procedure Draw_Arrays (Mode : Connection_Mode; Offset, Count : Size);
-
    procedure Draw_Arrays
-     (Mode : Connection_Mode;
-      Offset, Count, Instances : Size;
+     (Mode          : Connection_Mode;
+      Offset, Count : Size;
+      Instances     : Size := 1;
       Base_Instance : Size := 0);
 
    procedure Draw_Multiple_Arrays_Indirect
@@ -37,23 +36,13 @@ package GL.Drawing is
       Offset, Count_Offset : Size := 0);
 
    procedure Draw_Elements
-     (Mode       : Connection_Mode; Count : Size;
-      Index_Kind : Index_Type;
-      Index_Offset : Natural);
-
-   procedure Draw_Elements
-     (Mode       : Connection_Mode; Count : Size;
-      Index_Kind : Index_Type;
-      Instances  : Size;
+     (Mode          : Connection_Mode;
+      Count         : Size;
+      Index_Kind    : Index_Type;
       Index_Offset  : Natural;
-      Base_Instance : Size := 0);
-
-   procedure Draw_Elements_Base_Vertex_Base_Instance
-     (Mode       : Connection_Mode; Count : Size;
-      Index_Kind : Index_Type;
-      Instances  : Size;
-      Vertex_Offset, Index_Offset : Natural;
-      Base_Instance : Size := 0);
+      Instances     : Size := 1;
+      Base_Instance : Size := 0;
+      Base_Vertex   : Size := 0);
 
    procedure Draw_Multiple_Elements_Indirect
      (Mode       : Connection_Mode;

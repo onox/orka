@@ -219,9 +219,6 @@ private package GL.API is
    --                                 Drawing                                 --
    -----------------------------------------------------------------------------
 
-   procedure Draw_Arrays is new Loader.Procedure_With_3_Params
-     ("glDrawArrays", Connection_Mode, Int, Size);
-
    procedure Draw_Arrays_Instanced_Base_Instance is new Loader.Procedure_With_5_Params
      ("glDrawArraysInstancedBaseInstance", Connection_Mode, Int, Size, Size, UInt);
 
@@ -230,13 +227,6 @@ private package GL.API is
 
    procedure Multi_Draw_Arrays_Indirect_Count is new Loader.Procedure_With_5_Params
      ("glMultiDrawArraysIndirectCount", Connection_Mode, Int, Low_Level.IntPtr, Size, Size);
-
-   procedure Draw_Elements is new Loader.Procedure_With_4_Params
-     ("glDrawElements", Connection_Mode, Size, Index_Type, Low_Level.IntPtr);
-
-   procedure Draw_Elements_Instanced_Base_Instance is new Loader.Procedure_With_6_Params
-     ("glDrawElementsInstancedBaseInstance", Connection_Mode, Size,
-      Index_Type, Low_Level.IntPtr, Size, UInt);
 
    procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance
      is new Loader.Procedure_With_7_Params
