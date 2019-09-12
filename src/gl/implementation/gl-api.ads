@@ -990,15 +990,6 @@ private package GL.API is
    procedure Transform_Feedback_Buffer_Base is new Loader.Procedure_With_3_Params
       ("glTransformFeedbackBufferBase", UInt, UInt, UInt);
 
-   procedure Draw_Transform_Feedback is new Loader.Procedure_With_2_Params
-     ("glDrawTransformFeedback", Connection_Mode, UInt);
-
-   procedure Draw_Transform_Feedback_Instanced is new Loader.Procedure_With_3_Params
-     ("glDrawTransformFeedbackInstanced", Connection_Mode, UInt, Size);
-
-   procedure Draw_Transform_Feedback_Stream is new Loader.Procedure_With_3_Params
-     ("glDrawTransformFeedbackStream", Connection_Mode, UInt, UInt);
-
    procedure Draw_Transform_Feedback_Stream_Instanced is new Loader.Procedure_With_4_Params
      ("glDrawTransformFeedbackStreamInstanced", Connection_Mode, UInt, UInt, Size);
 

@@ -58,34 +58,16 @@ package body GL.Objects.Transform_Feedbacks is
       end if;
    end Current;
 
-   procedure Draw_Transform_Feedback (Object : Feedback_Object; Mode : Connection_Mode) is
-   begin
-      API.Draw_Transform_Feedback (Mode, Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Transform_Feedback;
-
-   procedure Draw_Transform_Feedback (Object : Feedback_Object;
-                                      Mode : Connection_Mode; Instances : Size) is
-   begin
-      API.Draw_Transform_Feedback_Instanced (Mode, Object.Reference.GL_Id,
-                                             Instances);
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Transform_Feedback;
-
-   procedure Draw_Transform_Feedback_Stream (Object : Feedback_Object; Mode : Connection_Mode;
-                                             Stream : Natural) is
-   begin
-      API.Draw_Transform_Feedback_Stream (Mode, Object.Reference.GL_Id, UInt (Stream));
-      Raise_Exception_On_OpenGL_Error;
-   end Draw_Transform_Feedback_Stream;
-
-   procedure Draw_Transform_Feedback_Stream (Object : Feedback_Object; Mode : Connection_Mode;
-                                             Stream : Natural; Instances : Size) is
+   procedure Draw_Transform_Feedback
+     (Object    : Feedback_Object;
+      Mode      : Connection_Mode;
+      Stream    : Size := 0;
+      Instances : Size := 1) is
    begin
       API.Draw_Transform_Feedback_Stream_Instanced (Mode, Object.Reference.GL_Id,
                                                     UInt (Stream), Instances);
       Raise_Exception_On_OpenGL_Error;
-   end Draw_Transform_Feedback_Stream;
+   end Draw_Transform_Feedback;
 
    overriding
    procedure Initialize_Id (Object : in out Feedback_Object) is

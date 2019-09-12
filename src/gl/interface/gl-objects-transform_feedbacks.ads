@@ -36,16 +36,11 @@ package GL.Objects.Transform_Feedbacks is
 
    function Current (Target : Feedback_Target) return Feedback_Object'Class;
 
-   procedure Draw_Transform_Feedback (Object : Feedback_Object; Mode : Connection_Mode);
-
-   procedure Draw_Transform_Feedback (Object : Feedback_Object;
-                                      Mode : Connection_Mode; Instances : Size);
-
-   procedure Draw_Transform_Feedback_Stream (Object : Feedback_Object; Mode : Connection_Mode;
-                                             Stream : Natural);
-
-   procedure Draw_Transform_Feedback_Stream (Object : Feedback_Object; Mode : Connection_Mode;
-                                             Stream : Natural; Instances : Size);
+   procedure Draw_Transform_Feedback
+     (Object    : Feedback_Object;
+      Mode      : Connection_Mode;
+      Stream    : Size := 0;
+      Instances : Size := 1);
 
    overriding
    procedure Initialize_Id (Object : in out Feedback_Object);
