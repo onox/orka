@@ -77,24 +77,6 @@ package body GL.Objects.Programs is
       Raise_Exception_On_OpenGL_Error;
    end Use_Program;
 
-   procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean) is
-   begin
-      API.Program_Parameter_Bool (Subject.Reference.GL_Id,
-                                  Enums.Program_Binary_Retrievable_Hint,
-                                  Low_Level.Bool (Retrievable));
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Binary_Retrievable;
-
-   function Binary_Retrievable (Subject : Program) return Boolean is
-      Retrievable_Value : Int := 0;
-   begin
-      API.Get_Program_Param (Subject.Reference.GL_Id,
-                             Enums.Program_Binary_Retrievable_Hint,
-                             Retrievable_Value);
-      Raise_Exception_On_OpenGL_Error;
-      return Retrievable_Value /= 0;
-   end Binary_Retrievable;
-
    procedure Set_Separable (Subject : Program; Separable : Boolean) is
    begin
       API.Program_Parameter_Bool (Subject.Reference.GL_Id, Enums.Program_Separable,

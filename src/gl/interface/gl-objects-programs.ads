@@ -40,9 +40,6 @@ package GL.Objects.Programs is
    --  subsequently call Set_Uniform_Subroutines, because the subroutine
    --  state is completely lost after having called Use_Program.
 
-   procedure Set_Binary_Retrievable (Subject : Program; Retrievable : Boolean);
-   function Binary_Retrievable (Subject : Program) return Boolean;
-
    procedure Set_Separable (Subject : Program; Separable : Boolean);
    function Separable (Subject : Program) return Boolean;
 
