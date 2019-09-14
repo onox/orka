@@ -33,10 +33,10 @@ vec3 update_y(in vec3 position)
     return position;
 }
 
-subroutine uniform update_position[2] update_pos;
+subroutine uniform update_position update_pos;
 subroutine uniform no_update_position no_update_pos;
 
 void main(void) {
-   gl_Position = vec4(update_pos[0](in_Position), 1.0);
+   gl_Position = vec4(update_pos(in_Position), 1.0);
    ex_Color = in_Color;
 }

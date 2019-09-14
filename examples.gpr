@@ -13,25 +13,20 @@ project Examples is
    for Source_Dirs use Orka.Glfw.Shared_Example_Sources &
      "examples/gl" & "examples/orka" & "examples/glfw";
 
-   OpenGL_Examples := (
-      "gl_test-vbo",
-      "gl_test-geometry",
-      "gl_test-transform_feedback",
-      "gl_test-subroutines",
-      "gl_test-mdi"
-   );
-
    Orka_Examples := (
       "orka_test-test_1_triangle",
       "orka_test-test_2_two_triangles",
       "orka_test-test_3_module_array",
 --      "orka_test-test_4_mdi",
       "orka_test-test_5_scene_tree",
+      "orka_test-test_6_transform_feedback",
       "orka_test-test_7_half",
       "orka_test-test_9_jobs",
       "orka_test-test_10_compute",
       "orka_test-test_11_instancing",
-      "orka_test-test_12_stencil"
+      "orka_test-test_12_stencil",
+      "orka_test-test_13_geometry",
+      "orka_test-test_14_subroutines"
    );
 
    GLFW_Examples := (
@@ -40,7 +35,7 @@ project Examples is
       "glfw_test-clipboard"
    );
 
-   for Main use OpenGL_Examples & Orka_Examples;  --  & GLFW_Examples;
+   for Main use Orka_Examples;  --  & GLFW_Examples;
 
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
