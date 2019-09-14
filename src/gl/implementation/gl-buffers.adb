@@ -19,7 +19,7 @@ with GL.Enums.Getter;
 
 package body GL.Buffers is
 
-   use type Culling.Face_Selector;
+   use type Rasterization.Face_Selector;
 
    procedure Color_Mask (Value : Colors.Enabled_Color) is
    begin
@@ -77,7 +77,7 @@ package body GL.Buffers is
    end Depth_Mask;
 
    procedure Set_Stencil_Function
-     (Face : Culling.Face_Selector;
+     (Face : Rasterization.Face_Selector;
       Func : Compare_Function;
       Ref  : Int;
       Mask : UInt) is
@@ -89,7 +89,7 @@ package body GL.Buffers is
    function Stencil_Function (Face : Single_Face_Selector) return Compare_Function is
       Value : Compare_Function := Compare_Function'First;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Compare_Function (Enums.Getter.Stencil_Func, Value);
       else
          API.Get_Compare_Function (Enums.Getter.Stencil_Back_Func, Value);
@@ -101,7 +101,7 @@ package body GL.Buffers is
    function Stencil_Reference_Value (Face : Single_Face_Selector) return Int is
       Value : Int := 0;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Integer (Enums.Getter.Stencil_Ref, Value);
       else
          API.Get_Integer (Enums.Getter.Stencil_Back_Ref, Value);
@@ -113,7 +113,7 @@ package body GL.Buffers is
    function Stencil_Value_Mask (Face : Single_Face_Selector) return UInt is
       Value : UInt := 0;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Value_Mask, Value);
       else
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Value_Mask, Value);
@@ -123,7 +123,7 @@ package body GL.Buffers is
    end Stencil_Value_Mask;
 
    procedure Set_Stencil_Operation
-     (Face         : Culling.Face_Selector;
+     (Face         : Rasterization.Face_Selector;
       Stencil_Fail : Buffers.Stencil_Action;
       Depth_Fail   : Buffers.Stencil_Action;
       Depth_Pass   : Buffers.Stencil_Action) is
@@ -137,7 +137,7 @@ package body GL.Buffers is
    is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Stencil_Action (Enums.Getter.Stencil_Fail, Value);
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Fail, Value);
@@ -151,7 +151,7 @@ package body GL.Buffers is
    is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Fail, Value);
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Fail, Value);
@@ -165,7 +165,7 @@ package body GL.Buffers is
    is
       Value : Buffers.Stencil_Action := Buffers.Stencil_Action'First;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Stencil_Action (Enums.Getter.Stencil_Pass_Depth_Pass, Value);
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Pass, Value);
@@ -175,12 +175,12 @@ package body GL.Buffers is
    end Stencil_Operation_Depth_Pass;
 
    procedure Set_Stencil_Mask (Value : UInt) is
-      Face : constant Culling.Face_Selector := Culling.Front_And_Back;
+      Face : constant Rasterization.Face_Selector := Rasterization.Front_And_Back;
    begin
       Set_Stencil_Mask (Face, Value);
    end Set_Stencil_Mask;
 
-   procedure Set_Stencil_Mask (Face  : Culling.Face_Selector;
+   procedure Set_Stencil_Mask (Face  : Rasterization.Face_Selector;
                                Value : UInt) is
    begin
       API.Stencil_Mask_Separate (Face, Value);
@@ -190,7 +190,7 @@ package body GL.Buffers is
    function Stencil_Mask (Face : Single_Face_Selector) return UInt is
       Value : UInt := 0;
    begin
-      if Face = Culling.Front then
+      if Face = Rasterization.Front then
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Writemask, Value);
       else
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Writemask, Value);

@@ -1,4 +1,4 @@
---  Copyright (c) 2014 Felix Krause <contact@flyx.org>
+--  Copyright (c) 2013 - 2014 Felix Krause <contact@flyx.org>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Culling;
 with GL.Enums.Getter;
 
 package body GL.Rasterization is
 
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type) is
    begin
-      API.Polygon_Mode (Culling.Front_And_Back, Value);
+      API.Polygon_Mode (Front_And_Back, Value);
       Raise_Exception_On_OpenGL_Error;
    end Set_Polygon_Mode;
 
@@ -61,5 +60,27 @@ package body GL.Rasterization is
       Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Clamp;
+
+   -----------------------------------------------------------------------------
+
+   procedure Set_Front_Face (Face : Orientation) renames API.Front_Face;
+
+   function Front_Face return Orientation is
+      Ret : Orientation := Orientation'First;
+   begin
+      API.Get_Orientation (Enums.Getter.Cull_Face, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Front_Face;
+
+   procedure Set_Cull_Face (Selector : Face_Selector) renames API.Cull_Face;
+
+   function Cull_Face return Face_Selector is
+      Ret : Face_Selector := Face_Selector'First;
+   begin
+      API.Get_Face_Selector (Enums.Getter.Cull_Face_Mode, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Cull_Face;
 
 end GL.Rasterization;

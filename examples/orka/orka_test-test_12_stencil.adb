@@ -15,11 +15,11 @@
 with Ada.Text_IO;
 
 with GL.Buffers;
-with GL.Culling;
 with GL.Drawing;
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 with GL.Pixels;
+with GL.Rasterization;
 with GL.Types;
 with GL.Toggles;
 
@@ -281,8 +281,8 @@ begin
          GL.Toggles.Enable (GL.Toggles.Stencil_Test);
 
          -- Set any stencil to 1
-         Set_Stencil_Function (GL.Culling.Front_And_Back, Always, 1, 16#FF#);
-         Set_Stencil_Operation (GL.Culling.Front_And_Back, Keep, Keep, Replace);
+         Set_Stencil_Function (GL.Rasterization.Front_And_Back, Always, 1, 16#FF#);
+         Set_Stencil_Operation (GL.Rasterization.Front_And_Back, Keep, Keep, Replace);
          Set_Stencil_Mask (16#FF#);  -- Allow writing to stencil buffer
 
          --  Disable writing to the depth buffer in order to prevent the
@@ -292,7 +292,7 @@ begin
          GL.Drawing.Draw_Arrays (Triangles, 30, 6);
 
          -- Pass test if stencil value is 1
-         Set_Stencil_Function (GL.Culling.Front_And_Back, Equal, 1, 16#FF#);
+         Set_Stencil_Function (GL.Rasterization.Front_And_Back, Equal, 1, 16#FF#);
          Set_Stencil_Mask (16#00#);  -- Don't write anything to stencil buffer
          Set_Depth_Mask (True);
 

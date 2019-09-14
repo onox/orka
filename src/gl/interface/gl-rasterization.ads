@@ -1,4 +1,4 @@
---  Copyright (c) 2014 Felix Krause <contact@flyx.org>
+--  Copyright (c) 2013 - 2014 Felix Krause <contact@flyx.org>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -35,9 +35,37 @@ package GL.Rasterization is
    function Polygon_Offset_Units return Single;
    function Polygon_Offset_Clamp return Single;
 
+   -----------------------------------------------------------------------------
+   --                                 Culling                                 --
+   -----------------------------------------------------------------------------
+
+   --  Enable culling by enabling Cull_Face in package GL.Toggles
+
+   type Orientation is (Clockwise, Counter_Clockwise);
+
+   type Face_Selector is (Front, Back, Front_And_Back);
+
+   procedure Set_Front_Face (Face : Orientation);
+   function Front_Face return Orientation;
+
+   procedure Set_Cull_Face (Selector : Face_Selector);
+   function Cull_Face return Face_Selector;
+
 private
+
    for Polygon_Mode_Type use (Point => 16#1B00#,
                               Line => 16#1B01#,
                               Fill => 16#1B02#);
    for Polygon_Mode_Type'Size use Low_Level.Enum'Size;
+
+   -----------------------------------------------------------------------------
+
+   for Orientation use (Clockwise => 16#0900#, Counter_Clockwise => 16#0901#);
+   for Orientation'Size use Low_Level.Enum'Size;
+
+   for Face_Selector use (Front          => 16#0404#,
+                          Back           => 16#0405#,
+                          Front_And_Back => 16#0408#);
+   for Face_Selector'Size use Low_Level.Enum'Size;
+
 end GL.Rasterization;

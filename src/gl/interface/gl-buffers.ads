@@ -13,8 +13,8 @@
 --  limitations under the License.
 
 with GL.Low_Level;
+with GL.Rasterization;
 with GL.Types.Colors;
-with GL.Culling;
 
 package GL.Buffers is
    pragma Preelaborate;
@@ -96,8 +96,8 @@ package GL.Buffers is
      range Color_Attachment0 .. Color_Attachment15;
    --  Table 17.5 of the OpenGL specification
 
-   subtype Single_Face_Selector is Culling.Face_Selector
-     range Culling.Front .. Culling.Back;
+   subtype Single_Face_Selector is Rasterization.Face_Selector
+     range Rasterization.Front .. Rasterization.Back;
 
    -----------------------------------------------------------------------------
    --                                  Depth                                  --
@@ -129,7 +129,7 @@ package GL.Buffers is
    -----------------------------------------------------------------------------
 
    procedure Set_Stencil_Function
-     (Face : Culling.Face_Selector;
+     (Face : Rasterization.Face_Selector;
       Func : Compare_Function;
       Ref  : Int;
       Mask : UInt);
@@ -139,7 +139,7 @@ package GL.Buffers is
    function Stencil_Value_Mask (Face : Single_Face_Selector) return UInt;
 
    procedure Set_Stencil_Operation
-     (Face         : Culling.Face_Selector;
+     (Face         : Rasterization.Face_Selector;
       Stencil_Fail : Buffers.Stencil_Action;
       Depth_Fail   : Buffers.Stencil_Action;
       Depth_Pass   : Buffers.Stencil_Action);
@@ -153,7 +153,7 @@ package GL.Buffers is
 
    procedure Set_Stencil_Mask (Value : UInt);
 
-   procedure Set_Stencil_Mask (Face  : Culling.Face_Selector;
+   procedure Set_Stencil_Mask (Face  : Rasterization.Face_Selector;
                                Value : UInt);
 
    function Stencil_Mask (Face : Single_Face_Selector) return UInt;

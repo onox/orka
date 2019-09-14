@@ -16,7 +16,6 @@ with GL.Runtime_Loading;
 
 with GL.Blending;
 with GL.Buffers;
-with GL.Culling;
 with GL.Debug;
 with GL.Debug_Types;
 with GL.Enums.Getter;
@@ -138,10 +137,10 @@ private package GL.API is
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
 
    procedure Get_Orientation is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Culling.Orientation);
+     ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Orientation);
 
    procedure Get_Face_Selector is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Culling.Face_Selector);
+     ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Face_Selector);
 
    procedure Get_Polygon_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
@@ -195,10 +194,10 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Cull_Face is new Loader.Procedure_With_1_Param
-     ("glCullFace", Culling.Face_Selector);
+     ("glCullFace", Rasterization.Face_Selector);
 
    procedure Front_Face is new Loader.Procedure_With_1_Param
-     ("glFrontFace", Culling.Orientation);
+     ("glFrontFace", Rasterization.Orientation);
 
    -----------------------------------------------------------------------------
    --                               Pixel stuff                               --
@@ -267,7 +266,7 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Polygon_Mode is new Loader.Procedure_With_2_Params
-     ("glPolygonMode", Culling.Face_Selector, Rasterization.Polygon_Mode_Type);
+     ("glPolygonMode", Rasterization.Face_Selector, Rasterization.Polygon_Mode_Type);
 
    procedure Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
      ("glPolygonOffsetClamp", Single, Single, Single);
@@ -304,15 +303,15 @@ private package GL.API is
      ("glDepthFunc", Compare_Function);
 
    procedure Stencil_Func_Separate is new Loader.Procedure_With_4_Params
-     ("glStencilFuncSeparate", Culling.Face_Selector,
+     ("glStencilFuncSeparate", Rasterization.Face_Selector,
       Compare_Function, Int, UInt);
 
    procedure Stencil_Op_Separate is new Loader.Procedure_With_4_Params
-     ("glStencilOpSeparate", Culling.Face_Selector, Buffers.Stencil_Action,
+     ("glStencilOpSeparate", Rasterization.Face_Selector, Buffers.Stencil_Action,
       Buffers.Stencil_Action, Buffers.Stencil_Action);
 
    procedure Stencil_Mask_Separate is new Loader.Procedure_With_2_Params
-     ("glStencilMaskSeparate", Culling.Face_Selector, UInt);
+     ("glStencilMaskSeparate", Rasterization.Face_Selector, UInt);
 
    -----------------------------------------------------------------------------
    --                                Textures                                 --
