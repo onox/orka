@@ -29,11 +29,15 @@ package Orka.Rendering.Programs is
 
    type Program is tagged private;
 
-   function Create_Program (Module    : Programs.Modules.Module;
-                            Separable : Boolean := False) return Program;
+   function Create_Program
+     (Module    : Programs.Modules.Module;
+      Separable : Boolean := False;
+      Pre_Link  : access procedure (Object : Program) := null) return Program;
 
-   function Create_Program (Modules   : Programs.Modules.Module_Array;
-                            Separable : Boolean := False) return Program;
+   function Create_Program
+     (Modules   : Programs.Modules.Module_Array;
+      Separable : Boolean := False;
+      Pre_Link  : access procedure (Object : Program) := null) return Program;
 
    function GL_Program (Object : Program) return GL.Objects.Programs.Program
      with Inline;

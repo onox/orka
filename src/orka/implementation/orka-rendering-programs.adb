@@ -22,8 +22,11 @@ package body Orka.Rendering.Programs is
 
    Current_Program : Program_Holder.Holder;
 
-   function Create_Program (Modules   : Programs.Modules.Module_Array;
-                            Separable : Boolean := False) return Program is
+   function Create_Program
+     (Modules   : Programs.Modules.Module_Array;
+      Separable : Boolean := False;
+      Pre_Link  : access procedure (Object : Program) := null) return Program
+   is
       use type GL.Types.Int;
    begin
       return Result : Program do
@@ -31,6 +34,10 @@ package body Orka.Rendering.Programs is
 
          --  Attach all shaders to the program before linking
          Programs.Modules.Attach_Shaders (Modules, Result);
+
+         if Pre_Link /= null then
+            Pre_Link (Result);
+         end if;
 
          Result.GL_Program.Link;
          Programs.Modules.Detach_Shaders (Modules, Result);
@@ -62,10 +69,12 @@ package body Orka.Rendering.Programs is
       end return;
    end Create_Program;
 
-   function Create_Program (Module    : Programs.Modules.Module;
-                            Separable : Boolean := False) return Program is
+   function Create_Program
+     (Module    : Programs.Modules.Module;
+      Separable : Boolean := False;
+      Pre_Link  : access procedure (Object : Program) := null) return Program is
    begin
-      return Create_Program (Modules.Module_Array'(1 => Module), Separable);
+      return Create_Program (Modules.Module_Array'(1 => Module), Separable, Pre_Link);
    end Create_Program;
 
    function GL_Program (Object : Program) return GL.Objects.Programs.Program
