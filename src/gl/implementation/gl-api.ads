@@ -30,7 +30,6 @@ with GL.Objects.Programs;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;
 with GL.Objects.Textures;
-with GL.Objects.Transform_Feedbacks;
 with GL.Objects.Vertex_Arrays;
 with GL.Pixels.Queries;
 with GL.Rasterization;
@@ -959,10 +958,6 @@ private package GL.API is
    -----------------------------------------------------------------------------
    --                           Transform feedback                            --
    -----------------------------------------------------------------------------
-
-   procedure Transform_Feedback_Varyings is new Loader.Procedure_With_4_Params
-     ("glTransformFeedbackVaryings", UInt, Size, Low_Level.CharPtr_Array,
-      Objects.Transform_Feedbacks.Outputs_Format);
 
    procedure Create_Transform_Feedbacks is new Loader.Getter_With_2_Params
      ("glCreateTransformFeedbacks", Size, UInt);

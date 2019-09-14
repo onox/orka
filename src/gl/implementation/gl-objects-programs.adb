@@ -120,20 +120,6 @@ package body GL.Objects.Programs is
       return Values;
    end Compute_Work_Group_Size;
 
-   procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
-                                   Format : Transform_Feedbacks.Outputs_Format) is
-      C_Source : Low_Level.CharPtr_Array (Names'Range);
-   begin
-      for Index in Names'Range loop
-         C_Source (Index) := C.Strings.New_String (Names (Index).all);
-      end loop;
-      API.Transform_Feedback_Varyings (Object.Reference.GL_Id, Names'Length, C_Source, Format);
-      for C_String of C_Source loop
-         C.Strings.Free (C_String);
-      end loop;
-      Raise_Exception_On_OpenGL_Error;
-   end Set_Feedback_Outputs;
-
    overriding
    procedure Initialize_Id (Object : in out Program) is
    begin

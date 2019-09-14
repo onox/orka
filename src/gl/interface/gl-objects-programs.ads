@@ -14,9 +14,9 @@
 
 with GL.Low_Level.Enums;
 with GL.Objects.Shaders.Lists;
-with GL.Objects.Transform_Feedbacks;
-limited with GL.Objects.Programs.Uniforms;
 with GL.Types.Compute;
+
+limited with GL.Objects.Programs.Uniforms;
 
 package GL.Objects.Programs is
    pragma Preelaborate;
@@ -48,9 +48,6 @@ package GL.Objects.Programs is
 
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array;
    --  Size (per dimension) of a local work group in the linked compute stage
-
-   procedure Set_Feedback_Outputs (Object : Program; Names : String_Array;
-                                   Format : Transform_Feedbacks.Outputs_Format);
 
    function Uniform_Location (Subject : Program; Name : String)
      return Programs.Uniforms.Uniform;
