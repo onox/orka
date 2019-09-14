@@ -24,7 +24,6 @@ with GL.Enums.Internalformat;
 with GL.Enums.Textures;
 with GL.Errors;
 with GL.Fences;
-with GL.Framebuffer;
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
@@ -148,7 +147,7 @@ private package GL.API is
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
 
    procedure Get_Logic_Op is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Framebuffer.Logic_Op);
+     ("glGetIntegerv", Enums.Getter.Parameter, Blending.Logic_Op);
 
    procedure Get_Stencil_Action is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Stencil_Action);
@@ -625,7 +624,7 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Logic_Op is new Loader.Procedure_With_1_Param
-     ("glLogicOp", Framebuffer.Logic_Op);
+     ("glLogicOp", Blending.Logic_Op);
 
    procedure Create_Framebuffers is new Loader.Getter_With_2_Params
      ("glCreateFramebuffers", Size, UInt);

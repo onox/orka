@@ -99,11 +99,19 @@ package GL.Buffers is
    subtype Single_Face_Selector is Culling.Face_Selector
      range Culling.Front .. Culling.Back;
 
+   -----------------------------------------------------------------------------
+   --                                  Depth                                  --
+   -----------------------------------------------------------------------------
+
    procedure Set_Depth_Function (Func : Compare_Function);
    function Depth_Function return Compare_Function;
 
    procedure Set_Depth_Mask (Enabled : Boolean);
    function Depth_Mask return Boolean;
+
+   -----------------------------------------------------------------------------
+   --                                  Color                                  --
+   -----------------------------------------------------------------------------
 
    procedure Color_Mask (Value : Colors.Enabled_Color);
    --  Set the color mask for all draw buffers
@@ -115,6 +123,10 @@ package GL.Buffers is
 
    function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color;
    --  Return the color mask of a particular draw buffer
+
+   -----------------------------------------------------------------------------
+   --                                 Stencil                                 --
+   -----------------------------------------------------------------------------
 
    procedure Set_Stencil_Function
      (Face : Culling.Face_Selector;

@@ -108,4 +108,20 @@ package body GL.Blending is
       return Ret;
    end Blend_Equation_Alpha;
 
+   -----------------------------------------------------------------------------
+
+   procedure Set_Logic_Op_Mode (Value : Logic_Op) is
+   begin
+      API.Logic_Op (Value);
+      Raise_Exception_On_OpenGL_Error;
+   end Set_Logic_Op_Mode;
+
+   function Logic_Op_Mode return Logic_Op is
+      Ret : Logic_Op := Logic_Op'First;
+   begin
+      API.Get_Logic_Op (Enums.Getter.Logic_Op_Mode, Ret);
+      Raise_Exception_On_OpenGL_Error;
+      return Ret;
+   end Logic_Op_Mode;
+
 end GL.Blending;
