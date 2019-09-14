@@ -1,4 +1,4 @@
-#version 150 core
+#version 420 core
 
 in  float in_value;
 out float geom_value;

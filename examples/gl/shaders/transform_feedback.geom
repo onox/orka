@@ -1,10 +1,12 @@
-#version 150 core
+#version 420 core
+
+#extension GL_ARB_enhanced_layouts : require
 
 layout(points) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 in float geom_value[];
-out float out_value;
+layout(xfb_buffer = 0, xfb_offset = 0) out float out_value;
 
 void main()
 {

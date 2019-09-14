@@ -31,7 +31,7 @@ with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_6_Transform_Feedback is
    Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
-     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 5, Debug => True);
    pragma Unreferenced (Initialized);
 
    W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
@@ -70,19 +70,11 @@ procedure Orka_Test.Test_6_Transform_Feedback is
       end return;
    end Load_Data;
 
-   procedure On_Pre_Link (Object : Program) is
-      Name    : aliased  String       := "out_value";
-      Outputs : constant String_Array := (1 => Name'Unchecked_Access);
-   begin
-      Object.GL_Program.Set_Feedback_Outputs (Outputs, Interleaved_Attributes);
-   end On_Pre_Link;
-
    Location_Shaders : constant Locations.Location_Ptr
      := Locations.Directories.Create_Location ("../examples/gl/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
-     (Location_Shaders, VS => "transform_feedback.vert", GS => "transform_feedback.geom"),
-     Pre_Link => On_Pre_Link'Access);
+     (Location_Shaders, VS => "transform_feedback.vert", GS => "transform_feedback.geom"));
 
    VF_1 : constant Vertex_Format := Load_Data (Program_1);
 
