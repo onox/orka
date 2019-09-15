@@ -1,0 +1,26 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+layout(local_size_x = 64) in;
+// Must be a power of two
+
+layout(std430, binding = 0) readonly restrict buffer inputBuffer {
+    float inputNumbers[];
+};
+
+layout(std430, binding = 1) writeonly restrict buffer outputBuffer {
+    float outputNumbers[];
+};
+
+void main(void) {
+    uint gid = gl_GlobalInvocationID.x;
+
+    if (gid < inputNumbers.length()) {
+        float sqrt_input = sqrt(inputNumbers[gid]);
+        for (int i = 0; i < 3; i++) {
+            outputNumbers[3 * gid + i] = sqrt_input + i;
+        }
+    }
+}

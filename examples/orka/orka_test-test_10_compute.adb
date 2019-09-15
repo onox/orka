@@ -18,7 +18,6 @@ with Ada.Text_IO;
 with GL.Barriers;
 with GL.Compute;
 with GL.Debug.Logs;
-with GL.Objects.Buffers;
 with GL.Types.Compute;
 
 with Orka.Debug;
@@ -123,7 +122,7 @@ begin
             Buffer_1.Set_Data (Data => Numbers, Offset => Numbers'Length * Natural (Index));
          end loop;
 
-         GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Buffer_1.GL_Buffer, 0);
+         Buffer_1.Bind_Base (Shader_Storage, 0);
 
          A := Ada.Real_Time.Clock;
          declare
