@@ -1,3 +1,5 @@
+--  SPDX-License-Identifier: Apache-2.0
+--
 --  Copyright (c) 2013 Felix Krause <contact@flyx.org>
 --  Copyright (c) 2017 onox <denkpadje@gmail.com>
 --

@@ -2,6 +2,8 @@
 
 #extension GL_ARB_shading_language_420pack : require
 
+//  SPDX-License-Identifier: Apache-2.0
+
 in VS_OUT {
     vec2 uv;
 } fs_in;

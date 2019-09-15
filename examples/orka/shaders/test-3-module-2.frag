@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #version 330 core
 
 out vec4 out_color;

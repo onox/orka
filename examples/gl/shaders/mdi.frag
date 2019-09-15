@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #version 330 core
 
 #extension GL_ARB_shading_language_420pack : require

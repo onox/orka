@@ -2,6 +2,8 @@
 
 #extension GL_ARB_shading_language_420pack : require
 
+//  SPDX-License-Identifier: Apache-2.0
+
 flat in uint var_InstanceID;
 
 in VS_OUT {

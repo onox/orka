@@ -3,6 +3,8 @@
 #extension GL_ARB_compute_shader : require
 #extension GL_ARB_shader_storage_buffer_object : require
 
+//  SPDX-License-Identifier: Apache-2.0
+//
 //  Copyright (c) 2018 onox <denkpadje@gmail.com>
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");

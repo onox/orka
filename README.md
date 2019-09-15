@@ -232,6 +232,10 @@ a bugfix or an improvement.
 ## 📄 License
 
 Orka is distributed under the terms of the [Apache License 2.0][url-apache].
+The first line of each Ada file should contain an SPDX license identifier
+tag that refers to this license:
+
+    SPDX-License-Identifier: Apache-2.0
 
   [url-json-ada]: https://github.com/onox/json-ada
   [url-dcf-ada]: https://github.com/onox/dcf-ada

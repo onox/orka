@@ -3,6 +3,8 @@
 #extension GL_ARB_shader_draw_parameters : require
 #extension GL_ARB_shader_storage_buffer_object : require
 
+//  SPDX-License-Identifier: Apache-2.0
+
 layout(location = 0) in vec3 in_Position;
 layout(location = 1) in vec3 in_Normal;
 layout(location = 2) in vec2 in_UV;

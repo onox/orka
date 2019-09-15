@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #version 330 core
 
 #extension GL_ARB_shader_subroutine : require
