@@ -956,37 +956,6 @@ private package GL.API is
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
 
    -----------------------------------------------------------------------------
-   --                           Transform feedback                            --
-   -----------------------------------------------------------------------------
-
-   procedure Create_Transform_Feedbacks is new Loader.Getter_With_2_Params
-     ("glCreateTransformFeedbacks", Size, UInt);
-
-   procedure Delete_Transform_Feedbacks is new Loader.Array_Proc_With_2_Params
-     ("glDeleteTransformFeedbacks", Size, UInt, Low_Level.UInt_Array);
-
-   procedure Begin_Transform_Feedback is new Loader.Procedure_With_1_Param
-     ("glBeginTransformFeedback", Connection_Mode);
-
-   procedure End_Transform_Feedback is new Loader.Procedure_Without_Params
-     ("glEndTransformFeedback");
-
-   procedure Pause_Transform_Feedback is new Loader.Procedure_Without_Params
-     ("glPauseTransformFeedback");
-
-   procedure Resume_Transform_Feedback is new Loader.Procedure_Without_Params
-     ("glResumeTransformFeedback");
-
-   procedure Bind_Transform_Feedback is new Loader.Procedure_With_2_Params
-     ("glBindTransformFeedback", Enums.Transform_Feedback_Kind, UInt);
-
-   procedure Transform_Feedback_Buffer_Base is new Loader.Procedure_With_3_Params
-      ("glTransformFeedbackBufferBase", UInt, UInt, UInt);
-
-   procedure Draw_Transform_Feedback_Stream_Instanced is new Loader.Procedure_With_4_Params
-     ("glDrawTransformFeedbackStreamInstanced", Connection_Mode, UInt, UInt, Size);
-
-   -----------------------------------------------------------------------------
    --                                Barriers                                 --
    -----------------------------------------------------------------------------
 

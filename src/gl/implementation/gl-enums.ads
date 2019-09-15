@@ -30,9 +30,6 @@ private package GL.Enums is
                           Attached_Shaders,
                           Active_Uniforms, Active_Uniform_Max_Length,
                           Active_Attributes, Active_Attribute_Max_Length,
-                          Transform_Feedback_Varying_Max_Length,
-                          Transform_Feedback_Buffer_Mode,
-                          Transform_Feedback_Varyings,
                           Active_Atomic_Counter_Buffers);
 
    type Program_Set_Param is (Program_Binary_Retrievable_Hint, Program_Separable);
@@ -66,8 +63,7 @@ private package GL.Enums is
                               Tess_Evaluation_Subroutine_Uniform,
                               Geometry_Subroutine_Uniform,
                               Fragment_Subroutine_Uniform,
-                              Compute_Subroutine_Uniform,
-                              Transform_Feedback_Varyings);
+                              Compute_Subroutine_Uniform);
 
    type Program_Interface_Param is (Active_Resources, Max_Name_Length,
                                     Max_Num_Active_Variables, Max_Num_Compatible_Subroutines);
@@ -120,12 +116,9 @@ private package GL.Enums is
 
    type Framebuffer_Kind is (Read, Draw);
 
-   type Transform_Feedback_Kind is (Transform_Feedback);
-
-   type Buffer_Kind is (Parameter_Buffer, Array_Buffer, Element_Array_Buffer,
+   type Buffer_Kind is (Parameter_Buffer,
                         Pixel_Pack_Buffer, Pixel_Unpack_Buffer, Uniform_Buffer,
-                        Texture_Buffer, Transform_Feedback_Buffer, Copy_Read_Buffer,
-                        Copy_Write_Buffer, Draw_Indirect_Buffer,
+                        Draw_Indirect_Buffer,
                         Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
                         Query_Buffer, Atomic_Counter_Buffer);
 
@@ -161,9 +154,6 @@ private
                           Active_Uniform_Max_Length             => 16#8B87#,
                           Active_Attributes                     => 16#8B89#,
                           Active_Attribute_Max_Length           => 16#8B8A#,
-                          Transform_Feedback_Varying_Max_Length => 16#8C76#,
-                          Transform_Feedback_Buffer_Mode        => 16#8C7F#,
-                          Transform_Feedback_Varyings           => 16#8C83#,
                           Active_Atomic_Counter_Buffers         => 16#92D9#);
    for Program_Param'Size use Low_Level.Enum'Size;
 
@@ -206,8 +196,7 @@ private
                               Tess_Evaluation_Subroutine_Uniform => 16#92F0#,
                               Geometry_Subroutine_Uniform        => 16#92F1#,
                               Fragment_Subroutine_Uniform        => 16#92F2#,
-                              Compute_Subroutine_Uniform         => 16#92F3#,
-                              Transform_Feedback_Varyings        => 16#92F4#);
+                              Compute_Subroutine_Uniform         => 16#92F3#);
    for Program_Interface'Size use Low_Level.Enum'Size;
 
    for Program_Interface_Param use (Active_Resources               => 16#92F5#,
@@ -296,19 +285,10 @@ private
                              Draw => 16#8CA9#);
    for Framebuffer_Kind'Size use Low_Level.Enum'Size;
 
-   for Transform_Feedback_Kind use (Transform_Feedback => 16#8E22#);
-   for Transform_Feedback_Kind'Size use Low_Level.Enum'Size;
-
    for Buffer_Kind use (Parameter_Buffer          => 16#80EE#,
-                        Array_Buffer              => 16#8892#,
-                        Element_Array_Buffer      => 16#8893#,
                         Pixel_Pack_Buffer         => 16#88EB#,
                         Pixel_Unpack_Buffer       => 16#88EC#,
                         Uniform_Buffer            => 16#8A11#,
-                        Texture_Buffer            => 16#8C2A#,
-                        Transform_Feedback_Buffer => 16#8C8E#,
-                        Copy_Read_Buffer          => 16#8F36#,
-                        Copy_Write_Buffer         => 16#8F37#,
                         Draw_Indirect_Buffer      => 16#8F3F#,
                         Shader_Storage_Buffer     => 16#90D2#,
                         Dispatch_Indirect_Buffer  => 16#90EE#,

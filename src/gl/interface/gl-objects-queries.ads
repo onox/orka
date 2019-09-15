@@ -18,9 +18,7 @@ package GL.Objects.Queries is
    pragma Preelaborate;
 
    type Query_Type is
-     (Transform_Feedback_Overflow,
-      Transform_Feedback_Stream_Overflow,
-      Vertices_Submitted,
+     (Vertices_Submitted,
       Primitives_Submitted,
       Vertex_Shader_Invocations,
       Tess_Control_Shader_Invocations,
@@ -35,15 +33,12 @@ package GL.Objects.Queries is
       Samples_Passed,
       Any_Samples_Passed,
       Primitives_Generated,
-      Transform_Feedback_Primitives_Written,
       Any_Samples_Passed_Conservative,
       Timestamp);
 
    --  Has to be defined here because of the subtype declaration below
    for Query_Type use
-     (Transform_Feedback_Overflow           => 16#82EC#,
-      Transform_Feedback_Stream_Overflow    => 16#82ED#,
-      Vertices_Submitted                    => 16#82EE#,
+     (Vertices_Submitted                    => 16#82EE#,
       Primitives_Submitted                  => 16#82EF#,
       Vertex_Shader_Invocations             => 16#82F0#,
       Tess_Control_Shader_Invocations       => 16#82F1#,
@@ -58,21 +53,18 @@ package GL.Objects.Queries is
       Samples_Passed                        => 16#8914#,
       Any_Samples_Passed                    => 16#8C2F#,
       Primitives_Generated                  => 16#8C87#,
-      Transform_Feedback_Primitives_Written => 16#8C88#,
       Any_Samples_Passed_Conservative       => 16#8D6A#,
       Timestamp                             => 16#8E28#);
    for Query_Type'Size use Low_Level.Enum'Size;
 
    subtype Async_Query_Type is Query_Type
-     range Transform_Feedback_Overflow .. Any_Samples_Passed_Conservative;
+     range Vertices_Submitted .. Any_Samples_Passed_Conservative;
 
    subtype Timestamp_Query_Type is Query_Type range Timestamp .. Timestamp;
 
    subtype Stream_Query_Type is Query_Type
      with Static_Predicate =>
-       Stream_Query_Type in Primitives_Generated |
-                            Transform_Feedback_Primitives_Written |
-                            Transform_Feedback_Stream_Overflow;
+       Stream_Query_Type in Primitives_Generated;
 
    type Query_Mode is (Wait, No_Wait, By_Region_Wait, By_Region_No_Wait,
                        Wait_Inverted, No_Wait_Inverted, By_Region_Wait_Inverted,
@@ -117,15 +109,6 @@ package GL.Objects.Queries is
    --  Geometry Shader. These targets are:
    --
    --    * Primitives_Generated
-   --    * Transform_Feedback_Primitives_Written
-   --    * Transform_Feedback_Stream_Overflow
-   --
-   --  The query should be issued while within a transform feedback scope
-   --  for one of the following targets:
-   --
-   --    * Transform_Feedback_Primitives_Written
-   --    * Transform_Feedback_Overflow
-   --    * Transform_Feedback_Stream_Overflow
 
    function Begin_Conditional_Render (Object : in out Query;
                                       Mode   : in     Query_Mode)

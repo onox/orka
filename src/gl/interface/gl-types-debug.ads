@@ -20,7 +20,7 @@ package GL.Types.Debug is
    type Identifier is
      (Texture, Vertex_Array, Buffer, Shader,
       Program, Query, Program_Pipeline, Sampler,
-      Framebuffer, Transform_Feedback);
+      Framebuffer);
 
 private
 
@@ -33,8 +33,7 @@ private
       Query              => 16#82E3#,
       Program_Pipeline   => 16#82E4#,
       Sampler            => 16#82E6#,
-      Framebuffer        => 16#8D40#,
-      Transform_Feedback => 16#8E22#);
+      Framebuffer        => 16#8D40#);
    for Identifier'Size use Low_Level.Enum'Size;
 
 end GL.Types.Debug;

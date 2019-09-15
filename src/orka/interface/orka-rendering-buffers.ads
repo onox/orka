@@ -27,7 +27,7 @@ package Orka.Rendering.Buffers is
 
    type Bindable_Buffer is interface;
 
-   type Buffer_Target is (Uniform, Transform_Feedback, Shader_Storage, Atomic_Counter);
+   type Buffer_Target is (Uniform, Shader_Storage, Atomic_Counter);
 
    procedure Bind_Base
      (Object : Bindable_Buffer;

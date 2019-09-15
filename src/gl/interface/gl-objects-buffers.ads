@@ -64,7 +64,6 @@ package GL.Objects.Buffers is
    --  Target must be one of the following:
    --
    --    * Atomic_Counter_Buffer
-   --    * Transform_Feedback_Buffer
    --    * Uniform_Buffer
    --    * Shader_Storage_Buffer
 
@@ -111,7 +110,6 @@ package GL.Objects.Buffers is
       --  Target must be one of the following:
       --
       --    * Atomic_Counter_Buffer
-      --    * Transform_Feedback_Buffer
       --    * Uniform_Buffer
       --    * Shader_Storage_Buffer
 
@@ -185,10 +183,10 @@ package GL.Objects.Buffers is
    --  Array_Buffer, Element_Array_Buffer, Texture_Buffer,
    --  Copy_Read_Buffer, and Copy_Write_Buffer are no longer needed
    --  since the GL.Objects.* packages use DSA
+   --  Transform_Feedback_Buffer replaced by Shader_Storage_Buffer
    Pixel_Pack_Buffer         : aliased constant Buffer_Target;
    Pixel_Unpack_Buffer       : aliased constant Buffer_Target;
    Uniform_Buffer            : aliased constant Buffer_Target;
-   Transform_Feedback_Buffer : aliased constant Buffer_Target;
    Draw_Indirect_Buffer      : aliased constant Buffer_Target;
    Parameter_Buffer          : aliased constant Buffer_Target;
    Shader_Storage_Buffer     : aliased constant Buffer_Target;
@@ -236,8 +234,6 @@ private
      := Buffer_Target'(Kind => Enums.Pixel_Unpack_Buffer);
    Uniform_Buffer            : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Enums.Uniform_Buffer);
-   Transform_Feedback_Buffer : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Enums.Transform_Feedback_Buffer);
    Draw_Indirect_Buffer      : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Enums.Draw_Indirect_Buffer);
    Parameter_Buffer          : aliased constant Buffer_Target
