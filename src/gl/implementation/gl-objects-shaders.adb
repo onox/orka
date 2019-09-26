@@ -60,8 +60,6 @@ package body GL.Objects.Shaders is
       Raise_Exception_On_OpenGL_Error;
    end Compile;
 
-   procedure Release_Shader_Compiler renames API.Release_Shader_Compiler;
-
    function Compile_Status (Subject : Shader) return Boolean is
       Value : Int := 0;
    begin

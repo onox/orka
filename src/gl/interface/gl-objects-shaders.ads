@@ -30,8 +30,6 @@ package GL.Objects.Shaders is
 
    procedure Compile (Subject : Shader);
 
-   procedure Release_Shader_Compiler;
-
    function Compile_Status (Subject : Shader) return Boolean;
 
    function Info_Log (Subject : Shader) return String;

@@ -738,9 +738,6 @@ private package GL.API is
    procedure Compile_Shader is new Loader.Procedure_With_1_Param
      ("glCompileShader", UInt);
 
-   procedure Release_Shader_Compiler is new Loader.Procedure_Without_Params
-     ("glReleaseShaderCompiler");
-
    procedure Get_Shader_Info_Log is
      new Loader.String_Getter_With_4_Params
      ("glGetShaderInfoLog", Size, UInt);
