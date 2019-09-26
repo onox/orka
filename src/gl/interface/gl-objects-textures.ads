@@ -244,8 +244,6 @@ package GL.Objects.Textures is
    --                            Texture Units                                --
    -----------------------------------------------------------------------------
 
-   function Active_Unit return Texture_Unit;
-
    function Texture_Unit_Count return Natural;
 
    -----------------------------------------------------------------------------

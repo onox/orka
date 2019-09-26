@@ -17,7 +17,6 @@
 with GL.API;
 with GL.Helpers;
 with GL.Enums.Getter;
-with GL.Enums.Indexes;
 with GL.Enums.Textures;
 
 package body GL.Objects.Textures is
@@ -597,25 +596,6 @@ package body GL.Objects.Textures is
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);
       Raise_Exception_On_OpenGL_Error;
    end Generate_Mipmap;
-
-   function Active_Unit return Texture_Unit is
-      function Maximum return Int is
-         Max : Int := 0;
-      begin
-         API.Get_Integer (Enums.Getter.Max_Combined_Texture_Image_Units, Max);
-         Raise_Exception_On_OpenGL_Error;
-         return Max - 1;
-      end Maximum;
-
-      package Texture_Indexing is new Enums.Indexes
-        (Enums.Textures.Texture_Unit_Start_Rep, Maximum);
-
-      Raw_Unit : Int := Enums.Textures.Texture_Unit_Start_Rep;
-   begin
-      API.Get_Integer (Enums.Getter.Active_Texture, Raw_Unit);
-      Raise_Exception_On_OpenGL_Error;
-      return UInt (Texture_Indexing.Value (Raw_Unit));
-   end Active_Unit;
 
    function Texture_Unit_Count return Natural is
       Count : Int := 0;
