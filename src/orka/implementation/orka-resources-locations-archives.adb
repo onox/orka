@@ -16,7 +16,9 @@
 
 with Ada.Directories;
 
+with DCF.Streams;
 with DCF.Unzip.Streams;
+with DCF.Zip;
 
 package body Orka.Resources.Locations.Archives is
 
@@ -40,6 +42,21 @@ package body Orka.Resources.Locations.Archives is
       Stream.Bytes (Stream.Index .. Stream.Index + Item'Length - 1) := Item;
       Stream.Index := Stream.Index + Item'Length;
    end Write;
+
+   -----------------------------------------------------------------------------
+
+   type Archive_Location is limited new Location with record
+      Stream  : aliased DCF.Streams.File_Zipstream;
+      Archive : DCF.Zip.Zip_Info;
+   end record;
+
+   overriding
+   function Exists (Object : Archive_Location; Path : String) return Boolean;
+
+   overriding
+   function Read_Data
+     (Object : Archive_Location;
+      Path   : String) return Byte_Array_Pointers.Pointer;
 
    -----------------------------------------------------------------------------
 

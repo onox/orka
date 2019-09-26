@@ -15,10 +15,22 @@
 --  limitations under the License.
 
 with Ada.Directories;
+with Ada.Finalization;
+with Ada.Streams.Stream_IO;
 
 package body Orka.Resources.Locations.Directories is
 
    use Ada.Streams;
+
+   type Byte_Array_File is limited new Ada.Finalization.Limited_Controlled with record
+      File : Ada.Streams.Stream_IO.File_Type;
+      Finalized : Boolean;
+   end record;
+
+   overriding
+   procedure Finalize (Object : in out Byte_Array_File);
+
+   -----------------------------------------------------------------------------
 
    function Open_File (File_Name : String) return Byte_Array_File is
    begin
@@ -74,6 +86,29 @@ package body Orka.Resources.Locations.Directories is
       File_Stream := Stream_IO.Stream (Object.File);
       File_Byte_Array'Write (File_Stream, Data);
    end Write_Data;
+
+   -----------------------------------------------------------------------------
+
+   type Directory_Location is limited new Location with record
+      Full_Path : SU.Unbounded_String;
+   end record;
+
+   overriding
+   function Exists (Object : Directory_Location; Path : String) return Boolean;
+
+   overriding
+   function Read_Data
+     (Object : Directory_Location;
+      Path   : String) return Byte_Array_Pointers.Pointer;
+
+   type Writable_Directory_Location is limited
+     new Directory_Location and Writable_Location with null record;
+
+   overriding
+   procedure Write_Data
+     (Object : Writable_Directory_Location;
+      Path   : String;
+      Data   : Byte_Array);
 
    -----------------------------------------------------------------------------
 
