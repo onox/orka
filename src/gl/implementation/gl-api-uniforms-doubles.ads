@@ -25,20 +25,11 @@ package GL.API.Uniforms.Doubles is
    procedure Uniform1v is new Loader.Procedure_With_4_Params
      ("glProgramUniform1dv", UInt, Int, Size, Double_Array);
 
-   procedure Uniform2 is new Loader.Procedure_With_4_Params
-     ("glProgramUniform2d", UInt, Int, Double, Double);
-
    procedure Uniform2v is new Loader.Procedure_With_4_Params
      ("glProgramUniform2dv", UInt, Int, Size, Vector2_Array);
 
-   procedure Uniform3 is new Loader.Procedure_With_5_Params
-     ("glProgramUniform3d", UInt, Int, Double, Double, Double);
-
    procedure Uniform3v is new Loader.Procedure_With_4_Params
      ("glProgramUniform3dv", UInt, Int, Size, Vector3_Array);
-
-   procedure Uniform4 is new Loader.Procedure_With_6_Params
-     ("glProgramUniform4d", UInt, Int, Double, Double, Double, Double);
 
    procedure Uniform4v is new Loader.Procedure_With_4_Params
      ("glProgramUniform4dv", UInt, Int, Size, Vector4_Array);    

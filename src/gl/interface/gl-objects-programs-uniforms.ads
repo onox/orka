@@ -27,9 +27,6 @@ package GL.Objects.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    procedure Set_Single  (Location : Uniform; Value          : Single);
-   procedure Set_Singles (Location : Uniform; V1, V2         : Single);
-   procedure Set_Singles (Location : Uniform; V1, V2, V3     : Single);
-   procedure Set_Singles (Location : Uniform; V1, V2, V3, V4 : Single);
 
    procedure Set_Single_Array (Location : Uniform; Value : Single_Array);
 
@@ -54,9 +51,6 @@ package GL.Objects.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    procedure Set_Double  (Location : Uniform; Value          : Double);
-   procedure Set_Doubles (Location : Uniform; V1, V2         : Double);
-   procedure Set_Doubles (Location : Uniform; V1, V2, V3     : Double);
-   procedure Set_Doubles (Location : Uniform; V1, V2, V3, V4 : Double);
 
    procedure Set_Double_Array (Location : Uniform; Value : Double_Array);
 
@@ -81,9 +75,6 @@ package GL.Objects.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    procedure Set_Int  (Location : Uniform; Value          : Int);
-   procedure Set_Ints (Location : Uniform; V1, V2         : Int);
-   procedure Set_Ints (Location : Uniform; V1, V2, V3     : Int);
-   procedure Set_Ints (Location : Uniform; V1, V2, V3, V4 : Int);
 
    procedure Set_Int_Array (Location : Uniform; Value : Int_Array);
 
@@ -100,9 +91,6 @@ package GL.Objects.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    procedure Set_UInt  (Location : Uniform; Value          : UInt);
-   procedure Set_UInts (Location : Uniform; V1, V2         : UInt);
-   procedure Set_UInts (Location : Uniform; V1, V2, V3     : UInt);
-   procedure Set_UInts (Location : Uniform; V1, V2, V3, V4 : UInt);
 
    procedure Set_UInt_Array (Location : Uniform; Value : UInt_Array);
 

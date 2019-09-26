@@ -25,20 +25,11 @@ package GL.API.Uniforms.Singles is
    procedure Uniform1v is new Loader.Procedure_With_4_Params
      ("glProgramUniform1fv", UInt, Int, Size, Single_Array);
 
-   procedure Uniform2 is new Loader.Procedure_With_4_Params
-     ("glProgramUniform2f", UInt, Int, Single, Single);
-
    procedure Uniform2v is new Loader.Procedure_With_4_Params
      ("glProgramUniform2fv", UInt, Int, Size, Vector2_Array);
 
-   procedure Uniform3 is new Loader.Procedure_With_5_Params
-     ("glProgramUniform3f", UInt, Int, Single, Single, Single);
-
    procedure Uniform3v is new Loader.Procedure_With_4_Params
      ("glProgramUniform3fv", UInt, Int, Size, Vector3_Array);
-
-   procedure Uniform4 is new Loader.Procedure_With_6_Params
-     ("glProgramUniform4f", UInt, Int, Single, Single, Single, Single);
 
    procedure Uniform4v is new Loader.Procedure_With_4_Params
      ("glProgramUniform4fv", UInt, Int, Size, Vector4_Array);    

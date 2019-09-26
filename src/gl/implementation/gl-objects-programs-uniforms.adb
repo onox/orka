@@ -37,35 +37,17 @@ package body GL.Objects.Programs.Uniforms is
                                      Location.Location, Value);
    end Set_Single;
 
-   procedure Set_Singles (Location : Uniform; V1, V2 : Single) is
-   begin
-      API.Uniforms.Singles.Uniform2 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2);
-   end Set_Singles;
-
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector2) is
    begin
       API.Uniforms.Singles.Uniform2v (Location.Program.Reference.GL_Id,
                                       Location.Location, 1, (1 => Value));
    end Set_Single_Vector;
 
-   procedure Set_Singles (Location : Uniform; V1, V2, V3 : Single) is
-   begin
-      API.Uniforms.Singles.Uniform3 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2, V3);
-   end Set_Singles;
-
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector3) is
    begin
       API.Uniforms.Singles.Uniform3v (Location.Program.Reference.GL_Id,
                                       Location.Location, 1, (1 => Value));
    end Set_Single_Vector;
-
-   procedure Set_Singles (Location : Uniform; V1, V2, V3, V4 : Single) is
-   begin
-      API.Uniforms.Singles.Uniform4 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2, V3, V4);
-   end Set_Singles;
 
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector4) is
    begin
@@ -149,35 +131,17 @@ package body GL.Objects.Programs.Uniforms is
                                      Location.Location, Value);
    end Set_Double;
 
-   procedure Set_Doubles (Location : Uniform; V1, V2 : Double) is
-   begin
-      API.Uniforms.Doubles.Uniform2 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2);
-   end Set_Doubles;
-
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector2) is
    begin
       API.Uniforms.Doubles.Uniform2v (Location.Program.Reference.GL_Id,
                                       Location.Location, 1, (1 => Value));
    end Set_Double_Vector;
 
-   procedure Set_Doubles (Location : Uniform; V1, V2, V3 : Double) is
-   begin
-      API.Uniforms.Doubles.Uniform3 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2, V3);
-   end Set_Doubles;
-
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector3) is
    begin
       API.Uniforms.Doubles.Uniform3v (Location.Program.Reference.GL_Id,
                                       Location.Location, 1, (1 => Value));
    end Set_Double_Vector;
-
-   procedure Set_Doubles (Location : Uniform; V1, V2, V3, V4 : Double) is
-   begin
-      API.Uniforms.Doubles.Uniform4 (Location.Program.Reference.GL_Id,
-                                     Location.Location, V1, V2, V3, V4);
-   end Set_Doubles;
 
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector4) is
    begin
@@ -261,35 +225,17 @@ package body GL.Objects.Programs.Uniforms is
                                   Location.Location, Value);
    end Set_Int;
 
-   procedure Set_Ints (Location : Uniform; V1, V2 : Int) is
-   begin
-      API.Uniforms.Ints.Uniform2 (Location.Program.Reference.GL_Id,
-                                  Location.Location, V1, V2);
-   end Set_Ints;
-
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector2) is
    begin
       API.Uniforms.Ints.Uniform2v (Location.Program.Reference.GL_Id,
                                    Location.Location, 1, (1 => Value));
    end Set_Int_Vector;
 
-   procedure Set_Ints (Location : Uniform; V1, V2, V3 : Int) is
-   begin
-      API.Uniforms.Ints.Uniform3 (Location.Program.Reference.GL_Id,
-                                  Location.Location, V1, V2, V3);
-   end Set_Ints;
-
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector3) is
    begin
       API.Uniforms.Ints.Uniform3v (Location.Program.Reference.GL_Id,
                                    Location.Location, 1, (1 => Value));
    end Set_Int_Vector;
-
-   procedure Set_Ints (Location : Uniform; V1, V2, V3, V4 : Int) is
-   begin
-      API.Uniforms.Ints.Uniform4 (Location.Program.Reference.GL_Id,
-                                  Location.Location, V1, V2, V3, V4);
-   end Set_Ints;
 
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector4) is
    begin
@@ -306,19 +252,19 @@ package body GL.Objects.Programs.Uniforms is
    procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector2_Array) is
    begin
       API.Uniforms.Ints.Uniform2v (Location.Program.Reference.GL_Id,
-                                   Location.Location, Value'Length * 2, Value);
+                                   Location.Location, Value'Length, Value);
    end Set_Int_Vectors;
 
    procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector3_Array) is
    begin
       API.Uniforms.Ints.Uniform3v (Location.Program.Reference.GL_Id,
-                                   Location.Location, Value'Length * 3, Value);
+                                   Location.Location, Value'Length, Value);
    end Set_Int_Vectors;
 
    procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector4_Array) is
    begin
       API.Uniforms.Ints.Uniform4v (Location.Program.Reference.GL_Id,
-                                   Location.Location, Value'Length * 4, Value);
+                                   Location.Location, Value'Length, Value);
    end Set_Int_Vectors;
 
    -----------------------------------------------------------------------------
@@ -331,35 +277,17 @@ package body GL.Objects.Programs.Uniforms is
                                    Location.Location, Value);
    end Set_UInt;
 
-   procedure Set_UInts (Location : Uniform; V1, V2 : UInt) is
-   begin
-      API.Uniforms.UInts.Uniform2 (Location.Program.Reference.GL_Id,
-                                   Location.Location, V1, V2);
-   end Set_UInts;
-
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector2) is
    begin
       API.Uniforms.UInts.Uniform2v (Location.Program.Reference.GL_Id,
                                     Location.Location, 1, (1 => Value));
    end Set_UInt_Vector;
 
-   procedure Set_UInts (Location : Uniform; V1, V2, V3 : UInt) is
-   begin
-      API.Uniforms.UInts.Uniform3 (Location.Program.Reference.GL_Id,
-                                   Location.Location, V1, V2, V3);
-   end Set_UInts;
-
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector3) is
    begin
       API.Uniforms.UInts.Uniform3v (Location.Program.Reference.GL_Id,
                                     Location.Location, 1, (1 => Value));
    end Set_UInt_Vector;
-
-   procedure Set_UInts (Location : Uniform; V1, V2, V3, V4 : UInt) is
-   begin
-      API.Uniforms.UInts.Uniform4 (Location.Program.Reference.GL_Id,
-                                   Location.Location, V1, V2, V3, V4);
-   end Set_UInts;
 
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector4) is
    begin
