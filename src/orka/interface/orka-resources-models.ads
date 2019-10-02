@@ -14,17 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
+private with Ada.Containers.Indefinite_Holders;
+
+private with Orka.Instances;
+private with Orka.Rendering.Buffers.MDI;
+private with Orka.Rendering.Vertex_Formats;
+private with Orka.Scenes.Singles.Trees;
+private with Orka.Transforms.Singles.Matrices;
+private with Orka.Types;
 
 with Orka.Behaviors;
 with Orka.Culling;
-with Orka.Instances;
-with Orka.Rendering.Buffers.MDI;
-with Orka.Rendering.Vertex_Formats;
-with Orka.Scenes.Singles.Trees;
-with Orka.Transforms.Singles.Matrices;
-
-private with Orka.Types;
 
 package Orka.Resources.Models is
    pragma Preelaborate;

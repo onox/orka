@@ -24,6 +24,7 @@ with GL.Low_Level.Enums;
 with GL.Types;
 with GL.Pixels.Queries;
 
+with Orka.Jobs;
 with Orka.Logging;
 with Orka.KTX;
 

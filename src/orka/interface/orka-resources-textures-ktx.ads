@@ -16,8 +16,6 @@
 
 with GL.Objects.Textures;
 
-with Orka.Jobs;
-
 with Orka.Resources.Loaders;
 with Orka.Resources.Locations;
 with Orka.Resources.Managers;
