@@ -129,19 +129,19 @@ package body Orka.Jobs.Executors is
             if Job.Dependent /= Null_Job then
                --  Make the root dependents of the jobs in Jobs
                --  dependencies of Job.Dependent
-               if not Jobs.Empty then
+               if not Jobs.Is_Empty then
                   Set_Root_Dependent (Job.Dependent);
                end if;
 
                --  If another job depends on this job, decrement its dependencies counter
                --  and if it has reached zero then it can be scheduled
                if Job.Dependent.Decrement_Dependencies then
-                  pragma Assert (Jobs.Empty);
+                  pragma Assert (Jobs.Is_Empty);
 --                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing dependent " &
 --                    Ada.Tags.Expanded_Name (Job.Dependent'Tag));
                   Queue.Enqueue (Job.Dependent, Pair.Future);
                end if;
-            elsif Jobs.Empty then
+            elsif Jobs.Is_Empty then
                Promise.Set_Status (Futures.Done);
 --               Ada.Text_IO.Put_Line (Name & " completed graph with job " & Tag);
             else
@@ -152,7 +152,7 @@ package body Orka.Jobs.Executors is
                Set_Root_Dependent (Create_Empty_Job);
             end if;
 
-            if not Jobs.Empty then
+            if not Jobs.Is_Empty then
                for Job of Jobs loop
 --                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing job " &
 --                    Ada.Tags.Expanded_Name (Job'Tag));

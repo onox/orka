@@ -449,7 +449,7 @@ package body Orka.Frame_Graphs is
             end;
          end loop;
 
-         while not Stack.Empty loop
+         while not Stack.Is_Empty loop
             Stack.Remove_Last (Index);
 
             declare

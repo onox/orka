@@ -77,10 +77,10 @@ package Orka.Containers.Bounded_Vectors is
    function Length (Container : Vector) return Length_Type
      with Inline;
 
-   function Empty (Container : Vector) return Boolean
+   function Is_Empty (Container : Vector) return Boolean
      with Inline;
 
-   function Full (Container : Vector) return Boolean
+   function Is_Full (Container : Vector) return Boolean
      with Inline;
 
 private

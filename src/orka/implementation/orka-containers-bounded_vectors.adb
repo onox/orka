@@ -19,10 +19,10 @@ package body Orka.Containers.Bounded_Vectors is
    function Length (Container : Vector) return Length_Type is
      (Container.Length);
 
-   function Empty (Container : Vector) return Boolean is
+   function Is_Empty (Container : Vector) return Boolean is
      (Length (Container) = 0);
 
-   function Full (Container : Vector) return Boolean is
+   function Is_Full (Container : Vector) return Boolean is
      (Length (Container) = Container.Capacity);
 
    procedure Append (Container : in out Vector; Elements : Vector) is
@@ -128,7 +128,7 @@ package body Orka.Containers.Bounded_Vectors is
 
    overriding function First (Object : Iterator) return Cursor is
    begin
-      if Object.Container.all.Empty then
+      if Object.Container.all.Is_Empty then
          return No_Element;
       else
          return Cursor'(Object => Object.Container, Index => 1);
@@ -137,7 +137,7 @@ package body Orka.Containers.Bounded_Vectors is
 
    overriding function Last  (Object : Iterator) return Cursor is
    begin
-      if Object.Container.all.Empty then
+      if Object.Container.all.Is_Empty then
          return No_Element;
       else
          return Cursor'(Object => Object.Container,
