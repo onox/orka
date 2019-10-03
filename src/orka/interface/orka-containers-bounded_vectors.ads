@@ -42,6 +42,9 @@ package Orka.Containers.Bounded_Vectors is
      with Pre  => Container.Length > 0,
           Post => Container.Length = Container'Old.Length - 1;
 
+   procedure Clear (Container : in out Vector)
+     with Post => Container.Length = 0;
+
    type Element_Array is array (Index_Type range <>) of aliased Element_Type;
 
    procedure Query

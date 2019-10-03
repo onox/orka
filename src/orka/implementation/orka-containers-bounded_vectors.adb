@@ -51,6 +51,12 @@ package body Orka.Containers.Bounded_Vectors is
       Container.Length := Container.Length - 1;
    end Remove_Last;
 
+   procedure Clear (Container : in out Vector) is
+   begin
+      Container.Elements := (others => <>);
+      Container.Length   := 0;
+   end Clear;
+
    procedure Query
      (Container : Vector;
       Process   : not null access procedure (Elements : Element_Array)) is
