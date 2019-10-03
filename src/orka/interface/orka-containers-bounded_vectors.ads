@@ -17,7 +17,7 @@
 private with Ada.Iterator_Interfaces;
 
 generic
-   type Index_Type is new Positive;
+   type Index_Type is new Natural;
    type Element_Type is private;
 package Orka.Containers.Bounded_Vectors is
    pragma Preelaborate;
@@ -127,7 +127,7 @@ private
      return Vector_Iterator_Interfaces.Reversible_Iterator'Class;
 
    type Vector (Capacity : Length_Type) is tagged record
-      Elements : Element_Array (1 .. Capacity) := (others => <>);
+      Elements : Element_Array (Index_Type'First .. Capacity) := (others => <>);
       Length   : Length_Type := 0;
    end record
      with Default_Iterator  => Iterate,

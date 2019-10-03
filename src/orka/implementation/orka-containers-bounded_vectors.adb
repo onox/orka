@@ -26,8 +26,8 @@ package body Orka.Containers.Bounded_Vectors is
      (Length (Container) = Container.Capacity);
 
    procedure Append (Container : in out Vector; Elements : Vector) is
-      Start_Index : constant Index_Type := Container.Length + 1;
-      Stop_Index  : constant Index_Type := Container.Length + Elements.Length;
+      Start_Index : constant Index_Type := Container.Length + Index_Type'First;
+      Stop_Index  : constant Index_Type'Base := Start_Index + Elements.Length - 1;
 
       procedure Copy_Elements (Elements : Element_Array) is
       begin
@@ -35,19 +35,21 @@ package body Orka.Containers.Bounded_Vectors is
       end Copy_Elements;
    begin
       Elements.Query (Copy_Elements'Access);
-      Container.Length := Stop_Index;
+      Container.Length := Container.Length + Elements.Length;
    end Append;
 
    procedure Append (Container : in out Vector; Element : Element_Type) is
+      Index : constant Index_Type := Container.Length + Index_Type'First;
    begin
       Container.Length := Container.Length + 1;
-      Container.Elements (Container.Length) := Element;
+      Container.Elements (Index) := Element;
    end Append;
 
    procedure Remove_Last (Container : in out Vector; Element : out Element_Type) is
+      Index : constant Index_Type := Container.Length + Index_Type'First - 1;
    begin
-      Element := Container.Elements (Container.Length);
-      Container.Elements (Container.Length .. Container.Length) := (others => <>);
+      Element := Container.Elements (Index);
+      Container.Elements (Index .. Index) := (others => <>);
       Container.Length := Container.Length - 1;
    end Remove_Last;
 
@@ -59,9 +61,11 @@ package body Orka.Containers.Bounded_Vectors is
 
    procedure Query
      (Container : Vector;
-      Process   : not null access procedure (Elements : Element_Array)) is
+      Process   : not null access procedure (Elements : Element_Array))
+   is
+      Last_Index : constant Index_Type'Base := Container.Length + Index_Type'First - 1;
    begin
-      Process (Container.Elements (1 .. Container.Length));
+      Process (Container.Elements (Index_Type'First .. Last_Index));
    end Query;
 
    procedure Update
@@ -137,7 +141,7 @@ package body Orka.Containers.Bounded_Vectors is
       if Object.Container.all.Is_Empty then
          return No_Element;
       else
-         return Cursor'(Object => Object.Container, Index => 1);
+         return Cursor'(Object => Object.Container, Index => Index_Type'First);
       end if;
    end First;
 
@@ -157,7 +161,7 @@ package body Orka.Containers.Bounded_Vectors is
    begin
       if Position = No_Element then
          raise Constraint_Error;
-      elsif Position.Index = Position.Object.Length then
+      elsif Position.Index = Position.Object.Length + Index_Type'First - 1 then
          return No_Element;
       else
          return Cursor'(Position.Object, Position.Index + 1);
@@ -170,7 +174,7 @@ package body Orka.Containers.Bounded_Vectors is
    begin
       if Position = No_Element then
          raise Constraint_Error;
-      elsif Position.Index = 1 then
+      elsif Position.Index = Index_Type'First then
          return No_Element;
       else
          return Cursor'(Position.Object, Position.Index - 1);
