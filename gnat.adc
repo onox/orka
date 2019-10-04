@@ -1,4 +1,8 @@
-pragma Assertion_Policy (Pre => Check, Pre'Class => Check);
+pragma Assertion_Policy
+  (Pre        => Check,
+   Pre'Class  => Check,
+   Post       => Ignore,
+   Post'Class => Ignore);
 pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
 
 pragma Restrictions (No_Implicit_Aliasing);
