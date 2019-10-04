@@ -62,15 +62,15 @@ package body Orka.Resources.Models.glTF is
       Buffers    : Time_Span;
    end record;
 
-   type GLTF_Data is limited record
+   type GLTF_Data (Maximum_Nodes, Maximum_Accessors : Natural) is limited record
       Directory : SU.Unbounded_String;
       Location  : Locations.Location_Ptr;
-      Buffers   : Orka.glTF.Buffers.Buffer_Vectors.Vector;
-      Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
-      Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
-      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
-      Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector;
-      Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector;
+      Buffers   : Orka.glTF.Buffers.Buffer_Vectors.Vector (Capacity => 8);
+      Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector (Capacity => Maximum_Accessors);
+      Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector  (Capacity => Maximum_Accessors);
+      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector (Capacity => Maximum_Nodes);
+      Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector (Capacity => Maximum_Nodes);
+      Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector (Capacity => 8);
       Default_Scene : Long_Integer;
       Times     : Times_Data := (others => Time_Span_Zero);
       Start_Time : Time;
@@ -154,7 +154,7 @@ package body Orka.Resources.Models.glTF is
    procedure Add_Nodes
      (Scene   : in out Trees.Tree;
       Parts   : in out String_Maps.Map;
-      Nodes   : Orka.glTF.Scenes.Node_Vectors.Vector;
+      Nodes   : in out Orka.glTF.Scenes.Node_Vectors.Vector;
       Parents : Orka.glTF.Scenes.Natural_Vectors.Vector)
    is
       Current_Parents, Next_Parents : Orka.glTF.Scenes.Natural_Vectors.Vector;
@@ -228,7 +228,7 @@ package body Orka.Resources.Models.glTF is
 
    function Bounds_List
      (Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
-      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector) return Orka.Types.Singles.Vector4_Array
+      Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector) return Orka.Types.Singles.Vector4_Array
    is
       use type GL.Types.Size;
       use Orka.glTF.Accessors;
@@ -320,7 +320,7 @@ package body Orka.Resources.Models.glTF is
    procedure Count_Parts
      (Index_Kind : GL.Types.Index_Type;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
-      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector;
+      Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Vertices, Indices : out Natural)
    is
       use type Ada.Containers.Count_Type;
@@ -387,7 +387,7 @@ package body Orka.Resources.Models.glTF is
       Batch  : in out Rendering.Buffers.MDI.Batch;
       Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
-      Meshes    : Orka.glTF.Meshes.Mesh_Vectors.Vector)
+      Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector)
    is
       use GL.Types;
       use Orka.glTF.Accessors;
@@ -525,9 +525,20 @@ package body Orka.Resources.Models.glTF is
 
          T2 : constant Time := Clock;
 
+         Buffers   : constant JSON_Value := JSON ("buffers");
+         Views     : constant JSON_Value := JSON ("bufferViews");
+         Accessors : constant JSON_Value := JSON ("accessors");
+         Meshes    : constant JSON_Value := JSON ("meshes");
+         Nodes     : constant JSON_Value := JSON ("nodes");
+         Scenes    : constant JSON_Value := JSON ("scenes");
+
+         Maximum_Nodes : constant Natural := Nodes.Length;
+
          --  Tokenize and parse JSON data
          Data : constant GLTF_Data_Access := new GLTF_Data'
-           (Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
+           (Maximum_Nodes     => Maximum_Nodes,
+            Maximum_Accessors => Maximum_Nodes * 4,
+            Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
             Format     => Object.Format,
             Manager    => Object.Manager,
@@ -535,6 +546,7 @@ package body Orka.Resources.Models.glTF is
             others     => <>);
 
          Asset : constant JSON_Value := JSON ("asset");
+         Scene : constant JSON_Value := JSON ("scene");
 
          function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
             Directory     : String renames SU.To_String (Data.Directory);
@@ -552,16 +564,16 @@ package body Orka.Resources.Models.glTF is
          --  TODO Check minVersion
 
          --  Process buffers, nodes, meshes, and scenes
-         Data.Buffers := Orka.glTF.Buffers.Get_Buffers (JSON ("buffers"), Load_Data'Access);
-         Data.Views   := Orka.glTF.Buffers.Get_Buffer_Views (Data.Buffers, JSON ("bufferViews"));
+         Data.Buffers.Append (Orka.glTF.Buffers.Get_Buffers (Buffers, Load_Data'Access));
+         Data.Views.Append (Orka.glTF.Buffers.Get_Buffer_Views (Data.Buffers, Views));
 
-         Data.Accessors := Orka.glTF.Accessors.Get_Accessors (JSON ("accessors"));
-         Data.Meshes    := Orka.glTF.Meshes.Get_Meshes (JSON ("meshes"));
+         Data.Accessors.Append (Orka.glTF.Accessors.Get_Accessors (Accessors));
+         Data.Meshes.Append (Orka.glTF.Meshes.Get_Meshes (Meshes));
 
-         Data.Nodes  := Orka.glTF.Scenes.Get_Nodes (JSON ("nodes"));
-         Data.Scenes := Orka.glTF.Scenes.Get_Scenes (JSON ("scenes"));
+         Data.Nodes.Append (Orka.glTF.Scenes.Get_Nodes (Nodes));
+         Data.Scenes.Append (Orka.glTF.Scenes.Get_Scenes (Scenes));
 
-         Data.Default_Scene := JSON ("scene").Value;
+         Data.Default_Scene := Scene.Value;
 
          Data.Times.Reading    := Object.Data.Reading_Time;
          Data.Times.Parsing    := T2 - T1;
@@ -588,7 +600,7 @@ package body Orka.Resources.Models.glTF is
       --  TODO Textures, Images, Samplers, Materials, Cameras
 
       Default_Scene_Index : constant Long_Integer := Data.Default_Scene;
-      Default_Scene : constant Orka.glTF.Scenes.Scene
+      Default_Scene : Orka.glTF.Scenes.Scene
         := Data.Scenes (Natural (Default_Scene_Index));
       --  Cannot be "renames" because freeing Object.Data results in cursor tampering
 

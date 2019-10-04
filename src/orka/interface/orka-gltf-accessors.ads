@@ -14,10 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Vectors;
-
 with GL.Types;
 
+with Orka.Containers.Bounded_Vectors;
 with Orka.Transforms.Singles.Vectors;
 
 package Orka.glTF.Accessors is
@@ -58,7 +57,7 @@ package Orka.glTF.Accessors is
 
    package Transforms renames Orka.Transforms.Singles.Vectors;
 
-   type Accessor (Bounds : Boolean) is record
+   type Accessor (Bounds : Boolean := False) is record
       View       : Natural;
       Offset     : Natural;
       Component  : Component_Kind;
@@ -74,7 +73,7 @@ package Orka.glTF.Accessors is
       end case;
    end record;
 
-   package Accessor_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Accessor);
+   package Accessor_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Accessor);
 
    function Get_Accessors
      (Accessors : Types.JSON_Value) return Accessor_Vectors.Vector;

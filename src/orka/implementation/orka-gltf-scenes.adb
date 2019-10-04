@@ -64,7 +64,7 @@ package body Orka.glTF.Scenes is
    begin
       return Result : Node (Transform) do
          Result.Name := SU.To_Unbounded_String (Object.Get ("name").Value);
-         Result.Children := Create_Nodes (Object.Get_Array_Or_Empty ("children"));
+         Result.Children.Append (Create_Nodes (Object.Get_Array_Or_Empty ("children")));
          Result.Mesh := Natural_Optional (Long_Integer'(Object.Get ("mesh", Undefined).Value));
 
          case Transform is
@@ -95,7 +95,7 @@ package body Orka.glTF.Scenes is
    function Get_Nodes
      (Nodes : Types.JSON_Value) return Node_Vectors.Vector
    is
-      Result : Node_Vectors.Vector;
+      Result : Node_Vectors.Vector (Capacity => Nodes.Length);
    begin
       for Node of Nodes loop
          Result.Append (Create_Node (Node));
@@ -108,14 +108,14 @@ package body Orka.glTF.Scenes is
    begin
       return Result : Scene do
          Result.Name  := SU.To_Unbounded_String (Object.Get ("name").Value);
-         Result.Nodes := Create_Nodes (Object.Get ("nodes"));
+         Result.Nodes.Append (Create_Nodes (Object.Get ("nodes")));
       end return;
    end Create_Scene;
 
    function Get_Scenes
      (Scenes : Types.JSON_Value) return Scene_Vectors.Vector
    is
-      Result : Scene_Vectors.Vector;
+      Result : Scene_Vectors.Vector (Capacity => Scenes.Length);
    begin
       for Scene of Scenes loop
          Result.Append (Create_Scene (Scene));

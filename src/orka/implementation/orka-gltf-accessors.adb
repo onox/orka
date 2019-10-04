@@ -105,7 +105,7 @@ package body Orka.glTF.Accessors is
    function Get_Accessors
      (Accessors : Types.JSON_Value) return Accessor_Vectors.Vector
    is
-      Result : Accessor_Vectors.Vector;
+      Result : Accessor_Vectors.Vector (Capacity => Accessors.Length);
    begin
       for Accessor of Accessors loop
          --  TODO accessor.byteOffset + bufferView.byteOffset mod componentType = 0

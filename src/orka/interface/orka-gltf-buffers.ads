@@ -14,11 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Vectors;
-with Ada.Containers.Vectors;
-
 with GL.Low_Level;
 
+with Orka.Containers.Bounded_Vectors;
 with Orka.Resources;
 
 package Orka.glTF.Buffers is
@@ -40,7 +38,7 @@ package Orka.glTF.Buffers is
       Length : Positive;  --  Length in bytes
    end record;
 
-   package Buffer_Vectors is new Ada.Containers.Vectors (Natural, Buffer);
+   package Buffer_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Buffer);
 
    function Get_Buffers
      (Buffers   : Types.JSON_Value;
@@ -49,7 +47,7 @@ package Orka.glTF.Buffers is
 
    subtype Stride_Natural is Natural range 4 .. 252;
 
-   type Buffer_View (Packed : Boolean) is record
+   type Buffer_View (Packed : Boolean := True) is record
       Buffer : Byte_Array_Pointers.Pointer;
       Offset : Natural;   --  Offset in bytes
       Length : Positive;  --  Length in bytes
@@ -62,7 +60,7 @@ package Orka.glTF.Buffers is
       end case;
    end record;
 
-   package Buffer_View_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Buffer_View);
+   package Buffer_View_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Buffer_View);
 
    generic
       type Element_Type is private;

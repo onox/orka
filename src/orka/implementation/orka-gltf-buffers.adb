@@ -117,7 +117,7 @@ package body Orka.glTF.Buffers is
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer_Vectors.Vector
    is
-      Result : Buffer_Vectors.Vector;
+      Result : Buffer_Vectors.Vector (Capacity => Buffers.Length);
    begin
       for Buffer of Buffers loop
          Result.Append (Create_Buffer (Buffer, Load_Path));
@@ -129,7 +129,7 @@ package body Orka.glTF.Buffers is
      (Buffers : Buffer_Vectors.Vector;
       Views   : Types.JSON_Value) return Buffer_View_Vectors.Vector
    is
-      Result : Buffer_View_Vectors.Vector;
+      Result : Buffer_View_Vectors.Vector (Capacity => Views.Length);
    begin
       for View of Views loop
          Result.Append (Create_Buffer_View (Buffers, View));

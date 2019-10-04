@@ -15,10 +15,11 @@
 --  limitations under the License.
 
 with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Containers.Vectors;
 with Ada.Strings.Hash;
 
 with GL.Types;
+
+with Orka.Containers.Bounded_Vectors;
 
 package Orka.glTF.Meshes is
    pragma Preelaborate;
@@ -39,14 +40,15 @@ package Orka.glTF.Meshes is
       Mode       : Primitive_Mode;
    end record;
 
-   package Primitive_Vectors is new Ada.Containers.Vectors (Natural, Primitive);
+   package Primitive_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Primitive);
 
    type Mesh is record
-      Primitives : Primitive_Vectors.Vector;
+      --  Orka.Resources.Models.glTF can handle only one primitive per mesh
+      Primitives : Primitive_Vectors.Vector (Capacity => 1);
       Name       : SU.Unbounded_String;
    end record;
 
-   package Mesh_Vectors is new Ada.Containers.Vectors (Natural, Mesh);
+   package Mesh_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Mesh);
 
    function Get_Meshes
      (Meshes : Types.JSON_Value) return Mesh_Vectors.Vector;

@@ -67,7 +67,7 @@ package body Orka.glTF.Meshes is
    function Create_Primitives
      (Primitives : Types.JSON_Value) return Primitive_Vectors.Vector
    is
-      Result : Primitive_Vectors.Vector;
+      Result : Primitive_Vectors.Vector (Capacity => Primitives.Length);
    begin
       for Primitive of Primitives loop
          Result.Append (Create_Primitive (Primitive));
@@ -87,7 +87,7 @@ package body Orka.glTF.Meshes is
    function Get_Meshes
      (Meshes : Types.JSON_Value) return Mesh_Vectors.Vector
    is
-      Result : Mesh_Vectors.Vector;
+      Result : Mesh_Vectors.Vector (Capacity => Meshes.Length);
    begin
       for Mesh of Meshes loop
          Result.Append (Create_Mesh (Mesh));

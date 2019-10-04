@@ -14,9 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Vectors;
 with Ada.Containers.Vectors;
 
+with Orka.Containers.Bounded_Vectors;
 with Orka.Transforms.Singles.Matrices;
 
 package Orka.glTF.Scenes is
@@ -28,7 +28,7 @@ package Orka.glTF.Scenes is
 
    type Transform_Kind is (Matrix, TRS);
 
-   type Node (Transform : Transform_Kind) is record
+   type Node (Transform : Transform_Kind := TRS) is record
       Name     : SU.Unbounded_String;
       Mesh     : Natural_Optional;
       Children : Natural_Vectors.Vector;
@@ -42,7 +42,7 @@ package Orka.glTF.Scenes is
       end case;
    end record;
 
-   package Node_Vectors is new Ada.Containers.Indefinite_Vectors (Natural, Node);
+   package Node_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Node);
 
    function Get_Nodes
      (Nodes : Types.JSON_Value) return Node_Vectors.Vector;
@@ -52,7 +52,7 @@ package Orka.glTF.Scenes is
       Nodes : Natural_Vectors.Vector;
    end record;
 
-   package Scene_Vectors is new Ada.Containers.Vectors (Natural, Scene);
+   package Scene_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Scene);
 
    function Get_Scenes
      (Scenes : Types.JSON_Value) return Scene_Vectors.Vector;
