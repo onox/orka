@@ -24,7 +24,7 @@ generic
    Maximum_Queued_Jobs : Positive;
    --  Maximum number of jobs that can be enqueued
    --
-   --  Should be less than the largest width (number of jobs at a
+   --  Should be no less than the largest width (number of jobs at a
    --  particular level) of any job graph.
 
    Maximum_Job_Graphs  : Positive;
@@ -32,16 +32,14 @@ generic
    --
    --  For each job graph, a Future object is acquired. The number of
    --  concurrent acquired objects is bounded by this number.
-
-   Maximum_Enqueued_By_Job : Positive;
-   --  Maximum number of extra jobs that a job can enqueue
 package Orka.Jobs.System is
 
    package Queues is new Jobs.Queues
      (Maximum_Graphs => Maximum_Job_Graphs,
       Capacity       => Maximum_Queued_Jobs);
 
-   package Executors is new Jobs.Executors (Queues, Maximum_Enqueued_By_Job);
+   package Executors is new Jobs.Executors
+     (Queues, Maximum_Enqueued_By_Job => Maximum_Queued_Jobs);
 
    Queue : aliased Queues.Queue;
 
