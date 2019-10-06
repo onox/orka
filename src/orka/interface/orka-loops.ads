@@ -19,7 +19,7 @@ with Ada.Real_Time;
 
 with Orka.Behaviors;
 with Orka.Cameras;
-with Orka.Jobs.Boss;
+with Orka.Jobs.System;
 with Orka.Simulation;
 with Orka.Windows;
 
@@ -32,7 +32,7 @@ generic
    Camera : Cameras.Camera_Ptr;
    Render : Simulation.Render_Ptr;
 
-   with package Job_Manager is new Orka.Jobs.Boss (<>);
+   with package Job_Manager is new Orka.Jobs.System (<>);
 
    Maximum_Frame_Time : Time_Span := Milliseconds (1000);
    --  Maximum allowed duration of a frame. The simulation loop will

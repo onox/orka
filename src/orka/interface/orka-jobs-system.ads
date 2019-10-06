@@ -35,7 +35,7 @@ generic
 
    Maximum_Enqueued_By_Job : Positive;
    --  Maximum number of extra jobs that a job can enqueue
-package Orka.Jobs.Boss is
+package Orka.Jobs.System is
 
    package Queues is new Jobs.Queues
      (Maximum_Graphs => Maximum_Job_Graphs,
@@ -45,13 +45,13 @@ package Orka.Jobs.Boss is
 
    Queue : aliased Queues.Queue;
 
-   Number_Of_Workers : constant System.Multiprocessors.CPU;
+   Number_Of_Workers : constant Standard.System.Multiprocessors.CPU;
 
    procedure Shutdown;
 
 private
 
-   package SM renames System.Multiprocessors;
+   package SM renames Standard.System.Multiprocessors;
 
    use type SM.CPU;
 
@@ -64,4 +64,4 @@ private
 
    procedure Shutdown renames Workers.Shutdown;
 
-end Orka.Jobs.Boss;
+end Orka.Jobs.System;
