@@ -23,16 +23,16 @@ alidir     = $(libdir)
 .PHONY: build examples tools tests coverage docs clean install
 
 build:
-	$(GPRBUILD) -P orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
 
 build_test:
 	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native -largs $(LDFLAGS)
 
 examples: build
-	$(GPRBUILD) -P examples.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/examples.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
 
 tools: build
-	$(GPRBUILD) -P tools.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/tools.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
 
 tests: build_test
 	./tests/unit/bin/run_unit_tests
@@ -50,10 +50,10 @@ docs:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
-	$(GPRCLEAN) -r -P orka-glfw.gpr
+	$(GPRCLEAN) -r -P tools/orka-glfw.gpr
 	$(GPRCLEAN) -P tests/unit/tests.gpr
-	$(GPRCLEAN) -P examples.gpr
-	$(GPRCLEAN) -P tools.gpr
+	$(GPRCLEAN) -P tools/examples.gpr
+	$(GPRCLEAN) -P tools/tools.gpr
 	rm -rf bin build tests/unit/build tests/unit/bin tests/cov
 
 install:
@@ -62,10 +62,10 @@ install:
 		--project-subdir=$(gprdir) \
 		--lib-subdir=$(libdir) \
 		--ali-subdir=$(alidir) \
-		--prefix=$(PREFIX) -P orka-lib.gpr
+		--prefix=$(PREFIX) -P tools/orka-lib.gpr
 	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka-glfw' \
 		--sources-subdir=$(includedir) \
 		--project-subdir=$(gprdir) \
 		--lib-subdir=$(libdir) \
 		--ali-subdir=$(alidir) \
-		--prefix=$(PREFIX) -P orka-glfw.gpr
+		--prefix=$(PREFIX) -P tools/orka-glfw.gpr

@@ -16,24 +16,13 @@
 
 with "config";
 
-library project Orka.Lib extends "orka" is
+project Orka.Base extends "orka" is
 
    for Languages use ("ada");
 
    for Create_Missing_Dirs use "True";
 
-   for Library_Name use "orka";
-   for Library_Version use "liborka.so." & Config.Version;
-   for Library_Dir use "build/lib";
-   for Library_ALI_Dir use "build/lib/orka";
-   for Library_Kind use Config.Library_Kind;
-
    for Source_Dirs use OpenGL_Sources & Orka_Sources;
-   for Object_Dir use "build/obj/orka";
+   for Object_Dir use "../build/obj/orka";
 
-   package Builder renames Orka.Builder;
-   package Compiler renames Orka.Compiler;
-   package Binder renames Orka.Binder;
-   package Linker renames Orka.Linker;
-
-end Orka.Lib;
+end Orka.Base;

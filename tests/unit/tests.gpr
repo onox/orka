@@ -16,8 +16,8 @@
 
 with "ahven";
 
-with "../../config";
-with "../../orka-base";
+with "../../tools/config";
+with "../../tools/orka-base";
 
 project Tests is
 

@@ -25,19 +25,19 @@ library project Orka.Glfw is
 
    for Library_Name use "orka-glfw";
    for Library_Version use "liborka-glfw.so." & Config.Version;
-   for Library_Dir use "build/lib";
-   for Library_ALI_Dir use "build/lib/glfw";
+   for Library_Dir use "../build/lib";
+   for Library_ALI_Dir use "../build/lib/glfw";
    for Library_Kind use Config.Library_Kind;
 
-   Shared_Example_Sources := ("examples/shared");
+   Shared_Example_Sources := ("../examples/shared");
 
-   GLFW_Sources := ("src/glfw");
+   GLFW_Sources := ("../src/glfw");
 
-   Orka_Sources := ("src/orka/interface/glfw",
-                    "src/orka/implementation/glfw");
+   Orka_Sources := ("../src/orka/interface/glfw",
+                    "../src/orka/implementation/glfw");
 
    for Source_Dirs use GLFW_Sources & Orka_Sources;
-   for Object_Dir use "build/obj/glfw";
+   for Object_Dir use "../build/obj/glfw";
 
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;

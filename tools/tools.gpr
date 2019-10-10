@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2019 onox <denkpadje@gmail.com>
+--  Copyright (c) 2018 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -15,14 +15,35 @@
 --  limitations under the License.
 
 with "config";
+with "orka-glfw";
 
-project Orka.Base extends "orka" is
+project Tools is
 
    for Languages use ("ada");
 
    for Create_Missing_Dirs use "True";
 
-   for Source_Dirs use OpenGL_Sources & Orka_Sources;
-   for Object_Dir use "build/obj/orka";
+   for Object_Dir use "../build/obj/tools";
+   for Exec_Dir use "../bin";
 
-end Orka.Base;
+   for Source_Dirs use ("../src/tools");
+
+   Executables := (
+      "orka_gltf",
+      "orka_info",
+      "orka_ktx"
+   );
+
+   for Main use Executables;
+
+   package Compiler renames Config.Compiler;
+   package Binder renames Config.Binder;
+
+   package Builder extends Config.Builder is
+      for Executable ("orka_gltf.adb") use "orka-gltf";
+      for Executable ("orka_info.adb") use "orka-info";
+      for Executable ("orka_ktx.adb") use "orka-ktx";
+   end Builder;
+
+
+end Tools;
