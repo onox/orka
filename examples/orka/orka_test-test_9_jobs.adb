@@ -42,12 +42,12 @@ procedure Orka_Test.Test_9_Jobs is
 
    T1, T2 : Time;
 
-   package Boss renames Package_9_Jobs.Boss;
+   package Job_System renames Package_9_Jobs.Job_System;
 begin
    --  Graph: Job_0 --> Job_1 --> Job_4 (4 slices) --> Job_2
    Orka.Jobs.Chain ((Job_0, Job_1, Job_4, Job_2));
 
-   Package_9_Jobs.Boss.Queue.Enqueue (Job_0, Handle);
+   Job_System.Queue.Enqueue (Job_0, Handle);
    Put_Line ("References (2): " & Handle.References'Image);
 
    T1 := Clock;
@@ -70,8 +70,8 @@ begin
    end;
    Put_Line ("References (1): " & Handle.References'Image);
 
-   Boss.Shutdown;
+   Job_System.Shutdown;
 
-   Put_Line ("CPU Queue:   " & Boss.Queue.Length (Boss.Queues.CPU)'Image);
-   Put_Line ("GPU Queue:   " & Boss.Queue.Length (Boss.Queues.GPU)'Image);
+   Put_Line ("CPU Queue:   " & Job_System.Queue.Length (Job_System.Queues.CPU)'Image);
+   Put_Line ("GPU Queue:   " & Job_System.Queue.Length (Job_System.Queues.GPU)'Image);
 end Orka_Test.Test_9_Jobs;

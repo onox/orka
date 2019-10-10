@@ -14,14 +14,13 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Jobs.Boss;
+with Orka.Jobs.System;
 
 package Orka_Test.Package_9_Jobs is
 
-   package Boss is new Orka.Jobs.Boss
+   package Job_System is new Orka.Jobs.System
      (Maximum_Queued_Jobs     => 4,
-      Maximum_Job_Graphs      => 1,
-      Maximum_Enqueued_By_Job => 4);
+      Maximum_Job_Graphs      => 1);
 
    type Test_Parallel_Job is new Orka.Jobs.Abstract_Parallel_Job with null record;
 
