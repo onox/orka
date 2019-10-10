@@ -287,8 +287,7 @@ package body Orka.Loops is
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
 
          --  Execute GPU jobs in the current task
-         Job_Manager.Executors.Execute_Jobs
-           ("Renderer", Job_Manager.Queues.GPU, Job_Manager.Queue'Access);
+         Job_Manager.Execute_GPU_Jobs;
       end;
    end Run_Loop;
 

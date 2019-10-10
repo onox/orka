@@ -266,9 +266,7 @@ holds the OpenGL context. In this task, the following code will dequeue
 and execute jobs from this queue:
 
 ```ada
---  Execute GPU jobs in the current task
-Job_System.Executors.Execute_Jobs
-  ("Renderer", Job_System.Queues.GPU, Job_System.Queue'Access);
+Job_System.Execute_GPU_Jobs;
 ```
 
 Note that this procedure blocks until the system is shut down.

@@ -38,12 +38,12 @@ package Orka.Jobs.System is
      (Maximum_Graphs => Maximum_Job_Graphs,
       Capacity       => Maximum_Queued_Jobs);
 
-   package Executors is new Jobs.Executors
-     (Queues, Maximum_Enqueued_By_Job => Maximum_Queued_Jobs);
-
    Queue : aliased Queues.Queue;
 
    Number_Of_Workers : constant Standard.System.Multiprocessors.CPU;
+
+   procedure Execute_GPU_Jobs;
+   --  Dequeue and execute GPU jobs in the calling task
 
    procedure Shutdown;
 
@@ -56,6 +56,9 @@ private
    Number_Of_Workers : constant SM.CPU := SM.Number_Of_CPUs - 1;
    --  For n logical CPU's we spawn n - 1 workers (1 CPU is dedicated
    --  to rendering)
+
+   package Executors is new Jobs.Executors
+     (Queues, Maximum_Enqueued_By_Job => Maximum_Queued_Jobs);
 
    package Workers is new Jobs.Workers
      (Executors, Queue'Access, "Worker", Number_Of_Workers);
