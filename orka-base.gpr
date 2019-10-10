@@ -23,6 +23,6 @@ project Orka.Base extends "orka" is
    for Create_Missing_Dirs use "True";
 
    for Source_Dirs use OpenGL_Sources & Orka_Sources;
-   for Object_Dir use "obj/orka";
+   for Object_Dir use "build/obj/orka";
 
 end Orka.Base;

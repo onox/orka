@@ -24,12 +24,12 @@ library project Orka.Lib extends "orka" is
 
    for Library_Name use "orka";
    for Library_Version use "liborka.so." & Config.Version;
-   for Library_Dir use "lib";
-   for Library_ALI_Dir use "lib/orka";
+   for Library_Dir use "build/lib";
+   for Library_ALI_Dir use "build/lib/orka";
    for Library_Kind use Config.Library_Kind;
 
    for Source_Dirs use OpenGL_Sources & Orka_Sources;
-   for Object_Dir use "obj/orka";
+   for Object_Dir use "build/obj/orka";
 
    package Builder renames Orka.Builder;
    package Compiler renames Orka.Compiler;

@@ -20,13 +20,13 @@ gprdir     = $(PREFIX)/share/gpr
 libdir     = $(PREFIX)/lib
 alidir     = $(libdir)
 
-.PHONY: build examples tools test coverage docs clean install
+.PHONY: build examples tools tests coverage docs clean install
 
 build:
 	$(GPRBUILD) -P orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
 
 build_test:
-	$(GPRBUILD) -P test/unit/orka/unit_tests.gpr -XMode=coverage -cargs -O0 -march=native -largs $(LDFLAGS)
+	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native -largs $(LDFLAGS)
 
 examples: build
 	$(GPRBUILD) -P examples.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
@@ -34,27 +34,27 @@ examples: build
 tools: build
 	$(GPRBUILD) -P tools.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
 
-test: build_test
-	./test/unit/orka/bin/run_unit_tests
+tests: build_test
+	./tests/unit/bin/run_unit_tests
 
 coverage:
-	mkdir -p test/cov
-	lcov -q -c -d test/unit/orka/obj -o test/cov/unit.info
-	lcov -q -c -d obj/orka -o test/cov/unit.info
-	lcov -q -r test/cov/unit.info */adainclude/* -o test/cov/unit.info
-	lcov -q -r test/cov/unit.info */test/unit/* -o test/cov/unit.info
-	genhtml -q --ignore-errors source -o test/cov/html test/cov/unit.info
-	lcov -l test/cov/unit.info
+	mkdir -p tests/cov
+	lcov -q -c -d tests/unit/build/obj -o tests/cov/unit.info
+	lcov -q -c -d build/obj/orka -o tests/cov/unit.info
+	lcov -q -r tests/cov/unit.info */adainclude/* -o tests/cov/unit.info
+	lcov -q -r tests/cov/unit.info */tests/unit/* -o tests/cov/unit.info
+	genhtml -q --ignore-errors source -o tests/cov/html tests/cov/unit.info
+	lcov -l tests/cov/unit.info
 
 docs:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
 	$(GPRCLEAN) -r -P orka-glfw.gpr
-	$(GPRCLEAN) -P test/unit/orka/unit_tests.gpr
+	$(GPRCLEAN) -P tests/unit/tests.gpr
 	$(GPRCLEAN) -P examples.gpr
 	$(GPRCLEAN) -P tools.gpr
-	rm -rf bin lib obj test/unit/orka/obj test/unit/orka/bin test/cov
+	rm -rf bin build tests/unit/build tests/unit/bin tests/cov
 
 install:
 	$(GPRINSTALL) --relocate-build-tree -p --install-name='orka' \

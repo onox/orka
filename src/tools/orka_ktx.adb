@@ -61,7 +61,7 @@ procedure Orka_KTX is
    use Ada.Exceptions;
 begin
    if Ada.Command_Line.Argument_Count /= 2 then
-      Ada.Text_IO.Put_Line ("Usage: <path to resources folder> <relative path to .ktx file>");
+      Ada.Text_IO.Put_Line ("Usage: <path to data folder> <relative path to .ktx file>");
       Job_System.Shutdown;
       Loader.Shutdown;
       return;
@@ -95,7 +95,7 @@ begin
       use all type Orka.Types.Index_Type;
 
       Location_Shaders : constant Locations.Location_Ptr
-        := Locations.Directories.Create_Location ("../resources");
+        := Locations.Directories.Create_Location ("../data");
 
       P_1 : Program := Create_Program (Modules.Create_Module
         (Location_Shaders,

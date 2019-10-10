@@ -27,15 +27,15 @@ library project Orka.SDL is
 
    for Library_Name use "orka-sdl";
    for Library_Version use "liborka-sdl.so." & Config.Version;
-   for Library_Dir use "lib";
-   for Library_ALI_Dir use "lib/sdl";
+   for Library_Dir use "build/lib";
+   for Library_ALI_Dir use "build/lib/sdl";
    for Library_Kind use Config.Library_Kind;
 
    Orka_Sources := ("src/orka/interface/sdl",
                     "src/orka/implementation/sdl");
 
    for Source_Dirs use Orka_Sources;
-   for Object_Dir use "obj/sdl";
+   for Object_Dir use "build/obj/sdl";
 
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;

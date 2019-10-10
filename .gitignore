@@ -1,9 +1,8 @@
-/lib/
-/obj/
+/build/
 /bin/
-/test/unit/orka/bin/
-/test/unit/orka/obj/
-/test/cov/
+/tests/unit/bin/
+/tests/unit/build/
+/tests/cov/
 /auto.cgpr
 *.swp
 .DS_Store

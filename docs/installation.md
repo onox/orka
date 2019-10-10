@@ -185,11 +185,11 @@ with `bin` as the current directory.
 
 ### Running tests
 
-The project contains a set of unit tests. Use `make test` to build and
+The project contains a set of unit tests. Use `make tests` to build and
 run the unit tests. A coverage report can be generated with `make coverage`:
 
 ```sh
-$ make test
+$ make tests
 $ make coverage
 ```
 

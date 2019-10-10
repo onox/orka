@@ -12,7 +12,7 @@ build:
     - git clone https://github.com/onox/dcf-ada.git
     - cd json-ada; make; make install; cd ..
     - cd dcf-ada; make tools; make install; cd ..
-    - make test
+    - make tests
     - make coverage
 
 integrations:
