@@ -600,7 +600,7 @@ package body Orka.Resources.Models.glTF is
       --  TODO Textures, Images, Samplers, Materials, Cameras
 
       Default_Scene_Index : constant Long_Integer := Data.Default_Scene;
-      Default_Scene : Orka.glTF.Scenes.Scene
+      Default_Scene : constant Orka.glTF.Scenes.Scene
         := Data.Scenes (Natural (Default_Scene_Index));
       --  Cannot be "renames" because freeing Object.Data results in cursor tampering
 
