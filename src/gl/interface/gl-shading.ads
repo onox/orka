@@ -21,6 +21,9 @@ package GL.Shading is
 
    use GL.Types;
 
+   --  Enable sample shading by enabling Multisample and Sample_Shading
+   --  in package GL.Toggles
+
    procedure Set_Minimum_Sample_Shading (Value : Normalized_Single);
    --  Set the minimum amount of samples for which the fragment
    --  shader should run.

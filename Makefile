@@ -20,7 +20,7 @@ gprdir     = $(PREFIX)/share/gpr
 libdir     = $(PREFIX)/lib
 alidir     = $(libdir)
 
-.PHONY: build examples tools test coverage clean install
+.PHONY: build examples tools test coverage docs clean install
 
 build:
 	$(GPRBUILD) -P orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
@@ -45,6 +45,9 @@ coverage:
 	lcov -q -r test/cov/unit.info */test/unit/* -o test/cov/unit.info
 	genhtml -q --ignore-errors source -o test/cov/html test/cov/unit.info
 	lcov -l test/cov/unit.info
+
+docs:
+	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
 	$(GPRCLEAN) -r -P orka-glfw.gpr

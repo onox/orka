@@ -1,0 +1,79 @@
+site_name: "Orka"
+site_description: "The OpenGL 4.6 Rendering Kernel in Ada 2012"
+site_author: "onox"
+site_url: "https://onox.github.io/orka"
+
+repo_name: "onox/orka"
+repo_url: "https://github.com/onox/orka"
+
+# Disable edit button
+edit_uri: ""
+
+copyright: "Copyright &copy; 2016 - 2019 onox"
+
+theme:
+  name: "material"
+  palette:
+    primary: "indigo"
+    accent: "blue"
+  logo:
+    icon: "🌌"
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+extra:
+  search:
+    language: "en"
+  social:
+    - type: "github"
+      link: "https://github.com/onox"
+
+markdown_extensions:
+  - admonition
+  - def_list
+  - footnotes
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: onox
+      repo: orka
+  - pymdownx.superfences
+  - pymdownx.smartsymbols:
+      copyright: false
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - toc:
+      permalink: true
+
+nav:
+  - Orka: index.md
+  - Installation: installation.md
+  - Parallel programming: parallel-programming.md
+  - Containers: containers.md
+  - Logging: logging.md
+  - Rendering:
+      - Programs: rendering/programs.md
+      - Buffers: rendering/buffers.md
+      - Vertex formats: rendering/vertex-formats.md
+      - Textures: rendering/textures.md
+      - Framebuffers: rendering/framebuffers.md
+      - Cameras: rendering/cameras.md
+  - Resources:
+      - Locations: resources/locations.md
+      - Loaders: resources/loaders.md
+  - Transforms:
+      - Vectors: transforms/vectors.md
+      - Matrices: transforms/matrices.md
+      - Quaternions: transforms/quaternions.md
+      - Scene trees: transforms/scene-trees.md
+  - Contributing: contributing.md

@@ -45,8 +45,7 @@ package Orka.Rendering.Buffers.Mapped.Persistent is
    function Length (Object : Persistent_Mapped_Buffer) return Natural;
    --  Number of elements in the buffer
    --
-   --  Will be less than the actual size of the buffer due to triple
-   --  buffering.
+   --  Will be less than the actual size of the buffer due to the n regions.
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer);
 
