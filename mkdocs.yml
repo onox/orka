@@ -1,7 +1,7 @@
 site_name: "Orka"
 site_description: "The OpenGL 4.6 Rendering Kernel in Ada 2012"
 site_author: "onox"
-site_url: "https://onox.github.io/orka"
+site_url: "https://orka-engine.netlify.com"
 
 repo_name: "onox/orka"
 repo_url: "https://github.com/onox/orka"
