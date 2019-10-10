@@ -16,19 +16,18 @@
 
 with Orka.Behaviors;
 with Orka.Culling;
-with Orka.Jobs.Boss;
+with Orka.Jobs.System;
 with Orka.Resources.Loader;
 with Orka.Resources.Models;
 
 package Orka_Package_glTF is
 
-   package Boss is new Orka.Jobs.Boss
-     (Maximum_Queued_Jobs     => 50,
-      Maximum_Job_Graphs      => 10,
-      Maximum_Enqueued_By_Job => 32);
+   package Job_System is new Orka.Jobs.System
+     (Maximum_Queued_Jobs => 16,
+      Maximum_Job_Graphs  => 4);
 
    package Loader is new Orka.Resources.Loader
-     (Boss.Queues, Boss.Queue'Unchecked_Access, Maximum_Requests => 10);
+     (Job_System.Queues, Job_System.Queue'Unchecked_Access, Maximum_Requests => 10);
 
    -----------------------------------------------------------------------------
 

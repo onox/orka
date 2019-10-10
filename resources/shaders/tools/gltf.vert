@@ -13,6 +13,8 @@ layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 matrices[];
 };
 
+uniform sampler2DArray diffuseTexture;
+
 uniform mat4 view;
 uniform mat4 proj;
 uniform vec4 lightPosition;
@@ -47,5 +49,6 @@ void main(void) {
     vs_out.uv = in_UV;
 
     // Modulo number of textures
-    var_InstanceID = uint(mod(instanceID, 7.0));
+    const int layers = textureSize(diffuseTexture, 0).z;
+    var_InstanceID = uint(mod(instanceID, layers));
 }

@@ -55,14 +55,14 @@ procedure Orka_KTX is
 
    Context : Orka.Contexts.Context;
 
-   package Boss   renames Orka_Package_glTF.Boss;
+   package Job_System renames Orka_Package_glTF.Job_System;
    package Loader renames Orka_Package_glTF.Loader;
 
    use Ada.Exceptions;
 begin
    if Ada.Command_Line.Argument_Count /= 2 then
       Ada.Text_IO.Put_Line ("Usage: <path to resources folder> <relative path to .ktx file>");
-      Boss.Shutdown;
+      Job_System.Shutdown;
       Loader.Shutdown;
       return;
    end if;
@@ -135,36 +135,28 @@ begin
       use Ada.Real_Time;
 
       Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
+      Loading_Failed : Boolean := False;
 
       task body Load_Resource is
          Loader_KTX : constant Loaders.Loader_Ptr := Textures.KTX.Create_Loader (Manager);
-
-         Location_Textures : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location (Location_Path);
       begin
-         Loader.Add_Location (Location_Textures, Loader_KTX);
-         Ada.Text_IO.Put_Line ("Registered resource locations");
+         declare
+            Location_Textures : constant Locations.Location_Ptr
+              := Locations.Directories.Create_Location (Location_Path);
+         begin
+            Loader.Add_Location (Location_Textures, Loader_KTX);
+         end;
 
          declare
-            T1 : constant Time := Clock;
-            T2 : Time;
-
             Future_Ref : Orka.Futures.Pointers.Reference := Loader.Load (Texture_Path).Get;
 
             use type Orka.Futures.Status;
             Resource_Status : Orka.Futures.Status;
          begin
             Future_Ref.Wait_Until_Done (Resource_Status);
-            T2 := Clock;
 
             pragma Assert (Resource_Status = Orka.Futures.Done);
             pragma Assert (Manager.Contains (Texture_Path));
-
-            declare
-               Loading_Time : constant Duration := 1e3 * To_Duration (T2 - T1);
-            begin
-               Ada.Text_IO.Put_Line ("Loaded in " & Loading_Time'Image & " ms");
-            end;
 
             --  Here we should either create a GPU job to set the
             --  texture to the uniform or just simply set it in the
@@ -172,10 +164,14 @@ begin
          end;
       exception
          when Error : others =>
-            Ada.Text_IO.Put_Line ("Error loading resource: " & Exception_Information (Error));
+            Ada.Text_IO.Put_Line ("Error loading resource: " & Exception_Message (Error));
+            Loading_Failed := True;
       end Load_Resource;
    begin
       Uni_Screen.Set_Vector (Screen_Size);
+
+      --  Clear color to black and depth to 0.0 (because of reversed Z)
+      FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 0.0), Depth => 0.0, others => <>));
 
       declare
          use GL.Objects.Textures;
@@ -185,12 +181,14 @@ begin
            (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
             Camera : Orka.Cameras.Camera_Ptr) is
          begin
-            --  Clear color to black and depth to 0.0 (because of reversed Z)
-            Camera.FB.GL_Framebuffer.Clear_Color_Buffer (0, (0.0, 0.0, 0.0, 0.0));
-            Camera.FB.GL_Framebuffer.Clear_Depth_Buffer (0.0);
+            Camera.FB.Clear;
 
             Camera.FB.Use_Framebuffer;
             P_1.Use_Program;
+
+            if Loading_Failed then
+               raise Program_Error with "Loading resource failed";
+            end if;
 
             if not Loaded and then Manager.Contains (Texture_Path) then
                declare
@@ -206,9 +204,11 @@ begin
                   T_2.Set_Minifying_Filter (Nearest);
                   T_2.Set_Magnifying_Filter (Nearest);
 
+                  T_2.Set_Lowest_Mipmap_Level (0);
+
                   Uni_Texture.Set_Texture (T_2, 0);
                end;
-               Ada.Text_IO.Put_Line ("Set texture");
+               Ada.Text_IO.Put_Line ("Set texture " & Texture_Path);
                Loaded := True;
             end if;
 
@@ -221,14 +221,14 @@ begin
             Window      => W_Ptr,
             Camera      => Current_Camera,
             Render      => Render'Unrestricted_Access,
-            Job_Manager => Boss);
+            Job_Manager => Job_System);
       begin
          Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
          Ada.Text_IO.Put_Line ("Running render loop...");
          Loops.Run_Loop;
       end;
       Ada.Text_IO.Put_Line ("Shutting down...");
-      Boss.Shutdown;
+      Job_System.Shutdown;
       Loader.Shutdown;
       Ada.Text_IO.Put_Line ("Shutdown job system and loader");
    end;
