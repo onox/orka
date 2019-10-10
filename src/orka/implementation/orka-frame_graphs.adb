@@ -733,6 +733,10 @@ package body Orka.Frame_Graphs is
                      use type GL.Buffers.Color_Buffer_Selector;
                      use type GL.Types.UInt;
                   begin
+                     --  Clear color to black and depth to 0.0 (because of reversed Z)
+                     Framebuffer.Set_Default_Values
+                       ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
+
                      if Framebuffer.Default then
                         --  The resource is 'read' by the present pass
                         pragma Assert (not Invalidate_Mask.Color);
