@@ -192,27 +192,27 @@ package body Orka.Resources.Textures.KTX is
          --  Register resource at the resource manager
          Object.Manager.Add_Resource (Path, Resource_Ptr (Resource));
 
-         Messages.Insert (Info, "Loaded texture " & Path & " in " &
+         Messages.Log (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
-         Messages.Insert (Info, "  size:   " &
+         Messages.Log (Info, "  size:   " &
             Logging.Trim (Width'Image) & " x " &
             Logging.Trim (Height'Image) & " x " &
             Logging.Trim (Depth'Image) &
             ", mipmap levels:" & Levels'Image);
-         Messages.Insert (Info, "  kind:   " & Header.Kind'Image);
+         Messages.Log (Info, "  kind:   " & Header.Kind'Image);
          if Header.Compressed then
-            Messages.Insert (Info, "  format: " & Header.Compressed_Format'Image);
+            Messages.Log (Info, "  format: " & Header.Compressed_Format'Image);
          else
-            Messages.Insert (Info, "  format: " & Header.Internal_Format'Image);
+            Messages.Log (Info, "  format: " & Header.Internal_Format'Image);
          end if;
 
-         Messages.Insert (Info, "  statistics:");
-         Messages.Insert (Info, "    reading file:   " & Logging.Image (T2 - T1));
-         Messages.Insert (Info, "    parsing header: " & Logging.Image (T3 - T2));
-         Messages.Insert (Info, "    storage:        " & Logging.Image (T4 - T3));
-         Messages.Insert (Info, "    buffers:        " & Logging.Image (T5 - T4));
+         Messages.Log (Info, "  statistics:");
+         Messages.Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
+         Messages.Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
+         Messages.Log (Info, "    storage:        " & Logging.Image (T4 - T3));
+         Messages.Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
          if Header.Mipmap_Levels = 0 then
-            Messages.Insert (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
+            Messages.Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
          end if;
       end;
    exception

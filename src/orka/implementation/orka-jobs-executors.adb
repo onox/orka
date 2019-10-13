@@ -110,11 +110,11 @@ package body Orka.Jobs.Executors is
                   when Error : others =>
                      Promise.Set_Failed (Error);
 
-                     Messages.Insert (Logging.Error,
+                     Messages.Log (Logging.Error,
                        Kind'Image & " job " & Tag & " " & Exception_Information (Error));
                end;
             else
-               Messages.Insert (Warning,
+               Messages.Log (Warning,
                  Kind'Image & " job " & Tag & " already " & Future.Current_Status'Image);
             end if;
 
@@ -169,7 +169,7 @@ package body Orka.Jobs.Executors is
       end loop;
    exception
       when Error : others =>
-         Messages.Insert (Logging.Error, Exception_Information (Error));
+         Messages.Log (Logging.Error, Exception_Information (Error));
    end Execute_Jobs;
 
 end Orka.Jobs.Executors;

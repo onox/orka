@@ -86,10 +86,10 @@ package body Orka.Culling is
                Kind   => Elements_Command_Type,
                Length => Commands))
       do
-         Messages.Insert (Notification, "Created culler for" &
+         Messages.Log (Notification, "Created culler for" &
            Transforms'Image & " transforms and" &
            Commands'Image & " commands");
-         Messages.Insert (Notification, "  cull frustum:" &
+         Messages.Log (Notification, "  cull frustum:" &
            Work_Groups'Image & " groups x" & Local_Size'Image & " transforms");
       end return;
    end Create_Instance;

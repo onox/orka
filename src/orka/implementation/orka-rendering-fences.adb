@@ -38,10 +38,10 @@ package body Orka.Rendering.Fences is
 
       case Object.Fences (Object.Index).Client_Wait (Maximum_Wait) is
          when Condition_Satisfied =>
-            Messages.Insert (Medium, "Fence not already signalled");
+            Messages.Log (Medium, "Fence not already signalled");
             Status := Signaled;
          when Timeout_Expired | Wait_Failed =>
-            Messages.Insert (High, "Fence timed out or failed");
+            Messages.Log (High, "Fence timed out or failed");
             Status := Not_Signaled;
          when Already_Signaled =>
             Status := Signaled;

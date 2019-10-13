@@ -41,12 +41,10 @@ package Orka.Logging is
 
    generic
       From : Source;
+      ID   : Natural := 0;
    package Messages is
-      procedure Insert (Level : Severity; Message : String);
-      --  Generate a new debug message and increment the internal identifier
-
-      procedure Reset_Identifier (Value : Natural);
-      --  Reset the internal identifier to the given value
+      procedure Log (Level : Severity; Message : String);
+      --  Generate a new debug message
    end Messages;
 
 end Orka.Logging;

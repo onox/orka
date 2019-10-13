@@ -736,18 +736,18 @@ package body Orka.Resources.Models.glTF is
       declare
          Times : Times_Data renames Data.Times;
       begin
-         Messages.Insert (Info, "Loaded model " & Path & " in " &
+         Messages.Log (Info, "Loaded model " & Path & " in " &
            Logging.Trim (Logging.Image (Clock - Data.Start_Time)));
-         Messages.Insert (Info, " " &
+         Messages.Log (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Messages.Insert (Info, "  statistics:");
-         Messages.Insert (Info, "    reading file:    " & Logging.Image (Times.Reading));
-         Messages.Insert (Info, "    parsing JSON:    " & Logging.Image (Times.Parsing));
-         Messages.Insert (Info, "    processing glTF: " & Logging.Image (Times.Processing));
-         Messages.Insert (Info, "    scene tree:      " & Logging.Image (Times.Scene));
-         Messages.Insert (Info, "    buffers:         " & Logging.Image (Times.Buffers));
+         Messages.Log (Info, "  statistics:");
+         Messages.Log (Info, "    reading file:    " & Logging.Image (Times.Reading));
+         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (Times.Parsing));
+         Messages.Log (Info, "    processing glTF: " & Logging.Image (Times.Processing));
+         Messages.Log (Info, "    scene tree:      " & Logging.Image (Times.Scene));
+         Messages.Log (Info, "    buffers:         " & Logging.Image (Times.Buffers));
       end;
    end Execute;
 

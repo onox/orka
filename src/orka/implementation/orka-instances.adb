@@ -42,9 +42,9 @@ package body Orka.Instances is
          Result.Transforms := PMB.Create_Buffer
            (Orka.Types.Single_Matrix_Type, Transforms, Rendering.Buffers.Mapped.Write);
 
-         Messages.Insert (Notification, "Created group for" &
+         Messages.Log (Notification, "Created group for" &
            Capacity'Image & " instances");
-         Messages.Insert (Notification, " " &
+         Messages.Log (Notification, " " &
            Capacity'Image & " instances x" & Parts'Image & " parts =" &
            Transforms'Image & " transforms");
       end return;

@@ -134,7 +134,7 @@ package body Orka.Loops is
    begin
       Scene.Replace_Array (Scene_Array);
 
-      Messages.Insert (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
+      Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
 
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -216,19 +216,19 @@ package body Orka.Loops is
                      FPS : constant Duration
                        := Duration (Frame_Counter) / To_Duration (Total_Elapsed);
                   begin
-                     Messages.Insert (Debug, "FPS: " & Trim (FPS'Image));
+                     Messages.Log (Debug, "FPS: " & Trim (FPS'Image));
                   end;
 
                   if Exceeded_Frame_Counter > 0 then
                      declare
                         Avg : constant Time_Span := Stat_Sum / Exceeded_Frame_Counter;
                      begin
-                        Messages.Insert (Debug, "Frame time limit (" &
+                        Messages.Log (Debug, "Frame time limit (" &
                           Trim (Image (Handler.Frame_Limit)) & ") exceeded " &
                           Trim (Exceeded_Frame_Counter'Image) & " times by:");
-                        Messages.Insert (Debug, "  avg: " & Image (Avg));
-                        Messages.Insert (Debug, "  min: " & Image (To_Time_Span (Stat_Min)));
-                        Messages.Insert (Debug, "  max: " & Image (To_Time_Span (Stat_Max)));
+                        Messages.Log (Debug, "  avg: " & Image (Avg));
+                        Messages.Log (Debug, "  min: " & Image (To_Time_Span (Stat_Min)));
+                        Messages.Log (Debug, "  max: " & Image (To_Time_Span (Stat_Max)));
                      end;
                   end if;
 

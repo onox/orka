@@ -28,7 +28,7 @@ package body Orka.Windows.GLFW is
 
    procedure Print_Error (Code : Standard.Glfw.Errors.Kind; Description : String) is
    begin
-      Messages.Insert (Error, "GLFW " & Code'Image & ": " & Trim (Description));
+      Messages.Log (Error, "GLFW " & Code'Image & ": " & Trim (Description));
    end Print_Error;
 
    function Initialize
@@ -55,7 +55,7 @@ package body Orka.Windows.GLFW is
    begin
       if not Object.Finalized then
          if Object.Debug then
-            Messages.Insert (Debug, "Shutting down GLFW");
+            Messages.Log (Debug, "Shutting down GLFW");
          end if;
          Standard.Glfw.Shutdown;
          Object.Finalized := True;
@@ -66,7 +66,7 @@ package body Orka.Windows.GLFW is
    procedure Finalize (Object : in out GLFW_Window) is
    begin
       if not Object.Finalized then
-         Messages.Insert (Debug, "Closing GLFW window");
+         Messages.Log (Debug, "Closing GLFW window");
          Object.Destroy;
          Object.Finalized := True;
       end if;
@@ -100,11 +100,11 @@ package body Orka.Windows.GLFW is
                Reference.Get_Framebuffer_Size (Width, Height);
                Result.Framebuffer_Size_Changed (Natural (Width), Natural (Height));
 
-               Messages.Insert (Debug, "Created GLFW window and GL context");
-               Messages.Insert (Debug, "  size:      " &
+               Messages.Log (Debug, "Created GLFW window and GL context");
+               Messages.Log (Debug, "  size:      " &
                  Trim (Width'Image) & " x " & Trim (Height'Image));
-               Messages.Insert (Debug, "  visible:   " & (if Visible then "yes" else "no"));
-               Messages.Insert (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
+               Messages.Log (Debug, "  visible:   " & (if Visible then "yes" else "no"));
+               Messages.Log (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
             end;
 
             --  Callbacks

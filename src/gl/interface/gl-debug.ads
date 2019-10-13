@@ -116,12 +116,10 @@ package GL.Debug is
    generic
       From : Source;
       Kind : Message_Type;
+      ID   : UInt := 0;
    package Messages is
-      procedure Insert (Level : Severity; Message : String);
-      --  Generate a new debug message and increment the internal identifier
-
-      procedure Reset_Identifier (Value : UInt);
-      --  Reset the internal identifier to the given value
+      procedure Log (Level : Severity; Message : String);
+      --  Generate a new debug message
    end Messages;
 
 private
