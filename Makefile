@@ -9,7 +9,7 @@ LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
 
-GPRBUILD = gprbuild -dm -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE)
+GPRBUILD = nice gprbuild -dm -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE)
 GPRCLEAN = gprclean -q $(X_WINDOWING_SYSTEM)
 GPRINSTALL = gprinstall -q $(X_WINDOWING_SYSTEM)
 
