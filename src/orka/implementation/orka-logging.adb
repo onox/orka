@@ -20,11 +20,12 @@ with Orka.Terminals;
 
 package body Orka.Logging is
 
-   procedure Insert_Message
-     (From       : Source;
-      Level      : Severity;
-      Identifier : Natural;
-      Message    : String)
+   function Format_Message
+     (From    : Source;
+      Kind    : Message_Type;
+      Level   : Severity;
+      ID      : Natural;
+      Message : String) return String
    is
       Level_Color : constant Terminals.Color
         := (case Level is
@@ -35,22 +36,36 @@ package body Orka.Logging is
 
       Time_Image : constant String := Terminals.Time_Image;
    begin
-      Ada.Text_IO.Put_Line
-        (Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
-         " " &
-         Terminals.Colorize ("[" & From'Image & "]", Terminals.Magenta) &
-         Identifier'Image & ": " & Terminals.Strip_Line_Term (Message));
-   end Insert_Message;
+      return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
+             " " &
+             Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
+             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
+   end Format_Message;
 
    function Image (Value : Ada.Real_Time.Time_Span) return String is
      (Terminals.Image (Ada.Real_Time.To_Duration (Value)));
 
    function Trim (Value : String) return String is (Terminals.Trim (Value));
 
+   -----------------------------------------------------------------------------
+
+   procedure Log
+     (From    : Source;
+      Kind    : Message_Type;
+      Level   : Severity;
+      ID      : Natural;
+      Message : String) is
+   begin
+      Ada.Text_IO.Put_Line (Format_Message (From, Kind, Level, ID, Message));
+   end Log;
+
    package body Messages is
+      Kind : constant Message_Type := Message_Type (GL.Debug.Message_Type'(GL.Debug.Other));
+      --  TODO Make generic parameter
+
       procedure Log (Level : Severity; Message : String) is
       begin
-         Insert_Message (From, Level, ID, Message);
+         Orka.Logging.Log (From, Kind, Level, ID, Message);
       end Log;
    end Messages;
 

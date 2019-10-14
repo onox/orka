@@ -280,8 +280,7 @@ package body Orka.Loops is
             Run_Game_Loop (Fence'Unchecked_Access);
          exception
             when Error : others =>
-               Logging.Insert_Message
-                 (Logging.Game_Loop, Logging.Error, 0, Exception_Information (Error));
+               Messages.Log (Logging.Error, Exception_Information (Error));
          end Simulation;
       begin
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);

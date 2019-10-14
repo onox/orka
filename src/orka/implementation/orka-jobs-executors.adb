@@ -26,7 +26,7 @@ with Orka.Logging;
 package body Orka.Jobs.Executors is
 
    use Orka.Logging;
-   package Messages is new Orka.Logging.Messages (Executor);
+   package Messages is new Orka.Logging.Messages (Worker);
 
    function Get_Root_Dependent (Element : Job_Ptr) return Job_Ptr is
       Result : Job_Ptr := Element;

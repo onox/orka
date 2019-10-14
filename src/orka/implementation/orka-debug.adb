@@ -14,60 +14,65 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
-
 with GL.Debug.Logs;
+with GL.Types;
 
-with Orka.Terminals;
+with Orka.Logging;
 
 package body Orka.Debug is
 
-   function Format_Message
-     (From    : Source;
-      Kind    : Message_Type;
-      ID      : GL.Types.UInt;
-      Level   : Severity;
-      Message : String) return String
-   is
-      Level_Color : constant Terminals.Color
-        := (case Level is
-               when High         => Terminals.Red,
-               when Medium       => Terminals.Yellow,
-               when Low          => Terminals.Blue,
-               when Notification => Terminals.Green);
+   use GL.Debug;
 
-      Time_Image : constant String := Terminals.Time_Image;
-   begin
-      return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
-             " " &
-             Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
-   end Format_Message;
-
-   function Logged_Messages return Natural is (Natural (GL.Debug.Logs.Logged_Messages));
-
-   procedure Flush_Log is
-   begin
-      for M of GL.Debug.Logs.Message_Log loop
-         Ada.Text_IO.Put_Line
-           (Format_Message (M.From, M.Kind, M.ID, M.Level, M.Message.Element));
-      end loop;
-   end Flush_Log;
-
-   procedure Print_Debug_Message
+   procedure Log_Debug_Message
      (From      : Source;
       Kind      : Message_Type;
       Level     : Severity;
       ID        : GL.Types.UInt;
-      Message   : String) is
-   begin
-      Ada.Text_IO.Put_Line (Format_Message (From, Kind, ID, Level, Message));
-   end Print_Debug_Message;
+      Message   : String)
+   is
+      use all type Orka.Logging.Source;
+      use all type Orka.Logging.Severity;
 
-   procedure Enable_Print_Callback is
+      Source : constant Orka.Logging.Source
+        := (case From is
+               when OpenGL          => OpenGL,
+               when Window_System   => Window_System,
+               when Shader_Compiler => Shader_Compiler,
+               when Third_Party     => Third_Party,
+               when Application     => Application,
+               when Other           => Other);
+
+      Severity : constant Orka.Logging.Severity
+        := (case Level is
+               when High         => Logging.Error,
+               when Medium       => Logging.Warning,
+               when Low          => Logging.Info,
+               when Notification => Logging.Debug);
    begin
-      GL.Debug.Set_Message_Callback (Print_Debug_Message'Access);
-      GL.Debug.Set (GL.Debug.Low, True);
-   end Enable_Print_Callback;
+      Logging.Log (Source, Logging.Message_Type (Kind), Severity, Natural (ID), Message);
+   end Log_Debug_Message;
+
+   procedure Set_Log_Messages (Enable : Boolean) is
+   begin
+      if Enable then
+         declare
+            Count : constant Natural := Natural (GL.Debug.Logs.Logged_Messages);
+         begin
+            if Count > 0 then
+               Log_Debug_Message (Application, Other, Notification, 0,
+                 "Flushing" & Count'Image & " messages in the debug log:");
+            end if;
+         end;
+
+         for M of GL.Debug.Logs.Message_Log loop
+            Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, M.Message.Element);
+         end loop;
+
+         GL.Debug.Set_Message_Callback (Log_Debug_Message'Access);
+         GL.Debug.Set (GL.Debug.Low, True);
+      else
+         GL.Debug.Disable_Message_Callback;
+      end if;
+   end Set_Log_Messages;
 
 end Orka.Debug;

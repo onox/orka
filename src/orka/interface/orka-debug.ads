@@ -14,28 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Debug;
-with GL.Types;
-
 package Orka.Debug is
 
-   use GL.Debug;
-
-   function Format_Message
-     (From    : Source;
-      Kind    : Message_Type;
-      ID      : GL.Types.UInt;
-      Level   : Severity;
-      Message : String) return String;
-   --  Format and colorize the message so that it can be readily printed
-
-   function Logged_Messages return Natural;
-   --  Return number of messages currently in the log
-
-   procedure Flush_Log;
-   --  Print all messages currently in the log
-
-   procedure Enable_Print_Callback;
-   --  Enable a callback that will print messages
+   procedure Set_Log_Messages (Enable : Boolean);
+   --  Enable or disable receiving messages from the video driver
 
 end Orka.Debug;

@@ -67,14 +67,7 @@ begin
       return;
    end if;
 
-   declare
-      Messages : constant Natural := Orka.Debug.Logged_Messages;
-   begin
-      Ada.Text_IO.Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
-   end;
-   Orka.Debug.Flush_Log;
-
-   Orka.Debug.Enable_Print_Callback;
+   Orka.Debug.Set_Log_Messages (Enable => True);
    Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
    --  Enable some features

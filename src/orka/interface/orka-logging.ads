@@ -16,35 +16,40 @@
 
 with Ada.Real_Time;
 
+with GL.Debug;
+
 package Orka.Logging is
 
-   type Source is (Executor, Game_Loop, Resource_Loader, Other);
+   type Source is
+     (Worker, Game_Loop, Resource_Loader,
+      OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
+
+   type Message_Type is new GL.Debug.Message_Type;
 
    type Severity is (Error, Warning, Info, Debug);
 
-   procedure Insert_Message
-     (From       : Source;
-      Level      : Severity;
-      Identifier : Natural;
-      Message    : String);
-   --  Generate a new message
-   --
-   --  Instantiate the generic package Messages below if you need to
-   --  print multiple messages with the same source.
-   --
-   --  The generated messages will be printed in the terminal.
+   -----------------------------------------------------------------------------
 
    function Image (Value : Ada.Real_Time.Time_Span) return String;
    --  Return the image of the given duration with an appropriate suffix
 
    function Trim (Value : String) return String;
 
+   -----------------------------------------------------------------------------
+
+   procedure Log
+     (From    : Source;
+      Kind    : Message_Type;
+      Level   : Severity;
+      ID      : Natural;
+      Message : String);
+   --  Log the message to the terminal
+
    generic
       From : Source;
       ID   : Natural := 0;
    package Messages is
       procedure Log (Level : Severity; Message : String);
-      --  Generate a new debug message
    end Messages;
 
 end Orka.Logging;
