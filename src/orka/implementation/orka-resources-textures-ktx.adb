@@ -30,7 +30,9 @@ with Orka.KTX;
 
 package body Orka.Resources.Textures.KTX is
 
-   use Orka.Logging;
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
    package Messages is new Orka.Logging.Messages (Resource_Loader);
 
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record

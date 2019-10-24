@@ -14,33 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
+with GL.Debug;
 
+with Orka.Loggers.Terminal;
 with Orka.Terminals;
 
 package body Orka.Logging is
-
-   function Format_Message
-     (From    : Source;
-      Kind    : Message_Type;
-      Level   : Severity;
-      ID      : Natural;
-      Message : String) return String
-   is
-      Level_Color : constant Terminals.Color
-        := (case Level is
-              when Error   => Terminals.Red,
-              when Warning => Terminals.Yellow,
-              when Info    => Terminals.Blue,
-              when Debug   => Terminals.Green);
-
-      Time_Image : constant String := Terminals.Time_Image;
-   begin
-      return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
-             " " &
-             Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
-   end Format_Message;
 
    function Image (Value : Ada.Real_Time.Time_Span) return String is
      (Terminals.Image (Ada.Real_Time.To_Duration (Value)));
@@ -49,6 +28,13 @@ package body Orka.Logging is
 
    -----------------------------------------------------------------------------
 
+   Current_Logger : Loggers.Logger_Ptr := Orka.Loggers.Terminal.Logger;
+
+   procedure Set_Logger (Logger : Loggers.Logger_Ptr) is
+   begin
+      Current_Logger := Logger;
+   end Set_Logger;
+
    procedure Log
      (From    : Source;
       Kind    : Message_Type;
@@ -56,7 +42,7 @@ package body Orka.Logging is
       ID      : Natural;
       Message : String) is
    begin
-      Ada.Text_IO.Put_Line (Format_Message (From, Kind, Level, ID, Message));
+      Current_Logger.Log (From, Kind, Level, ID, Message);
    end Log;
 
    package body Messages is

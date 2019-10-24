@@ -16,17 +16,15 @@
 
 with Ada.Real_Time;
 
-with GL.Debug;
+with Orka.Loggers;
 
 package Orka.Logging is
 
-   type Source is
-     (Worker, Game_Loop, Resource_Loader,
-      OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
+   subtype Source is Loggers.Source;
 
-   type Message_Type is new GL.Debug.Message_Type;
+   subtype Message_Type is Loggers.Message_Type;
 
-   type Severity is (Error, Warning, Info, Debug);
+   subtype Severity is Loggers.Severity;
 
    -----------------------------------------------------------------------------
 
@@ -37,13 +35,17 @@ package Orka.Logging is
 
    -----------------------------------------------------------------------------
 
+   procedure Set_Logger (Logger : Loggers.Logger_Ptr);
+
    procedure Log
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
       ID      : Natural;
       Message : String);
-   --  Log the message to the terminal
+   --  Log the message using the logger
+   --
+   --  If no logger has been set, it will log the message to the terminal.
 
    generic
       From : Source;

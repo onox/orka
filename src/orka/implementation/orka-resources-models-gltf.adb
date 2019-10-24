@@ -39,7 +39,9 @@ with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
-   use Orka.Logging;
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
    package Messages is new Orka.Logging.Messages (Resource_Loader);
 
    Default_Root_Name : constant String := "root";

@@ -21,11 +21,14 @@ with Ada.Tags;
 
 with Orka.Containers.Bounded_Vectors;
 with Orka.Futures;
+with Orka.Loggers;
 with Orka.Logging;
 
 package body Orka.Jobs.Executors is
 
-   use Orka.Logging;
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
    package Messages is new Orka.Logging.Messages (Worker);
 
    function Get_Root_Dependent (Element : Job_Ptr) return Job_Ptr is
@@ -110,7 +113,7 @@ package body Orka.Jobs.Executors is
                   when Error : others =>
                      Promise.Set_Failed (Error);
 
-                     Messages.Log (Logging.Error,
+                     Messages.Log (Loggers.Error,
                        Kind'Image & " job " & Tag & " " & Exception_Information (Error));
                end;
             else
@@ -169,7 +172,7 @@ package body Orka.Jobs.Executors is
       end loop;
    exception
       when Error : others =>
-         Messages.Log (Logging.Error, Exception_Information (Error));
+         Messages.Log (Loggers.Error, Exception_Information (Error));
    end Execute_Jobs;
 
 end Orka.Jobs.Executors;

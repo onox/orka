@@ -23,7 +23,10 @@ with Orka.Logging;
 
 package body Orka.Windows.GLFW is
 
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
    use Orka.Logging;
+
    package Messages is new Orka.Logging.Messages (Window_System);
 
    procedure Print_Error (Code : Standard.Glfw.Errors.Kind; Description : String) is

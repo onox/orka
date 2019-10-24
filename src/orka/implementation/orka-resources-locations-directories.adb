@@ -32,11 +32,13 @@ package body Orka.Resources.Locations.Directories is
 
    -----------------------------------------------------------------------------
 
-   function Open_File (File_Name : String) return Byte_Array_File is
+   function Open_File
+     (File_Name : String;
+      Mode      : Stream_IO.File_Mode) return Byte_Array_File is
    begin
       return Result : Byte_Array_File
         := (Ada.Finalization.Limited_Controlled with File => <>, Finalized => False) do
-         Stream_IO.Open (Result.File, Stream_IO.In_File, File_Name);
+         Stream_IO.Open (Result.File, Mode, File_Name);
       end return;
    end Open_File;
 
@@ -110,6 +112,12 @@ package body Orka.Resources.Locations.Directories is
       Path   : String;
       Data   : Byte_Array);
 
+   overriding
+   procedure Append_Data
+     (Object : Writable_Directory_Location;
+      Path   : String;
+      Data   : Byte_Array);
+
    -----------------------------------------------------------------------------
 
    overriding
@@ -139,7 +147,7 @@ package body Orka.Resources.Locations.Directories is
       end if;
 
       declare
-         File : constant Byte_Array_File := Open_File (Full_Path);
+         File : constant Byte_Array_File := Open_File (Full_Path, Mode => Stream_IO.In_File);
          Pointer : Byte_Array_Pointers.Pointer;
       begin
          Pointer.Set (File.Read_File);
@@ -168,6 +176,28 @@ package body Orka.Resources.Locations.Directories is
          File.Write_Data (Data);
       end;
    end Write_Data;
+
+   overriding
+   procedure Append_Data
+     (Object : Writable_Directory_Location;
+      Path   : String;
+      Data   : Byte_Array)
+   is
+      Directory : String renames SU.To_String (Object.Full_Path);
+      Full_Path : constant String := Directory & Path_Separator & Path;
+
+      use Ada.Directories;
+   begin
+      declare
+         File : constant Byte_Array_File :=
+           (if Exists (Full_Path) then
+              Open_File (Full_Path, Mode => Stream_IO.Append_File)
+            else
+              Create_File (Full_Path));
+      begin
+         File.Write_Data (Data);
+      end;
+   end Append_Data;
 
    function Create_Location (Path : String) return Location_Ptr is
       use Ada.Directories;

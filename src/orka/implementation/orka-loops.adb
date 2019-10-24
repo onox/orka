@@ -21,12 +21,16 @@ with Ada.Unchecked_Deallocation;
 with Ada.Exceptions;
 
 with Orka.Futures;
+with Orka.Loggers;
 with Orka.Logging;
 with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
 
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
    use Orka.Logging;
+
    package Messages is new Orka.Logging.Messages (Game_Loop);
 
    procedure Free is new Ada.Unchecked_Deallocation
@@ -280,7 +284,7 @@ package body Orka.Loops is
             Run_Game_Loop (Fence'Unchecked_Access);
          exception
             when Error : others =>
-               Messages.Log (Logging.Error, Exception_Information (Error));
+               Messages.Log (Loggers.Error, Exception_Information (Error));
          end Simulation;
       begin
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);

@@ -17,6 +17,7 @@
 with GL.Debug.Logs;
 with GL.Types;
 
+with Orka.Loggers;
 with Orka.Logging;
 
 package body Orka.Debug is
@@ -30,10 +31,10 @@ package body Orka.Debug is
       ID        : GL.Types.UInt;
       Message   : String)
    is
-      use all type Orka.Logging.Source;
-      use all type Orka.Logging.Severity;
+      use all type Orka.Loggers.Source;
+      use all type Orka.Loggers.Severity;
 
-      Source : constant Orka.Logging.Source
+      Source : constant Orka.Loggers.Source
         := (case From is
                when OpenGL          => OpenGL,
                when Window_System   => Window_System,
@@ -42,14 +43,14 @@ package body Orka.Debug is
                when Application     => Application,
                when Other           => Other);
 
-      Severity : constant Orka.Logging.Severity
+      Severity : constant Orka.Loggers.Severity
         := (case Level is
-               when High         => Logging.Error,
-               when Medium       => Logging.Warning,
-               when Low          => Logging.Info,
-               when Notification => Logging.Debug);
+               when High         => Loggers.Error,
+               when Medium       => Loggers.Warning,
+               when Low          => Loggers.Info,
+               when Notification => Loggers.Debug);
    begin
-      Logging.Log (Source, Logging.Message_Type (Kind), Severity, Natural (ID), Message);
+      Logging.Log (Source, Loggers.Message_Type (Kind), Severity, Natural (ID), Message);
    end Log_Debug_Message;
 
    procedure Set_Log_Messages (Enable : Boolean) is

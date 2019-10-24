@@ -27,4 +27,14 @@ package body Orka.Resources is
       return Convert (Bytes);
    end Convert;
 
+   function Convert (Text : String) return Byte_Array is
+      subtype Bytes_String is String (1 .. Text'Length);
+      subtype Bytes_String_Array is Byte_Array (1 .. Text'Length);
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Bytes_String, Target => Bytes_String_Array);
+   begin
+      return Convert (Text);
+   end Convert;
+
 end Orka.Resources;

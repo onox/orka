@@ -44,6 +44,15 @@ package Orka.Resources.Locations is
    --  If the file at the given path could not be created or written to
    --  for any reason then any kind of error is raised.
 
+   procedure Append_Data
+     (Object : Writable_Location;
+      Path   : String;
+      Data   : Byte_Array) is abstract;
+   --  Append data to a (non-)existing file at the given path in the location
+   --
+   --  If the file at the given path could not be created or written to
+   --  for any reason then any kind of error is raised.
+
    type Location_Access is access Location'Class;
 
    subtype Location_Ptr is not null Location_Access;

@@ -37,6 +37,8 @@ package Orka.Resources is
 
    function Convert (Bytes : Byte_Array) return String;
 
+   function Convert (Text : String) return Byte_Array;
+
    procedure Free is new Ada.Unchecked_Deallocation
      (Object => Byte_Array, Name => Byte_Array_Access);
 
