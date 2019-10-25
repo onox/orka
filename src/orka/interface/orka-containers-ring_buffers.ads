@@ -35,10 +35,10 @@ package Orka.Containers.Ring_Buffers is
    function Length (Container : Buffer) return Natural
      with Inline;
 
-   function Empty (Container : Buffer) return Boolean
+   function Is_Empty (Container : Buffer) return Boolean
      with Inline;
 
-   function Full (Container : Buffer) return Boolean
+   function Is_Full (Container : Buffer) return Boolean
      with Inline;
 
 private

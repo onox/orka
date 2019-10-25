@@ -19,10 +19,10 @@ package body Orka.Jobs.Queues is
    protected body Queue is
 
       function Can_Schedule_Job (Kind : Executor_Kind) return Boolean is
-        (not Buffers (Kind).Full);
+        (not Buffers (Kind).Is_Full);
 
       function Has_Jobs (Kind : Executor_Kind) return Boolean is
-        (not Buffers (Kind).Empty);
+        (not Buffers (Kind).Is_Empty);
 
       entry Enqueue
         (Element : Job_Ptr;

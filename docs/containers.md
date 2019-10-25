@@ -156,7 +156,7 @@ Elements : Buffers.Buffer (Capacity => Maximum_Elements);
 
 To retrieve the current number of elements in the buffer, use the
 function `Length`. To know whether the buffer is empty or at maximum
-capacity, use the functions `Empty` and `Full`.
+capacity, use the functions `Is_Empty` and `Is_Full`.
 
 ### Appending an element
 

@@ -160,13 +160,13 @@ package body Orka.Resources.Loader is
    end Queue;
 
    protected body Queue is
-      entry Enqueue (Element : Read_Request) when not Requests.Full is
+      entry Enqueue (Element : Read_Request) when not Requests.Is_Full is
       begin
          Requests.Add_Last (Element);
       end Enqueue;
 
       entry Dequeue (Element : out Read_Request; Stop : out Boolean)
-        when Should_Stop or else not Requests.Empty is
+        when Should_Stop or else not Requests.Is_Empty is
       begin
          Stop := Should_Stop;
          if Should_Stop then

@@ -63,7 +63,7 @@ package body Orka.Loggers.Location is
          ID      : Natural;
          Message : String) is
       begin
-         if not Messages.Full and not Has_Stopped then
+         if not Messages.Is_Full and not Has_Stopped then
             Messages.Add_Last
               ((Path    => Path,
                 Message => SU.To_Unbounded_String
@@ -75,9 +75,9 @@ package body Orka.Loggers.Location is
 
       entry Dequeue
         (Request : out Log_Request;
-         Stop    : out Boolean) when not Messages.Empty or else Should_Stop is
+         Stop    : out Boolean) when not Messages.Is_Empty or else Should_Stop is
       begin
-         Stop := Should_Stop and Messages.Empty;
+         Stop := Should_Stop and Messages.Is_Empty;
          if Stop then
             Has_Stopped := True;
             return;

@@ -19,10 +19,10 @@ package body Orka.Containers.Ring_Buffers is
    function Length (Container : Buffer) return Natural is
      (Container.Count);
 
-   function Empty (Container : Buffer) return Boolean is
+   function Is_Empty (Container : Buffer) return Boolean is
      (Length (Container) = 0);
 
-   function Full (Container : Buffer) return Boolean is
+   function Is_Full (Container : Buffer) return Boolean is
      (Length (Container) = Container.Capacity);
 
    procedure Add_Last (Container : in out Buffer; Element : Element_Type) is
