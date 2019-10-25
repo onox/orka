@@ -16,6 +16,7 @@
 
 with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
+with Ada.Real_Time;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
@@ -75,20 +76,31 @@ package body Orka.Terminals is
 
    -----------------------------------------------------------------------------
 
+   Time_Zero : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+
+   Days_Since_Zero : Natural := 0;
+
    function Time_Image return String is
-      use Ada.Calendar;
+      use Ada.Real_Time;
       use Ada.Calendar.Formatting;
 
       Hour       : Hour_Number;
       Minute     : Minute_Number;
       Second     : Second_Number;
       Sub_Second : Second_Duration;
+
+      Seconds_Since_Zero : Duration := To_Duration (Clock - Time_Zero);
    begin
-      Split (Seconds (Clock), Hour, Minute, Second, Sub_Second);
+      if Seconds_Since_Zero > Ada.Calendar.Day_Duration'Last then
+         Seconds_Since_Zero := Seconds_Since_Zero - Ada.Calendar.Day_Duration'Last;
+         Days_Since_Zero    := Days_Since_Zero + 1;
+      end if;
+      Split (Seconds_Since_Zero, Hour, Minute, Second, Sub_Second);
 
       declare
          --  Remove first character (space) from ' hhmmss' image and then pad it to six digits
-         Image1 : constant String := Natural'Image (Hour * 1e4 + Minute * 1e2 + Second);
+         Image1 : constant String := Natural'Image
+           ((Days_Since_Zero * 24 + Hour) * 1e4 + Minute * 1e2 + Second);
          Image2 : constant String := SF.Tail (Image1 (2 .. Image1'Last), 6, '0');
 
          --  Insert ':' characters to get 'hh:mm:ss'
