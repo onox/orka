@@ -1,75 +1,145 @@
 # Logging
 
+The packages `:::ada Orka.Logging` and `:::ada Orka.Loggers.*` are used
+to log messages to various destinations like the terminal or a file. This
+can help to debug your application.
+
+Each message has a source, a message type, and a severity:
+
+| Source           | Type                 | Severity     |
+|------------------|----------------------|--------------|
+| Worker           | Error                | Error        |
+| Game\_Loop       | Deprecated\_Behavior | Warning      |
+| Resource\_Loader | Undefined\_Behavior  | Info         |
+| OpenGL           | Portability          | Debug        |
+| Window\_System   | Performance          |              |
+| Shader\_Compiler | Other                |              |
+| Third\_Party     | Marker               |              |
+| Application      | Push\_Group          |              |
+| Other            | Pop\_Group           |              |
+
+## Loggers
+
+A logger is an object that logs messages to some destination. For example,
+the terminal or to a file. Loggers implement the synchronized interface
+`Logger`, which allows messages to be logged from any task.
+
+There are several implementations in the packages `:::ada Orka.Loggers.*`:
+
+- **Terminal**. Prints messages to the terminal.
+
+- **Location**. Logs messages to a file in a writable location.
+
+The logger can be set by calling procedure `Set_Logger` in the package
+`:::ada Orka.Logging`. The default logger is `:::ada Orka.Loggers.Terminal.Logger`.
+
+### Terminal
+
+The logger returned by the function `Logger` in the package
+`:::ada Orka.Loggers.Terminal` logs messages to the standard error stream
+of the terminal if the severity is `Error` or to the standard output of
+the terminal for any lower severity.
+
+
+### Location
+
+The package `:::ada Orka.Loggers.Location` is a generic package that can be
+used to create loggers that will write to a file in a writable location.
+This package has two generic parameters:
+
+- `Location`: of the type `Writable_Location_Ptr` (see [Locations][url-locations])
+
+- `Capacity_Queue`: a `Positive` integer.
+
+When the generic package is instantiated, a background task and a queue
+bounded by `Capacity_Queue` will be created. The instantiated package
+provides the procedure `Shutdown` to terminate this background task.
+This procedure must be called at the end of your application. If the
+task has been shutdown, or if the queue is full, new messages are not
+dropped, but instead logged via `:::ada Orka.Loggers.Terminal.Logger`.
+
+To create a logger that can log to a file in the writable location, execute
+the function `Create_Logger` with the path to a file.
+
+!!! example
+    To log to files in the directory `/var/log/orka`, the package can be
+    instantiated at the library level:
+
+    ```ada linenums="1"
+    Location_Logs : constant Locations.Writable_Location_Ptr
+      := Locations.Directories.Create_Location ("/var/log/orka");
+
+    package Loggers_Location is new Orka.Loggers.Location
+      (Location => Location_Logs, Capacity_Queue => 10);
+    ```
+
+    A logger that can log messages to a specific file in this location
+    can then be created by calling `Create_Logger`:
+
+    ```ada
+    File_Logger : constant Orka.Loggers.Logger_Ptr
+      := Loggers_Location.Create_Logger ("default.log");
+    ```
+
+    and then set as the default logger:
+
+    ```ada
+    Orka.Logging.Set_Logger (File_Logger);
+    ```
+
 ## Logging
 
-The package `:::ada Orka.Logging` provides subprograms to print messages
-to the screen. This can help with debugging your application.
-
-Each message has a source and a severity:
-
-
-| Source           | Severity |
-|------------------|----------|
-| Executor         | Error    |
-| Game\_Loop       | Warning  |
-| Resource\_Loader | Info     |
-| Other            | Debug    |
-
-Currently application should only use `Other`. To print a message
-to the screen, call procedure `Insert_Message`:
+The package `:::ada Orka.Logging` provides subprograms to log messages.
+These subprograms can be called from any task. To log a message, use the
+procedure `Log`:
 
 ```ada
-Orka.Logging.Insert_Message
-  (From       => Other,
-   Level      => Info,
-   Identifier => 0,
-   Message    => "FPS: " & FPS'Image);
+Orka.Logging.Log
+  (From    => Application,
+   Kind    => Other,
+   Level   => Info,
+   ID      => 0,
+   Message => "FPS: " & FPS'Image);
 ```
 
-Identifier should be unique per source and is an application-defined
-number. This procedure may be called from any task.
+The identifier should be unique per source and is an application-defined
+number.
+
+Alternatively, the generic package `Messages` can be instantiated:
+
+```ada
+use all type Orka.Logging.Source;
+use all type Orka.Logging.Severity;
+use Orka.Logging;
+
+package Messages is new Orka.Logging.Messages (Game_Loop);
+```
+
+and then call `Log` of the instantiated package:
+
+```ada
+Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
+```
+
+This will log the following text:
+
+`[00:00:13.370042 DEBUG] [GAME_LOOP:OTHER] 0: Simulation tick resolution: 0.001 us`
+
+The generic package has an optional second generic parameter `ID`, which
+is 0 by default.
 
 ### Formatting
 
 To trim a string, use the function `Trim`.
 
-To format a `:::ada Ada.Real_Time.Time_Span`, use the function `Image`.
-
-!!! example
-    The following code:
-
-    ```ada linenums="1"
-       use Ada.Real_Time;
-       use Orka.Logging;
-
-       Insert_Message
-         (From       => Game_Loop,
-          Level      => Debug,
-          Identifier => 0,
-          Message    => "Tick resolution: " & Trim (Image (Tick)));
-    ```
-
-    will print:
-
-    `[13:37:00.000042 DEBUG] [GAME_LOOP] 0: Tick resolution: 0.001 us`
+To format a variable of type `:::ada Ada.Real_Time.Time_Span`, use the
+function `Image`.
 
 ## OpenGL debugging
 
 The graphics driver has the ability to notify the application of various
 events that may occur. Each message has a source, message type, severity,
 implementation-defined ID, and a human-readable description:
-
-| Source           | Type                 | Severity     |
-|------------------|----------------------|--------------|
-| OpenGL           | Error                | Notification |
-| Window\_System   | Deprecated\_Behavior | High         |
-| Shader\_Compiler | Undefined\_Behavior  | Medium       |
-| Third\_Party     | Portability          | Low          |
-| Application      | Performance          |              |
-| Other            | Other                |              |
-|                  | Marker               |              |
-|                  | Push\_Group          |              |
-|                  | Pop\_Group           |              |
 
 To make sure the driver generates messages, use the `Debug` flag when
 creating the context:
@@ -79,53 +149,25 @@ Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class :=
   Orka.Windows.GLFW.Initialize (Major => 4, Minor => 3, Debug => True);
 ```
 
-To print all messages currently in the log to the screen, execute:
+To enable log messages from the video driver, call from the OpenGL task:
 
 ```ada
-Orka.Debug.Flush_Log;
+Orka.Debug.Set_Log_Messages (Enable => True);
 ```
 
-Function `:::ada Orka.Debug.Logged_Messages` returns the number of messages
-currently in the log.
-After the log has been flushed, a default callback can be enabled which
-automatically prints new messages to the screen:
-
-```ada
-Orka.Debug.Enable_Print_Callback;
-```
-
-This procedures enables messages with any severity, including `Low` severity.
-To enable your own callback procedure instead of the default, call:
-
-```ada
-GL.Debug.Set_Message_Callback (My_Callback'Access);
-```
+This will flush all messages currently in the log and then
+enables a callback which forwards all messages to the procedure `Log` in the
+package `:::ada Orka.Logging`. This procedure commands the video driver
+to generate messages with any severity, including `Debug`.
 
 The callback may be called by the graphics driver from multiple tasks,
 concurrently, and/or asynchronously after executing an OpenGL command
 if `:::ada GL.Toggles.State (Debug_Output_Synchronous) = Disabled`.
 
-!!! example
-    ```ada linenums="1"
-    declare
-       Messages : constant Natural := Orka.Debug.Logged_Messages;
-    begin
-       Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
-    end;
-    Orka.Debug.Flush_Log;
-
-    Orka.Debug.Enable_Print_Callback;
-    Put_Line ("Set callback for debug messages");
-    ```
-
 ### Enabling or disabling specific messages
 
 Messages of a specific source, type, level, or ID can be enabled or
 disabled by calling one of the `:::ada GL.Debug.Set` procedures.
-
-### Manually generating messages
-
-!!! note "TODO"
 
 ### Object labels
 
@@ -134,3 +176,5 @@ disabled by calling one of the `:::ada GL.Debug.Set` procedures.
 ### Groups
 
 !!! note "TODO"
+
+  [url-locations]: /resources/locations
