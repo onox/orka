@@ -68,7 +68,6 @@ begin
    end if;
 
    Orka.Debug.Set_Log_Messages (Enable => True);
-   Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
    --  Enable some features
    Context.Enable (Orka.Contexts.Reversed_Z);
@@ -201,7 +200,6 @@ begin
 
                   Uni_Texture.Set_Texture (T_2, 0);
                end;
-               Ada.Text_IO.Put_Line ("Set texture " & Texture_Path);
                Loaded := True;
             end if;
 
@@ -217,14 +215,14 @@ begin
             Job_Manager => Job_System);
       begin
          Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
-         Ada.Text_IO.Put_Line ("Running render loop...");
          Loops.Run_Loop;
       end;
-      Ada.Text_IO.Put_Line ("Shutting down...");
-      Job_System.Shutdown;
-      Loader.Shutdown;
-      Ada.Text_IO.Put_Line ("Shutdown job system and loader");
    end;
+
+   Job_System.Shutdown;
+   Loader.Shutdown;
+
+   Ada.Text_IO.Put_Line ("Shutdown job system and loader");
 exception
    when Error : others =>
       Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));

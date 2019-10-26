@@ -140,7 +140,6 @@ begin
       Context : Orka.Contexts.Context;
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
-      Ada.Text_IO.Put_Line ("Set callback for debug messages");
 
       --  Enable some features
       Context.Enable (Orka.Contexts.Reversed_Z);
@@ -227,7 +226,6 @@ begin
               := Locations.Directories.Create_Location (Location_Path);
          begin
             Loader.Add_Location (Location_Models, Loader_glTF);
-            Ada.Text_IO.Put_Line ("Registered location for glTF models");
 
             declare
                T1 : constant Time := Clock;
@@ -256,7 +254,6 @@ begin
                            (Orka.Jobs.Abstract_Job with Model => Model_1, Culler => Culler_1,
                            Group => Group'Unchecked_Access);
                   begin
-                     Ada.Text_IO.Put_Line ("Adding resource to scene...");
                      Job_System.Queue.Enqueue (Create_Instance_Job, Handle);
                   end;
                or
@@ -366,7 +363,6 @@ begin
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
             Loops.Handler.Enable_Limit (False);
-            Ada.Text_IO.Put_Line ("Running render loop...");
             Loops.Run_Loop;
          end;
       exception
@@ -375,9 +371,9 @@ begin
       end;
    end;
 
-   Ada.Text_IO.Put_Line ("Shutting down...");
    Job_System.Shutdown;
    Loader.Shutdown;
+
    Ada.Text_IO.Put_Line ("Shutdown job system and loader");
 exception
    when Error : others =>
