@@ -37,7 +37,7 @@ package body Orka.Loggers is
       return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
              " " &
              Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
+             (if ID > 0 then ID'Image & ": " else " ") & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 
    function Format_Message_No_Color
@@ -52,7 +52,7 @@ package body Orka.Loggers is
       return "[" & Time_Image & " " & Level'Image & "]" &
              " " &
              "[" & From'Image & ":" & Kind'Image & "]" &
-             ID'Image & ": " & Terminals.Strip_Line_Term (Message);
+             (if ID > 0 then ID'Image & ": " else " ") & Terminals.Strip_Line_Term (Message);
    end Format_Message_No_Color;
 
 end Orka.Loggers;
