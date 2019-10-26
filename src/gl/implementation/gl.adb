@@ -18,15 +18,9 @@ with GL.API;
 
 package body GL is
    
-   procedure Flush is
-   begin
-      API.Flush;
-   end Flush;
+   procedure Flush renames API.Flush;
 
-   procedure Finish is
-   begin
-      API.Finish;
-   end Finish;
+   procedure Finish renames API.Finish;
 
    procedure Raise_Exception_On_OpenGL_Error is separate;
    --  Implementation depends on whether Auto_Exceptions has been enabled
