@@ -47,25 +47,11 @@ package GL.Objects.Samplers is
    procedure Set_Minifying_Filter (Object : Sampler;
                                    Filter : Minifying_Function);
 
-   function Minifying_Filter (Object : Sampler) return Minifying_Function;
-   --  Return the minification function. By default this is
-   --  Nearest_Mipmap_Linear.
-
    procedure Set_Magnifying_Filter (Object : Sampler;
                                     Filter : Magnifying_Function);
 
-   function Magnifying_Filter (Object : Sampler) return Magnifying_Function;
-   --  Return the magnification function. By default this is Linear.
-
    procedure Set_Minimum_LoD (Object : Sampler; Level : Double);
-
-   function Minimum_LoD (Object : Sampler) return Double;
-   --  Return the minimum LOD. By default this is -1000.
-
    procedure Set_Maximum_LoD (Object : Sampler; Level : Double);
-
-   function Maximum_LoD (Object : Sampler) return Double;
-   --  Return the maximum LOD. By default this is 1000.
 
    procedure Set_LoD_Bias (Object : Sampler; Level : Double);
    --  Adjust the selection of a mipmap image. A positive level will
@@ -73,20 +59,14 @@ package GL.Objects.Samplers is
    --  result in visual aliasing, but if the bias is small enough it
    --  can make the texture look a bit sharper.
 
-   function LoD_Bias (Object : Sampler) return Double;
-   --  Return the LOD bias for the selection of a mipmap.
-   --  By default this is 0.0.
-
    procedure Set_Seamless_Filtering (Object : Sampler; Enable : Boolean);
    --  Enable seamless cubemap filtering
+   --
+   --  Texture must be a Texture_Cube_Map or Texture_Cube_Map_Array.
    --
    --  Note: this procedure requires the ARB_seamless_cubemap_per_texture
    --  extension. If this extension is not available, you can enable seamless
    --  filtering globally via GL.Toggles.
-
-   function Seamless_Filtering (Object : Sampler) return Boolean;
-   --  Return whether seamless filtering is enabled for cube map
-   --  textures. By default this is False.
 
    procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double)
      with Pre => Degree >= 1.0;
@@ -98,40 +78,61 @@ package GL.Objects.Samplers is
    --  a Linear_Mipmap_Linear minification filter and a Linear maxification
    --  filter.
 
+   -----------------------------------------------------------------------------
+
+   function Minifying_Filter (Object : Sampler) return Minifying_Function;
+   --  Return the minification function (default is Nearest_Mipmap_Linear)
+
+   function Magnifying_Filter (Object : Sampler) return Magnifying_Function;
+   --  Return the magnification function (default is Linear)
+
+   function Minimum_LoD (Object : Sampler) return Double;
+   --  Return the minimum LOD (default is -1000)
+
+   function Maximum_LoD (Object : Sampler) return Double;
+   --  Return the maximum LOD (default is 1000)
+
+   function LoD_Bias (Object : Sampler) return Double;
+   --  Return the LOD bias for the selection of a mipmap (default is 0.0)
+
+   function Seamless_Filtering (Object : Sampler) return Boolean;
+   --  Return whether seamless filtering is enabled for cube map
+   --  textures (default is False)
+
    function Max_Anisotropy (Object : Sampler) return Double
      with Post => Max_Anisotropy'Result >= 1.0;
 
+   -----------------------------------------------------------------------------
+
    procedure Set_X_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
-
-   function X_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the X direction. By default this
-   --  is Repeat.
-
    procedure Set_Y_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
-
-   function Y_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the Y direction. By default this
-   --  is Repeat.
-
    procedure Set_Z_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
 
+   function X_Wrapping (Object : Sampler) return Wrapping_Mode;
+   --  Return the wrapping mode for the X direction (default is Repeat)
+
+   function Y_Wrapping (Object : Sampler) return Wrapping_Mode;
+   --  Return the wrapping mode for the Y direction (default is Repeat)
+
    function Z_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the Z direction. By default this
-   --  is Repeat.
+   --  Return the wrapping mode for the Z direction (default is Repeat)
+
+   -----------------------------------------------------------------------------
 
    procedure Set_Border_Color (Object : Sampler; Color : Colors.Border_Color);
-   function Border_Color (Object : Sampler) return Colors.Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean);
-
-   function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean;
-   --  Return whether to enable comparing. By default this is false.
 
    procedure Set_Compare_Function (Object : Sampler;
                                    Func   : Compare_Function);
 
+   function Border_Color (Object : Sampler) return Colors.Border_Color;
+
+   function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean;
+   --  Return whether to enable comparing (default is False)
+
    function Current_Compare_Function (Object : Sampler) return Compare_Function;
-   --  Return the comparison function. By default this is LEqual.
+   --  Return the comparison function (default is LEqual)
 
 private
 

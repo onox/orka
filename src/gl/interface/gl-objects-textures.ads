@@ -23,7 +23,7 @@ with Ada.Unchecked_Deallocation;
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
 with GL.Pixels.Extensions;
-with GL.Types.Colors;
+with GL.Types;
 
 package GL.Objects.Textures is
    pragma Preelaborate;
@@ -137,68 +137,15 @@ package GL.Objects.Textures is
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 
-   procedure Set_Minifying_Filter     (Object : Texture; Filter : Minifying_Function)
-     with Pre => (if Object.Kind = Texture_Rectangle then Filter in Nearest | Linear);
-
-   procedure Set_Magnifying_Filter    (Object : Texture; Filter : Magnifying_Function);
-   procedure Set_Minimum_LoD          (Object : Texture; Level : Double);
-   procedure Set_Maximum_LoD          (Object : Texture; Level : Double);
-   procedure Set_LoD_Bias             (Object : Texture; Level : Double);
    procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
-   procedure Set_Seamless_Filtering   (Object : Texture; Enable : Boolean)
-     with Pre => Object.Kind in Texture_Cube_Map | Texture_Cube_Map_Array;
-   --  Enable seamless cubemap filtering
-   --
-   --  Note: this procedure requires the ARB_seamless_cubemap_per_texture
-   --  extension. If this extension is not available, you can enable seamless
-   --  filtering globally via GL.Toggles.
-
-   function Minifying_Filter     (Object : Texture) return Minifying_Function;
-   function Magnifying_Filter    (Object : Texture) return Magnifying_Function;
-   function Minimum_LoD          (Object : Texture) return Double;
-   function Maximum_LoD          (Object : Texture) return Double;
-   function LoD_Bias             (Object : Texture) return Double;
    function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
    function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
 
    function Mipmap_Levels (Object : Texture) return Mipmap_Level
      with Pre  => Object.Allocated,
           Post => Mipmap_Levels'Result >= 1;
-
-   function Seamless_Filtering   (Object : Texture) return Boolean
-     with Pre => Object.Kind in Texture_Cube_Map | Texture_Cube_Map_Array;
-
-   procedure Set_Max_Anisotropy (Object : Texture; Degree : Double)
-     with Pre => Degree >= 1.0;
-   --  Set the maximum amount of anisotropy filtering to reduce the blurring
-   --  of textures (caused by mipmap filtering) that are viewed at an
-   --  oblique angle.
-   --
-   --  For best results, combine the use of anisotropy filtering with
-   --  a Linear_Mipmap_Linear minification filter and a Linear maxification
-   --  filter.
-
-   function Max_Anisotropy (Object : Texture) return Double
-     with Post => Max_Anisotropy'Result >= 1.0;
-
-   procedure Set_X_Wrapping (Object : Texture; Mode : Wrapping_Mode);
-   procedure Set_Y_Wrapping (Object : Texture; Mode : Wrapping_Mode);
-   procedure Set_Z_Wrapping (Object : Texture; Mode : Wrapping_Mode);
-
-   function X_Wrapping (Object : Texture) return Wrapping_Mode;
-   function Y_Wrapping (Object : Texture) return Wrapping_Mode;
-   function Z_Wrapping (Object : Texture) return Wrapping_Mode;
-
-   procedure Set_Border_Color (Object : Texture; Color : Colors.Border_Color);
-   function Border_Color      (Object : Texture) return Colors.Border_Color;
-
-   procedure Set_Compare_X_To_Texture (Object : Texture; Enabled : Boolean);
-   procedure Set_Compare_Function     (Object : Texture; Func : Compare_Function);
-
-   function Compare_X_To_Texture_Enabled (Object : Texture) return Boolean;
-   function Current_Compare_Function     (Object : Texture) return Compare_Function;
 
    -----------------------------------------------------------------------------
 

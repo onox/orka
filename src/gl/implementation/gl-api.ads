@@ -318,43 +318,10 @@ private package GL.API is
    --                                Textures                                 --
    -----------------------------------------------------------------------------
 
-   procedure Texture_Parameter_Min_Filter is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
-   procedure Texture_Parameter_Mag_Filter is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
-   procedure Texture_Parameter_Wrap_Mode is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
-   procedure Texture_Parameter_Compare_Mode is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
-   procedure Texture_Parameter_Compare_Func is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Compare_Function);
-
-   procedure Texture_Parameter_Bool is new Loader.Procedure_With_3_Params
-     ("glTextureParameteri", UInt, Enums.Textures.Parameter, Low_Level.Bool);
    procedure Texture_Parameter_Int is new Loader.Procedure_With_3_Params
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Int);
-   procedure Texture_Parameter_Float is new Loader.Procedure_With_3_Params
-     ("glTextureParameterf", UInt, Enums.Textures.Parameter, Single);
-   procedure Texture_Parameter_Floats is new Loader.Procedure_With_3_Params
-     ("glTextureParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
-
-   procedure Get_Texture_Parameter_Min_Filter is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
-   procedure Get_Texture_Parameter_Mag_Filter is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
-   procedure Get_Texture_Parameter_Wrap_Mode is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
-   procedure Get_Texture_Parameter_Compare_Mode is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
-   procedure Get_Texture_Parameter_Compare_Func is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
-
-   procedure Get_Texture_Parameter_Bool is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Low_Level.Bool);
    procedure Get_Texture_Parameter_Int is new Loader.Getter_With_3_Params
      ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Int);
-   procedure Get_Texture_Parameter_Floats is new Loader.Getter_With_3_Params
-     ("glGetTextureParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
 
    procedure Get_Texture_Level_Parameter_Size is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,

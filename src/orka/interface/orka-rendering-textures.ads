@@ -14,12 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Objects.Samplers;
 with GL.Objects.Textures;
 
 package Orka.Rendering.Textures is
    pragma Preelaborate;
 
    use all type GL.Objects.Textures.Dimension_Count;
+
+   function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler;
+   --  Return a sampler for sampling a texture containing the Bayer ordered
+   --  dithering pattern
 
    function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture
      with Post => Bayer_Dithering_Pattern'Result.Dimensions = Two;
