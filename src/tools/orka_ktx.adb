@@ -19,6 +19,7 @@ with Ada.Exceptions;
 with Ada.Real_Time;
 with Ada.Text_IO;
 
+with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Types;
 
@@ -101,6 +102,11 @@ begin
 
       Uni_Screen : constant Uniforms.Uniform := P_1.Uniform ("screenSize");
 
+      use GL.Objects.Textures;
+      use GL.Objects.Samplers;
+
+      Sampler_1 : Sampler;
+
       --  Create an empty vertex format. Vertex shader contains the data needed
       --  to generate a quad
       VF_1 : constant Formats.Vertex_Format
@@ -165,8 +171,15 @@ begin
       --  Clear color to black and depth to 0.0 (because of reversed Z)
       FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 0.0), Depth => 0.0, others => <>));
 
+      Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
+      Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
+
+      Sampler_1.Set_Minifying_Filter (Nearest);
+      Sampler_1.Set_Magnifying_Filter (Nearest);
+
+      Sampler_1.Bind (0);
+
       declare
-         use GL.Objects.Textures;
          Loaded : Boolean := False;
 
          procedure Render
@@ -190,12 +203,6 @@ begin
                   T_2 : constant GL.Objects.Textures.Texture := T_1.Element;
                   --  TODO Handle non-Texture_2D textures
                begin
-                  T_2.Set_X_Wrapping (Clamp_To_Edge);
-                  T_2.Set_X_Wrapping (Clamp_To_Edge);
-
-                  T_2.Set_Minifying_Filter (Nearest);
-                  T_2.Set_Magnifying_Filter (Nearest);
-
                   T_2.Set_Lowest_Mipmap_Level (0);
 
                   Uni_Texture.Set_Texture (T_2, 0);

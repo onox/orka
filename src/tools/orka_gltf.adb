@@ -20,6 +20,7 @@ with Ada.Text_IO;
 with Ada.Exceptions;
 
 with GL.Low_Level.Enums;
+with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with GL.Toggles;
@@ -57,8 +58,6 @@ procedure Orka_GLTF is
    Light_Position : constant Orka.Types.Singles.Vector4 := (0.0, 0.0, 0.0, 1.0);
 
    ----------------------------------------------------------------------
-
-   use GL.Objects.Textures;
 
    procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
       Pixels : aliased constant GL.Types.Single_Array
@@ -104,13 +103,6 @@ procedure Orka_GLTF is
             0.5, 0.5, 0.5,   1.0, 0.0, 1.0,   0.5, 0.5, 0.5,   1.0, 0.0, 1.0,
             1.0, 0.0, 1.0,   0.5, 0.5, 0.5,   1.0, 0.0, 1.0,   0.5, 0.5, 0.5);
    begin
-      Texture.Set_X_Wrapping (Clamp_To_Edge);
-      Texture.Set_Y_Wrapping (Clamp_To_Edge);
-
-      Texture.Set_Minifying_Filter (Nearest);
-      Texture.Set_Magnifying_Filter (Nearest);
-
-      --  Load texture data
       Texture.Allocate_Storage (1, 1, GL.Pixels.RGBA8, 4, 4, 7);
       Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 7,
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
@@ -183,11 +175,17 @@ begin
          Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("diffuseTexture");
          Uni_Dither  : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("ditherTexture");
 
+         use GL.Objects.Textures;
+         use GL.Objects.Samplers;
+
          Texture_1 : Texture (LE.Texture_2D_Array);
          Texture_2 : constant Texture := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
 
          Texture_3 : Texture (LE.Texture_2D_Multisample);
          Texture_4 : Texture (LE.Texture_2D_Multisample);
+
+         Sampler_1 : Sampler;
+         Sampler_2 : constant Sampler := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
 
          ----------------------------------------------------------------------
 
@@ -272,6 +270,15 @@ begin
 
          Texture_3.Allocate_Storage (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
          Texture_4.Allocate_Storage (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
+
+         Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
+         Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
+
+         Sampler_1.Set_Minifying_Filter (Nearest);
+         Sampler_1.Set_Magnifying_Filter (Nearest);
+
+         Sampler_1.Bind (1);
+         Sampler_2.Bind (2);
 
          FB_1.Attach (Texture_3);
          FB_1.Attach (Texture_4);
