@@ -85,8 +85,7 @@ procedure Orka_Test.Test_14_Subroutines is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 begin
-   Orka.Debug.Flush_Log;
-   Orka.Debug.Enable_Print_Callback;
+   Orka.Debug.Set_Log_Messages (Enable => True);
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
 

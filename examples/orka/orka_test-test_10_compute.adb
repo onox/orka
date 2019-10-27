@@ -49,16 +49,7 @@ procedure Orka_Test.Test_10_Compute is
    Numbers : constant Int_Array
      := (10, 1, 8, -1, 0, -2, 3, 5, -2, -3, 2, 7, 0, 11, 0, 2);
 begin
-   --  Enable debug messages
-   declare
-      Messages : constant Size := GL.Debug.Logs.Logged_Messages;
-   begin
-      Put_Line ("Flushing" & Messages'Image & " messages in the debug log:");
-   end;
-   Orka.Debug.Flush_Log;
-
-   Orka.Debug.Enable_Print_Callback;
-   Put_Line ("Set callback for debug messages");
+   Orka.Debug.Set_Log_Messages (Enable => True);
 
    declare
       use Orka.Rendering.Buffers;

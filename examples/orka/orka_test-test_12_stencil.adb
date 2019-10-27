@@ -19,6 +19,7 @@ with Ada.Text_IO;
 with GL.Buffers;
 with GL.Drawing;
 with GL.Low_Level.Enums;
+with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with GL.Rasterization;
@@ -152,40 +153,25 @@ procedure Orka_Test.Test_12_Stencil is
    end Load_Screen_Data;
 
    procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
-      use GL.Objects.Textures;
-
       Pixels : aliased constant Single_Array
         := (0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,
             0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1);
    begin
-      Texture.Bind_Texture_Unit (0);
-
-      Texture.Set_X_Wrapping (Clamp_To_Edge);
-      Texture.Set_Y_Wrapping (Clamp_To_Edge);
-
-      Texture.Set_Minifying_Filter (Nearest);
-      Texture.Set_Magnifying_Filter (Nearest);
-
-      --  Load texture data
       Texture.Allocate_Storage (1, 1, GL.Pixels.RGB32F, 4, 4, 1);
       Texture.Load_From_Data (0, 0, 0, 0, 4, 4, 1,
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
    procedure Load_Color_Texture (Texture : in out GL.Objects.Textures.Texture) is
-      use GL.Objects.Textures;
    begin
-      Texture.Bind_Texture_Unit (0);
-
-      Texture.Set_Minifying_Filter (Nearest);
-      Texture.Set_Magnifying_Filter (Nearest);
-
       Texture.Allocate_Storage (1, 1, GL.Pixels.RGB8, 500, 500, 1);
    end Load_Color_Texture;
 
    Scene_Texture, Color_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
+
+   Sampler_1 : GL.Objects.Samplers.Sampler;
 
    use Orka.Resources;
 
@@ -213,7 +199,18 @@ procedure Orka_Test.Test_12_Stencil is
      := new Framebuffer'(Create_Framebuffer (Width, Height));
    FB_D : constant Framebuffer_Ptr
      := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
+
+   use all type GL.Objects.Textures.Minifying_Function;
+   use all type GL.Objects.Textures.Wrapping_Mode;
 begin
+   Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
+   Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
+
+   Sampler_1.Set_Minifying_Filter (Nearest);
+   Sampler_1.Set_Magnifying_Filter (Nearest);
+
+   Sampler_1.Bind (0);
+
    --  Load checkerboard texture
    Load_Texture (Scene_Texture);
    Load_Color_Texture (Color_Texture);

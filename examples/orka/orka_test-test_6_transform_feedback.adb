@@ -58,8 +58,7 @@ procedure Orka_Test.Test_6_Transform_Feedback is
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, CS => "test-6-module-1.comp"));
 begin
-   Orka.Debug.Flush_Log;
-   Orka.Debug.Enable_Print_Callback;
+   Orka.Debug.Set_Log_Messages (Enable => True);
 
    Program_1.Use_Program;
 
