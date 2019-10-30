@@ -4,7 +4,6 @@ LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
 CFLAGS  ?= -O2 -march=native
-LDFLAGS ?= -Wl,-z,relro -Wl,-z,now
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
@@ -23,16 +22,16 @@ alidir     = $(libdir)
 .PHONY: build examples tools tests coverage docs clean install
 
 build:
-	$(GPRBUILD) -P tools/orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS)
 
 build_test:
-	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native -largs $(LDFLAGS)
+	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native
 
 examples: build
-	$(GPRBUILD) -P tools/examples.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/examples.gpr -XMode=$(MODE) -cargs $(CFLAGS)
 
 tools: build
-	$(GPRBUILD) -P tools/tools.gpr -XMode=$(MODE) -cargs $(CFLAGS) -largs $(LDFLAGS)
+	$(GPRBUILD) -P tools/tools.gpr -XMode=$(MODE) -cargs $(CFLAGS)
 
 tests: build_test
 	./tests/unit/bin/run_unit_tests

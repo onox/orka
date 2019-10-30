@@ -9,9 +9,9 @@ In order to build and use Orka you need to have:
 
  * GPRBuild and `make`
 
- * [json-ada 3.0.2][url-json-ada] (for glTF)
+ * [json-ada 3.0.4][url-json-ada] (for glTF)
 
- * [dcf-ada 2.0.0][url-dcf-ada] (for loading resources in Zip archives)
+ * [dcf-ada 2.0.1][url-dcf-ada] (for loading resources in Zip archives)
 
  * Video driver with [EGL 1.5][url-egl] or WGL, and OpenGL 4.6 core profile
    (or 4.0 + extensions below)
