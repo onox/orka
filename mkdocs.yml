@@ -62,9 +62,10 @@ nav:
   - Containers: containers.md
   - Logging: logging.md
   - Rendering:
-      - Programs: rendering/programs.md
+      - Introduction: rendering/index.md
       - Buffers: rendering/buffers.md
       - Vertex formats: rendering/vertex-formats.md
+      - Programs: rendering/programs.md
       - Textures: rendering/textures.md
       - Framebuffers: rendering/framebuffers.md
       - Cameras: rendering/cameras.md

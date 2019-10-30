@@ -1,15 +1,15 @@
 # Buffers
 
+Buffers are objects that contain data that can be read or written by
+shaders on the GPU. Buffers must contain homogeneous data (all elements
+in the buffer have the same type) and can be numeric or composite. Composite
+data can be vectors, matrices, or draw commands for indirect drawing.
+
 !!! info
     The various objects described on this page are declared in
     the package `Orka.Rendering.Buffers` and its child packages.
 
 ## Creating a buffer
-
-Buffers are objects that contain data that can be read or written by
-shaders on the GPU. Buffers must contain homogeneous data (all elements
-in the buffer have the same type) and can be numeric or composite. Composite
-data can be vectors, matrices, or draw commands for indirect drawing.
 
 To create a buffer, call `Create_Buffer`:
 
@@ -21,10 +21,10 @@ Buffer_1 : Buffer := Create_Buffer
 ```
 
 `Length` specifies the number of elements in the buffer, not the number
-of bytes. The size of a buffer can also be queried with function `Length`.
+of bytes. The size of a buffer can be queried with the function `Length`.
 
-Alternatively, `Create_Buffer` can be called with the `Flags` and `Data`
-parameters to initialize the buffer with the given data:
+Alternatively, `Create_Buffer` can be called with the parameters `Flags`
+and `Data` to initialize the buffer with the given data:
 
 ```ada
 Indices  : UInt_Array := (1, 2, 0, 0, 2, 3);
@@ -36,7 +36,7 @@ Buffer_2 : Buffer := Create_Buffer ((others => False), Indices);
 
 If data needs to be uploaded to the buffer from the CPU *after*
 the buffer has been created, then `Dynamic_Storage` must be true and
-`Set_Data` with the `Data` parameter can be called to upload the data:
+`Set_Data` with the parameter `Data` can be called to upload the data:
 
 ```ada
 Buffer_1.Set_Data (Indices, Offset => 42);

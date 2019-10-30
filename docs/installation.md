@@ -204,3 +204,9 @@ $ make coverage
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
   [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities
+
+## Rendering your first triangle
+
+After having installed Orka, you might want to skip the next few chapters
+and jump to [Rendering](/rendering) to get an introduction to rendering
+and learn how you can render your first triangle on the screen.

@@ -19,7 +19,6 @@ with Ada.Text_IO;
 
 with GL.Barriers;
 with GL.Compute;
-with GL.Debug.Logs;
 with GL.Types.Compute;
 
 with Orka.Debug;
