@@ -20,6 +20,8 @@ with Ada.Text_IO;
 with GL.Context;
 with GL.Types;
 
+with Orka.Loggers.Terminal;
+with Orka.Logging;
 with Orka.Windows.GLFW;
 
 procedure Orka_Info is
@@ -27,14 +29,9 @@ procedure Orka_Info is
      := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
    pragma Unreferenced (Initialized);
 
-   W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
-     (1, 1, Visible => False);
-   pragma Unreferenced (W);
-
-   use Ada.Text_IO;
-
    procedure Display_Context_Information is
       use Ada.Strings.Unbounded;
+      use Ada.Text_IO;
    begin
       Put_Line ("Major version: " & GL.Types.Int'Image (GL.Context.Major_Version));
       Put_Line ("Minor version: " & GL.Types.Int'Image (GL.Context.Minor_Version));
@@ -73,5 +70,13 @@ procedure Orka_Info is
       end;
    end Display_Context_Information;
 begin
-   Display_Context_Information;
+   Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
+
+   declare
+      W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+        (1, 1, Visible => False);
+      pragma Unreferenced (W);
+   begin
+      Display_Context_Information;
+   end;
 end Orka_Info;

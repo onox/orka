@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Ada.Command_Line;
+with Ada.Directories;
 with Ada.Real_Time;
 with Ada.Text_IO;
 with Ada.Exceptions;
@@ -115,8 +116,8 @@ procedure Orka_GLTF is
 
    use Ada.Exceptions;
 begin
-   if Ada.Command_Line.Argument_Count /= 2 then
-      Ada.Text_IO.Put_Line ("Usage: <path to data folder> <relative path to .gltf file");
+   if Ada.Command_Line.Argument_Count /= 1 then
+      Ada.Text_IO.Put_Line ("Usage: <path to .gltf file");
       Job_System.Shutdown;
       Loader.Shutdown;
       return;
@@ -147,8 +148,10 @@ begin
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
       declare
-         Location_Path : constant String := Ada.Command_Line.Argument (1);
-         Model_Path    : constant String := Ada.Command_Line.Argument (2);
+         Full_Path     : constant String := Ada.Command_Line.Argument (1);
+
+         Location_Path : constant String := Ada.Directories.Containing_Directory (Full_Path);
+         Model_Path    : constant String := Ada.Directories.Simple_Name (Full_Path);
 
          use Orka.Resources;
 
