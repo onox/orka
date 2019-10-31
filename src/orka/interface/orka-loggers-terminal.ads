@@ -19,4 +19,8 @@ package Orka.Loggers.Terminal is
    function Logger return Logger_Ptr;
    --  Return a logger that logs messages to the terminal
 
+   function Create_Logger (Level : Severity := Debug) return Logger_Ptr;
+   --  Create and return a logger that only logs messages to the terminal
+   --  with the minimum specified severity
+
 end Orka.Loggers.Terminal;

@@ -121,7 +121,7 @@ package body Orka.Loggers.Location is
          Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
    end Logger_Task;
 
-   protected type Location_Logger is new Logger with
+   protected type Location_Logger (Min_Level : Severity) is new Logger with
       overriding
       procedure Log
         (From    : Source;
@@ -143,7 +143,9 @@ package body Orka.Loggers.Location is
          ID      : Natural;
          Message : String) is
       begin
-         Queue.Enqueue (File_Path, From, Kind, Level, ID, Message);
+         if Level <= Min_Level then
+            Queue.Enqueue (File_Path, From, Kind, Level, ID, Message);
+         end if;
       end Log;
 
       procedure Set_Path (Path : String) is
@@ -152,9 +154,9 @@ package body Orka.Loggers.Location is
       end Set_Path;
    end Location_Logger;
 
-   function Create_Logger (Path : String) return Logger_Ptr is
+   function Create_Logger (Path : String; Level : Severity := Debug) return Logger_Ptr is
    begin
-      return Result : constant Logger_Ptr := new Location_Logger do
+      return Result : constant Logger_Ptr := new Location_Logger (Min_Level => Level) do
          Location_Logger (Result.all).Set_Path (Path);
       end return;
    end Create_Logger;

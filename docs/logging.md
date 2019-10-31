@@ -40,6 +40,14 @@ The logger returned by the function `Logger` in the package
 of the terminal if the severity is `Error` or to the standard output of
 the terminal for any lower severity.
 
+The default logger returned by function `Logger` will log messages with
+any severity. To only log messages with a certain minimum severity, create
+a new logger:
+
+```ada
+Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger
+  (Level => Orka.Loggers.Info));
+```
 
 ### Location
 
@@ -59,7 +67,9 @@ task has been shutdown, or if the queue is full, new messages are not
 dropped, but instead logged via `:::ada Orka.Loggers.Terminal.Logger`.
 
 To create a logger that can log to a file in the writable location, execute
-the function `Create_Logger` with the path to a file.
+the function `Create_Logger` with the path to a file. An optional second
+parameter can be given to specify the minimum severity of messages
+(default is `Debug`).
 
 !!! example
     To log to files in the directory `/var/log/orka`, the package can be

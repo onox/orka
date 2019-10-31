@@ -30,7 +30,7 @@ generic
    Task_Name : String := "File Logger";
 package Orka.Loggers.Location is
 
-   function Create_Logger (Path : String) return Logger_Ptr
+   function Create_Logger (Path : String; Level : Severity := Debug) return Logger_Ptr
      with Pre => Path'Length > 0;
    --  Return a logger that logs messages to a writable location
 

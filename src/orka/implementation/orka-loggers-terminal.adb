@@ -18,7 +18,7 @@ with Ada.Text_IO;
 
 package body Orka.Loggers.Terminal is
 
-   protected type Logger_Object is new Orka.Loggers.Logger with
+   protected type Logger_Object (Min_Level : Severity) is new Orka.Loggers.Logger with
       overriding
       procedure Log
         (From    : Source;
@@ -38,13 +38,20 @@ package body Orka.Loggers.Terminal is
       is
          package IO renames Ada.Text_IO;
       begin
-         IO.Put_Line ((if Level = Error then IO.Standard_Error else IO.Standard_Output),
-           Format_Message (From, Kind, Level, ID, Message));
+         if Level <= Min_Level then
+            IO.Put_Line ((if Level = Error then IO.Standard_Error else IO.Standard_Output),
+              Format_Message (From, Kind, Level, ID, Message));
+         end if;
       end Log;
    end Logger_Object;
 
-   Default_Logger : aliased Logger_Object;
+   Default_Logger : aliased Logger_Object (Min_Level => Debug);
 
    function Logger return Logger_Ptr is (Default_Logger'Access);
+
+   function Create_Logger (Level : Severity := Debug) return Logger_Ptr is
+   begin
+      return new Logger_Object (Min_Level => Level);
+   end Create_Logger;
 
 end Orka.Loggers.Terminal;

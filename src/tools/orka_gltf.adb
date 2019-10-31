@@ -33,6 +33,8 @@ with Orka.Culling;
 with Orka.Debug;
 with Orka.Futures;
 with Orka.Jobs;
+with Orka.Loggers.Terminal;
+with Orka.Logging;
 with Orka.Loops;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
@@ -119,6 +121,8 @@ begin
       Loader.Shutdown;
       return;
    end if;
+
+   Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Debug));
 
    declare
       Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
