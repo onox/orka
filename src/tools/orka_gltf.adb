@@ -271,9 +271,11 @@ begin
                Ada.Text_IO.Put_Line ("Error loading resource: " & Exception_Information (Error));
          end Resource_Test;
       begin
-         --  Clear color to black and depth to 0.0 (because of reversed Z)
+         --  Clear color to black and depth to 0.0 (if using reversed Z)
          FB_1.Set_Default_Values
-           ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
+           ((Color => (0.0, 0.0, 0.0, 1.0),
+             Depth => (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0),
+             others => <>));
 
          Texture_3.Allocate_Storage (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
          Texture_4.Allocate_Storage (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);

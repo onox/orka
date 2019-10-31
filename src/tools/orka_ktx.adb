@@ -176,8 +176,11 @@ begin
       begin
          Uni_Screen.Set_Vector (Screen_Size);
 
-         --  Clear color to black and depth to 0.0 (because of reversed Z)
-         FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 0.0), Depth => 0.0, others => <>));
+         --  Clear color to black and depth to 0.0 (if using reversed Z)
+         FB_D.Set_Default_Values
+           ((Color => (0.0, 0.0, 0.0, 0.0),
+             Depth => (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0),
+             others => <>));
 
          Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
          Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);

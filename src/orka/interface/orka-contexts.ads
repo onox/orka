@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Finalization;
+
 package Orka.Contexts is
    pragma Preelaborate;
 
@@ -31,8 +33,11 @@ private
 
    type Feature_Array is array (Feature) of Boolean;
 
-   type Context is tagged limited record
+   type Context is limited new Ada.Finalization.Limited_Controlled with record
       Features : Feature_Array := (others => False);
    end record;
+
+   overriding
+   procedure Initialize (Object : in out Context);
 
 end Orka.Contexts;

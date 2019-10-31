@@ -50,8 +50,7 @@ package Orka.Cameras is
    function Create_Lens
      (Width, Height : Positive;
       FOV : GL.Types.Single;
-      Context : Contexts.Context) return Camera_Lens'Class
-   with Pre => Context.Enabled (Contexts.Reversed_Z);
+      Context : Contexts.Context) return Camera_Lens'Class;
 
    -----------------------------------------------------------------------------
 
@@ -116,6 +115,7 @@ private
 
    type Camera_Lens (Width, Height : Positive) is tagged record
       FOV : GL.Types.Single;
+      Reversed_Z : Boolean;
    end record;
 
    type Camera

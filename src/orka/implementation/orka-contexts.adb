@@ -22,6 +22,12 @@ with GL.Viewports;
 
 package body Orka.Contexts is
 
+   overriding
+   procedure Initialize (Object : in out Context) is
+   begin
+      GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+   end Initialize;
+
    procedure Enable (Object : in out Context; Subject : Feature) is
    begin
       case Subject is
@@ -29,9 +35,8 @@ package body Orka.Contexts is
             --  Enable reversed Z for better depth precision at great distances
             --  See https://developer.nvidia.com/content/depth-precision-visualized
             --  for a visualization
-            GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
             GL.Buffers.Set_Depth_Function (GL.Types.Greater);
-            --  When clearing the depth buffer, the value 0.0 must be used
+            --  When clearing the depth buffer, the value 0.0 instead of 1.0 must be used
          when Multisample =>
             --  Enable MSAA
             GL.Toggles.Enable (GL.Toggles.Multisample);

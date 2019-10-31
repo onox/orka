@@ -211,8 +211,11 @@ package body Orka.Transforms.SIMD_Matrices is
    begin
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
-      Result (Z) (Z) := (Z_Near + Z_Far) / (Z_Near - Z_Far);
-      Result (W) (Z) := (2.0 * Z_Near * Z_Far) / (Z_Near - Z_Far);
+
+      --  Depth normalized to [0, 1] instead of [-1 , 1]
+      Result (Z) (Z) := Z_Far / (Z_Near - Z_Far);
+      Result (W) (Z) := (Z_Near * Z_Far) / (Z_Near - Z_Far);
+
       Result (Z) (W) := Element_Type (-1.0);
       Result (W) (W) := Element_Type (0.0);
       return Result;
@@ -225,9 +228,9 @@ package body Orka.Transforms.SIMD_Matrices is
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
 
-      --  No reversed Z
+      --  Depth normalized to [0, 1] instead of [-1 , 1]
       Result (Z) (Z) := Element_Type (-1.0);
-      Result (W) (Z) := -2.0 * Z_Near;
+      Result (W) (Z) := -Z_Near;
 
       Result (Z) (W) := Element_Type (-1.0);
       Result (W) (W) := Element_Type (0.0);
@@ -244,9 +247,9 @@ package body Orka.Transforms.SIMD_Matrices is
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
 
-      --  Reversed Z
+      --  Depth normalized to [1, 0] instead of [-1 , 1]
       Result (Z) (Z) := Element_Type (0.0);
-      Result (W) (Z) := Z_Near;  --  Depth normalized to [0, 1] instead of [-1 , 1]
+      Result (W) (Z) := Z_Near;
 
       Result (Z) (W) := Element_Type (-1.0);
       Result (W) (W) := Element_Type (0.0);
@@ -257,11 +260,13 @@ package body Orka.Transforms.SIMD_Matrices is
    function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
    begin
-      Result (X) (X) := 1.0 / X_Mag;
-      Result (Y) (Y) := 1.0 / Y_Mag;
-      Result (Z) (Z) := 2.0 / (Z_Near - Z_Far);
-      Result (W) (Z) := (Z_Near + Z_Far) / (Z_Near - Z_Far);
-      Result (W) (W) := Element_Type (1.0);
+      Result (X) (X) := 2.0 / X_Mag;
+      Result (Y) (Y) := 2.0 / Y_Mag;
+
+      --  Depth normalized to [0, 1] instead of [-1, 1]
+      Result (Z) (Z) := -1.0 / (Z_Far - Z_Near);
+      Result (W) (Z) := -Z_Near / (Z_Far - Z_Near);
+
       return Result;
    end Orthographic;
 

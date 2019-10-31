@@ -28,7 +28,11 @@ package body Orka.Cameras is
       Width  : constant GL.Types.Single := GL.Types.Single (Object.Width);
       Height : constant GL.Types.Single := GL.Types.Single (Object.Height);
    begin
-      return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
+      if Object.Reversed_Z then
+         return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
+      else
+         return Transforms.Infinite_Perspective (Object.FOV, Width / Height, 0.1);
+      end if;
    end Projection_Matrix;
 
    -----------------------------------------------------------------------------
@@ -67,6 +71,7 @@ package body Orka.Cameras is
    begin
       return Result : Camera_Lens (Width, Height) do
          Result.FOV := FOV;
+         Result.Reversed_Z := Context.Enabled (Contexts.Reversed_Z);
       end return;
    end Create_Lens;
 
