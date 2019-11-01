@@ -15,8 +15,10 @@
 --  limitations under the License.
 
 with GL.Barriers;
+with GL.Types;
 
 with Orka.Transforms.Singles.Vectors;
+with Orka.Rendering.Drawing;
 
 package body Orka.Resources.Models is
 
@@ -83,7 +85,9 @@ package body Orka.Resources.Models is
       GL.Barriers.Memory_Barrier
         ((By_Region => False, Shader_Storage | Command => True, others => False));
 
-      Object.Model.Format.Draw_Indirect (Object.Compacted_Commands);
+      Object.Model.Format.Bind;
+      Rendering.Drawing.Draw_Indirect
+        (GL.Types.Triangles, Object.Model.Format.Index_Kind, Object.Compacted_Commands);
    end Render;
 
    procedure After_Render (Object : in out Model_Group) is

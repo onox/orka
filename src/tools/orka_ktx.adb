@@ -32,6 +32,7 @@ with Orka.Debug;
 with Orka.Futures;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
@@ -86,7 +87,7 @@ begin
          Texture_Path  : constant String := Ada.Directories.Simple_Name (Full_Path);
 
          package Textures renames Orka.Resources.Textures;
-         package Formats renames Orka.Rendering.Vertex_Formats;
+         package Formats  renames Orka.Rendering.Vertex_Formats;
 
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;
@@ -118,7 +119,7 @@ begin
          --  Create an empty vertex format. Vertex shader contains the data needed
          --  to generate a quad
          VF_1 : constant Formats.Vertex_Format
-           := Formats.Create_Vertex_Format (GL.Types.Triangles, UInt_Type);
+           := Formats.Create_Vertex_Format (UInt_Type);
 
          ----------------------------------------------------------------------
 
@@ -190,6 +191,8 @@ begin
 
          Sampler_1.Bind (0);
 
+         VF_1.Bind;
+
          declare
             Loaded : Boolean := False;
 
@@ -221,7 +224,7 @@ begin
                   Loaded := True;
                end if;
 
-               VF_1.Draw (0, 3);
+               Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
             end Render;
 
             package Loops is new Orka.Loops

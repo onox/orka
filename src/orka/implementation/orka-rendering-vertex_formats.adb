@@ -14,13 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Drawing;
-with GL.Objects.Buffers;
-
 package body Orka.Rendering.Vertex_Formats is
 
    use GL.Types;
-   use all type Orka.Types.Element_Type;
 
    function Create
      (Vertex_Array  : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
@@ -58,11 +54,9 @@ package body Orka.Rendering.Vertex_Formats is
    -----------------------------------------------------------------------------
 
    function Create_Vertex_Format
-     (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Index_Type) return Vertex_Format is
+     (Index_Kind : Types.Index_Type) return Vertex_Format is
    begin
       return Result : Vertex_Format do
-         Result.Mode       := Mode;
          Result.Index_Kind := Index_Kind;
       end return;
    end Create_Vertex_Format;
@@ -117,40 +111,9 @@ package body Orka.Rendering.Vertex_Formats is
       Object.Vertex_Array.Bind_Element_Buffer (Buffer.GL_Buffer);
    end Set_Index_Buffer;
 
-   -----------------------------------------------------------------------------
-
-   procedure Draw (Object : Vertex_Format; Offset, Count : Natural) is
+   procedure Bind (Object : Vertex_Format) is
    begin
       Object.Vertex_Array.Bind;
-      GL.Drawing.Draw_Arrays (Object.Mode, Offset => Size (Offset), Count => Size (Count));
-   end Draw;
-
-   procedure Draw_Indirect
-     (Object : Vertex_Format; Buffer : Buffers.Buffer; Offset, Count : Natural) is
-   begin
-      Object.Vertex_Array.Bind;
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
-      GL.Drawing.Draw_Multiple_Elements_Indirect
-        (Object.Mode, Convert (Object.Index_Kind),
-         Count => Size (Count), Offset => Size (Offset));
-   end Draw_Indirect;
-
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer) is
-   begin
-      Object.Draw_Indirect (Buffer, Offset => 0, Count => Buffer.Length);
-   end Draw_Indirect;
-
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer, Count : Buffers.Buffer) is
-   begin
-      Object.Vertex_Array.Bind;
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
-      GL.Objects.Buffers.Parameter_Buffer.Bind (Count.GL_Buffer);
-      GL.Drawing.Draw_Multiple_Elements_Indirect_Count
-        (Object.Mode, Convert (Object.Index_Kind), GL.Types.Size (Buffer.Length));
-   end Draw_Indirect;
-
-   function GL_Vertex_Array (Object : Vertex_Format)
-     return GL.Objects.Vertex_Arrays.Vertex_Array_Object
-   is (Object.Vertex_Array);
+   end Bind;
 
 end Orka.Rendering.Vertex_Formats;

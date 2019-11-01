@@ -14,9 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Vectors;
+private with Ada.Containers.Vectors;
 
-with GL.Objects.Vertex_Arrays;
+private with GL.Objects.Vertex_Arrays;
+
 with GL.Types;
 
 with Orka.Rendering.Buffers;
@@ -24,6 +25,8 @@ with Orka.Types;
 
 package Orka.Rendering.Vertex_Formats is
    pragma Preelaborate;
+
+   use all type Orka.Types.Element_Type;
 
    type Attribute_Buffer is tagged private;
 
@@ -43,8 +46,7 @@ package Orka.Rendering.Vertex_Formats is
    type Vertex_Format_Ptr is not null access Vertex_Format;
 
    function Create_Vertex_Format
-     (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Index_Type) return Vertex_Format;
+     (Index_Kind : Types.Index_Type) return Vertex_Format;
 
    function Index_Kind (Object : Vertex_Format) return Types.Index_Type;
 
@@ -64,27 +66,10 @@ package Orka.Rendering.Vertex_Formats is
 
    procedure Set_Index_Buffer
      (Object : in out Vertex_Format;
-      Buffer : Buffers.Buffer);
+      Buffer : Buffers.Buffer)
+   with Pre => Object.Index_Kind = Buffer.Kind;
 
-   -----------------------------------------------------------------------------
-
-   procedure Draw (Object : Vertex_Format; Offset, Count : Natural);
-
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer : Buffers.Buffer);
-   --  Draw all elements commands in the bound indirect buffer
-
-   procedure Draw_Indirect (Object : Vertex_Format; Buffer, Count : Buffers.Buffer);
-   --  Draw multiple elements commands in the bound indirect buffer. The
-   --  number of commands is determined by the value in the Count buffer
-
-   procedure Draw_Indirect
-     (Object : Vertex_Format; Buffer : Buffers.Buffer; Offset, Count : Natural);
-   --  Draw multiple elements commands at the given offset in the bound
-   --  indirect buffer
-
-   function GL_Vertex_Array (Object : Vertex_Format)
-     return GL.Objects.Vertex_Arrays.Vertex_Array_Object
-   with Inline;
+   procedure Bind (Object : Vertex_Format);
 
 private
 
@@ -98,7 +83,6 @@ private
    package Attribute_Buffers is new Ada.Containers.Vectors (Positive, Attribute_Buffer);
 
    type Vertex_Format is tagged record
-      Mode         : GL.Types.Connection_Mode;
       Index_Kind   : Types.Index_Type;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Attributes   : Attribute_Buffers.Vector;

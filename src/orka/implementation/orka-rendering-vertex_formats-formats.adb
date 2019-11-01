@@ -19,7 +19,6 @@ with GL.Types;
 package body Orka.Rendering.Vertex_Formats.Formats is
 
    use all type GL.Types.Connection_Mode;
-   use all type Orka.Types.Element_Type;
 
    function Interleaved_Position_Normal_UV return Vertex_Format is
       procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is
@@ -29,9 +28,7 @@ package body Orka.Rendering.Vertex_Formats.Formats is
          Buffer.Add_Attribute (2, 2);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format
-        (Triangles, UInt_Type)
-      do
+      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Interleaved_Position_Normal_UV;
@@ -52,9 +49,7 @@ package body Orka.Rendering.Vertex_Formats.Formats is
          Buffer.Add_Attribute (2, 2);
       end Add_UV_Attribute;
    begin
-      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format
-        (Triangles, UInt_Type)
-      do
+      return Result : Vertex_Format := Vertex_Formats.Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Half_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (Half_Type, Add_Normal_Attribute'Access);
          Result.Add_Attribute_Buffer (Half_Type, Add_UV_Attribute'Access);
