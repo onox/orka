@@ -203,9 +203,9 @@ objects and then draw the triangle in a loop.
 First we need to initialize the OpenGL context and create a window:
 
 ```ada
-Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+Context : constant Orka.Contexts.Context'Class :=
   := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-pragma Unreferenced (Initialized);
+pragma Unreferenced (Context);
 
 Window : aliased Orka.Windows.Window'Class
   := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500);
@@ -368,9 +368,9 @@ and then draw the triangle. Press ++esc++ to close the application.
     with Orka.Windows.GLFW;
 
     procedure Triangle is
-       Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+       Context : constant Orka.Contexts.Context'Class :=
          := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-       pragma Unreferenced (Initialized);
+       pragma Unreferenced (Context);
 
        Window : aliased Orka.Windows.Window'Class
          := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500);

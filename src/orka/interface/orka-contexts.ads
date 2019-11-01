@@ -21,7 +21,9 @@ package Orka.Contexts is
 
    type Feature is (Reversed_Z, Multisample, Sample_Shading);
 
-   type Context is tagged limited private;
+   type Context (Debug : Boolean) is tagged limited private;
+
+   procedure Shutdown (Object : in out Context) is null;
 
    procedure Enable (Object : in out Context; Subject : Feature);
    --  Note: If enabling Reversed_Z, the depth must be cleared with the
@@ -33,11 +35,15 @@ private
 
    type Feature_Array is array (Feature) of Boolean;
 
-   type Context is limited new Ada.Finalization.Limited_Controlled with record
-      Features : Feature_Array := (others => False);
+   type Context (Debug : Boolean) is limited new Ada.Finalization.Limited_Controlled with record
+      Finalized : Boolean := False;
+      Features  : Feature_Array := (others => False);
    end record;
 
    overriding
    procedure Initialize (Object : in out Context);
+
+   overriding
+   procedure Finalize (Object : in out Context);
 
 end Orka.Contexts;

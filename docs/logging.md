@@ -155,7 +155,7 @@ To make sure the driver generates messages, use the `Debug` flag when
 creating the context:
 
 ```ada
-Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class :=
+Context : constant Orka.Contexts.Context'Class :=
   Orka.Windows.GLFW.Initialize (Major => 4, Minor => 3, Debug => True);
 ```
 

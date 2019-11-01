@@ -67,7 +67,7 @@ package body Orka.Cameras is
    function Create_Lens
      (Width, Height : Positive;
       FOV : GL.Types.Single;
-      Context : Contexts.Context) return Camera_Lens'Class is
+      Context : Contexts.Context'Class) return Camera_Lens'Class is
    begin
       return Result : Camera_Lens (Width, Height) do
          Result.FOV := FOV;

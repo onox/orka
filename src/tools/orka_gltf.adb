@@ -126,15 +126,12 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Debug));
 
    declare
-      Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+      Context : constant Orka.Contexts.Context'Class
         := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
-      pragma Unreferenced (Initialized);
 
       W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
         (Width, Height, Resizable => True);
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unchecked_Access);
-
-      Context : Orka.Contexts.Context;
    begin
       Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
 

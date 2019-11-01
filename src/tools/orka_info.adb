@@ -20,14 +20,15 @@ with Ada.Text_IO;
 with GL.Context;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 with Orka.Windows.GLFW;
 
 procedure Orka_Info is
-   Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+   Context : constant Orka.Contexts.Context'Class
      := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-   pragma Unreferenced (Initialized);
+   pragma Unreferenced (Context);
 
    procedure Display_Context_Information is
       use Ada.Strings.Unbounded;

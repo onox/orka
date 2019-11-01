@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Finalization;
+with Orka.Contexts;
 
 private with GL.Types;
 
@@ -24,11 +24,9 @@ private with Glfw.Input.Mouse;
 
 package Orka.Windows.GLFW is
 
-   type Active_GLFW is limited new Ada.Finalization.Limited_Controlled with private;
-
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Active_GLFW'Class
+      Debug : Boolean := False) return Orka.Contexts.Context'Class
    with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
    function Create_Window
@@ -68,13 +66,10 @@ package Orka.Windows.GLFW is
 
 private
 
-   type Active_GLFW is limited new Ada.Finalization.Limited_Controlled with record
-      Debug     : Boolean := False;
-      Finalized : Boolean;
-   end record;
+   type Active_GLFW is limited new Orka.Contexts.Context with null record;
 
    overriding
-   procedure Finalize (Object : in out Active_GLFW);
+   procedure Shutdown (Object : in out Active_GLFW);
 
    type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
       Input     : Inputs.Pointers.Pointer_Input_Ptr;

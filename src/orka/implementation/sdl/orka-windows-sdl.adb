@@ -22,15 +22,18 @@ with SDL.Video.Windows.Makers;
 
 with Orka.Inputs.SDL;
 with Orka.Logging;
+with Orka.Loggers;
 
 package body Orka.Windows.SDL is
 
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
    use Orka.Logging;
    package Messages is new Orka.Logging.Messages (Window_System);
 
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Active_SDL'Class
+      Debug : Boolean := False) return Orka.Contexts.Context'Class
    is
       package GL renames Standard.SDL.Video.GL;
       use type GL.Flags;
@@ -49,8 +52,8 @@ package body Orka.Windows.SDL is
 
       Standard.SDL.Video.Disable_Screen_Saver;
 
-      Messages.Insert (Logging.Debug, "SDL driver: " & Standard.SDL.Video.Current_Driver_Name);
-      Messages.Insert (Logging.Debug, "SDL OpenGL context: " &
+      Messages.Log (Loggers.Debug, "SDL driver: " & Standard.SDL.Video.Current_Driver_Name);
+      Messages.Log (Loggers.Debug, "SDL OpenGL context: " &
         Trim (Major'Image) & "." & Trim (Minor'Image));
 
       --  Initialize OpenGL context
@@ -59,27 +62,23 @@ package body Orka.Windows.SDL is
       GL.Set_Context_Profile (GL.Core);
       GL.Set_Context_Flags (Flags);
 
-      return Active_SDL'(Ada.Finalization.Limited_Controlled
-        with Debug => Debug, Finalized => False);
+      return Active_SDL'(Orka.Contexts.Context with Debug => Debug);
    end Initialize;
 
    overriding
-   procedure Finalize (Object : in out Active_SDL) is
+   procedure Shutdown (Object : in out Active_SDL) is
    begin
-      if not Object.Finalized then
-         if Object.Debug then
-            Messages.Insert (Debug, "Shutting down SDL");
-         end if;
-         Standard.SDL.Finalise;
-         Object.Finalized := True;
+      if Object.Debug then
+         Messages.Log (Debug, "Shutting down SDL");
       end if;
-   end Finalize;
+      Standard.SDL.Finalise;
+   end Shutdown;
 
    overriding
    procedure Finalize (Object : in out SDL_Window) is
    begin
       if not Object.Finalized then
-         Messages.Insert (Debug, "Closing SDL window");
+         Messages.Log (Debug, "Closing SDL window");
          Object.Window.Finalize;
          Object.Finalized := True;
       end if;
@@ -130,11 +129,11 @@ package body Orka.Windows.SDL is
                Result.Width  := Positive (Extents.Width);
                Result.Height := Positive (Extents.Height);
 
-               Messages.Insert (Debug, "Created SDL window and GL context");
-               Messages.Insert (Debug, "  size:      " &
+               Messages.Log (Debug, "Created SDL window and GL context");
+               Messages.Log (Debug, "  size:      " &
                  Trim (Result.Width'Image) & " x " & Trim (Result.Height'Image));
-               Messages.Insert (Debug, "  visible:   " & (if Visible then "yes" else "no"));
-               Messages.Insert (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
+               Messages.Log (Debug, "  visible:   " & (if Visible then "yes" else "no"));
+               Messages.Log (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
             end;
          end;
       end return;
@@ -249,7 +248,7 @@ package body Orka.Windows.SDL is
       if not Standard.SDL.Video.GL.Set_Swap_Interval
         ((if Enable then Synchronised else Not_Synchronised), Late_Swap_Tear => True)
       then
-         Messages.Insert (Debug,
+         Messages.Log (Debug,
            (if Enable then "Enabling" else "Disabling") & " vertical sync failed");
       end if;
    end Enable_Vertical_Sync;

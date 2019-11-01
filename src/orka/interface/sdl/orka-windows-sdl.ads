@@ -14,20 +14,20 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Finalization;
+private with Ada.Finalization;
 
 private with GL.Types;
 
 private with SDL.Video.GL;
 private with SDL.Video.Windows;
 
-package Orka.Windows.SDL is
+with Orka.Contexts;
 
-   type Active_SDL is limited new Ada.Finalization.Limited_Controlled with private;
+package Orka.Windows.SDL is
 
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Active_SDL'Class
+      Debug : Boolean := False) return Orka.Contexts.Context'Class
    with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
    function Create_Window
@@ -67,13 +67,10 @@ package Orka.Windows.SDL is
 
 private
 
-   type Active_SDL is limited new Ada.Finalization.Limited_Controlled with record
-      Debug     : Boolean := False;
-      Finalized : Boolean;
-   end record;
+   type Active_SDL is limited new Orka.Contexts.Context with null record;
 
    overriding
-   procedure Finalize (Object : in out Active_SDL);
+   procedure Shutdown (Object : in out Active_SDL);
 
    type SDL_Window is limited new Ada.Finalization.Limited_Controlled and Window with record
       Input     : Inputs.Pointers.Pointer_Input_Ptr;

@@ -36,7 +36,7 @@ package body Orka.Windows.GLFW is
 
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Active_GLFW'Class is
+      Debug : Boolean := False) return Orka.Contexts.Context'Class is
    begin
       --  Initialize GLFW
       Standard.Glfw.Errors.Set_Callback (Print_Error'Access);
@@ -49,21 +49,17 @@ package body Orka.Windows.GLFW is
       Standard.Glfw.Windows.Hints.Set_Profile (Standard.Glfw.Windows.Context.Core_Profile);
       Standard.Glfw.Windows.Hints.Set_Debug_Context (Debug);
 
-      return Active_GLFW'(Ada.Finalization.Limited_Controlled
-        with Debug => Debug, Finalized => False);
+      return Active_GLFW'(Orka.Contexts.Context with Debug => Debug);
    end Initialize;
 
    overriding
-   procedure Finalize (Object : in out Active_GLFW) is
+   procedure Shutdown (Object : in out Active_GLFW) is
    begin
-      if not Object.Finalized then
-         if Object.Debug then
-            Messages.Log (Debug, "Shutting down GLFW");
-         end if;
-         Standard.Glfw.Shutdown;
-         Object.Finalized := True;
+      if Object.Debug then
+         Messages.Log (Debug, "Shutting down GLFW");
       end if;
-   end Finalize;
+      Standard.Glfw.Shutdown;
+   end Shutdown;
 
    overriding
    procedure Finalize (Object : in out GLFW_Window) is

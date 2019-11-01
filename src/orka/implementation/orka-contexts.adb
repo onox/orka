@@ -28,6 +28,15 @@ package body Orka.Contexts is
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
    end Initialize;
 
+   overriding
+   procedure Finalize (Object : in out Context) is
+   begin
+      if not Object.Finalized then
+         Context'Class (Object).Shutdown;
+         Object.Finalized := True;
+      end if;
+   end Finalize;
+
    procedure Enable (Object : in out Context; Subject : Feature) is
    begin
       case Subject is
