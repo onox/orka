@@ -159,6 +159,8 @@ Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class :=
   Orka.Windows.GLFW.Initialize (Major => 4, Minor => 3, Debug => True);
 ```
 
+If `Debug` is `False` then the video driver may choose to not enable
+full debug output.
 To enable log messages from the video driver, call from the OpenGL task:
 
 ```ada
@@ -173,6 +175,16 @@ to generate messages with any severity, including `Debug`.
 The callback may be called by the graphics driver from multiple tasks,
 concurrently, and/or asynchronously after executing an OpenGL command
 if `:::ada GL.Toggles.State (Debug_Output_Synchronous) = Disabled`.
+
+If you would like to raise an exception if an OpenGL command fails, set
+the parameter `Raise_API_Error` to `True`:
+
+```ada
+Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
+```
+
+This will make debug output synchronously, so that it is only called
+from the task holding the OpenGL context.
 
 ### Enabling or disabling specific messages
 

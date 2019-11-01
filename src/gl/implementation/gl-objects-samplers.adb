@@ -24,7 +24,6 @@ package body GL.Objects.Samplers is
    procedure Bind (Object : Sampler; Unit : Textures.Texture_Unit) is
    begin
       API.Bind_Sampler (UInt (Unit), Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Bind;
 
    procedure Bind (Objects : Sampler_Array; First_Unit : Textures.Texture_Unit) is
@@ -34,7 +33,6 @@ package body GL.Objects.Samplers is
          Sampler_Ids (Index) := Objects (Index).Reference.GL_Id;
       end loop;
       API.Bind_Samplers (UInt (First_Unit), Sampler_Ids'Length, Sampler_Ids);
-      Raise_Exception_On_OpenGL_Error;
    end Bind;
 
    overriding
@@ -42,7 +40,6 @@ package body GL.Objects.Samplers is
       New_Id : UInt := 0;
    begin
       API.Create_Samplers (1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
@@ -51,7 +48,6 @@ package body GL.Objects.Samplers is
    procedure Delete_Id (Object : in out Sampler) is
    begin
       API.Delete_Samplers (1, (1 => Object.Reference.GL_Id));
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
@@ -65,7 +61,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Minifying_Function (Object.Reference.GL_Id,
                                                 Enums.Textures.Min_Filter, Filter);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Minifying_Filter;
 
    function Minifying_Filter (Object : Sampler) return Minifying_Function is
@@ -73,7 +68,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Minifying_Function (Object.Reference.GL_Id,
                                                     Enums.Textures.Min_Filter, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Minifying_Filter;
 
@@ -82,7 +76,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Magnifying_Function (Object.Reference.GL_Id,
                                                  Enums.Textures.Mag_Filter, Filter);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Magnifying_Filter;
 
    function Magnifying_Filter (Object : Sampler) return Magnifying_Function is
@@ -90,7 +83,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Magnifying_Function (Object.Reference.GL_Id,
                                                      Enums.Textures.Mag_Filter, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Magnifying_Filter;
 
@@ -98,7 +90,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Min_LoD, Single (Level));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Minimum_LoD;
 
    function Minimum_LoD (Object : Sampler) return Double is
@@ -106,7 +97,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.Min_LoD, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Double (Ret (1));
    end Minimum_LoD;
 
@@ -114,7 +104,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_LoD, Single (Level));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Maximum_LoD;
 
    function Maximum_LoD (Object : Sampler) return Double is
@@ -122,7 +111,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.Max_LoD, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Double (Ret (1));
    end Maximum_LoD;
 
@@ -130,7 +118,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.LoD_Bias, Single (Level));
-      Raise_Exception_On_OpenGL_Error;
    end Set_LoD_Bias;
 
    function LoD_Bias (Object : Sampler) return Double is
@@ -138,7 +125,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.LoD_Bias, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Double (Ret (1));
    end LoD_Bias;
 
@@ -147,7 +133,6 @@ package body GL.Objects.Samplers is
       API.Sampler_Parameter_Bool
         (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless,
          Low_Level.Bool (Enable));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Seamless_Filtering;
 
    function Seamless_Filtering (Object : Sampler) return Boolean is
@@ -155,7 +140,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Bool
         (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Result);
    end Seamless_Filtering;
 
@@ -164,7 +148,6 @@ package body GL.Objects.Samplers is
       API.Sampler_Parameter_Float (Object.Reference.GL_Id,
                                    Enums.Textures.Max_Anisotropy,
                                    Single (Degree));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Max_Anisotropy;
 
    function Max_Anisotropy (Object : Sampler) return Double is
@@ -172,7 +155,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.Max_Anisotropy, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Double (Ret (1));
    end Max_Anisotropy;
 
@@ -180,7 +162,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                            Enums.Textures.Wrap_S, Mode);
-      Raise_Exception_On_OpenGL_Error;
    end Set_X_Wrapping;
 
    function X_Wrapping (Object : Sampler) return Wrapping_Mode is
@@ -188,7 +169,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                                Enums.Textures.Wrap_S, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end X_Wrapping;
 
@@ -196,7 +176,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                            Enums.Textures.Wrap_T, Mode);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Y_Wrapping;
 
    function Y_Wrapping (Object : Sampler) return Wrapping_Mode is
@@ -204,7 +183,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                                Enums.Textures.Wrap_T, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Y_Wrapping;
 
@@ -212,7 +190,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                            Enums.Textures.Wrap_R, Mode);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Z_Wrapping;
 
    function Z_Wrapping (Object : Sampler) return Wrapping_Mode is
@@ -220,7 +197,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Wrapping_Mode (Object.Reference.GL_Id,
                                                Enums.Textures.Wrap_R, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Z_Wrapping;
 
@@ -230,7 +206,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                     Enums.Textures.Border_Color, Raw);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Border_Color;
 
    function Border_Color (Object : Sampler) return Colors.Border_Color is
@@ -238,7 +213,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Floats (Object.Reference.GL_Id,
                                         Enums.Textures.Border_Color, Raw);
-      Raise_Exception_On_OpenGL_Error;
       return Colors.OpenGL_To_Vulkan (Helpers.Color (Raw));
    end Border_Color;
 
@@ -252,7 +226,6 @@ package body GL.Objects.Samplers is
       end if;
       API.Sampler_Parameter_Compare_Kind (Object.Reference.GL_Id,
                                           Enums.Textures.Compare_Mode, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Compare_X_To_Texture;
 
    function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean is
@@ -262,7 +235,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Compare_Kind (Object.Reference.GL_Id,
                                               Enums.Textures.Compare_Mode, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value = Enums.Textures.Compare_R_To_Texture;
    end Compare_X_To_Texture_Enabled;
 
@@ -270,7 +242,6 @@ package body GL.Objects.Samplers is
    begin
       API.Sampler_Parameter_Compare_Function (Object.Reference.GL_Id,
                                               Enums.Textures.Compare_Func, Func);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Compare_Function;
 
    function Current_Compare_Function (Object : Sampler) return Compare_Function is
@@ -278,7 +249,6 @@ package body GL.Objects.Samplers is
    begin
       API.Get_Sampler_Parameter_Compare_Function (Object.Reference.GL_Id,
                                                   Enums.Textures.Compare_Func, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Current_Compare_Function;
 

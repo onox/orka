@@ -30,7 +30,6 @@ package body GL.Objects.Shaders is
    begin
       API.Shader_Source (Subject.Reference.GL_Id, 1, C_Source, Lengths);
       C.Strings.Free (C_Shader_Source);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Source;
 
    function Source (Subject : Shader) return String is
@@ -38,7 +37,6 @@ package body GL.Objects.Shaders is
    begin
       API.Get_Shader_Param (Subject.Reference.GL_Id,
                             Enums.Shader_Source_Length, Source_Length);
-      Raise_Exception_On_OpenGL_Error;
 
       if Source_Length = 0 then
          return "";
@@ -49,7 +47,6 @@ package body GL.Objects.Shaders is
       begin
          API.Get_Shader_Source (Subject.Reference.GL_Id, Source_Length,
                                 Source_Length, Shader_Source);
-         Raise_Exception_On_OpenGL_Error;
          return Shader_Source (1 .. Integer (Source_Length));
       end;
    end Source;
@@ -57,7 +54,6 @@ package body GL.Objects.Shaders is
    procedure Compile (Subject : Shader) is
    begin
       API.Compile_Shader (Subject.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Compile;
 
    function Compile_Status (Subject : Shader) return Boolean is
@@ -73,7 +69,6 @@ package body GL.Objects.Shaders is
    begin
       API.Get_Shader_Param (Subject.Reference.GL_Id,
                             Enums.Info_Log_Length, Log_Length);
-      Raise_Exception_On_OpenGL_Error;
 
       if Log_Length = 0 then
          return "";
@@ -84,7 +79,6 @@ package body GL.Objects.Shaders is
       begin
          API.Get_Shader_Info_Log (Subject.Reference.GL_Id, Log_Length,
                                   Log_Length, Info_Log);
-         Raise_Exception_On_OpenGL_Error;
          return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
@@ -108,7 +102,6 @@ package body GL.Objects.Shaders is
       Kind : Shader_Type := Shader_Type'First;
    begin
       API.Get_Shader_Type (Id, Enums.Shader_Type, Kind);
-      Raise_Exception_On_OpenGL_Error;
       return Object : Shader (Kind) do
          Object.Reference.GL_Id := Id;
          Object.Reference.Initialized := True;

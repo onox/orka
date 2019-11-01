@@ -56,7 +56,6 @@ package body GL.Debug.Logs is
       Length := Size (API.Get_Debug_Message_Log
         (UInt (Number_Messages), Log_Length,
          Sources, Types, IDs, Levels, Lengths, Log));
-      Raise_Exception_On_OpenGL_Error;
       pragma Assert (Length <= Number_Messages);
 
       declare
@@ -88,7 +87,6 @@ package body GL.Debug.Logs is
       Result : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Debug_Logged_Messages, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Logged_Messages;
 

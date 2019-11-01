@@ -30,7 +30,6 @@ package body GL.Drawing is
    begin
       API.Draw_Arrays_Instanced_Base_Instance
         (Mode, Offset, Count, Instances, UInt (Base_Instance));
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Arrays;
 
    procedure Draw_Multiple_Arrays_Indirect
@@ -44,7 +43,6 @@ package body GL.Drawing is
         := Offset * Arrays_Indirect_Command'Size / System.Storage_Unit;
    begin
       API.Multi_Draw_Arrays_Indirect (Mode, Offset_In_Bytes, Count, 0);
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays_Indirect;
 
    procedure Draw_Multiple_Arrays_Indirect_Count
@@ -62,7 +60,6 @@ package body GL.Drawing is
    begin
       API.Multi_Draw_Arrays_Indirect_Count
         (Mode, Offset_In_Bytes, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Arrays_Indirect_Count;
 
    procedure Draw_Elements
@@ -83,7 +80,6 @@ package body GL.Drawing is
       API.Draw_Elements_Instanced_Base_Vertex_Base_Instance
         (Mode, Count, Index_Kind, Low_Level.IntPtr (Element_Bytes * Index_Offset),
          Instances, Int (Base_Vertex), UInt (Base_Instance));
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Elements;
 
    procedure Draw_Multiple_Elements_Indirect
@@ -99,7 +95,6 @@ package body GL.Drawing is
    begin
       API.Multi_Draw_Elements_Indirect
         (Mode, Index_Kind, Offset_In_Bytes, Count, 0);
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements_Indirect;
 
    procedure Draw_Multiple_Elements_Indirect_Count
@@ -119,7 +114,6 @@ package body GL.Drawing is
       API.Multi_Draw_Elements_Indirect_Count
         (Mode, Index_Kind, Offset_In_Bytes,
          Low_Level.IntPtr (Count_Offset_In_Bytes), Max_Count, 0);
-      Raise_Exception_On_OpenGL_Error;
    end Draw_Multiple_Elements_Indirect_Count;
 
 end GL.Drawing;

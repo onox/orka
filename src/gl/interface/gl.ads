@@ -37,8 +37,6 @@ package GL is
    --  Raised when a function that is not available for the current
    --  context is called
 
-private
-
    -----------------------------------------------------------------------------
    --                           Internal functions                            --
    -----------------------------------------------------------------------------

@@ -22,73 +22,61 @@ package body GL.Pixels is
    procedure Set_Pack_Swap_Bytes (Value : Boolean) is
    begin
       API.Pixel_Store (Enums.Pack_Swap_Bytes, Low_Level.Bool (Value));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Swap_Bytes;
 
    procedure Set_Pack_LSB_First (Value : Boolean) is
    begin
       API.Pixel_Store (Enums.Pack_LSB_First, Low_Level.Bool (Value));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_LSB_First;
 
    procedure Set_Pack_Row_Length (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Row_Length, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Row_Length;
 
    procedure Set_Pack_Image_Height (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Image_Height, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Image_Height;
 
    procedure Set_Pack_Skip_Pixels (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Skip_Pixels, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Skip_Pixels;
 
    procedure Set_Pack_Skip_Rows (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Skip_Rows, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Skip_Rows;
 
    procedure Set_Pack_Skip_Images (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Skip_Images, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Skip_Images;
 
    procedure Set_Pack_Alignment (Value : Alignment) is
    begin
       API.Pixel_Store (Enums.Pack_Alignment, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Alignment;
 
    procedure Set_Pack_Compressed_Block_Width (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Compressed_Block_Width, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Compressed_Block_Width;
 
    procedure Set_Pack_Compressed_Block_Height (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Compressed_Block_Height, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Compressed_Block_Height;
 
    procedure Set_Pack_Compressed_Block_Depth (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Compressed_Block_Depth, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Compressed_Block_Depth;
 
    procedure Set_Pack_Compressed_Block_Size (Value : Size) is
    begin
       API.Pixel_Store (Enums.Pack_Compressed_Block_Size, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Pack_Compressed_Block_Size;
 
    -----------------------------------------------------------------------------
@@ -97,7 +85,6 @@ package body GL.Pixels is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Boolean (Enums.Getter.Pack_Swap_Bytes, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Pack_Swap_Bytes;
 
@@ -105,7 +92,6 @@ package body GL.Pixels is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Boolean (Enums.Getter.Pack_Lsb_First, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Pack_LSB_First;
 
@@ -113,7 +99,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Row_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Row_Length;
 
@@ -121,7 +106,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Image_Height, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Image_Height;
 
@@ -129,7 +113,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Skip_Pixels, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Skip_Pixels;
 
@@ -137,7 +120,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Skip_Rows, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Skip_Rows;
 
@@ -145,7 +127,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Skip_Images, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Skip_Images;
 
@@ -153,7 +134,6 @@ package body GL.Pixels is
       Ret : Alignment := Words;
    begin
       API.Get_Alignment (Enums.Getter.Pack_Alignment, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Pack_Alignment;
 
@@ -161,7 +141,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Compressed_Block_Width, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Compressed_Block_Width;
 
@@ -169,7 +148,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Compressed_Block_Height, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Compressed_Block_Height;
 
@@ -177,7 +155,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Compressed_Block_Depth, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Compressed_Block_Depth;
 
@@ -185,7 +162,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Pack_Compressed_Block_Size, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Pack_Compressed_Block_Size;
 
@@ -194,73 +170,61 @@ package body GL.Pixels is
    procedure Set_Unpack_Swap_Bytes (Value : Boolean) is
    begin
       API.Pixel_Store (Enums.Unpack_Swap_Bytes, Low_Level.Bool (Value));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Swap_Bytes;
 
    procedure Set_Unpack_LSB_First (Value : Boolean) is
    begin
       API.Pixel_Store (Enums.Unpack_LSB_First, Low_Level.Bool (Value));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_LSB_First;
 
    procedure Set_Unpack_Row_Length (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Row_Length, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Row_Length;
 
    procedure Set_Unpack_Image_Height (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Image_Height, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Image_Height;
 
    procedure Set_Unpack_Skip_Pixels (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Skip_Pixels, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Skip_Pixels;
 
    procedure Set_Unpack_Skip_Rows (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Skip_Rows, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Skip_Rows;
 
    procedure Set_Unpack_Skip_Images (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Skip_Images, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Skip_Images;
 
    procedure Set_Unpack_Alignment (Value : Alignment) is
    begin
       API.Pixel_Store (Enums.Unpack_Alignment, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Alignment;
 
    procedure Set_Unpack_Compressed_Block_Width (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Compressed_Block_Width, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Compressed_Block_Width;
 
    procedure Set_Unpack_Compressed_Block_Height (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Compressed_Block_Height, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Compressed_Block_Height;
 
    procedure Set_Unpack_Compressed_Block_Depth (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Compressed_Block_Depth, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Compressed_Block_Depth;
 
    procedure Set_Unpack_Compressed_Block_Size (Value : Size) is
    begin
       API.Pixel_Store (Enums.Unpack_Compressed_Block_Size, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Unpack_Compressed_Block_Size;
 
    -----------------------------------------------------------------------------
@@ -269,7 +233,6 @@ package body GL.Pixels is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Boolean (Enums.Getter.Unpack_Swap_Bytes, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Unpack_Swap_Bytes;
 
@@ -277,7 +240,6 @@ package body GL.Pixels is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Boolean (Enums.Getter.Unpack_Lsb_First, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Unpack_LSB_First;
 
@@ -285,7 +247,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Row_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Row_Length;
 
@@ -293,7 +254,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Image_Height, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Image_Height;
 
@@ -301,7 +261,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Skip_Pixels, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Skip_Pixels;
 
@@ -309,7 +268,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Skip_Rows, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Skip_Rows;
 
@@ -317,7 +275,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Skip_Images, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Skip_Images;
 
@@ -325,7 +282,6 @@ package body GL.Pixels is
       Ret : Alignment := Words;
    begin
       API.Get_Alignment (Enums.Getter.Unpack_Alignment, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Unpack_Alignment;
 
@@ -333,7 +289,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Compressed_Block_Width, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Compressed_Block_Width;
 
@@ -341,7 +296,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Compressed_Block_Height, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Compressed_Block_Height;
 
@@ -349,7 +303,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Compressed_Block_Depth, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Compressed_Block_Depth;
 
@@ -357,7 +310,6 @@ package body GL.Pixels is
       Ret : Types.Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Unpack_Compressed_Block_Size, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Ret);
    end Unpack_Compressed_Block_Size;
 

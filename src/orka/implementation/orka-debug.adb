@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with GL.Debug.Logs;
+with GL.Toggles;
 with GL.Types;
 
 with Orka.Loggers;
@@ -23,6 +24,12 @@ with Orka.Logging;
 package body Orka.Debug is
 
    use GL.Debug;
+
+   Has_Seen_API_Error : Boolean := False
+     with Volatile => True;
+
+   Debug_Synchronous : Boolean := False
+     with Volatile => True;
 
    procedure Log_Debug_Message
      (From      : Source;
@@ -50,10 +57,20 @@ package body Orka.Debug is
                when Low          => Loggers.Info,
                when Notification => Loggers.Debug);
    begin
+      if Debug_Synchronous and then Has_Seen_API_Error then
+         Has_Seen_API_Error := False;
+         GL.Raise_Exception_On_OpenGL_Error;
+      end if;
+
       Logging.Log (Source, Loggers.Message_Type (Kind), Severity, Natural (ID), Message);
+
+      if Debug_Synchronous and then (Source = OpenGL and Kind = Error) then
+         GL.Raise_Exception_On_OpenGL_Error;
+         Has_Seen_API_Error := True;
+      end if;
    end Log_Debug_Message;
 
-   procedure Set_Log_Messages (Enable : Boolean) is
+   procedure Set_Log_Messages (Enable : Boolean; Raise_API_Error : Boolean := False) is
    begin
       if Enable then
          declare
@@ -69,9 +86,15 @@ package body Orka.Debug is
             Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, M.Message.Element);
          end loop;
 
+         GL.Toggles.Set (GL.Toggles.Debug_Output_Synchronous,
+           (if Raise_API_Error then GL.Toggles.Enabled else GL.Toggles.Disabled));
+         Debug_Synchronous := Raise_API_Error;
+
+         GL.Toggles.Enable (GL.Toggles.Debug_Output);
          GL.Debug.Set_Message_Callback (Log_Debug_Message'Access);
          GL.Debug.Set (GL.Debug.Low, True);
       else
+         GL.Toggles.Disable (GL.Toggles.Debug_Output);
          GL.Debug.Disable_Message_Callback;
       end if;
    end Set_Log_Messages;

@@ -29,7 +29,6 @@ package body GL.Objects.Buffers is
       Ret : Types.Size := 64;
    begin
       API.Get_Size (Enums.Getter.Min_Map_Buffer_Alignment, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Minimum_Alignment;
 
@@ -114,7 +113,6 @@ package body GL.Objects.Buffers is
    begin
       if Holder.Is_Empty or else Object /= Holder.Element then
          API.Bind_Buffer (Target.Kind, Object.Reference.GL_Id);
-         Raise_Exception_On_OpenGL_Error;
          Holder.Replace_Element (Object);
       end if;
    end Bind;
@@ -124,7 +122,6 @@ package body GL.Objects.Buffers is
    begin
       if Holder.Is_Empty or else Object /= Holder.Element then
          API.Bind_Buffer_Base (Target.Kind, UInt (Index), Object.Reference.GL_Id);
-         Raise_Exception_On_OpenGL_Error;
          Holder.Replace_Element (Object);
       end if;
    end Bind_Base;
@@ -172,7 +169,6 @@ package body GL.Objects.Buffers is
       end case;
       API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Bytes),
                                 System.Null_Address, Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
    end Allocate;
 
    function Access_Type (Object : Buffer) return Access_Kind is
@@ -180,7 +176,6 @@ package body GL.Objects.Buffers is
    begin
       API.Get_Named_Buffer_Parameter_Access_Kind (Object.Reference.GL_Id, Enums.Buffer_Access,
                                             Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Access_Type;
 
@@ -188,7 +183,6 @@ package body GL.Objects.Buffers is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Named_Buffer_Parameter_Bool (Object.Reference.GL_Id, Enums.Buffer_Immutable_Storage, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Immutable;
 
@@ -196,7 +190,6 @@ package body GL.Objects.Buffers is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Named_Buffer_Parameter_Bool (Object.Reference.GL_Id, Enums.Buffer_Mapped, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Mapped;
 
@@ -204,7 +197,6 @@ package body GL.Objects.Buffers is
       Ret : Types.Long_Size := 0;
    begin
       API.Get_Named_Buffer_Parameter_Size (Object.Reference.GL_Id, Enums.Buffer_Size, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Size;
 
@@ -219,7 +211,6 @@ package body GL.Objects.Buffers is
       API.Get_Named_Buffer_Parameter_Bitfield (Object.Reference.GL_Id,
                                                Enums.Buffer_Storage_Flags,
                                                Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
       return Convert (Raw_Bits and 2#0000001111000011#);
    end Storage_Flags;
 
@@ -227,7 +218,6 @@ package body GL.Objects.Buffers is
       New_Id : UInt := 0;
    begin
       API.Create_Buffers (1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
@@ -236,7 +226,6 @@ package body GL.Objects.Buffers is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Delete_Buffers (1, Arr);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
@@ -244,7 +233,6 @@ package body GL.Objects.Buffers is
    procedure Unmap (Object : in out Buffer) is
    begin
       API.Unmap_Named_Buffer (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Unmap;
 
    procedure Clear_With_Zeros (Object : Buffer) is
@@ -255,13 +243,11 @@ package body GL.Objects.Buffers is
       API.Clear_Named_Buffer_Data
         (Object.Reference.GL_Id, GL.Pixels.R8I, GL.Pixels.Red_Integer,
          GL.Pixels.Byte, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_With_Zeros;
 
    procedure Invalidate_Data (Object : in out Buffer) is
    begin
       API.Invalidate_Buffer_Data (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
 
    package body Buffer_Pointers is
@@ -277,7 +263,6 @@ package body GL.Objects.Buffers is
             API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
                                    Low_Level.IntPtr (Offset_In_Bytes),
                                    Low_Level.SizeIPtr (Number_Of_Bytes));
-            Raise_Exception_On_OpenGL_Error;
             Holder.Replace_Element (Object);
          end if;
       end Bind_Range;
@@ -296,7 +281,6 @@ package body GL.Objects.Buffers is
       begin
          API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
                                    Data (Data'First)'Address, Raw_Bits);
-         Raise_Exception_On_OpenGL_Error;
       end Load_To_Immutable_Buffer;
 
       procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
@@ -319,7 +303,6 @@ package body GL.Objects.Buffers is
          Pointer := Map_Named_Buffer_Range (Object.Reference.GL_Id,
            Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
            Raw_Bits);
-         Raise_Exception_On_OpenGL_Error;
       end Map_Range;
 
       function Get_Mapped_Data
@@ -371,7 +354,6 @@ package body GL.Objects.Buffers is
          API.Flush_Mapped_Named_Buffer_Range (Object.Reference.GL_Id,
                                               Low_Level.IntPtr (Offset_In_Bytes),
                                               Low_Level.SizeIPtr (Number_Of_Bytes));
-         Raise_Exception_On_OpenGL_Error;
       end Flush_Buffer_Range;
 
       procedure Clear_Data
@@ -384,7 +366,6 @@ package body GL.Objects.Buffers is
          API.Clear_Named_Buffer_Data
            (Object.Reference.GL_Id, Format_Info.Internal_Format,
             Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
-         Raise_Exception_On_OpenGL_Error;
       end Clear_Data;
 
       procedure Clear_Sub_Data
@@ -402,7 +383,6 @@ package body GL.Objects.Buffers is
            (Object.Reference.GL_Id, Format_Info.Internal_Format,
             Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
             Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
-         Raise_Exception_On_OpenGL_Error;
       end Clear_Sub_Data;
 
       procedure Clear_With_Zeros (Object : Buffer; Offset, Length : Types.Size) is
@@ -416,7 +396,6 @@ package body GL.Objects.Buffers is
            (Object.Reference.GL_Id, GL.Pixels.R8I,
             Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
             GL.Pixels.Red_Integer, GL.Pixels.Byte, System.Null_Address);
-         Raise_Exception_On_OpenGL_Error;
       end Clear_With_Zeros;
 
       procedure Copy_Sub_Data (Object, Target_Object : Buffer;
@@ -429,7 +408,6 @@ package body GL.Objects.Buffers is
                                          Low_Level.IntPtr (Read_Offset_In_Bytes),
                                          Low_Level.IntPtr (Write_Offset_In_Bytes),
                                          Low_Level.SizeIPtr (Number_Of_Bytes));
-         Raise_Exception_On_OpenGL_Error;
       end Copy_Sub_Data;
 
       function To_Pointer (Object : Buffer) return Pointers.Pointer is
@@ -439,7 +417,6 @@ package body GL.Objects.Buffers is
          Ret : Pointers.Pointer := null;
       begin
          Named_Buffer_Pointer (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
-         Raise_Exception_On_OpenGL_Error;
          return Ret;
       end To_Pointer;
 
@@ -452,7 +429,6 @@ package body GL.Objects.Buffers is
          API.Named_Buffer_Sub_Data (Object.Reference.GL_Id,
                                     Low_Level.IntPtr (Offset_In_Bytes),
                                     Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
-         Raise_Exception_On_OpenGL_Error;
       end Set_Sub_Data;
 
       procedure Get_Sub_Data (Object : Buffer;
@@ -468,7 +444,6 @@ package body GL.Objects.Buffers is
          Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id,
                                     Low_Level.IntPtr (Offset_In_Bytes),
                                     Low_Level.SizeIPtr (Number_Of_Bytes), Data);
-         Raise_Exception_On_OpenGL_Error;
       end Get_Sub_Data;
 
       procedure Invalidate_Sub_Data (Object : Buffer;
@@ -479,7 +454,6 @@ package body GL.Objects.Buffers is
          API.Invalidate_Buffer_Sub_Data (Object.Reference.GL_Id,
                                          Low_Level.IntPtr (Offset_In_Bytes),
                                          Low_Level.SizeIPtr (Number_Of_Bytes));
-         Raise_Exception_On_OpenGL_Error;
       end Invalidate_Sub_Data;
 
    end Buffer_Pointers;

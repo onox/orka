@@ -28,7 +28,6 @@ package body GL.Buffers is
       API.Color_Mask
         (Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
          Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
-      Raise_Exception_On_OpenGL_Error;
    end Color_Mask;
 
    procedure Color_Mask
@@ -39,42 +38,36 @@ package body GL.Buffers is
         (Index,
          Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
          Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
-      Raise_Exception_On_OpenGL_Error;
    end Color_Mask;
 
    function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color is
       Value : Colors.Enabled_Color;
    begin
       API.Get_Enabled_Color (Enums.Getter.Color_Writemask, Index, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Color_Mask;
 
    procedure Set_Depth_Function (Func : Compare_Function) is
    begin
       API.Depth_Func (Func);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Depth_Function;
 
    function Depth_Function return Compare_Function is
       Value : Compare_Function := Compare_Function'First;
    begin
       API.Get_Compare_Function (Enums.Getter.Depth_Func, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Depth_Function;
 
    procedure Set_Depth_Mask (Enabled : Boolean) is
    begin
       API.Depth_Mask (Low_Level.Bool (Enabled));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Depth_Mask;
 
    function Depth_Mask return Boolean is
       Value : Low_Level.Bool := Low_Level.Bool (True);
    begin
       API.Get_Boolean (Enums.Getter.Depth_Writemask, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Value);
    end Depth_Mask;
 
@@ -85,7 +78,6 @@ package body GL.Buffers is
       Mask : UInt) is
    begin
       API.Stencil_Func_Separate (Face, Func, Ref, Mask);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Stencil_Function;
 
    function Stencil_Function (Face : Single_Face_Selector) return Compare_Function is
@@ -96,7 +88,6 @@ package body GL.Buffers is
       else
          API.Get_Compare_Function (Enums.Getter.Stencil_Back_Func, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Function;
 
@@ -108,7 +99,6 @@ package body GL.Buffers is
       else
          API.Get_Integer (Enums.Getter.Stencil_Back_Ref, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Reference_Value;
 
@@ -120,7 +110,6 @@ package body GL.Buffers is
       else
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Value_Mask, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Value_Mask;
 
@@ -131,7 +120,6 @@ package body GL.Buffers is
       Depth_Pass   : Buffers.Stencil_Action) is
    begin
       API.Stencil_Op_Separate (Face, Stencil_Fail, Depth_Fail, Depth_Pass);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Stencil_Operation;
 
    function Stencil_Operation_Stencil_Fail
@@ -144,7 +132,6 @@ package body GL.Buffers is
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Fail, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Operation_Stencil_Fail;
 
@@ -158,7 +145,6 @@ package body GL.Buffers is
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Fail, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Operation_Depth_Fail;
 
@@ -172,7 +158,6 @@ package body GL.Buffers is
       else
          API.Get_Stencil_Action (Enums.Getter.Stencil_Back_Pass_Depth_Pass, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Operation_Depth_Pass;
 
@@ -186,7 +171,6 @@ package body GL.Buffers is
                                Value : UInt) is
    begin
       API.Stencil_Mask_Separate (Face, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Stencil_Mask;
 
    function Stencil_Mask (Face : Single_Face_Selector) return UInt is
@@ -197,7 +181,6 @@ package body GL.Buffers is
       else
          API.Get_Unsigned_Integer (Enums.Getter.Stencil_Back_Writemask, Value);
       end if;
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Stencil_Mask;
 

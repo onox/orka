@@ -25,20 +25,17 @@ package body GL.Compute is
    procedure Dispatch_Compute (X, Y, Z : UInt := 1) is
    begin
       API.Dispatch_Compute (X, Y, Z);
-      Raise_Exception_On_OpenGL_Error;
    end Dispatch_Compute;
 
    procedure Dispatch_Compute_Indirect (Offset : Size) is
    begin
       API.Dispatch_Compute_Indirect (Low_Level.IntPtr (Offset));
-      Raise_Exception_On_OpenGL_Error;
    end Dispatch_Compute_Indirect;
 
    function Max_Compute_Shared_Memory_Size return Size is
       Value : Size := 0;
    begin
       API.Get_Size (Enums.Getter.Max_Compute_Shared_Memory_Size, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Max_Compute_Shared_Memory_Size;
 
@@ -46,7 +43,6 @@ package body GL.Compute is
       Value : Size := 0;
    begin
       API.Get_Size (Enums.Getter.Max_Compute_Work_Group_Invocations, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Max_Compute_Work_Group_Invocations;
 
@@ -57,7 +53,6 @@ package body GL.Compute is
          API.Get_Size_I (Enums.Getter.Max_Compute_Work_Group_Count,
            Indices (Dimension), Values (Dimension));
       end loop;
-      Raise_Exception_On_OpenGL_Error;
       return Values;
    end Max_Compute_Work_Group_Count;
 
@@ -68,7 +63,6 @@ package body GL.Compute is
          API.Get_Size_I (Enums.Getter.Max_Compute_Work_Group_Size,
            Indices (Dimension), Values (Dimension));
       end loop;
-      Raise_Exception_On_OpenGL_Error;
       return Values;
    end Max_Compute_Work_Group_Size;
 

@@ -20,11 +20,7 @@ with GL.API;
 
 package body GL.Barriers is
 
-   procedure Texture_Barrier is
-   begin
-      API.Texture_Barrier;
-      Raise_Exception_On_OpenGL_Error;
-   end Texture_Barrier;
+   procedure Texture_Barrier renames API.Texture_Barrier;
 
    procedure Memory_Barrier (Bits : Memory_Barrier_Bits) is
       use type Low_Level.Bitfield;
@@ -35,7 +31,6 @@ package body GL.Barriers is
         Convert (Bits) and 2#1111111111101111#;
    begin
       API.Memory_Barrier (Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
    end Memory_Barrier;
 
    procedure Memory_Barrier_By_Region (Bits : Memory_Barrier_Bits) is
@@ -47,7 +42,6 @@ package body GL.Barriers is
         Convert (Bits) and 2#0011010000101100#;
    begin
       API.Memory_Barrier_By_Region (Raw_Bits);
-      Raise_Exception_On_OpenGL_Error;
    end Memory_Barrier_By_Region;
 
 end GL.Barriers;

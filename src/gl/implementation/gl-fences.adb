@@ -60,14 +60,12 @@ package body GL.Fences is
          Object.Delete;
       end if;
       Object.Reference.Sync_ID := API.Fence_Sync (GPU_Commands_Complete, 0);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.Status := (if Object.Initialized then Set else Unset);
    end Set_Fence;
 
    procedure Delete (Object : in out Fence) is
    begin
       API.Delete_Sync (Object.Reference.Sync_ID);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.Sync_ID := 0;
       Object.Reference.Status := Unset;
    end Delete;
@@ -104,7 +102,6 @@ package body GL.Fences is
          Value : constant Int_Array := API.Get_Sync
            (Object.Reference.Sync_ID, Sync_Status, 1);
       begin
-         Raise_Exception_On_OpenGL_Error;
          return Convert (Value (1)) = Signaled;
       end;
    end Signaled;
@@ -117,7 +114,6 @@ package body GL.Fences is
    begin
       Result := API.Client_Wait_Sync
         (Object.Reference.Sync_ID, Flush_Commands_Bit, Timeout_Nanoseconds);
-      Raise_Exception_On_OpenGL_Error;
 
       if Result in Already_Signaled | Condition_Satisfied then
          Object.Reference.Status := Signaled;
@@ -133,7 +129,6 @@ package body GL.Fences is
       GL.Flush;
 
       API.Wait_Sync (Object.Reference.Sync_ID, 0, Timeout_Ignored);
-      Raise_Exception_On_OpenGL_Error;
    end Server_Wait;
 
    overriding

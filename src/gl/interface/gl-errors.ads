@@ -20,14 +20,6 @@ package GL.Errors is
    -- not Pure because Error_Flag can change with each call
    pragma Preelaborate;
 
-   -- The behavior of this package depends on the scenario variable
-   -- Auto_Exceptions. If enabled, every call to OpenGL will be followed by
-   -- a call to glGetError, and if an error flag is set, the corresponding
-   -- exception will be raised.
-   --
-   -- If disabled, the user has to check manually for the OpenGL error flag by
-   -- calling Error_Flag.
-
    type Error_Code is (No_Error, Invalid_Enum, Invalid_Value, Invalid_Operation,
                        Stack_Overflow, Stack_Underflow, Out_Of_Memory,
                        Invalid_Framebuffer_Operation);

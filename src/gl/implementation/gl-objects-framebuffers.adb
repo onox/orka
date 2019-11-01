@@ -65,13 +65,11 @@ package body GL.Objects.Framebuffers is
       List   : Buffers.Color_Buffer_List) is
    begin
       API.Named_Framebuffer_Draw_Buffers (Object.Reference.GL_Id, List'Length, List);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Draw_Buffers;
 
    procedure Set_Read_Buffer (Object : Framebuffer; Selector : Buffers.Color_Buffer_Selector) is
    begin
       API.Named_Framebuffer_Read_Buffer (Object.Reference.GL_Id, Selector);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Read_Buffer;
 
    procedure Attach_Texture
@@ -82,7 +80,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment,
                                      Texture.Raw_Id, Level);
-      Raise_Exception_On_OpenGL_Error;
    end Attach_Texture;
 
    procedure Attach_Texture_Layer
@@ -94,13 +91,11 @@ package body GL.Objects.Framebuffers is
    begin
       API.Named_Framebuffer_Texture_Layer (Object.Reference.GL_Id, Attachment,
                                            Texture.Raw_Id, Level, Int (Layer));
-      Raise_Exception_On_OpenGL_Error;
    end Attach_Texture_Layer;
 
    procedure Detach (Object : Framebuffer; Attachment : Attachment_Point) is
    begin
       API.Named_Framebuffer_Texture (Object.Reference.GL_Id, Attachment, 0, 0);
-      Raise_Exception_On_OpenGL_Error;
    end Detach;
 
    procedure Invalidate_Data
@@ -109,7 +104,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Invalidate_Named_Framebuffer_Data
         (Object.Reference.GL_Id, Attachments'Length, Attachments);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
 
    procedure Invalidate_Sub_Data
@@ -120,7 +114,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Invalidate_Named_Framebuffer_Sub_Data
         (Object.Reference.GL_Id, Attachments'Length, Attachments, X, Y, Width, Height);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Data;
 
    procedure Invalidate_Data
@@ -129,7 +122,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Invalidate_Named_Framebuffer_Data
         (Object.Reference.GL_Id, Attachments'Length, Attachments);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Data;
 
    procedure Invalidate_Sub_Data
@@ -140,7 +132,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Invalidate_Named_Framebuffer_Sub_Data
         (Object.Reference.GL_Id, Attachments'Length, Attachments, X, Y, Width, Height);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Data;
 
    procedure Blit (Read_Object, Draw_Object : Framebuffer;
@@ -162,14 +153,12 @@ package body GL.Objects.Framebuffers is
                                   Src_X0, Src_Y0, Src_X1, Src_Y1,
                                   Dst_X0, Dst_Y0, Dst_X1, Dst_Y1,
                                   Raw_Bits, Filter);
-      Raise_Exception_On_OpenGL_Error;
    end Blit;
 
    procedure Set_Default_Width (Object : Framebuffer; Value : Size) is
    begin
       API.Named_Framebuffer_Parameter_Size (Object.Reference.GL_Id,
                                             Enums.Default_Width, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Default_Width;
 
    function Default_Width (Object : Framebuffer) return Size is
@@ -177,7 +166,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Get_Named_Framebuffer_Parameter_Size
         (Object.Reference.GL_Id, Enums.Default_Width, Ret'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Default_Width;
 
@@ -185,7 +173,6 @@ package body GL.Objects.Framebuffers is
       Ret : Size := 16_384;
    begin
       API.Get_Size (Enums.Getter.Max_Framebuffer_Width, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Width;
 
@@ -194,7 +181,6 @@ package body GL.Objects.Framebuffers is
       API.Named_Framebuffer_Parameter_Size (Object.Reference.GL_Id,
                                             Enums.Default_Height,
                                             Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Default_Height;
 
    function Default_Height (Object : Framebuffer) return Size is
@@ -202,7 +188,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Get_Named_Framebuffer_Parameter_Size
         (Object.Reference.GL_Id, Enums.Default_Height, Ret'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Default_Height;
 
@@ -210,7 +195,6 @@ package body GL.Objects.Framebuffers is
       Ret : Size := 16_384;
    begin
       API.Get_Size (Enums.Getter.Max_Framebuffer_Height, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Height;
 
@@ -218,7 +202,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Named_Framebuffer_Parameter_Size (Object.Reference.GL_Id,
                                             Enums.Default_Layers, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Default_Layers;
 
    function Default_Layers (Object : Framebuffer) return Size is
@@ -226,7 +209,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Get_Named_Framebuffer_Parameter_Size
         (Object.Reference.GL_Id, Enums.Default_Layers, Ret'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Default_Layers;
 
@@ -234,7 +216,6 @@ package body GL.Objects.Framebuffers is
       Ret : Size := 2_048;
    begin
       API.Get_Size (Enums.Getter.Max_Framebuffer_Layers, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Layers;
 
@@ -243,7 +224,6 @@ package body GL.Objects.Framebuffers is
       API.Named_Framebuffer_Parameter_Size (Object.Reference.GL_Id,
                                             Enums.Default_Samples,
                                             Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Default_Samples;
 
    function Default_Samples (Object : Framebuffer) return Size is
@@ -251,7 +231,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Get_Named_Framebuffer_Parameter_Size
         (Object.Reference.GL_Id, Enums.Default_Samples, Ret'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Default_Samples;
 
@@ -259,7 +238,6 @@ package body GL.Objects.Framebuffers is
       Ret : Size := 4;
    begin
       API.Get_Size (Enums.Getter.Max_Framebuffer_Samples, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Max_Framebuffer_Samples;
 
@@ -268,7 +246,6 @@ package body GL.Objects.Framebuffers is
       API.Named_Framebuffer_Parameter_Bool (Object.Reference.GL_Id,
                                             Enums.Default_Fixed_Sample_Locations,
                                             Low_Level.Bool (Value));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Default_Fixed_Sample_Locations;
 
    function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean is
@@ -277,7 +254,6 @@ package body GL.Objects.Framebuffers is
       API.Get_Named_Framebuffer_Parameter_Bool
         (Object.Reference.GL_Id, Enums.Default_Fixed_Sample_Locations,
          Ret'Unchecked_Access);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Ret);
    end Default_Fixed_Sample_Locations;
 
@@ -286,7 +262,6 @@ package body GL.Objects.Framebuffers is
       New_Id : UInt := 0;
    begin
       API.Create_Framebuffers (1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
@@ -296,7 +271,6 @@ package body GL.Objects.Framebuffers is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Delete_Framebuffers (1, Arr);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
@@ -315,7 +289,6 @@ package body GL.Objects.Framebuffers is
    begin
       if Holder.Is_Empty or else Object /= Holder.Element then
          API.Bind_Framebuffer (Target.Kind, Object.Reference.GL_Id);
-         Raise_Exception_On_OpenGL_Error;
          Holder.Replace_Element (Object);
       end if;
    end Bind;
@@ -351,7 +324,6 @@ package body GL.Objects.Framebuffers is
          when None =>
             raise Constraint_Error;
       end case;
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Color_Buffer;
 
    procedure Clear_Depth_Buffer (Object : Framebuffer; Value : Buffers.Depth) is
@@ -359,7 +331,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Clear_Named_Framebuffer_Depth
         (Object.Reference.GL_Id, Enums.Depth_Buffer, 0, Aliased_Value);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_Buffer;
 
    procedure Clear_Stencil_Buffer (Object : Framebuffer; Value : Buffers.Stencil_Index) is
@@ -367,7 +338,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Clear_Named_Framebuffer_Stencil
         (Object.Reference.GL_Id, Enums.Stencil_Buffer, 0, Aliased_Value);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Stencil_Buffer;
 
    procedure Clear_Depth_And_Stencil_Buffer (Object : Framebuffer;
@@ -376,7 +346,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Clear_Named_Framebuffer_Depth_Stencil
         (Object.Reference.GL_Id, Enums.Depth_Stencil_Buffer, 0, Depth_Value, Stencil_Value);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Depth_And_Stencil_Buffer;
 
    -----------------------------------------------------------------------------

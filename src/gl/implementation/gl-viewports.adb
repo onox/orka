@@ -28,7 +28,6 @@ package body GL.Viewports is
       Result : Size := 16;
    begin
       API.Get_Size (Enums.Getter.Max_Viewports, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Maximum_Viewports;
 
@@ -36,7 +35,6 @@ package body GL.Viewports is
       Result : Size := 0;
    begin
       API.Get_Size (Enums.Getter.Viewport_Subpixel_Bits, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Viewport_Subpixel_Bits;
 
@@ -44,7 +42,6 @@ package body GL.Viewports is
       Result : Singles.Vector2 := (0.0, 0.0);
    begin
       API.Get_Single_Vec2 (Enums.Getter.Viewport_Bounds_Range, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Origin_Range;
 
@@ -52,21 +49,18 @@ package body GL.Viewports is
       Result : Singles.Vector2 := (0.0, 0.0);
    begin
       API.Get_Single_Vec2 (Enums.Getter.Max_Viewport_Dims, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Maximum_Extent;
 
    procedure Set_Viewports (List : Viewport_List) is
    begin
       GL.API.Viewport_Array (List'First, List'Length, List);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Viewports;
 
    function Get_Viewport (Index : UInt) return Viewport is
       Result : Singles.Vector4;
    begin
       API.Get_Single_Vec4_I (Enums.Getter.Viewport, Index, Result);
-      Raise_Exception_On_OpenGL_Error;
       return
         (X      => Result (X),
          Y      => Result (Y),
@@ -77,14 +71,12 @@ package body GL.Viewports is
    procedure Set_Depth_Ranges (List : Depth_Range_List) is
    begin
       API.Depth_Range_Array (List'First, List'Length, List);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Depth_Ranges;
 
    function Get_Depth_Range (Index : UInt) return Depth_Range is
       Result : Doubles.Vector2;
    begin
       API.Get_Double_Vec2_I (Enums.Getter.Depth_Range, Index, Result);
-      Raise_Exception_On_OpenGL_Error;
       return
         (Near => Result (X),
          Far  => Result (Y));
@@ -93,14 +85,12 @@ package body GL.Viewports is
    procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List) is
    begin
       API.Scissor_Array (List'First, List'Length, List);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Scissor_Rectangles;
 
    function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle is
       Result : Ints.Vector4;
    begin
       API.Get_Int_Vec4_I (Enums.Getter.Scissor_Box, Index, Result);
-      Raise_Exception_On_OpenGL_Error;
       return
         (Left   => Result (X),
          Bottom => Result (Y),
@@ -115,14 +105,12 @@ package body GL.Viewports is
    procedure Set_Clipping (Origin : Viewport_Origin; Depth : Depth_Mode) is
    begin
       API.Clip_Control (Origin, Depth);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Clipping;
 
    function Origin return Viewport_Origin is
       Result : Viewport_Origin := Viewport_Origin'First;
    begin
       API.Get_Clip_Origin (Enums.Getter.Clip_Origin, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Origin;
 
@@ -130,7 +118,6 @@ package body GL.Viewports is
       Result : Depth_Mode := Depth_Mode'First;
    begin
       API.Get_Clip_Depth_Mode (Enums.Getter.Clip_Depth_Mode, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Depth;
 

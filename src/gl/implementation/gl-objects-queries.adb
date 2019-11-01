@@ -24,7 +24,6 @@ package body GL.Objects.Queries is
       New_Id : UInt := 0;
    begin
       API.Create_Queries (Object.Target, 1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
 
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
@@ -34,7 +33,6 @@ package body GL.Objects.Queries is
    procedure Delete_Id (Object : in out Query) is
    begin
       API.Delete_Queries (1, (1 => Object.Reference.GL_Id));
-      Raise_Exception_On_OpenGL_Error;
 
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
@@ -45,7 +43,6 @@ package body GL.Objects.Queries is
       Index  : in     Natural := 0) return Active_Query'Class is
    begin
       API.Begin_Query_Indexed (Object.Target, UInt (Index), Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
       return Active_Query'(Ada.Finalization.Limited_Controlled
         with Target => Object.Target, Index => Index, Finalized => False);
    end Begin_Query;
@@ -64,7 +61,6 @@ package body GL.Objects.Queries is
      return Conditional_Render'Class is
    begin
       API.Begin_Conditional_Render (Object.Reference.GL_Id, Mode);
-      Raise_Exception_On_OpenGL_Error;
       return Conditional_Render'(Ada.Finalization.Limited_Controlled
         with Finalized => False);
    end Begin_Conditional_Render;
@@ -82,7 +78,6 @@ package body GL.Objects.Queries is
       Available : UInt := 0;
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_Available, Available);
-      Raise_Exception_On_OpenGL_Error;
       return Available = 1;
    end Result_Available;
 
@@ -92,7 +87,6 @@ package body GL.Objects.Queries is
       Result : UInt := (if Default_Value then 1 else 0);
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result = 1;
    end Result_If_Available;
 
@@ -102,7 +96,6 @@ package body GL.Objects.Queries is
       Result : UInt := UInt (Default_Value);
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Natural (Result);
    end Result_If_Available;
 
@@ -110,7 +103,6 @@ package body GL.Objects.Queries is
       Result_Value : UInt := 0;
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result, Result_Value);
-      Raise_Exception_On_OpenGL_Error;
       return Result_Value = 1;
    end Result;
 
@@ -119,7 +111,6 @@ package body GL.Objects.Queries is
       Result_Value : UInt := 0;
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result, Result_Value);
-      Raise_Exception_On_OpenGL_Error;
       return Natural (Result_Value);
    end Result;
 
@@ -127,21 +118,18 @@ package body GL.Objects.Queries is
       Bits : Int := 0;
    begin
       API.Get_Query_Indexed_Param (Target, 0, Counter_Bits, Bits);
-      Raise_Exception_On_OpenGL_Error;
       return Natural (Bits);
    end Result_Bits;
 
    procedure Record_Current_Time (Object : in out Query) is
    begin
       API.Query_Counter (Object.Reference.GL_Id, Timestamp);
-      Raise_Exception_On_OpenGL_Error;
    end Record_Current_Time;
 
    function Get_Current_Time return Long is
       Result : Types.Long := 0;
    begin
       API.Get_Long (Enums.Getter.Timestamp, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Get_Current_Time;
 

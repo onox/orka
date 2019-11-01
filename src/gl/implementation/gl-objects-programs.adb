@@ -28,19 +28,16 @@ package body GL.Objects.Programs is
    procedure Attach (Subject : Program; Shader : Shaders.Shader) is
    begin
       API.Attach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Attach;
 
    procedure Detach (Subject : Program; Shader : Shaders.Shader) is
    begin
       API.Detach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Detach;
 
    procedure Link (Subject : Program) is
    begin
       API.Link_Program (Subject.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Link;
 
    function Link_Status (Subject : Program) return Boolean is
@@ -48,7 +45,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Link_Status,
                              Status_Value);
-      Raise_Exception_On_OpenGL_Error;
       return Status_Value /= 0;
    end Link_Status;
 
@@ -57,7 +53,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Info_Log_Length,
                              Log_Length);
-      Raise_Exception_On_OpenGL_Error;
 
       if Log_Length = 0 then
          return "";
@@ -68,7 +63,6 @@ package body GL.Objects.Programs is
       begin
          API.Get_Program_Info_Log (Subject.Reference.GL_Id, Log_Length,
                                    Log_Length, Info_Log);
-         Raise_Exception_On_OpenGL_Error;
          return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
@@ -76,14 +70,12 @@ package body GL.Objects.Programs is
    procedure Use_Program (Subject : Program) is
    begin
       API.Use_Program (Subject.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Use_Program;
 
    procedure Set_Separable (Subject : Program; Separable : Boolean) is
    begin
       API.Program_Parameter_Bool (Subject.Reference.GL_Id, Enums.Program_Separable,
                                   Low_Level.Bool (Separable));
-      Raise_Exception_On_OpenGL_Error;
    end Set_Separable;
 
    function Separable (Subject : Program) return Boolean is
@@ -91,7 +83,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Program_Separable,
                              Separable_Value);
-      Raise_Exception_On_OpenGL_Error;
       return Separable_Value /= 0;
    end Separable;
 
@@ -100,7 +91,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Param (Object.Reference.GL_Id, Enums.Compute_Work_Group_Size,
                              Values);
-      Raise_Exception_On_OpenGL_Error;
       return Values;
    end Compute_Work_Group_Size;
 
@@ -118,7 +108,6 @@ package body GL.Objects.Programs is
    begin
       Object.Reference.GL_Id := API.Create_Shader_Program (Kind, 1, C_Source);
       C.Strings.Free (C_Shader_Source);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.Initialized := True;
    end Initialize_Id;
 
@@ -126,7 +115,6 @@ package body GL.Objects.Programs is
    procedure Delete_Id (Object : in out Program) is
    begin
       API.Delete_Program (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
@@ -136,7 +124,6 @@ package body GL.Objects.Programs is
       Result : constant Int := API.Get_Uniform_Location
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
-      Raise_Exception_On_OpenGL_Error;
       if Result = -1 then
          raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
       end if;
@@ -148,7 +135,6 @@ package body GL.Objects.Programs is
       Index : constant UInt := API.Get_Program_Resource_Index
         (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
    begin
-      Raise_Exception_On_OpenGL_Error;
       if Index = -1 then
          raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
       end if;
@@ -160,7 +146,6 @@ package body GL.Objects.Programs is
          function Convert is new Ada.Unchecked_Conversion
            (Source => Int, Target => Low_Level.Enums.Resource_Type);
       begin
-         Raise_Exception_On_OpenGL_Error;
          return Convert (Values (1));
       end;
    end Uniform_Type;
@@ -170,7 +155,6 @@ package body GL.Objects.Programs is
       Location : constant Int := API.Get_Program_Resource_Location
         (Subject.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
-      Raise_Exception_On_OpenGL_Error;
       if Location = -1 then
          raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
       end if;
@@ -182,7 +166,6 @@ package body GL.Objects.Programs is
       Index : constant UInt := API.Get_Program_Resource_Index
        (Object.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
-      Raise_Exception_On_OpenGL_Error;
       if Index = -1 then
          raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
       end if;
@@ -194,7 +177,6 @@ package body GL.Objects.Programs is
          function Convert is new Ada.Unchecked_Conversion
            (Source => Int, Target => Low_Level.Enums.Resource_Type);
       begin
-         Raise_Exception_On_OpenGL_Error;
          return Convert (Values (1));
       end;
    end Attribute_Type;
@@ -204,13 +186,12 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Param (Object.Reference.GL_Id, Enums.Attached_Shaders,
                              Shader_Count);
-      Raise_Exception_On_OpenGL_Error;
 
       return List : constant Shaders.Lists.List := Shaders.Lists.Create
         (API.Get_Attached_Shaders (Object.Reference.GL_Id,
                                    Size (Shader_Count)))
       do
-         Raise_Exception_On_OpenGL_Error;
+         null;
       end return;
    end Attached_Shaders;
 
@@ -266,7 +247,6 @@ package body GL.Objects.Programs is
         (Object.Reference.GL_Id,
          Subroutine_Interface (Shader),
          Enums.Active_Resources, Indices);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Indices (1));
    end Subroutines_Indices;
 
@@ -280,7 +260,6 @@ package body GL.Objects.Programs is
         (Object.Reference.GL_Id,
          Subroutine_Uniform_Interface (Shader),
          Enums.Active_Resources, Indices);
-      Raise_Exception_On_OpenGL_Error;
       return Size (Indices (1));
    end Subroutine_Uniforms_Indices;
 
@@ -295,7 +274,6 @@ package body GL.Objects.Programs is
          1, (1 => Enums.Array_Size), 1);
       Locations : constant Size := Size (Values (1));
    begin
-      Raise_Exception_On_OpenGL_Error;
       return Locations;
    end Subroutine_Uniform_Locations;
 
@@ -320,7 +298,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
                              Enums.Active_Subroutine_Uniform_Max_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
       --  Received length includes null termination character
       return (if Ret > 0 then Ret - 1 else 0);
    end Active_Subroutine_Uniform_Max_Length;
@@ -333,7 +310,6 @@ package body GL.Objects.Programs is
    begin
       API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
                              Enums.Active_Subroutine_Max_Length, Ret);
-      Raise_Exception_On_OpenGL_Error;
       --  Received length includes null termination character
       return (if Ret > 0 then Ret - 1 else 0);
    end Active_Subroutine_Max_Length;
@@ -350,7 +326,6 @@ package body GL.Objects.Programs is
         (API.Get_Program_Resource_Index (Object.Reference.GL_Id,
                                          Subroutine_Interface (Shader), C_String))
       do
-         Raise_Exception_On_OpenGL_Error;
          if Index = -1 then
             raise Subroutine_Inactive_Error with "Subroutine " & Name & " is inactive (unused)";
          end if;
@@ -371,7 +346,6 @@ package body GL.Objects.Programs is
               Subroutine_Uniform_Interface (Shader),
               C_String))
       do
-         Raise_Exception_On_OpenGL_Error;
          if Index = -1 then
             raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
          end if;
@@ -392,7 +366,7 @@ package body GL.Objects.Programs is
               Subroutine_Uniform_Interface (Shader),
               C_String))
       do
-         Raise_Exception_On_OpenGL_Error;
+         null;
       end return;
    end Subroutine_Uniform_Location;
 
@@ -407,14 +381,12 @@ package body GL.Objects.Programs is
          1, (1 => Enums.Num_Compatible_Subroutines), 1);
       Num_Subroutines : constant Size := Size (Values (1));
    begin
-      Raise_Exception_On_OpenGL_Error;
       declare
          Values : constant Int_Array := API.Get_Program_Resource
            (Object.Reference.GL_Id,
             Subroutine_Uniform_Interface (Shader), Index,
             1, (1 => Enums.Compatible_Subroutines), Num_Subroutines);
       begin
-         Raise_Exception_On_OpenGL_Error;
          return Result : Subroutine_Index_Array (1 .. Num_Subroutines) do
             for Index in Values'Range loop
                Result (Size (Index)) := Subroutine_Index_Type (Values (Index));
@@ -434,14 +406,12 @@ package body GL.Objects.Programs is
       --  Received length includes null termination character
       Name_Length : Size := Size (Values (1));
    begin
-      Raise_Exception_On_OpenGL_Error;
       declare
          Name : String (1 .. Integer (Name_Length));
       begin
          API.Get_Program_Resource_Name (Object.Reference.GL_Id,
                                         Subroutine_Interface (Shader), Index,
                                         Name_Length, Name_Length, Name);
-         Raise_Exception_On_OpenGL_Error;
          return Name (1 .. Integer (Name_Length));
       end;
    end Subroutine_Name;
@@ -464,7 +434,6 @@ package body GL.Objects.Programs is
          API.Get_Program_Resource_Name (Object.Reference.GL_Id,
                                         Subroutine_Uniform_Interface (Shader),
                                         Index, Name_Length, Name_Length, Name);
-         Raise_Exception_On_OpenGL_Error;
          return Name (1 .. Integer (Name_Length));
       end;
    end Subroutine_Uniform_Name;
@@ -472,7 +441,6 @@ package body GL.Objects.Programs is
    procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array) is
    begin
       API.Uniform_Subroutines (Shader, Indices'Length, Indices);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Uniform_Subroutines;
 
    function Uniform_Subroutine
@@ -482,7 +450,6 @@ package body GL.Objects.Programs is
       Value : Subroutine_Index_Type := Invalid_Index;
    begin
       API.Get_Uniform_Subroutine (Shader, Location, Value);
-      Raise_Exception_On_OpenGL_Error;
       return Value;
    end Uniform_Subroutine;
 

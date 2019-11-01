@@ -22,28 +22,24 @@ package body GL.Rasterization is
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type) is
    begin
       API.Polygon_Mode (Front_And_Back, Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Polygon_Mode;
 
    function Polygon_Mode return Polygon_Mode_Type is
       Ret : Polygon_Mode_Type := Fill;
    begin
       API.Get_Polygon_Mode (Enums.Getter.Polygon_Mode, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Polygon_Mode;
 
    procedure Set_Polygon_Offset (Factor, Units : Single; Clamp : Single := 0.0) is
    begin
       API.Polygon_Offset_Clamp (Factor, Units, Clamp);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Polygon_Offset;
 
    function Polygon_Offset_Factor return Single is
       Result : Single := 0.0;
    begin
       API.Get_Single (Enums.Getter.Polygon_Offset_Factor, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Factor;
 
@@ -51,7 +47,6 @@ package body GL.Rasterization is
       Result : Single := 0.0;
    begin
       API.Get_Single (Enums.Getter.Polygon_Offset_Units, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Units;
 
@@ -59,7 +54,6 @@ package body GL.Rasterization is
       Result : Single := 0.0;
    begin
       API.Get_Single (Enums.Getter.Polygon_Offset_Clamp, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Polygon_Offset_Clamp;
 
@@ -71,7 +65,6 @@ package body GL.Rasterization is
       Ret : Orientation := Orientation'First;
    begin
       API.Get_Orientation (Enums.Getter.Cull_Face, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Front_Face;
 
@@ -81,7 +74,6 @@ package body GL.Rasterization is
       Ret : Face_Selector := Face_Selector'First;
    begin
       API.Get_Face_Selector (Enums.Getter.Cull_Face_Mode, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Cull_Face;
 

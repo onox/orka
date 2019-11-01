@@ -32,7 +32,6 @@ package body GL.Context is
       Result : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Major_Version, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Major_Version;
 
@@ -40,7 +39,6 @@ package body GL.Context is
       Result : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Minor_Version, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Minor_Version;
 
@@ -65,7 +63,6 @@ package body GL.Context is
       Count : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Num_Extensions, Count);
-      Raise_Exception_On_OpenGL_Error;
 
       pragma Assert (API.Get_Error = Errors.No_Error);
       --  We are on OpenGL 3
@@ -82,7 +79,6 @@ package body GL.Context is
       Count : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Num_Extensions, Count);
-      Raise_Exception_On_OpenGL_Error;
 
       pragma Assert (API.Get_Error = Errors.No_Error);
       --  We are on OpenGL 3
@@ -94,7 +90,6 @@ package body GL.Context is
       Result : constant String := C.Strings.Value
         (API.Get_String (Enums.Getter.Shading_Language_Version));
    begin
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Primary_Shading_Language_Version;
 
@@ -118,8 +113,6 @@ package body GL.Context is
       Count : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count);
-      Raise_Exception_On_OpenGL_Error;
-
       return (for some I in 1 .. Positive (Count) => GLSL_Version (I) = Name);
    end Supports_Shading_Language_Version;
 

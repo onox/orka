@@ -131,8 +131,7 @@ You can override CFLAGS if desired. The Makefile determines which
 system-dependent API ([EGL][url-egl] or WGL) to use for fetching OpenGL
 function pointers.
 
-To disable assertions and avoid checking after each call to OpenGL whether
-an error flag was set and raise a corresponding exception, use the `release` mode:
+To disable assertions use the `release` mode:
 
 ```sh
 $ make MODE=release
@@ -146,7 +145,6 @@ debugging symbols, use the `debug` mode. See the following table:
 |-------------------|---------|-------------|-------|
 | Optimizations     | Yes     | Yes         | No    |
 | Assertions        | No      | Yes         | Yes   |
-| OpenGL exceptions | No      | Yes         | Yes   |
 | Debugging symbols | No      | No          | Yes   |
 
 After having compiled the source code, the library can be installed by

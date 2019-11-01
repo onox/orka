@@ -34,25 +34,20 @@ package body GL.Objects.Pipelines is
         Convert (Stages) and 2#0000000000111111#;
    begin
       API.Use_Program_Stages (Object.Reference.GL_Id, Raw_Bits, Program.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Use_Program_Stages;
 
    procedure Bind (Object : Pipeline) is
    begin
       API.Use_Program (0);
-      Raise_Exception_On_OpenGL_Error;
       API.Bind_Program_Pipeline (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Bind;
 
    function Validate (Object : Pipeline) return Boolean is
       Status_Value : Int := 0;
    begin
       API.Validate_Program_Pipeline (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
       API.Get_Program_Pipeline_Param (Object.Reference.GL_Id, Enums.Validate_Status,
                                       Status_Value);
-      Raise_Exception_On_OpenGL_Error;
       return Status_Value /= 0;
    end Validate;
 
@@ -61,7 +56,6 @@ package body GL.Objects.Pipelines is
    begin
       API.Get_Program_Pipeline_Param (Object.Reference.GL_Id, Enums.Info_Log_Length,
                                       Log_Length);
-      Raise_Exception_On_OpenGL_Error;
 
       if Log_Length = 0 then
          return "";
@@ -72,7 +66,6 @@ package body GL.Objects.Pipelines is
       begin
          API.Get_Program_Pipeline_Info_Log (Object.Reference.GL_Id, Log_Length,
                                             Log_Length, Info_Log);
-         Raise_Exception_On_OpenGL_Error;
          return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
@@ -82,7 +75,6 @@ package body GL.Objects.Pipelines is
       New_Id : UInt := 0;
    begin
       API.Create_Program_Pipelines (1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
@@ -91,7 +83,6 @@ package body GL.Objects.Pipelines is
    procedure Delete_Id (Object : in out Pipeline) is
    begin
       API.Delete_Program_Pipelines (1, (1 => Object.Reference.GL_Id));
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;

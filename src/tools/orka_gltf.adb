@@ -136,7 +136,7 @@ begin
 
       Context : Orka.Contexts.Context;
    begin
-      Orka.Debug.Set_Log_Messages (Enable => True);
+      Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
 
       --  Enable some features
       Context.Enable (Orka.Contexts.Reversed_Z);

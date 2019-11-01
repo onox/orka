@@ -47,7 +47,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
                                             Enums.Textures.Width, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Width;
 
@@ -56,7 +55,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
                                             Enums.Textures.Height, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Height;
 
@@ -65,7 +63,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
                                             Enums.Textures.Depth, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Depth;
 
@@ -74,7 +71,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Base_Level,
                                               Enums.Textures.Internal_Format, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Internal_Format;
 
@@ -83,7 +79,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Format (Object.Reference.GL_Id, Base_Level,
                                               Enums.Textures.Internal_Format, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Compressed_Format;
 
@@ -92,7 +87,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Red_Type, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Red_Type;
 
@@ -101,7 +95,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Green_Type, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Green_Type;
 
@@ -110,7 +103,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Blue_Type, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Blue_Type;
 
@@ -119,7 +111,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Alpha_Type, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Alpha_Type;
 
@@ -128,7 +119,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Type (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Depth_Type, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Depth_Type;
 
@@ -137,7 +127,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Red_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Red_Size;
 
@@ -146,7 +135,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Green_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Green_Size;
 
@@ -155,7 +143,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Blue_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Blue_Size;
 
@@ -164,7 +151,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Alpha_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Alpha_Size;
 
@@ -173,7 +159,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Depth_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Depth_Size;
 
@@ -182,7 +167,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Stencil_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Stencil_Size;
 
@@ -191,7 +175,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Shared_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Shared_Size;
 
@@ -200,7 +183,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Bool (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Compressed, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Result);
    end Compressed;
 
@@ -210,7 +192,6 @@ package body GL.Objects.Textures is
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Level,
                                             Enums.Textures.Compressed_Image_Size,
                                             Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Compressed_Image_Size;
 
@@ -219,7 +200,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Buffer_Offset, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Buffer_Offset;
 
@@ -228,7 +208,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Buffer_Size, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Buffer_Size;
 
@@ -237,7 +216,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Level_Parameter_Size (Object.Reference.GL_Id, Base_Level,
                                             Enums.Textures.Samples, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Samples;
 
@@ -247,21 +225,18 @@ package body GL.Objects.Textures is
       API.Get_Texture_Level_Parameter_Bool
         (Object.Reference.GL_Id, Base_Level,
          Enums.Textures.Fixed_Sample_Locations, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Boolean (Result);
    end Fixed_Sample_Locations;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
    begin
       API.Bind_Texture_Unit (Unit, Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Bind_Texture_Unit;
 
    procedure Bind_Image_Texture (Object : Texture_Base; Unit : Image_Unit) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Bind_Image_Textures (Unit, 1, Arr);
-      Raise_Exception_On_OpenGL_Error;
    end Bind_Image_Texture;
 
    overriding
@@ -269,7 +244,6 @@ package body GL.Objects.Textures is
       New_Id : UInt := 0;
    begin
       API.Create_Textures (Object.Kind, 1, New_Id);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
@@ -279,7 +253,6 @@ package body GL.Objects.Textures is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
       API.Delete_Textures (1, Arr);
-      Raise_Exception_On_OpenGL_Error;
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
@@ -287,7 +260,6 @@ package body GL.Objects.Textures is
    procedure Invalidate_Image (Object : Texture_Base; Level : Mipmap_Level) is
    begin
       API.Invalidate_Tex_Image (Object.Reference.GL_Id, Level);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Image;
    
    procedure Invalidate_Sub_Image (Object : Texture_Base; Level : Mipmap_Level;
@@ -296,14 +268,12 @@ package body GL.Objects.Textures is
    begin
       API.Invalidate_Tex_Sub_Image (Object.Reference.GL_Id, Level, X, Y, Z,
                                     Width, Height, Depth);
-      Raise_Exception_On_OpenGL_Error;
    end Invalidate_Sub_Image;
 
    procedure Set_Lowest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Base_Level, Level);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Lowest_Mipmap_Level;
 
    function Lowest_Mipmap_Level (Object : Texture) return Mipmap_Level is
@@ -311,7 +281,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Parameter_Int (Object.Reference.GL_Id,
                                      Enums.Textures.Base_Level, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Lowest_Mipmap_Level;
 
@@ -319,7 +288,6 @@ package body GL.Objects.Textures is
    begin
       API.Texture_Parameter_Int (Object.Reference.GL_Id,
                                  Enums.Textures.Max_Level, Level);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Highest_Mipmap_Level;
 
    function Highest_Mipmap_Level (Object : Texture)
@@ -328,7 +296,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Parameter_Int (Object.Reference.GL_Id,
                                      Enums.Textures.Max_Level, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Highest_Mipmap_Level;
 
@@ -337,7 +304,6 @@ package body GL.Objects.Textures is
    begin
       API.Get_Texture_Parameter_Int
         (Object.Reference.GL_Id, Enums.Textures.Immutable_Levels, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Mipmap_Levels;
 
@@ -349,7 +315,6 @@ package body GL.Objects.Textures is
    begin
       API.Clear_Tex_Image
         (Object.Reference.GL_Id, Level, Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Data;
 
    procedure Clear_Using_Zeros
@@ -358,20 +323,17 @@ package body GL.Objects.Textures is
       API.Clear_Tex_Image
         (Object.Reference.GL_Id, Level, Pixels.Format'First,
          Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Zeros;
 
    procedure Generate_Mipmap (Object : Texture) is
    begin
       API.Generate_Texture_Mipmap (Object.Reference.GL_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Generate_Mipmap;
 
    function Texture_Unit_Count return Natural is
       Count : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Max_Combined_Texture_Image_Units, Count);
-      Raise_Exception_On_OpenGL_Error;
       return Natural (Count);
    end Texture_Unit_Count;
 
@@ -379,7 +341,6 @@ package body GL.Objects.Textures is
       Ret : Single := 16.0;
    begin
       API.Get_Single (Enums.Getter.Max_Texture_Max_Anisotropy, Ret);
-      Raise_Exception_On_OpenGL_Error;
       return Ret;
    end Maximum_Anisotropy;
 
@@ -392,7 +353,6 @@ package body GL.Objects.Textures is
                             Buffer : Objects.Buffers.Buffer) is
    begin
       API.Texture_Buffer (Object.Reference.GL_Id, Internal_Format, Buffer.Raw_Id);
-      Raise_Exception_On_OpenGL_Error;
    end Attach_Buffer;
 
    procedure Attach_Buffer (Object : Buffer_Texture;
@@ -402,7 +362,6 @@ package body GL.Objects.Textures is
    begin
       API.Texture_Buffer_Range (Object.Reference.GL_Id, Internal_Format, Buffer.Raw_Id,
                                 Low_Level.IntPtr (Offset), Size);
-      Raise_Exception_On_OpenGL_Error;
    end Attach_Buffer;
 
    -----------------------------------------------------------------------------
@@ -442,7 +401,6 @@ package body GL.Objects.Textures is
                  (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
          end case;
       end if;
-      Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
 
@@ -478,7 +436,6 @@ package body GL.Objects.Textures is
                  (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
          end case;
       end if;
-      Raise_Exception_On_OpenGL_Error;
       Object.Allocated := True;
    end Allocate_Storage;
 
@@ -516,7 +473,6 @@ package body GL.Objects.Textures is
               (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
                Source_Format, Source_Type, Source);
       end case;
-      Raise_Exception_On_OpenGL_Error;
    end Load_From_Data;
 
    procedure Load_From_Data
@@ -545,7 +501,6 @@ package body GL.Objects.Textures is
               (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
                Source_Format, Image_Size, Source);
       end case;
-      Raise_Exception_On_OpenGL_Error;
    end Load_From_Data;
 
    procedure Copy_Data
@@ -573,7 +528,6 @@ package body GL.Objects.Textures is
          Subject.Reference.GL_Id, Subject.Kind, Target_Level,
          Target_X, Target_Y, Target_Z,
          Width, Height, Depth);
-      Raise_Exception_On_OpenGL_Error;
    end Copy_Sub_Data;
 
    procedure Clear_Using_Data
@@ -588,7 +542,6 @@ package body GL.Objects.Textures is
       API.Clear_Tex_Sub_Image
         (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
          Source_Format, Source_Type, Source);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Data;
 
    procedure Clear_Using_Zeros
@@ -600,7 +553,6 @@ package body GL.Objects.Textures is
       API.Clear_Tex_Sub_Image
         (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
          Pixels.Format'First, Pixels.Data_Type'First, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
    end Clear_Using_Zeros;
 
    -----------------------------------------------------------------------------
@@ -621,7 +573,6 @@ package body GL.Objects.Textures is
       API.Get_Compressed_Texture_Sub_Image
         (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
          Number_Of_Bytes, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Get_Compressed_Data;
 
@@ -667,7 +618,6 @@ package body GL.Objects.Textures is
          Get_Texture_Sub_Image
            (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
             Format, Data_Type, Number_Of_Bytes, Result);
-         Raise_Exception_On_OpenGL_Error;
          return Result;
       end Get_Data;
 

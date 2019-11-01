@@ -22,14 +22,12 @@ package body GL.Shading is
    procedure Set_Minimum_Sample_Shading (Value : Normalized_Single) is
    begin
       API.Min_Sample_Shading (Value);
-      Raise_Exception_On_OpenGL_Error;
    end Set_Minimum_Sample_Shading;
 
    function Minimum_Sample_Shading return Normalized_Single is
       Result : Single := 0.0;
    begin
       API.Get_Single (Enums.Getter.Min_Sample_Shading_Value, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Normalized_Single (Result);
    end Minimum_Sample_Shading;
 

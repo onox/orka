@@ -33,13 +33,6 @@ abstract project Orka is
       when "egl"     => OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
    end case;
 
-   case Config.Mode is
-      when "release" => OpenGL_Sources :=
-        OpenGL_Sources & "../src/gl/implementation/no_auto_exceptions";
-      when others => OpenGL_Sources :=
-        OpenGL_Sources & "../src/gl/implementation/auto_exceptions";
-   end case;
-
    case Config.Compiler_Name is
       when "gnat" => Orka_Sources :=
         Orka_Sources & ("../src/orka/interface/x86/gnat");

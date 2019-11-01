@@ -58,14 +58,12 @@ package body GL.Debug is
    procedure Set_Message_Callback (Callback : not null Callback_Reference) is
    begin
       API.Debug_Message_Callback (Debug_Callback'Address, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
       Current_Callback := Callback;
    end Set_Message_Callback;
 
    procedure Disable_Message_Callback is
    begin
       API.Debug_Message_Callback (System.Null_Address, System.Null_Address);
-      Raise_Exception_On_OpenGL_Error;
       Current_Callback := null;
    end Disable_Message_Callback;
 
@@ -75,7 +73,6 @@ package body GL.Debug is
    begin
       API.Debug_Message_Control
         (From, Kind, Level, 0, Identifiers, Low_Level.Bool (Enabled));
-      Raise_Exception_On_OpenGL_Error;
    end Set;
 
    procedure Set (Level : Severity; Enabled : Boolean) is
@@ -83,7 +80,6 @@ package body GL.Debug is
    begin
       API.Debug_Message_Control
         (Any, Any, Level, 0, Identifiers, Low_Level.Bool (Enabled));
-      Raise_Exception_On_OpenGL_Error;
    end Set;
 
    procedure Set (From : Source; Kind : Message_Type; Identifiers : Types.UInt_Array;
@@ -92,7 +88,6 @@ package body GL.Debug is
       API.Debug_Message_Control
         (From, Kind, Any, Types.Size (Identifiers'Length),
          Identifiers, Low_Level.Bool (Enabled));
-      Raise_Exception_On_OpenGL_Error;
    end Set;
 
    procedure Insert_Message (From : Source; Kind : Message_Type; Level : Severity;
@@ -101,7 +96,6 @@ package body GL.Debug is
    begin
       API.Debug_Message_Insert (From, Kind, Identifier, Level,
                                 Types.Size (Message'Length), C.To_C (Message));
-      Raise_Exception_On_OpenGL_Error;
    end Insert_Message;
 
    function Push_Debug_Group (From : Source; Identifier : UInt; Message : String)
@@ -110,7 +104,6 @@ package body GL.Debug is
    begin
       API.Push_Debug_Group (From, Identifier,
                             Types.Size (Message'Length), C.To_C (Message));
-      Raise_Exception_On_OpenGL_Error;
       return Active_Group'(Ada.Finalization.Limited_Controlled with Finalized => False);
    end Push_Debug_Group;
 
@@ -125,8 +118,8 @@ package body GL.Debug is
 
    procedure Annotate (Object : GL.Objects.GL_Object'Class; Message : String) is
    begin
-      API.Object_Label (Object.Identifier, Object.Raw_Id, Types.Size (Message'Length), C.To_C (Message));
-      Raise_Exception_On_OpenGL_Error;
+      API.Object_Label
+        (Object.Identifier, Object.Raw_Id, Types.Size (Message'Length), C.To_C (Message));
    end Annotate;
 
    function Get_Label (Object : GL.Objects.GL_Object'Class) return String is
@@ -144,8 +137,6 @@ package body GL.Debug is
       Label_Size := C_Size.all;
       Free (C_Size);
 
-      Raise_Exception_On_OpenGL_Error;
-
       if Label_Size = 0 then
          return "";
       end if;
@@ -155,7 +146,6 @@ package body GL.Debug is
       begin
          API.Get_Object_Label (Object.Identifier, Object.Raw_Id, Label_Size,
                                Label_Size, Label);
-         Raise_Exception_On_OpenGL_Error;
          return Label;
       end;
    end Get_Label;
@@ -164,7 +154,6 @@ package body GL.Debug is
       Result : Int := 0;
    begin
       API.Get_Integer (Enums.Getter.Max_Debug_Message_Length, Result);
-      Raise_Exception_On_OpenGL_Error;
       return Result;
    end Max_Message_Length;
 
