@@ -71,10 +71,15 @@ package body Orka.Jobs.Executors is
 
             Jobs : Vectors.Vector (Capacity => Maximum_Enqueued_By_Job);
 
-            procedure Enqueue (Element : Job_Ptr) is
+            type Executor_Context is new Execution_Context with null record;
+
+            overriding
+            procedure Enqueue (Object : Executor_Context; Element : Job_Ptr) is
             begin
                Jobs.Append (Element);
             end Enqueue;
+
+            Context : Executor_Context;
 
             procedure Set_Root_Dependent (Last_Job : Job_Ptr) is
                Root_Dependents : Vectors.Vector (Capacity => Jobs.Length);
@@ -108,7 +113,7 @@ package body Orka.Jobs.Executors is
 
             if Future.Current_Status = Futures.Running then
                begin
-                  Job.Execute (Enqueue'Access);
+                  Job.Execute (Context);
                exception
                   when Error : others =>
                      Promise.Set_Failed (Error);

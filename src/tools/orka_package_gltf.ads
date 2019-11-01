@@ -40,7 +40,7 @@ package Orka_Package_glTF is
    overriding
    procedure Execute
      (Object  : Create_Group_Job;
-      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
+      Context : Orka.Jobs.Execution_Context'Class);
 
    -----------------------------------------------------------------------------
 

@@ -49,7 +49,7 @@ package body Orka.Jobs is
    overriding
    procedure Execute
      (Object  : No_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr)) is
+      Context : Execution_Context'Class) is
    begin
       raise Program_Error with "Cannot execute Null_Job";
    end Execute;
@@ -107,7 +107,7 @@ package body Orka.Jobs is
    overriding
    procedure Execute
      (Object  : Parallel_For_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr))
+      Context : Execution_Context'Class)
    is
       Slice_Length : constant Positive := Positive'Min (Object.Length, Object.Slice);
 
@@ -133,7 +133,7 @@ package body Orka.Jobs is
       pragma Assert (To = Object.Length);
 
       for Job of Parallel_Jobs loop
-         Enqueue (Job);
+         Context.Enqueue (Job);
       end loop;
 
       --  Object is still a (useless) dependency of Object.Dependent,
@@ -155,9 +155,9 @@ package body Orka.Jobs is
    overriding
    procedure Execute
      (Object  : Abstract_Parallel_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr)) is
+      Context : Execution_Context'Class) is
    begin
-      Abstract_Parallel_Job'Class (Object).Execute (Object.From, Object.To);
+      Abstract_Parallel_Job'Class (Object).Execute (Context, Object.From, Object.To);
    end Execute;
 
    overriding

@@ -19,7 +19,7 @@ package body Orka_Package_glTF is
    overriding
    procedure Execute
      (Object  : Create_Group_Job;
-      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr)) is
+      Context : Orka.Jobs.Execution_Context'Class) is
    begin
       Object.Group.all := Object.Model.Create_Group (Object.Culler, Capacity => 1);
    end Execute;

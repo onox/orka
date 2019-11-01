@@ -80,7 +80,7 @@ end record;
 overriding
 procedure Execute
   (Object  : Example_Job;
-   Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
+   Context : Orka.Jobs.Execution_Context'Class);
 ```
 
 Create an instance of the job and assign it to a variable of the type
@@ -91,8 +91,9 @@ Job_1 : Orka.Jobs.Job_Ptr := new Example_Job;
 ```
 
 `Job_1` can then be enqueued via the entry `Queue.Enqueue`.
-When the job is executed, it can optionally enqueue new jobs. These jobs
-will be enqueued and executed before any dependent job of the job.
+When the job is executed, it can optionally enqueue new jobs via
+`Context.Enqueue`. These jobs will be enqueued and executed before any
+dependent job of the job.
 
 ### Graphs
 
@@ -219,7 +220,10 @@ type Example_Parallel_Job is new Jobs.Abstract_Parallel_Job with record
 end record;
 
 overriding
-procedure Execute (Object : Example_Parallel_Job; From, To : Positive);
+procedure Execute
+  (Object   : Example_Parallel_Job;
+   Context  : Orka.Jobs.Execution_Context'Class;
+   From, To : Positive);
 ```
 
 An instance of this job can then be created and parallelized with the

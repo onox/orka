@@ -25,9 +25,13 @@ package Orka.Jobs is
 
    type Job_Ptr is not null access all Job'Class;
 
+   type Execution_Context is limited interface;
+
+   procedure Enqueue (Object : Execution_Context; Element : Job_Ptr) is abstract;
+
    procedure Execute
      (Object  : Job;
-      Enqueue : not null access procedure (Element : Job_Ptr)) is abstract;
+      Context : Execution_Context'Class) is abstract;
    --  Execute the job. The job can insert extra jobs between itself and its
    --  Dependent by calling the Enqueue procedure
 
@@ -96,7 +100,10 @@ package Orka.Jobs is
 
    procedure Set_Range (Object : in out Parallel_Job; From, To : Positive) is abstract;
 
-   procedure Execute (Object : Parallel_Job; From, To : Positive) is abstract;
+   procedure Execute
+     (Object   : Parallel_Job;
+      Context  : Execution_Context'Class;
+      From, To : Positive) is abstract;
    --  Any job which inherits Abstract_Parallel_Job needs to override this
    --  procedure instead of the regular Execute procedure
 
@@ -119,7 +126,7 @@ package Orka.Jobs is
    overriding
    procedure Execute
      (Object  : Abstract_Parallel_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr));
+      Context : Execution_Context'Class);
 
    overriding
    procedure Set_Range (Object : in out Abstract_Parallel_Job; From, To : Positive);
@@ -135,7 +142,7 @@ private
    overriding
    procedure Execute
      (Object  : No_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr));
+      Context : Execution_Context'Class);
 
    overriding
    function Dependent (Object : No_Job) return Job_Ptr is (Null_Job);
@@ -201,7 +208,7 @@ private
    overriding
    procedure Execute
      (Object  : Empty_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr)) is null;
+      Context : Execution_Context'Class) is null;
 
    function Create_Empty_Job return Job_Ptr is (new Empty_Job);
 
@@ -216,7 +223,7 @@ private
    overriding
    procedure Execute
      (Object  : Parallel_For_Job;
-      Enqueue : not null access procedure (Element : Job_Ptr));
+      Context : Execution_Context'Class);
 
    type Abstract_Parallel_Job is abstract new Abstract_Job and Parallel_Job with record
       From, To : Positive;

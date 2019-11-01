@@ -43,7 +43,7 @@ package body Orka.Resources.Textures.KTX is
    overriding
    procedure Execute
      (Object  : KTX_Load_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    -----------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ package body Orka.Resources.Textures.KTX is
    overriding
    procedure Execute
      (Object  : KTX_Load_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Bytes : Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
       Path  : String renames SU.To_String (Object.Data.Path);

@@ -129,27 +129,27 @@ package body Orka.Resources.Models.glTF is
    overriding
    procedure Execute
      (Object  : GLTF_Parse_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : GLTF_Finish_Processing_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : GLTF_Create_Model_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : GLTF_Write_Buffers_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : GLTF_Finish_Loading_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    -----------------------------------------------------------------------------
 
@@ -508,7 +508,7 @@ package body Orka.Resources.Models.glTF is
    overriding
    procedure Execute
      (Object  : GLTF_Parse_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       use Orka.glTF.Types;
 
@@ -587,7 +587,7 @@ package body Orka.Resources.Models.glTF is
             Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Processing_Job'
               (Jobs.Abstract_Job with Data => Pointer, Path => Object.Data.Path);
          begin
-            Enqueue (Finish_Job);
+            Context.Enqueue (Finish_Job);
          end;
       end;
    end Execute;
@@ -595,7 +595,7 @@ package body Orka.Resources.Models.glTF is
    overriding
    procedure Execute
      (Object  : GLTF_Finish_Processing_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Data  : GLTF_Data renames Object.Data.Get;
 
@@ -667,7 +667,7 @@ package body Orka.Resources.Models.glTF is
               (Jobs.Abstract_Job with Data => Object.Data, Path => Object.Path,
                 Scene => Scene_Data, Vertices => Vertices, Indices => Indices);
          begin
-            Enqueue (Create_Job);
+            Context.Enqueue (Create_Job);
          end;
       end;
    end Execute;
@@ -675,7 +675,7 @@ package body Orka.Resources.Models.glTF is
    overriding
    procedure Execute
      (Object  : GLTF_Create_Model_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Data  : GLTF_Data renames Object.Data.Get;
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
@@ -707,13 +707,13 @@ package body Orka.Resources.Models.glTF is
          Parts => Parts, Vertices => Object.Vertices, Indices => Object.Indices);
    begin
       Orka.Jobs.Chain ((Buffers_Job, Finish_Job));
-      Enqueue (Buffers_Job);
+      Context.Enqueue (Buffers_Job);
    end Execute;
 
    overriding
    procedure Execute
      (Object  : GLTF_Write_Buffers_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Data : GLTF_Data renames Object.Data.Get;
    begin
@@ -723,7 +723,7 @@ package body Orka.Resources.Models.glTF is
    overriding
    procedure Execute
      (Object  : GLTF_Finish_Loading_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Data : GLTF_Data renames Object.Data.Get;
       Path : String renames SU.To_String (Object.Path);

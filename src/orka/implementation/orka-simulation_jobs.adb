@@ -41,18 +41,27 @@ package body Orka.Simulation_Jobs is
    end record;
 
    overriding
-   procedure Execute (Object : Fixed_Update_Job; From, To : Positive);
+   procedure Execute
+     (Object   : Fixed_Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive);
 
    overriding
-   procedure Execute (Object : Update_Job; From, To : Positive);
+   procedure Execute
+     (Object   : Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive);
 
    overriding
-   procedure Execute (Object : After_Update_Job; From, To : Positive);
+   procedure Execute
+     (Object   : After_Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive);
 
    overriding
    procedure Execute
      (Object  : Finished_Fixed_Update_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    -----------------------------------------------------------------------------
 
@@ -76,17 +85,17 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Start_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : Scene_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    overriding
    procedure Execute
      (Object  : Finish_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr));
+      Context : Jobs.Execution_Context'Class);
 
    -----------------------------------------------------------------------------
    --                              CONSTRUCTORS                               --
@@ -153,7 +162,11 @@ package body Orka.Simulation_Jobs is
    -----------------------------------------------------------------------------
 
    overriding
-   procedure Execute (Object : Fixed_Update_Job; From, To : Positive) is
+   procedure Execute
+     (Object   : Fixed_Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive)
+   is
       DT : constant Duration := To_Duration (Object.Time_Step);
    begin
       for Behavior of Object.Scene (From .. To) loop
@@ -164,7 +177,11 @@ package body Orka.Simulation_Jobs is
    end Execute;
 
    overriding
-   procedure Execute (Object : Update_Job; From, To : Positive) is
+   procedure Execute
+     (Object   : Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive)
+   is
       DT : constant Duration := To_Duration (Object.Time_Step);
    begin
       for Behavior of Object.Scene (From .. To) loop
@@ -173,7 +190,11 @@ package body Orka.Simulation_Jobs is
    end Execute;
 
    overriding
-   procedure Execute (Object : After_Update_Job; From, To : Positive) is
+   procedure Execute
+     (Object   : After_Update_Job;
+      Context  : Jobs.Execution_Context'Class;
+      From, To : Positive)
+   is
       DT : constant Duration := To_Duration (Object.Time_Step);
    begin
       for Behavior of Object.Scene (From .. To) loop
@@ -184,7 +205,7 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Finished_Fixed_Update_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Update_Job : constant Jobs.Job_Ptr
         := Jobs.Parallelize (Create_Update_Job (Object.Scene, Object.Time_Step),
@@ -196,7 +217,7 @@ package body Orka.Simulation_Jobs is
           Object.Scene'Length, Object.Batch_Length);
    begin
       After_Update_Job.Set_Dependency (Update_Job);
-      Enqueue (Update_Job);
+      Context.Enqueue (Update_Job);
    end Execute;
 
    -----------------------------------------------------------------------------
@@ -206,7 +227,7 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Start_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr))
+      Context : Jobs.Execution_Context'Class)
    is
       Status : Fences.Fence_Status;
    begin
@@ -217,7 +238,7 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Scene_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is
+      Context : Jobs.Execution_Context'Class) is
    begin
       Object.Render (Object.Scene, Object.Camera);
    end Execute;
@@ -225,7 +246,7 @@ package body Orka.Simulation_Jobs is
    overriding
    procedure Execute
      (Object  : Finish_Render_Job;
-      Enqueue : not null access procedure (Element : Jobs.Job_Ptr)) is
+      Context : Jobs.Execution_Context'Class) is
    begin
       Object.Fence.Advance_Index;
       Object.Window.Swap_Buffers;
