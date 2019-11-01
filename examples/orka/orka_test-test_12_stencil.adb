@@ -25,6 +25,7 @@ with GL.Pixels;
 with GL.Rasterization;
 with GL.Types;
 with GL.Toggles;
+with GL.Viewports;
 
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Framebuffers;
@@ -61,46 +62,66 @@ procedure Orka_Test.Test_12_Stencil is
    function Load_Scene_Data (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
       use all type Orka.Types.Element_Type;
 
+      V1 : constant Single_Array := (-0.5,  0.5,  0.5);
+      V2 : constant Single_Array := (+0.5,  0.5,  0.5);
+      V3 : constant Single_Array := (-0.5, -0.5,  0.5);
+      V4 : constant Single_Array := (+0.5, -0.5,  0.5);
+
+      V5 : constant Single_Array := (-0.5,  0.5, -0.5);
+      V6 : constant Single_Array := (+0.5,  0.5, -0.5);
+      V7 : constant Single_Array := (-0.5, -0.5, -0.5);
+      V8 : constant Single_Array := (+0.5, -0.5, -0.5);
+
+      C1 : constant Single_Array := (0.0, 0.0, 1.0);
+      C2 : constant Single_Array := (1.0, 0.0, 1.0);
+      C3 : constant Single_Array := (1.0, 0.0, 0.0);
+      C4 : constant Single_Array := (0.0, 1.0, 0.0);
+
+      C5 : constant Single_Array := (0.0, 1.0, 0.0);
+      C6 : constant Single_Array := (1.0, 1.0, 0.0);
+      C7 : constant Single_Array := (1.0, 1.0, 0.0);
+      C8 : constant Single_Array := (0.0, 1.0, 1.0);
+
       Vertices : constant Single_Array
             -- Back
-        := (-0.5,  0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
-             0.5,  0.5, -0.5,   1.0, 0.0, 0.0,   1.0, 1.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-            -0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 0.0,
-            -0.5,  0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
+        := (V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 0.0,
+            V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 1.0,
+            V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 0.0,
+            V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 0.0,
+            V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 1.0,
+            V5 (0), V5 (1), V5 (2),   C5 (0), C5 (1), C5 (2),   0.0, 1.0,
 
             -- Top
-            -0.5, -0.5,  0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
-             0.5, -0.5,  0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-            -0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-            -0.5, -0.5,  0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
+            V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 0.0,
+            V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
+            V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   0.0, 0.0,
+            V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   0.0, 0.0,
+            V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
+            V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 1.0,
 
             -- Front
-            -0.5, -0.5, -0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
-             0.5, -0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
-             0.5, -0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-             0.5, -0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-            -0.5, -0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-            -0.5, -0.5, -0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
+            V8 (0), V8 (1), V8 (2),   C8 (0), C8 (1), C8 (2),   1.0, 0.0,
+            V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 1.0,
+            V7 (0), V7 (1), V7 (2),   C7 (0), C7 (1), C7 (2),   0.0, 0.0,
+            V7 (0), V7 (1), V7 (2),   C7 (0), C7 (1), C7 (2),   0.0, 0.0,
+            V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 1.0,
+            V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   0.0, 1.0,
 
             -- Right
-             0.5, -0.5, -0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
-             0.5,  0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-             0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   1.0, 1.0,
-             0.5, -0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-             0.5, -0.5, -0.5,   1.0, 0.0, 0.0,   0.0, 0.0,
+            V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 0.0,
+            V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
+            V8 (0), V8 (1), V8 (2),   C8 (0), C8 (1), C8 (2),   0.0, 0.0,
+            V8 (0), V8 (1), V8 (2),   C8 (0), C8 (1), C8 (2),   0.0, 0.0,
+            V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
+            V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   0.0, 1.0,
 
             -- Left
-            -0.5, -0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
-            -0.5,  0.5, -0.5,   1.0, 0.0, 0.0,   1.0, 1.0,
-            -0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-            -0.5,  0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 1.0,
-            -0.5, -0.5,  0.5,   0.0, 0.0, 1.0,   0.0, 0.0,
-            -0.5, -0.5, -0.5,   0.0, 1.0, 0.0,   1.0, 0.0,
+            V7 (0), V7 (1), V7 (2),   C7 (0), C7 (1), C7 (2),   1.0, 0.0,
+            V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   1.0, 1.0,
+            V5 (0), V5 (1), V5 (2),   C5 (0), C5 (1), C5 (2),   0.0, 0.0,
+            V5 (0), V5 (1), V5 (2),   C5 (0), C5 (1), C5 (2),   0.0, 0.0,
+            V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   1.0, 1.0,
+            V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 1.0,
 
             -- Floor
             -1.0, -1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0,
@@ -164,12 +185,9 @@ procedure Orka_Test.Test_12_Stencil is
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   procedure Load_Color_Texture (Texture : in out GL.Objects.Textures.Texture) is
-   begin
-      Texture.Allocate_Storage (1, 1, GL.Pixels.RGB8, 500, 500, 1);
-   end Load_Color_Texture;
-
-   Scene_Texture, Color_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
+   Scene_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
+   Color_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
+   Depth_Texture : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D);
 
    Sampler_1 : GL.Objects.Samplers.Sampler;
 
@@ -203,6 +221,12 @@ procedure Orka_Test.Test_12_Stencil is
    use all type GL.Objects.Textures.Minifying_Function;
    use all type GL.Objects.Textures.Wrapping_Mode;
 begin
+   FB_1.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
+
+   GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+   GL.Toggles.Enable (GL.Toggles.Cull_Face);
+
    Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
    Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
 
@@ -213,12 +237,18 @@ begin
 
    --  Load checkerboard texture
    Load_Texture (Scene_Texture);
-   Load_Color_Texture (Color_Texture);
+
+   Color_Texture.Allocate_Storage (1, 1, GL.Pixels.RGBA8, Width, Height, 1);
+   Depth_Texture.Allocate_Storage (1, 1, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
 
    FB_1.Attach (Color_Texture);
+   FB_1.Attach (Depth_Texture);
 
    --  Use post-processing program
    Uni_FB.Set_Int (0);
+
+   --  Projection matrix
+   Uni_Proj.Set_Matrix (Transforms.Infinite_Perspective (45.0, 1.0, 0.1));
 
    Ada.Text_IO.Put_Line ("Loaded textures and buffers");
 
@@ -229,9 +259,6 @@ begin
    declare
       Mouse_X, Mouse_Y, Mouse_Z : Single;
    begin
-      --  Projection matrix
-      Uni_Proj.Set_Matrix (Transforms.Infinite_Perspective (45.0, 1.0, 0.1));
-
       while not GL_Test.Display_Backend.Get_Window.Should_Close loop
          Mouse_X := Single (GL_Test.Display_Backend.Get_Mouse_X);
          Mouse_Y := Single (GL_Test.Display_Backend.Get_Mouse_Y);
@@ -252,16 +279,17 @@ begin
             Uni_View.Set_Matrix (Matrix_View);
          end;
 
-         --  Model matrix
-         Uni_Model.Set_Matrix (Transforms.Identity_Value);
-
          Uni_Effect.Set_Int (Int (GL_Test.Display_Backend.Get_Effect (5)));
 
-         --  Bind frame buffer and draw 3D scene
-         FB_1.Use_Framebuffer;
+         ---------------------------------------------------------------
+         --                           Cube                            --
+         ---------------------------------------------------------------
 
-         FB_1.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
-         FB_1.GL_Framebuffer.Clear_Depth_Buffer (1.0);
+         FB_1.Use_Framebuffer;
+         FB_1.Clear;
+
+         --  Model matrix
+         Uni_Model.Set_Matrix (Transforms.Identity_Value);
 
          VAO_Scene.GL_Vertex_Array.Bind;
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
@@ -269,14 +297,12 @@ begin
          Program_Scene.Use_Program;
          Scene_Texture.Bind_Texture_Unit (0);
 
-         ---------------------------------------------------------------
-
-         --  Draw cube
          GL.Drawing.Draw_Arrays (Triangles, 0, 30);
 
          ---------------------------------------------------------------
+         --                           Floor                           --
+         ---------------------------------------------------------------
 
-         --  Draw floor
          GL.Toggles.Enable (GL.Toggles.Stencil_Test);
 
          -- Set any stencil to 1
@@ -287,8 +313,13 @@ begin
          --  Disable writing to the depth buffer in order to prevent the
          --  floor from hiding the reflection cube
          Set_Depth_Mask (False);
-         FB_1.GL_Framebuffer.Clear_Stencil_Buffer (0);
+         FB_1.Clear ((Stencil => True, others => False));
+
          GL.Drawing.Draw_Arrays (Triangles, 30, 6);
+
+         ---------------------------------------------------------------
+         --                      Reflection cube                      --
+         ---------------------------------------------------------------
 
          -- Pass test if stencil value is 1
          Set_Stencil_Function (GL.Rasterization.Front_And_Back, Equal, 1, 16#FF#);
@@ -296,14 +327,7 @@ begin
          Set_Depth_Mask (True);
 
          --  Start drawing reflection cube
-         declare
-            Matrix_Model : Transforms.Matrix4 := Transforms.Identity_Value;
-         begin
-            Transforms.Scale (Matrix_Model, (1.0, 1.0, -1.0, 1.0));
-            Transforms.Translate (Matrix_Model, (0.0, 0.0, -1.0, 0.0));
-
-            Uni_Model.Set_Matrix (Matrix_Model);
-         end;
+         Uni_Model.Set_Matrix (Transforms.T ((0.0, 0.0, -1.0, 0.0)));
 
          Uni_Color.Set_Vector (Transforms.Vector4'(0.3, 0.3, 0.3, 0.0));
          GL.Drawing.Draw_Arrays (Triangles, 0, 30);
@@ -314,14 +338,11 @@ begin
          GL.Toggles.Disable (GL.Toggles.Stencil_Test);
 
          ---------------------------------------------------------------
+         --                      Post-processing                      --
+         ---------------------------------------------------------------
 
-         --  Bind default frame buffer
          FB_D.Use_Framebuffer;
-
-         --  Clear color buffer to red in order to verify it gets fully
-         --  overwritten in the fullscreen pass
-         FB_D.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (1.0, 0.0, 0.0, 1.0));
-         FB_D.GL_Framebuffer.Clear_Depth_Buffer (1.0);
+         FB_D.Clear;
 
          VAO_Screen.GL_Vertex_Array.Bind;
          GL.Toggles.Disable (GL.Toggles.Depth_Test);

@@ -63,5 +63,6 @@ void main()
         vec4 sy = 4.0 * ((s2 + s4) - (s1 + s3));
         vec4 sobel = sqrt(sx * sx + sy * sy);
         outColor = sobel;
+        outColor.w = 1.0;
     }
 }
