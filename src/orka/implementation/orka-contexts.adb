@@ -25,6 +25,7 @@ package body Orka.Contexts is
    overriding
    procedure Initialize (Object : in out Context) is
    begin
+      --  FIXME Should not be called before OpenGL has been initialized
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
    end Initialize;
 
