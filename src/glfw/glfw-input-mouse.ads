@@ -30,6 +30,11 @@ package Glfw.Input.Mouse is
    subtype Coordinate is Interfaces.C.double;
    subtype Scroll_Offset is Interfaces.C.double;
 
+   function Raw_Motion_Supported return Boolean;
+   --  Return True if the system supports raw mouse motion, False otherwise
+   --
+   --  Must only be called from the environment task.
+
 private
    for Button'Size use Interfaces.C.int'Size;
 

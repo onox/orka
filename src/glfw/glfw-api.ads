@@ -383,7 +383,7 @@ private package Glfw.API is
    -----------------------------------------------------------------------------
 
    function Get_Input_Mode (Window : System.Address;
-                            Mode : Input.Sticky_Toggle) return Bool;
+                            Mode : Input.Input_Toggle) return Bool;
    function Get_Input_Mode (Window : System.Address;
                             Mode : Enums.Input_Toggle)
                             return Input.Mouse.Cursor_Mode;
@@ -391,13 +391,16 @@ private package Glfw.API is
                   External_Name => "glfwGetInputMode");
 
    procedure Set_Input_Mode (Window : System.Address;
-                             Mode   : Input.Sticky_Toggle;
+                             Mode   : Input.Input_Toggle;
                              Value  : Bool);
    procedure Set_Input_Mode (Window : System.Address;
                              Mode   : Enums.Input_Toggle;
                              Value  : Input.Mouse.Cursor_Mode);
    pragma Import (Convention => C, Entity => Set_Input_Mode,
                   External_Name => "glfwSetInputMode");
+
+   function Raw_Mouse_Motion_Supported return Bool
+     with Import, Convention => C, External_Name => "glfwRawMouseMotionSupported";
 
    function Get_Key (Window : System.Address; Key : Input.Keys.Key)
                      return Input.Button_State;

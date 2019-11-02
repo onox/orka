@@ -222,13 +222,13 @@ package body Glfw.Windows is
    end Mouse_Button_State;
 
    function Get_Input_Toggle (Object : not null access Window;
-                              Kind   : Input.Sticky_Toggle) return Boolean is
+                              Kind   : Input.Input_Toggle) return Boolean is
    begin
       return Boolean (API.Get_Input_Mode (Object.Handle, Kind));
    end Get_Input_Toggle;
 
    procedure Set_Input_Toggle (Object : not null access Window;
-                               Kind   : Input.Sticky_Toggle;
+                               Kind   : Input.Input_Toggle;
                                Value  : Boolean) is
    begin
       API.Set_Input_Mode (Object.Handle, Kind, Bool (Value));
