@@ -21,13 +21,16 @@ package body Orka_Test.Package_9_Jobs is
    overriding
    procedure Execute
      (Object  : Test_Sequential_Job;
-      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr)) is
+      Context : Orka.Jobs.Execution_Context'Class) is
    begin
       Ada.Text_IO.Put_Line ("Sequential job " & Object.ID'Image);
    end Execute;
 
    overriding
-   procedure Execute (Object : Test_Parallel_Job; From, To : Positive) is
+   procedure Execute
+     (Object   : Test_Parallel_Job;
+      Context  : Orka.Jobs.Execution_Context'Class;
+      From, To : Positive) is
    begin
       Ada.Text_IO.Put_Line ("Parallel job (" & From'Image & " .. " & To'Image & ")");
    end Execute;

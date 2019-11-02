@@ -21,6 +21,7 @@ with GL.Barriers;
 with GL.Compute;
 with GL.Types.Compute;
 
+with Orka.Contexts;
 with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
@@ -31,9 +32,9 @@ with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_10_Compute is
-   Initialized : constant Orka.Windows.GLFW.Active_GLFW'Class
+   Context : constant Orka.Contexts.Context'Class
      := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
-   pragma Unreferenced (Initialized);
+   pragma Unreferenced (Context);
 
    W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
      (1, 1, Visible => False);

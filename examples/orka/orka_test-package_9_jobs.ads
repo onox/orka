@@ -25,7 +25,10 @@ package Orka_Test.Package_9_Jobs is
    type Test_Parallel_Job is new Orka.Jobs.Abstract_Parallel_Job with null record;
 
    overriding
-   procedure Execute (Object : Test_Parallel_Job; From, To : Positive);
+   procedure Execute
+     (Object   : Test_Parallel_Job;
+      Context  : Orka.Jobs.Execution_Context'Class;
+      From, To : Positive);
 
    type Test_Sequential_Job is new Orka.Jobs.Abstract_Job with record
       ID : Natural;
@@ -34,6 +37,6 @@ package Orka_Test.Package_9_Jobs is
    overriding
    procedure Execute
      (Object  : Test_Sequential_Job;
-      Enqueue : not null access procedure (Element : Orka.Jobs.Job_Ptr));
+      Context : Orka.Jobs.Execution_Context'Class);
 
 end Orka_Test.Package_9_Jobs;

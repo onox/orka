@@ -17,7 +17,6 @@
 with Ada.Text_IO;
 
 with GL.Drawing;
-with GL.Pixels;
 with GL.Types;
 with GL.Toggles;
 
@@ -126,7 +125,7 @@ procedure Orka_Test.Test_11_Instancing is
       Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
 
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
          Result.Add_Attribute_Buffer (Single_Type, Add_Matrix_Attribute'Access);
          Result.Set_Index_Buffer (Buffer_2);
@@ -144,9 +143,9 @@ procedure Orka_Test.Test_11_Instancing is
    Uni_View  : constant Uniforms.Uniform := Program_1.Uniform ("view");
    Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
-   Triangle : constant Vertex_Format := Load_Mesh (Program_1);
+   VF_1 : constant Vertex_Format := Load_Mesh (Program_1);
 
-   Default_FB : constant Framebuffer := Create_Default_Framebuffer (500, 500);
+   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
    Mouse_X, Mouse_Y, Mouse_Z, Distance_Center : Single;
 begin
@@ -164,11 +163,11 @@ begin
    GL.Toggles.Enable (GL.Toggles.Cull_Face);
    GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
-   Triangle.GL_Vertex_Array.Bind;
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 0.0), Depth => 1.0, others => <>));
+   VF_1.Bind;
 
    while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 1.0));
-      Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
+      FB_D.Clear ((Color | Depth => True, others => False));
 
       Mouse_X := Single (GL_Test.Display_Backend.Get_Mouse_X);
       Mouse_Y := Single (GL_Test.Display_Backend.Get_Mouse_Y);

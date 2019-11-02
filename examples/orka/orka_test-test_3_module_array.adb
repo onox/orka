@@ -14,22 +14,25 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Pixels;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
-
-with GL_Test.Display_Backend;
+with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_3_Module_Array is
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
-   pragma Unreferenced (Initialized);
+   Context : constant Orka.Contexts.Context'Class
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   pragma Unreferenced (Context);
+
+   Window : aliased Orka.Windows.Window'Class
+     := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
@@ -55,7 +58,7 @@ procedure Orka_Test.Test_3_Module_Array is
       end Add_Vertex_Attributes;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Mesh;
@@ -73,20 +76,21 @@ procedure Orka_Test.Test_3_Module_Array is
        FS => "test-3-module-2.frag")
    ));
 
-   Triangle : constant Vertex_Format := Load_Mesh (Program_1);
+   VF_1 : constant Vertex_Format := Load_Mesh (Program_1);
 
-   Default_FB : constant Framebuffer := Create_Default_Framebuffer (500, 500);
+   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 begin
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+
+   VF_1.Bind;
    Program_1.Use_Program;
 
-   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 0.0));
-      Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
+   while not Window.Should_Close loop
+      Window.Process_Input;
 
-      Triangle.Draw (0, 3);
+      FB_D.Clear ((Color => True, others => False));
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
 
-      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+      Window.Swap_Buffers;
    end loop;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_3_Module_Array;

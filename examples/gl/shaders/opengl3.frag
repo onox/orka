@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-#version 140
+#version 420 core
 
-in vec3 ex_Color;
+in  vec3 ex_Color;
 out vec4 out_Color;
 
 const float gamma = 2.2;

@@ -14,22 +14,25 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Pixels;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
-
-with GL_Test.Display_Backend;
+with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_2_Two_Triangles is
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
-   pragma Unreferenced (Initialized);
+   Context : constant Orka.Contexts.Context'Class
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   pragma Unreferenced (Context);
+
+   Window : aliased Orka.Windows.Window'Class
+     := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500, Resizable => False);
 
    use GL.Types;
    use all type Orka.Types.Element_Type;
@@ -67,7 +70,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       end Add_Color_Attribute;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Position_Attribute'Access);
          Result.Add_Attribute_Buffer (Single_Type, Add_Color_Attribute'Access);
       end return;
@@ -100,7 +103,7 @@ procedure Orka_Test.Test_2_Two_Triangles is
       end Add_Instance_Attribute;
    begin
       --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
          Result.Add_Attribute_Buffer (Single_Type, Add_Instance_Attribute'Access);
       end return;
@@ -114,22 +117,25 @@ procedure Orka_Test.Test_2_Two_Triangles is
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "opengl3.vert", FS => "opengl3.frag"));
 
-   Triangle_1 : constant Vertex_Format := Load_Mesh_1 (Program_1);
-   Triangle_2 : constant Vertex_Format := Load_Mesh_2 (Program_1);
+   VF_1 : constant Vertex_Format := Load_Mesh_1 (Program_1);
+   VF_2 : constant Vertex_Format := Load_Mesh_2 (Program_1);
 
-   Default_FB : constant Framebuffer := Create_Default_Framebuffer (500, 500);
+   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 begin
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+
    Program_1.Use_Program;
 
-   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      Default_FB.GL_Framebuffer.Clear_Color_Buffer (0, GL.Pixels.Float_Type, (0.0, 0.0, 0.0, 0.0));
-      Default_FB.GL_Framebuffer.Clear_Depth_Buffer (1.0);
+   while not Window.Should_Close loop
+      Window.Process_Input;
 
-      Triangle_1.Draw (0, 3);
-      Triangle_2.Draw (0, 3);
+      FB_D.Clear ((Color => True, others => False));
 
-      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+      VF_1.Bind;
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+      VF_2.Bind;
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+
+      Window.Swap_Buffers;
    end loop;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_2_Two_Triangles;

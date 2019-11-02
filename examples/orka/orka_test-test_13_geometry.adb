@@ -16,19 +16,23 @@
 
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
-
-with GL_Test.Display_Backend;
+with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_13_Geometry is
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False);
-   pragma Unreferenced (Initialized);
+   Context : constant Orka.Contexts.Context'Class
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   pragma Unreferenced (Context);
+
+   Window : aliased Orka.Windows.Window'Class
+     := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Vertex_Formats;
@@ -54,7 +58,7 @@ procedure Orka_Test.Test_13_Geometry is
          Buffer.Set_Buffer (VBO);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Create_Vertex_Format (Points, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Data;
@@ -74,18 +78,18 @@ procedure Orka_Test.Test_13_Geometry is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 begin
+   VF_1.Bind;
    Program_1.Use_Program;
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
-   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      FB_D.Clear ((Color => True, others => False));
+   while not Window.Should_Close loop
+      Window.Process_Input;
 
-      VF_1.Draw (0, 4);
+      FB_D.Clear ((Color => True, others => False));
+      Orka.Rendering.Drawing.Draw (GL.Types.Points, 0, 4);
 
       -- Swap front and back buffers and process events
-      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+      Window.Swap_Buffers;
    end loop;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_13_Geometry;

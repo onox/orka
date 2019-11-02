@@ -21,6 +21,7 @@ with GL.Types;
 
 with Orka.Debug;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
@@ -57,7 +58,7 @@ procedure Orka_Test.Test_14_Subroutines is
          Buffer.Set_Buffer (VBO);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Data;
@@ -88,6 +89,7 @@ begin
    Orka.Debug.Set_Log_Messages (Enable => True);
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
+   VF_1.Bind;
 
    Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between subroutines.");
 
@@ -103,7 +105,7 @@ begin
 
       Program_1.Use_Program;
 
-      VF_1.Draw (0, 3);
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
 
       -- Swap front and back buffers and process events
       GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;

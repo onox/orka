@@ -142,7 +142,7 @@ procedure Orka_Test.Test_12_Stencil is
          Buffer.Set_Buffer (Buffer_1);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
       end return;
    end Load_Scene_Data;
@@ -167,7 +167,7 @@ procedure Orka_Test.Test_12_Stencil is
          Buffer.Set_Buffer (Buffer_1);
       end Add_Vertex_Attributes;
    begin
-      return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
          Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
          Result.Set_Index_Buffer (Buffer_2);
       end return;
@@ -291,7 +291,7 @@ begin
          --  Model matrix
          Uni_Model.Set_Matrix (Transforms.Identity_Value);
 
-         VAO_Scene.GL_Vertex_Array.Bind;
+         VAO_Scene.Bind;
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
          Program_Scene.Use_Program;
@@ -344,7 +344,7 @@ begin
          FB_D.Use_Framebuffer;
          FB_D.Clear;
 
-         VAO_Screen.GL_Vertex_Array.Bind;
+         VAO_Screen.Bind;
          GL.Toggles.Disable (GL.Toggles.Depth_Test);
 
          Program_Screen.Use_Program;
