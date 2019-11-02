@@ -181,6 +181,9 @@ package body Orka.Windows.SDL is
       use type Events.Keyboards.Key_Codes;
       use type GL.Types.Double;
    begin
+      Object.Scroll_X := 0.0;
+      Object.Scroll_Y := 0.0;
+
       while Events.Events.Poll (Event) loop
          case Event.Common.Event_Type is
             when Events.Quit =>
@@ -198,6 +201,7 @@ package body Orka.Windows.SDL is
                Object.Position_X := GL.Types.Double (Event.Mouse_Motion.X);
                Object.Position_Y := GL.Types.Double (Event.Mouse_Motion.Y);
             when Events.Mice.Wheel =>
+               --  Accumulate the offset in case multiple events are processed
                Object.Scroll_X := Object.Scroll_X + GL.Types.Double (Event.Mouse_Wheel.X);
                Object.Scroll_Y := Object.Scroll_Y + GL.Types.Double (Event.Mouse_Wheel.Y);
             when Events.Mice.Button_Down =>

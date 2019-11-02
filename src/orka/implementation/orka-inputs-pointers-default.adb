@@ -42,14 +42,14 @@ package body Orka.Inputs.Pointers.Default is
    function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Single is
       use type GL.Types.Double;
    begin
-      return GL.Types.Single (Object.Last_Offset_X - Object.Prev_Offset_X);
+      return GL.Types.Single (Object.Scroll_X);
    end Scroll_X;
 
    overriding
    function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Single is
       use type GL.Types.Double;
    begin
-      return GL.Types.Single (Object.Last_Offset_Y - Object.Prev_Offset_Y);
+      return GL.Types.Single (Object.Scroll_Y);
    end Scroll_Y;
 
    overriding
@@ -98,6 +98,7 @@ package body Orka.Inputs.Pointers.Default is
          Object.X := X;
          Object.Y := Y;
       end if;
+
       Object.Prev_X := Object.Last_X;
       Object.Prev_Y := Object.Last_Y;
       Object.Last_X := X;
@@ -106,10 +107,8 @@ package body Orka.Inputs.Pointers.Default is
 
    procedure Set_Scroll_Offset (Object : in out Abstract_Pointer_Input; X, Y : GL.Types.Double) is
    begin
-      Object.Prev_Offset_X := Object.Last_Offset_X;
-      Object.Prev_Offset_Y := Object.Last_Offset_Y;
-      Object.Last_Offset_X := X;
-      Object.Last_Offset_Y := Y;
+      Object.Scroll_X := X;
+      Object.Scroll_Y := Y;
    end Set_Scroll_Offset;
 
    procedure Set_Button_State

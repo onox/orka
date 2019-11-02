@@ -79,8 +79,8 @@ private
       X, Y           : GL.Types.Double := 0.0;
       Prev_X, Prev_Y : GL.Types.Double := 0.0;
       Last_X, Last_Y : GL.Types.Double := 0.0;
-      Prev_Offset_X, Prev_Offset_Y : GL.Types.Double := 0.0;
-      Last_Offset_X, Last_Offset_Y : GL.Types.Double := 0.0;
+      Scroll_X : GL.Types.Double := 0.0;
+      Scroll_Y : GL.Types.Double := 0.0;
       Buttons : Button_Array := (others => False);
       Locked  : Boolean := False;
       Visible : Boolean := True;

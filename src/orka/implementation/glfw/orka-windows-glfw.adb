@@ -153,6 +153,9 @@ package body Orka.Windows.GLFW is
    overriding
    procedure Process_Input (Object : in out GLFW_Window) is
    begin
+      Object.Scroll_X := 0.0;
+      Object.Scroll_Y := 0.0;
+
       Standard.Glfw.Input.Poll_Events;
 
       --  Update position of mouse
@@ -215,6 +218,8 @@ package body Orka.Windows.GLFW is
    is
       use type GL.Types.Double;
    begin
+      --  Accumulate the offset because the callback can be called
+      --  multiple times
       Object.Scroll_X := Object.Scroll_X + GL.Types.Double (X);
       Object.Scroll_Y := Object.Scroll_Y + GL.Types.Double (Y);
    end Mouse_Scrolled;
