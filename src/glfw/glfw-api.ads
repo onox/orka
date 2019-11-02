@@ -135,18 +135,6 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Version_String,
                   External_Name => "glfwGetVersionString");
 
-   function Get_Time return C.double;
-   pragma Import (Convention => C, Entity => Get_Time,
-                  External_Name => "glfwGetTime");
-
-   procedure Set_Time (Value : C.double);
-   pragma Import (Convention => C, Entity => Set_Time,
-                  External_Name => "glfwSetTime");
-
-   procedure Sleep (Time : C.double);
-   pragma Import (Convention => C, Entity => Sleep,
-                  External_Name => "glfwSleep");
-
    function Extension_Supported (Name : C.char_array) return Bool;
    pragma Import (Convention => C, Entity => Extension_Supported,
                   External_Name => "glfwExtensionSupported");

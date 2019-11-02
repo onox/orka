@@ -47,16 +47,6 @@ package body Glfw is
       return Interfaces.C.Strings.Value (API.Get_Version_String);
    end Version_String;
 
-   function Time return Seconds is
-   begin
-      return API.Get_Time;
-   end Time;
-
-   procedure Set_Time (Value : Seconds) is
-   begin
-      API.Set_Time (Value);
-   end Set_Time;
-
    function Extension_Supported (Name : String) return Boolean is
    begin
       return Boolean (API.Extension_Supported (Interfaces.C.To_C (Name)));
