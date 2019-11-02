@@ -48,7 +48,7 @@ library project Orka.Glfw is
          when "windows" =>
             for Linker_Options use ("-lglfw3");
          when "egl" =>
-            for Linker_Options use ("-lglfw");
+            for Linker_Options use external_as_list ("GLFW_Libs", " ");
       end case;
    end Linker;
 

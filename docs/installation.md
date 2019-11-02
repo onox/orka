@@ -4,10 +4,10 @@
 
 In order to build and use Orka you need to have:
 
- * Ada 2012 compiler (Either [GNAT FSF][url-fsf] from
+ * Ada 2012 compiler ([GNAT FSF][url-fsf] from
    your Linux distribution or [GNAT CE][url-ce])
 
- * GPRBuild and `make`
+ * GPRBuild, `make`, and `pkg-config`
 
  * [json-ada 3.0.4][url-json-ada] (for glTF)
 
@@ -81,7 +81,7 @@ Optional dependencies:
 Install the dependencies using apt:
 
 ```sh
-$ sudo apt install gnat-7 gprbuild make libahven6-dev lcov
+$ sudo apt install gnat-7 gprbuild make pkg-config libahven6-dev lcov
 $ sudo apt install libglfw3 libglfw3-dev libegl1-mesa-dev
 ```
 

@@ -1,14 +1,16 @@
 WINDOWING_BACKEND := egl
+GLFW_LIBS := $(strip $(shell pkg-config --libs glfw3))
 
 LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
-CFLAGS  ?= -O2 -march=native
+CFLAGS ?= -O2 -march=native
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
+X_GLFW_LIBS := -XGLFW_Libs="$(GLFW_LIBS)"
 
-GPRBUILD = nice gprbuild -dm -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE)
+GPRBUILD = nice gprbuild -dm -p $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS)
 GPRCLEAN = gprclean -q $(X_WINDOWING_SYSTEM)
 GPRINSTALL = gprinstall -q $(X_WINDOWING_SYSTEM)
 

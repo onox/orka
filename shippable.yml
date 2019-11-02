@@ -7,7 +7,7 @@ build:
     pull: true
   ci:
     - apt update
-    - apt install -y --no-install-recommends gprbuild make libahven6-dev lcov git ca-certificates libegl1-mesa-dev
+    - apt install -y --no-install-recommends gprbuild make pkg-config libahven6-dev lcov git ca-certificates libegl1-mesa-dev
     - git clone https://github.com/onox/json-ada.git
     - git clone https://github.com/onox/dcf-ada.git
     - cd json-ada; make; make install; cd ..
