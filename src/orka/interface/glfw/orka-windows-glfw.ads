@@ -79,6 +79,9 @@ private
       Scroll_X   : GL.Types.Double := 0.0;
       Scroll_Y   : GL.Types.Double := 0.0;
       Width, Height : Positive;
+
+      --  Needed to workaround a GLFW bug
+      Got_Locked, Last_Locked : Boolean := False;
    end record;
 
    overriding
