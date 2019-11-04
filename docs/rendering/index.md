@@ -248,7 +248,7 @@ function Create_Format return Vertex_Format is
    end Add_Vertex_Attributes;
 begin
    --  Create mesh and its attributes
-   return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+   return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
       Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
    end return;
 end Create_Format;
@@ -260,6 +260,7 @@ Later we set `Buffer_1` as the buffer for the attribute buffer
 that we have created:
 
 ```ada
+VF_1.Bind;
 VF_1.Set_Vertex_Buffer (1, Buffer_1);
 ```
 
@@ -344,7 +345,7 @@ while not Window.Should_Close loop
    Window.Process_Input;
 
    FB_1.Clear;
-   VF_1.Draw (0, 3);
+   Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
    Window.Swap_Buffers;
 end loop;
@@ -359,7 +360,9 @@ and then draw the triangle. Press ++esc++ to close the application.
     ```ada linenums="1"
     with GL.Types;
 
+    with Orka.Contexts;
     with Orka.Rendering.Buffers;
+    with Orka.Rendering.Drawing;
     with Orka.Rendering.Framebuffers;
     with Orka.Rendering.Programs.Modules;
     with Orka.Rendering.Vertex_Formats;
@@ -394,7 +397,7 @@ and then draw the triangle. Press ++esc++ to close the application.
           end Add_Vertex_Attributes;
        begin
           --  Create mesh and its attributes
-          return Result : Vertex_Format := Create_Vertex_Format (Triangles, UInt_Type) do
+          return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
              Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
           end return;
        end Create_Format;
@@ -417,6 +420,7 @@ and then draw the triangle. Press ++esc++ to close the application.
        --  Upload Vertices data to buffer
        Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
     begin
+       VF_1.Bind;
        VF_1.Set_Vertex_Buffer (1, Buffer_1);
 
        FB_1.Set_Default_Values
@@ -429,7 +433,7 @@ and then draw the triangle. Press ++esc++ to close the application.
           Window.Process_Input;
 
           FB_1.Clear;
-          VF_1.Draw (0, 3);
+          Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
           Window.Swap_Buffers;
        end loop;

@@ -86,7 +86,7 @@ begin
       Window.Process_Input;
 
       FB_D.Clear ((Color => True, others => False));
-      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+      Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
       Window.Swap_Buffers;
    end loop;
