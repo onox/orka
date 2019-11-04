@@ -17,6 +17,7 @@
 with System;
 
 with Ada.Finalization;
+with Ada.Strings.Unbounded;
 
 with Glfw.Input.Mouse;
 with Glfw.Input.Keys;
@@ -25,20 +26,29 @@ with Glfw.Monitors;
 package Glfw.Windows is
    pragma Preelaborate;
 
+   use type Interfaces.C.int;
+
+   package SU renames Ada.Strings.Unbounded;
+
    type Window is limited new Ada.Finalization.Limited_Controlled with private;
    type Window_Reference is not null access all Window;
 
    Creation_Error : exception;
 
    package Callbacks is
-      -- avoid pollution of Glfw.Windows package with symbols
+      --  Avoid pollution of Glfw.Windows package with symbols
 
-      type Kind is (Position, Size, Close, Refresh, Focus, Iconify,
-                    Framebuffer_Size, Mouse_Button, Mouse_Position,
-                    Mouse_Scroll, Mouse_Enter, Key, Char);
+      type Kind is (Position, Size, Close, Refresh, Focus, Maximize,
+                    Content_Scale, Iconify, Framebuffer_Size,
+                    Mouse_Button, Mouse_Position, Mouse_Scroll, Mouse_Enter,
+                    Key, Char, File_Drop);
    end Callbacks;
 
    subtype Coordinate is Interfaces.C.int;
+
+   subtype Opacity is Interfaces.C.C_float range 0.0 .. 1.0;
+
+   type Path_List is array (Positive range <>) of SU.Unbounded_String;
 
    -- throws Creation_Error if the window cannot be created
    procedure Init (Object        : not null access Window;
@@ -51,6 +61,17 @@ package Glfw.Windows is
 
    procedure Show (Object : not null access Window);
    procedure Hide (Object : not null access Window);
+
+   procedure Focus (Object : not null access Window);
+   procedure Maximize (Object : not null access Window);
+
+   procedure Request_Attention (Object : not null access Window);
+
+   function Get_Monitor (Object : not null access Window) return Monitors.Monitor;
+
+   procedure Set_Monitor
+     (Object  : not null access Window;
+      Monitor : Monitors.Monitor := Monitors.No_Monitor);
 
    procedure Set_Title (Object : not null access Window; Value : String);
 
@@ -87,17 +108,51 @@ package Glfw.Windows is
    procedure Set_Position (Object : not null access Window;
                            X, Y : Coordinate);
 
+   procedure Set_Aspect_Ratio
+     (Object : not null access Window;
+      Numer, Denom : Size)
+   with Pre => Numer > 0 and Denom > 0;
+
+   procedure Set_Window_Size_Limits
+     (Object : not null access Window;
+      Min_Width, Min_Height, Max_Width, Max_Height : Size)
+   with Pre => Max_Width >= Min_Width and Max_Height >= Min_Height;
+
    procedure Get_Size (Object : not null access Window;
                        Width, Height : out Size);
    procedure Set_Size (Object : not null access Window;
                        Width, Height : Size);
 
+   procedure Get_Content_Scale
+     (Object : not null access Window; X, Y : out Float);
+
+   function Get_Opacity (Object : not null access Window) return Opacity;
+   procedure Set_Opacity (Object : not null access Window; Value : Opacity);
+
+   procedure Get_Frame_Size
+     (Object : not null access Window;
+      Left, Top, Right, Bottom : out Size);
+
    procedure Get_Framebuffer_Size (Object : not null access Window;
                                    Width, Height : out Size);
 
-   function Visible   (Object : not null access Window) return Boolean;
-   function Iconified (Object : not null access Window) return Boolean;
    function Focused   (Object : not null access Window) return Boolean;
+   function Iconified (Object : not null access Window) return Boolean;
+   function Resizable (Object : not null access Window) return Boolean;
+   function Visible   (Object : not null access Window) return Boolean;
+   function Decorated (Object : not null access Window) return Boolean;
+   function Floating  (Object : not null access Window) return Boolean;
+   function Maximized (Object : not null access Window) return Boolean;
+   function Hovered   (Object : not null access Window) return Boolean;
+   function Auto_Iconified  (Object : not null access Window) return Boolean;
+   function Focused_On_Show (Object : not null access Window) return Boolean;
+   function Transparent_Framebuffer (Object : not null access Window) return Boolean;
+
+   procedure Set_Resizable (Object : not null access Window; Enable : Boolean);
+   procedure Set_Decorated (Object : not null access Window; Enable : Boolean);
+   procedure Set_Floating  (Object : not null access Window; Enable : Boolean);
+   procedure Set_Auto_Iconify  (Object : not null access Window; Enable : Boolean);
+   procedure Set_Focus_On_Show (Object : not null access Window; Enable : Boolean);
 
    function Should_Close (Object : not null access Window) return Boolean;
    procedure Set_Should_Close (Object : not null access Window;
@@ -121,6 +176,12 @@ package Glfw.Windows is
    procedure Refresh (Object : not null access Window) is null;
    procedure Focus_Changed (Object : not null access Window;
                             Focused : Boolean) is null;
+   procedure Maximize_Changed
+     (Object    : not null access Window;
+      Maximized : Boolean) is null;
+   procedure Content_Scale_Changed
+     (Object : not null access Window;
+      X, Y   : Float) is null;
    procedure Iconification_Changed (Object : not null access Window;
                                     Iconified : Boolean) is null;
    procedure Framebuffer_Size_Changed (Object : not null access Window;
@@ -143,10 +204,23 @@ package Glfw.Windows is
    procedure Character_Entered (Object : not null access Window;
                                 Char   : Wide_Wide_Character) is null;
 
+   procedure Files_Dropped
+     (Object : not null access Window;
+      Paths  : Path_List) is null;
+
 private
+
+   type Windowed_Size is record
+      X, Y           : Coordinate;
+      Width, Height  : Size;
+   end record;
 
    type Window is limited new Ada.Finalization.Limited_Controlled with record
       Handle : System.Address := System.Null_Address;
+
+      --  Used to restore position and size when moving from fullscreen
+      --  to windowed
+      Original_Size : Windowed_Size;
    end record;
 
    function Window_Ptr (Raw : System.Address) return not null access Window'Class;

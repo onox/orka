@@ -20,41 +20,66 @@ private package Glfw.Enums is
    pragma Preelaborate;
 
    type Window_Info is (Focused, Iconified, Resizable, Visible, Decorated,
+                        Auto_Iconify, Floating, Maximized, Center_Cursor,
+                        Transparent, Hovered, Focus_On_Show,
                         Red_Bits, Green_Bits, Blue_Bits, Alpha_Bits, Depth_Bits,
                         Stencil_Bits, Stereo, Samples, SRGB_Capable,
                         Refresh_Rate, Client_API, Context_Version_Major,
                         Context_Version_Minor, Context_Revision,
                         Context_Robustness, OpenGL_Forward_Compat,
-                        OpenGL_Debug_Context, OpenGL_Profile);
+                        OpenGL_Debug_Context, OpenGL_Profile,
+                        Context_Rel_Behavior, Context_No_Error, Scale_To_Monitor);
 
-   for Window_Info use (Focused      => 16#20001#,
-                        Iconified    => 16#20002#,
-                        Resizable    => 16#20003#,
-                        Visible      => 16#20004#,
-                        Decorated    => 16#20005#,
-                        Red_Bits     => 16#21001#,
-                        Green_Bits   => 16#21002#,
-                        Blue_Bits    => 16#21003#,
-                        Alpha_Bits   => 16#21004#,
-                        Depth_Bits   => 16#21005#,
-                        Stencil_Bits => 16#21006#,
+   for Window_Info use (Focused       => 16#20001#,  --  h g
+                        Iconified     => 16#20002#,  --    g
+                        Resizable     => 16#20003#,  --  h g s
+                        Visible       => 16#20004#,  --  h g
+                        Decorated     => 16#20005#,  --  h g s
+                        Auto_Iconify  => 16#20006#,  --  h g s
+                        Floating      => 16#20007#,  --  h g s
+                        Maximized     => 16#20008#,  --  h g
+                        Center_Cursor => 16#20009#,  --  h
+                        Transparent   => 16#2000A#,  --  h g
+                        Hovered       => 16#2000B#,  --    g
+                        Focus_On_Show => 16#2000C#,  --  h g s
 
-                        Stereo           => 16#2100C#,
-                        Samples          => 16#2100D#,
-                        SRGB_Capable     => 16#2100E#,
-                        Refresh_Rate     => 16#2100F#,
+                        Red_Bits      => 16#21001#,  --  h
+                        Green_Bits    => 16#21002#,  --  h
+                        Blue_Bits     => 16#21003#,  --  h
+                        Alpha_Bits    => 16#21004#,  --  h
+                        Depth_Bits    => 16#21005#,  --  h
+                        Stencil_Bits  => 16#21006#,  --  h
 
-                        Client_API             => 16#22001#,
-                        Context_Version_Major  => 16#22002#,
-                        Context_Version_Minor  => 16#22003#,
-                        Context_Revision       => 16#22004#,
-                        Context_Robustness     => 16#22005#,
-                        OpenGL_Forward_Compat  => 16#22006#,
-                        OpenGL_Debug_Context   => 16#22007#,
-                        OpenGL_Profile         => 16#22008#);
+                        Stereo        => 16#2100C#,  --  h
+                        Samples       => 16#2100D#,  --  h
+                        SRGB_Capable  => 16#2100E#,  --  h
+                        Refresh_Rate  => 16#2100F#,  --  h
+
+                        Client_API             => 16#22001#,  --  h g
+                        Context_Version_Major  => 16#22002#,  --  h g
+                        Context_Version_Minor  => 16#22003#,  --  h g
+                        Context_Revision       => 16#22004#,  --    g
+                        Context_Robustness     => 16#22005#,  --  h g
+                        OpenGL_Forward_Compat  => 16#22006#,  --  h g
+                        OpenGL_Debug_Context   => 16#22007#,  --  h g
+                        OpenGL_Profile         => 16#22008#,  --  h g
+                        Context_Rel_Behavior   => 16#22009#,  --  h
+                        Context_No_Error       => 16#2200A#,  --  h
+                        Scale_To_Monitor       => 16#2200C#); --  h
    for Window_Info'Size use Interfaces.C.int'Size;
 
-   subtype Window_Hint is Window_Info range Resizable .. OpenGL_Profile;
+   subtype Window_Hint is Window_Info
+     with Static_Predicate => Window_Hint not in Iconified | Hovered | Context_Revision;
+
+   subtype Window_Attrib_Getter is Window_Info
+     with Static_Predicate => Window_Attrib_Getter
+       in Focused .. Maximized | Transparent .. Focus_On_Show | Client_API .. OpenGL_Profile;
+
+   subtype Window_Attrib_Setter is Window_Info
+     with Static_Predicate => Window_Attrib_Setter
+       in Resizable | Decorated | Auto_Iconify | Floating | Focus_On_Show;
+
+   type Init_Hint is (Joystick_Hat_Buttons);
 
    type Input_Toggle is (Mouse_Cursor);
 
@@ -67,6 +92,10 @@ private package Glfw.Enums is
    type Joystick_Param is (Present, Axis, Buttons);
 
 private
+
+   for Init_Hint use
+     (Joystick_Hat_Buttons => 16#50001#);
+   for Init_Hint'Size use Interfaces.C.int'Size;
 
    for Input_Toggle use (Mouse_Cursor => 16#33001#);
    for Input_Toggle'Size use Interfaces.C.int'Size;

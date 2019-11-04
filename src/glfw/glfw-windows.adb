@@ -16,6 +16,8 @@
 
 with System.Address_To_Access_Conversions;
 
+with Interfaces.C.Strings;
+
 with Ada.Unchecked_Conversion;
 
 with Glfw.API;
@@ -32,6 +34,8 @@ package body Glfw.Windows is
    procedure Raw_Close_Callback (Raw  : System.Address);
    procedure Raw_Refresh_Callback (Raw  : System.Address);
    procedure Raw_Focus_Callback (Raw : System.Address; Focused : Bool);
+   procedure Raw_Maximize_Callback (Raw : System.Address; Maximized : Bool);
+   procedure Raw_Content_Scale_Callback (Raw : System.Address; X, Y : Interfaces.C.C_float);
    procedure Raw_Iconify_Callback (Raw : System.Address; Iconified : Bool);
    procedure Raw_Framebuffer_Size_Callback (Raw : System.Address;
                                             Width, Height : Interfaces.C.int);
@@ -53,11 +57,18 @@ package body Glfw.Windows is
    procedure Raw_Character_Callback (Raw  : System.Address;
                                      Char : Interfaces.C.unsigned);
 
+   procedure Raw_File_Drop_Callback
+     (Raw   : System.Address;
+      Count : Interfaces.C.int;
+      Paths : Interfaces.C.Strings.chars_ptr_array);
+
    pragma Convention (C, Raw_Position_Callback);
    pragma Convention (C, Raw_Size_Callback);
    pragma Convention (C, Raw_Close_Callback);
    pragma Convention (C, Raw_Refresh_Callback);
    pragma Convention (C, Raw_Focus_Callback);
+   pragma Convention (C, Raw_Maximize_Callback);
+   pragma Convention (C, Raw_Content_Scale_Callback);
    pragma Convention (C, Raw_Iconify_Callback);
    pragma Convention (C, Raw_Framebuffer_Size_Callback);
    pragma Convention (C, Raw_Mouse_Button_Callback);
@@ -66,6 +77,7 @@ package body Glfw.Windows is
    pragma Convention (C, Raw_Mouse_Enter_Callback);
    pragma Convention (C, Raw_Key_Callback);
    pragma Convention (C, Raw_Character_Callback);
+   pragma Convention (C, Raw_File_Drop_Callback);
 
    function Window_Ptr (Raw : System.Address) return not null access Window'Class is
    begin
@@ -98,6 +110,17 @@ package body Glfw.Windows is
    begin
       Window_Ptr (Raw).Focus_Changed (Boolean (Focused));
    end Raw_Focus_Callback;
+
+   procedure Raw_Maximize_Callback (Raw : System.Address; Maximized : Bool) is
+   begin
+      Window_Ptr (Raw).Maximize_Changed (Boolean (Maximized));
+   end Raw_Maximize_Callback;
+
+   procedure Raw_Content_Scale_Callback
+     (Raw : System.Address; X, Y : Interfaces.C.C_float) is
+   begin
+      Window_Ptr (Raw).Content_Scale_Changed (Float (X), Float (Y));
+   end Raw_Content_Scale_Callback;
 
    procedure Raw_Iconify_Callback (Raw : System.Address; Iconified : Bool) is
    begin
@@ -153,6 +176,20 @@ package body Glfw.Windows is
       Window_Ptr (Raw).Character_Entered (Convert (Char));
    end Raw_Character_Callback;
 
+   procedure Raw_File_Drop_Callback
+     (Raw   : System.Address;
+      Count : Interfaces.C.int;
+      Paths : Interfaces.C.Strings.chars_ptr_array)
+   is
+      List : Path_List (1 .. Positive (Count));
+   begin
+      for Index in List'Range loop
+         List (Index) := SU.To_Unbounded_String
+           (Interfaces.C.Strings.Value (Paths (Interfaces.C.size_t (Index))));
+      end loop;
+      Window_Ptr (Raw).Files_Dropped (List);
+   end Raw_File_Drop_Callback;
+
    procedure Init (Object        : not null access Window;
                    Width, Height : Size;
                    Title         : String;
@@ -202,6 +239,55 @@ package body Glfw.Windows is
    begin
       API.Hide_Window (Object.Handle);
    end Hide;
+
+   procedure Focus (Object : not null access Window) is
+   begin
+      API.Focus_Window (Object.Handle);
+   end Focus;
+
+   procedure Maximize (Object : not null access Window) is
+   begin
+      API.Maximize_Window (Object.Handle);
+   end Maximize;
+
+   procedure Request_Attention (Object : not null access Window) is
+   begin
+      API.Request_Window_Attention (Object.Handle);
+   end Request_Attention;
+
+   function Get_Monitor (Object : not null access Window) return Monitors.Monitor is
+   begin
+      return Monitors.To_Monitor (API.Get_Window_Monitor (Object.Handle));
+   exception
+      when Operation_Exception =>
+         return Monitors.No_Monitor;
+   end Get_Monitor;
+
+   procedure Set_Monitor
+     (Object  : not null access Window;
+      Monitor : Monitors.Monitor := Monitors.No_Monitor)
+   is
+      use type Monitors.Monitor;
+
+      OS : Windowed_Size renames Object.Original_Size;
+   begin
+      if Monitor = Monitors.No_Monitor then
+         --  Restore saved position and size
+         API.Set_Window_Monitor (Object.Handle, Monitor.Raw_Pointer,
+           OS.X, OS.Y, OS.Width, OS.Height, 0);
+      else
+         declare
+            Mode : constant Monitors.Video_Mode := Monitor.Current_Video_Mode;
+         begin
+            --  Save position and size
+            Object.Get_Position (OS.X, OS.Y);
+            Object.Get_Size (OS.Width, OS.Height);
+
+            API.Set_Window_Monitor (Object.Handle, Monitor.Raw_Pointer,
+              0, 0, Mode.Width, Mode.Height, Mode.Refresh_Rate);
+         end;
+      end if;
+   end Set_Monitor;
 
    procedure Set_Title (Object : not null access Window; Value : String) is
    begin
@@ -270,6 +356,21 @@ package body Glfw.Windows is
       API.Set_Window_Pos (Object.Handle, X, Y);
    end Set_Position;
 
+   procedure Set_Aspect_Ratio
+     (Object : not null access Window;
+      Numer, Denom : Size) is
+   begin
+      API.Set_Window_Aspect_Ratio (Object.Handle, Numer, Denom);
+   end Set_Aspect_Ratio;
+
+   procedure Set_Window_Size_Limits
+     (Object : not null access Window;
+      Min_Width, Min_Height, Max_Width, Max_Height : Size) is
+   begin
+      API.Set_Window_Size_Limits
+        (Object.Handle, Min_Width, Min_Height, Max_Width, Max_Height);
+   end Set_Window_Size_Limits;
+
    procedure Get_Size (Object : not null access Window;
                        Width, Height : out Size) is
    begin
@@ -282,29 +383,94 @@ package body Glfw.Windows is
       API.Set_Window_Size (Object.Handle, Width, Height);
    end Set_Size;
 
+   procedure Get_Content_Scale
+     (Object : not null access Window; X, Y : out Float)
+   is
+      X_Raw, Y_Raw : Interfaces.C.C_float;
+   begin
+      API.Get_Window_Content_Scale (Object.Handle, X_Raw, Y_Raw);
+      X := Float (X_Raw);
+      Y := Float (Y_Raw);
+   end Get_Content_Scale;
+
+   function Get_Opacity (Object : not null access Window) return Opacity is
+     (API.Get_Window_Opacity (Object.Handle));
+
+   procedure Set_Opacity (Object : not null access Window; Value : Opacity) is
+   begin
+      API.Set_Window_Opacity (Object.Handle, Value);
+   end Set_Opacity;
+
+   procedure Get_Frame_Size
+     (Object : not null access Window;
+      Left, Top, Right, Bottom : out Size) is
+   begin
+      API.Get_Window_Frame_Size (Object.Handle, Left, Top, Right, Bottom);
+   end Get_Frame_Size;
+
    procedure Get_Framebuffer_Size (Object : not null access Window;
                                    Width, Height : out Size) is
    begin
       API.Get_Framebuffer_Size (Object.Handle, Width, Height);
    end Get_Framebuffer_Size;
 
-   function Visible (Object : not null access Window) return Boolean is
-   begin
-      return Boolean
-        (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Visible)));
-   end Visible;
+   function Focused (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Focused))));
 
    function Iconified (Object : not null access Window) return Boolean is
-   begin
-      return Boolean
-        (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Iconified)));
-   end Iconified;
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Iconified))));
 
-   function Focused (Object : not null access Window) return Boolean is
+   function Resizable (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Resizable))));
+
+   function Visible (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Visible))));
+
+   function Decorated (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Decorated))));
+
+   function Auto_Iconified (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Auto_Iconify))));
+
+   function Floating (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Floating))));
+
+   function Maximized (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Maximized))));
+
+   function Transparent_Framebuffer (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Transparent))));
+
+   function Hovered (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Hovered))));
+
+   function Focused_On_Show (Object : not null access Window) return Boolean is
+     (Boolean (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Focus_On_Show))));
+
+   procedure Set_Resizable (Object : not null access Window; Enable : Boolean) is
    begin
-      return Boolean
-        (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Focused)));
-   end Focused;
+      API.Set_Window_Attrib (Object.Handle, Enums.Resizable, Bool (Enable));
+   end Set_Resizable;
+
+   procedure Set_Decorated (Object : not null access Window; Enable : Boolean) is
+   begin
+      API.Set_Window_Attrib (Object.Handle, Enums.Decorated, Bool (Enable));
+   end Set_Decorated;
+
+   procedure Set_Auto_Iconify (Object : not null access Window; Enable : Boolean) is
+   begin
+      API.Set_Window_Attrib (Object.Handle, Enums.Auto_Iconify, Bool (Enable));
+   end Set_Auto_Iconify;
+
+   procedure Set_Floating (Object : not null access Window; Enable : Boolean) is
+   begin
+      API.Set_Window_Attrib (Object.Handle, Enums.Floating, Bool (Enable));
+   end Set_Floating;
+
+   procedure Set_Focus_On_Show (Object : not null access Window; Enable : Boolean) is
+   begin
+      API.Set_Window_Attrib (Object.Handle, Enums.Focus_On_Show, Bool (Enable));
+   end Set_Focus_On_Show;
 
    function Should_Close (Object : not null access Window) return Boolean is
    begin
@@ -321,19 +487,38 @@ package body Glfw.Windows is
                               Subject : Callbacks.Kind) is
    begin
       case Subject is
-         when Callbacks.Position => API.Set_Window_Pos_Callback (Object.Handle, Raw_Position_Callback'Access);
-         when Callbacks.Size => API.Set_Window_Size_Callback (Object.Handle, Raw_Size_Callback'Access);
-         when Callbacks.Close => API.Set_Window_Close_Callback (Object.Handle, Raw_Close_Callback'Access);
-         when Callbacks.Refresh => API.Set_Window_Refresh_Callback (Object.Handle, Raw_Refresh_Callback'Access);
-         when Callbacks.Focus => API.Set_Window_Focus_Callback (Object.Handle, Raw_Focus_Callback'Access);
-         when Callbacks.Iconify => API.Set_Window_Iconify_Callback (Object.Handle, Raw_Iconify_Callback'Access);
-         when Callbacks.Framebuffer_Size => API.Set_Framebuffer_Size_Callback (Object.Handle, Raw_Framebuffer_Size_Callback'Access);
-         when Callbacks.Mouse_Button => API.Set_Mouse_Button_Callback (Object.Handle, Raw_Mouse_Button_Callback'Access);
-         when Callbacks.Mouse_Position => API.Set_Cursor_Pos_Callback (Object.Handle, Raw_Mouse_Position_Callback'Access);
-         when Callbacks.Mouse_Scroll => API.Set_Scroll_Callback (Object.Handle, Raw_Mouse_Scroll_Callback'Access);
-         when Callbacks.Mouse_Enter => API.Set_Cursor_Enter_Callback (Object.Handle, Raw_Mouse_Enter_Callback'Access);
-         when Callbacks.Key => API.Set_Key_Callback (Object.Handle, Raw_Key_Callback'Access);
-         when Callbacks.Char => API.Set_Char_Callback (Object.Handle, Raw_Character_Callback'Access);
+         when Callbacks.Position =>
+            API.Set_Window_Pos_Callback (Object.Handle, Raw_Position_Callback'Access);
+         when Callbacks.Size =>
+            API.Set_Window_Size_Callback (Object.Handle, Raw_Size_Callback'Access);
+         when Callbacks.Close =>
+            API.Set_Window_Close_Callback (Object.Handle, Raw_Close_Callback'Access);
+         when Callbacks.Refresh =>
+            API.Set_Window_Refresh_Callback (Object.Handle, Raw_Refresh_Callback'Access);
+         when Callbacks.Focus =>
+            API.Set_Window_Focus_Callback (Object.Handle, Raw_Focus_Callback'Access);
+         when Callbacks.Maximize =>
+            API.Set_Window_Maximize_Callback (Object.Handle, Raw_Maximize_Callback'Access);
+         when Callbacks.Content_Scale =>
+            API.Set_Window_Content_Scale_Callback (Object.Handle, Raw_Content_Scale_Callback'Access);
+         when Callbacks.Iconify =>
+            API.Set_Window_Iconify_Callback (Object.Handle, Raw_Iconify_Callback'Access);
+         when Callbacks.Framebuffer_Size =>
+            API.Set_Framebuffer_Size_Callback (Object.Handle, Raw_Framebuffer_Size_Callback'Access);
+         when Callbacks.Mouse_Button =>
+            API.Set_Mouse_Button_Callback (Object.Handle, Raw_Mouse_Button_Callback'Access);
+         when Callbacks.Mouse_Position =>
+            API.Set_Cursor_Pos_Callback (Object.Handle, Raw_Mouse_Position_Callback'Access);
+         when Callbacks.Mouse_Scroll =>
+            API.Set_Scroll_Callback (Object.Handle, Raw_Mouse_Scroll_Callback'Access);
+         when Callbacks.Mouse_Enter =>
+            API.Set_Cursor_Enter_Callback (Object.Handle, Raw_Mouse_Enter_Callback'Access);
+         when Callbacks.Key =>
+            API.Set_Key_Callback (Object.Handle, Raw_Key_Callback'Access);
+         when Callbacks.Char =>
+            API.Set_Char_Callback (Object.Handle, Raw_Character_Callback'Access);
+         when Callbacks.File_Drop =>
+            API.Set_Drop_Callback (Object.Handle, Raw_File_Drop_Callback'Access);
       end case;
    end Enable_Callback;
 
@@ -341,19 +526,38 @@ package body Glfw.Windows is
                                Subject : Callbacks.Kind) is
    begin
       case Subject is
-         when Callbacks.Position => API.Set_Window_Pos_Callback (Object.Handle, null);
-         when Callbacks.Size => API.Set_Window_Size_Callback (Object.Handle,  null);
-         when Callbacks.Close => API.Set_Window_Close_Callback (Object.Handle,  null);
-         when Callbacks.Refresh => API.Set_Window_Refresh_Callback (Object.Handle,  null);
-         when Callbacks.Focus => API.Set_Window_Focus_Callback (Object.Handle,  null);
-         when Callbacks.Iconify => API.Set_Window_Iconify_Callback (Object.Handle,  null);
-         when Callbacks.Framebuffer_Size => API.Set_Framebuffer_Size_Callback (Object.Handle,  null);
-         when Callbacks.Mouse_Button => API.Set_Mouse_Button_Callback (Object.Handle,  null);
-         when Callbacks.Mouse_Position => API.Set_Cursor_Pos_Callback (Object.Handle,  null);
-         when Callbacks.Mouse_Scroll => API.Set_Scroll_Callback (Object.Handle,  null);
-         when Callbacks.Mouse_Enter => API.Set_Cursor_Enter_Callback (Object.Handle,  null);
-         when Callbacks.Key => API.Set_Key_Callback (Object.Handle,  null);
-         when Callbacks.Char => API.Set_Char_Callback (Object.Handle,  null);
+         when Callbacks.Position =>
+            API.Set_Window_Pos_Callback (Object.Handle, null);
+         when Callbacks.Size =>
+            API.Set_Window_Size_Callback (Object.Handle, null);
+         when Callbacks.Close =>
+            API.Set_Window_Close_Callback (Object.Handle, null);
+         when Callbacks.Refresh =>
+            API.Set_Window_Refresh_Callback (Object.Handle, null);
+         when Callbacks.Focus =>
+            API.Set_Window_Focus_Callback (Object.Handle, null);
+         when Callbacks.Maximize =>
+            API.Set_Window_Maximize_Callback (Object.Handle, null);
+         when Callbacks.Content_Scale =>
+            API.Set_Window_Content_Scale_Callback (Object.Handle, null);
+         when Callbacks.Iconify =>
+            API.Set_Window_Iconify_Callback (Object.Handle, null);
+         when Callbacks.Framebuffer_Size =>
+            API.Set_Framebuffer_Size_Callback (Object.Handle, null);
+         when Callbacks.Mouse_Button =>
+            API.Set_Mouse_Button_Callback (Object.Handle, null);
+         when Callbacks.Mouse_Position =>
+            API.Set_Cursor_Pos_Callback (Object.Handle, null);
+         when Callbacks.Mouse_Scroll =>
+            API.Set_Scroll_Callback (Object.Handle, null);
+         when Callbacks.Mouse_Enter =>
+            API.Set_Cursor_Enter_Callback (Object.Handle, null);
+         when Callbacks.Key =>
+            API.Set_Key_Callback (Object.Handle, null);
+         when Callbacks.Char =>
+            API.Set_Char_Callback (Object.Handle, null);
+         when Callbacks.File_Drop =>
+            API.Set_Drop_Callback (Object.Handle, null);
       end case;
    end Disable_Callback;
 

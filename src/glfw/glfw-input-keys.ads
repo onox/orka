@@ -150,6 +150,12 @@ package Glfw.Input.Keys is
 
    type Scancode is new Interfaces.C.int;
 
+   function Key_Name
+     (Key  : Input.Keys.Key;
+      Code : Input.Keys.Scancode) return String;
+
+   function Key_Code (Key : Input.Keys.Key) return Input.Keys.Scancode;
+
 private
    for Action use (Release => 0,
                    Press   => 1,
@@ -291,5 +297,7 @@ private
    pragma Convention (C_Pass_By_Copy, Modifiers);
 
    for Scancode'Size use Interfaces.C.int'Size;
+
+   pragma Convention (C, Key_Code);
 
 end Glfw.Input.Keys;

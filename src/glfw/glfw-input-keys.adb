@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2013 Felix Krause <contact@flyx.org>
+--  Copyright (c) 2019 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Strings;
+
 with Glfw.API;
 
-package body Glfw.Input is
+package body Glfw.Input.Keys is
 
-   procedure Poll_Events renames API.Poll_Events;
-   --  Process events in the event queue
-   --
-   --  Must only be called from environment task.
+   function Key_Name
+     (Key  : Input.Keys.Key;
+      Code : Input.Keys.Scancode) return String is
+   begin
+      return Interfaces.C.Strings.Value (API.Get_Key_Name (Key, Code));
+   end Key_Name;
 
-   procedure Wait_For_Events renames API.Wait_Events;
+   function Key_Code (Key : Input.Keys.Key) return Input.Keys.Scancode renames API.Get_Key_Code;
 
-   procedure Wait_For_Events (Timeout : Seconds) renames API.Wait_Events_Timeout;
-
-   procedure Post_Empty_Event renames API.Post_Empty_Event;
-
-end Glfw.Input;
+end Glfw.Input.Keys;

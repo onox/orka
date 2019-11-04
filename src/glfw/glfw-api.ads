@@ -30,7 +30,7 @@ private package Glfw.API is
    pragma Preelaborate;
 
    -----------------------------------------------------------------------------
-   -- Types
+   --  Types
    -----------------------------------------------------------------------------
 
    type Address_List is array (Positive range <>) of aliased System.Address;
@@ -50,6 +50,10 @@ private package Glfw.API is
      (Positive, Input.Joysticks.Joystick_Button_State,
       Input.Joysticks.Joystick_Button_States, Input.Joysticks.Released);
 
+   package Joystick_Hat_State_List_Pointers is new Interfaces.C.Pointers
+     (Positive, Input.Joysticks.Joystick_Hat_State,
+      Input.Joysticks.Joystick_Hat_States, Input.Joysticks.Centered);
+
    package Unsigned_Short_List_Pointers is new Interfaces.C.Pointers
      (Positive, Interfaces.C.unsigned_short, Glfw.Monitors.Gamma_Value_Array, 0);
 
@@ -60,7 +64,7 @@ private package Glfw.API is
    pragma Convention (C, Raw_Gamma_Ramp);
 
    -----------------------------------------------------------------------------
-   -- Callbacks
+   --  Callbacks
    -----------------------------------------------------------------------------
 
    type Error_Callback is access procedure (Code : Errors.Kind;
@@ -75,8 +79,13 @@ private package Glfw.API is
      (Window : System.Address);
    type Window_Focus_Callback is access procedure
      (Window : System.Address; Focussed : Bool);
+   type Window_Maximize_Callback is access procedure
+     (Window : System.Address; Maximized : Bool);
    type Window_Iconify_Callback is access procedure
      (Window : System.Address; Iconified : Bool);
+   type Window_Content_Scale_Callback is access procedure
+     (Window : System.Address;
+      X, Y   : C.C_float);
    type Framebuffer_Size_Callback is access procedure
      (Window : System.Address; Width, Height : C.int);
    type Mouse_Button_Callback is access procedure (Window : System.Address;
@@ -98,6 +107,10 @@ private package Glfw.API is
      (Window : System.Address; Unicode_Char : Interfaces.C.unsigned);
    type Monitor_Callback is access procedure
      (Monitor : System.Address; Event : Monitors.Event);
+   type File_Drop_Callback is access procedure
+     (Window : System.Address; Count : C.int; Paths : C.Strings.chars_ptr_array);
+   type Joystick_Callback is access procedure
+     (Joystick : Enums.Joystick_ID; Event : Input.Joysticks.Connect_State);
 
    pragma Convention (C, Error_Callback);
    pragma Convention (C, Window_Position_Callback);
@@ -105,7 +118,9 @@ private package Glfw.API is
    pragma Convention (C, Window_Close_Callback);
    pragma Convention (C, Window_Refresh_Callback);
    pragma Convention (C, Window_Focus_Callback);
+   pragma Convention (C, Window_Maximize_Callback);
    pragma Convention (C, Window_Iconify_Callback);
+   pragma Convention (C, Window_Content_Scale_Callback);
    pragma Convention (C, Framebuffer_Size_Callback);
    pragma Convention (C, Mouse_Button_Callback);
    pragma Convention (C, Cursor_Position_Callback);
@@ -114,14 +129,19 @@ private package Glfw.API is
    pragma Convention (C, Key_Callback);
    pragma Convention (C, Character_Callback);
    pragma Convention (C, Monitor_Callback);
+   pragma Convention (C, File_Drop_Callback);
+   pragma Convention (C, Joystick_Callback);
 
    -----------------------------------------------------------------------------
-   -- Basics
+   --  Basics
    -----------------------------------------------------------------------------
 
    function Init return C.int;
    pragma Import (Convention => C, Entity => Init,
                   External_Name => "glfwInit");
+
+   procedure Init_Hint (Hint : Enums.Init_Hint; Value : Bool)
+     with Import, Convention => C, External_Name => "glfwInitHint";
 
    procedure Glfw_Terminate;
    pragma Import (Convention => C, Entity => Glfw_Terminate,
@@ -144,7 +164,7 @@ private package Glfw.API is
                   External_Name => "glfwSetErrorCallback");
 
    -----------------------------------------------------------------------------
-   -- Monitors
+   --  Monitors
    -----------------------------------------------------------------------------
 
    function Get_Monitors (Count : access Interfaces.C.int)
@@ -166,16 +186,34 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Monitor_Physical_Size,
                   External_Name => "glfwGetMonitorPhysicalSize");
 
+   procedure Get_Monitor_Content_Scale
+     (Monitor : System.Address;
+      X, Y    : out Interfaces.C.C_float)
+   with Import, Convention => C, External_Name => "glfwGetMonitorContentScale";
+
+   procedure Get_Monitor_Workarea
+     (Monitor : System.Address;
+      X, Y, Width, Height : out Interfaces.C.int)
+   with Import, Convention => C, External_Name => "glfwGetMonitorWorkarea";
+
    function Get_Monitor_Name (Monitor : System.Address)
                               return Interfaces.C.Strings.chars_ptr;
    pragma Import (Convention => C, Entity => Get_Monitor_Name,
                   External_Name => "glfwGetMonitorName");
 
-   function Set_Monitor_Callback (Monitor : System.Address;
-                                  CB_Fun  : Monitor_Callback)
-                                  return Monitor_Callback;
-   pragma Import (Convention => C, Entity => Set_Monitor_Callback,
-                  External_Name => "glfwSetMonitorCallback");
+   procedure Set_Monitor_User_Pointer
+     (Monitor : System.Address;
+      Pointer : System.Address)
+   with Import, Convention => C, External_Name => "glfwSetMonitorUserPointer";
+
+   function Get_Monitor_User_Pointer
+     (Monitor : System.Address) return System.Address
+   with Import, Convention => C, External_Name => "glfwGetMonitorUserPointer";
+
+   procedure Set_Monitor_Callback
+     (Monitor : System.Address;
+      CB_Fun  : Monitor_Callback)
+   with Import, Convention => C, External_Name => "glfwSetMonitorCallback";
 
    function Get_Video_Modes (Monitor : System.Address;
                              Count : access Interfaces.C.int)
@@ -203,7 +241,7 @@ private package Glfw.API is
                   External_Name => "glfwSetGammaRamp");
 
    -----------------------------------------------------------------------------
-   -- Windows
+   --  Windows
    -----------------------------------------------------------------------------
 
    procedure Default_Window_Hints;
@@ -218,6 +256,8 @@ private package Glfw.API is
                           Info   : Windows.Context.API_Kind);
    procedure Window_Hint (Target : Glfw.Enums.Window_Hint;
                           Info   : Glfw.Windows.Context.Robustness_Kind);
+   procedure Window_Hint (Target : Glfw.Enums.Window_Hint;
+                          Info   : Windows.Context.Release_Behavior);
    pragma Import (Convention => C, Entity => Window_Hint,
                   External_Name => "glfwWindowHint");
 
@@ -233,10 +273,19 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Destroy_Window,
                   External_Name => "glfwDestroyWindow");
 
+   procedure Focus_Window (Window : System.Address)
+     with Import, Convention => C, External_Name => "glfwFocusWindow";
+
+   procedure Maximize_Window (Window : System.Address)
+     with Import, Convention => C, External_Name => "glfwMaximizeWindow";
+
    function Window_Should_Close (Window : System.Address)
                                  return Bool;
    pragma Import (Convention => C, Entity => Window_Should_Close,
                   External_Name => "glfwWindowShouldClose");
+
+   procedure Request_Window_Attention (Window : System.Address)
+     with Import, Convention => C, External_Name => "glfwRequestWindowAttention";
 
    procedure Set_Window_Should_Close (Window : System.Address;
                                       Value  : Bool);
@@ -258,10 +307,38 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Set_Window_Pos,
                   External_Name => "glfwSetWindowPos");
 
+   procedure Set_Window_Aspect_Ratio
+     (Window : System.Address;
+      Numer, Denom : Size)
+   with Import, Convention => C, External_Name => "glfwSetWindowAspectRatio";
+
+   procedure Set_Window_Size_Limits
+     (Window : System.Address;
+      Min_Width, Min_Height, Max_Width, Max_Height : Size)
+   with Import, Convention => C, External_Name => "glfwSetWindowSizeLimits";
+
+   procedure Get_Window_Content_Scale
+     (Window : System.Address;
+      X, Y   : out Interfaces.C.C_float)
+   with Import, Convention => C, External_Name => "glfwGetWindowContentScale";
+
+   function Get_Window_Opacity (Window : System.Address) return Windows.Opacity
+     with Import, Convention => C, External_Name => "glfwGetWindowOpacity";
+
+   procedure Set_Window_Opacity
+     (Window  : System.Address;
+      Opacity : Windows.Opacity)
+   with Import, Convention => C, External_Name => "glfwSetWindowOpacity";
+
    procedure Get_Window_Size (Window : System.Address;
                               Width, Height : out Size);
    pragma Import (Convention => C, Entity => Get_Window_Size,
                   External_Name => "glfwGetWindowSize");
+
+   procedure Get_Window_Frame_Size
+     (Window : System.Address;
+      Left, Top, Right, Bottom : out Size)
+   with Import, Convention => C, External_Name => "glfwGetWindowFrameSize";
 
    procedure Set_Window_Size (Window : System.Address;
                               Width, Height : Size);
@@ -293,6 +370,12 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Window_Monitor,
                   External_Name => "glfwGetWindowMonitor");
 
+   procedure Set_Window_Monitor
+     (Window  : System.Address;
+      Monitor : System.Address;
+      X, Y, Width, Height, Refresh_Rate : C.int)
+   with Import, Convention => C, External_Name => "glfwSetWindowMonitor";
+
    function Get_Window_Attrib (Window : System.Address;
                                Attrib : Enums.Window_Info) return C.int;
    function Get_Window_Attrib (Window : System.Address;
@@ -309,6 +392,12 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Window_Attrib,
                   External_Name => "glfwGetWindowAttrib");
 
+   procedure Set_Window_Attrib
+     (Window : System.Address;
+      Attrib : Enums.Window_Attrib_Setter;
+      Enable : Bool)
+   with Import, Convention => C, External_Name => "glfwSetWindowAttrib";
+
    procedure Set_Window_User_Pointer (Window  : System.Address;
                                       Pointer : System.Address);
    pragma Import (Convention => C, Entity => Set_Window_User_Pointer,
@@ -319,10 +408,10 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Window_User_Pointer,
                   External_Name => "glfwGetWindowUserPointer");
 
-   -- The callback setters in the C header are defined as returning the
-   -- previous callback pointer. This is rather low-level and not applicable
-   -- in the object-oriented interface of this binding. So we define the setters
-   -- as procedures, the return value will just get thrown away.
+   --  The callback setters in the C header are defined as returning the
+   --  previous callback pointer. This is rather low-level and not applicable
+   --  in the object-oriented interface of this binding. So we define the setters
+   --  as procedures, the return value will just get thrown away.
 
    procedure Set_Window_Pos_Callback (Window : System.Address;
                                      CB_Fun : Window_Position_Callback);
@@ -354,6 +443,16 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Set_Window_Focus_Callback,
                   External_Name => "glfwSetWindowFocusCallback");
 
+   procedure Set_Window_Maximize_Callback
+     (Window : System.Address;
+      CB_Fun : Window_Maximize_Callback)
+   with Import, Convention => C, External_Name => "glfwSetWindowMaximizeCallback";
+
+   procedure Set_Window_Content_Scale_Callback
+     (Window : System.Address;
+      CB_Fun : Window_Content_Scale_Callback)
+   with Import, Convention => C, External_Name => "glfwSetWindowContentScaleCallback";
+
    procedure Set_Window_Iconify_Callback (Window : System.Address;
                                          CB_Fun : Window_Iconify_Callback);
                                          --return Window_Iconify_Callback;
@@ -367,7 +466,7 @@ private package Glfw.API is
                   External_Name => "glfwSetFramebufferSizeCallback");
 
    -----------------------------------------------------------------------------
-   -- Input
+   --  Input
    -----------------------------------------------------------------------------
 
    function Get_Input_Mode (Window : System.Address;
@@ -394,6 +493,14 @@ private package Glfw.API is
                      return Input.Button_State;
    pragma Import (Convention => C, Entity => Get_Key,
                   External_Name => "glfwGetKey");
+
+   function Get_Key_Name
+     (Key  : Input.Keys.Key;
+      Code : Input.Keys.Scancode) return C.Strings.chars_ptr
+   with Import, Convention => C, External_Name => "glfwGetKeyName";
+
+   function Get_Key_Code (Key : Input.Keys.Key) return Input.Keys.Scancode
+     with Import, Convention => C, External_Name => "glfwGetKeyScancode";
 
    function Get_Mouse_Button (Window : System.Address;
                               Button : Input.Mouse.Button)
@@ -451,6 +558,23 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Joystick_Present,
                   External_Name => "glfwJoystickPresent");
 
+   function Joystick_Is_Gamepad (Joy : Enums.Joystick_ID) return Bool
+     with Import, Convention => C, External_Name => "glfwJoystickIsGamepad";
+
+   function Get_Joystick_GUID (Joy : Enums.Joystick_ID) return C.Strings.chars_ptr
+     with Import, Convention => C, External_Name => "glfwGetJoystickGUID";
+
+   function Get_Gamepad_Name (Joy : Enums.Joystick_ID) return C.Strings.chars_ptr
+     with Import, Convention => C, External_Name => "glfwGetGamepadName";
+
+   function Get_Gamepad_State
+     (Joy   : Enums.Joystick_ID;
+      State : out Input.Joysticks.Joystick_Gamepad_State) return Bool
+   with Import, Convention => C, External_Name => "glfwGetGamepadState";
+
+   function Update_Gamepad_Mappings (Mappings : C.Strings.chars_ptr) return Bool
+     with Import, Convention => C, External_Name => "glfwUpdateGamepadMappings";
+
    function Get_Joystick_Axes (Joy : Enums.Joystick_ID;
                                Count : access Interfaces.C.int)
                                return Axis_Position_List_Pointers.Pointer;
@@ -463,10 +587,19 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Get_Joystick_Buttons,
                   External_Name => "glfwGetJoystickButtons");
 
+   function Get_Joystick_Hats
+     (Joy   : Enums.Joystick_ID;
+      Count : out C.int) return Joystick_Hat_State_List_Pointers.Pointer
+   with Import, Convention => C, External_Name => "glfwGetJoystickHats";
+
    function Get_Joystick_Name (Joy : Enums.Joystick_ID)
                                return Interfaces.C.Strings.chars_ptr;
    pragma Import (Convention => C, Entity => Get_Joystick_Name,
                   External_Name => "glfwGetJoystickName");
+
+   procedure Set_Joystick_Callback
+     (CB_Fun : Joystick_Callback)
+   with Import, Convention => C, External_Name => "glfwSetJoystickCallback";
 
    procedure Poll_Events;
    pragma Import (Convention => C, Entity => Poll_Events,
@@ -476,8 +609,14 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Wait_Events,
                   External_Name => "glfwWaitEvents");
 
+   procedure Wait_Events_Timeout (Timeout : C.double)
+     with Import, Convention => C, External_Name => "glfwWaitEventsTimeout";
+
+   procedure Post_Empty_Event
+     with Import, Convention => C, External_Name => "glfwPostEmptyEvent";
+
    -----------------------------------------------------------------------------
-   -- Context
+   --  Context
    -----------------------------------------------------------------------------
 
    procedure Make_Context_Current (Window : System.Address);
@@ -497,7 +636,7 @@ private package Glfw.API is
                   External_Name => "glfwSwapInterval");
 
    -----------------------------------------------------------------------------
-   -- Clipboard
+   --  Clipboard
    -----------------------------------------------------------------------------
 
    function Get_Clipboard_String (Window : System.Address)
@@ -509,5 +648,14 @@ private package Glfw.API is
                                    Value  : Interfaces.C.char_array);
    pragma Import (Convention => C, Entity => Set_Clipboard_String,
                   External_Name => "glfwSetClipboardString");
+
+   -----------------------------------------------------------------------------
+   --  File drop
+   -----------------------------------------------------------------------------
+
+   procedure Set_Drop_Callback
+     (Window : System.Address;
+      CB_Fun : File_Drop_Callback)
+   with Import, Convention => C, External_Name => "glfwSetDropCallback";
 
 end Glfw.API;

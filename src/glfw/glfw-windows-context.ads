@@ -21,6 +21,7 @@ package Glfw.Windows.Context is
    type API_Kind is (OpenGL, OpenGL_ES);
    type Robustness_Kind is (No_Robustness, No_Reset_Notification,
                             Lose_Context_On_Reset);
+   type Release_Behavior is (Any, Flush, None);
 
    subtype Swap_Interval is Interfaces.C.int;
 

@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Glfw.API;
+with Glfw.Enums;
 
 with Interfaces.C.Strings;
 
@@ -23,6 +24,9 @@ package body Glfw is
    procedure Init is
       use type Interfaces.C.int;
    begin
+      --  Is True by default for compatibility with earlier versions of GLFW
+      API.Init_Hint (Enums.Joystick_Hat_Buttons, False);
+
       if API.Init = 0 then
          raise Initialization_Exception;
       end if;

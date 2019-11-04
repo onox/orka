@@ -21,6 +21,21 @@ package body Glfw.Windows.Hints is
 
    procedure Reset_To_Defaults renames API.Default_Window_Hints;
 
+   procedure Set_Focused (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Focused, Bool (Value));
+   end Set_Focused;
+
+   procedure Set_Floating (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Floating, Bool (Value));
+   end Set_Floating;
+
+   procedure Set_Maximized (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Maximized, Bool (Value));
+   end Set_Maximized;
+
    procedure Set_Resizable (Value : Boolean) is
    begin
       API.Window_Hint (Enums.Resizable, Bool (Value));
@@ -35,6 +50,31 @@ package body Glfw.Windows.Hints is
    begin
       API.Window_Hint (Enums.Decorated, Bool (Value));
    end Set_Decorated;
+
+   procedure Set_Focus_On_Show (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Focus_On_Show, Bool (Value));
+   end Set_Focus_On_Show;
+
+   procedure Set_Auto_Iconify  (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Auto_Iconify, Bool (Value));
+   end Set_Auto_Iconify;
+
+   procedure Set_Center_On_Cursor (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Center_Cursor, Bool (Value));
+   end Set_Center_On_Cursor;
+
+   procedure Set_Scale_To_Monitor (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Scale_To_Monitor, Bool (Value));
+   end Set_Scale_To_Monitor;
+
+   procedure Set_Transparent_Framebuffer (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Transparent, Bool (Value));
+   end Set_Transparent_Framebuffer;
 
    procedure Set_Color_Bits (Red, Green, Blue, Alpha : Natural) is
    begin
@@ -104,5 +144,15 @@ package body Glfw.Windows.Hints is
    begin
       API.Window_Hint (Enums.OpenGL_Profile, Value);
    end Set_Profile;
+
+   procedure Set_Release_Behavior (Value : Context.Release_Behavior) is
+   begin
+      API.Window_Hint (Enums.Context_Rel_Behavior, Value);
+   end Set_Release_Behavior;
+
+   procedure Set_No_Error_Context (Value : Boolean) is
+   begin
+      API.Window_Hint (Enums.Context_No_Error, Bool (Value));
+   end Set_No_Error_Context;
 
 end Glfw.Windows.Hints;

@@ -25,9 +25,17 @@ package Glfw.Windows.Hints is
    -- Window related
    -----------------------------------------------------------------------------
 
+   procedure Set_Focused   (Value : Boolean);
+   procedure Set_Floating  (Value : Boolean);
+   procedure Set_Maximized (Value : Boolean);
    procedure Set_Resizable (Value : Boolean);
    procedure Set_Visible   (Value : Boolean);
    procedure Set_Decorated (Value : Boolean);
+   procedure Set_Focus_On_Show (Value : Boolean);
+   procedure Set_Auto_Iconify  (Value : Boolean);
+   procedure Set_Center_On_Cursor (Value : Boolean);
+   procedure Set_Scale_To_Monitor (Value : Boolean);
+   procedure Set_Transparent_Framebuffer (Value : Boolean);
 
    -----------------------------------------------------------------------------
    -- Framebuffer related
@@ -61,7 +69,14 @@ package Glfw.Windows.Hints is
    procedure Set_Debug_Context (Value : Boolean);
 
    procedure Set_Profile (Value : Context.OpenGL_Profile_Kind);
+
+   procedure Set_Release_Behavior (Value : Context.Release_Behavior);
+
+   procedure Set_No_Error_Context (Value : Boolean);
+
 private
-   -- to be able to use renames
+
+   --  To be able to use renames
    pragma Convention (C, Reset_To_Defaults);
+
 end Glfw.Windows.Hints;
