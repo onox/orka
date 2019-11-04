@@ -327,10 +327,18 @@ begin
          Set_Depth_Mask (True);
 
          --  Start drawing reflection cube
-         Uni_Model.Set_Matrix (Transforms.T ((0.0, 0.0, -1.0, 0.0)));
+         declare
+            use Transforms;
+         begin
+            Uni_Model.Set_Matrix ((0.0, 0.0, -1.0, 0.0) + Transforms.S ((1.0, 1.0, -1.0, 1.0)));
+         end;
 
          Uni_Color.Set_Vector (Transforms.Vector4'(0.3, 0.3, 0.3, 0.0));
+
+         --  Disable face culling because we scaled Z by -1
+         GL.Toggles.Disable (GL.Toggles.Cull_Face);
          GL.Drawing.Draw_Arrays (Triangles, 0, 30);
+         GL.Toggles.Enable (GL.Toggles.Cull_Face);
          --  End drawing reflection cube
 
          Uni_Color.Set_Vector (Transforms.Vector4'(1.0, 1.0, 1.0, 0.0));
