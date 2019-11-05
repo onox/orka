@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2016 onox <denkpadje@gmail.com>
+--  Copyright (c) 2019 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -15,42 +15,26 @@
 --  limitations under the License.
 
 with "config";
-with "dcf_ada";
-with "json_ada";
+with "sources";
 
-abstract project Orka is
+library project Orka is
 
-   OpenGL_Sources := ("../src/gl/interface",
-                      "../src/gl/implementation");
+   for Languages use ("ada");
 
-   Orka_Sources := ("../src/orka/interface",
-                    "../src/orka/implementation",
-                    "../src/orka/interface/x86/generic",
-                    "../src/orka/implementation/x86/generic");
+   for Create_Missing_Dirs use "True";
 
-   case Config.Windowing_System is
-      when "windows" => OpenGL_Sources := OpenGL_Sources & "../src/gl/windows" & "../src/orka/windows";
-      when "egl"     => OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
-   end case;
+   for Library_Name use "orka";
+   for Library_Version use "liborka.so." & Config.Version;
+   for Library_Dir use "../build/lib";
+   for Library_ALI_Dir use "../build/lib/orka";
+   for Library_Kind use Config.Library_Kind;
 
-   case Config.Compiler_Name is
-      when "gnat" => Orka_Sources :=
-        Orka_Sources & ("../src/orka/interface/x86/gnat");
-      when others =>
-        null;
-   end case;
+   for Source_Dirs use Sources.OpenGL_Sources & Sources.Orka_Sources;
+   for Object_Dir use "../build/obj/orka";
 
-   package Compiler renames Config.Compiler;
-   package Binder renames Config.Binder;
-   package Builder renames Config.Builder;
-
-   package Linker is
-      case Config.Windowing_System is
-         when "windows" =>
-            for Linker_Options use ("-lkernel32", "-lopengl32");
-         when "egl" =>
-            for Linker_Options use ("-lEGL");
-      end case;
-   end Linker;
+   package Builder renames Sources.Builder;
+   package Compiler renames Sources.Compiler;
+   package Binder renames Sources.Binder;
+   package Linker renames Sources.Linker;
 
 end Orka;

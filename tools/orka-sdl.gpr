@@ -17,7 +17,7 @@
 with "sdlada";
 
 with "config";
-with "orka-lib";
+with "orka";
 
 library project Orka.SDL is
 
