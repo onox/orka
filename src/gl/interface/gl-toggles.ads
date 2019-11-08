@@ -42,8 +42,7 @@ package GL.Toggles is
    procedure Set (Subject : Toggle; Value : Toggle_State);
    function State (Subject : Toggle) return Toggle_State;
 
-   subtype Toggle_Indexed is Toggle
-     with Static_Predicate => Toggle_Indexed in Scissor_Test | Blend;
+   type Toggle_Indexed is (Blend, Scissor_Test);
 
    procedure Enable  (Subject : Toggle_Indexed; Index : Types.UInt);
    procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt);
@@ -89,5 +88,10 @@ private
                    Primitive_Restart         => 16#8F9D#,
                    Debug_Output              => 16#92E0#);
    for Toggle'Size use Low_Level.Enum'Size;
+
+   for Toggle_Indexed use
+     (Blend        => 16#0BE2#,
+      Scissor_Test => 16#0C11#);
+   for Toggle_Indexed'Size use Low_Level.Enum'Size;
 
 end GL.Toggles;
