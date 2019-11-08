@@ -80,6 +80,9 @@ package body Orka.Rendering.Programs.Uniforms is
       end case;
    end Texture_Image_Kind;
 
+   function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform is
+     (Object.GL_Uniform);
+
    procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
         (Source => TS.Matrix4, Target => GL.Types.Singles.Matrix4);

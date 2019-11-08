@@ -53,6 +53,9 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Boolean (Object : Uniform; Value : Boolean);
 
+   function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform
+     with Inline;
+
    -----------------------------------------------------------------------------
 
    type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged private;
