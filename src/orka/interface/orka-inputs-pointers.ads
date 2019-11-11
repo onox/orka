@@ -23,7 +23,7 @@ package Orka.Inputs.Pointers is
 
    type Button_State is (Released, Pressed);
 
-   type Pointer_Input is interface;
+   type Pointer_Input is limited interface;
 
    type Pointer_Input_Ptr is not null access Pointer_Input'Class;
 
