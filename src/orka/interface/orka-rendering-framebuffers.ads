@@ -155,13 +155,11 @@ package Orka.Rendering.Framebuffers is
      (Object     : in out Framebuffer;
       Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
-      Level      : Textures.Mipmap_Level := 0;
-      Layer      : Natural := 0)
+      Level      : Textures.Mipmap_Level := 0)
    with Pre  => (not Object.Default and Texture.Allocated and
                   (if Attachment in Color_Attachment_Point then
                     (Object.Width  = Texture.Width  (Level) and
-                     Object.Height = Texture.Height (Level))) and
-                  (if not Texture.Layered then Layer = 0))
+                     Object.Height = Texture.Height (Level))))
                 or else raise Constraint_Error with
                   "Cannot attach " & Rendering.Textures.Image (Texture, Level) &
                   " to " & Object.Image,
@@ -170,16 +168,11 @@ package Orka.Rendering.Framebuffers is
    --
    --  The internal format of the texture must be valid for the given
    --  attachment point.
-   --
-   --  If the texture is three-dimensional (3D, 1D/2D array, cube
-   --  map [array], or 2D multisampled array) then Layer is used to
-   --  attach the selected 1D/2D layer to the attachment point.
 
    procedure Attach
      (Object  : in out Framebuffer;
       Texture : Textures.Texture;
-      Level   : Textures.Mipmap_Level := 0;
-      Layer   : Natural := 0);
+      Level   : Textures.Mipmap_Level := 0);
    --  Attach the texture to an attachment point based on the internal
    --  format of the texture
    --
@@ -188,6 +181,32 @@ package Orka.Rendering.Framebuffers is
    --  If the texture is color renderable, it will always be attached to
    --  Color_Attachment_0. If you need to attach a texture to a different
    --  color attachment point then use the other procedure Attach directly.
+   --
+   --  If the texture is layered and you want to attach a specific layer,
+   --  then you must call the procedure Attach_Layer below instead.
+
+   procedure Attach_Layer
+     (Object     : in out Framebuffer;
+      Attachment : FB.Attachment_Point;
+      Texture    : Textures.Texture;
+      Layer      : Natural;
+      Level      : Textures.Mipmap_Level := 0)
+   with Pre  => (not Object.Default and Texture.Allocated and
+                  Texture.Layered and
+                  (if Attachment in Color_Attachment_Point then
+                    (Object.Width  = Texture.Width  (Level) and
+                     Object.Height = Texture.Height (Level))))
+                or else raise Constraint_Error with
+                  "Cannot attach layer of " & Rendering.Textures.Image (Texture, Level) &
+                  " to " & Object.Image,
+        Post => Object.Has_Attachment (Attachment);
+   --  Attach the selected 1D/2D layer of the texture to the attachment point
+   --
+   --  The internal format of the texture must be valid for the given
+   --  attachment point.
+   --
+   --  The texture must be layered (3D, 1D/2D array, cube
+   --  map [array], or 2D multisampled array).
 
    procedure Detach
      (Object     : in out Framebuffer;

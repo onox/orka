@@ -300,36 +300,41 @@ package body Orka.Rendering.Framebuffers is
      (Object     : in out Framebuffer;
       Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
-      Level      : Textures.Mipmap_Level := 0;
-      Layer      : Natural := 0) is
+      Level      : Textures.Mipmap_Level := 0) is
    begin
-      if not Texture.Layered then
-         Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
-      else
-         Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture, Level, Layer => Layer);
-      end if;
+      Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
       Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
    end Attach;
 
    procedure Attach
      (Object  : in out Framebuffer;
       Texture : Textures.Texture;
-      Level   : Textures.Mipmap_Level := 0;
-      Layer   : Natural := 0)
+      Level   : Textures.Mipmap_Level := 0)
    is
       use all type GL.Pixels.Internal_Format;
    begin
       case Texture.Internal_Format is
          when Depth24_Stencil8 | Depth32F_Stencil8 =>
-            Object.Attach (FB.Depth_Stencil_Attachment, Texture, Level, Layer);
+            Object.Attach (FB.Depth_Stencil_Attachment, Texture, Level);
          when Depth_Component16 | Depth_Component24 | Depth_Component32F =>
-            Object.Attach (FB.Depth_Attachment, Texture, Level, Layer);
+            Object.Attach (FB.Depth_Attachment, Texture, Level);
          when Stencil_Index8 =>
-            Object.Attach (FB.Stencil_Attachment, Texture, Level, Layer);
+            Object.Attach (FB.Stencil_Attachment, Texture, Level);
          when others =>
-            Object.Attach (FB.Color_Attachment_0, Texture, Level, Layer);
+            Object.Attach (FB.Color_Attachment_0, Texture, Level);
       end case;
    end Attach;
+
+   procedure Attach_Layer
+     (Object     : in out Framebuffer;
+      Attachment : FB.Attachment_Point;
+      Texture    : Textures.Texture;
+      Layer      : Natural;
+      Level      : Textures.Mipmap_Level := 0) is
+   begin
+      Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture, Level, Layer => Layer);
+      Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
+   end Attach_Layer;
 
    procedure Detach
      (Object     : in out Framebuffer;
