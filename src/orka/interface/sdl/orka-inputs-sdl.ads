@@ -20,7 +20,6 @@ with SDL.Video.Windows;
 with Orka.Inputs.Pointers.Default;
 
 package Orka.Inputs.SDL is
-   pragma Preelaborate;
 
    type SDL_Pointer_Input is new Pointers.Default.Abstract_Pointer_Input with private;
 
