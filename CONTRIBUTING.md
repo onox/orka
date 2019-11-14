@@ -171,4 +171,6 @@ the open source license(s) involved.
 
 ## License
 
-This project is licensed under the Apache License 2.0.
+This project is licensed under the Apache License 2.0. Some files are
+licensed under the BSD 3-Clause license. See the SPDX license identifier
+at the top of each file.

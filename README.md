@@ -84,7 +84,13 @@ tag that refers to this license:
 
     SPDX-License-Identifier: Apache-2.0
 
+The following packages (including any child packages) are licensed under
+the [BSD 3-Clause license][url-bsd-3]:
+
+- `Orka.Features.Atmosphere`
+
   [url-apache]: https://opensource.org/licenses/Apache-2.0
+  [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
   [url-awesome]: https://github.com/ohenley/awesome-ada#online-books
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
   [url-contributing]: /contributing
