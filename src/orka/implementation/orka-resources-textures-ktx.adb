@@ -49,15 +49,12 @@ package body Orka.Resources.Textures.KTX is
 
    use all type Ada.Real_Time.Time;
 
-   overriding
-   procedure Execute
-     (Object  : KTX_Load_Job;
-      Context : Jobs.Execution_Context'Class)
+   function Read_Texture
+     (Bytes : Byte_Array_Pointers.Constant_Reference;
+      Path  : String;
+      Start : Ada.Real_Time.Time) return GL.Objects.Textures.Texture
    is
-      Bytes : Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
-      Path  : String renames SU.To_String (Object.Data.Path);
-
-      T1 : Ada.Real_Time.Time renames Object.Data.Start_Time;
+      T1 : Ada.Real_Time.Time renames Start;
       T2 : constant Ada.Real_Time.Time := Clock;
 
       use Ada.Streams;
@@ -74,7 +71,6 @@ package body Orka.Resources.Textures.KTX is
          Header : constant Orka.KTX.Header := Orka.KTX.Get_Header (Bytes);
          Levels : constant GL.Types.Size   := GL.Types.Size'Max (1, Header.Mipmap_Levels);
 
-         Resource : constant Texture_Ptr := new Texture'(others => <>);
          Texture  : GL.Objects.Textures.Texture (Header.Kind);
 
          Width  : constant GL.Types.Size := Header.Width;
@@ -189,11 +185,6 @@ package body Orka.Resources.Textures.KTX is
          end if;
          T6 := Clock;
 
-         Resource.Texture.Replace_Element (Texture);
-
-         --  Register resource at the resource manager
-         Object.Manager.Add_Resource (Path, Resource_Ptr (Resource));
-
          Messages.Log (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
          Messages.Log (Info, "  size:   " &
@@ -216,6 +207,8 @@ package body Orka.Resources.Textures.KTX is
          if Header.Mipmap_Levels = 0 then
             Messages.Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
          end if;
+
+         return Texture;
       end;
    exception
       when Error : Orka.KTX.Invalid_Enum_Error =>
@@ -224,6 +217,31 @@ package body Orka.Resources.Textures.KTX is
          begin
             raise Texture_Load_Error with Path & " has " & Message;
          end;
+   end Read_Texture;
+
+   function Read_Texture
+     (Location : Locations.Location_Ptr;
+      Path     : String) return GL.Objects.Textures.Texture
+   is
+      Start_Time : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+   begin
+      return Read_Texture (Location.Read_Data (Path).Get, Path, Start_Time);
+   end Read_Texture;
+
+   overriding
+   procedure Execute
+     (Object  : KTX_Load_Job;
+      Context : Jobs.Execution_Context'Class)
+   is
+      Bytes : Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
+      Path  : String renames SU.To_String (Object.Data.Path);
+
+      Resource : constant Texture_Ptr := new Texture'(others => <>);
+   begin
+      Resource.Texture.Replace_Element (Read_Texture (Bytes, Path, Object.Data.Start_Time));
+
+      --  Register resource at the resource manager
+      Object.Manager.Add_Resource (Path, Resource_Ptr (Resource));
    end Execute;
 
    -----------------------------------------------------------------------------

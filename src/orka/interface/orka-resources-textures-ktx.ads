@@ -25,6 +25,10 @@ package Orka.Resources.Textures.KTX is
    function Create_Loader
      (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
+   function Read_Texture
+     (Location : Locations.Location_Ptr;
+      Path     : String) return GL.Objects.Textures.Texture;
+
    procedure Write_Texture
      (Texture  : GL.Objects.Textures.Texture;
       Location : Locations.Writable_Location_Ptr;
