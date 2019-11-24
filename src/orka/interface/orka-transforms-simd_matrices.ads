@@ -19,9 +19,13 @@ with Orka.Transforms.SIMD_Vectors;
 
 generic
    with package Vectors is new Orka.Transforms.SIMD_Vectors (<>);
+
    type Matrix_Type is array (SIMD.Index_Homogeneous) of Vectors.Vector_Type;
+
    with function Multiply_Matrices (Left, Right : Matrix_Type) return Matrix_Type;
-   with function Multiply_Vector (Left : Matrix_Type; Right : Vectors.Vector_Type) return Vectors.Vector_Type;
+   with function Multiply_Vector
+     (Left  : Matrix_Type;
+      Right : Vectors.Vector_Type) return Vectors.Vector_Type;
    with function Transpose_Matrix (Matrix : Matrix_Type) return Matrix_Type;
 package Orka.Transforms.SIMD_Matrices is
    pragma Preelaborate;
@@ -66,6 +70,8 @@ package Orka.Transforms.SIMD_Matrices is
 
    function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type;
    --  Add a scale transformation to the matrix
+
+   function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
 
    procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
    --  Add a rotation transformation to the matrix with the center

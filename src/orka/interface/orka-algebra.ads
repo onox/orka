@@ -30,6 +30,8 @@ package Orka.Algebra is
 
    function Identity4 return Matrix4 renames Transforms.Identity_Value;
 
+   function Zero4 return Vector4 renames Transforms.Zero_Point;
+
    type Vector4_Array is array (GL.Types.Size range <>) of aliased Vector4
      with Convention => C;
 
