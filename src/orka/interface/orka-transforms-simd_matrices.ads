@@ -43,16 +43,56 @@ package Orka.Transforms.SIMD_Matrices is
        (0.0, 0.0, 1.0, 0.0),
        (0.0, 0.0, 0.0, 1.0)))
    with Inline;
+   --  Return the identity matrix
 
    function Zero_Point return Vector_Type renames Vectors.Zero_Point;
+   --  Return a zero vector that indicates a point. The fourth (W) component
+   --  is 1.
+
+   --  Linear transform: a transform in which vector addition and scalar
+   --  multiplication is preserved.
+
+   --  Affine transform: a transform that includes a linear transform and
+   --  a translation. Parallelism of lines remain unchanged, but lengths
+   --  and angles may not. A concatenation of affine transforms is affine.
+   --
+   --  Orthogonal matrix: the inverse of the matrix is equal to the transpose.
+   --  A concatenation of orthogonal matrices is orthogonal.
 
    function T (Offset : Vector_Type) return Matrix_Type;
+   --  Translate points by the given amount
+   --
+   --  Matrix is affine.
+   --
+   --  The inverse T^-1 (t) = T (-t).
 
    function Rx (Angle : Element_Type) return Matrix_Type;
+   --  Rotate around the x-axis by the given amount in radians
+   --
+   --  Matrix is orthogonal and affine.
+   --
+   --  The inverse Rx^-1 (o) = Rx (-o) = (Rx (o))^T.
+
    function Ry (Angle : Element_Type) return Matrix_Type;
+   --  Rotate around the y-axis by the given amount in radians
+   --
+   --  Matrix is orthogonal and affine.
+   --
+   --  The inverse Ry^-1 (o) = Ry (-o) = (Ry (o))^T.
+
    function Rz (Angle : Element_Type) return Matrix_Type;
+   --  Rotate around the z-axis by the given amount in radians
+   --
+   --  Matrix is orthogonal and affine.
+   --
+   --  The inverse Rz^-1 (o) = Rz (-o) = (Rz (o))^T.
 
    function R (Axis : Vector_Type; Angle : Element_Type) return Matrix_Type;
+   --  Rotate around the given axis by the given amount in radians
+   --
+   --  Matrix is orthogonal and affine.
+   --
+   --  The inverse is R^-1 (a, o) = R (a, -o) = (R (a, o))^T.
 
    function R (Quaternion : Vector_Type) return Matrix_Type;
    --  Converts a quaternion to a rotation matrix
@@ -60,6 +100,12 @@ package Orka.Transforms.SIMD_Matrices is
    --  Note: the quaternion must be a unit quaternion (normalized).
 
    function S (Factors : Vector_Type) return Matrix_Type;
+   --  Scale points by the given amount in the x-, y-, and z-axis
+   --
+   --  If all axes are scaled by the same amount, then the matrix is
+   --  affine.
+   --
+   --  The inverse is S^-1 (s) = S (1/s_x, 1/s_y, 1/s_z).
 
    function "*" (Left, Right : Matrix_Type) return Matrix_Type renames Multiply_Matrices;
 
