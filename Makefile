@@ -66,8 +66,8 @@ clean:
 	rm -rf bin build tests/unit/build tests/unit/bin tests/cov
 
 install:
-	$(installcmd) --install-name='orka' -P tools/orka.gpr
-	$(installcmd) --install-name='orka-glfw' -P tools/orka-glfw.gpr
+	$(installcmd) -f --install-name='orka' -P tools/orka.gpr
+	$(installcmd) -f --install-name='orka-glfw' -P tools/orka-glfw.gpr
 
 uninstall:
 	$(installcmd) --uninstall --install-name='orka-glfw' -P tools/orka-glfw.gpr
