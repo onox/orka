@@ -92,7 +92,6 @@ private
       Batch   : Rendering.Buffers.MDI.Batch;
       Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Bounds  : Rendering.Buffers.Buffer (Types.Single_Vector_Type);
-      Structural_Frame_To_GL : Trees.Matrix4;
    end record;
 
    type Partition_Index_Type is mod 4;

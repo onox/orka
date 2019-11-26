@@ -623,21 +623,8 @@ package body Orka.Resources.Models.glTF is
          use Transforms;
          Start_Time : constant Time := Clock;
 
-         --  Convert the object from structural frame (X = aft,
-         --  Y = right, Z = top) to OpenGL (X = right, Y = top,
-         --  Z = aft)
-         --
-         --  X => Z, Y => X, Z => Y   -->   Ry (-90.0) * Rx (-90.0)
-         Structural_Frame_To_GL : constant Trees.Matrix4 := Identity_Value;
-         --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
-
          Vertices, Indices : Natural;
       begin
-         --  Rotate the whole object so that the nose of a model points
-         --  to the screen by transforming the root node
-         Scene.Set_Local_Transform
-           (Scene.To_Cursor (Scene.Root_Name), Structural_Frame_To_GL);
-
          --  Link the nodes in the default scene to the root node and
          --  then add all the other nodes that are reachable
          for Node_Index of Default_Scene.Nodes loop
@@ -694,8 +681,7 @@ package body Orka.Resources.Models.glTF is
          --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => (others => False),
-            Data  => Bounds_List (Data.Accessors, Data.Meshes)),
-         Structural_Frame_To_GL => Identity_Value);
+            Data  => Bounds_List (Data.Accessors, Data.Meshes)));
 
       Buffers_Job : constant Jobs.Job_Ptr := new GLTF_Write_Buffers_Job'
         (Jobs.Abstract_Job with Data => Object.Data, Model => Model_Data);

@@ -105,7 +105,6 @@ package body Orka.Resources.Models is
       use Orka.Transforms.Singles.Vectors;
 
       pragma Assert (Object.Group /= null);
-      Rotate_To_GL : Trees.Matrix4 renames Object.Group.Model.Structural_Frame_To_GL;
 
       Position : Behaviors.Transforms.Vector4
         renames Behaviors.Behavior'Class (Object).Position;
@@ -123,7 +122,7 @@ package body Orka.Resources.Models is
       --  Compute the world transforms by multiplying the local transform
       --  of each node with the world transform of its parent. Also updates
       --  the visibility of each node.
-      Object.Scene.Update_Tree (T (Rotate_To_GL * (Position - View_Position)));
+      Object.Scene.Update_Tree (T (Position - View_Position));
 
       --  Write the world transform of the leaf nodes to the persistent mapped buffer
       Object.Group.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);
