@@ -182,15 +182,29 @@ package Orka.Transforms.SIMD_Matrices is
 
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type
      with Pre => FOV > 0.0 and Aspect > 0.0 and Z_Near > 0.0 and Z_Far > Z_Near;
+   --  Return a matrix providing perspective projection with a depth
+   --  range of [0, 1]
+   --
+   --  The vertical field of view must be in radians.
 
    function Infinite_Perspective (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type
      with Pre => FOV > 0.0 and Aspect > 0.0 and Z_Near > 0.0;
+   --  Return a matrix providing perspective projection with Z_far to
+   --  infinite and a depth range of [0, 1]
+   --
+   --  The vertical field of view must be in radians.
 
    function Infinite_Perspective_Reversed_Z
      (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type
    with Pre => FOV > 0.0 and Aspect > 0.0 and Z_Near > 0.0;
+   --  Return a matrix providing perspective projection with Z_far to
+   --  infinite and a depth range of [1, 0]
+   --
+   --  The vertical field of view must be in radians.
 
    function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type
      with Pre => Z_Near >= 0.0 and Z_Far >= 0.0;
+   --  Return a matrix providing orthographic projection with a depth
+   --  range of [0, 1]
 
 end Orka.Transforms.SIMD_Matrices;

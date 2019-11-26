@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Numerics;
+
 generic
    type Element_Type is digits <>;
    type Vector_Type is array (Index_Homogeneous) of Element_Type;
@@ -38,6 +40,12 @@ package Orka.Transforms.SIMD_Vectors is
      ((0.0, 0.0, 0.0, 1.0))
    with Inline;
 
+   function To_Radians (Angle : Element_Type) return Element_Type is
+     (Angle / 180.0 * Ada.Numerics.Pi);
+
+   function To_Degrees (Angle : Element_Type) return Element_Type is
+     (Angle / Ada.Numerics.Pi * 180.0);
+
    function "+" (Left, Right : Vector_Type) return Vector_Type renames Add_Vectors;
 
    function "-" (Left, Right : Vector_Type) return Vector_Type renames Subtract_Vectors;
@@ -54,18 +62,29 @@ package Orka.Transforms.SIMD_Vectors is
      with Inline;
 
    function Magnitude (Elements : Vector_Type) return Element_Type;
+   --  Return the magnitude or length of the vector
+
+   function Length (Elements : Vector_Type) return Element_Type renames Magnitude;
+   --  Return the magnitude or length of the vector
 
    function Normalize (Elements : Vector_Type) return Vector_Type;
+   --  Return the unit vector of the given vector
 
    function Normalized (Elements : Vector_Type) return Boolean;
+   --  Return True if the vector is normalized, False otherwise
 
    function Distance (Left, Right : Vector_Type) return Element_Type;
+   --  Return the distance between two points
 
    function Projection (Elements, Direction : Vector_Type) return Vector_Type;
+   --  Return the projection of a vector in some direction
 
    function Perpendicular (Elements, Direction : Vector_Type) return Vector_Type;
+   --  Return a vector perpendicular to the projection of the vector in
+   --  the given direction
 
    function Angle (Left, Right : Vector_Type) return Element_Type;
+   --  Return the angle in radians between two vectors
 
    function Dot (Left, Right : Vector_Type) return Element_Type;
 

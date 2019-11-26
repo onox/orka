@@ -69,8 +69,8 @@ package body Orka.Transforms.SIMD_Quaternions is
    is
       use type Vectors.Element_Type;
 
-      CA : constant Vectors.Element_Type := EF.Cos (Angle / 2.0, 360.0);
-      SA : constant Vectors.Element_Type := EF.Sin (Angle / 2.0, 360.0);
+      CA : constant Vectors.Element_Type := EF.Cos (Angle / 2.0);
+      SA : constant Vectors.Element_Type := EF.Sin (Angle / 2.0);
 
       use Vectors;
    begin
@@ -142,12 +142,12 @@ package body Orka.Transforms.SIMD_Quaternions is
       use type Vectors.Element_Type;
 
       Cos_Angle : constant Vectors.Element_Type := Vectors.Dot (Vector4 (Left), Vector4 (Right));
-      Angle     : constant Vectors.Element_Type := EF.Arccos (Cos_Angle, 360.0);
+      Angle     : constant Vectors.Element_Type := EF.Arccos (Cos_Angle);
 
-      SA : constant Vectors.Element_Type := EF.Sin (Angle, 360.0);
+      SA : constant Vectors.Element_Type := EF.Sin (Angle);
 
-      SL : constant Vectors.Element_Type := EF.Sin ((1.0 - Time) * Angle, 360.0);
-      SR : constant Vectors.Element_Type := EF.Sin (Time * Angle, 360.0);
+      SL : constant Vectors.Element_Type := EF.Sin ((1.0 - Time) * Angle);
+      SR : constant Vectors.Element_Type := EF.Sin (Time * Angle);
 
       use Vectors;
    begin

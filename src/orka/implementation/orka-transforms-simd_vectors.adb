@@ -72,7 +72,7 @@ package body Orka.Transforms.SIMD_Vectors is
 
    function Angle (Left, Right : Vector_Type) return Element_Type is
    begin
-      return EF.Arccos (Dot (Left, Right) / (Magnitude (Left) * Magnitude (Right)), 360.0);
+      return EF.Arccos (Dot (Left, Right) / (Magnitude (Left) * Magnitude (Right)));
    end Angle;
 
    function Dot (Left, Right : Vector_Type) return Element_Type is

@@ -44,7 +44,7 @@ package Orka.Transforms.SIMD_Quaternions is
       Angle : Vectors.Element_Type) return Quaternion
    with Pre  => Vectors.Normalized (Axis),
         Post => Normalized (R'Result);
-   --  Return a quaternion that will cause a rotation of Angle degrees
+   --  Return a quaternion that will cause a rotation of Angle radians
    --  about the given Axis
 
    function R (Left, Right : Vector4) return Quaternion

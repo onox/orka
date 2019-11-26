@@ -32,8 +32,8 @@ package body Orka.Transforms.SIMD_Matrices is
    end T;
 
    function Rx (Angle : Element_Type) return Matrix_Type is
-      CA : constant Element_Type := EF.Cos (Angle, 360.0);
-      SA : constant Element_Type := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle);
+      SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (Y) := (0.0,  CA, SA, 0.0);
@@ -42,8 +42,8 @@ package body Orka.Transforms.SIMD_Matrices is
    end Rx;
 
    function Ry (Angle : Element_Type) return Matrix_Type is
-      CA : constant Element_Type := EF.Cos (Angle, 360.0);
-      SA : constant Element_Type := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle);
+      SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) := (CA, 0.0, -SA, 0.0);
@@ -52,8 +52,8 @@ package body Orka.Transforms.SIMD_Matrices is
    end Ry;
 
    function Rz (Angle : Element_Type) return Matrix_Type is
-      CA : constant Element_Type := EF.Cos (Angle, 360.0);
-      SA : constant Element_Type := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle);
+      SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) := (CA,  SA, 0.0, 0.0);
@@ -62,8 +62,8 @@ package body Orka.Transforms.SIMD_Matrices is
    end Rz;
 
    function R (Axis : Vector_Type; Angle : Element_Type) return Matrix_Type is
-      CA : constant Element_Type := EF.Cos (Angle, 360.0);
-      SA : constant Element_Type := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle);
+      SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Value;
 
       MCA : constant Element_Type := 1.0 - CA;
@@ -204,7 +204,7 @@ package body Orka.Transforms.SIMD_Matrices is
    end Transpose;
 
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type is
-      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV, 360.0);
+      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) (X) := F / Aspect;
@@ -220,7 +220,7 @@ package body Orka.Transforms.SIMD_Matrices is
    end Finite_Perspective;
 
    function Infinite_Perspective (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type is
-      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV, 360.0);
+      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) (X) := F / Aspect;
@@ -239,7 +239,7 @@ package body Orka.Transforms.SIMD_Matrices is
    function Infinite_Perspective_Reversed_Z
      (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type
    is
-      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV, 360.0);
+      F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
       Result : Matrix_Type := Identity_Value;
    begin
       Result (X) (X) := F / Aspect;
