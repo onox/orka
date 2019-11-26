@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD;
 with Orka.Transforms.Singles.Vectors;
 
 package body Orka.Cameras.Look_At_Cameras is
@@ -44,7 +43,6 @@ package body Orka.Cameras.Look_At_Cameras is
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
       use Vector_Transforms;
       use Transforms;
-      use Orka.SIMD;
 
       Rotate_To_GL : constant Matrix4 := Ry (-90.0) * Rx (-90.0);
 

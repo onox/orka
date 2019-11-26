@@ -16,8 +16,6 @@
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
-with Orka.SIMD;
-
 package body Orka.Transforms.SIMD_Quaternions is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Vectors.Element_Type);
@@ -25,7 +23,7 @@ package body Orka.Transforms.SIMD_Quaternions is
    function Vector_Part (Elements : Quaternion) return Vector4 is
    begin
       return Result : Vector4 := Vector4 (Elements) do
-         Result (SIMD.W) := 0.0;
+         Result (W) := 0.0;
       end return;
    end Vector_Part;
 
@@ -35,24 +33,24 @@ package body Orka.Transforms.SIMD_Quaternions is
       Lv : constant Vector4 := Vector_Part (Left);
       Rv : constant Vector4 := Vector_Part (Right);
 
-      Ls : constant Vectors.Element_Type := Left (SIMD.W);
-      Rs : constant Vectors.Element_Type := Right (SIMD.W);
+      Ls : constant Vectors.Element_Type := Left (W);
+      Rs : constant Vectors.Element_Type := Right (W);
 
       V : constant Vector4 := Ls * Rv + Rs * Lv + Vectors.Cross (Lv, Rv);
       S : constant Element_Type := Ls * Rs - Vectors.Dot (Lv, Rv);
    begin
       return Result : Quaternion := Quaternion (V) do
-         Result (SIMD.W) := S;
+         Result (W) := S;
       end return;
    end "*";
 
    function Conjugate (Elements : Quaternion) return Quaternion is
-      W : constant Vectors.Element_Type := Elements (SIMD.W);
+      Element_W : constant Vectors.Element_Type := Elements (W);
 
       use Vectors;
    begin
       return Result : Quaternion := Quaternion (-Vector4 (Elements)) do
-         Result (SIMD.W) := W;
+         Result (W) := Element_W;
       end return;
    end Conjugate;
 
@@ -77,7 +75,7 @@ package body Orka.Transforms.SIMD_Quaternions is
       use Vectors;
    begin
       return Result : Quaternion := Quaternion (Axis * SA) do
-         Result (SIMD.W) := CA;
+         Result (W) := CA;
       end return;
    end R;
 
@@ -100,14 +98,14 @@ package body Orka.Transforms.SIMD_Quaternions is
          declare
             Result : Quaternion := Quaternion ((1.0 / SRE) * Vectors.Cross (S, T));
          begin
-            Result (SIMD.W) := SRE / 2.0;
+            Result (W) := SRE / 2.0;
             return Normalize (Result);
          end;
       else
-         if abs S (SIMD.Z) < abs S (SIMD.X) then
-            return R ((S (SIMD.Y), -S (SIMD.X), 0.0, 0.0), 180.0);
+         if abs S (Z) < abs S (X) then
+            return R ((S (Y), -S (X), 0.0, 0.0), 180.0);
          else
-            return R ((0.0, -S (SIMD.Z), S (SIMD.Y), 0.0), 180.0);
+            return R ((0.0, -S (Z), S (Y), 0.0), 180.0);
          end if;
       end if;
    end R;

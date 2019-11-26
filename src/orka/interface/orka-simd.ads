@@ -20,7 +20,6 @@ package Orka.SIMD is
    type Unsigned_32 is mod 2 ** 32
      with Size => 32;
 
-   type Index_Homogeneous is (X, Y, Z, W);
    subtype Index_3D is Index_Homogeneous range X .. Z;
    subtype Index_2D is Index_Homogeneous range X .. Y;
 

@@ -16,4 +16,7 @@
 
 package Orka is
    pragma Pure;
+
+   type Index_Homogeneous is (X, Y, Z, W);
+
 end Orka;

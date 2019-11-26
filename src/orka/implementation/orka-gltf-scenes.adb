@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD;
-
 package body Orka.glTF.Scenes is
 
    function Create_Nodes (Nodes : Types.JSON_Value) return Natural_Vectors.Vector is
@@ -33,11 +31,11 @@ package body Orka.glTF.Scenes is
    function Get_Matrix (Matrix : Types.JSON_Value) return Transforms.Matrix4 is
       Result : Transforms.Matrix4;
    begin
-      for I in Orka.SIMD.Index_Homogeneous loop
-         for J in Orka.SIMD.Index_Homogeneous loop
+      for I in Index_Homogeneous loop
+         for J in Index_Homogeneous loop
             declare
-               Column : constant Natural := Orka.SIMD.Index_Homogeneous'Pos (I) * 4;
-               Row    : constant Natural := Orka.SIMD.Index_Homogeneous'Pos (J);
+               Column : constant Natural := Index_Homogeneous'Pos (I) * 4;
+               Row    : constant Natural := Index_Homogeneous'Pos (J);
             begin
                Result (I) (J) := Matrix.Get (Column + Row + 1).Value;
             end;

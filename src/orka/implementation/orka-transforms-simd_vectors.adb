@@ -79,8 +79,6 @@ package body Orka.Transforms.SIMD_Vectors is
      (Sum (Left * Right));
 
    function Image (Elements : Vector_Type) return String is
-      use all type SIMD.Index_Homogeneous;
-
       package SF renames Ada.Strings.Fixed;
       use Ada.Strings;
    begin

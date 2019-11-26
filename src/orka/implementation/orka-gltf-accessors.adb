@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD;
-
 package body Orka.glTF.Accessors is
 
    function Unsigned_Type (Value : Component_Kind) return GL.Types.Index_Type is
@@ -32,8 +30,8 @@ package body Orka.glTF.Accessors is
    end Unsigned_Type;
 
    function Create_Bounds (Bounds : Types.JSON_Value) return Transforms.Vector4 is
-      Key : constant array (Positive range 1 .. 4) of SIMD.Index_Homogeneous :=
-        (1 => SIMD.X, 2 => SIMD.Y, 3 => SIMD.Z, 4 => SIMD.W);
+      Key : constant array (Positive range 1 .. 4) of Index_Homogeneous :=
+        (1 => X, 2 => Y, 3 => Z, 4 => W);
    begin
       return Result : Transforms.Vector4 := Transforms.Zero_Direction do
          for Index in 1 .. Bounds.Length loop

@@ -22,8 +22,6 @@ package body Orka.Transforms.SIMD_Matrices is
 
    function "-" (Elements : Vectors.Vector_Type) return Vectors.Vector_Type renames Vectors."-";
 
-   use SIMD;
-
    function T (Offset : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
       Old_W  : constant Element_Type := Result (W) (W);
