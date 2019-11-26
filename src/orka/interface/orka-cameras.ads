@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Numerics;
+
 with GL.Types;
 
 with Orka.Behaviors;
@@ -31,7 +33,7 @@ package Orka.Cameras is
 
    use type GL.Types.Single;
 
-   subtype Angle is GL.Types.Single range -180.0 .. 180.0;
+   subtype Angle is GL.Types.Single range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
 
    subtype Distance is GL.Types.Single range 0.0 .. GL.Types.Single'Last;
 
