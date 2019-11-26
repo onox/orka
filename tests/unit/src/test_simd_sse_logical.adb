@@ -24,7 +24,7 @@ package body Test_SIMD_SSE_Logical is
 
    use GL.Types;
 
-   use Orka.SIMD;
+   use Orka;
    use Orka.SIMD.SSE.Singles;
    use Orka.SIMD.SSE.Singles.Logical;
 

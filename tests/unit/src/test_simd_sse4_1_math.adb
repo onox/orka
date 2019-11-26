@@ -25,7 +25,7 @@ package body Test_SIMD_SSE4_1_Math is
 
    use GL.Types;
 
-   use Orka.SIMD;
+   use Orka;
    use Orka.SIMD.SSE.Singles;
    use Orka.SIMD.SSE4_1.Singles.Math;
 

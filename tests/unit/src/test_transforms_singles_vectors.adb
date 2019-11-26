@@ -26,7 +26,7 @@ with Orka.Transforms.Singles.Vectors;
 package body Test_Transforms_Singles_Vectors is
 
    use GL.Types;
-   use Orka.SIMD;
+   use Orka;
    use Orka.Transforms.Singles.Vectors;
 
    use type Vector4;

@@ -25,7 +25,7 @@ package body Test_SIMD_AVX_Compare is
 
    use GL.Types;
 
-   use Orka.SIMD;
+   use Orka;
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX.Doubles.Compare;
 

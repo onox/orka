@@ -16,7 +16,6 @@
 
 with Ahven; use Ahven;
 
-with Orka.SIMD;
 with Orka.Scenes.Singles.Trees;
 with Orka.Transforms.Singles.Matrices;
 
@@ -228,7 +227,7 @@ package body Test_Scene_Trees is
          T.Update_Tree;
 
          --  Check world transform of node N1
-         Assert (T.World_Transform (C2) (Orka.SIMD.W) = Offset, "Unexpected World_Transform");
+         Assert (T.World_Transform (C2) (Orka.W) = Offset, "Unexpected World_Transform");
       end;
    end Test_World_Transform;
 

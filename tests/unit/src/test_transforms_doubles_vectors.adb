@@ -26,7 +26,7 @@ with Orka.Transforms.Doubles.Vectors;
 package body Test_Transforms_Doubles_Vectors is
 
    use GL.Types;
-   use Orka.SIMD;
+   use Orka;
    use Orka.Transforms.Doubles.Vectors;
 
    use type Vector4;

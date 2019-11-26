@@ -20,14 +20,13 @@ with Ahven; use Ahven;
 
 with GL.Types;
 
-with Orka.SIMD;
 with Orka.Transforms.Singles.Quaternions;
 with Orka.Transforms.Singles.Vectors;
 
 package body Test_Transforms_Singles_Quaternions is
 
    use GL.Types;
-   use Orka.SIMD;
+   use Orka;
    use Orka.Transforms.Singles.Quaternions;
 
    package Vectors renames Orka.Transforms.Singles.Vectors;

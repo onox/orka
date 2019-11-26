@@ -24,6 +24,7 @@ package body Test_SIMD_AVX_Swizzle is
 
    use GL.Types;
 
+   use Orka;
    use Orka.SIMD;
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX.Doubles.Swizzle;

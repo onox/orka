@@ -23,7 +23,7 @@ with Orka.SIMD.AVX.Doubles.Math;
 package body Test_SIMD_AVX_Math is
 
    use GL.Types;
-   use Orka.SIMD;
+   use Orka;
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX.Doubles.Math;
 

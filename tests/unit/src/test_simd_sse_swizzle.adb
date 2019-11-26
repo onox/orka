@@ -24,6 +24,7 @@ package body Test_SIMD_SSE_Swizzle is
 
    use GL.Types;
 
+   use Orka;
    use Orka.SIMD;
    use Orka.SIMD.SSE.Singles;
    use Orka.SIMD.SSE.Singles.Swizzle;

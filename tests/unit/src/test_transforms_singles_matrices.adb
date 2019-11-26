@@ -26,7 +26,7 @@ with Orka.Transforms.Singles.Matrices;
 package body Test_Transforms_Singles_Matrices is
 
    use GL.Types;
-   use Orka.SIMD;
+   use Orka;
    use Orka.Transforms.Singles.Matrices;
 
    use type Vector4;
