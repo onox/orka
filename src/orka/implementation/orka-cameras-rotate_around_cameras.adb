@@ -39,11 +39,11 @@ package body Orka.Cameras.Rotate_Around_Cameras is
       Object.Input.Lock_Pointer (Using_Camera);
 
       if Using_Camera then
-         Object.Alpha := Normalize_Angle (Object.Alpha + Object.Input.Delta_X);
-         Object.Beta  := Normalize_Angle (Object.Beta  + Object.Input.Delta_Y);
+         Object.Alpha := Normalize_Angle (Object.Alpha + Object.Input.Delta_X * Object.Scale (X));
+         Object.Beta  := Normalize_Angle (Object.Beta  + Object.Input.Delta_Y * Object.Scale (Y));
       end if;
 
-      Object.Radius := Clamp_Distance (Object.Radius - Object.Input.Scroll_Y);
+      Object.Radius := Clamp_Distance (Object.Radius - Object.Input.Scroll_Y * Object.Scale (Z));
    end Update;
 
    overriding

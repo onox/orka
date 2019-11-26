@@ -32,8 +32,8 @@ package body Orka.Cameras.Look_From_Cameras is
       Object.Input.Lock_Pointer (Using_Camera);
 
       if Using_Camera then
-         Object.Yaw   := Normalize_Angle (Object.Yaw   + Object.Input.Delta_X);
-         Object.Pitch := Normalize_Angle (Object.Pitch + Object.Input.Delta_Y);
+         Object.Yaw   := Normalize_Angle (Object.Yaw   + Object.Input.Delta_X * Object.Scale (X));
+         Object.Pitch := Normalize_Angle (Object.Pitch + Object.Input.Delta_Y * Object.Scale (Y));
       end if;
    end Update;
 

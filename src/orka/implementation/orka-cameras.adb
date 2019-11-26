@@ -37,6 +37,22 @@ package body Orka.Cameras is
 
    -----------------------------------------------------------------------------
 
+   overriding
+   procedure Set_Input_Scale
+     (Object  : in out First_Person_Camera;
+      X, Y, Z : GL.Types.Single) is
+   begin
+      Object.Scale := (X, Y, Z, 0.0);
+   end Set_Input_Scale;
+
+   overriding
+   procedure Set_Input_Scale
+     (Object  : in out Third_Person_Camera;
+      X, Y, Z : GL.Types.Single) is
+   begin
+      Object.Scale := (X, Y, Z, 0.0);
+   end Set_Input_Scale;
+
    procedure Set_Position
      (Object   : in out First_Person_Camera;
       Position : Transforms.Vector4) is

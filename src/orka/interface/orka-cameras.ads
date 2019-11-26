@@ -35,6 +35,8 @@ package Orka.Cameras is
 
    subtype Distance is GL.Types.Single range 0.0 .. GL.Types.Single'Last;
 
+   Default_Scale : Transforms.Vector4 := (0.002, 0.002, 1.0, 0.0);
+
    -----------------------------------------------------------------------------
 
    type Camera_Lens (Width, Height : Positive) is tagged private;
@@ -62,6 +64,10 @@ package Orka.Cameras is
    type Camera_Ptr is not null access Camera'Class;
 
    procedure Update (Object : in out Camera; Delta_Time : Duration) is abstract;
+
+   procedure Set_Input_Scale
+     (Object  : in out Camera;
+      X, Y, Z : GL.Types.Single) is abstract;
 
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
@@ -97,6 +103,11 @@ package Orka.Cameras is
 
    type First_Person_Camera is abstract new Camera with private;
 
+   overriding
+   procedure Set_Input_Scale
+     (Object  : in out First_Person_Camera;
+      X, Y, Z : GL.Types.Single);
+
    procedure Set_Position
      (Object   : in out First_Person_Camera;
       Position : Transforms.Vector4);
@@ -109,6 +120,11 @@ package Orka.Cameras is
    -----------------------------------------------------------------------------
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with private;
+
+   overriding
+   procedure Set_Input_Scale
+     (Object  : in out Third_Person_Camera;
+      X, Y, Z : GL.Types.Single);
 
    overriding
    procedure Look_At
@@ -133,10 +149,12 @@ private
 
    type First_Person_Camera is abstract new Camera with record
       Position : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Scale    : Transforms.Vector4 := Default_Scale;
    end record;
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record
       Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
+      Scale  : Transforms.Vector4     := Default_Scale;
    end record;
 
    function Clamp_Distance is new Orka.Types.Clamp (GL.Types.Single, Distance);
