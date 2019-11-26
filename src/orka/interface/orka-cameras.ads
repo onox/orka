@@ -65,6 +65,9 @@ package Orka.Cameras is
 
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
+   function View_Matrix_Inverse (Object : Camera) return Transforms.Matrix4 is abstract;
+   --  Return the inverse of the view matrix
+
    function View_Position (Object : Camera) return Transforms.Vector4 is abstract;
    --  Return the position of the camera in world space
 
@@ -83,6 +86,10 @@ package Orka.Cameras is
      (Object : in out Observing_Camera;
       Target : Behaviors.Behavior_Ptr) is abstract;
    --  Orient the camera such that it looks at the given target
+
+   function Target_Position
+     (Object : Observing_Camera) return Transforms.Vector4 is abstract;
+   --  Return the position of the target the camera looks at
 
    -----------------------------------------------------------------------------
    --                          First person camera's                          --
@@ -109,7 +116,8 @@ package Orka.Cameras is
       Target : Behaviors.Behavior_Ptr);
 
    overriding
-   function View_Position (Object : Third_Person_Camera) return Transforms.Vector4;
+   function Target_Position
+     (Object : Third_Person_Camera) return Transforms.Vector4;
 
 private
 

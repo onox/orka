@@ -22,7 +22,7 @@ package body Orka.Cameras.Rotate_Around_Cameras is
       Beta   : Angle) is
    begin
       Object.Alpha := Alpha;
-      Object.Beta := Beta;
+      Object.Beta  := Beta;
    end Set_Angles;
 
    procedure Set_Radius
@@ -50,8 +50,25 @@ package body Orka.Cameras.Rotate_Around_Cameras is
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
       use Transforms;
    begin
-      return (0.0, 0.0, -Object.Radius, 0.0) + Rx (Object.Beta) * Ry (Object.Alpha);
+      return Rx (Object.Beta) * Ry (Object.Alpha);
    end View_Matrix;
+
+   overriding
+   function View_Matrix_Inverse (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
+      use Transforms;
+   begin
+      return Ry (-Object.Alpha) * Rx (-Object.Beta);
+   end View_Matrix_Inverse;
+
+   overriding
+   function View_Position (Object : Rotate_Around_Camera) return Transforms.Vector4 is
+      use Transforms;
+
+      View_Matrix : constant Matrix4 :=
+         Object.Target_Position + Object.View_Matrix_Inverse * T ((0.0, 0.0, Object.Radius, 0.0));
+   begin
+      return View_Matrix (W);
+   end View_Position;
 
    overriding
    function Create_Camera

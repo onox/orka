@@ -59,7 +59,7 @@ package body Orka.Cameras is
      (Object.Position);
 
    overriding
-   function View_Position (Object : Third_Person_Camera) return Transforms.Vector4 is
+   function Target_Position (Object : Third_Person_Camera) return Transforms.Vector4 is
      (Object.Target.Position);
 
    -----------------------------------------------------------------------------

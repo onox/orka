@@ -628,7 +628,7 @@ package body Orka.Resources.Models.glTF is
          --  Z = aft)
          --
          --  X => Z, Y => X, Z => Y   -->   Ry (-90.0) * Rx (-90.0)
-         Structural_Frame_To_GL : constant Trees.Matrix4 := Ry (-90.0);
+         Structural_Frame_To_GL : constant Trees.Matrix4 := Identity_Value;
          --  The Khronos Blender glTF 2.0 exporter seems to already apply one of the rotations
 
          Vertices, Indices : Natural;
@@ -695,8 +695,7 @@ package body Orka.Resources.Models.glTF is
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => (others => False),
             Data  => Bounds_List (Data.Accessors, Data.Meshes)),
-         Structural_Frame_To_GL => Ry (-90.0) * Rx (-90.0));
-         -- TODO Job GLTF_Finish_Processing_Job doesn't use Rx (-90.0)?
+         Structural_Frame_To_GL => Identity_Value);
 
       Buffers_Job : constant Jobs.Job_Ptr := new GLTF_Write_Buffers_Job'
         (Jobs.Abstract_Job with Data => Object.Data, Model => Model_Data);

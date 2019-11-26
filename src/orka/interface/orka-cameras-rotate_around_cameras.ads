@@ -32,6 +32,12 @@ package Orka.Cameras.Rotate_Around_Cameras is
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4;
 
    overriding
+   function View_Matrix_Inverse (Object : Rotate_Around_Camera) return Transforms.Matrix4;
+
+   overriding
+   function View_Position (Object : Rotate_Around_Camera) return Transforms.Vector4;
+
+   overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration);
 
    overriding

@@ -32,6 +32,12 @@ package Orka.Cameras.Look_At_Cameras is
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
 
    overriding
+   function View_Matrix_Inverse (Object : Look_At_Camera) return Transforms.Matrix4;
+
+   overriding
+   function Target_Position (Object : Look_At_Camera) return Transforms.Vector4;
+
+   overriding
    procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration) is null;
    --  Look_At camera does not need to implement Update because the
    --  view matrix does not depend on the pointer (it is computed using

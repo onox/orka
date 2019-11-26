@@ -27,6 +27,9 @@ package Orka.Cameras.Look_From_Cameras is
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4;
 
    overriding
+   function View_Matrix_Inverse (Object : Look_From_Camera) return Transforms.Matrix4;
+
+   overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration);
 
    overriding

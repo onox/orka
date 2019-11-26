@@ -14,11 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Singles.Vectors;
-
 package body Orka.Cameras.Look_At_Cameras is
-
-   package Vector_Transforms renames Orka.Transforms.Singles.Vectors;
 
    overriding
    procedure Look_At
@@ -41,15 +37,12 @@ package body Orka.Cameras.Look_At_Cameras is
 
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
-      use Vector_Transforms;
-      use Transforms;
+      use Transforms.Vectors;
 
-      Rotate_To_GL : constant Matrix4 := Ry (-90.0) * Rx (-90.0);
-
-      Forward : constant Vector_Type
-        := Normalize (Rotate_To_GL * (Object.Target.Position - Object.Position));
-      Side    : constant Vector_Type := Cross (Forward, Object.Up);
-      Up      : constant Vector_Type := Cross (Side, Forward);
+      Forward : constant Vector4
+        := Normalize ((Object.Target.Position - Object.Position));
+      Side    : constant Vector4 := Cross (Forward, Object.Up);
+      Up      : constant Vector4 := Cross (Side, Forward);
    begin
       return
         ((Side (X), Up (X), -Forward (X), 0.0),
@@ -57,6 +50,17 @@ package body Orka.Cameras.Look_At_Cameras is
          (Side (Z), Up (Z), -Forward (Z), 0.0),
          (0.0, 0.0, 0.0, 1.0));
    end View_Matrix;
+
+   overriding
+   function View_Matrix_Inverse (Object : Look_At_Camera) return Transforms.Matrix4 is
+      use Transforms;
+   begin
+      return Transpose (Object.View_Matrix);
+   end View_Matrix_Inverse;
+
+   overriding
+   function Target_Position (Object : Look_At_Camera) return Transforms.Vector4 is
+     (Object.Target.Position);
 
    overriding
    function Create_Camera
