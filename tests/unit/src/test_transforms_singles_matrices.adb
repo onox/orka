@@ -31,7 +31,24 @@ package body Test_Transforms_Singles_Matrices is
 
    use type Vector4;
 
-   package Elementary_Functions is new Ada.Numerics.Generic_Elementary_Functions (Single);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
+
+   function To_Radians (Angle : Single) return Single renames Vectors.To_Radians;
+
+   function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
+      Epsilon  : constant GL.Types.Single := 2.0 ** (1 - GL.Types.Single'Model_Mantissa);
+   begin
+      return Result in Expected - 2.0 * Epsilon .. Expected + 2.0 * Epsilon;
+   end Is_Equivalent;
+
+   procedure Assert_Equivalent (Expected, Result : Vector4; Column : Index_Homogeneous) is
+   begin
+      for Row in Index_Homogeneous loop
+         Assert (Is_Equivalent (Expected (Row), Result (Row)),
+           "Unexpected element " & Expected (Row)'Image & " instead of " & Result (Row)'Image &
+           " at (" & Column'Image & ", " & Row'Image & ")");
+      end loop;
+   end Assert_Equivalent;
 
    overriding
    procedure Initialize (T : in out Test) is
@@ -72,15 +89,15 @@ package body Test_Transforms_Singles_Matrices is
       Result : constant Matrix4 := T (Offset);
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_T;
 
    procedure Test_Rx is
       Angle : constant Single := 60.0;
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0, 0.0, 0.0, 0.0),
@@ -88,18 +105,18 @@ package body Test_Transforms_Singles_Matrices is
             (0.0, -SA,  CA, 0.0),
             (0.0, 0.0, 0.0, 1.0));
 
-      Result : constant Matrix4 := Rx (Angle);
+      Result : constant Matrix4 := Rx (To_Radians (Angle));
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rx;
 
    procedure Test_Ry is
       Angle : constant Single := 60.0;
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0, -SA, 0.0),
@@ -107,18 +124,18 @@ package body Test_Transforms_Singles_Matrices is
             (SA,  0.0,  CA, 0.0),
             (0.0, 0.0, 0.0, 1.0));
 
-      Result : constant Matrix4 := Ry (Angle);
+      Result : constant Matrix4 := Ry (To_Radians (Angle));
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Ry;
 
    procedure Test_Rz is
       Angle : constant Single := 60.0;
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,   SA, 0.0, 0.0),
@@ -126,21 +143,22 @@ package body Test_Transforms_Singles_Matrices is
             (0.0, 0.0, 1.0, 0.0),
             (0.0, 0.0, 0.0, 1.0));
 
-      Result : constant Matrix4 := Rz (Angle);
+      Result : constant Matrix4 := Rz (To_Radians (Angle));
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rz;
 
    procedure Test_R is
       Angle : constant Single := 90.0;
 
-      Expected : constant Matrix4 := Rz (Angle) * Ry (Angle) * Rx (Angle);
-      Result   : constant Matrix4 := R ((0.0, 1.0, 0.0, 1.0), Angle);
+      Expected : constant Matrix4 :=
+        Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
+      Result   : constant Matrix4 := R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle));
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_R;
 
@@ -156,7 +174,7 @@ package body Test_Transforms_Singles_Matrices is
       Result : constant Matrix4 := S (Factors);
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_S;
 
@@ -176,7 +194,7 @@ package body Test_Transforms_Singles_Matrices is
       Result : constant Matrix4 := Offset_A + (Offset_B + Identity_Value);
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Add_Offset;
 
@@ -195,7 +213,7 @@ package body Test_Transforms_Singles_Matrices is
       Result : constant Matrix4 := Factor_A * (Factor_B * Identity_Value);
    begin
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Multiply_Factor;
 
@@ -203,13 +221,14 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      Expected : constant Matrix4 := Rz (Angle) * Ry (Angle) * Rx (Angle) * T (Offset);
+      Expected : constant Matrix4 :=
+        Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle)) * T (Offset);
       Result   : Matrix4 := T (Offset);
    begin
-      Rotate_At_Origin (Result, (0.0, 1.0, 0.0, 1.0), Angle);
+      Rotate_At_Origin (Result, (0.0, 1.0, 0.0, 1.0), To_Radians (Angle));
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_At_Origin;
 
@@ -217,14 +236,15 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      Expected : Matrix4 := Rz (Angle) * Ry (Angle) * Rx (Angle);
+      Expected : Matrix4 :=
+        Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
       Result   : Matrix4 := T (Offset);
    begin
       Expected (W) := Offset;
-      Rotate (Result, (0.0, 1.0, 0.0, 1.0), Angle, Offset);
+      Rotate (Result, (0.0, 1.0, 0.0, 1.0), To_Radians (Angle), Offset);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate;
 
@@ -232,8 +252,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -243,10 +263,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_X_At_Origin (Result, Angle);
+      Rotate_X_At_Origin (Result, To_Radians (Angle));
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X_At_Origin;
 
@@ -254,8 +274,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -265,10 +285,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_Y_At_Origin (Result, Angle);
+      Rotate_Y_At_Origin (Result, To_Radians (Angle));
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y_At_Origin;
 
@@ -276,8 +296,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -287,10 +307,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_Z_At_Origin (Result, Angle);
+      Rotate_Z_At_Origin (Result, To_Radians (Angle));
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Z_At_Origin;
 
@@ -298,8 +318,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -309,10 +329,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_X (Result, Angle, Offset);
+      Rotate_X (Result, To_Radians (Angle), Offset);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X;
 
@@ -320,8 +340,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -331,10 +351,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_Y (Result, Angle, Offset);
+      Rotate_Y (Result, To_Radians (Angle), Offset);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y;
 
@@ -342,8 +362,8 @@ package body Test_Transforms_Singles_Matrices is
       Angle  : constant Single  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := Elementary_Functions.Cos (Angle, 360.0);
-      SA : constant Single := Elementary_Functions.Sin (Angle, 360.0);
+      CA : constant Single := EF.Cos (Angle, 360.0);
+      SA : constant Single := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -353,10 +373,10 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : Matrix4 := T (Offset);
    begin
-      Rotate_Z (Result, Angle, Offset);
+      Rotate_Z (Result, To_Radians (Angle), Offset);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Z;
 
@@ -374,7 +394,7 @@ package body Test_Transforms_Singles_Matrices is
       Translate (Result, Offset);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Translate;
 
@@ -392,7 +412,7 @@ package body Test_Transforms_Singles_Matrices is
       Scale (Result, Factors);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Scale_Factors;
 
@@ -410,7 +430,7 @@ package body Test_Transforms_Singles_Matrices is
       Scale (Result, Factor);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Scale_Factor;
 
@@ -430,7 +450,7 @@ package body Test_Transforms_Singles_Matrices is
       Transpose (Result);
 
       for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected vector at " & Index_Homogeneous'Image (I));
+         Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Transpose;
 

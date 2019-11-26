@@ -20,7 +20,6 @@ with Ahven; use Ahven;
 
 with GL.Types;
 
-with Orka.SIMD;
 with Orka.Transforms.Singles.Vectors;
 
 package body Test_Transforms_Singles_Vectors is
@@ -160,7 +159,7 @@ package body Test_Transforms_Singles_Vectors is
       Left  : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
       Right : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
 
-      Expected : constant GL.Types.Single := 90.0;
+      Expected : constant GL.Types.Single := To_Radians (90.0);
       Result   : constant GL.Types.Single := Angle (Left, Right);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));

@@ -35,11 +35,31 @@ package body Test_Transforms_Singles_Quaternions is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
 
+   function To_Radians (Angle : Single) return Single renames Vectors.To_Radians;
+
    function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
       Epsilon : constant GL.Types.Single := GL.Types.Single'Model_Epsilon;
    begin
       return Result in Expected - Epsilon .. Expected + Epsilon;
    end Is_Equivalent;
+
+   procedure Assert_Equivalent (Expected, Result : Vector4) is
+   begin
+      for I in Index_Homogeneous loop
+         Assert (Is_Equivalent (Expected (I), Result (I)),
+           "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
+           " at " & I'Image);
+      end loop;
+   end Assert_Equivalent;
+
+   procedure Assert_Equivalent (Expected, Result : Quaternion) is
+   begin
+      for I in Index_Homogeneous loop
+         Assert (Is_Equivalent (Expected (I), Result (I)),
+           "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
+           " at " & I'Image);
+      end loop;
+   end Assert_Equivalent;
 
    overriding
    procedure Initialize (T : in out Test) is
@@ -66,33 +86,29 @@ package body Test_Transforms_Singles_Quaternions is
          Sin_Value : constant GL.Types.Single := EF.Sin (Half_Angle, 360.0);
          Cos_Value : constant GL.Types.Single := EF.Cos (Half_Angle, 360.0);
 
-         Result   : constant Quaternion := R (Axis, Half_Angle) * R (Axis, Half_Angle);
+         Result   : constant Quaternion :=
+           R (Axis, To_Radians (Half_Angle)) * R (Axis, To_Radians (Half_Angle));
          Expected : constant Quaternion := (Axis (X) * Sin_Value,
                                             Axis (Y) * Sin_Value,
                                             Axis (Z) * Sin_Value,
                                             Cos_Value);
       begin
-         for I in Index_Homogeneous loop
-            Assert (Is_Equivalent (Expected (I), Result (I)),
-              "A Unexpected Single at " & Index_Homogeneous'Image (I));
-         end loop;
+         Assert_Equivalent (Expected, Result);
          Assert (Normalized (Result), "Result not normalized");
       end;
 
       declare
          Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+         Angle_Radians : constant Single := To_Radians (30.0);
 
-         Rotation : constant Quaternion := R (Axis, 30.0) * R (Axis, 30.0) * R (Axis, 30.0);
+         Rotation : constant Quaternion :=
+           R (Axis, Angle_Radians) * R (Axis, Angle_Radians) * R (Axis, Angle_Radians);
 
          Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
          Result   : Vector4 := (0.0, 1.0, 0.0, 0.0);
       begin
          Rotate_At_Origin (Result, Rotation);
-
-         for I in Index_Homogeneous loop
-            Assert (Is_Equivalent (Expected (I), Result (I)),
-              "B Unexpected Single at " & Index_Homogeneous'Image (I));
-         end loop;
+         Assert_Equivalent (Expected, Result);
       end;
    end Test_Multiplication;
 
@@ -102,10 +118,7 @@ package body Test_Transforms_Singles_Quaternions is
       Expected : constant Quaternion := (-1.0, -2.0, -3.0, 4.0);
       Result   : constant Quaternion := Conjugate (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
+      Assert_Equivalent (Expected, Result);
    end Test_Conjugate;
 
    procedure Test_Norm is
@@ -121,9 +134,12 @@ package body Test_Transforms_Singles_Quaternions is
       Expected_2 : constant GL.Types.Single := EF.Sqrt (30.0);
       Expected_3 : constant GL.Types.Single := 0.0;
    begin
-      Assert (Is_Equivalent (Expected_1, Result_1), "Unexpected Single " & GL.Types.Single'Image (Result_1));
-      Assert (Is_Equivalent (Expected_2, Result_2), "Unexpected Single " & GL.Types.Single'Image (Result_2));
-      Assert (Is_Equivalent (Expected_3, Result_3), "Unexpected Single " & GL.Types.Single'Image (Result_3));
+      Assert (Is_Equivalent (Expected_1, Result_1),
+        "Unexpected Single " & GL.Types.Single'Image (Result_1));
+      Assert (Is_Equivalent (Expected_2, Result_2),
+        "Unexpected Single " & GL.Types.Single'Image (Result_2));
+      Assert (Is_Equivalent (Expected_3, Result_3),
+        "Unexpected Single " & GL.Types.Single'Image (Result_3));
    end Test_Norm;
 
    procedure Test_Normalize is
@@ -158,16 +174,13 @@ package body Test_Transforms_Singles_Quaternions is
       Sin_Value : constant GL.Types.Single := EF.Sin (45.0, 360.0);
       Cos_Value : constant GL.Types.Single := EF.Cos (45.0, 360.0);
 
-      Result   : constant Quaternion := R (Axis, Angle);
+      Result   : constant Quaternion := R (Axis, To_Radians (Angle));
       Expected : constant Quaternion := (Axis (X) * Sin_Value,
                                          Axis (Y) * Sin_Value,
                                          Axis (Z) * Sin_Value,
                                          Cos_Value);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
+      Assert_Equivalent (Expected, Result);
       Assert (Normalized (Result), "Result not normalized");
    end Test_Rotate_Axis_Angle;
 
@@ -178,54 +191,40 @@ package body Test_Transforms_Singles_Quaternions is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
       Angle : constant GL.Types.Single := 90.0;
 
-      Expected_1 : constant Quaternion := R (Axis, Angle);
+      Expected_1 : constant Quaternion := R (Axis, To_Radians (Angle));
       Result_1   : constant Quaternion := R (Start_Vector, End_Vector);
 
-      Expected_2 : constant Quaternion := R (Axis, -Angle);
+      Expected_2 : constant Quaternion := R (Axis, To_Radians (-Angle));
       Result_2   : constant Quaternion := R (End_Vector, Start_Vector);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected_1 (I), Result_1 (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
-
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected_2 (I), Result_2 (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
+      Assert_Equivalent (Expected_1, Result_1);
+      Assert_Equivalent (Expected_2, Result_2);
    end Test_Rotate_Vectors;
 
    procedure Test_Rotate_At_Origin is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
       Angle : constant GL.Types.Single := 90.0;
 
-      Rotation : constant Quaternion := R (Axis, Angle);
+      Rotation : constant Quaternion := R (Axis, To_Radians (Angle));
 
       Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
       Result   : Vector4 := (0.0, 1.0, 0.0, 0.0);
    begin
       Rotate_At_Origin (Result, Rotation);
-
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
+      Assert_Equivalent (Expected, Result);
    end Test_Rotate_At_Origin;
 
    procedure Test_Slerp is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
       Angle : constant GL.Types.Single := 45.0;
 
-      Start_Quaternion : constant Quaternion := R (Axis, 0.0);
-      End_Quaternion   : constant Quaternion := R (Axis, 90.0);
+      Start_Quaternion : constant Quaternion := R (Axis, To_Radians (0.0));
+      End_Quaternion   : constant Quaternion := R (Axis, To_Radians (90.0));
 
-      Expected : constant Quaternion := R (Axis, Angle);
+      Expected : constant Quaternion := R (Axis, To_Radians (Angle));
       Result   : constant Quaternion := Slerp (Start_Quaternion, End_Quaternion, 0.5);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
-           "Unexpected Single at " & Index_Homogeneous'Image (I));
-      end loop;
+      Assert_Equivalent (Expected, Result);
    end Test_Slerp;
 
 end Test_Transforms_Singles_Quaternions;

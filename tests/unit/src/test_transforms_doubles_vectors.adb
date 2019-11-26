@@ -20,7 +20,6 @@ with Ahven; use Ahven;
 
 with GL.Types;
 
-with Orka.SIMD;
 with Orka.Transforms.Doubles.Vectors;
 
 package body Test_Transforms_Doubles_Vectors is
@@ -160,7 +159,7 @@ package body Test_Transforms_Doubles_Vectors is
       Left  : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
       Right : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
 
-      Expected : constant GL.Types.Double := 90.0;
+      Expected : constant GL.Types.Double := To_Radians (90.0);
       Result   : constant GL.Types.Double := Angle (Left, Right);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Double " & GL.Types.Double'Image (Result));
