@@ -203,6 +203,9 @@ package body Orka.Transforms.SIMD_Matrices is
       Matrix := Transpose_Matrix (Matrix);
    end Transpose;
 
+   function FOV (Width, Distance : Element_Type) return Element_Type is
+     (2.0 * EF.Arctan (Width  / (2.0 * Distance)));
+
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type is
       F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
       Result : Matrix_Type := Identity_Value;

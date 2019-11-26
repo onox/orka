@@ -180,6 +180,13 @@ package Orka.Transforms.SIMD_Matrices is
 
    use type Element_Type;
 
+   function FOV (Width, Distance : Element_Type) return Element_Type;
+   --  Return an appropriate field of view in radians for a given screen
+   --  width and view distance in physical units (mm/inches)
+   --
+   --  For example, for a 35 mm frame (which is 36 mm wide) and a
+   --  50 mm standard lens, the function gives ~ 39 degrees.
+
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type
      with Pre => FOV > 0.0 and Aspect > 0.0 and Z_Near > 0.0 and Z_Far > Z_Near;
    --  Return a matrix providing perspective projection with a depth
