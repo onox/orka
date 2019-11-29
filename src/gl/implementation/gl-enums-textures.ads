@@ -19,15 +19,24 @@ private with GL.Low_Level;
 package GL.Enums.Textures is
    pragma Preelaborate;
 
-   -- Texture_Kind is declared in GL.Low_Level.Enums to be accessible for
-   -- OpenCLAda
-
    type Parameter is (Border_Color, Mag_Filter, Min_Filter, Wrap_S,
                       Wrap_T, Wrap_R, Min_LoD, Max_LoD,
                       Base_Level, Max_Level, Immutable_Levels, Max_Anisotropy,
                       LoD_Bias, Compare_Mode, Compare_Func, Cube_Map_Seamless);
 
-   -- needs to be declared here because of subtypes
+   type Compare_Kind is (None, Compare_R_To_Texture);
+
+   type Level_Parameter is (Width, Height, Internal_Format, Red_Size,
+                            Green_Size, Blue_Size, Alpha_Size, Depth,
+                            Compressed_Image_Size, Compressed,
+                            Depth_Size, Stencil_Size,
+                            Red_Type, Green_Type, Blue_Type,
+                            Alpha_Type, Depth_Type, Shared_Size,
+                            Samples, Fixed_Sample_Locations,
+                            Buffer_Offset, Buffer_Size);
+
+private
+
    for Parameter use (Border_Color    => 16#1004#,
                       Mag_Filter      => 16#2800#,
                       Min_Filter      => 16#2801#,
@@ -46,31 +55,8 @@ package GL.Enums.Textures is
                       Cube_Map_Seamless => 16#884F#);
    for Parameter'Size use Low_Level.Enum'Size;
 
-   subtype LoD is Parameter range Min_LoD .. Max_Level;
-
-   type Compare_Kind is (None, Compare_R_To_Texture);
-
-   type Env_Parameter is (LoD_Bias, Src1_Alpha);
-
-   type Level_Parameter is (Width, Height, Internal_Format, Red_Size,
-                            Green_Size, Blue_Size, Alpha_Size, Depth,
-                            Compressed_Image_Size, Compressed,
-                            Depth_Size, Stencil_Size,
-                            Red_Type, Green_Type, Blue_Type,
-                            Alpha_Type, Depth_Type, Shared_Size,
-                            Samples, Fixed_Sample_Locations,
-                            Buffer_Offset, Buffer_Size);
-
-   Texture_Unit_Start_Rep : constant := 16#84C0#;
-
-private
-
    for Compare_Kind use (None => 0, Compare_R_To_Texture => 16#884E#);
    for Compare_Kind'Size use Low_Level.Enum'Size;
-
-   for Env_Parameter use (LoD_Bias       => 16#8501#,
-                          Src1_Alpha     => 16#8589#);
-   for Env_Parameter'Size use Low_Level.Enum'Size;
 
    for Level_Parameter use (Width           => 16#1000#,
                             Height          => 16#1001#,
