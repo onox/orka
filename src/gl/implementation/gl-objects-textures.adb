@@ -337,6 +337,28 @@ package body GL.Objects.Textures is
       return Natural (Count);
    end Texture_Unit_Count;
 
+   function Texture_Unit_Count (Shader : Shaders.Shader_Type) return Natural is
+      Count : Int := 0;
+
+      use all type Shaders.Shader_Type;
+   begin
+      case Shader is
+         when Vertex_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Vertex_Texture_Image_Units, Count);
+         when Fragment_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Texture_Image_Units, Count);
+         when Geometry_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Geometry_Texture_Image_Units, Count);
+         when Tess_Control_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Tess_Control_Texture_Image_Units, Count);
+         when Tess_Evaluation_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Tess_Evaluation_Texture_Image_Units, Count);
+         when Compute_Shader =>
+            API.Get_Integer (Enums.Getter.Max_Compute_Texture_Image_Units, Count);
+      end case;
+      return Natural (Count);
+   end Texture_Unit_Count;
+
    function Maximum_Anisotropy return Single is
       Ret : Single := 16.0;
    begin

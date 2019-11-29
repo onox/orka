@@ -22,6 +22,7 @@ with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
+with GL.Objects.Shaders;
 with GL.Pixels.Extensions;
 with GL.Types;
 
@@ -192,6 +193,15 @@ package GL.Objects.Textures is
    -----------------------------------------------------------------------------
 
    function Texture_Unit_Count return Natural;
+   --  Return the maximum combined number of texture image units available
+   --  to all shaders
+   --
+   --  If a texture image unit is used by multiple shaders, each shader stage
+   --  is counted separately.
+
+   function Texture_Unit_Count (Shader : Shaders.Shader_Type) return Natural;
+   --  Return the maximum number of texture image units available for
+   --  the specified shader
 
    -----------------------------------------------------------------------------
    --                        Buffer Texture Loading                           --
