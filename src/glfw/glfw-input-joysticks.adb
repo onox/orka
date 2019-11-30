@@ -48,6 +48,9 @@ package body Glfw.Input.Joysticks is
       end if;
    end Gamepad_State;
 
+   function Joystick_Name (Source : Joystick) return String is
+     (Interfaces.C.Strings.Value (API.Get_Joystick_Name (Source.Raw_Index)));
+
    function Joystick_GUID (Source : Joystick) return String is
      (Interfaces.C.Strings.Value (API.Get_Joystick_GUID (Source.Raw_Index)));
 

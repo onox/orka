@@ -59,6 +59,8 @@ package Glfw.Input.Joysticks is
 
    function Gamepad_State (Source : Joystick) return Joystick_Gamepad_State;
 
+   function Joystick_Name (Source : Joystick) return String;
+
    function Joystick_GUID (Source : Joystick) return String;
 
    procedure Update_Gamepad_Mappings (Mappings : String);
