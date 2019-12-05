@@ -21,9 +21,16 @@ package body Orka.Rendering.Drawing is
 
    use GL.Types;
 
-   procedure Draw (Mode : GL.Types.Connection_Mode; Offset, Count : Natural) is
+   procedure Draw
+     (Mode          : GL.Types.Connection_Mode;
+      Offset, Count : Natural;
+      Instances     : Positive := 1) is
    begin
-      GL.Drawing.Draw_Arrays (Mode, Offset => Size (Offset), Count => Size (Count));
+      GL.Drawing.Draw_Arrays
+        (Mode,
+         Offset    => Size (Offset),
+         Count     => Size (Count),
+         Instances => Size (Instances));
    end Draw;
 
    procedure Draw_Indexed

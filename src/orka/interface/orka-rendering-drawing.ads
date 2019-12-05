@@ -22,7 +22,10 @@ with Orka.Types;
 package Orka.Rendering.Drawing is
    pragma Preelaborate;
 
-   procedure Draw (Mode : GL.Types.Connection_Mode; Offset, Count : Natural);
+   procedure Draw
+     (Mode          : GL.Types.Connection_Mode;
+      Offset, Count : Natural;
+      Instances     : Positive := 1);
 
    procedure Draw_Indexed
      (Mode          : GL.Types.Connection_Mode;
