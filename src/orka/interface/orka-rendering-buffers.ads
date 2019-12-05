@@ -36,6 +36,8 @@ package Orka.Rendering.Buffers is
       Target : Buffer_Target;
       Index  : Natural) is abstract;
 
+   function Length (Object : Bindable_Buffer) return Natural is abstract;
+
    -----------------------------------------------------------------------------
 
    type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with private;
@@ -100,6 +102,7 @@ package Orka.Rendering.Buffers is
    function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
 
+   overriding
    function Length (Object : Buffer) return Natural
      with Inline;
 

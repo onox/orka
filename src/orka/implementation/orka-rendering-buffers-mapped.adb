@@ -19,6 +19,7 @@ package body Orka.Rendering.Buffers.Mapped is
    function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer is
      (Object.Buffer.GL_Buffer);
 
+   overriding
    function Length (Object : Mapped_Buffer) return Natural is
      (Object.Buffer.Length);
 

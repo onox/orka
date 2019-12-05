@@ -28,6 +28,7 @@ package Orka.Rendering.Buffers.Mapped is
    function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer
      with Inline;
 
+   overriding
    function Length (Object : Mapped_Buffer) return Natural;
    --  Number of elements in the buffer
 
