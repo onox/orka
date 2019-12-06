@@ -63,6 +63,20 @@ package body Orka.Transforms.SIMD_Quaternions is
    function Normalized (Elements : Quaternion) return Boolean is
      (Vectors.Normalized (Vector4 (Elements)));
 
+   function To_Axis_Angle (Elements : Quaternion) return Axis_Angle is
+      use type Vectors.Element_Type;
+
+      Angle : constant Vectors.Element_Type := EF.Arccos (Elements (W)) * 2.0;
+      SA    : constant Vectors.Element_Type := EF.Sin (Angle / 2.0);
+
+      use Vectors;
+
+      Axis : Vector4 := Vector4 (Elements) * (1.0 / SA);
+   begin
+      Axis (W) := 0.0;
+      return (Axis => Axis, Angle => Angle);
+   end To_Axis_Angle;
+
    function R
      (Axis  : Vector4;
       Angle : Vectors.Element_Type) return Quaternion

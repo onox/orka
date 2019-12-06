@@ -25,6 +25,11 @@ package Orka.Transforms.SIMD_Quaternions is
 
    subtype Vector4 is Vectors.Vector_Type;
 
+   type Axis_Angle is record
+      Axis  : Vector4;
+      Angle : Vectors.Element_Type;
+   end record;
+
    function Identity_Value return Quaternion is
      ((0.0, 0.0, 0.0, 1.0))
    with Inline;
@@ -38,6 +43,8 @@ package Orka.Transforms.SIMD_Quaternions is
    function Normalize (Elements : Quaternion) return Quaternion;
 
    function Normalized (Elements : Quaternion) return Boolean;
+
+   function To_Axis_Angle (Elements : Quaternion) return Axis_Angle;
 
    function R
      (Axis  : Vector4;
