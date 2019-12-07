@@ -20,31 +20,29 @@ with GL.Types;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
 
-package body Orka.Rendering.Debug.Bounding_Boxes is
+package body Orka.Rendering.Debug.Coordinate_Axes is
 
-   function Create_Bounding_Box
-     (Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := (1.0, 1.0, 1.0, 1.0)) return Bounding_Box
+   function Create_Coordinate_Axes
+     (Location : Resources.Locations.Location_Ptr) return Coordinate_Axes
    is
       use Rendering.Programs;
    begin
-      return Result : Bounding_Box :=
+      return Result : Coordinate_Axes :=
         (Program => Create_Program (Modules.Create_Module
-                      (Location, VS => "bbox.vert", FS => "line.frag")),
+                      (Location, VS => "axes.vert", FS => "line.frag")),
          others  => <>)
       do
-         Result.Program.Uniform ("color").Set_Vector (Color);
-
          Result.Uniform_Visible  := Result.Program.Uniform ("visible");
+
          Result.Uniform_View     := Result.Program.Uniform ("view");
          Result.Uniform_Proj     := Result.Program.Uniform ("proj");
       end return;
-   end Create_Bounding_Box;
+   end Create_Coordinate_Axes;
 
    procedure Render
-     (Object     : in out Bounding_Box;
+     (Object     : in out Coordinate_Axes;
       View, Proj : Transforms.Matrix4;
-      Transforms, Bounds : Rendering.Buffers.Bindable_Buffer'Class)
+      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
    is
       use all type GL.Types.Compare_Function;
       use all type Rendering.Buffers.Buffer_Target;
@@ -68,21 +66,21 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
       Object.Program.Use_Program;
 
       Transforms.Bind_Base (Shader_Storage, 0);
-      Bounds.Bind_Base (Shader_Storage, 1);
+      Sizes.Bind_Base (Shader_Storage, 1);
 
-      --  Visible lines of bounding box
+      --  Visible part of axes
       Object.Uniform_Visible.Set_Boolean (True);
-      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 2 * 12, Instances => Transforms.Length);
+      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Transforms.Length);
 
-      --  Hidden lines of bounding box
+      --  Hidden part of axes
       GL.Buffers.Set_Depth_Function (Reverse_Function (Original_Function));
       GL.Buffers.Set_Depth_Mask (Enabled => False);
 
       Object.Uniform_Visible.Set_Boolean (False);
-      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 2 * 12, Instances => Transforms.Length);
+      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Transforms.Length);
 
       GL.Buffers.Set_Depth_Function (Original_Function);
       GL.Buffers.Set_Depth_Mask (Enabled => Original_Mask);
    end Render;
 
-end Orka.Rendering.Debug.Bounding_Boxes;
+end Orka.Rendering.Debug.Coordinate_Axes;

@@ -18,8 +18,8 @@
 
 uniform bool visible;
 
+in vec4  vs_color;
 in float vs_weight;
-in vec4 vs_color;
 
 layout(location = 0) out vec4 fs_color;
 
@@ -32,7 +32,7 @@ void main() {
     float b = float(int(a) % pattern_b);
 
     if (visible || b / pattern_b < 0.5) {
-        fs_color = vec4(vs_color.xyz, 1.0);
+        fs_color = vs_color;
     }
     else {
         discard;

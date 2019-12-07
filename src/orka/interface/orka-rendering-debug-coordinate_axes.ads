@@ -22,38 +22,34 @@ private with GL.Low_Level.Enums;
 
 private with Orka.Rendering.Programs.Uniforms;
 
-package Orka.Rendering.Debug.Lines is
+package Orka.Rendering.Debug.Coordinate_Axes is
    pragma Preelaborate;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Line is tagged private;
+   type Coordinate_Axes is tagged private;
 
-   function Create_Line
-     (Location : Resources.Locations.Location_Ptr) return Line;
+   function Create_Coordinate_Axes
+     (Location : Resources.Locations.Location_Ptr) return Coordinate_Axes;
 
    procedure Render
-     (Object     : in out Line;
+     (Object     : in out Coordinate_Axes;
       View, Proj : Transforms.Matrix4;
-      Transforms, Colors, Points : Rendering.Buffers.Bindable_Buffer'Class)
-   with Pre => Transforms.Length in 1 | Points.Length / 2
-                 and Colors.Length in 1 | Points.Length / 2
-                 and Points.Length mod 2 = 0;
-   --  Render lines between pairs of points
+      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
+   with Pre => Transforms.Length > 0 and Sizes.Length in 1 | Transforms.Length;
+   --  Render three coordinates axes for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
    --  contain one or n matrices for n lines. If all lines exist
    --  in the same world space, then one matrix transform is sufficient.
    --
-   --  The buffer Colors must contain one or n vectors.
-   --
-   --  The buffer Points must contain 2 * n points.
+   --  The buffer Sizes must contain one or n singles.
 
 private
 
    package LE renames GL.Low_Level.Enums;
 
-   type Line is tagged record
+   type Coordinate_Axes is tagged record
       Program : Rendering.Programs.Program;
 
       Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
@@ -62,4 +58,4 @@ private
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
    end record;
 
-end Orka.Rendering.Debug.Lines;
+end Orka.Rendering.Debug.Coordinate_Axes;

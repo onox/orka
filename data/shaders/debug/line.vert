@@ -39,8 +39,8 @@ layout(std430, binding = 2) readonly restrict buffer lineBuffer {
     Line lines[];
 };
 
+out vec4  vs_color;
 out float vs_weight;
-out vec4 vs_color;
 
 void main() {
     const int instanceID = gl_BaseInstanceARB + gl_InstanceID;

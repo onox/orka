@@ -22,78 +22,48 @@
 uniform mat4 view;
 uniform mat4 proj;
 
-uniform vec4 color;
-
-struct BoundingBox {
-    vec4 minimum;
-    vec4 maximum;
-};
-
 layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
-    mat4 matrices[];
+    mat4 world[];
 };
 
-layout(std430, binding = 1) readonly restrict buffer bboxBuffer {
-    BoundingBox bboxes[];
+layout(std430, binding = 1) readonly restrict buffer sizeBuffer {
+    float sizes[];
 };
 
 out vec4  vs_color;
 out float vs_weight;
 
-//      6----7
-//     /|   /|
-//    / |  / |
-//   /  4-/--5
-//  /  / /  /
-// 2----3  /
-// | /  | /
-// |/   |/
-// 0----1
 const vec3 vertices[] = {
-    vec3(-1.0, -1.0, 1.0),
-    vec3( 1.0, -1.0, 1.0),
-    vec3(-1.0,  1.0, 1.0),
-    vec3( 1.0,  1.0, 1.0),
-
-    vec3(-1.0, -1.0, -1.0),
-    vec3( 1.0, -1.0, -1.0),
-    vec3(-1.0,  1.0, -1.0),
-    vec3( 1.0,  1.0, -1.0),
+    vec3(0.0, 0.0, 0.0),
+    vec3(1.0, 0.0, 0.0),
+    vec3(0.0, 1.0, 0.0),
+    vec3(0.0, 0.0, 1.0),
 };
 
 const int indices[] = {
-    // Front
-    0, 1,
-    0, 2,
-    1, 3,
-    2, 3,
+    0, 1, // x-axis
+    0, 2, // y-axis
+    0, 3  // z-axis
+};
 
-    // Back
-    4, 5,
-    4, 6,
-    5, 7,
-    6, 7,
-
-    // Right
-    1, 5,
-    3, 7,
-
-    // Left
-    0, 4,
-    2, 6
+const vec3 colors[] = {
+    vec3(1.0, 0.0, 0.0),
+    vec3(0.0, 1.0, 0.0),
+    vec3(0.0, 0.0, 1.0),
 };
 
 void main() {
     const int instanceID = gl_BaseInstanceARB + gl_InstanceID;
 
-    const vec4 bboxMin = bboxes[instanceID].minimum;
-    const vec4 bboxMax = bboxes[instanceID].maximum;
+    // Take the last matrix in world[] if there are not enough in the buffer
+    const int transformID = min(instanceID, world.length() - 1);
+    const int sizeID      = min(instanceID, sizes.length() - 1);
 
     vec4 vertex = vec4(vertices[indices[gl_VertexID]], 1.0);
-    vertex.xyz *= 0.5 * (bboxMax.xyz - bboxMin.xyz);
+    vertex.xyz *= sizes[sizeID];
 
-    gl_Position = proj * (view * (matrices[instanceID] * vertex));
+    gl_Position = proj * (view * (world[transformID] * vertex));
 
-    vs_color  = color;
+    vs_color  = vec4(colors[gl_VertexID / 2], 1.0);
     vs_weight = float(gl_VertexID % 2 != 0);
 }
