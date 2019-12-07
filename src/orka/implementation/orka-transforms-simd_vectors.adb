@@ -78,6 +78,21 @@ package body Orka.Transforms.SIMD_Vectors is
    function Dot (Left, Right : Vector_Type) return Element_Type is
      (Sum (Left * Right));
 
+   function Slerp
+     (Left, Right : Vector_Type;
+      Weight      : Element_Type) return Vector_Type
+   is
+      Cos_Angle : constant Element_Type := Dot (Left, Right);
+      Angle     : constant Element_Type := EF.Arccos (Cos_Angle);
+
+      SA : constant Element_Type := EF.Sin (Angle);
+
+      SL : constant Element_Type := EF.Sin ((1.0 - Weight) * Angle);
+      SR : constant Element_Type := EF.Sin (Weight * Angle);
+   begin
+      return (SL / SA) * Left + (SR / SA) * Right;
+   end Slerp;
+
    function Image (Elements : Vector_Type) return String is
       package SF renames Ada.Strings.Fixed;
       use Ada.Strings;

@@ -90,6 +90,14 @@ package Orka.Transforms.SIMD_Vectors is
 
    function Cross (Left, Right : Vector_Type) return Vector_Type renames Cross_Product;
 
+   function Slerp
+     (Left, Right : Vector_Type;
+      Weight      : Element_Type) return Vector_Type
+   with Pre  => Weight in 0.0 .. 1.0,
+        Post => Normalized (Slerp'Result);
+   --  Return the interpolated unit vector on the shortest arc
+   --  between the Left and Right vectors
+
    function Image (Elements : Vector_Type) return String;
 
 end Orka.Transforms.SIMD_Vectors;
