@@ -117,9 +117,9 @@ package body Orka.Transforms.SIMD_Quaternions is
          end;
       else
          if abs S (Z) < abs S (X) then
-            return R ((S (Y), -S (X), 0.0, 0.0), 180.0);
+            return R ((S (Y), -S (X), 0.0, 0.0), Ada.Numerics.Pi);
          else
-            return R ((0.0, -S (Z), S (Y), 0.0), 180.0);
+            return R ((0.0, -S (Z), S (Y), 0.0), Ada.Numerics.Pi);
          end if;
       end if;
    end R;
