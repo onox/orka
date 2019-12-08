@@ -22,6 +22,7 @@ with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
 with GL.Types;
+with GL.Pixels.Extensions;
 with GL.Pixels.Queries;
 
 with Orka.Jobs;
@@ -78,6 +79,13 @@ package body Orka.Resources.Textures.KTX is
          Depth  :          GL.Types.Size := Header.Depth;
       begin
          T3 := Clock;
+
+         if not Header.Compressed
+           and then Header.Data_Type in GL.Pixels.Extensions.Packed_Data_Type
+         then
+            raise GL.Feature_Not_Supported_Exception with
+              "Packed data type " & Header.Data_Type'Image & " is not supported yet";
+         end if;
 
          --  Allocate storage
          case Header.Kind is
