@@ -440,6 +440,18 @@ private package GL.API is
    procedure Create_Textures is new Loader.Getter_With_3_Params
      ("glCreateTextures", Low_Level.Enums.Texture_Kind, Size, UInt);
 
+   procedure Gen_Textures is new Loader.Getter_With_2_Params
+     ("glGenTextures", Size, UInt);
+   --  Only to be used by Texture_View
+
+   procedure Texture_View is new Loader.Procedure_With_8_Params
+     ("glTextureView", UInt, Low_Level.Enums.Texture_Kind, UInt,
+      Pixels.Internal_Format, UInt, UInt, UInt, UInt);
+
+   procedure Texture_View is new Loader.Procedure_With_8_Params
+     ("glTextureView", UInt, Low_Level.Enums.Texture_Kind, UInt,
+      Pixels.Compressed_Format, UInt, UInt, UInt, UInt);
+
    procedure Bind_Texture_Unit is new Loader.Procedure_With_2_Params
      ("glBindTextureUnit", Objects.Textures.Texture_Unit, UInt);
 

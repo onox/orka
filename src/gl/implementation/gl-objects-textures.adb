@@ -38,9 +38,92 @@ package body GL.Objects.Textures is
       end case;
    end Get_Dimensions;
 
+   function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size is
+   begin
+      case Kind is
+         when Texture_1D | Texture_2D | Texture_3D =>
+            return 1;
+         when Texture_Rectangle | Texture_2D_Multisample =>
+            return 1;
+         when Texture_Cube_Map | Texture_Cube_Map_Array =>
+            return 6;
+         when Texture_Buffer =>
+            raise Constraint_Error;
+         when others =>
+            return 1;
+      end case;
+   end Get_Layers;
+
    function Dimensions (Object : Texture) return Dimension_Count is (Object.Dimensions);
 
    function Allocated (Object : Texture) return Boolean is (Object.Allocated);
+
+   type Texture_View is new Texture with null record;
+
+   overriding
+   procedure Initialize_Id (Object : in out Texture_View) is
+      New_Id : UInt := 0;
+   begin
+      --  A texture that is going to be used as a view must not be created
+      --  with a target, therefore use Gen_Textures instead of Create_Textures
+      API.Gen_Textures (1, New_Id);
+      Object.Reference.GL_Id := New_Id;
+      Object.Reference.Initialized := True;
+   end Initialize_Id;
+
+   function Create_View
+     (Object    : Texture;
+      Kind      : LE.Texture_Kind;
+      Format    : Pixels.Internal_Format;
+      Min_Level, Levels : Mipmap_Level;
+      Min_Layer, Layers : Size) return Texture
+   is
+      Result : Texture_View (Kind => Kind);
+   begin
+      API.Texture_View (Result.Reference.GL_Id, Kind, Object.Reference.GL_Id,
+        Format, UInt (Min_Level), UInt (Levels), UInt (Min_Layer), UInt (Layers));
+
+      return Texture (Result);
+   end Create_View;
+
+   function Create_View
+     (Object    : Texture;
+      Kind      : LE.Texture_Kind;
+      Format    : Pixels.Compressed_Format;
+      Min_Level, Levels : Mipmap_Level;
+      Min_Layer, Layers : Size) return Texture
+   is
+      Result : Texture_View (Kind => Kind);
+   begin
+      API.Texture_View (Result.Reference.GL_Id, Kind, Object.Reference.GL_Id,
+        Format, UInt (Min_Level), UInt (Levels), UInt (Min_Layer), UInt (Layers));
+
+      return Texture (Result);
+   end Create_View;
+
+   function Create_View
+     (Object : Texture;
+      Kind   : LE.Texture_Kind;
+      Layer  : Size) return Texture is
+   begin
+      if Object.Compressed then
+         return Object.Create_View
+          (Kind      => Kind,
+           Format    => Object.Compressed_Format,
+           Min_Level => Object.Lowest_Mipmap_Level,
+           Levels    => Object.Mipmap_Levels,
+           Min_Layer => Layer,
+           Layers    => Get_Layers (Kind));
+      else
+         return Object.Create_View
+          (Kind      => Kind,
+           Format    => Object.Internal_Format,
+           Min_Level => Object.Lowest_Mipmap_Level,
+           Levels    => Object.Mipmap_Levels,
+           Min_Layer => Layer,
+           Layers    => Get_Layers (Kind));
+      end if;
+   end Create_View;
 
    function Width (Object : Texture; Level : Mipmap_Level) return Size is
       Result : Size := 0;
@@ -256,12 +339,12 @@ package body GL.Objects.Textures is
       Object.Reference.GL_Id := 0;
       Object.Reference.Initialized := False;
    end Delete_Id;
-   
+
    procedure Invalidate_Image (Object : Texture_Base; Level : Mipmap_Level) is
    begin
       API.Invalidate_Tex_Image (Object.Reference.GL_Id, Level);
    end Invalidate_Image;
-   
+
    procedure Invalidate_Sub_Image (Object : Texture_Base; Level : Mipmap_Level;
                                    X, Y, Z : Int; Width, Height, Depth : Size)
    is

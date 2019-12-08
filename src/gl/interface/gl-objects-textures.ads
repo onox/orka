@@ -38,6 +38,8 @@ package GL.Objects.Textures is
 
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count;
 
+   function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size;
+
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
 
@@ -326,6 +328,42 @@ package GL.Objects.Textures is
                     not Object.Compressed and PE.Compatible (Format, Data_Type);
 
    end Texture_Pointers;
+
+   -----------------------------------------------------------------------------
+   --                              Texture Views                              --
+   -----------------------------------------------------------------------------
+
+   function Create_View
+     (Object    : Texture;
+      Kind      : LE.Texture_Kind;
+      Format    : Pixels.Internal_Format;
+      Min_Level, Levels : Mipmap_Level;
+      Min_Layer, Layers : Size) return Texture
+   with Pre => Object.Allocated;
+   --  Create a Texture object that shares some of the original texture's data
+   --
+   --  The format and kind must be compatible with the original texture. See
+   --  the OpenGL documentation.
+
+   function Create_View
+     (Object    : Texture;
+      Kind      : LE.Texture_Kind;
+      Format    : Pixels.Compressed_Format;
+      Min_Level, Levels : Mipmap_Level;
+      Min_Layer, Layers : Size) return Texture
+   with Pre => Object.Allocated;
+   --  Create a Texture object that shares some of the original texture's data
+   --
+   --  The format and kind must be compatible with the original texture. See
+   --  the OpenGL documentation.
+
+   function Create_View
+     (Object : Texture;
+      Kind   : LE.Texture_Kind;
+      Layer  : Size) return Texture
+   with Pre => Object.Allocated and Object.Layered;
+   --  Create a Texture object that shares one layer or six layer-faces
+   --  of the original texture's data
 
 private
 
