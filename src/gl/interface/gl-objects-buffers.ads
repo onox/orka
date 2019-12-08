@@ -57,7 +57,9 @@ package GL.Objects.Buffers is
 
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
    --  Bind the buffer object to the target
-   --  TODO Not one of the four targets used by Bind_Base
+   --
+   --  The target must not be one of the targets that should be used with
+   --  Bind_Base or Bind_Range.
 
    procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural);
    --  Bind the buffer object to the index of the target as well as to
