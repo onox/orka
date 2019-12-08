@@ -272,8 +272,7 @@ private package GL.API is
    procedure Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
      ("glPolygonOffsetClamp", Single, Single, Single);
 
-   --  TODO glPointSize, glSampleCoverage, glSampleMaski, glPointParameter{if}[v]
-   --  TODO glGetMultisample, glGetGraphicsResetStatus
+   --  TODO glSampleCoverage, glSampleMaski, glGetMultisample, glGetGraphicsResetStatus
 
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --

@@ -18,10 +18,7 @@ package GL.Enums.Getter is
    pragma Preelaborate;
 
    type Parameter is
-     (Point_Size,
-      Point_Size_Range,
-      Point_Size_Granularity,
-      Line_Smooth,
+     (Line_Smooth,
       Polygon_Mode,
       Polygon_Smooth,
       Cull_Face,
@@ -143,10 +140,7 @@ package GL.Enums.Getter is
 private
 
    for Parameter use
-     (Point_Size                    => 16#0B11#,
-      Point_Size_Range              => 16#0B12#,
-      Point_Size_Granularity        => 16#0B13#,
-      Line_Smooth                   => 16#0B20#,
+     (Line_Smooth                   => 16#0B20#,
       Polygon_Mode                  => 16#0B40#,
       Polygon_Smooth                => 16#0B41#,
       Cull_Face                     => 16#0B44#,
