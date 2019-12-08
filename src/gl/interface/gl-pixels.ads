@@ -52,10 +52,12 @@ package GL.Pixels is
       Compressed_Signed_Red_RGTC1,
       Compressed_RG_RGTC2,
       Compressed_Signed_RG_RGTC2,
+
       Compressed_RGBA_BPTC_Unorm,
       Compressed_SRGB_Alpha_BPTC_UNorm,
       Compressed_RGB_BPTC_Signed_Float,
       Compressed_RGB_BPTC_Unsigned_Float,
+
       Compressed_R11_EAC,
       Compressed_Signed_R11_EAC,
       Compressed_RG11_EAC,
@@ -65,7 +67,38 @@ package GL.Pixels is
       Compressed_RGB8_Punchthrough_Alpha1_ETC2,
       Compressed_SRGB8_Punchthrough_Alpha1_ETC2,
       Compressed_RGBA8_ETC2_EAC,
-      Compressed_SRGB8_Alpha8_ETC2_EAC);
+      Compressed_SRGB8_Alpha8_ETC2_EAC,
+
+      --  ASTC (not part of OpenGL core)
+      Compressed_RGBA_ASTC_4x4_KHR,
+      Compressed_RGBA_ASTC_5x4_KHR,
+      Compressed_RGBA_ASTC_5x5_KHR,
+      Compressed_RGBA_ASTC_6x5_KHR,
+      Compressed_RGBA_ASTC_6x6_KHR,
+      Compressed_RGBA_ASTC_8x5_KHR,
+      Compressed_RGBA_ASTC_8x6_KHR,
+      Compressed_RGBA_ASTC_8x8_KHR,
+      Compressed_RGBA_ASTC_10x5_KHR,
+      Compressed_RGBA_ASTC_10x6_KHR,
+      Compressed_RGBA_ASTC_10x8_KHR,
+      Compressed_RGBA_ASTC_10x10_KHR,
+      Compressed_RGBA_ASTC_12x10_KHR,
+      Compressed_RGBA_ASTC_12x12_KHR,
+
+      Compressed_SRGB8_ALPHA8_ASTC_4x4_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_5x4_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_5x5_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_6x5_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_6x6_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_8x5_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_8x6_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_8x8_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_10x5_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_10x6_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_10x8_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_10x10_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_12x10_KHR,
+      Compressed_SRGB8_ALPHA8_ASTC_12x12_KHR);
    --  Specific compressed internal formats of Table 8.14 of the OpenGL specification
 
    type Format is (Stencil_Index, Depth_Component, Red, Green, Blue,
@@ -295,7 +328,38 @@ private
       Compressed_RGB8_Punchthrough_Alpha1_ETC2  => 16#9276#,
       Compressed_SRGB8_Punchthrough_Alpha1_ETC2 => 16#9277#,
       Compressed_RGBA8_ETC2_EAC                 => 16#9278#,
-      Compressed_SRGB8_Alpha8_ETC2_EAC          => 16#9279#);
+      Compressed_SRGB8_Alpha8_ETC2_EAC          => 16#9279#,
+
+      --  ASTC (not part of OpenGL core)
+      Compressed_RGBA_ASTC_4x4_KHR              => 16#93B0#,
+      Compressed_RGBA_ASTC_5x4_KHR              => 16#93B1#,
+      Compressed_RGBA_ASTC_5x5_KHR              => 16#93B2#,
+      Compressed_RGBA_ASTC_6x5_KHR              => 16#93B3#,
+      Compressed_RGBA_ASTC_6x6_KHR              => 16#93B4#,
+      Compressed_RGBA_ASTC_8x5_KHR              => 16#93B5#,
+      Compressed_RGBA_ASTC_8x6_KHR              => 16#93B6#,
+      Compressed_RGBA_ASTC_8x8_KHR              => 16#93B7#,
+      Compressed_RGBA_ASTC_10x5_KHR             => 16#93B8#,
+      Compressed_RGBA_ASTC_10x6_KHR             => 16#93B9#,
+      Compressed_RGBA_ASTC_10x8_KHR             => 16#93BA#,
+      Compressed_RGBA_ASTC_10x10_KHR            => 16#93BB#,
+      Compressed_RGBA_ASTC_12x10_KHR            => 16#93BC#,
+      Compressed_RGBA_ASTC_12x12_KHR            => 16#93BD#,
+
+      Compressed_SRGB8_ALPHA8_ASTC_4x4_KHR      => 16#93D0#,
+      Compressed_SRGB8_ALPHA8_ASTC_5x4_KHR      => 16#93D1#,
+      Compressed_SRGB8_ALPHA8_ASTC_5x5_KHR      => 16#93D2#,
+      Compressed_SRGB8_ALPHA8_ASTC_6x5_KHR      => 16#93D3#,
+      Compressed_SRGB8_ALPHA8_ASTC_6x6_KHR      => 16#93D4#,
+      Compressed_SRGB8_ALPHA8_ASTC_8x5_KHR      => 16#93D5#,
+      Compressed_SRGB8_ALPHA8_ASTC_8x6_KHR      => 16#93D6#,
+      Compressed_SRGB8_ALPHA8_ASTC_8x8_KHR      => 16#93D7#,
+      Compressed_SRGB8_ALPHA8_ASTC_10x5_KHR     => 16#93D8#,
+      Compressed_SRGB8_ALPHA8_ASTC_10x6_KHR     => 16#93D9#,
+      Compressed_SRGB8_ALPHA8_ASTC_10x8_KHR     => 16#93DA#,
+      Compressed_SRGB8_ALPHA8_ASTC_10x10_KHR    => 16#93DB#,
+      Compressed_SRGB8_ALPHA8_ASTC_12x10_KHR    => 16#93DC#,
+      Compressed_SRGB8_ALPHA8_ASTC_12x12_KHR    => 16#93DD#);
    for Compressed_Format'Size use Low_Level.Enum'Size;
 
    for Format use (Stencil_Index   => 16#1901#,

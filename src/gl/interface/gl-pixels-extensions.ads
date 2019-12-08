@@ -115,7 +115,38 @@ package GL.Pixels.Extensions is
         when Compressed_RGB8_Punchthrough_Alpha1_ETC2  => 8,
         when Compressed_SRGB8_Punchthrough_Alpha1_ETC2 => 8,
         when Compressed_RGBA8_ETC2_EAC                 => 16,
-        when Compressed_SRGB8_Alpha8_ETC2_EAC          => 16);
+        when Compressed_SRGB8_Alpha8_ETC2_EAC          => 16,
+
+        --  ASTC
+        when Compressed_RGBA_ASTC_4x4_KHR              => 16,
+        when Compressed_RGBA_ASTC_5x4_KHR              => 16,
+        when Compressed_RGBA_ASTC_5x5_KHR              => 16,
+        when Compressed_RGBA_ASTC_6x5_KHR              => 16,
+        when Compressed_RGBA_ASTC_6x6_KHR              => 16,
+        when Compressed_RGBA_ASTC_8x5_KHR              => 16,
+        when Compressed_RGBA_ASTC_8x6_KHR              => 16,
+        when Compressed_RGBA_ASTC_8x8_KHR              => 16,
+        when Compressed_RGBA_ASTC_10x5_KHR             => 16,
+        when Compressed_RGBA_ASTC_10x6_KHR             => 16,
+        when Compressed_RGBA_ASTC_10x8_KHR             => 16,
+        when Compressed_RGBA_ASTC_10x10_KHR            => 16,
+        when Compressed_RGBA_ASTC_12x10_KHR            => 16,
+        when Compressed_RGBA_ASTC_12x12_KHR            => 16,
+
+        when Compressed_SRGB8_ALPHA8_ASTC_4x4_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_5x4_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_5x5_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_6x5_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_6x6_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_8x5_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_8x6_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_8x8_KHR      => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_10x5_KHR     => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_10x6_KHR     => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_10x8_KHR     => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_10x10_KHR    => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_12x10_KHR    => 16,
+        when Compressed_SRGB8_ALPHA8_ASTC_12x12_KHR    => 16);
 
    -----------------------------------------------------------------------------
 
