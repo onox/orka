@@ -38,8 +38,6 @@ package GL.Objects.Textures is
 
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count;
 
-   function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size;
-
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
 

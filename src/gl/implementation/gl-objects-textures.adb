@@ -38,22 +38,6 @@ package body GL.Objects.Textures is
       end case;
    end Get_Dimensions;
 
-   function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size is
-   begin
-      case Kind is
-         when Texture_1D | Texture_2D | Texture_3D =>
-            return 1;
-         when Texture_Rectangle | Texture_2D_Multisample =>
-            return 1;
-         when Texture_Cube_Map | Texture_Cube_Map_Array =>
-            return 6;
-         when Texture_Buffer =>
-            raise Constraint_Error;
-         when others =>
-            return 1;
-      end case;
-   end Get_Layers;
-
    function Dimensions (Object : Texture) return Dimension_Count is (Object.Dimensions);
 
    function Allocated (Object : Texture) return Boolean is (Object.Allocated);
@@ -104,7 +88,15 @@ package body GL.Objects.Textures is
    function Create_View
      (Object : Texture;
       Kind   : LE.Texture_Kind;
-      Layer  : Size) return Texture is
+      Layer  : Size) return Texture
+   is
+      function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size is
+        (case Kind is
+            when Texture_1D | Texture_2D | Texture_3D       => 1,
+            when Texture_Rectangle | Texture_2D_Multisample => 1,
+            when Texture_Cube_Map | Texture_Cube_Map_Array  => 6,
+            when Texture_Buffer                             => raise Constraint_Error,
+            when others                                     => 1);
    begin
       if Object.Compressed then
          return Object.Create_View
