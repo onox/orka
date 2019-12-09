@@ -64,7 +64,9 @@ package Orka.Rendering.Programs.Uniforms is
      (Object  : Uniform_Sampler;
       Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural)
-   with Pre => Texture.Kind = Object.Kind;
+   with Pre => Texture.Kind = Object.Kind or else raise Constraint_Error with
+                 "Cannot bind " & Texture.Kind'Image & " to " &
+                 Object.Kind'Image & " sampler";
    --  TODO Add pre condition to check Texture.Format matches Sampler_Kind
    --  (see https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Sampler_types)
    --  Set the binding point of the uniform sampler and bind the
@@ -78,7 +80,9 @@ package Orka.Rendering.Programs.Uniforms is
      (Object  : Uniform_Image;
       Texture : GL.Objects.Textures.Texture_Base'Class;
       Binding : Natural)
-   with Pre => Texture.Kind = Object.Kind;
+   with Pre => Texture.Kind = Object.Kind or else raise Constraint_Error with
+                 "Cannot bind " & Texture.Kind'Image & " to " &
+                 Object.Kind'Image & " image sampler";
 
    -----------------------------------------------------------------------------
 
