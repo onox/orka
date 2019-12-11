@@ -185,8 +185,7 @@ package body Orka.KTX is
    is
       Result : KTX.String_Maps.Map;
 
-      Non_Header_Index : constant Stream_Element_Offset
-        := Bytes.Value'First + Identifier'Length + Header_Array'Length;
+      Non_Header_Index : constant Stream_Element_Offset := Get_Data_Offset (Bytes, 0);
       Data_Index : constant Stream_Element_Offset
         := Non_Header_Index + Stream_Element_Offset (Length);
       pragma Assert (Data_Index <= Bytes.Value'Last);
@@ -196,13 +195,11 @@ package body Orka.KTX is
    begin
       while Bytes_Remaining > 0 loop
          declare
-            Size_Bytes : constant Four_Bytes_Array := Four_Bytes_Array
-              (Bytes (Pair_Index .. Pair_Index + 4 - 1));
-
-            Key_Value_Size : constant Natural := Natural (Convert_Size (Size_Bytes));
+            Key_Value_Size : constant Natural := Get_Length (Bytes, Pair_Index);
             Padding_Size   : constant Natural := 3 - ((Key_Value_Size + 3) mod 4);
 
             Pair_Size : constant Natural := 4 + Key_Value_Size + Padding_Size;
+            pragma Assert (Pair_Size <= Bytes_Remaining);
 
             type Key_Value_Array is array (Positive range 1 .. Key_Value_Size) of Stream_Element
               with Pack;
