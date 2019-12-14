@@ -22,7 +22,9 @@ with Ada.Text_IO;
 
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
+with GL.Toggles;
 with GL.Types;
+with GL.Viewports;
 
 with Orka.Behaviors;
 with Orka.Contexts;
@@ -37,9 +39,7 @@ with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
-with Orka.Resources.Loaders;
 with Orka.Resources.Locations.Directories;
-with Orka.Resources.Managers;
 with Orka.Resources.Textures.KTX;
 with Orka.Types;
 with Orka.Windows.GLFW;
@@ -68,9 +68,9 @@ begin
       Context : constant Orka.Contexts.Context'Class
         := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
 
-      W : constant Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+      Window : constant Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
         (Width, Height, Resizable => False);
-      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unchecked_Access);
+      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
 
@@ -83,145 +83,169 @@ begin
          Location_Path : constant String := Ada.Directories.Containing_Directory (Full_Path);
          Texture_Path  : constant String := Ada.Directories.Simple_Name (Full_Path);
 
-         package Textures renames Orka.Resources.Textures;
-         package Formats  renames Orka.Rendering.Vertex_Formats;
-
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;
+         use Orka.Rendering.Vertex_Formats;
          use Orka.Resources;
 
          use GL.Types;
          use all type Orka.Types.Index_Type;
 
-         Location_Shaders : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data");
+         --  Create an empty vertex format. Vertex shader contains the data needed
+         --  to generate a quad
+         VF_1 : constant Vertex_Format := Create_Vertex_Format (UInt_Type);
 
-         P_1 : Program := Create_Program (Modules.Create_Module
-           (Location_Shaders,
-            VS => "oversized-triangle.vert",
-            FS => "shaders/tools/ktx.frag"));
+         ----------------------------------------------------------------------
 
-         Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("colorTexture");
+         FB_D : constant Framebuffer_Ptr
+           := new Framebuffer'(Get_Default_Framebuffer (Window));
 
-         Screen_Size : constant Uniforms.TS.Vector4
-           := (Single (Width), Single (Height), 0.0, 0.0);
+         use Orka.Cameras;
+         Lens : constant Lens_Ptr
+           := new Camera_Lens'Class'(Create_Lens
+                (Width, Height, Transforms.FOV (36.0, 50.0), Context));
+         Current_Camera : constant Camera_Ptr
+              := new Camera'Class'(Camera'Class
+                   (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_D)));
 
-         Uni_Screen : constant Uniforms.Uniform := P_1.Uniform ("screenSize");
+         ----------------------------------------------------------------------
 
          use GL.Objects.Textures;
          use GL.Objects.Samplers;
 
          Sampler_1 : Sampler;
 
-         --  Create an empty vertex format. Vertex shader contains the data needed
-         --  to generate a quad
-         VF_1 : constant Formats.Vertex_Format
-           := Formats.Create_Vertex_Format (UInt_Type);
+         Location_Textures : constant Locations.Location_Ptr :=
+           Locations.Directories.Create_Location (Location_Path);
+
+         T_1 : constant Texture := Orka.Resources.Textures.KTX.Read_Texture
+           (Location_Textures, Texture_Path);
 
          ----------------------------------------------------------------------
 
-         FB_D : constant Framebuffer_Ptr
-           := new Framebuffer'(Get_Default_Framebuffer (W));
+         Location_Shaders : constant Locations.Location_Ptr
+           := Locations.Directories.Create_Location ("../data");
 
-         --  The camera provides a view and projection matrices, but are unused
-         --  in the shaders. The object is created because package Loops needs it
-         use Orka.Cameras;
-         Lens : constant Lens_Ptr
-           := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
-         Current_Camera : constant Camera_Ptr
-              := new Camera'Class'(Camera'Class
-                   (Rotate_Around_Cameras.Create_Camera (W.Pointer_Input, Lens, FB_D)));
-
-         ----------------------------------------------------------------------
-
-         task Load_Resource;
-
-         use Ada.Real_Time;
-
-         Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
-         Loading_Failed : Boolean := False;
-
-         task body Load_Resource is
-            Loader_KTX : constant Loaders.Loader_Ptr := Textures.KTX.Create_Loader (Manager);
+         function Get_Module (Kind : LE.Texture_Kind) return Modules.Module is
+            use all type LE.Texture_Kind;
          begin
-            declare
-               Location_Textures : constant Locations.Location_Ptr
-                 := Locations.Directories.Create_Location (Location_Path);
-            begin
-               Loader.Add_Location (Location_Textures, Loader_KTX);
-            end;
+            case Kind is
+               when Texture_1D =>
+                  return Modules.Create_Module (Location_Shaders,
+                    VS => "oversized-triangle.vert",
+                    FS => "shaders/tools/ktx-1D.frag");
+               when Texture_2D =>
+                  return Modules.Create_Module (Location_Shaders,
+                    VS => "oversized-triangle.vert",
+                    FS => "shaders/tools/ktx-2D.frag");
+               when Texture_3D =>
+                  return Modules.Create_Module (Location_Shaders,
+                    VS => "shaders/tools/volume.vert",
+                    FS => "shaders/tools/ktx-3D.frag");
+               when Texture_Cube_Map =>
+                  return Modules.Create_Module (Location_Shaders,
+                    VS => "shaders/tools/cube.vert",
+                    FS => "shaders/tools/ktx-cube.frag");
+               when Texture_2D_Array =>
+                  return Modules.Create_Module (Location_Shaders,
+                    VS => "oversized-triangle.vert",
+                    FS => "shaders/tools/ktx-2D-array.frag");
+               when others => raise Constraint_Error;
+            end case;
+         end Get_Module;
 
-            declare
-               Future_Ref : Orka.Futures.Pointers.Reference := Loader.Load (Texture_Path).Get;
+         procedure Draw (Kind : LE.Texture_Kind) is
+            use all type LE.Texture_Kind;
+         begin
+            case Kind is
+               when Texture_1D | Texture_2D | Texture_2D_Array =>
+                  Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+               when Texture_3D | Texture_Cube_Map =>
+                  Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 6 * 6);
+               when others => raise Constraint_Error;
+            end case;
+         end Draw;
 
-               use type Orka.Futures.Status;
-               Resource_Status : Orka.Futures.Status;
-            begin
-               Future_Ref.Wait_Until_Done (Resource_Status);
+         P_1 : Program := Create_Program (Get_Module (T_1.Kind));
 
-               pragma Assert (Resource_Status = Orka.Futures.Done);
-               pragma Assert (Manager.Contains (Texture_Path));
-
-               --  Here we should either create a GPU job to set the
-               --  texture to the uniform or just simply set it in the
-               --  render callback below
-            end;
-         exception
-            when Error : others =>
-               Ada.Text_IO.Put_Line ("Error loading resource: " & Exception_Message (Error));
-               Loading_Failed := True;
-         end Load_Resource;
+         Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("colorTexture");
       begin
-         Uni_Screen.Set_Vector (Screen_Size);
-
          --  Clear color to black and depth to 0.0 (if using reversed Z)
          FB_D.Set_Default_Values
-           ((Color => (0.0, 0.0, 0.0, 0.0),
+           ((Color => (0.0, 0.0, 0.0, 1.0),
              Depth => (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0),
              others => <>));
+
+         FB_D.Use_Framebuffer;
+
+         P_1.Use_Program;
+
+         VF_1.Bind;
+
+         Uni_Texture.Set_Texture (T_1, 0);
 
          Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
          Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
 
-         Sampler_1.Set_Minifying_Filter (Nearest);
-         Sampler_1.Set_Magnifying_Filter (Nearest);
+         Sampler_1.Set_Minifying_Filter (Linear);
+         Sampler_1.Set_Magnifying_Filter (Linear);
 
          Sampler_1.Bind (0);
 
-         VF_1.Bind;
+         GL.Toggles.Enable (GL.Toggles.Depth_Test);
+         GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
+
+         Window.Set_Title ("KTX viewer - " & Texture_Path);
 
          declare
-            Loaded : Boolean := False;
-
             procedure Render
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
-               Camera : Orka.Cameras.Camera_Ptr) is
+               Camera : Orka.Cameras.Camera_Ptr)
+            is
+               use all type LE.Texture_Kind;
             begin
                Camera.FB.Clear;
 
-               Camera.FB.Use_Framebuffer;
-               P_1.Use_Program;
+               T_1.Set_Lowest_Mipmap_Level (0);
 
-               if Loading_Failed then
-                  raise Program_Error with "Loading resource failed";
-               end if;
+               case T_1.Kind is
+                  when Texture_1D | Texture_2D | Texture_2D_Array =>
+                     declare
+                        Uni_Screen   : constant Uniforms.Uniform := P_1.Uniform ("screenSize");
+                        Uni_Best_Fit : constant Uniforms.Uniform := P_1.Uniform ("useBestFit");
+                     begin
+                        Uni_Screen.Set_Vector (Uniforms.TS.Vector4'
+                          (Single (Window.Width), Single (Window.Height), 0.0, 0.0)
+                        );
+                        Uni_Best_Fit.Set_Boolean (True);
+                     end;
+                  when Texture_3D | Texture_Cube_Map =>
+                     declare
+                        Uni_View : constant Uniforms.Uniform := P_1.Uniform ("view");
+                        Uni_Proj : constant Uniforms.Uniform := P_1.Uniform ("proj");
 
-               if not Loaded and then Manager.Contains (Texture_Path) then
-                  declare
-                     T_1 : constant Textures.Texture_Ptr
-                       := Textures.Texture_Ptr (Manager.Resource (Texture_Path));
+                        Uni_External : constant Uniforms.Uniform := P_1.Uniform ("showExternal");
+                        Uni_Colors   : constant Uniforms.Uniform := P_1.Uniform ("showColors");
+                     begin
+                        Uni_View.Set_Matrix (Camera.View_Matrix);
+                        Uni_Proj.Set_Matrix (Camera.Projection_Matrix);
 
-                     T_2 : constant GL.Objects.Textures.Texture := T_1.Element;
-                     --  TODO Handle non-Texture_2D textures
-                  begin
-                     T_2.Set_Lowest_Mipmap_Level (0);
+                        Uni_External.Set_Boolean (False);
+                        Uni_Colors.Set_Boolean (False);
+                     end;
+                  when others => null;
+               end case;
 
-                     Uni_Texture.Set_Texture (T_2, 0);
-                  end;
-                  Loaded := True;
-               end if;
+               --  TODO When the window gets resized, it should automatically update
+               --  the default framebuffer
+               GL.Viewports.Set_Viewports
+                 ((0 => (X      => 0.0,
+                         Y      => 0.0,
+                         Width  => Single (Window.Width),
+                         Height => Single (Window.Height))
+                 ));
 
-               Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+               Draw (T_1.Kind);
             end Render;
 
             package Loops is new Orka.Loops
@@ -240,8 +264,6 @@ begin
 
    Job_System.Shutdown;
    Loader.Shutdown;
-
-   Ada.Text_IO.Put_Line ("Shutdown job system and loader");
 exception
    when Error : others =>
       Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));

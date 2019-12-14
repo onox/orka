@@ -140,6 +140,15 @@ package body Orka.Resources.Textures.KTX is
          T4 := Clock;
 
          --  TODO Handle KTXorientation key value pair
+         declare
+            procedure Iterate (Position : Orka.KTX.String_Maps.Cursor) is
+            begin
+               Messages.Log (Warning, "Metadata: " & Orka.KTX.String_Maps.Key (Position) &
+                 " = " & Orka.KTX.String_Maps.Element (Position));
+            end Iterate;
+         begin
+            Orka.KTX.Get_Key_Value_Map (Bytes, Header.Bytes_Key_Value).Iterate (Iterate'Access);
+         end;
 
          --  Upload texture data
          declare
