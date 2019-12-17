@@ -34,9 +34,12 @@ package Glfw.Input.Joysticks is
    type Joystick_Button_States is array (Positive range <>) of
      aliased Joystick_Button_State;
 
+   subtype Gamepad_Button_Index is Positive range 1 .. 15;
+   subtype Gamepad_Axis_Index   is Positive range 1 .. 6;
+
    type Joystick_Gamepad_State is record
-      Buttons : Joystick_Button_States (1 .. 15);
-      Axes    : Axis_Positions (1 .. 6);
+      Buttons : Joystick_Button_States (Gamepad_Button_Index);
+      Axes    : Axis_Positions (Gamepad_Axis_Index);
    end record
      with Convention => C;
 
