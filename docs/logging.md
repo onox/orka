@@ -152,10 +152,10 @@ events that may occur. Each message has a source, message type, severity,
 implementation-defined ID, and a human-readable description:
 
 To make sure the driver generates messages, use the `Debug` flag when
-creating the context:
+initializing the windowing library:
 
 ```ada
-Context : constant Orka.Contexts.Context'Class :=
+Library : constant Orka.Contexts.Library'Class :=
   Orka.Windows.GLFW.Initialize (Major => 4, Minor => 3, Debug => True);
 ```
 
