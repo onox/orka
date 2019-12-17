@@ -123,7 +123,7 @@ package body Orka.Loops is
 
       Lag : Time_Span := Time_Span_Zero;
 
-      Scene_Array : Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
+      Scene_Array : not null Behaviors.Behavior_Array_Access := Behaviors.Empty_Behavior_Array;
       Batch_Length : constant := 10;
 
       One_Second  : constant Time_Span := Seconds (1);
@@ -160,7 +160,9 @@ package body Orka.Loops is
                declare
                   Fixed_Update_Job : constant Jobs.Job_Ptr
                     := Jobs.Parallelize (SJ.Create_Fixed_Update_Job
-                         (Scene_Array, Time_Step, Iterations), Scene_Array'Length, Batch_Length);
+                         (Scene_Array, Time_Step, Iterations),
+                         SJ.Clone_Fixed_Update_Job'Access,
+                         Scene_Array'Length, Batch_Length);
 
                   Finished_Job : constant Jobs.Job_Ptr := SJ.Create_Finished_Job
                     (Scene_Array, Time_Step, Scene.Camera.View_Position, Batch_Length);

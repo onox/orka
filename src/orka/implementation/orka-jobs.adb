@@ -94,14 +94,16 @@ package body Orka.Jobs is
    end Chain;
 
    function Parallelize
-     (Job : Parallel_Job_Ptr;
+     (Job   : Parallel_Job_Ptr;
+      Clone : Parallel_Job_Cloner;
       Length, Slice : Positive) return Job_Ptr is
    begin
       return new Parallel_For_Job'
         (Abstract_Job with
           Length => Length,
           Slice  => Slice,
-          Job    => Job);
+          Job    => Job,
+          Clone  => Clone);
    end Parallelize;
 
    overriding
@@ -117,7 +119,7 @@ package body Orka.Jobs is
       Array_Length : constant Positive := Slices + (if Remaining /= 0 then 1 else 0);
 
       Parallel_Jobs : constant Dependency_Array (1 .. Array_Length)
-        := (others => new Parallel_Job'Class'(Object.Job.all));
+        := Object.Clone (Object.Job, Array_Length);
 
       From, To : Positive := 1;
    begin

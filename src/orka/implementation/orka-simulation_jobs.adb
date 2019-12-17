@@ -202,19 +202,49 @@ package body Orka.Simulation_Jobs is
       end loop;
    end Execute;
 
+   function Clone_Update_Job
+     (Job    : Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Jobs.Dependency_Array
+   is
+      Object : constant Update_Job := Update_Job (Job.all);
+   begin
+      return Result : constant Jobs.Dependency_Array (1 .. Length)
+        := (others => new Update_Job'(Object));
+   end Clone_Update_Job;
+
+   function Clone_After_Update_Job
+     (Job    : Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Jobs.Dependency_Array
+   is
+      Object : constant After_Update_Job := After_Update_Job (Job.all);
+   begin
+      return Result : constant Jobs.Dependency_Array (1 .. Length)
+        := (others => new After_Update_Job'(Object));
+   end Clone_After_Update_Job;
+
+   function Clone_Fixed_Update_Job
+     (Job    : Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Jobs.Dependency_Array
+   is
+      Object : constant Fixed_Update_Job := Fixed_Update_Job (Job.all);
+   begin
+      return Result : constant Jobs.Dependency_Array (1 .. Length)
+        := (others => new Fixed_Update_Job'(Object));
+   end Clone_Fixed_Update_Job;
+
    overriding
    procedure Execute
      (Object  : Finished_Fixed_Update_Job;
       Context : Jobs.Execution_Context'Class)
    is
-      Update_Job : constant Jobs.Job_Ptr
-        := Jobs.Parallelize (Create_Update_Job (Object.Scene, Object.Time_Step),
-          Object.Scene'Length, Object.Batch_Length);
+      Update_Job : constant Jobs.Job_Ptr :=
+        Jobs.Parallelize (Create_Update_Job (Object.Scene, Object.Time_Step),
+          Clone_Update_Job'Access, Object.Scene'Length, Object.Batch_Length);
 
-      After_Update_Job : constant Jobs.Job_Ptr
-        := Jobs.Parallelize (Create_After_Update_Job
-             (Object.Scene, Object.Time_Step, Object.View_Position),
-          Object.Scene'Length, Object.Batch_Length);
+      After_Update_Job : constant Jobs.Job_Ptr :=
+        Jobs.Parallelize (Create_After_Update_Job
+          (Object.Scene, Object.Time_Step, Object.View_Position),
+          Clone_After_Update_Job'Access, Object.Scene'Length, Object.Batch_Length);
    begin
       After_Update_Job.Set_Dependency (Update_Job);
       Context.Enqueue (Update_Job);

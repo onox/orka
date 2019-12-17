@@ -226,13 +226,28 @@ procedure Execute
    From, To : Positive);
 ```
 
+A function to clone the job must be defined as well:
+
+```ada
+function Clone_Job
+  (Job    : Orka.Jobs.Parallel_Job_Ptr;
+   Length : Positive) return Orka.Jobs.Dependency_Array
+is
+   Object : constant Example_Parallel_Job := Example_Parallel_Job (Job.all);
+begin
+   return Result : constant Orka.Jobs.Dependency_Array (1 .. Length)
+     := (others => new Example_Parallel_Job'(Object));
+end Clone_Job;
+```
+
 An instance of this job can then be created and parallelized with the
 function `Parallelize`:
 
 ```ada
 Job_1 : Jobs.Parallel_Job_Ptr := new Example_Parallel_Job;
 
-Job_2 : Jobs.Job_Ptr := Jobs.Parallelize (Job_1, Length => 24, Slice => 6);
+Job_2 : Jobs.Job_Ptr := Jobs.Parallelize
+  (Job_1, Clone_Job'Access, Length => 24, Slice => 6);
 ```
 
 When `Job_2` is executed, it will enqueue four instances of `Job_1` with

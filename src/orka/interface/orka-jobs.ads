@@ -107,8 +107,13 @@ package Orka.Jobs is
    --  Any job which inherits Abstract_Parallel_Job needs to override this
    --  procedure instead of the regular Execute procedure
 
+   type Parallel_Job_Cloner is not null access function
+     (Job    : Parallel_Job_Ptr;
+      Length : Positive) return Dependency_Array;
+
    function Parallelize
-     (Job : Parallel_Job_Ptr;
+     (Job   : Parallel_Job_Ptr;
+      Clone : Parallel_Job_Cloner;
       Length, Slice : Positive) return Job_Ptr;
    --  Parallelize a job by returning a new job that will enqueue multiple
    --  instances of the given job with different ranges
@@ -216,7 +221,8 @@ private
 
    type Parallel_For_Job is new Abstract_Job with record
       Length, Slice : Positive;
-      Job : access Parallel_Job'Class;
+      Job   : Parallel_Job_Ptr;
+      Clone : Parallel_Job_Cloner;
    end record
      with Dynamic_Predicate => not Parallel_For_Job.Job.Has_Dependencies;
 

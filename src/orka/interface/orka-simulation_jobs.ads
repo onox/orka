@@ -36,6 +36,10 @@ private package Orka.Simulation_Jobs is
 
    -----------------------------------------------------------------------------
 
+   function Clone_Fixed_Update_Job
+     (Job    : Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Jobs.Dependency_Array;
+
    function Create_Fixed_Update_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
