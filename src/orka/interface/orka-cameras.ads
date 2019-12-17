@@ -23,6 +23,7 @@ with Orka.Contexts;
 with Orka.Inputs.Pointers;
 with Orka.Rendering.Framebuffers;
 with Orka.Transforms.Singles.Matrices;
+with Orka.Transforms.Doubles.Vectors;
 
 private with Orka.Types;
 
@@ -31,13 +32,15 @@ package Orka.Cameras is
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   use type GL.Types.Single;
+   subtype Vector4 is Orka.Transforms.Doubles.Vectors.Vector4;
 
-   subtype Angle is GL.Types.Single range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
+   use type GL.Types.Double;
 
-   subtype Distance is GL.Types.Single range 0.0 .. GL.Types.Single'Last;
+   subtype Angle is GL.Types.Double range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
 
-   Default_Scale : Transforms.Vector4 := (0.002, 0.002, 1.0, 0.0);
+   subtype Distance is GL.Types.Double range 0.0 .. GL.Types.Double'Last;
+
+   Default_Scale : Vector4 := (0.002, 0.002, 1.0, 0.0);
 
    -----------------------------------------------------------------------------
 
@@ -69,14 +72,14 @@ package Orka.Cameras is
 
    procedure Set_Input_Scale
      (Object  : in out Camera;
-      X, Y, Z : GL.Types.Single) is abstract;
+      X, Y, Z : GL.Types.Double) is abstract;
 
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
    function View_Matrix_Inverse (Object : Camera) return Transforms.Matrix4 is abstract;
    --  Return the inverse of the view matrix
 
-   function View_Position (Object : Camera) return Transforms.Vector4 is abstract;
+   function View_Position (Object : Camera) return Vector4 is abstract;
    --  Return the position of the camera in world space
 
    function Projection_Matrix (Object : Camera) return Transforms.Matrix4 is
@@ -96,7 +99,7 @@ package Orka.Cameras is
    --  Orient the camera such that it looks at the given target
 
    function Target_Position
-     (Object : Observing_Camera) return Transforms.Vector4 is abstract;
+     (Object : Observing_Camera) return Vector4 is abstract;
    --  Return the position of the target the camera looks at
 
    -----------------------------------------------------------------------------
@@ -108,14 +111,14 @@ package Orka.Cameras is
    overriding
    procedure Set_Input_Scale
      (Object  : in out First_Person_Camera;
-      X, Y, Z : GL.Types.Single);
+      X, Y, Z : GL.Types.Double);
 
    procedure Set_Position
      (Object   : in out First_Person_Camera;
-      Position : Transforms.Vector4);
+      Position : Vector4);
 
    overriding
-   function View_Position (Object : First_Person_Camera) return Transforms.Vector4;
+   function View_Position (Object : First_Person_Camera) return Vector4;
 
    -----------------------------------------------------------------------------
    --                          Third person camera's                          --
@@ -126,7 +129,7 @@ package Orka.Cameras is
    overriding
    procedure Set_Input_Scale
      (Object  : in out Third_Person_Camera;
-      X, Y, Z : GL.Types.Single);
+      X, Y, Z : GL.Types.Double);
 
    overriding
    procedure Look_At
@@ -135,7 +138,7 @@ package Orka.Cameras is
 
    overriding
    function Target_Position
-     (Object : Third_Person_Camera) return Transforms.Vector4;
+     (Object : Third_Person_Camera) return Vector4;
 
 private
 
@@ -150,16 +153,16 @@ private
       FB    : Rendering.Framebuffers.Framebuffer_Ptr) is abstract tagged null record;
 
    type First_Person_Camera is abstract new Camera with record
-      Position : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
-      Scale    : Transforms.Vector4 := Default_Scale;
+      Position : Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Scale    : Vector4 := Default_Scale;
    end record;
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record
       Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
-      Scale  : Transforms.Vector4     := Default_Scale;
+      Scale  : Vector4                := Default_Scale;
    end record;
 
-   function Clamp_Distance is new Orka.Types.Clamp (GL.Types.Single, Distance);
-   function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Single, Angle);
+   function Clamp_Distance  is new Orka.Types.Clamp (GL.Types.Double, Distance);
+   function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Double, Angle);
 
 end Orka.Cameras;

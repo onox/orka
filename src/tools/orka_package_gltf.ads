@@ -45,17 +45,17 @@ package Orka_Package_glTF is
    -----------------------------------------------------------------------------
 
    type No_Behavior is new Orka.Resources.Models.Model_Instance with record
-      Position : Orka.Behaviors.Transforms.Vector4 := Orka.Behaviors.Null_Behavior.Position;
+      Position : Orka.Behaviors.Vector4 := Orka.Behaviors.Null_Behavior.Position;
    end record;
 
    overriding
-   function Position (Object : No_Behavior) return Orka.Behaviors.Transforms.Vector4 is
+   function Position (Object : No_Behavior) return Orka.Behaviors.Vector4 is
      (Object.Position);
 
    overriding
    procedure After_Update
      (Object        : in out No_Behavior;
       Delta_Time    : Duration;
-      View_Position : Orka.Behaviors.Transforms.Vector4);
+      View_Position : Orka.Behaviors.Vector4);
 
 end Orka_Package_glTF;

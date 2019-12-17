@@ -14,12 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Singles.Matrices;
+with Orka.Transforms.Doubles.Vectors;
 
 package Orka.Behaviors is
    pragma Preelaborate;
 
-   package Transforms renames Orka.Transforms.Singles.Matrices;
+   subtype Vector4 is Orka.Transforms.Doubles.Vectors.Vector4;
 
    type Visibility is (Invisible, Visible);
 
@@ -29,7 +29,7 @@ package Orka.Behaviors is
 
    type Behavior_Ptr is not null access all Behavior'Class;
 
-   function Position (Object : Behavior) return Transforms.Vector4 is abstract;
+   function Position (Object : Behavior) return Vector4 is abstract;
 
    procedure Fixed_Update (Object : in out Behavior; Delta_Time : Duration) is null;
    --  Called zero to multiple times per frame and before Update
@@ -46,7 +46,7 @@ package Orka.Behaviors is
    procedure After_Update
      (Object : in out Behavior;
       Delta_Time    : Duration;
-      View_Position : Transforms.Vector4) is null;
+      View_Position : Vector4) is null;
    --  Called once per frame and after Update
 
    procedure Visibility_Changed (Object : in out Behavior; State : Visibility) is null;
@@ -70,7 +70,7 @@ private
    type Origin_Behavior is new Behavior with null record;
 
    overriding
-   function Position (Object : Origin_Behavior) return Transforms.Vector4 is
+   function Position (Object : Origin_Behavior) return Vector4 is
      ((0.0, 0.0, 0.0, 1.0));
 
    Null_Behavior : constant Behavior_Ptr := new Origin_Behavior;

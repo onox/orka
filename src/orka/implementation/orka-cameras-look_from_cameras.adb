@@ -14,15 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Transforms.Doubles.Matrices;
+with Orka.Transforms.Doubles.Matrix_Conversions;
+
 package body Orka.Cameras.Look_From_Cameras is
 
    procedure Set_Orientation
      (Object : in out Look_From_Camera;
       Roll, Pitch, Yaw : Angle) is
    begin
-      Object.Roll := Roll;
+      Object.Roll  := Roll;
       Object.Pitch := Pitch;
-      Object.Yaw := Yaw;
+      Object.Yaw   := Yaw;
    end Set_Orientation;
 
    overriding
@@ -37,19 +40,16 @@ package body Orka.Cameras.Look_From_Cameras is
       end if;
    end Update;
 
+   use Orka.Transforms.Doubles.Matrices;
+   use Orka.Transforms.Doubles.Matrix_Conversions;
+
    overriding
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4 is
-      use Transforms;
-   begin
-      return Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw);
-   end View_Matrix;
+     (Convert (Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw)));
 
    overriding
    function View_Matrix_Inverse (Object : Look_From_Camera) return Transforms.Matrix4 is
-      use Transforms;
-   begin
-      return Ry (-Object.Yaw) * Rx (-Object.Pitch) * Ry (-Object.Roll);
-   end View_Matrix_Inverse;
+     (Convert (Ry (-Object.Yaw) * Rx (-Object.Pitch) * Ry (-Object.Roll)));
 
    overriding
    function Create_Camera

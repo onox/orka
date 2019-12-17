@@ -17,7 +17,8 @@
 with GL.Barriers;
 with GL.Types;
 
-with Orka.Transforms.Singles.Vectors;
+with Orka.Transforms.Doubles.Vectors;
+with Orka.Transforms.Doubles.Vector_Conversions;
 with Orka.Rendering.Drawing;
 
 package body Orka.Resources.Models is
@@ -99,14 +100,15 @@ package body Orka.Resources.Models is
 
    procedure Update_Transforms
      (Object : in out Model_Instance;
-      View_Position : Behaviors.Transforms.Vector4)
+      View_Position : Behaviors.Vector4)
    is
       use Transforms;
-      use Orka.Transforms.Singles.Vectors;
+      use Orka.Transforms.Doubles.Vectors;
+      use Orka.Transforms.Doubles.Vector_Conversions;
 
       pragma Assert (Object.Group /= null);
 
-      Position : Behaviors.Transforms.Vector4
+      Position : Behaviors.Vector4
         renames Behaviors.Behavior'Class (Object).Position;
 
       procedure Write_Transforms (Cursors : Cursor_Array) is
@@ -122,7 +124,7 @@ package body Orka.Resources.Models is
       --  Compute the world transforms by multiplying the local transform
       --  of each node with the world transform of its parent. Also updates
       --  the visibility of each node.
-      Object.Scene.Update_Tree (T (Position - View_Position));
+      Object.Scene.Update_Tree (T (Convert (Position - View_Position)));
 
       --  Write the world transform of the leaf nodes to the persistent mapped buffer
       Object.Group.Model.Scene.Shapes.Query_Element (Write_Transforms'Access);

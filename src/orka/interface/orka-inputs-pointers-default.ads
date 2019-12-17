@@ -22,22 +22,22 @@ package Orka.Inputs.Pointers.Default is
    type Abstract_Pointer_Input is abstract new Pointer_Input with private;
 
    overriding
-   function Position_X (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Position_X (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
-   function Position_Y (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Position_Y (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
-   function Delta_X (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Delta_X (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
-   function Delta_Y (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Delta_Y (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
-   function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
-   function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Single;
+   function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Double;
 
    overriding
    function Locked (Object : Abstract_Pointer_Input) return Boolean;

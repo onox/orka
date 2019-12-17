@@ -28,7 +28,7 @@ package body Orka_Package_glTF is
    procedure After_Update
      (Object        : in out No_Behavior;
       Delta_Time    : Duration;
-      View_Position : Orka.Behaviors.Transforms.Vector4) is
+      View_Position : Orka.Behaviors.Vector4) is
    begin
       Object.Update_Transforms (View_Position);
    end After_Update;

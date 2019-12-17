@@ -30,13 +30,13 @@ package body Orka.Simulation_Jobs is
    type After_Update_Job is new Jobs.Abstract_Parallel_Job with record
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      View_Position : Transforms.Vector4;
+      View_Position : Behaviors.Vector4;
    end record;
 
    type Finished_Fixed_Update_Job is new Jobs.Abstract_Job with record
       Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      View_Position : Transforms.Vector4;
+      View_Position : Behaviors.Vector4;
       Batch_Length : Positive;
    end record;
 
@@ -118,7 +118,7 @@ package body Orka.Simulation_Jobs is
    function Create_After_Update_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      Position  : Transforms.Vector4) return Jobs.Parallel_Job_Ptr
+      Position  : Behaviors.Vector4) return Jobs.Parallel_Job_Ptr
    is (new After_Update_Job'
      (Jobs.Abstract_Parallel_Job with
        Scene => Scene, Time_Step => Time_Step, View_Position => Position));
@@ -126,7 +126,7 @@ package body Orka.Simulation_Jobs is
    function Create_Finished_Job
      (Scene     : not null Behaviors.Behavior_Array_Access;
       Time_Step : Time_Span;
-      Position  : Transforms.Vector4;
+      Position  : Behaviors.Vector4;
       Batch_Length : Positive) return Jobs.Job_Ptr
    is (new Finished_Fixed_Update_Job'
      (Jobs.Abstract_Job with

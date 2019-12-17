@@ -14,6 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Transforms.Doubles.Matrices;
+with Orka.Transforms.Doubles.Matrix_Conversions;
+
 package body Orka.Cameras.Rotate_Around_Cameras is
 
    procedure Set_Angles
@@ -46,26 +49,24 @@ package body Orka.Cameras.Rotate_Around_Cameras is
       Object.Radius := Clamp_Distance (Object.Radius - Object.Input.Scroll_Y * Object.Scale (Z));
    end Update;
 
+   use Orka.Transforms.Doubles.Matrices;
+   use Orka.Transforms.Doubles.Matrix_Conversions;
+
    overriding
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
-      use Transforms;
-   begin
-      return Rx (Object.Beta) * Ry (Object.Alpha);
-   end View_Matrix;
+     (Convert (Rx (Object.Beta) * Ry (Object.Alpha)));
 
    overriding
    function View_Matrix_Inverse (Object : Rotate_Around_Camera) return Transforms.Matrix4 is
-      use Transforms;
-   begin
-      return Ry (-Object.Alpha) * Rx (-Object.Beta);
-   end View_Matrix_Inverse;
+     (Convert (Ry (-Object.Alpha) * Rx (-Object.Beta)));
 
    overriding
-   function View_Position (Object : Rotate_Around_Camera) return Transforms.Vector4 is
-      use Transforms;
+   function View_Position (Object : Rotate_Around_Camera) return Vector4 is
+      View_Inverse : constant Matrix4 :=
+        Ry (-Object.Alpha) * Rx (-Object.Beta);
 
       View_Matrix : constant Matrix4 :=
-         Object.Target_Position + Object.View_Matrix_Inverse * T ((0.0, 0.0, Object.Radius, 0.0));
+         Object.Target_Position + View_Inverse * T ((0.0, 0.0, Object.Radius, 0.0));
    begin
       return View_Matrix (W);
    end View_Position;

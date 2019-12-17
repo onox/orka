@@ -26,7 +26,7 @@ package Orka.Cameras.Look_At_Cameras is
 
    procedure Set_Up_Direction
      (Object    : in out Look_At_Camera;
-      Direction : Transforms.Vector4);
+      Direction : Vector4);
 
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4;
@@ -35,7 +35,7 @@ package Orka.Cameras.Look_At_Cameras is
    function View_Matrix_Inverse (Object : Look_At_Camera) return Transforms.Matrix4;
 
    overriding
-   function Target_Position (Object : Look_At_Camera) return Transforms.Vector4;
+   function Target_Position (Object : Look_At_Camera) return Vector4;
 
    overriding
    procedure Update (Object : in out Look_At_Camera; Delta_Time : Duration) is null;
@@ -53,7 +53,7 @@ private
 
    type Look_At_Camera is new First_Person_Camera and Observing_Camera with record
       Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
-      Up     : Transforms.Vector4 := (0.0, 1.0, 0.0, 0.0);
+      Up     : Vector4 := (0.0, 1.0, 0.0, 0.0);
    end record;
 
 end Orka.Cameras.Look_At_Cameras;

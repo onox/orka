@@ -35,7 +35,7 @@ package Orka.Resources.Models is
 
    procedure Update_Transforms
      (Object : in out Model_Instance;
-      View_Position : Behaviors.Transforms.Vector4);
+      View_Position : Behaviors.Vector4);
 
    -----------------------------------------------------------------------------
 

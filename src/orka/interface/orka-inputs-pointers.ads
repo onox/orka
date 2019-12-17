@@ -27,26 +27,26 @@ package Orka.Inputs.Pointers is
 
    type Pointer_Input_Ptr is not null access Pointer_Input'Class;
 
-   function Position_X (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Position_X (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  The X position of the pointer. Does not change while the pointer
    --  is locked.
 
-   function Position_Y (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Position_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  The Y position of the pointer. Does not change while the pointer
    --  is locked.
 
-   function Delta_X (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Delta_X (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  Pointer movement in the X direction since previous frame. May
    --  change irrespective of whether pointer is locked or not.
 
-   function Delta_Y (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Delta_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  Pointer movement in the Y direction since previous frame. May
    --  change irrespective of whether pointer is locked or not.
 
-   function Scroll_X (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Scroll_X (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  Scroll movement of pointer in the X direction since the previous frame
 
-   function Scroll_Y (Object : Pointer_Input) return GL.Types.Single is abstract;
+   function Scroll_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
    --  Scroll movement of pointer in the Y direction since the previous frame
 
    function Locked (Object : Pointer_Input) return Boolean is abstract;

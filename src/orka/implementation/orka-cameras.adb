@@ -27,6 +27,8 @@ package body Orka.Cameras is
    function Projection_Matrix (Object : Camera_Lens) return Transforms.Matrix4 is
       Width  : constant GL.Types.Single := GL.Types.Single (Object.Width);
       Height : constant GL.Types.Single := GL.Types.Single (Object.Height);
+
+      use type GL.Types.Single;
    begin
       if Object.Reversed_Z then
          return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
@@ -40,7 +42,7 @@ package body Orka.Cameras is
    overriding
    procedure Set_Input_Scale
      (Object  : in out First_Person_Camera;
-      X, Y, Z : GL.Types.Single) is
+      X, Y, Z : GL.Types.Double) is
    begin
       Object.Scale := (X, Y, Z, 0.0);
    end Set_Input_Scale;
@@ -48,14 +50,14 @@ package body Orka.Cameras is
    overriding
    procedure Set_Input_Scale
      (Object  : in out Third_Person_Camera;
-      X, Y, Z : GL.Types.Single) is
+      X, Y, Z : GL.Types.Double) is
    begin
       Object.Scale := (X, Y, Z, 0.0);
    end Set_Input_Scale;
 
    procedure Set_Position
      (Object   : in out First_Person_Camera;
-      Position : Transforms.Vector4) is
+      Position : Vector4) is
    begin
       Object.Position := Position;
    end Set_Position;
@@ -71,11 +73,11 @@ package body Orka.Cameras is
    -----------------------------------------------------------------------------
 
    overriding
-   function View_Position (Object : First_Person_Camera) return Transforms.Vector4 is
+   function View_Position (Object : First_Person_Camera) return Vector4 is
      (Object.Position);
 
    overriding
-   function Target_Position (Object : Third_Person_Camera) return Transforms.Vector4 is
+   function Target_Position (Object : Third_Person_Camera) return Vector4 is
      (Object.Target.Position);
 
    -----------------------------------------------------------------------------

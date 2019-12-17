@@ -17,40 +17,34 @@
 package body Orka.Inputs.Pointers.Default is
 
    overriding
-   function Position_X (Object : Abstract_Pointer_Input) return GL.Types.Single is
-     (GL.Types.Single (Object.X));
+   function Position_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
+     (Object.X);
 
    overriding
-   function Position_Y (Object : Abstract_Pointer_Input) return GL.Types.Single is
-     (GL.Types.Single (Object.Y));
+   function Position_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
+     (Object.Y);
 
    overriding
-   function Delta_X (Object : Abstract_Pointer_Input) return GL.Types.Single is
+   function Delta_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
       use type GL.Types.Double;
    begin
-      return GL.Types.Single (Object.Last_X - Object.Prev_X);
+      return Object.Last_X - Object.Prev_X;
    end Delta_X;
 
    overriding
-   function Delta_Y (Object : Abstract_Pointer_Input) return GL.Types.Single is
+   function Delta_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
       use type GL.Types.Double;
    begin
-      return GL.Types.Single (Object.Last_Y - Object.Prev_Y);
+      return Object.Last_Y - Object.Prev_Y;
    end Delta_Y;
 
    overriding
-   function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Single is
-      use type GL.Types.Double;
-   begin
-      return GL.Types.Single (Object.Scroll_X);
-   end Scroll_X;
+   function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
+     (Object.Scroll_X);
 
    overriding
-   function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Single is
-      use type GL.Types.Double;
-   begin
-      return GL.Types.Single (Object.Scroll_Y);
-   end Scroll_Y;
+   function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
+     (Object.Scroll_Y);
 
    overriding
    function Locked (Object : Abstract_Pointer_Input) return Boolean is
