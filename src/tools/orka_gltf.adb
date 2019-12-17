@@ -126,12 +126,14 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Debug));
 
    declare
-      Context : constant Orka.Contexts.Context'Class
+      Library : constant Orka.Contexts.Library'Class
         := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
 
-      W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+      Window : aliased Orka.Windows.Window'Class := Library.Create_Window
         (Width, Height, Resizable => True);
-      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(W'Unchecked_Access);
+      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
+
+      Context : Orka.Contexts.Context'Class := Window.Context;
    begin
       Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
 
@@ -196,7 +198,7 @@ begin
          FB_1 : constant Framebuffer_Ptr
            := new Framebuffer'(Create_Framebuffer (Width, Height, Samples, Context));
          FB_D : constant Framebuffer_Ptr
-           := new Framebuffer'(Get_Default_Framebuffer (W));
+           := new Framebuffer'(Get_Default_Framebuffer (Window));
 
          use Orka.Cameras;
          Lens : constant Lens_Ptr
@@ -299,6 +301,8 @@ begin
          Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
          Uni_Light.Set_Vector (Light_Position);
+
+         Window.Set_Title ("glTF viewer - " & Model_Path);
 
          declare
             Group_Added : Boolean := False;

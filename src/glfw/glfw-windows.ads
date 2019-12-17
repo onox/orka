@@ -50,14 +50,27 @@ package Glfw.Windows is
 
    type Path_List is array (Positive range <>) of SU.Unbounded_String;
 
-   -- throws Creation_Error if the window cannot be created
+   --  Task safety: Unless indicated otherwise, subprograms in this package
+   --  must only be called from the environment task.
+
    procedure Init (Object        : not null access Window;
                    Width, Height : Size;
                    Title         : String; -- interpreted as UTF-8
                    Monitor       : Monitors.Monitor := Monitors.No_Monitor;
                    Share_Resources_With : access Window'Class := null);
+   --  Create a window and its corresponding OpenGL context
+   --
+   --  If the window cannot be created, a Creation_Error is raised.
+   --
+   --  The OpenGL context of Share_Resources_With must no be current on
+   --  the rendering task.
+
    function Initialized (Object : not null access Window) return Boolean;
+
    procedure Destroy (Object : not null access Window);
+   --  Destroy the window and its corresponding OpenGL context
+   --
+   --  The context must not be current on the rendering task.
 
    procedure Show (Object : not null access Window);
    procedure Hide (Object : not null access Window);
@@ -155,11 +168,19 @@ package Glfw.Windows is
    procedure Set_Focus_On_Show (Object : not null access Window; Enable : Boolean);
 
    function Should_Close (Object : not null access Window) return Boolean;
-   procedure Set_Should_Close (Object : not null access Window;
-                               Value  : Boolean);
+   --  Return the close flag of the window
+   --
+   --  Task safety: May be called from any task.
+
+   procedure Set_Should_Close
+     (Object : not null access Window;
+      Value  : Boolean);
+   --  Set the close flag to signal that the window should (not) be closed
+   --
+   --  Task safety: May be called from any task.
 
    -----------------------------------------------------------------------------
-   -- Event API
+   --                                Event API                                --
    -----------------------------------------------------------------------------
 
    procedure Enable_Callback (Object : not null access Window;
@@ -211,8 +232,8 @@ package Glfw.Windows is
 private
 
    type Windowed_Size is record
-      X, Y           : Coordinate;
-      Width, Height  : Size;
+      X, Y          : Coordinate;
+      Width, Height : Size;
    end record;
 
    type Window is limited new Ada.Finalization.Limited_Controlled with record

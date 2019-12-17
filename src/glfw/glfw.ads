@@ -27,9 +27,14 @@ package Glfw is
    Operation_Exception      : exception;
 
    procedure Init;
+   --  Initialize the GLFW library
+   --
+   --  Task safety: Must only be called from the environment task.
 
-   -- because terminate is a keyword in Ada
    procedure Shutdown;
+   --  Destroy all windows and resources
+   --
+   --  Task safety: Must only be called from the environment task.
 
    procedure Version (Major, Minor, Rev : out Natural);
 

@@ -79,7 +79,7 @@ package Glfw.Input.Joysticks is
    --  Enable or disable a callback to receive joystick (dis)connection
    --  events
    --
-   --  Must only be called from the environment task.
+   --  Task safety: Must only be called from the environment task.
 
 private
 

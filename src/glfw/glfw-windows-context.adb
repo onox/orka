@@ -21,15 +21,18 @@ package body Glfw.Windows.Context is
 
    procedure Make_Current (Window : access Glfw.Windows.Window'Class) is
    begin
-      if not Window.Initialized then
-         -- null is accepted to detach the current context, but an uninitialized
-         -- window *should* lead to an exception instead of detaching the
-         -- context, so we handle this here
-         raise Operation_Exception with "Window not initialized";
-      end if;
       if Window = null then
+         if not Current.Initialized then
+            --  null is accepted to detach the current context, but an uninitialized
+            --  window *should* lead to an exception instead of detaching the
+            --  context, so we handle this here
+            raise Operation_Exception with "Window not initialized";
+         end if;
          API.Make_Context_Current (System.Null_Address);
       else
+         if not Window.Initialized then
+            raise Operation_Exception with "Window not initialized";
+         end if;
          API.Make_Context_Current (Window.Handle);
       end if;
    end Make_Current;

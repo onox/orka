@@ -65,17 +65,16 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      Context : constant Orka.Contexts.Context'Class
+      Library : constant Orka.Contexts.Library'Class
         := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
 
-      Window : constant Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+      Window : constant Orka.Windows.Window'Class := Library.Create_Window
         (Width, Height, Resizable => False);
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
+
+      Context : Orka.Contexts.Context'Class := Window.Context;
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
-
-      --  Enable some features
-      Context.Enable (Orka.Contexts.Reversed_Z);
 
       declare
          Full_Path     : constant String := Ada.Command_Line.Argument (1);

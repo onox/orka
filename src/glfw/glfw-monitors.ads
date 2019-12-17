@@ -73,7 +73,7 @@ package Glfw.Monitors is
    --  Enable or disable a callback to receive monitor (dis)connection
    --  events
    --
-   --  Must only be called from the environment task.
+   --  Task safety: Must only be called from the environment task.
 
    -- used internally
    function Raw_Pointer (Object : Monitor) return System.Address;

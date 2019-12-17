@@ -23,9 +23,18 @@ with GL.Viewports;
 package body Orka.Contexts is
 
    overriding
+   procedure Finalize (Object : in out Library) is
+   begin
+      if not Object.Finalized then
+         Library'Class (Object).Shutdown;
+         Object.Finalized := True;
+      end if;
+   end Finalize;
+
+   overriding
    procedure Initialize (Object : in out Context) is
    begin
-      --  FIXME Should not be called before OpenGL has been initialized
+      Context'Class (Object).Make_Current (True);
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
    end Initialize;
 
@@ -33,7 +42,7 @@ package body Orka.Contexts is
    procedure Finalize (Object : in out Context) is
    begin
       if not Object.Finalized then
-         Context'Class (Object).Shutdown;
+         Context'Class (Object).Make_Current (False);
          Object.Finalized := True;
       end if;
    end Finalize;

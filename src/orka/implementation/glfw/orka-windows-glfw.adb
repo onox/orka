@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Task_Identification;
-
 with Glfw.Errors;
 with Glfw.Windows.Context;
 with Glfw.Windows.Hints;
@@ -24,8 +22,6 @@ with Orka.Inputs.GLFW;
 with Orka.Logging;
 
 package body Orka.Windows.GLFW is
-
-   use Ada.Task_Identification;
 
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
@@ -40,10 +36,8 @@ package body Orka.Windows.GLFW is
 
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Orka.Contexts.Context'Class is
+      Debug : Boolean := False) return Contexts.Library'Class is
    begin
-      pragma Assert (Current_Task = Environment_Task);
-
       --  Initialize GLFW
       Standard.Glfw.Errors.Set_Callback (Print_Error'Access);
       Standard.Glfw.Init;
@@ -55,19 +49,24 @@ package body Orka.Windows.GLFW is
       Standard.Glfw.Windows.Hints.Set_Profile (Standard.Glfw.Windows.Context.Core_Profile);
       Standard.Glfw.Windows.Hints.Set_Debug_Context (Debug);
 
-      return Active_GLFW'(Orka.Contexts.Context with Debug => Debug);
+      return GLFW_Library'(Orka.Contexts.Library with Debug => Debug);
    end Initialize;
 
    overriding
-   procedure Shutdown (Object : in out Active_GLFW) is
+   procedure Shutdown (Object : in out GLFW_Library) is
    begin
       if Object.Debug then
          Messages.Log (Debug, "Shutting down GLFW");
       end if;
 
-      pragma Assert (Current_Task = Environment_Task);
       Standard.Glfw.Shutdown;
    end Shutdown;
+
+   overriding
+   procedure Make_Current (Object : in out GLFW_Context; Current : Boolean) is
+   begin
+      Standard.Glfw.Windows.Context.Make_Current (if Current then Object.Window else null);
+   end Make_Current;
 
    overriding
    procedure Finalize (Object : in out GLFW_Window) is
@@ -75,14 +74,15 @@ package body Orka.Windows.GLFW is
       if not Object.Finalized then
          Messages.Log (Debug, "Closing GLFW window");
          --  FIXME Requires context to be current => ask render task to release context
-         pragma Assert (Current_Task = Environment_Task);
          Object.Destroy;
          Object.Finalized := True;
       end if;
    end Finalize;
 
+   overriding
    function Create_Window
-     (Width, Height : Positive;
+     (Object : GLFW_Library;
+      Width, Height : Positive;
       Samples : Natural := 0;
       Visible, Resizable : Boolean := True) return Window'Class
    is
@@ -95,8 +95,6 @@ package body Orka.Windows.GLFW is
             Reference : constant Windows.Window_Reference
               := Windows.Window (Window'Class (Result))'Access;
          begin
-            pragma Assert (Current_Task = Environment_Task);
-
             Windows.Hints.Set_Visible (Visible);
             Windows.Hints.Set_Resizable (Resizable);
             Windows.Hints.Set_Samples (Samples);
@@ -125,12 +123,15 @@ package body Orka.Windows.GLFW is
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Scroll);
             Reference.Enable_Callback (Windows.Callbacks.Key);
             Reference.Enable_Callback (Windows.Callbacks.Framebuffer_Size);
-
-            --  FIXME Make current in the render task
-            Windows.Context.Make_Current (Reference);
          end;
       end return;
    end Create_Window;
+
+   overriding
+   function Context (Object : access GLFW_Window) return Contexts.Context'Class is
+   begin
+      return Result : GLFW_Context (Object);
+   end Context;
 
    overriding
    function Pointer_Input
@@ -138,17 +139,14 @@ package body Orka.Windows.GLFW is
    is (Object.Input);
 
    overriding
-   function Width (Object : GLFW_Window) return Positive is
-     (Object.Width);
+   function Width (Object : GLFW_Window) return Positive is (Object.Width);
 
    overriding
-   function Height (Object : GLFW_Window) return Positive is
-     (Object.Height);
+   function Height (Object : GLFW_Window) return Positive is (Object.Height);
 
    overriding
    procedure Set_Title (Object : in out GLFW_Window; Value : String) is
    begin
-      pragma Assert (Current_Task = Environment_Task);
       Standard.Glfw.Windows.Window (Object)'Access.Set_Title (Value);
    end Set_Title;
 
@@ -174,7 +172,6 @@ package body Orka.Windows.GLFW is
       Object.Scroll_X := 0.0;
       Object.Scroll_Y := 0.0;
 
-      pragma Assert (Current_Task = Environment_Task);
       Standard.Glfw.Input.Poll_Events;
 
       --  Update position of mouse
@@ -207,7 +204,6 @@ package body Orka.Windows.GLFW is
    overriding
    procedure Swap_Buffers (Object : in out GLFW_Window) is
    begin
-      --  TODO On the render task
       Standard.Glfw.Windows.Context.Swap_Buffers (Object'Access);
    end Swap_Buffers;
 

@@ -14,14 +14,20 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Strings;
+
+with Ada.Task_Identification;
+
 with Glfw.API;
 with Glfw.Enums;
 
-with Interfaces.C.Strings;
-
 package body Glfw is
 
+   use Ada.Task_Identification;
+
    procedure Init is
+      pragma Assert (Current_Task = Environment_Task);
+
       use type Interfaces.C.int;
    begin
       --  Is True by default for compatibility with earlier versions of GLFW
@@ -33,6 +39,7 @@ package body Glfw is
    end Init;
 
    procedure Shutdown is
+      pragma Assert (Current_Task = Environment_Task);
    begin
       API.Glfw_Terminate;
    end Shutdown;

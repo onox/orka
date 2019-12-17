@@ -16,14 +16,30 @@
 
 private with Ada.Finalization;
 
+with Orka.Windows;
+
 package Orka.Contexts is
    pragma Preelaborate;
 
+   type Library (Debug : Boolean) is abstract tagged limited private;
+
+   procedure Shutdown (Object : in out Library) is null;
+
+   function Create_Window
+     (Object : Library;
+      Width, Height : Positive;
+      Samples : Natural := 0;
+      Visible, Resizable : Boolean := True) return Orka.Windows.Window'Class is abstract;
+
+   -----------------------------------------------------------------------------
+
    type Feature is (Reversed_Z, Multisample, Sample_Shading);
 
-   type Context (Debug : Boolean) is tagged limited private;
+   type Context is abstract tagged limited private;
 
-   procedure Shutdown (Object : in out Context) is null;
+   type Context_Access is access Context'Class;
+
+   procedure Make_Current (Object : in out Context; Current : Boolean) is abstract;
 
    procedure Enable (Object : in out Context; Subject : Feature);
    --  Note: If enabling Reversed_Z, the depth must be cleared with the
@@ -33,9 +49,20 @@ package Orka.Contexts is
 
 private
 
+   type Library (Debug : Boolean) is abstract limited
+     new Ada.Finalization.Limited_Controlled with
+   record
+      Finalized : Boolean := False;
+   end record;
+
+   overriding
+   procedure Finalize (Object : in out Library);
+
    type Feature_Array is array (Feature) of Boolean;
 
-   type Context (Debug : Boolean) is limited new Ada.Finalization.Limited_Controlled with record
+   type Context is abstract limited
+     new Ada.Finalization.Limited_Controlled with
+   record
       Finalized : Boolean := False;
       Features  : Feature_Array := (others => False);
    end record;

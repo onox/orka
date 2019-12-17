@@ -26,9 +26,8 @@ with Orka.Logging;
 with Orka.Windows.GLFW;
 
 procedure Orka_Info is
-   Context : constant Orka.Contexts.Context'Class
+   Library : constant Orka.Contexts.Library'Class
      := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-   pragma Unreferenced (Context);
 
    procedure Display_Context_Information is
       use Ada.Strings.Unbounded;
@@ -74,9 +73,11 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
+      W : aliased Orka.Windows.Window'Class := Library.Create_Window
         (1, 1, Visible => False);
-      pragma Unreferenced (W);
+
+      Context : Orka.Contexts.Context'Class := W.Context;
+      pragma Unreferenced (Context);
    begin
       Display_Context_Information;
    end;

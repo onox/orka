@@ -24,25 +24,25 @@ package Glfw.Input is
    procedure Poll_Events;
    --  Process events in the event queue
    --
-   --  Must only be called from the environment task.
+   --  Task safety: Must only be called from the environment task.
 
    procedure Wait_For_Events;
    --  Wait until at least one event is available and then process
    --  all events in the event queue
    --
-   --  Must only be called from the environment task.
+   --  Task safety: Must only be called from the environment task.
 
    procedure Wait_For_Events (Timeout : Seconds);
    --  Wait, for the specified duration, until at least one event is
    --  available and then process all events in the event queue
    --
-   --  Must only be called from the environment task.
+   --  Task safety: Must only be called from the environment task.
 
    procedure Post_Empty_Event;
    --  Post an empty event to wake up the task calling procedure
    --  Wait_For_Events
    --
-   --  May be called from any task.
+   --  Task safety: May be called from any task.
 
 private
 
@@ -55,8 +55,6 @@ private
    for Input_Toggle'Size use Interfaces.C.int'Size;
 
    --  Just so we can implement them with rename
-   pragma Convention (C, Poll_Events);
-   pragma Convention (C, Wait_For_Events);
    pragma Convention (C, Post_Empty_Event);
 
 end Glfw.Input;

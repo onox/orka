@@ -14,18 +14,31 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Task_Identification;
+
 with Glfw.API;
 
 package body Glfw.Input is
 
-   procedure Poll_Events renames API.Poll_Events;
-   --  Process events in the event queue
-   --
-   --  Must only be called from environment task.
+   use Ada.Task_Identification;
 
-   procedure Wait_For_Events renames API.Wait_Events;
+   procedure Poll_Events is
+      pragma Assert (Current_Task = Environment_Task);
+   begin
+      API.Poll_Events;
+   end Poll_Events;
 
-   procedure Wait_For_Events (Timeout : Seconds) renames API.Wait_Events_Timeout;
+   procedure Wait_For_Events is
+      pragma Assert (Current_Task = Environment_Task);
+   begin
+      API.Wait_Events;
+   end Wait_For_Events;
+
+   procedure Wait_For_Events (Timeout : Seconds) is
+      pragma Assert (Current_Task = Environment_Task);
+   begin
+      API.Wait_Events_Timeout (Timeout);
+   end Wait_For_Events;
 
    procedure Post_Empty_Event renames API.Post_Empty_Event;
 

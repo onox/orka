@@ -18,12 +18,15 @@ with System.Address_To_Access_Conversions;
 
 with Interfaces.C.Strings;
 
+with Ada.Task_Identification;
 with Ada.Unchecked_Conversion;
 
 with Glfw.API;
 with Glfw.Enums;
 
 package body Glfw.Windows is
+
+   use Ada.Task_Identification;
 
    package Conversions is new System.Address_To_Access_Conversions (Window'Class);
 
@@ -194,8 +197,12 @@ package body Glfw.Windows is
                    Width, Height : Size;
                    Title         : String;
                    Monitor       : Monitors.Monitor := Monitors.No_Monitor;
-                   Share_Resources_With : access Window'Class := null) is
+                   Share_Resources_With : access Window'Class := null)
+   is
+      pragma Assert (Current_Task = Environment_Task);
+
       use type System.Address;
+
       C_Title : constant Interfaces.C.char_array := Interfaces.C.To_C (Title);
       Share : System.Address;
    begin
@@ -225,6 +232,7 @@ package body Glfw.Windows is
    end Initialized;
 
    procedure Destroy (Object : not null access Window) is
+      pragma Assert (Current_Task = Environment_Task);
    begin
       API.Destroy_Window (Object.Handle);
       Object.Handle := System.Null_Address;
@@ -290,6 +298,7 @@ package body Glfw.Windows is
    end Set_Monitor;
 
    procedure Set_Title (Object : not null access Window; Value : String) is
+      pragma Assert (Current_Task = Environment_Task);
    begin
       API.Set_Window_Title (Object.Handle, Interfaces.C.To_C (Value));
    end Set_Title;

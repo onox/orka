@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+limited with Orka.Contexts;
+
 with Orka.Inputs.Pointers;
 
 package Orka.Windows is
@@ -26,19 +28,33 @@ package Orka.Windows is
    function Pointer_Input
      (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;
 
+   function Context (Object : access Window) return Contexts.Context'Class is abstract;
+   --  Return the OpenGL context and make it current in the calling task
+   --
+   --  Task safety: The calling task should be the rendering task.
+
    function Width (Object : Window) return Positive is abstract;
 
    function Height (Object : Window) return Positive is abstract;
 
    procedure Set_Title (Object : in out Window; Value : String) is abstract;
+   --  Set the title of the window
+   --
+   --  Task safety: Must only be called from the environment task.
 
    procedure Close (Object : in out Window) is abstract;
 
    function Should_Close (Object : in out Window) return Boolean is abstract;
 
    procedure Process_Input (Object : in out Window) is abstract;
+   --  Process window and input events
+   --
+   --  Task safety: Must only be called from the environment task.
 
    procedure Swap_Buffers (Object : in out Window) is abstract;
+   --  Swap the front and back buffers of the window
+   --
+   --  Task safety: Must only be called from the rendering task.
 
    procedure Enable_Vertical_Sync (Object : in out Window; Enable : Boolean) is abstract;
    --  Request the vertical retrace synchronization or vsync to be enabled

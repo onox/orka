@@ -18,6 +18,8 @@ with System.Address_To_Access_Conversions;
 
 with Interfaces.C.Strings;
 
+with Ada.Task_Identification;
+
 with Glfw.API;
 
 package body Glfw.Monitors is
@@ -180,7 +182,10 @@ package body Glfw.Monitors is
       Monitor_Ptr (Monitor).Event_Occurred (State);
    end Raw_Handler;
 
+   use Ada.Task_Identification;
+
    procedure Set_Callback (Object : Monitor; Enable : Boolean) is
+      pragma Assert (Current_Task = Environment_Task);
    begin
       API.Set_Monitor_Callback
         (Object.Handle, (if Enable then Raw_Handler'Access else null));

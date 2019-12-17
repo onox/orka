@@ -26,15 +26,22 @@ package Orka.Windows.GLFW is
 
    function Initialize
      (Major, Minor : Natural;
-      Debug : Boolean := False) return Orka.Contexts.Context'Class
+      Debug : Boolean := False) return Orka.Contexts.Library'Class
    with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
+   type GLFW_Library is limited new Orka.Contexts.Library with private;
+
+   overriding
    function Create_Window
-     (Width, Height : Positive;
+     (Object : GLFW_Library;
+      Width, Height : Positive;
       Samples : Natural := 0;
       Visible, Resizable : Boolean := True) return Window'Class;
 
    type GLFW_Window is limited new Window with private;
+
+   overriding
+   function Context (Object : access GLFW_Window) return Contexts.Context'Class;
 
    overriding
    function Pointer_Input
@@ -66,14 +73,11 @@ package Orka.Windows.GLFW is
 
 private
 
-   type Active_GLFW is limited new Orka.Contexts.Context with null record;
-
-   overriding
-   procedure Shutdown (Object : in out Active_GLFW);
-
    type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
       Input     : Inputs.Pointers.Pointer_Input_Ptr;
+      Context   : Contexts.Context_Access;
       Finalized : Boolean;
+
       Position_X : GL.Types.Double := 0.0;
       Position_Y : GL.Types.Double := 0.0;
       Scroll_X   : GL.Types.Double := 0.0;
@@ -119,5 +123,18 @@ private
    procedure Framebuffer_Size_Changed
      (Object : not null access GLFW_Window;
       Width, Height : Natural);
+
+   -----------------------------------------------------------------------------
+
+   type GLFW_Library is limited new Orka.Contexts.Library with null record;
+
+   overriding
+   procedure Shutdown (Object : in out GLFW_Library);
+
+   type GLFW_Context (Window : access GLFW_Window) is
+     limited new Orka.Contexts.Context with null record;
+
+   overriding
+   procedure Make_Current (Object : in out GLFW_Context; Current : Boolean);
 
 end Orka.Windows.GLFW;

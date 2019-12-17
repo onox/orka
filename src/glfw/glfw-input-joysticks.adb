@@ -16,6 +16,8 @@
 
 with Interfaces.C.Strings;
 
+with Ada.Task_Identification;
+
 with Glfw.API;
 
 package body Glfw.Input.Joysticks is
@@ -105,7 +107,10 @@ package body Glfw.Input.Joysticks is
       end if;
    end Raw_Handler;
 
+   use Ada.Task_Identification;
+
    procedure Set_Callback (Callback : Joystick_Callback) is
+      pragma Assert (Current_Task = Environment_Task);
    begin
       Current_Callback := Callback;
       if Callback = null then
