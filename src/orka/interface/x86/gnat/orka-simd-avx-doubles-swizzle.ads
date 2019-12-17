@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.SIMD.SSE.Singles;
 with Orka.SIMD.SSE2.Doubles;
 
 package Orka.SIMD.AVX.Doubles.Swizzle is
    pragma Preelaborate;
 
    use SIMD.SSE2.Doubles;
+   use SIMD.SSE.Singles;
 
    function Shuffle_Within_Lanes (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd256";
@@ -89,6 +91,12 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
 
    function Cast (Elements : m256d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pd_pd256";
+
+   function Convert (Elements : m256d) return m128
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtpd2ps256";
+
+   function Convert (Elements : m128) return m256d
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtps2pd256";
 
    function Extract (Elements : m256d; Mask : Unsigned_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_pd256";
