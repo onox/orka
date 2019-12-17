@@ -165,7 +165,7 @@ inserted into arbitrary positions. An element can be appended to the
 buffer as follows:
 
 ```ada
-Elements.Append (New_Element);
+Elements.Add_Last (New_Element);
 ```
 
 ### Removing the first element
