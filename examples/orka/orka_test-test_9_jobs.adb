@@ -31,7 +31,8 @@ procedure Orka_Test.Test_9_Jobs is
      (Orka.Jobs.Abstract_Job with ID => 2);
 
    Job_3 : constant Orka.Jobs.Parallel_Job_Ptr := new Package_9_Jobs.Test_Parallel_Job;
-   Job_4 : constant Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize (Job_3, 24, 6);
+   Job_4 : constant Orka.Jobs.Job_Ptr := Orka.Jobs.Parallelize
+     (Job_3, Package_9_Jobs.Clone_Job'Access, 24, 6);
 
    Handle : Orka.Futures.Pointers.Mutable_Pointer;
    Status : Orka.Futures.Status;

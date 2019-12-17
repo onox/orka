@@ -24,6 +24,10 @@ package Orka_Test.Package_9_Jobs is
 
    type Test_Parallel_Job is new Orka.Jobs.Abstract_Parallel_Job with null record;
 
+   function Clone_Job
+     (Job    : Orka.Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Orka.Jobs.Dependency_Array;
+
    overriding
    procedure Execute
      (Object   : Test_Parallel_Job;

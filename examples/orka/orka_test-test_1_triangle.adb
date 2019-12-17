@@ -27,12 +27,14 @@ with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_1_Triangle is
-   Context : constant Orka.Contexts.Context'Class
+   Library : constant Orka.Contexts.Library'Class
      := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-   pragma Unreferenced (Context);
 
    Window : aliased Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Width => 500, Height => 500, Resizable => False);
+     := Library.Create_Window (Width => 500, Height => 500, Resizable => False);
+
+   Context : constant Orka.Contexts.Context'Class := Window.Context;
+   pragma Unreferenced (Context);
 
    use Orka.Resources;
    use Orka.Rendering.Buffers;

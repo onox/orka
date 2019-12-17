@@ -30,13 +30,14 @@ with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_6_Transform_Feedback is
-   Context : constant Orka.Contexts.Context'Class
+   Library : constant Orka.Contexts.Library'Class
      := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 5, Debug => True);
-   pragma Unreferenced (Context);
 
-   W : aliased Orka.Windows.Window'Class := Orka.Windows.GLFW.Create_Window
-     (1, 1, Visible => False);
-   pragma Unreferenced (W);
+   Window : aliased Orka.Windows.Window'Class
+     := Library.Create_Window (1, 1, Visible => False);
+
+   Context : constant Orka.Contexts.Context'Class := Window.Context;
+   pragma Unreferenced (Context);
 
    ----------------------------------------------------------------------
 

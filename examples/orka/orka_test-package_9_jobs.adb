@@ -18,6 +18,16 @@ with Ada.Text_IO;
 
 package body Orka_Test.Package_9_Jobs is
 
+   function Clone_Job
+     (Job    : Orka.Jobs.Parallel_Job_Ptr;
+      Length : Positive) return Orka.Jobs.Dependency_Array
+   is
+      Object : constant Test_Parallel_Job := Test_Parallel_Job (Job.all);
+   begin
+      return Result : constant Orka.Jobs.Dependency_Array (1 .. Length)
+        := (others => new Test_Parallel_Job'(Object));
+   end Clone_Job;
+
    overriding
    procedure Execute
      (Object  : Test_Sequential_Job;
