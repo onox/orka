@@ -37,8 +37,6 @@ package Orka.Contexts is
 
    type Context is abstract tagged limited private;
 
-   type Context_Access is access Context'Class;
-
    procedure Make_Current (Object : in out Context; Current : Boolean) is abstract;
 
    procedure Enable (Object : in out Context; Subject : Feature);

@@ -75,7 +75,6 @@ private
 
    type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
       Input     : Inputs.Pointers.Pointer_Input_Ptr;
-      Context   : Contexts.Context_Access;
       Finalized : Boolean;
 
       Position_X : GL.Types.Double := 0.0;
