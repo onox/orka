@@ -21,12 +21,6 @@ package Glfw.Input.Joysticks is
 
    use type Interfaces.C.C_float;
 
-   type Joystick_Index is range 1 .. 16;
-   --  GLFW supports up to 16 joysticks; they are indexed from 1 to 16
-
-   type Joystick is tagged private;
-   --  A Joystick object will link to the first joystick by default
-
    type Axis_Position is new Interfaces.C.C_float range -1.0 .. 1.0;
    type Axis_Positions is array (Positive range <>) of aliased Axis_Position;
 
@@ -51,8 +45,17 @@ package Glfw.Input.Joysticks is
 
    type Connect_State is (Connected, Disconnected);
 
+   -----------------------------------------------------------------------------
+
+   type Joystick_Index is range 1 .. 16;
+   --  GLFW supports up to 16 joysticks; they are indexed from 1 to 16
+
+   type Joystick is tagged private;
+   --  A Joystick object will link to the first joystick by default
+
+   function Get_Joystick (Index : Joystick_Index) return Joystick;
+
    function Index (Source : Joystick) return Joystick_Index;
-   procedure Set_Index (Target : in out Joystick; Value : Joystick_Index);
    
    function Present (Source : Joystick) return Boolean;
 

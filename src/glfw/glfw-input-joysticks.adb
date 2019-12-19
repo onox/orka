@@ -25,10 +25,8 @@ package body Glfw.Input.Joysticks is
    function Index (Source : Joystick) return Joystick_Index is
      (Enums.Joystick_ID'Pos (Source.Raw_Index) + 1);
 
-   procedure Set_Index (Target : in out Joystick; Value : Joystick_Index) is
-   begin
-      Target.Raw_Index := Enums.Joystick_ID'Val (Value - 1);
-   end Set_Index;
+   function Get_Joystick (Index : Joystick_Index) return Joystick is
+     ((Raw_Index => Enums.Joystick_ID'Val (Index - 1)));
 
    function Present (Source : Joystick) return Boolean is
      (Boolean (API.Joystick_Present (Source.Raw_Index)));
