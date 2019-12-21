@@ -57,7 +57,7 @@ package Glfw.Input.Joysticks is
 
    function Index (Source : Joystick) return Joystick_Index;
    
-   function Present (Source : Joystick) return Boolean;
+   function Is_Present (Source : Joystick) return Boolean;
 
    function Is_Gamepad (Source : Joystick) return Boolean;
 

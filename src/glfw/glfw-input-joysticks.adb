@@ -28,7 +28,7 @@ package body Glfw.Input.Joysticks is
    function Get_Joystick (Index : Joystick_Index) return Joystick is
      ((Raw_Index => Enums.Joystick_ID'Val (Index - 1)));
 
-   function Present (Source : Joystick) return Boolean is
+   function Is_Present (Source : Joystick) return Boolean is
      (Boolean (API.Joystick_Present (Source.Raw_Index)));
 
    function Is_Gamepad (Source : Joystick) return Boolean is
