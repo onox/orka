@@ -74,6 +74,13 @@ package Orka.Inputs.Joysticks is
    function Current_State (Object : Joystick_Input) return Joystick_State is abstract;
    function Last_State    (Object : Joystick_Input) return Joystick_State is abstract;
 
+   subtype Joystick_Button_States is Button_States (Button_Index);
+
+   type Boolean_Button_States is array (Joystick_Button_States'Range) of Boolean with Pack;
+
+   function Just_Pressed  (Object : Joystick_Input'Class) return Boolean_Button_States;
+   function Just_Released (Object : Joystick_Input'Class) return Boolean_Button_States;
+
    Disconnected_Error : exception;
 
 end Orka.Inputs.Joysticks;
