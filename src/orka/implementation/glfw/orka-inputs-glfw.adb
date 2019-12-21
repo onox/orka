@@ -14,6 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Unbounded;
+
+with Orka.Inputs.Joysticks.Default;
+with Orka.Inputs.Joysticks.Gamepads;
+
 package body Orka.Inputs.GLFW is
 
    overriding
@@ -73,5 +78,176 @@ package body Orka.Inputs.GLFW is
       return new GLFW_Pointer_Input'
         (Pointers.Default.Abstract_Pointer_Input with others => <>);
    end Create_Pointer_Input;
+
+   -----------------------------------------------------------------------------
+
+   use Inputs.Joysticks;
+
+   procedure Copy_Buttons
+     (From :     Standard.Glfw.Input.Joysticks.Joystick_Button_States;
+      To   : out Inputs.Joysticks.Button_States)
+   is
+      use all type Standard.Glfw.Input.Joysticks.Joystick_Button_State;
+   begin
+      for Index in From'Range loop
+         To (Index) := (case From (Index) is
+                          when Pressed  => Pressed,
+                          when Released => Released);
+      end loop;
+   end Copy_Buttons;
+
+   procedure Copy_Axes
+     (From :     Standard.Glfw.Input.Joysticks.Axis_Positions;
+      To   : out Inputs.Joysticks.Axis_Positions) is
+   begin
+      for Index in From'Range loop
+         To (Index) := Axis_Position (From (Index));
+      end loop;
+   end Copy_Axes;
+
+   procedure Copy_Hats
+     (From :     Standard.Glfw.Input.Joysticks.Joystick_Hat_States;
+      To   : out Inputs.Joysticks.Hat_States)
+   is
+      use all type Standard.Glfw.Input.Joysticks.Joystick_Hat_State;
+   begin
+      for Index in From'Range loop
+         To (Index) := (case From (Index) is
+                          when Centered   => Centered,
+                          when Up         => Up,
+                          when Right      => Right,
+                          when Right_Up   => Right_Up,
+                          when Down       => Down,
+                          when Right_Down => Right_Down,
+                          when Left       => Left,
+                          when Left_Up    => Left_Up,
+                          when Left_Down  => Left_Down);
+      end loop;
+   end Copy_Hats;
+
+   -----------------------------------------------------------------------------
+
+   package SU renames Ada.Strings.Unbounded;
+
+   type Abstract_GLFW_Joystick_Input is abstract
+     new Joysticks.Default.Abstract_Joystick_Input with
+   record
+      Joystick   : Standard.Glfw.Input.Joysticks.Joystick;
+      Name, GUID : SU.Unbounded_String;
+      Present    : Boolean;
+   end record;
+
+   overriding
+   function Is_Present (Object : Abstract_GLFW_Joystick_Input) return Boolean is
+     (Object.Present and then Object.Joystick.Is_Present);
+
+   overriding
+   function Name (Object : Abstract_GLFW_Joystick_Input) return String is
+     (SU.To_String (Object.Name));
+
+   overriding
+   function GUID (Object : Abstract_GLFW_Joystick_Input) return String is
+     (SU.To_String (Object.GUID));
+
+   -----------------------------------------------------------------------------
+
+   type GLFW_Gamepad_Input  is new Abstract_GLFW_Joystick_Input with null record;
+
+   overriding
+   function Is_Gamepad (Object : GLFW_Gamepad_Input) return Boolean is (True);
+
+   overriding
+   function State (Object : in out GLFW_Gamepad_Input) return Inputs.Joysticks.Joystick_State is
+      use type SU.Unbounded_String;
+   begin
+      if not Object.Joystick.Is_Present then
+         Object.Present := False;
+         raise Disconnected_Error with Object.Joystick.Index'Image & " is not connected";
+      elsif Object.Joystick.Joystick_GUID = Object.GUID then
+         Object.Present := True;
+      end if;
+
+      declare
+         State : constant Standard.Glfw.Input.Joysticks.Joystick_Gamepad_State :=
+           Object.Joystick.Gamepad_State;
+      begin
+         return Result : Joystick_State
+           (Button_Count => State.Buttons'Length,
+            Axis_Count   => State.Axes'Length,
+            Hat_Count    => 0)
+         do
+            Copy_Buttons (State.Buttons, Result.Buttons);
+            Copy_Axes (State.Axes, Result.Axes);
+
+            Inputs.Joysticks.Gamepads.Normalize_Axes (Result.Axes);
+         end return;
+      end;
+   end State;
+
+   -----------------------------------------------------------------------------
+
+   type GLFW_Joystick_Input is new Abstract_GLFW_Joystick_Input with null record;
+
+   overriding
+   function Is_Gamepad (Object : GLFW_Joystick_Input) return Boolean is (False);
+
+   overriding
+   function State (Object : in out GLFW_Joystick_Input) return Inputs.Joysticks.Joystick_State is
+      use type SU.Unbounded_String;
+   begin
+      if not Object.Joystick.Is_Present then
+         Object.Present := False;
+         raise Disconnected_Error with Object.Joystick.Index'Image & " is not connected";
+      elsif Object.Joystick.Joystick_GUID = Object.GUID then
+         Object.Present := True;
+      end if;
+
+      declare
+         Buttons : constant Standard.Glfw.Input.Joysticks.Joystick_Button_States :=
+           Object.Joystick.Button_States;
+         Axes : constant Standard.Glfw.Input.Joysticks.Axis_Positions :=
+           Object.Joystick.Positions;
+         Hats : constant Standard.Glfw.Input.Joysticks.Joystick_Hat_States :=
+           Object.Joystick.Hat_States;
+      begin
+         return Result : Joystick_State
+           (Button_Count => Buttons'Length,
+            Axis_Count   => Axes'Length,
+            Hat_Count    => Hats'Length)
+         do
+            Copy_Buttons (Buttons, Result.Buttons);
+            Copy_Axes (Axes, Result.Axes);
+            Copy_Hats (Hats, Result.Hats);
+         end return;
+      end;
+   end State;
+
+   -----------------------------------------------------------------------------
+
+   function Create_Joystick_Input
+     (Index : Standard.Glfw.Input.Joysticks.Joystick_Index)
+     return Inputs.Joysticks.Joystick_Input_Ptr
+   is
+      Joystick : constant Standard.Glfw.Input.Joysticks.Joystick :=
+        Standard.Glfw.Input.Joysticks.Get_Joystick (Index);
+   begin
+      if not Joystick.Is_Present then
+         raise Disconnected_Error with Index'Image & " is not connected";
+      end if;
+
+      if Joystick.Is_Gamepad then
+         return new GLFW_Gamepad_Input'
+           (Joysticks.Default.Abstract_Joystick_Input with Joystick => Joystick,
+            Present  => True,
+            Name => SU.To_Unbounded_String (Joystick.Gamepad_Name),
+            GUID => SU.To_Unbounded_String (Joystick.Joystick_GUID));
+      else
+         return new GLFW_Joystick_Input'
+           (Joysticks.Default.Abstract_Joystick_Input with Joystick => Joystick,
+            Present  => True,
+            Name => SU.To_Unbounded_String (Joystick.Gamepad_Name),
+            GUID => SU.To_Unbounded_String (Joystick.Joystick_GUID));
+      end if;
+   end Create_Joystick_Input;
 
 end Orka.Inputs.GLFW;

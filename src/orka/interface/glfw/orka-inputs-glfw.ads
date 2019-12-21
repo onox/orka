@@ -14,9 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Glfw.Input.Joysticks;
 with Glfw.Input.Mouse;
 with Glfw.Windows;
 
+with Orka.Inputs.Joysticks;
 with Orka.Inputs.Pointers.Default;
 
 package Orka.Inputs.GLFW is
@@ -39,6 +41,10 @@ package Orka.Inputs.GLFW is
       Window  : Standard.Glfw.Windows.Window_Reference);
 
    function Create_Pointer_Input return Inputs.Pointers.Pointer_Input_Ptr;
+
+   function Create_Joystick_Input
+     (Index : Standard.Glfw.Input.Joysticks.Joystick_Index)
+   return Inputs.Joysticks.Joystick_Input_Ptr;
 
 private
 
