@@ -52,8 +52,7 @@ package body Orka.Inputs.Joysticks.Chords is
           Current_State.Buttons (Index) = Pressed and Pressed_Buttons (Index))
       do
          if Result then
-            Object.States      := (others => (others => False));
-            Object.Frame_Index := 1;
+            Object.States := (others => (others => False));
          end if;
       end return;
    end Detect_Activation;
