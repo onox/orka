@@ -14,6 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Inputs.Pointers;
+with Orka.Transforms.Doubles.Vectors;
+
 package Orka.Inputs.Joysticks.Default is
    pragma Preelaborate;
 
@@ -36,6 +39,21 @@ package Orka.Inputs.Joysticks.Default is
    function State
      (Object : in out Abstract_Joystick_Input) return Joystick_State
    is abstract;
+
+   -----------------------------------------------------------------------------
+
+   function Create_Joystick_Input
+     (Pointer : Inputs.Pointers.Pointer_Input_Ptr;
+      Scales  : Orka.Transforms.Doubles.Vectors.Vector4) return Joystick_Input_Ptr;
+   --  Return a "joystick" backed by the pointer
+   --
+   --  Because the pointer provides relative instead of absolute axes,
+   --  scales must be provided for converting the values to -1.0 .. 1.0.
+   --  For example, the value 0.01 will map the range -100.0 .. 100.0
+   --  to -1.0 .. 1.0.
+   --
+   --  3 buttons are provided: left, right, and middle click.
+   --  4 axes are provided: delta x and y (while locked), and scroll x and y
 
 private
 

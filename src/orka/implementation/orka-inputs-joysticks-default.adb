@@ -40,4 +40,72 @@ package body Orka.Inputs.Joysticks.Default is
       end if;
    end Update_State;
 
+   -----------------------------------------------------------------------------
+
+   type Pointer_Joystick_Input is new Abstract_Joystick_Input with record
+      Pointer : Inputs.Pointers.Pointer_Input_Ptr;
+      Axes    : Orka.Transforms.Doubles.Vectors.Vector4 := (others => 0.0);
+      Scales  : Orka.Transforms.Doubles.Vectors.Vector4;
+   end record;
+
+   overriding
+   function Is_Present (Object : Pointer_Joystick_Input) return Boolean is (True);
+
+   overriding
+   function Name (Object : Pointer_Joystick_Input) return String is ("Pointer");
+
+   overriding
+   function GUID (Object : Pointer_Joystick_Input) return String is ("pointer");
+
+   overriding
+   function Is_Gamepad (Object : Pointer_Joystick_Input) return Boolean is (False);
+
+   overriding
+   function State (Object : in out Pointer_Joystick_Input) return Joystick_State is
+      use type GL.Types.Double;
+
+      function To_Button (Value : Boolean) return Button_State is
+        (if Value then Pressed else Released);
+
+      function Clamp (Value, Minimum, Maximum : GL.Types.Double) return GL.Types.Double is
+        (GL.Types.Double'Max (Minimum, GL.Types.Double'Min (Value, Maximum)));
+
+      Limit_X : constant GL.Types.Double := 1.0 / Object.Scales (X);
+      Limit_Y : constant GL.Types.Double := 1.0 / Object.Scales (Y);
+      Limit_Z : constant GL.Types.Double := 1.0 / Object.Scales (Z);
+      Limit_W : constant GL.Types.Double := 1.0 / Object.Scales (W);
+   begin
+      if Object.Pointer.Locked then
+         Object.Axes (X) := Clamp (Object.Axes (X) + Object.Pointer.Delta_X, -Limit_X, Limit_X);
+         Object.Axes (Y) := Clamp (Object.Axes (Y) - Object.Pointer.Delta_Y, -Limit_Y, Limit_Y);
+      end if;
+      Object.Axes (Z) := Clamp (Object.Axes (Z) + Object.Pointer.Scroll_X, -Limit_Z, Limit_Z);
+      Object.Axes (W) := Clamp (Object.Axes (W) - Object.Pointer.Scroll_Y, -Limit_W, Limit_W);
+
+      return Result : Joystick_State
+        (Button_Count => 3,
+         Axis_Count   => 4,
+         Hat_Count    => 0)
+      do
+         Result.Buttons (1) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Left));
+         Result.Buttons (2) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Right));
+         Result.Buttons (3) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Middle));
+
+         Result.Axes (1) := Axis_Position (Object.Axes (X) * Object.Scales (X));
+         Result.Axes (2) := Axis_Position (Object.Axes (Y) * Object.Scales (Y));
+         Result.Axes (3) := Axis_Position (Object.Axes (Z) * Object.Scales (Z));
+         Result.Axes (4) := Axis_Position (Object.Axes (W) * Object.Scales (W));
+      end return;
+   end State;
+
+   function Create_Joystick_Input
+     (Pointer : Inputs.Pointers.Pointer_Input_Ptr;
+      Scales  : Orka.Transforms.Doubles.Vectors.Vector4) return Joystick_Input_Ptr is
+   begin
+      return new Pointer_Joystick_Input'(Abstract_Joystick_Input with
+        Pointer => Pointer,
+        Scales  => Scales,
+        others  => <>);
+   end Create_Joystick_Input;
+
 end Orka.Inputs.Joysticks.Default;
