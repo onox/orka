@@ -16,6 +16,8 @@
 
 with Ada.Strings.Unbounded;
 
+with Glfw.Input.Joysticks;
+
 with Orka.Inputs.Joysticks.Default;
 with Orka.Inputs.Joysticks.Gamepads;
 
@@ -249,5 +251,98 @@ package body Orka.Inputs.GLFW is
             GUID => SU.To_Unbounded_String (Joystick.Joystick_GUID));
       end if;
    end Create_Joystick_Input;
+
+   -----------------------------------------------------------------------------
+
+   subtype Slot_Index is Standard.Glfw.Input.Joysticks.Joystick_Index range 1 .. 16;
+
+   type Boolean_Array is array (Slot_Index) of Boolean;
+
+   protected type Joystick_Manager is new Inputs.Joysticks.Joystick_Manager with
+      procedure Set_Present
+        (Index : Slot_Index;
+         Value : Boolean);
+
+      procedure Initialize
+        with Post => Is_Initialized;
+
+      function Is_Initialized return Boolean;
+
+      overriding
+      procedure Acquire (Joystick : out Inputs.Joysticks.Joystick_Input_Access);
+
+      overriding
+      procedure Release (Joystick : Inputs.Joysticks.Joystick_Input_Access);
+   private
+      Acquired, Present : Boolean_Array := (others => False);
+      Initialized : Boolean := False;
+   end Joystick_Manager;
+
+   package Joysticks renames Standard.Glfw.Input.Joysticks;
+
+   protected body Joystick_Manager is
+      procedure Set_Present
+        (Index : Slot_Index;
+         Value : Boolean) is
+      begin
+         Present (Index) := Value;
+      end Set_Present;
+
+      procedure Initialize is
+      begin
+         for Index in Present'Range loop
+            Present (Index) := Joysticks.Get_Joystick (Index).Is_Present;
+         end loop;
+
+         Initialized := True;
+      end Initialize;
+
+      function Is_Initialized return Boolean is (Initialized);
+
+      procedure Acquire (Joystick : out Inputs.Joysticks.Joystick_Input_Access) is
+      begin
+         for Index in Acquired'Range loop
+            if not Acquired (Index) and Present (Index) then
+               Joystick := Create_Joystick_Input (Index);
+               Acquired (Index) := True;
+               return;
+            end if;
+         end loop;
+
+         Joystick := null;
+      end Acquire;
+
+      procedure Release (Joystick : Inputs.Joysticks.Joystick_Input_Access) is
+         Index : constant Slot_Index :=
+           Abstract_GLFW_Joystick_Input (Joystick.all).Joystick.Index;
+      begin
+         if not Acquired (Index) then
+            raise Program_Error;
+         end if;
+
+         Acquired (Index) := False;
+      end Release;
+   end Joystick_Manager;
+
+   Default_Manager : aliased Joystick_Manager;
+
+   procedure On_Connected
+     (Source : Joysticks.Joystick;
+      State  : Joysticks.Connect_State)
+   is
+      use type Joysticks.Connect_State;
+   begin
+      Default_Manager.Set_Present (Source.Index, State = Joysticks.Connected);
+   end On_Connected;
+
+   function Create_Joystick_Manager return Inputs.Joysticks.Joystick_Manager_Ptr is
+   begin
+      if not Default_Manager.Is_Initialized then
+         Default_Manager.Initialize;
+         Joysticks.Set_Callback (On_Connected'Access);
+      end if;
+
+      return Default_Manager'Access;
+   end Create_Joystick_Manager;
 
 end Orka.Inputs.GLFW;

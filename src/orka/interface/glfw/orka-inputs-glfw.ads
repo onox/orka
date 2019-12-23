@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Glfw.Input.Joysticks;
 with Glfw.Input.Mouse;
 with Glfw.Windows;
 
@@ -42,9 +41,7 @@ package Orka.Inputs.GLFW is
 
    function Create_Pointer_Input return Inputs.Pointers.Pointer_Input_Ptr;
 
-   function Create_Joystick_Input
-     (Index : Standard.Glfw.Input.Joysticks.Joystick_Index)
-   return Inputs.Joysticks.Joystick_Input_Ptr;
+   function Create_Joystick_Manager return Inputs.Joysticks.Joystick_Manager_Ptr;
 
 private
 

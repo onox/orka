@@ -83,4 +83,22 @@ package Orka.Inputs.Joysticks is
 
    Disconnected_Error : exception;
 
+   -----------------------------------------------------------------------------
+
+   type Joystick_Manager is synchronized interface;
+
+   type Joystick_Manager_Ptr is not null access all Joystick_Manager'Class;
+
+   procedure Acquire
+     (Object   : in out Joystick_Manager;
+      Joystick : out Inputs.Joysticks.Joystick_Input_Access) is abstract
+   with Synchronization => By_Protected_Procedure;
+   --  Acquire an unused joystick or null if no unused joystick is present
+
+   procedure Release
+     (Object   : in out Joystick_Manager;
+      Joystick : Inputs.Joysticks.Joystick_Input_Access) is abstract
+   with Synchronization => By_Protected_Procedure;
+   --  Release a used joystick
+
 end Orka.Inputs.Joysticks;
