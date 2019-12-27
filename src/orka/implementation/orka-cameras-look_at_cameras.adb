@@ -39,20 +39,7 @@ package body Orka.Cameras.Look_At_Cameras is
 
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
-      use Orka.Transforms.Doubles.Vectors;
-      use Orka.Transforms.Doubles.Matrix_Conversions;
-
-      Forward : constant Vector4
-        := Normalize ((Object.Target.Position - Object.Position));
-      Side    : constant Vector4 := Cross (Forward, Object.Up);
-      Up      : constant Vector4 := Cross (Side, Forward);
-   begin
-      return Convert
-        (((Side (X), Up (X), -Forward (X), 0.0),
-          (Side (Y), Up (Y), -Forward (Y), 0.0),
-          (Side (Z), Up (Z), -Forward (Z), 0.0),
-          (0.0, 0.0, 0.0, 1.0)));
-   end View_Matrix;
+     (Look_At (Object.Target.Position, Object.Position, Object.Up));
 
    overriding
    function View_Matrix_Inverse (Object : Look_At_Camera) return Transforms.Matrix4 is

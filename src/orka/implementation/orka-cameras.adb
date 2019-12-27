@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Transforms.Doubles.Matrix_Conversions;
+
 package body Orka.Cameras is
 
    procedure Set_FOV (Object : in out Camera_Lens; FOV : GL.Types.Single) is
@@ -92,5 +94,21 @@ package body Orka.Cameras is
          Result.Reversed_Z := Context.Enabled (Contexts.Reversed_Z);
       end return;
    end Create_Lens;
+
+   function Look_At (Target, Camera, Up_World : Vector4) return Transforms.Matrix4 is
+      use Orka.Transforms.Doubles.Vectors;
+      use Orka.Transforms.Doubles.Matrix_Conversions;
+
+      Forward : constant Vector4
+        := Normalize ((Target - Camera));
+      Side    : constant Vector4 := Normalize (Cross (Forward, Up_World));
+      Up      : constant Vector4 := Cross (Side, Forward);
+   begin
+      return Convert
+        (((Side (X), Up (X), -Forward (X), 0.0),
+          (Side (Y), Up (Y), -Forward (Y), 0.0),
+          (Side (Z), Up (Z), -Forward (Z), 0.0),
+          (0.0, 0.0, 0.0, 1.0)));
+   end Look_At;
 
 end Orka.Cameras;

@@ -165,4 +165,6 @@ private
    function Clamp_Distance  is new Orka.Types.Clamp (GL.Types.Double, Distance);
    function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Double, Angle);
 
+   function Look_At (Target, Camera, Up_World : Vector4) return Transforms.Matrix4;
+
 end Orka.Cameras;
