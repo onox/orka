@@ -45,11 +45,12 @@ package body Orka.Cameras.Look_From_Cameras is
 
    overriding
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4 is
-     (Convert (Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw)));
+     (Convert (Ry (Object.Roll) * Rx (Object.Pitch) * Ry (Object.Yaw) * Object.Rotate_To_Up));
 
    overriding
    function View_Matrix_Inverse (Object : Look_From_Camera) return Transforms.Matrix4 is
-     (Convert (Ry (-Object.Yaw) * Rx (-Object.Pitch) * Ry (-Object.Roll)));
+     (Convert (Transpose (Object.Rotate_To_Up) *
+        Ry (-Object.Yaw) * Rx (-Object.Pitch) * Ry (-Object.Roll)));
 
    overriding
    function Create_Camera

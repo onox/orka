@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Doubles.Matrix_Conversions;
+with Orka.Transforms.Doubles.Quaternions;
 
 package body Orka.Cameras is
 
@@ -41,21 +41,19 @@ package body Orka.Cameras is
 
    -----------------------------------------------------------------------------
 
-   overriding
    procedure Set_Input_Scale
-     (Object  : in out First_Person_Camera;
+     (Object  : in out Camera;
       X, Y, Z : GL.Types.Double) is
    begin
       Object.Scale := (X, Y, Z, 0.0);
    end Set_Input_Scale;
 
-   overriding
-   procedure Set_Input_Scale
-     (Object  : in out Third_Person_Camera;
-      X, Y, Z : GL.Types.Double) is
+   procedure Set_Up_Direction
+     (Object    : in out Camera;
+      Direction : Vector4) is
    begin
-      Object.Scale := (X, Y, Z, 0.0);
-   end Set_Input_Scale;
+      Object.Up := Direction;
+   end Set_Up_Direction;
 
    procedure Set_Position
      (Object   : in out First_Person_Camera;
@@ -95,20 +93,27 @@ package body Orka.Cameras is
       end return;
    end Create_Lens;
 
-   function Look_At (Target, Camera, Up_World : Vector4) return Transforms.Matrix4 is
+   function Look_At (Target, Camera, Up_World : Vector4) return Matrix4 is
       use Orka.Transforms.Doubles.Vectors;
-      use Orka.Transforms.Doubles.Matrix_Conversions;
 
       Forward : constant Vector4
         := Normalize ((Target - Camera));
       Side    : constant Vector4 := Normalize (Cross (Forward, Up_World));
       Up      : constant Vector4 := Cross (Side, Forward);
    begin
-      return Convert
-        (((Side (X), Up (X), -Forward (X), 0.0),
-          (Side (Y), Up (Y), -Forward (Y), 0.0),
-          (Side (Z), Up (Z), -Forward (Z), 0.0),
-          (0.0, 0.0, 0.0, 1.0)));
+      return
+        ((Side (X), Up (X), -Forward (X), 0.0),
+         (Side (Y), Up (Y), -Forward (Y), 0.0),
+         (Side (Z), Up (Z), -Forward (Z), 0.0),
+         (0.0, 0.0, 0.0, 1.0));
    end Look_At;
+
+   function Rotate_To_Up (Object : Camera'Class) return Matrix4 is
+      package Quaternions renames Orka.Transforms.Doubles.Quaternions;
+
+      use Orka.Transforms.Doubles.Matrices;
+   begin
+      return R (Vector4 (Quaternions.R (Y_Axis, Object.Up)));
+   end Rotate_To_Up;
 
 end Orka.Cameras;

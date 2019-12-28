@@ -26,20 +26,15 @@ package body Orka.Cameras.Look_At_Cameras is
       Object.Target := Target;
    end Look_At;
 
-   procedure Set_Up_Direction
-     (Object    : in out Look_At_Camera;
-      Direction : Vector4) is
-   begin
-      Object.Up := Direction;
-   end Set_Up_Direction;
-
    --  Look_At camera does not need to implement Update because the
    --  view matrix does not depend on the pointer (it is computed using
    --  the camera's and target's positions)
 
+   use Orka.Transforms.Doubles.Matrix_Conversions;
+
    overriding
    function View_Matrix (Object : Look_At_Camera) return Transforms.Matrix4 is
-     (Look_At (Object.Target.Position, Object.Position, Object.Up));
+     (Convert (Look_At (Object.Target.Position, Object.Position, Object.Up)));
 
    overriding
    function View_Matrix_Inverse (Object : Look_At_Camera) return Transforms.Matrix4 is
