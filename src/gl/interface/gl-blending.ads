@@ -37,28 +37,32 @@ package GL.Blending is
                          One_Minus_Src1_Alpha);
    --  Table 17.2 of the OpenGL specification
 
+   type Blend_Factors is record
+      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor;
+   end record;
+
    type Equation is (Func_Add, Min, Max, Func_Subtract, Func_Reverse_Substract);
 
-   procedure Set_Blend_Func
-     (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor);
+   type Blend_Equations is record
+      RGB, Alpha : Equation;
+   end record;
+
+   procedure Set_Blend_Func (Factors : Blend_Factors);
    procedure Set_Blend_Func
      (Draw_Buffer : Buffers.Draw_Buffer_Index;
-      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor);
+      Factors     : Blend_Factors);
 
-   function Blend_Func_Src_RGB return Blend_Factor;
-   function Blend_Func_Src_Alpha return Blend_Factor;
-   function Blend_Func_Dst_RGB return Blend_Factor;
-   function Blend_Func_Dst_Alpha return Blend_Factor;
+   function Blend_Func return Blend_Factors;
 
    procedure Set_Blend_Color (Value : Types.Colors.Color);
    function Blend_Color return Types.Colors.Color;
 
-   procedure Set_Blend_Equation (RGB, Alpha : Equation);
+   procedure Set_Blend_Equation (Equations : Blend_Equations);
    procedure Set_Blend_Equation
-     (Draw_Buffer : Buffers.Draw_Buffer_Index; RGB, Alpha : Equation);
+     (Draw_Buffer : Buffers.Draw_Buffer_Index;
+      Equations   : Blend_Equations);
 
-   function Blend_Equation_RGB return Equation;
-   function Blend_Equation_Alpha return Equation;
+   function Blend_Equation return Blend_Equations;
 
    -----------------------------------------------------------------------------
    --                            Logical Operation                            --

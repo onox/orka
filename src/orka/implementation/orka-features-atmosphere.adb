@@ -544,8 +544,8 @@ package body Orka.Features.Atmosphere is
       use all type GL.Blending.Equation;
       use all type GL.Blending.Blend_Factor;
    begin
-      GL.Blending.Set_Blend_Equation (Func_Add, Func_Add);
-      GL.Blending.Set_Blend_Func (One, One, One, One);
+      GL.Blending.Set_Blend_Equation ((Func_Add, Func_Add));
+      GL.Blending.Set_Blend_Func ((One, One, One, One));
 
       --  Compute the transmittance and store it in Transmittance_Texture
       FBO_Transmittance.Use_Framebuffer;

@@ -20,46 +20,31 @@ with GL.Enums.Getter;
 package body GL.Blending is
 
    procedure Set_Blend_Func
-     (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor) is
+     (Factors : Blend_Factors) is
    begin
-      API.Blend_Func_Separate (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha);
+      API.Blend_Func_Separate
+        (Factors.Src_RGB, Factors.Dst_RGB, Factors.Src_Alpha, Factors.Dst_Alpha);
    end Set_Blend_Func;
 
    procedure Set_Blend_Func
      (Draw_Buffer : Buffers.Draw_Buffer_Index;
-      Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha : Blend_Factor) is
+      Factors     : Blend_Factors) is
    begin
-      API.Blend_Func_Separate_I (Draw_Buffer, Src_RGB, Dst_RGB,
-                                 Src_Alpha, Dst_Alpha);
+      API.Blend_Func_Separate_I (Draw_Buffer,
+        Factors.Src_RGB, Factors.Dst_RGB, Factors.Src_Alpha, Factors.Dst_Alpha);
    end Set_Blend_Func;
 
-   function Blend_Func_Src_RGB return Blend_Factor is
-      Ret : Blend_Factor := One;
+   function Blend_Func return Blend_Factors is
+      Src_RGB, Src_Alpha : Blend_Factor := One;
+      Dst_RGB, Dst_Alpha : Blend_Factor := Zero;
    begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Src_RGB, Ret);
-      return Ret;
-   end Blend_Func_Src_RGB;
+      API.Get_Blend_Factor (Enums.Getter.Blend_Src_RGB, Src_RGB);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Src_Alpha, Src_Alpha);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_RGB, Dst_RGB);
+      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_Alpha, Dst_Alpha);
 
-   function Blend_Func_Src_Alpha return Blend_Factor is
-      Ret : Blend_Factor := One;
-   begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Src_Alpha, Ret);
-      return Ret;
-   end Blend_Func_Src_Alpha;
-
-   function Blend_Func_Dst_RGB return Blend_Factor is
-      Ret : Blend_Factor := Zero;
-   begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_RGB, Ret);
-      return Ret;
-   end Blend_Func_Dst_RGB;
-
-   function Blend_Func_Dst_Alpha return Blend_Factor is
-      Ret : Blend_Factor := Zero;
-   begin
-      API.Get_Blend_Factor (Enums.Getter.Blend_Dst_Alpha, Ret);
-      return Ret;
-   end Blend_Func_Dst_Alpha;
+      return (Src_RGB, Dst_RGB, Src_Alpha, Dst_Alpha);
+   end Blend_Func;
 
    procedure Set_Blend_Color (Value : Types.Colors.Color) is
       use Types.Colors;
@@ -74,30 +59,26 @@ package body GL.Blending is
       return Ret;
    end Blend_Color;
 
-   procedure Set_Blend_Equation (RGB, Alpha : Equation) is
+   procedure Set_Blend_Equation (Equations : Blend_Equations) is
    begin
-      API.Blend_Equation_Separate (RGB, Alpha);
+      API.Blend_Equation_Separate (Equations.RGB, Equations.Alpha);
    end Set_Blend_Equation;
 
    procedure Set_Blend_Equation
-     (Draw_Buffer : Buffers.Draw_Buffer_Index; RGB, Alpha : Equation) is
+     (Draw_Buffer : Buffers.Draw_Buffer_Index;
+      Equations   : Blend_Equations) is
    begin
-      API.Blend_Equation_Separate_I (Draw_Buffer, RGB, Alpha);
+      API.Blend_Equation_Separate_I (Draw_Buffer, Equations.RGB, Equations.Alpha);
    end Set_Blend_Equation;
 
-   function Blend_Equation_RGB return Equation is
-      Ret : Equation := Equation'First;
+   function Blend_Equation return Blend_Equations is
+      RGB, Alpha : Equation := Equation'First;
    begin
-      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_RGB, Ret);
-      return Ret;
-   end Blend_Equation_RGB;
+      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_RGB, RGB);
+      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_Alpha, Alpha);
 
-   function Blend_Equation_Alpha return Equation is
-      Ret : Equation := Equation'First;
-   begin
-      API.Get_Blend_Equation (Enums.Getter.Blend_Equation_Alpha, Ret);
-      return Ret;
-   end Blend_Equation_Alpha;
+      return (RGB, Alpha);
+   end Blend_Equation;
 
    -----------------------------------------------------------------------------
 
