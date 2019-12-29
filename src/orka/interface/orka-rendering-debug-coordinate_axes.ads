@@ -40,8 +40,8 @@ package Orka.Rendering.Debug.Coordinate_Axes is
    --  Render three coordinates axes for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
-   --  contain one or n matrices for n lines. If all lines exist
-   --  in the same world space, then one matrix transform is sufficient.
+   --  contain n matrices for n coordinate axes. This buffer controls how
+   --  many coordinate axes are rendered.
    --
    --  The buffer Sizes must contain one or n singles.
 

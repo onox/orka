@@ -22,45 +22,45 @@ private with GL.Low_Level.Enums;
 
 private with Orka.Rendering.Programs.Uniforms;
 
-package Orka.Rendering.Debug.Lines is
+package Orka.Rendering.Debug.Spheres is
    pragma Preelaborate;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Line is tagged private;
+   type Sphere is tagged private;
 
-   function Create_Line
-     (Location : Resources.Locations.Location_Ptr) return Line;
+   function Create_Sphere
+     (Location : Resources.Locations.Location_Ptr;
+      Color    : Transforms.Vector4 := (1.0, 1.0, 1.0, 1.0);
+      Normals  : Boolean := False;
+      Cells_Horizontal : Positive := 36;
+      Cells_Vertical   : Positive := 18) return Sphere;
 
    procedure Render
-     (Object     : in out Line;
+     (Object     : in out Sphere;
       View, Proj : Transforms.Matrix4;
-      Transforms, Colors, Points : Rendering.Buffers.Bindable_Buffer'Class)
-   with Pre => Transforms.Length in 1 | Points.Length / 2
-                 and Colors.Length in 1 | Points.Length / 2
-                 and Points.Length mod 2 = 0;
-   --  Render lines between pairs of points
+      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
+   with Pre => Transforms.Length > 0 and Sizes.Length in 1 | Transforms.Length;
+   --  Render a sphere for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
-   --  contain one or n matrices for n lines. If all lines exist
-   --  in the same world space, then one matrix transform is sufficient.
+   --  contain n matrices for n spheres. This buffer controls how many
+   --  spheres are rendered.
    --
-   --  The buffer Colors must contain one or n vectors.
-   --
-   --  The buffer Points must contain 2 * n points. This buffers controls
-   --  how many lines are rendered.
+   --  The buffer Sizes must contain one or n singles.
 
 private
 
    package LE renames GL.Low_Level.Enums;
 
-   type Line is tagged record
+   type Sphere is tagged record
       Program : Rendering.Programs.Program;
 
-      Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
+      Cells_Horizontal, Cells_Vertical : Positive;
 
+      Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
    end record;
 
-end Orka.Rendering.Debug.Lines;
+end Orka.Rendering.Debug.Spheres;
