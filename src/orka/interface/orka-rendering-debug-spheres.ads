@@ -39,15 +39,18 @@ package Orka.Rendering.Debug.Spheres is
    procedure Render
      (Object     : in out Sphere;
       View, Proj : Transforms.Matrix4;
-      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
-   with Pre => Transforms.Length > 0 and Sizes.Length in 1 | Transforms.Length;
+      Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class)
+   with Pre => Transforms.Length > 0 and Spheres.Length in 2 | 2 * Transforms.Length;
    --  Render a sphere for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
    --  contain n matrices for n spheres. This buffer controls how many
    --  spheres are rendered.
    --
-   --  The buffer Sizes must contain one or n singles.
+   --  The buffer Spheres must contain two or 2 * n singles. Each pair
+   --  of singles describes the semi-major axis and the flattening of
+   --  a sphere. For a perfect sphere with no flattening, use 0.0 for
+   --  the flattening.
 
 private
 

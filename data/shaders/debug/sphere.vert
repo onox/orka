@@ -29,8 +29,13 @@ layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 world[];
 };
 
-layout(std430, binding = 1) readonly restrict buffer sizeBuffer {
-    float sizes[];
+struct Spheroid {
+    float semiMajorAxis;
+    float flattening;
+};
+
+layout(std430, binding = 1) readonly restrict buffer sphereBuffer {
+    Spheroid spheres[];
 };
 
 out vec4 vs_normal;
@@ -52,7 +57,7 @@ vec3 get_vertex(float lonIndex, float latIndex) {
     float x = xy * cos(lonAngle);
     float y = xy * sin(lonAngle);
 
-    return normalize(vec3(x, y, z));
+    return vec3(x, y, z);
 };
 
 const uint lonOffset[] = {0, 0, 1, 0, 1, 1};
@@ -76,10 +81,26 @@ void main() {
     vec4 vertex = vec4(get_vertex(lonIndex, latIndex), 1.0);
     vec3 normal = vertex.xyz;
 
-    // Take the last size in sizes[] if there are not enough in the buffer
-    const int sizeID = min(instanceID, sizes.length() - 1);
+    // Take the last size in spheres[] if there are not enough in the buffer
+    const int sizeID = min(instanceID, spheres.length() - 1);
 
-    vertex.xyz *= sizes[sizeID];
+    // Convert from geodetic coordinates to geocentric coordinates
+    // using the semi-major axis and the flattening of the sphere.
+    // See https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
+
+    // Semi-major axis and flattening (semi-minor axis b = a * (1.0 - f))
+    const float a = spheres[sizeID].semiMajorAxis;
+    const float f = spheres[sizeID].flattening;
+    // f = (a - b) / a
+
+    const float e2 = 2.0 * f - f * f;
+    // e is eccentricity. See https://en.wikipedia.org/wiki/Flattening
+
+    // Radius of curvature in the prime vertical
+    const float N = a / sqrt(1.0 - e2 * vertex.z * vertex.z);
+
+    // 1 - e2 = b**2 / a**2
+    vertex.xyz *= vec3(N, N, (1.0 - e2) * N);
 
     gl_Position = proj * (view * (world[instanceID] * vertex));
 

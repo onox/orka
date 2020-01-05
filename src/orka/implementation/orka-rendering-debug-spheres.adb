@@ -56,7 +56,7 @@ package body Orka.Rendering.Debug.Spheres is
    procedure Render
      (Object     : in out Sphere;
       View, Proj : Transforms.Matrix4;
-      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
+      Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class)
    is
       use all type GL.Blending.Blend_Factor;
       use all type GL.Blending.Equation;
@@ -94,7 +94,7 @@ package body Orka.Rendering.Debug.Spheres is
       Object.Program.Use_Program;
 
       Transforms.Bind_Base (Shader_Storage, 0);
-      Sizes.Bind_Base (Shader_Storage, 1);
+      Spheres.Bind_Base (Shader_Storage, 1);
 
       GL.Rasterization.Set_Polygon_Mode (GL.Rasterization.Line);
 
