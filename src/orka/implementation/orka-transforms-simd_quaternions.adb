@@ -68,13 +68,19 @@ package body Orka.Transforms.SIMD_Quaternions is
 
       Angle : constant Vectors.Element_Type := EF.Arccos (Elements (W)) * 2.0;
       SA    : constant Vectors.Element_Type := EF.Sin (Angle / 2.0);
-
-      use Vectors;
-
-      Axis : Vector4 := Vector4 (Elements) * (1.0 / SA);
    begin
-      Axis (W) := 0.0;
-      return (Axis => Axis, Angle => Angle);
+      if SA /= 0.0 then
+         declare
+            use Vectors;
+            Axis : Vector4 := Vector4 (Elements) * (1.0 / SA);
+         begin
+            Axis (W) := 0.0;
+            return (Axis => Axis, Angle => Angle);
+         end;
+      else
+         --  Singularity occurs when angle is 0. Return an arbitrary axis
+         return (Axis => (1.0, 0.0, 0.0, 0.0), Angle => 0.0);
+      end if;
    end To_Axis_Angle;
 
    function R
