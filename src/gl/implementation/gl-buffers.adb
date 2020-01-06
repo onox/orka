@@ -23,14 +23,14 @@ package body GL.Buffers is
 
    use type Rasterization.Face_Selector;
 
-   procedure Color_Mask (Value : Colors.Enabled_Color) is
+   procedure Set_Color_Mask (Value : Colors.Enabled_Color) is
    begin
       API.Color_Mask
         (Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
          Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
-   end Color_Mask;
+   end Set_Color_Mask;
 
-   procedure Color_Mask
+   procedure Set_Color_Mask
      (Index : Draw_Buffer_Index;
       Value : Colors.Enabled_Color) is
    begin
@@ -38,7 +38,7 @@ package body GL.Buffers is
         (Index,
          Low_Level.Bool (Value (Colors.R)), Low_Level.Bool (Value (Colors.G)),
          Low_Level.Bool (Value (Colors.B)), Low_Level.Bool (Value (Colors.A)));
-   end Color_Mask;
+   end Set_Color_Mask;
 
    function Color_Mask (Index : Draw_Buffer_Index) return Colors.Enabled_Color is
       Value : Colors.Enabled_Color;

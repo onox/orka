@@ -115,10 +115,10 @@ package GL.Buffers is
    --                                  Color                                  --
    -----------------------------------------------------------------------------
 
-   procedure Color_Mask (Value : Colors.Enabled_Color);
+   procedure Set_Color_Mask (Value : Colors.Enabled_Color);
    --  Set the color mask for all draw buffers
 
-   procedure Color_Mask
+   procedure Set_Color_Mask
      (Index : Draw_Buffer_Index;
       Value : Colors.Enabled_Color);
    --  Set the color mask for a particular draw buffer
