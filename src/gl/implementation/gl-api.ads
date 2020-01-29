@@ -748,10 +748,6 @@ private package GL.API is
      new Loader.String_Getter_With_4_Params
      ("glGetProgramInfoLog", Size, UInt);
 
-   procedure Get_Program_Stage is new Loader.Getter_With_4_Params
-     ("glGetProgramStageiv", UInt, Objects.Shaders.Shader_Type,
-      Enums.Program_Stage_Param, Size);
-
    procedure Uniform_Subroutines is new Loader.Procedure_With_3_Params
      ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
 

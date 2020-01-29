@@ -290,30 +290,6 @@ package body GL.Objects.Programs is
       return Locations;
    end Subroutine_Uniform_Locations;
 
-   function Active_Subroutine_Uniform_Max_Length
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size
-   is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Uniform_Max_Length, Ret);
-      --  Received length includes null termination character
-      return (if Ret > 0 then Ret - 1 else 0);
-   end Active_Subroutine_Uniform_Max_Length;
-
-   function Active_Subroutine_Max_Length
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size
-   is
-      Ret : Size := 0;
-   begin
-      API.Get_Program_Stage (Object.Reference.GL_Id, Shader,
-                             Enums.Active_Subroutine_Max_Length, Ret);
-      --  Received length includes null termination character
-      return (if Ret > 0 then Ret - 1 else 0);
-   end Active_Subroutine_Max_Length;
-
    function Subroutine_Index
      (Object : Program;
       Shader : Shaders.Shader_Type;

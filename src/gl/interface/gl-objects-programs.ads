@@ -119,18 +119,6 @@ package GL.Objects.Programs is
    --  A subroutine uniform that is an array has multiple locations, but
    --  has one index.
 
-   function Active_Subroutine_Max_Length
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size;
-   --  Return the largest name of all subroutine functions used by the
-   --  given stage
-
-   function Active_Subroutine_Uniform_Max_Length
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size;
-   --  Return the largest name of all subroutine uniforms used in the
-   --  given stage
-
    function Subroutine_Name
      (Object : Program;
       Shader : Shaders.Shader_Type;
