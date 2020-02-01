@@ -935,10 +935,9 @@ package body Orka.Features.Atmosphere is
       Subject.Uniform_Sampler ("irradiance_texture").Set_Texture
         (Object.Irradiance_Texture, 2);
 
-      if not Object.Combine_Scattering then
-         Subject.Uniform_Sampler ("single_mie_scattering_texture").Set_Texture
-           (Object.Optional_Single_Mie_Scattering_Texture, 3);
-      end if;
+      --  Defined in shader but unused if Object.Combine_Scattering
+      Subject.Uniform_Sampler ("single_mie_scattering_texture").Set_Texture
+        (Object.Optional_Single_Mie_Scattering_Texture, 3);
    end Set_Program_Uniforms;
 
 end Orka.Features.Atmosphere;
