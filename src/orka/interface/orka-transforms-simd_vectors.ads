@@ -19,7 +19,7 @@ with Ada.Numerics;
 generic
    type Element_Type is digits <>;
    type Vector_Type is array (Index_Homogeneous) of Element_Type;
-   with function "*" (Left, Right : Vector_Type) return Vector_Type;
+   with function Multiply_Vectors (Left, Right : Vector_Type) return Vector_Type;
    with function Add_Vectors (Left, Right : Vector_Type) return Vector_Type;
    with function Subtract_Vectors (Left, Right : Vector_Type) return Vector_Type;
    with function Minus_Vector (Elements : Vector_Type) return Vector_Type;
@@ -53,6 +53,8 @@ package Orka.Transforms.SIMD_Vectors is
    function "-" (Elements : Vector_Type) return Vector_Type renames Minus_Vector;
 
    function "abs" (Elements : Vector_Type) return Vector_Type renames Absolute_Vector;
+
+   function "*" (Left, Right : Vector_Type) return Vector_Type renames Multiply_Vectors;
 
    function "*" (Factor : Element_Type; Elements : Vector_Type) return Vector_Type;
 
