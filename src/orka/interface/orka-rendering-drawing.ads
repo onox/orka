@@ -26,13 +26,40 @@ package Orka.Rendering.Drawing is
      (Mode          : GL.Types.Connection_Mode;
       Offset, Count : Natural;
       Instances     : Positive := 1);
+   --  Draw primitives without any index buffer bound to the active
+   --  vertex format
 
    procedure Draw_Indexed
      (Mode          : GL.Types.Connection_Mode;
       Index_Kind    : Types.Index_Type;
-      Offset, Count : Natural);
+      Offset, Count : Natural;
+      Instances     : Positive := 1);
+   --  Draw primitives using an index buffer bound to the active vertex
+   --  format
+
+   -----------------------------------------------------------------------------
 
    procedure Draw_Indirect
+     (Mode       : GL.Types.Connection_Mode;
+      Buffer     : Buffers.Buffer;
+      Offset, Count : Natural);
+   --  Draw multiple arrays commands at the given offset in the bound
+   --  indirect buffer
+
+   procedure Draw_Indirect
+     (Mode   : GL.Types.Connection_Mode;
+      Buffer : Buffers.Buffer);
+   --  Draw all arrays commands in the bound indirect buffer
+
+   procedure Draw_Indirect
+     (Mode          : GL.Types.Connection_Mode;
+      Buffer, Count : Buffers.Buffer);
+   --  Draw multiple arrays commands in the bound indirect buffer. The
+   --  number of commands is determined by the value in the Count buffer
+
+   -----------------------------------------------------------------------------
+
+   procedure Draw_Indexed_Indirect
      (Mode       : GL.Types.Connection_Mode;
       Index_Kind : Types.Index_Type;
       Buffer     : Buffers.Buffer;
@@ -40,13 +67,13 @@ package Orka.Rendering.Drawing is
    --  Draw multiple elements commands at the given offset in the bound
    --  indirect buffer
 
-   procedure Draw_Indirect
+   procedure Draw_Indexed_Indirect
      (Mode       : GL.Types.Connection_Mode;
       Index_Kind : Types.Index_Type;
       Buffer     : Buffers.Buffer);
    --  Draw all elements commands in the bound indirect buffer
 
-   procedure Draw_Indirect
+   procedure Draw_Indexed_Indirect
      (Mode          : GL.Types.Connection_Mode;
       Index_Kind    : Types.Index_Type;
       Buffer, Count : Buffers.Buffer);

@@ -87,7 +87,7 @@ package body Orka.Resources.Models is
         ((By_Region => False, Shader_Storage | Command => True, others => False));
 
       Object.Model.Format.Bind;
-      Rendering.Drawing.Draw_Indirect
+      Rendering.Drawing.Draw_Indexed_Indirect
         (GL.Types.Triangles, Object.Model.Format.Index_Kind, Object.Compacted_Commands);
    end Render;
 
