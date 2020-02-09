@@ -838,7 +838,7 @@ private package GL.API is
    -----------------------------------------------------------------------------
 
    procedure Create_Queries is new Loader.Getter_With_3_Params
-     ("glCreateQueries", Objects.Queries.Async_Query_Type, Size, UInt);
+     ("glCreateQueries", Objects.Queries.Query_Type, Size, UInt);
 
    procedure Delete_Queries is new Loader.Array_Proc_With_2_Params
      ("glDeleteQueries", Size, UInt, Low_Level.UInt_Array);
@@ -861,11 +861,11 @@ private package GL.API is
    procedure Get_Query_Indexed_Param is new Loader.Getter_With_4_Params
      ("glGetQueryIndexed", Objects.Queries.Query_Type, UInt, Objects.Queries.Target_Param, Int);
 
-   procedure Get_Query_Object_Int is new Loader.Getter_With_3_Params
-     ("glGetQueryObjectiv", UInt, Objects.Queries.Query_Param, Int);
-
    procedure Get_Query_Object_UInt is new Loader.Getter_With_3_Params
      ("glGetQueryObjectuiv", UInt, Objects.Queries.Query_Param, UInt);
+
+   procedure Get_Query_Object_UInt64 is new Loader.Getter_With_3_Params
+     ("glGetQueryObjectui64v", UInt, Objects.Queries.Query_Param, UInt64);
 
    -----------------------------------------------------------------------------
    --                                Samplers                                 --
@@ -1008,11 +1008,11 @@ private package GL.API is
      ("glGetSynciv", Low_Level.Sync, Low_Level.Enum, Int, Int_Array);
 
    function Client_Wait_Sync is new Loader.Function_With_3_Params
-     ("glClientWaitSync", Low_Level.Sync, Low_Level.Bitfield, Low_Level.UInt64,
+     ("glClientWaitSync", Low_Level.Sync, Low_Level.Bitfield, UInt64,
       Fences.Wait_Status);
 
    procedure Wait_Sync is new Loader.Procedure_With_3_Params
-     ("glWaitSync", Low_Level.Sync, Low_Level.Bitfield, Low_Level.UInt64);
+     ("glWaitSync", Low_Level.Sync, Low_Level.Bitfield, UInt64);
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --

@@ -107,8 +107,10 @@ package body GL.Fences is
    end Signaled;
 
    function Client_Wait (Object : Fence; Timeout : Duration) return Wait_Status is
+      use GL.Types;
+
       Flush_Commands_Bit  : constant := 16#0000_0001#;
-      Timeout_Nanoseconds : constant Low_Level.UInt64 := Low_Level.UInt64 (Timeout * 1e9);
+      Timeout_Nanoseconds : constant UInt64 := UInt64 (Timeout * 1e9);
 
       Result : Wait_Status;
    begin

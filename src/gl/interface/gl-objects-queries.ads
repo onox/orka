@@ -136,21 +136,14 @@ package GL.Objects.Queries is
    --  can be used to avoid calling Result (and thereby stalling the CPU)
    --  when the result is not yet available.
 
-   function Result_If_Available (Object : in out Query; Default_Value : Boolean)
-     return Boolean;
-   --  Return the result if available, otherwise return the default value
-
-   function Result_If_Available (Object : in out Query; Default_Value : Natural)
-     return Natural;
+   function Result_If_Available (Object : in out Query; Default : Boolean) return Boolean;
+   function Result_If_Available (Object : in out Query; Default : Natural) return Natural;
+   function Result_If_Available (Object : in out Query; Default : UInt64)  return UInt64;
    --  Return the result if available, otherwise return the default value
 
    function Result (Object : in out Query) return Boolean;
-   --  Return the result. If the result is not yet available, then the
-   --  CPU will stall until the result becomes available. This means
-   --  that if you do not call Result_Available, then this function call
-   --  will make the query synchronous.
-
    function Result (Object : in out Query) return Natural;
+   function Result (Object : in out Query) return UInt64;
    --  Return the result. If the result is not yet available, then the
    --  CPU will stall until the result becomes available. This means
    --  that if you do not call Result_Available, then this function call

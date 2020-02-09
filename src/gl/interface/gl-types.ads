@@ -32,6 +32,8 @@ package GL.Types is
    type unsigned_long_long is mod 2 ** 64;
    --  Based on C99 unsigned long long int
 
+   subtype UInt64 is unsigned_long_long;
+
    --  Signed integer types
    type Byte  is new C.signed_char;
    type Short is new C.short;

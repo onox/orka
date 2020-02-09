@@ -81,23 +81,30 @@ package body GL.Objects.Queries is
       return Available = 1;
    end Result_Available;
 
-   function Result_If_Available (Object : in out Query; Default_Value : Boolean)
-     return Boolean
-   is
-      Result : UInt := (if Default_Value then 1 else 0);
+   -----------------------------------------------------------------------------
+
+   function Result_If_Available (Object : in out Query; Default : Boolean) return Boolean is
+      Result : UInt := (if Default then 1 else 0);
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
       return Result = 1;
    end Result_If_Available;
 
-   function Result_If_Available (Object : in out Query; Default_Value : Natural)
-     return Natural
-   is
-      Result : UInt := UInt (Default_Value);
+   function Result_If_Available (Object : in out Query; Default : Natural) return Natural is
+      Result : UInt := UInt (Default);
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
       return Natural (Result);
    end Result_If_Available;
+
+   function Result_If_Available (Object : in out Query; Default : UInt64) return UInt64 is
+      Result : UInt64 := Default;
+   begin
+      API.Get_Query_Object_UInt64 (Object.Reference.GL_Id, Result_No_Wait, Result);
+      return Result;
+   end Result_If_Available;
+
+   -----------------------------------------------------------------------------
 
    function Result (Object : in out Query) return Boolean is
       Result_Value : UInt := 0;
@@ -106,13 +113,21 @@ package body GL.Objects.Queries is
       return Result_Value = 1;
    end Result;
 
-   --  TODO Handle Integer (Int) and Long (UInt64?)?
    function Result (Object : in out Query) return Natural is
       Result_Value : UInt := 0;
    begin
       API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result, Result_Value);
       return Natural (Result_Value);
    end Result;
+
+   function Result (Object : in out Query) return UInt64 is
+      Result_Value : UInt64 := 0;
+   begin
+      API.Get_Query_Object_UInt64 (Object.Reference.GL_Id, Result, Result_Value);
+      return Result_Value;
+   end Result;
+
+   -----------------------------------------------------------------------------
 
    function Result_Bits (Target : in Query_Type) return Natural is
       Bits : Int := 0;
