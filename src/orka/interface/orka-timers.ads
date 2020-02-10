@@ -31,7 +31,10 @@ package Orka.Timers is
 
    procedure Start (Object : in out Timer)
      with Pre  => Object.State in Idle | Waiting,
-          Post => Object.State in Busy | Waiting;
+          Post => (case Object.State'Old is
+                     when Idle    => Object.State = Busy,
+                     when Waiting => Object.State in Waiting | Busy,
+                     when Busy    => raise Program_Error);
 
    procedure Stop (Object : in out Timer)
      with Pre  => Object.State in Busy | Waiting,
@@ -39,8 +42,7 @@ package Orka.Timers is
 
    function CPU_Duration (Object : Timer) return Duration;
 
-   function GPU_Duration (Object : in out Timer) return Duration
-     with Post => (if Object.State'Old = Waiting then Object.State in Waiting | Idle);
+   function GPU_Duration (Object : Timer) return Duration;
 
 private
 
