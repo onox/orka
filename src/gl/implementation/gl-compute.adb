@@ -14,9 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System;
+
 with GL.API;
 with GL.Enums.Getter;
 with GL.Low_Level;
+with GL.Types.Indirect;
 
 package body GL.Compute is
 
@@ -27,9 +30,13 @@ package body GL.Compute is
       API.Dispatch_Compute (X, Y, Z);
    end Dispatch_Compute;
 
-   procedure Dispatch_Compute_Indirect (Offset : Size) is
+   procedure Dispatch_Compute_Indirect (Offset : Size := 0) is
+      use GL.Types.Indirect;
+
+      Offset_In_Bytes : constant Size
+        := Offset * Dispatch_Indirect_Command'Size / System.Storage_Unit;
    begin
-      API.Dispatch_Compute_Indirect (Low_Level.IntPtr (Offset));
+      API.Dispatch_Compute_Indirect (Low_Level.IntPtr (Offset_In_Bytes));
    end Dispatch_Compute_Indirect;
 
    function Max_Compute_Shared_Memory_Size return Size is

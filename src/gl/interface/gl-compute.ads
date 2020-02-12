@@ -33,9 +33,9 @@ package GL.Compute is
    --  The number of groups in each dimension in the command must not
    --  be larger than Max_Compute_Work_Group_Count.
 
-   procedure Dispatch_Compute_Indirect (Offset : Size);
+   procedure Dispatch_Compute_Indirect (Offset : Size := 0);
    --  Launch a compute shader using the Dispatch_Indirect_Command at the
-   --  given offset in the bound Dispatch_Indirect_Buffer
+   --  given offset (in number of commands) in the bound Dispatch_Indirect_Buffer
    --
    --  The number of groups in each dimension in the command must not
    --  be larger than Max_Compute_Work_Group_Count.
