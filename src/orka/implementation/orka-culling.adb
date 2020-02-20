@@ -108,17 +108,17 @@ package body Orka.Culling is
    end Memory_Barrier;
 
    use GL.Types;
-   use all type Rendering.Buffers.Buffer_Target;
+   use all type Rendering.Buffers.Indexable_Buffer_Target;
 
    procedure Cull_Frustum
      (Object     : in out Cull_Instance;
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Bounds     : Rendering.Buffers.Buffer) is
    begin
-      Transforms.Bind_Base (Shader_Storage, 0);
-      Bounds.Bind_Base (Shader_Storage, 1);
+      Transforms.Bind (Shader_Storage, 0);
+      Bounds.Bind (Shader_Storage, 1);
 
-      Object.Buffer_Visibles.Bind_Base (Shader_Storage, 2);
+      Object.Buffer_Visibles.Bind (Shader_Storage, 2);
 
       Object.Culler.Program_Frustum.Use_Program;
 
@@ -131,17 +131,17 @@ package body Orka.Culling is
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Commands   : Rendering.Buffers.Buffer) is
    begin
-      Object.Buffer_Indices.Bind_Base (Shader_Storage, 0);
-      Object.Buffer_Visibles.Bind_Base (Shader_Storage, 1);
+      Object.Buffer_Indices.Bind (Shader_Storage, 0);
+      Object.Buffer_Visibles.Bind (Shader_Storage, 1);
 
-      Transforms.Bind_Base (Shader_Storage, 2);
-      Object.Compacted_Transforms.Bind_Base (Shader_Storage, 3);
+      Transforms.Bind (Shader_Storage, 2);
+      Object.Compacted_Transforms.Bind (Shader_Storage, 3);
 
       --  Buffer Commands acts as a template (with instanceCount = 0 for
       --  every draw call), copy it to Compacted_Commands so that the
       --  compute shader does not modify it
       Commands.Copy_Data (Object.Compacted_Commands);
-      Object.Compacted_Commands.Bind_Base (Shader_Storage, 4);
+      Object.Compacted_Commands.Bind (Shader_Storage, 4);
 
       Object.Culler.Program_Compact.Use_Program;
 

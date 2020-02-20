@@ -71,8 +71,8 @@ begin
       pragma Assert (Local_Size (GL.X) >= Size (VBO_1.Length));
    end;
 
-   VBO_1.Bind_Base (Shader_Storage, 0);
-   VBO_2.Bind_Base (Shader_Storage, 1);
+   VBO_1.Bind (Shader_Storage, 0);
+   VBO_2.Bind (Shader_Storage, 1);
 
    GL.Barriers.Memory_Barrier
      ((By_Region => False, Shader_Storage => True, others => False));

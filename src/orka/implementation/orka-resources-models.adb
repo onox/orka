@@ -78,10 +78,10 @@ package body Orka.Resources.Models is
    end Cull;
 
    procedure Render (Object : in out Model_Group) is
-      use all type Rendering.Buffers.Buffer_Target;
+      use all type Rendering.Buffers.Indexable_Buffer_Target;
    begin
       Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);
-      Object.Compacted_Transforms.Bind_Base (Shader_Storage, 0);
+      Object.Compacted_Transforms.Bind (Shader_Storage, 0);
 
       GL.Barriers.Memory_Barrier
         ((By_Region => False, Shader_Storage | Command => True, others => False));

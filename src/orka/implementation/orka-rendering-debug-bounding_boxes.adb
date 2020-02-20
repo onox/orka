@@ -47,7 +47,7 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
       Transforms, Bounds : Rendering.Buffers.Bindable_Buffer'Class)
    is
       use all type GL.Types.Compare_Function;
-      use all type Rendering.Buffers.Buffer_Target;
+      use all type Rendering.Buffers.Indexable_Buffer_Target;
 
       Reverse_Function : constant array (GL.Types.Compare_Function) of GL.Types.Compare_Function :=
         (Never     => Always,
@@ -67,8 +67,8 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
 
       Object.Program.Use_Program;
 
-      Transforms.Bind_Base (Shader_Storage, 0);
-      Bounds.Bind_Base (Shader_Storage, 1);
+      Transforms.Bind (Shader_Storage, 0);
+      Bounds.Bind (Shader_Storage, 1);
 
       --  Visible lines of bounding box
       Object.Uniform_Visible.Set_Boolean (True);

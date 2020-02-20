@@ -190,12 +190,15 @@ package GL.Objects.Buffers is
    --  Transform_Feedback_Buffer replaced by Shader_Storage_Buffer
    Pixel_Pack_Buffer         : aliased constant Buffer_Target;
    Pixel_Unpack_Buffer       : aliased constant Buffer_Target;
-   Uniform_Buffer            : aliased constant Buffer_Target;
    Draw_Indirect_Buffer      : aliased constant Buffer_Target;
    Parameter_Buffer          : aliased constant Buffer_Target;
-   Shader_Storage_Buffer     : aliased constant Buffer_Target;
    Dispatch_Indirect_Buffer  : aliased constant Buffer_Target;
    Query_Buffer              : aliased constant Buffer_Target;
+
+   --  Buffer targets that must be binded to a specific index
+   --  (specified in shaders)
+   Uniform_Buffer            : aliased constant Buffer_Target;
+   Shader_Storage_Buffer     : aliased constant Buffer_Target;
    Atomic_Counter_Buffer     : aliased constant Buffer_Target;
 
 private

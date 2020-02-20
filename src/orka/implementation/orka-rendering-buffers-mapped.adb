@@ -85,9 +85,9 @@ package body Orka.Rendering.Buffers.Mapped is
    -----------------------------------------------------------------------------
 
    overriding
-   procedure Bind_Base
+   procedure Bind
      (Object : Mapped_Buffer;
-      Target : Buffer_Target;
+      Target : Indexable_Buffer_Target;
       Index  : Natural)
    is
       Buffer_Target : access constant GL.Objects.Buffers.Buffer_Target;
@@ -156,7 +156,7 @@ package body Orka.Rendering.Buffers.Mapped is
             Pointers.Dispatch_Command.Bind_Range
               (Buffer_Target.all, Object.Buffer.Buffer, Index, Offset, Length);
       end case;
-   end Bind_Base;
+   end Bind;
 
    -----------------------------------------------------------------------------
 

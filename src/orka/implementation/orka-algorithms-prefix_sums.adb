@@ -94,13 +94,13 @@ package body Orka.Algorithms.Prefix_Sums is
       Buffer : Rendering.Buffers.Buffer)
    is
       use GL.Types;
-      use all type Rendering.Buffers.Buffer_Target;
+      use all type Rendering.Buffers.Indexable_Buffer_Target;
 
       procedure Compute_Sum
         (Buffer_1, Buffer_2 : Rendering.Buffers.Buffer; Work_Groups : Natural) is
       begin
-         Buffer_1.Bind_Base (Shader_Storage, 0);
-         Buffer_2.Bind_Base (Shader_Storage, 1);
+         Buffer_1.Bind (Shader_Storage, 0);
+         Buffer_2.Bind (Shader_Storage, 1);
 
          GL.Barriers.Memory_Barrier
            ((By_Region => False, Shader_Storage => True, others => False));
@@ -110,8 +110,8 @@ package body Orka.Algorithms.Prefix_Sums is
       procedure Add
         (Buffer_1, Buffer_2 : Rendering.Buffers.Buffer; Work_Groups : Natural) is
       begin
-         Buffer_1.Bind_Base (Shader_Storage, 0);
-         Buffer_2.Bind_Base (Shader_Storage, 1);
+         Buffer_1.Bind (Shader_Storage, 0);
+         Buffer_2.Bind (Shader_Storage, 1);
 
          GL.Barriers.Memory_Barrier
            ((By_Region => False, Shader_Storage => True, others => False));

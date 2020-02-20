@@ -45,7 +45,7 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
       Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
    is
       use all type GL.Types.Compare_Function;
-      use all type Rendering.Buffers.Buffer_Target;
+      use all type Rendering.Buffers.Indexable_Buffer_Target;
 
       Reverse_Function : constant array (GL.Types.Compare_Function) of GL.Types.Compare_Function :=
         (Never     => Always,
@@ -65,8 +65,8 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
 
       Object.Program.Use_Program;
 
-      Transforms.Bind_Base (Shader_Storage, 0);
-      Sizes.Bind_Base (Shader_Storage, 1);
+      Transforms.Bind (Shader_Storage, 0);
+      Sizes.Bind (Shader_Storage, 1);
 
       --  Visible part of axes
       Object.Uniform_Visible.Set_Boolean (True);

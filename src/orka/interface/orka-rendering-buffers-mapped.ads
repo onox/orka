@@ -35,9 +35,9 @@ package Orka.Rendering.Buffers.Mapped is
    -----------------------------------------------------------------------------
 
    overriding
-   procedure Bind_Base
+   procedure Bind
      (Object : Mapped_Buffer;
-      Target : Buffer_Target;
+      Target : Indexable_Buffer_Target;
       Index  : Natural);
    --  Bind the buffer object to the index of the target as well as to
    --  the target itself.

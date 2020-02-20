@@ -116,7 +116,7 @@ begin
             Buffer_1.Set_Data (Data => Numbers, Offset => Numbers'Length * Natural (Index));
          end loop;
 
-         Buffer_1.Bind_Base (Shader_Storage, 0);
+         Buffer_1.Bind (Shader_Storage, 0);
 
          A := Ada.Real_Time.Clock;
          declare

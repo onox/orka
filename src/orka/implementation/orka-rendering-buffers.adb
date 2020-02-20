@@ -199,7 +199,7 @@ package body Orka.Rendering.Buffers is
    function Length (Object : Buffer) return Natural is (Object.Length);
 
    overriding
-   procedure Bind_Base (Object : Buffer; Target : Buffer_Target; Index : Natural) is
+   procedure Bind (Object : Buffer; Target : Indexable_Buffer_Target; Index : Natural) is
    begin
       case Target is
          when Uniform =>
@@ -209,7 +209,7 @@ package body Orka.Rendering.Buffers is
          when Atomic_Counter =>
             GL.Objects.Buffers.Atomic_Counter_Buffer.Bind_Base (Object.Buffer, Index);
       end case;
-   end Bind_Base;
+   end Bind;
 
    -----------------------------------------------------------------------------
 
