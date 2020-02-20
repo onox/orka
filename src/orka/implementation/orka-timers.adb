@@ -57,7 +57,7 @@ package body Orka.Timers is
    begin
       if Object.State = Busy then
          declare
-            Current_Time : Long := Get_Current_Time;
+            Current_Time : constant Long := Get_Current_Time;
          begin
             if Current_Time > Object.CPU_Start then
                Object.CPU_Duration := Get_Duration (UInt64 (Current_Time - Object.CPU_Start));
