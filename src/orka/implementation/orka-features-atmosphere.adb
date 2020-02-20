@@ -260,7 +260,7 @@ package body Orka.Features.Atmosphere is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (Double);
       use Ada.Characters.Latin_1;
 
-      Data : access constant Model_Data renames Result.Data;
+      Data : not null access constant Model_Data renames Result.Data;
 
       function To_String
         (V       : Double_Vectors.Vector;
@@ -373,7 +373,7 @@ package body Orka.Features.Atmosphere is
    -----------------------------------------------------------------------------
 
    function Create_Model
-     (Data     : access constant Model_Data;
+     (Data     : not null access constant Model_Data;
       Location : Resources.Locations.Location_Ptr) return Model
    is
       --  Compute the values for the SKY_RADIANCE_TO_LUMINANCE constant. In theory

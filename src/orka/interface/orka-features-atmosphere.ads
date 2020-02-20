@@ -287,10 +287,10 @@ package Orka.Features.Atmosphere is
      (Object  : Precomputed_Textures;
       Subject : Rendering.Programs.Program);
 
-   type Model (Data : access constant Model_Data) is tagged limited private;
+   type Model (Data : not null access constant Model_Data) is tagged limited private;
 
    function Create_Model
-     (Data     : access constant Model_Data;
+     (Data     : not null access constant Model_Data;
       Location : Resources.Locations.Location_Ptr) return Model;
 
    function Compute_Textures (Object : Model; Scattering_Orders : Natural := 4)
@@ -323,7 +323,7 @@ private
       --  Unused if Combine_Scattering is True
    end record;
 
-   type Model (Data : access constant Model_Data) is tagged limited record
+   type Model (Data : not null access constant Model_Data) is tagged limited record
       Data_Definitions : Resources.Byte_Array_Pointers.Pointer;
       Data_Functions   : Resources.Byte_Array_Pointers.Pointer;
 
