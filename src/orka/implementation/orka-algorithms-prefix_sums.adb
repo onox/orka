@@ -16,7 +16,6 @@
 
 with GL.Barriers;
 with GL.Compute;
-with GL.Objects.Buffers;
 with GL.Types.Compute;
 
 with Orka.Rendering.Programs.Modules;
@@ -39,7 +38,6 @@ package body Orka.Algorithms.Prefix_Sums is
      (Object : Factory;
       Length : Positive) return Prefix_Sum'Class
    is
-      use GL.Objects.Buffers;
       use Rendering.Buffers;
       use all type Types.Numeric_Type;
 

@@ -158,6 +158,25 @@ package body Orka.Rendering.Buffers.Mapped is
       end case;
    end Bind;
 
+   overriding
+   procedure Bind (Object : Mapped_Buffer; Target : Buffer_Target) is
+   begin
+      case Target is
+         when Dispatch_Indirect =>
+            GL.Objects.Buffers.Dispatch_Indirect_Buffer.Bind (Object.Buffer.Buffer);
+         when Draw_Indirect =>
+            GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Object.Buffer.Buffer);
+         when Parameter =>
+            GL.Objects.Buffers.Parameter_Buffer.Bind (Object.Buffer.Buffer);
+         when Pixel_Pack =>
+            GL.Objects.Buffers.Pixel_Pack_Buffer.Bind (Object.Buffer.Buffer);
+         when Pixel_Unpack =>
+            GL.Objects.Buffers.Pixel_Unpack_Buffer.Bind (Object.Buffer.Buffer);
+         when Query =>
+            GL.Objects.Buffers.Query_Buffer.Bind (Object.Buffer.Buffer);
+      end case;
+   end Bind;
+
    -----------------------------------------------------------------------------
 
    procedure Write_Data

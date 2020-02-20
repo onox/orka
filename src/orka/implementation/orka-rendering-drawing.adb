@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.Drawing;
-with GL.Objects.Buffers;
 
 package body Orka.Rendering.Drawing is
 
@@ -52,9 +51,11 @@ package body Orka.Rendering.Drawing is
    procedure Draw_Indirect
      (Mode       : GL.Types.Connection_Mode;
       Buffer     : Buffers.Buffer;
-      Offset, Count : Natural) is
+      Offset, Count : Natural)
+   is
+      use all type Rendering.Buffers.Buffer_Target;
    begin
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
+      Buffer.Bind (Draw_Indirect);
       GL.Drawing.Draw_Multiple_Arrays_Indirect
         (Mode, Count => Size (Count), Offset => Size (Offset));
    end Draw_Indirect;
@@ -68,10 +69,12 @@ package body Orka.Rendering.Drawing is
 
    procedure Draw_Indirect
      (Mode          : GL.Types.Connection_Mode;
-      Buffer, Count : Buffers.Buffer) is
+      Buffer, Count : Buffers.Buffer)
+   is
+      use all type Rendering.Buffers.Buffer_Target;
    begin
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
-      GL.Objects.Buffers.Parameter_Buffer.Bind (Count.GL_Buffer);
+      Buffer.Bind (Draw_Indirect);
+      Count.Bind (Parameter);
       GL.Drawing.Draw_Multiple_Arrays_Indirect_Count
         (Mode, GL.Types.Size (Buffer.Length));
    end Draw_Indirect;
@@ -82,9 +85,11 @@ package body Orka.Rendering.Drawing is
      (Mode       : GL.Types.Connection_Mode;
       Index_Kind : Types.Index_Type;
       Buffer     : Buffers.Buffer;
-      Offset, Count : Natural) is
+      Offset, Count : Natural)
+   is
+      use all type Rendering.Buffers.Buffer_Target;
    begin
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
+      Buffer.Bind (Draw_Indirect);
       GL.Drawing.Draw_Multiple_Elements_Indirect
         (Mode, Orka.Types.Convert (Index_Kind), Count => Size (Count), Offset => Size (Offset));
    end Draw_Indexed_Indirect;
@@ -100,10 +105,12 @@ package body Orka.Rendering.Drawing is
    procedure Draw_Indexed_Indirect
      (Mode          : GL.Types.Connection_Mode;
       Index_Kind    : Types.Index_Type;
-      Buffer, Count : Buffers.Buffer) is
+      Buffer, Count : Buffers.Buffer)
+   is
+      use all type Rendering.Buffers.Buffer_Target;
    begin
-      GL.Objects.Buffers.Draw_Indirect_Buffer.Bind (Buffer.GL_Buffer);
-      GL.Objects.Buffers.Parameter_Buffer.Bind (Count.GL_Buffer);
+      Buffer.Bind (Draw_Indirect);
+      Count.Bind (Parameter);
       GL.Drawing.Draw_Multiple_Elements_Indirect_Count
         (Mode, Orka.Types.Convert (Index_Kind), GL.Types.Size (Buffer.Length));
    end Draw_Indexed_Indirect;

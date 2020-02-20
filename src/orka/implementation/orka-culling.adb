@@ -17,7 +17,6 @@
 with GL.Barriers;
 with GL.Compute;
 with GL.Debug;
-with GL.Objects.Buffers;
 with GL.Types.Compute;
 
 with Orka.Rendering.Programs.Modules;
@@ -50,7 +49,6 @@ package body Orka.Culling is
    function Create_Instance
      (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
    is
-      use GL.Objects.Buffers;
       use Rendering.Buffers;
       use all type Types.Element_Type;
 
