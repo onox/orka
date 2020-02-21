@@ -56,7 +56,7 @@ package Orka.Rendering.Framebuffers is
    function Create_Framebuffer
      (Width, Height, Samples : Size;
       Context : Contexts.Context'Class) return Framebuffer
-   with Pre  => Samples > 0 and Context.Enabled (Contexts.Multisample),
+   with Pre  => (if Samples > 0 then Context.Enabled (Contexts.Multisample)),
         Post => not Create_Framebuffer'Result.Default;
 
    function Create_Framebuffer (Width, Height : Size) return Framebuffer
