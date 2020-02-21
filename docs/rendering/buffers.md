@@ -66,16 +66,33 @@ source buffer.
     this staging buffer, the data can be copied to the immutable buffer by
     calling `Copy_Data`.
 
-## Accessing buffers in shaders
+## Binding buffers
 
 Buffer objects implement the `Bindable_Buffer` interface, which provides
-the procedure `Bind_Base`. This procedure can be used to bind the buffer
-object to the index of a target so that the buffer can be accessed in a
-shader. Valid targets are:
+the procedure `Bind`. This procedure can be used to bind the buffer to a
+target so that it can be used by certain operations like indirect drawing.
+Valid targets are:
 
-* `Uniform` (UBO)
-* `Shader_Storage` (SSBO)
+* `Dispatch_Indirect`
+* `Draw_Indirect`
+* `Parameter`
+* `Pixel_Pack`
+* `Pixel_Unpack`
+* `Query`
+
+!!! tip
+    The targets can be made directly visible with
+    `:::ada use all type Orka.Rendering.Buffers.Buffer_Target`.
+
+## Accessing buffers in shaders
+
+A second procedure `Bind` exists to bind the buffer object to the index
+of a target so that the buffer can be accessed in a shader. Valid targets
+are:
+
 * `Atomic_Counter`
+* `Shader_Storage` (SSBO)
+* `Uniform` (UBO)
 
 A UBO should only be used for small amount of data (no more than 64 KiB)
 that is accessed uniformly by all threads of a shader. Otherwise it is
@@ -83,7 +100,7 @@ recommended to use an SSBO, which does not have these limitations.
 
 !!! tip
     The targets can be made directly visible with
-    `:::ada use all type Orka.Rendering.Buffers.Buffer_Target`.
+    `:::ada use all type Orka.Rendering.Buffers.Indexable_Buffer_Target`.
 
 ### SSBO
 
@@ -99,7 +116,7 @@ layout(std430, binding = 0) buffer matrixBuffer {
 and then bind the buffer to the used index:
 
 ```ada
-Buffer_3.Bind_Base (Shader_Storage, 0);
+Buffer_3.Bind (Shader_Storage, 0);
 ```
 
 The buffer can then be accessed in the shader via the variable `matrices`.
