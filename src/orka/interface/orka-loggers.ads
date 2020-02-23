@@ -37,7 +37,7 @@ package Orka.Loggers is
       Message : String) is abstract
    with Synchronization => By_Protected_Procedure;
 
-   type Logger_Ptr is not null access Logger'Class;
+   type Logger_Ptr is not null access all Logger'Class;
 
 private
 

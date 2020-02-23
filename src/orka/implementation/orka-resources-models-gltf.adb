@@ -619,8 +619,6 @@ package body Orka.Resources.Models.glTF is
 
          Parts : String_Maps.Map;
 
-         use type GL.Types.Single;
-         use Transforms;
          Start_Time : constant Time := Clock;
 
          Vertices, Indices : Natural;
@@ -668,9 +666,6 @@ package body Orka.Resources.Models.glTF is
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
       Start_Time : constant Time := Clock;
-
-      use Transforms;
-      use type GL.Types.Single;
 
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,

@@ -14,11 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 package body Orka.Rendering.Vertex_Formats.Formats is
-
-   use all type GL.Types.Connection_Mode;
 
    function Interleaved_Position_Normal_UV return Vertex_Format is
       procedure Add_Vertex_Attributes (Buffer : in out Vertex_Formats.Attribute_Buffer) is

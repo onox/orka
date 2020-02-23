@@ -20,16 +20,12 @@ package body Orka.Inputs.Joysticks.Filtering is
      (Current, Last : Axis_Position;
       RC, DT        : GL.Types.Single) return Axis_Position
    is
-      use type Axis_Position;
-
       A : constant Axis_Position := Axis_Position (DT / (RC + DT));
    begin
       return A * Current + (1.0 - A) * Last;
    end Low_Pass_Filter;
 
    function Dead_Zone (Value, Threshold : Axis_Position) return Axis_Position is
-      use type Axis_Position;
-
       Result : Axis_Position;
 
       Scale : constant Axis_Position'Base := 1.0 / (1.0 - Threshold);

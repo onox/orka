@@ -306,7 +306,6 @@ begin
 
          declare
             Group_Added : Boolean := False;
-            use type GL.Types.Size;
             use Ada.Real_Time;
 
             procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr);
@@ -331,8 +330,6 @@ begin
                   if not Group_Added then
                      Group_Added := True;
                      declare
-                        use type GL.Types.Double;
-
                         Instance_1 : Orka.Resources.Models.Model_Instance_Ptr :=
                           new Orka_Package_glTF.No_Behavior'(Orka.Resources.Models.Model_Instance
                             with Position => (0.0, 0.0, 0.0, 1.0));

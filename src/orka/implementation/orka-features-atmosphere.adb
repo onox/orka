@@ -102,8 +102,6 @@ package body Orka.Features.Atmosphere is
      (Width, Height, Depth : Size;
       Half_Precision : Boolean) return Textures.Texture
    is
-      use type GL.Pixels.Format;
-
       Result : Textures.Texture (LE.Texture_3D);
       Internal_Format : constant GL.Pixels.Internal_Format
         := (if Half_Precision then GL.Pixels.RGBA16F else GL.Pixels.RGBA32F);
