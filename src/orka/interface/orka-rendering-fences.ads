@@ -20,6 +20,7 @@ generic
    type Index_Type is mod <>;
    Maximum_Wait : Duration := 0.010;
 package Orka.Rendering.Fences is
+   pragma Preelaborate;
 
    type Buffer_Fence is tagged private;
 
