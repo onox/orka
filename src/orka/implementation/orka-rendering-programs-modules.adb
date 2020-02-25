@@ -14,7 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Debug;
+
+with Orka.Strings;
+
 package body Orka.Rendering.Programs.Modules is
+
+   use GL.Debug;
+   package Messages is new GL.Debug.Messages (Third_Party, Other);
+
+   function Trim_Image (Value : Integer) return String is
+     (Orka.Strings.Trim (Integer'Image (Value)));
 
    procedure Load_And_Compile
      (Object      : in out Module;
@@ -28,13 +38,19 @@ package body Orka.Rendering.Programs.Modules is
             Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
             Source : constant Resources.Byte_Array_Pointers.Pointer
               := Location.Read_Data (Path);
+
+            Text : String renames Resources.Convert (Source.Get);
          begin
-            Shader.Set_Source (Resources.Convert (Source.Get));
+            Shader.Set_Source (Text);
 
             Shader.Compile;
             if not Shader.Compile_Status then
                raise Shader_Compile_Error with Path & ":" & Shader.Info_Log;
             end if;
+            Messages.Log (Notification, "Compiled shader " & Path);
+            Messages.Log (Notification, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
+              " lines (" & Trim_Image (Source.Get.Value'Length) & " bytes)");
+            Messages.Log (Notification, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
@@ -57,6 +73,11 @@ package body Orka.Rendering.Programs.Modules is
             if not Shader.Compile_Status then
                raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader.Info_Log;
             end if;
+            Messages.Log (Notification, "Compiled string with " &
+              Trim_Image (Source'Length) & " characters");
+            Messages.Log (Notification, "  size: " &
+              Trim_Image (Orka.Strings.Lines (Source)) & " lines");
+            Messages.Log (Notification, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;

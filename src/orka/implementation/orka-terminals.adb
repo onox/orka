@@ -20,6 +20,8 @@ with Ada.Real_Time;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
+with Orka.Strings;
+
 package body Orka.Terminals is
 
    Style_Codes : constant array (Style) of Natural :=
@@ -146,16 +148,8 @@ package body Orka.Terminals is
       return Result & " " & Suffix.all;
    end Image;
 
-   function Trim (Value : String) return String is (SF.Trim (Value, Ada.Strings.Both));
+   function Trim (Value : String) return String renames Orka.Strings.Trim;
 
-   function Strip_Line_Term (Value : String) return String is
-      Last_Index : Natural := Value'Last;
-   begin
-      for Index in reverse Value'Range loop
-         exit when Value (Index) not in L.LF | L.CR;
-         Last_Index := Last_Index - 1;
-      end loop;
-      return Value (Value'First .. Last_Index);
-   end Strip_Line_Term;
+   function Strip_Line_Term (Value : String) return String renames Orka.Strings.Strip_Line_Term;
 
 end Orka.Terminals;

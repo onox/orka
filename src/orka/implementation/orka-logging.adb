@@ -24,7 +24,7 @@ package body Orka.Logging is
    function Image (Value : Ada.Real_Time.Time_Span) return String is
      (Terminals.Image (Ada.Real_Time.To_Duration (Value)));
 
-   function Trim (Value : String) return String is (Terminals.Trim (Value));
+   function Trim (Value : String) return String renames Terminals.Trim;
 
    -----------------------------------------------------------------------------
 
