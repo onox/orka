@@ -219,22 +219,24 @@ package body Orka.Loops is
 
                if Total_Elapsed > One_Second then
                   declare
-                     FPS : constant Duration
-                       := Duration (Frame_Counter) / To_Duration (Total_Elapsed);
+                     Frame_Time : constant Time_Span := Total_Elapsed / Frame_Counter;
+                     FPS        : constant Integer   := Integer (1.0 / To_Duration (Frame_Time));
                   begin
-                     Messages.Log (Debug, "FPS: " & Trim (FPS'Image));
+                     Messages.Log (Debug, Trim (FPS'Image) & " FPS, frame time: " &
+                       Trim (Image (Frame_Time)));
                   end;
 
                   if Exceeded_Frame_Counter > 0 then
                      declare
-                        Avg : constant Time_Span := Stat_Sum / Exceeded_Frame_Counter;
+                        Stat_Avg : constant Time_Span := Stat_Sum / Exceeded_Frame_Counter;
                      begin
-                        Messages.Log (Debug, "Frame time limit (" &
-                          Trim (Image (Handler.Frame_Limit)) & ") exceeded " &
-                          Trim (Exceeded_Frame_Counter'Image) & " times by:");
-                        Messages.Log (Debug, "  avg: " & Image (Avg));
-                        Messages.Log (Debug, "  min: " & Image (To_Time_Span (Stat_Min)));
-                        Messages.Log (Debug, "  max: " & Image (To_Time_Span (Stat_Max)));
+                        Messages.Log (Debug, "  deadline missed: " &
+                          Trim (Exceeded_Frame_Counter'Image) & " (limit is " &
+                          Trim (Image (Handler.Frame_Limit)) & ")");
+                        Messages.Log (Debug, "    avg/min/max: " &
+                          Image (Stat_Avg) &
+                          Image (To_Time_Span (Stat_Min)) &
+                          Image (To_Time_Span (Stat_Max)));
                      end;
                   end if;
 
