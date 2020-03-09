@@ -23,11 +23,11 @@ with Ada.Unchecked_Deallocation;
 with GL.Low_Level.Enums;
 with GL.Types;
 with GL.Pixels.Extensions;
-with GL.Pixels.Queries;
 
 with Orka.Jobs;
 with Orka.Logging;
 with Orka.KTX;
+with Orka.Strings;
 
 package body Orka.Resources.Textures.KTX is
 
@@ -35,6 +35,9 @@ package body Orka.Resources.Textures.KTX is
    use all type Orka.Logging.Severity;
 
    package Messages is new Orka.Logging.Messages (Resource_Loader);
+
+   function Trim_Image (Value : Integer) return String is
+     (Orka.Strings.Trim (Integer'Image (Value)));
 
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Data    : Loaders.Resource_Data;
@@ -205,16 +208,19 @@ package body Orka.Resources.Textures.KTX is
 
          Messages.Log (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
-         Messages.Log (Info, "  size:   " &
+         Messages.Log (Info, "  dims:   " &
             Logging.Trim (Width'Image) & " x " &
             Logging.Trim (Height'Image) & " x " &
             Logging.Trim (Depth'Image) &
             ", mipmap levels:" & Levels'Image);
+         Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Value'Length) & " bytes");
          Messages.Log (Info, "  kind:   " & Header.Kind'Image);
          if Header.Compressed then
             Messages.Log (Info, "  format: " & Header.Compressed_Format'Image);
          else
-            Messages.Log (Info, "  format: " & Header.Internal_Format'Image);
+            Messages.Log (Info, "  format: " & Header.Internal_Format'Image &
+              " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
+              "x " & Header.Data_Type'Image & ")");
          end if;
 
          Messages.Log (Info, "  statistics:");
@@ -373,7 +379,11 @@ package body Orka.Resources.Textures.KTX is
            Texture.Compressed_Format);
          return Convert (Data);
       end Get_Compressed_Data;
+
+      T1, T2, T3, T4 : Ada.Real_Time.Time;
    begin
+      T1 := Clock;
+
       Header.Kind := Texture.Kind;
 
       Header.Width := Texture.Width (Base_Level);
@@ -414,14 +424,16 @@ package body Orka.Resources.Textures.KTX is
             Internal_Format : constant GL.Pixels.Internal_Format
               := Texture.Internal_Format;
          begin
-            Format := GL.Pixels.Queries.Get_Texture_Format (Internal_Format, Texture.Kind);
-            Data_Type := GL.Pixels.Queries.Get_Texture_Type (Internal_Format, Texture.Kind);
+            Format    := GL.Pixels.Extensions.Texture_Format    (Internal_Format);
+            Data_Type := GL.Pixels.Extensions.Texture_Data_Type (Internal_Format);
 
             Header.Internal_Format := Internal_Format;
             Header.Format    := Format;
             Header.Data_Type := Data_Type;
          end;
       end if;
+
+      T2 := Clock;
 
       declare
          function Get_Level_Data
@@ -431,7 +443,33 @@ package body Orka.Resources.Textures.KTX is
          Bytes : constant Byte_Array_Pointers.Pointer
            := Orka.KTX.Create_KTX_Bytes (Header, Get_Level_Data'Access);
       begin
+         T3 := Clock;
+
          Location.Write_Data (Path, Bytes.Get);
+
+         T4 := Clock;
+
+         Messages.Log (Info, "Saved texture " & Path & " in " &
+           Logging.Trim (Logging.Image (T4 - T1)));
+         Messages.Log (Info, "  dims:   " &
+            Logging.Trim (Texture.Width (Base_Level)'Image) & " x " &
+            Logging.Trim (Texture.Height (Base_Level)'Image) & " x " &
+            Logging.Trim (Texture.Depth (Base_Level)'Image) &
+            ", mipmap levels:" & Texture.Mipmap_Levels'Image);
+         Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Get.Value'Length) & " bytes");
+         Messages.Log (Info, "  kind:   " & Texture.Kind'Image);
+         if Header.Compressed then
+            Messages.Log (Info, "  format: " & Texture.Compressed_Format'Image);
+         else
+            Messages.Log (Info, "  format: " & Texture.Internal_Format'Image &
+              " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
+              "x " & Header.Data_Type'Image & ")");
+         end if;
+
+         Messages.Log (Info, "  statistics:");
+         Messages.Log (Info, "    creating header: " & Logging.Image (T2 - T1));
+         Messages.Log (Info, "    retrieving data: " & Logging.Image (T3 - T2));
+         Messages.Log (Info, "    writing file:    " & Logging.Image (T4 - T3));
       end;
    end Write_Texture;
 
