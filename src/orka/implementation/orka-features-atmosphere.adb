@@ -930,8 +930,16 @@ package body Orka.Features.Atmosphere is
         (Object.Transmittance_Texture, 0);
       Subject.Uniform_Sampler ("scattering_texture").Set_Texture
         (Object.Scattering_Texture, 1);
-      Subject.Uniform_Sampler ("irradiance_texture").Set_Texture
-        (Object.Irradiance_Texture, 2);
+
+      --  Only used by GetSunAndSkyIrradiance to compute radiance
+      --  reflected by the ground
+      begin
+         Subject.Uniform_Sampler ("irradiance_texture").Set_Texture
+           (Object.Irradiance_Texture, 2);
+      exception
+         when Rendering.Programs.Uniforms.Uniform_Inactive_Error =>
+            null;
+      end;
 
       --  Defined in shader but unused if Object.Combine_Scattering
       begin
