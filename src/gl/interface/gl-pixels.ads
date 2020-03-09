@@ -31,7 +31,7 @@ package GL.Pixels is
                                            RGBA32UI, RGB32UI, RGBA16UI, RGBA8UI,
                                            RGBA32I, RGB32I, RGBA16I, RGBA8I);
 
-   type Internal_Format is (R3_G3_B2, RGB4, RGB5, RGB8, RGB10, RGB12,
+   type Internal_Format is (R3_G3_B2, RGB4, RGB5, RGB8, RGB10, RGB12, RGB16,
                             RGBA2, RGBA4, RGB5_A1, RGBA8, RGB10_A2, RGBA12, RGBA16,
                             Depth_Component16, Depth_Component24,
                             R8, R16, RG8, RG16, R16F, R32F, RG16F, RG32F,
@@ -44,7 +44,7 @@ package GL.Pixels is
                             RGBA32UI, RGB32UI, RGBA16UI, RGB16UI, RGBA8UI, RGB8UI,
                             RGBA32I, RGB32I, RGBA16I, RGB16I, RGBA8I, RGB8I,
                             R8_SNorm, RG8_SNorm, RGB8_SNorm, RGBA8_SNorm,
-                            R16_SNorm, RG16_SNorm, RGB16_SNorm, RGB10_A2UI);
+                            R16_SNorm, RG16_SNorm, RGB16_SNorm, RGBA16_SNorm, RGB10_A2UI);
    --  Table 8.12 of the OpenGL specification
 
    type Compressed_Format is
@@ -235,6 +235,7 @@ private
                             RGB8     => 16#8051#,
                             RGB10    => 16#8052#,
                             RGB12    => 16#8053#,
+                            RGB16    => 16#8054#,
                             RGBA2    => 16#8055#,
                             RGBA4    => 16#8056#,
                             RGB5_A1  => 16#8057#,
@@ -304,6 +305,7 @@ private
                             R16_SNorm   => 16#8F98#,
                             RG16_SNorm  => 16#8F99#,
                             RGB16_SNorm => 16#8F9A#,
+                            RGBA16_SNorm => 16#8F9B#,
 
                             RGB10_A2UI => 16#906F#);
    for Internal_Format'Size use Low_Level.Enum'Size;
