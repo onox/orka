@@ -452,8 +452,8 @@ private package GL.API is
      ("glTextureView", UInt, Low_Level.Enums.Texture_Kind, UInt,
       Pixels.Compressed_Format, UInt, UInt, UInt, UInt);
 
-   procedure Bind_Texture_Unit is new Loader.Procedure_With_2_Params
-     ("glBindTextureUnit", Objects.Textures.Texture_Unit, UInt);
+   procedure Bind_Textures is new Loader.Procedure_With_3_Params
+     ("glBindTextures", Objects.Textures.Texture_Unit, Size, Low_Level.UInt_Array);
 
    procedure Get_Internal_Format is new Loader.Getter_With_5_Params
      ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,

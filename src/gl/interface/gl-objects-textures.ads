@@ -135,6 +135,20 @@ package GL.Objects.Textures is
      with Pre => Object.Has_Levels;
 
    -----------------------------------------------------------------------------
+
+   generic
+      Kind : LE.Texture_Kind;
+   package Texture_Bindings is
+      type Texture_Array is array (Texture_Unit range <>) of Texture (Kind);
+
+      type Image_Array is array (Image_Unit range <>) of Texture (Kind);
+
+      procedure Bind_Textures (Textures : Texture_Array);
+
+      procedure Bind_Images (Images : Image_Array);
+   end Texture_Bindings;
+
+   -----------------------------------------------------------------------------
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 

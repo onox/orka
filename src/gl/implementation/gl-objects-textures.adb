@@ -304,14 +304,15 @@ package body GL.Objects.Textures is
    end Fixed_Sample_Locations;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
+      IDs : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
-      API.Bind_Texture_Unit (Unit, Object.Reference.GL_Id);
+      API.Bind_Textures (Unit, 1, IDs);
    end Bind_Texture_Unit;
 
    procedure Bind_Image_Texture (Object : Texture_Base; Unit : Image_Unit) is
-      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      IDs : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
-      API.Bind_Image_Textures (Unit, 1, Arr);
+      API.Bind_Image_Textures (Unit, 1, IDs);
    end Bind_Image_Texture;
 
    overriding
@@ -719,5 +720,27 @@ package body GL.Objects.Textures is
       end Get_Data;
 
    end Texture_Pointers;
+
+   package body Texture_Bindings is
+
+      procedure Bind_Textures (Textures : Texture_Array) is
+         IDs : Low_Level.UInt_Array (Integer (Textures'First) .. Integer (Textures'Last));
+      begin
+         for Unit in Textures'Range loop
+            IDs (Integer (Unit)) := Textures (Unit).Reference.GL_Id;
+         end loop;
+         API.Bind_Textures (Textures'First, Textures'Length, IDs);
+      end Bind_Textures;
+
+      procedure Bind_Images (Images : Image_Array) is
+         IDs : Low_Level.UInt_Array (Integer (Images'First) .. Integer (Images'Last));
+      begin
+         for Unit in Images'Range loop
+            IDs (Integer (Unit)) := Images (Unit).Reference.GL_Id;
+         end loop;
+         API.Bind_Image_Textures (Images'First, Images'Length, IDs);
+      end Bind_Images;
+
+   end Texture_Bindings;
 
 end GL.Objects.Textures;
