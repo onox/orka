@@ -16,42 +16,14 @@
 
 with System;
 
-with Ada.Containers.Indefinite_Holders;
-
 with GL.API;
 with GL.Low_Level;
 
 package body GL.Objects.Vertex_Arrays is
 
-   package Vertex_Array_Holder is new Ada.Containers.Indefinite_Holders
-      (Element_Type => Vertex_Array_Object);
-
-   Current_Vertex_Array : Vertex_Array_Holder.Holder;
-
-   -----------------------------------------------------------------------------
-
-   type No_VAO_Type is new Vertex_Array_Object with null record;
-
-   overriding
-   procedure Initialize_Id (Object : in out No_VAO_Type) is null;
-
-   overriding
-   procedure Delete_Id (Object : in out No_VAO_Type) is null;
-
-   No_VAO : constant No_VAO_Type
-     := No_VAO_Type'(GL_Object with null record);
-
-   function No_Vertex_Array_Object return Vertex_Array_Object is
-     (Vertex_Array_Object (No_VAO));
-
-   -----------------------------------------------------------------------------
-
    procedure Bind (Object : Vertex_Array_Object) is
    begin
-      if Current_Vertex_Array.Is_Empty or else Object /= Current_Vertex_Array.Element then
-         API.Bind_Vertex_Array (Object.Reference.GL_Id);
-         Current_Vertex_Array.Replace_Element (Object);
-      end if;
+      API.Bind_Vertex_Array (Object.Reference.GL_Id);
    end Bind;
 
    procedure Enable_Attribute (Object : Vertex_Array_Object; Index : Attribute) is
@@ -171,15 +143,6 @@ package body GL.Objects.Vertex_Arrays is
       Object.Reference.GL_Id := New_Id;
       Object.Reference.Initialized := True;
    end Initialize_Id;
-
-   function Current_Array_Object return Vertex_Array_Object is
-   begin
-      if Current_Vertex_Array.Is_Empty then
-         return No_Vertex_Array_Object;
-      else
-         return Current_Vertex_Array.Element;
-      end if;
-   end Current_Array_Object;
 
    overriding
    procedure Delete_Id (Object : in out Vertex_Array_Object) is

@@ -51,8 +51,6 @@ package GL.Objects.Vertex_Arrays is
                                             Binding_Index : Binding;
                                             Divisor : UInt);
 
-   function Current_Array_Object return Vertex_Array_Object;
-
    overriding
    procedure Initialize_Id (Object : in out Vertex_Array_Object);
 
@@ -62,9 +60,6 @@ package GL.Objects.Vertex_Arrays is
    overriding
    function Identifier (Object : Vertex_Array_Object) return Types.Debug.Identifier is
      (Types.Debug.Vertex_Array);
-
-   function No_Vertex_Array_Object return Vertex_Array_Object;
-   --  Bind this object to unbind the current array object
 
 private
 

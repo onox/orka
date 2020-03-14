@@ -62,8 +62,6 @@ package GL.Objects is
    overriding
    function "=" (Left, Right : GL_Object) return Boolean;
 
-   No_Object_Bound_Exception : exception;
-
 private
 
    type GL_Object_Reference is record

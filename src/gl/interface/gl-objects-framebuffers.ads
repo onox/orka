@@ -193,8 +193,6 @@ package GL.Objects.Framebuffers is
    procedure Bind (Target : Framebuffer_Target;
                    Object : Framebuffer'Class);
 
-   function Current (Target : Framebuffer_Target) return Framebuffer'Class;
-
    function Status
      (Object : Framebuffer;
       Target : Framebuffer_Target'Class) return Framebuffer_Status;

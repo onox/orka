@@ -87,8 +87,6 @@ package GL.Objects.Buffers is
    --  Use this instead of Allocate_And_Load_From_Data if you don't want
    --  to copy any data
 
-   function Current_Object (Target : Buffer_Target) return Buffer'Class;
-
    overriding
    procedure Initialize_Id (Object : in out Buffer);
 

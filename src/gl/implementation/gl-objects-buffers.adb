@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
 with Ada.Unchecked_Conversion;
 
 with System;
@@ -109,39 +108,15 @@ package body GL.Objects.Buffers is
        when Enums.Atomic_Counter_Buffer => Atomic_Counter,
        when others => raise Constraint_Error);
 
-   package Buffer_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => Buffer'Class);
-
-   type Buffer_Target_Array is array (Enums.Buffer_Kind) of Buffer_Holder.Holder;
-   Current_Buffers : Buffer_Target_Array;
-
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class) is
-      Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
    begin
-      if Holder.Is_Empty or else Object /= Holder.Element then
-         API.Bind_Buffer (Target.Kind, Object.Reference.GL_Id);
-         Holder.Replace_Element (Object);
-      end if;
+      API.Bind_Buffer (Target.Kind, Object.Reference.GL_Id);
    end Bind;
 
    procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural) is
-      Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
    begin
-      if Holder.Is_Empty or else Object /= Holder.Element then
-         API.Bind_Buffer_Base (Target.Kind, UInt (Index), Object.Reference.GL_Id);
-         Holder.Replace_Element (Object);
-      end if;
+      API.Bind_Buffer_Base (Target.Kind, UInt (Index), Object.Reference.GL_Id);
    end Bind_Base;
-
-   function Current_Object (Target : Buffer_Target) return Buffer'Class is
-      Holder : constant Buffer_Holder.Holder := Current_Buffers (Target.Kind);
-   begin
-      if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with Target.Kind'Image;
-      else
-         return Holder.Element;
-      end if;
-   end Current_Object;
 
    procedure Allocate_Storage
      (Object : in out Buffer;
@@ -234,17 +209,12 @@ package body GL.Objects.Buffers is
          Index : Natural;
          Offset, Length : Types.Size)
       is
-         Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
-
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         if Holder.Is_Empty or else Object /= Holder.Element then
-            API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
-                                   Low_Level.IntPtr (Offset_In_Bytes),
-                                   Low_Level.SizeIPtr (Number_Of_Bytes));
-            Holder.Replace_Element (Object);
-         end if;
+         API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
+                                Low_Level.IntPtr (Offset_In_Bytes),
+                                Low_Level.SizeIPtr (Number_Of_Bytes));
       end Bind_Range;
 
       procedure Allocate_And_Load_From_Data

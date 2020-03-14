@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
 with Ada.Unchecked_Conversion;
 
 with GL.API;
@@ -275,33 +274,11 @@ package body GL.Objects.Framebuffers is
       Object.Reference.Initialized := False;
    end Delete_Id;
 
-   package Framebuffer_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => Framebuffer'Class);
-
-   type Framebuffer_Target_Array is
-     array (Enums.Framebuffer_Kind) of Framebuffer_Holder.Holder;
-
-   Current_Framebuffers : Framebuffer_Target_Array;
-
    procedure Bind (Target : Framebuffer_Target;
                    Object : Framebuffer'Class) is
-      Holder : Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
    begin
-      if Holder.Is_Empty or else Object /= Holder.Element then
-         API.Bind_Framebuffer (Target.Kind, Object.Reference.GL_Id);
-         Holder.Replace_Element (Object);
-      end if;
+      API.Bind_Framebuffer (Target.Kind, Object.Reference.GL_Id);
    end Bind;
-
-   function Current (Target : Framebuffer_Target) return Framebuffer'Class is
-      Holder : constant Framebuffer_Holder.Holder := Current_Framebuffers (Target.Kind);
-   begin
-      if Holder.Is_Empty then
-         raise No_Object_Bound_Exception with Target.Kind'Image;
-      else
-         return Holder.Element;
-      end if;
-   end Current;
 
    procedure Clear_Color_Buffer
      (Object    : Framebuffer;
