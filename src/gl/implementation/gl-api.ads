@@ -510,27 +510,11 @@ private package GL.API is
       ("glNamedBufferStorage", UInt, Low_Level.SizeIPtr,
        System.Address, Low_Level.Bitfield);
 
-   -- glMapNamedBufferRange returns an instance of generic Interfaces.C.Pointers.Pointer,
-   -- therefore declared in GL.Objects.Buffers
+   --  glMapNamedBufferRange returns an instance of generic Interfaces.C.Pointers.Pointer,
+   --  therefore declared in GL.Objects.Buffers
 
    procedure Unmap_Named_Buffer is new Loader.Procedure_With_1_Param
      ("glUnmapNamedBuffer", UInt);
-
-   procedure Get_Named_Buffer_Parameter_Access_Kind is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
-      Objects.Buffers.Access_Kind);
-
-   procedure Get_Named_Buffer_Parameter_Bool is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
-      Low_Level.Bool);
-
-   procedure Get_Named_Buffer_Parameter_Bitfield is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteriv", UInt, Enums.Buffer_Param,
-      Low_Level.Bitfield);
-
-   procedure Get_Named_Buffer_Parameter_Size is new Loader.Getter_With_3_Params
-     ("glGetNamedBufferParameteri64v", UInt, Enums.Buffer_Param,
-      Long_Size);
 
    procedure Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
      ("glInvalidateBufferData", UInt);

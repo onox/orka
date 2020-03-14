@@ -27,8 +27,6 @@ package GL.Objects.Buffers is
    --  Minimum byte alignment of pointers returned by Map_Range
    --  (at least 64 bytes to support SIMD CPU instructions)
 
-   type Access_Kind is (Read_Only, Write_Only, Read_Write);
-
    type Access_Bits is record
       Read              : Boolean := False;
       Write             : Boolean := False;
@@ -61,6 +59,8 @@ package GL.Objects.Buffers is
 
    function Allocated (Object : Buffer) return Boolean;
 
+   function Mapped (Object : Buffer) return Boolean;
+
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
    --  Bind the buffer object to the target
    --
@@ -78,7 +78,7 @@ package GL.Objects.Buffers is
    --    * Shader_Storage_Buffer
 
    procedure Allocate_Storage
-     (Object : Buffer;
+     (Object : in out Buffer;
       Length : Long;
       Kind   : Numeric_Type;
       Flags  : Storage_Bits)
@@ -88,11 +88,6 @@ package GL.Objects.Buffers is
    --  to copy any data
 
    function Current_Object (Target : Buffer_Target) return Buffer'Class;
-
-   function Access_Type   (Object : Buffer) return Access_Kind;
-   function Mapped        (Object : Buffer) return Boolean;
-   function Size          (Object : Buffer) return Long_Size;
-   function Storage_Flags (Object : Buffer) return Storage_Bits;
 
    overriding
    procedure Initialize_Id (Object : in out Buffer);
@@ -131,7 +126,7 @@ package GL.Objects.Buffers is
       --    * Shader_Storage_Buffer
 
       procedure Allocate_And_Load_From_Data
-        (Object : Buffer;
+        (Object : in out Buffer;
          Data   : Pointers.Element_Array;
          Flags  : Storage_Bits)
       with Pre  => not Object.Allocated,
@@ -222,11 +217,6 @@ package GL.Objects.Buffers is
 
 private
 
-   for Access_Kind use (Read_Only  => 16#88B8#,
-                        Write_Only => 16#88B9#,
-                        Read_Write => 16#88BA#);
-   for Access_Kind'Size use Low_Level.Enum'Size;
-
    for Access_Bits use record
       Read              at 0 range 0 .. 0;
       Write             at 0 range 1 .. 1;
@@ -252,7 +242,9 @@ private
    type Buffer_Target (Kind : Enums.Buffer_Kind) is
      tagged limited null record;
 
-   type Buffer is new GL_Object with null record;
+   type Buffer is new GL_Object with record
+      Allocated, Mapped : Boolean := False;
+   end record;
    
    Pixel_Pack_Buffer         : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Enums.Pixel_Pack_Buffer);

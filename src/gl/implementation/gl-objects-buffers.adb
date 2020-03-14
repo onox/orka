@@ -144,7 +144,7 @@ package body GL.Objects.Buffers is
    end Current_Object;
 
    procedure Allocate_Storage
-     (Object : Buffer;
+     (Object : in out Buffer;
       Length : Long;
       Kind   : Numeric_Type;
       Flags  : Storage_Bits)
@@ -182,51 +182,12 @@ package body GL.Objects.Buffers is
       API.Named_Buffer_Storage
         (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
          System.Null_Address, Raw_Bits);
+      Object.Allocated := True;
    end Allocate_Storage;
 
-   function Access_Type (Object : Buffer) return Access_Kind is
-      Ret : Access_Kind := Access_Kind'First;
-   begin
-      API.Get_Named_Buffer_Parameter_Access_Kind (Object.Reference.GL_Id, Enums.Buffer_Access,
-                                            Ret);
-      return Ret;
-   end Access_Type;
+   function Allocated (Object : Buffer) return Boolean is (Object.Allocated);
 
-   function Allocated (Object : Buffer) return Boolean is
-      Ret : Low_Level.Bool := Low_Level.Bool (False);
-   begin
-      API.Get_Named_Buffer_Parameter_Bool
-        (Object.Reference.GL_Id, Enums.Buffer_Immutable_Storage, Ret);
-      return Boolean (Ret);
-   end Allocated;
-
-   function Mapped (Object : Buffer) return Boolean is
-      Ret : Low_Level.Bool := Low_Level.Bool (False);
-   begin
-      API.Get_Named_Buffer_Parameter_Bool (Object.Reference.GL_Id, Enums.Buffer_Mapped, Ret);
-      return Boolean (Ret);
-   end Mapped;
-
-   function Size (Object : Buffer) return Types.Long_Size is
-      Ret : Types.Long_Size := 0;
-   begin
-      API.Get_Named_Buffer_Parameter_Size (Object.Reference.GL_Id, Enums.Buffer_Size, Ret);
-      return Ret;
-   end Size;
-
-   function Storage_Flags (Object : Buffer) return Storage_Bits is
-      use type Low_Level.Bitfield;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Low_Level.Bitfield, Target => Storage_Bits);
-
-      Raw_Bits : Low_Level.Bitfield := 2#0000000000000000#;
-   begin
-      API.Get_Named_Buffer_Parameter_Bitfield (Object.Reference.GL_Id,
-                                               Enums.Buffer_Storage_Flags,
-                                               Raw_Bits);
-      return Convert (Raw_Bits and 2#0000001111000011#);
-   end Storage_Flags;
+   function Mapped (Object : Buffer) return Boolean is (Object.Mapped);
 
    overriding procedure Initialize_Id (Object : in out Buffer) is
       New_Id : UInt := 0;
@@ -247,6 +208,7 @@ package body GL.Objects.Buffers is
    procedure Unmap (Object : in out Buffer) is
    begin
       API.Unmap_Named_Buffer (Object.Reference.GL_Id);
+      Object.Mapped := False;
    end Unmap;
 
    procedure Clear_With_Zeros (Object : Buffer) is
@@ -286,7 +248,7 @@ package body GL.Objects.Buffers is
       end Bind_Range;
 
       procedure Allocate_And_Load_From_Data
-        (Object : Buffer;
+        (Object : in out Buffer;
          Data   : Pointers.Element_Array;
          Flags  : Storage_Bits)
       is
@@ -301,8 +263,10 @@ package body GL.Objects.Buffers is
          Number_Of_Bytes : constant Long :=
            Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
-                                   Data (Data'First)'Address, Raw_Bits);
+         API.Named_Buffer_Storage
+           (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
+            Data (Data'First)'Address, Raw_Bits);
+         Object.Allocated := True;
       end Allocate_And_Load_From_Data;
 
       procedure Map_Range
@@ -329,6 +293,7 @@ package body GL.Objects.Buffers is
          Pointer := Map_Named_Buffer_Range (Object.Reference.GL_Id,
            Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
            Raw_Bits);
+         Object.Mapped := True;
       end Map_Range;
 
       function Get_Mapped_Data
