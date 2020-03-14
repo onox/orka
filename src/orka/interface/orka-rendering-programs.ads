@@ -20,6 +20,8 @@ with GL.Objects.Programs;
 with GL.Objects.Shaders;
 with GL.Types;
 
+with Orka.Rendering.Buffers;
+
 limited with Orka.Rendering.Programs.Modules;
 limited with Orka.Rendering.Programs.Uniforms;
 
@@ -83,18 +85,22 @@ package Orka.Rendering.Programs is
    --  exception is raised if the name is not defined in any of the attached
    --  shaders.
 
-   function Uniform_Block (Object : Program; Name : String) return Uniforms.Uniform_Block;
-   --  Return the uniform block that has the given name
-   --
-   --  Name must be a GLSL uniform block. A Uniforms.Uniform_Inactive_Error
-   --  exception is raised if the name is not defined in any of the attached
-   --  shaders.
-
    function Uniform (Object : Program; Name : String) return Uniforms.Uniform;
    --  Return the uniform that has the given name
    --
    --  Name must be a GLSL uniform. A Uniforms.Uniform_Inactive_Error exception
    --  is raised if the name is not defined in any of the attached shaders.
+
+   function Binding
+     (Object : Program;
+      Target : Buffers.Indexed_Buffer_Target;
+      Name   : String) return Natural;
+   --  Return the index of the binding point of a shader storage block (SSBO),
+   --  uniform block (UBO), or an atomic counter buffer.
+   --
+   --  Name must be a GLSL shader storage block, uniform block, or atomic
+   --  uniform. A Uniforms.Uniform_Inactive_Error exception is raised if
+   --  the name is not defined in any of the attached shaders.
 
    Program_Link_Error : exception;
 

@@ -235,14 +235,6 @@ package body Orka.Rendering.Programs.Uniforms is
          Shader   => Shader);
    end Create_Uniform_Subroutine;
 
-   function Create_Uniform_Block
-     (Object : Program;
-      Name   : String) return Uniform_Block is
-   begin
-      return Uniform_Block'
-        (GL_Uniform => Object.GL_Program.Uniform_Location (Name));
-   end Create_Uniform_Block;
-
    function Create_Uniform_Variable
      (Object : Program;
       Name   : String) return Uniform

@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Objects.Buffers;
+
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 
@@ -145,16 +147,25 @@ package body Orka.Rendering.Programs is
       return Uniforms.Create_Uniform_Subroutine (Object, Shader, Name);
    end Uniform_Subroutine;
 
-   function Uniform_Block (Object : Program; Name : String)
-     return Uniforms.Uniform_Block is
-   begin
-      return Uniforms.Create_Uniform_Block (Object, Name);
-   end Uniform_Block;
-
    function Uniform (Object : Program; Name : String)
      return Uniforms.Uniform is
    begin
       return Uniforms.Create_Uniform_Variable (Object, Name);
    end Uniform;
+
+   function Binding
+     (Object : Program;
+      Target : Buffers.Indexed_Buffer_Target;
+      Name   : String) return Natural
+   is
+      use all type Buffers.Indexed_Buffer_Target;
+   begin
+      return Natural (Object.GL_Program.Buffer_Binding
+        ((case Target is
+           when Uniform        => GL.Objects.Buffers.Uniform,
+           when Shader_Storage => GL.Objects.Buffers.Shader_Storage,
+           when Atomic_Counter => GL.Objects.Buffers.Atomic_Counter),
+         Name));
+   end Binding;
 
 end Orka.Rendering.Programs;

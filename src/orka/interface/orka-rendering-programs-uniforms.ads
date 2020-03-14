@@ -118,10 +118,6 @@ package Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   type Uniform_Block is tagged private;
-
-   -----------------------------------------------------------------------------
-
    function Create_Uniform_Sampler
      (Object : Program;
       Name   : String) return Uniform_Sampler;
@@ -134,10 +130,6 @@ package Orka.Rendering.Programs.Uniforms is
      (Object : in out Program;
       Shader : GL.Objects.Shaders.Shader_Type;
       Name   : String) return Uniform_Subroutine;
-
-   function Create_Uniform_Block
-     (Object : Program;
-      Name   : String) return Uniform_Block;
 
    function Create_Uniform_Variable
      (Object : Program;
@@ -169,10 +161,6 @@ private
       Location : Uniform_Location;
       Indices  : Indices_Holder.Holder;
       Shader   : GL.Objects.Shaders.Shader_Type;
-   end record;
-
-   type Uniform_Block is tagged record
-      GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 
 end Orka.Rendering.Programs.Uniforms;
