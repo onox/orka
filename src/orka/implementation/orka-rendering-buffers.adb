@@ -21,7 +21,7 @@ with Orka.Rendering.Buffers.Pointers;
 package body Orka.Rendering.Buffers is
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Kind   : Types.Element_Type;
       Length : Natural) return Buffer
    is
@@ -71,7 +71,7 @@ package body Orka.Rendering.Buffers is
    -----------------------------------------------------------------------------
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Half_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Half_Type) do
@@ -81,7 +81,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Single_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Type) do
@@ -91,7 +91,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Double_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Type) do
@@ -101,7 +101,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Int_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Int_Type) do
@@ -111,7 +111,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : UInt_Array) return Buffer is
    begin
       return Result : Buffer (Kind => UInt_Type) do
@@ -121,7 +121,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Singles.Vector4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Vector_Type) do
@@ -131,7 +131,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Singles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Matrix_Type) do
@@ -141,7 +141,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Doubles.Vector4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Vector_Type) do
@@ -151,7 +151,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Matrix_Type) do
@@ -161,7 +161,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Arrays_Command_Type) do
@@ -171,7 +171,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Elements_Command_Type) do
@@ -181,7 +181,7 @@ package body Orka.Rendering.Buffers is
    end Create_Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Dispatch_Command_Type) do

@@ -26,7 +26,7 @@ package GL.Objects.Programs.Uniforms is
    --                                 Singles                                 --
    -----------------------------------------------------------------------------
 
-   procedure Set_Single  (Location : Uniform; Value          : Single);
+   procedure Set_Single  (Location : Uniform; Value : Single);
 
    procedure Set_Single_Array (Location : Uniform; Value : Single_Array);
 
@@ -50,7 +50,7 @@ package GL.Objects.Programs.Uniforms is
    --                                 Doubles                                 --
    -----------------------------------------------------------------------------
 
-   procedure Set_Double  (Location : Uniform; Value          : Double);
+   procedure Set_Double  (Location : Uniform; Value : Double);
 
    procedure Set_Double_Array (Location : Uniform; Value : Double_Array);
 
@@ -74,7 +74,7 @@ package GL.Objects.Programs.Uniforms is
    --                                 Integers                                --
    -----------------------------------------------------------------------------
 
-   procedure Set_Int  (Location : Uniform; Value          : Int);
+   procedure Set_Int  (Location : Uniform; Value : Int);
 
    procedure Set_Int_Array (Location : Uniform; Value : Int_Array);
 
@@ -90,7 +90,7 @@ package GL.Objects.Programs.Uniforms is
    --                            Unsigned Integers                            --
    -----------------------------------------------------------------------------
 
-   procedure Set_UInt  (Location : Uniform; Value          : UInt);
+   procedure Set_UInt  (Location : Uniform; Value : UInt);
 
    procedure Set_UInt_Array (Location : Uniform; Value : UInt_Array);
 

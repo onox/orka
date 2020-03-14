@@ -22,6 +22,8 @@ with Orka.Types;
 package Orka.Rendering.Buffers is
    pragma Preelaborate;
 
+   subtype Storage_Bits is GL.Objects.Buffers.Storage_Bits;
+
    use GL.Types;
    use all type Orka.Types.Element_Type;
 
@@ -54,58 +56,58 @@ package Orka.Rendering.Buffers is
    type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with private;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Kind   : Types.Element_Type;
       Length : Natural) return Buffer;
 
    -----------------------------------------------------------------------------
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Half_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Single_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Double_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Int_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : UInt_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Singles.Vector4_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Singles.Matrix4_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Doubles.Vector4_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer;
 
    function Create_Buffer
-     (Flags  : GL.Objects.Buffers.Storage_Bits;
+     (Flags  : Storage_Bits;
       Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer;
 
    -----------------------------------------------------------------------------
