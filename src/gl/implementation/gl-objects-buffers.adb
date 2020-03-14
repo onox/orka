@@ -102,6 +102,13 @@ package body GL.Objects.Buffers is
       end return;
    end Get_Format_Data;
 
+   function Kind (Target : Buffer_Target) return Indexed_Buffer_Target is
+     (case Target.Kind is
+       when Enums.Shader_Storage_Buffer => Shader_Storage,
+       when Enums.Uniform_Buffer => Uniform,
+       when Enums.Atomic_Counter_Buffer => Atomic_Counter,
+       when others => raise Constraint_Error);
+
    package Buffer_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => Buffer'Class);
 

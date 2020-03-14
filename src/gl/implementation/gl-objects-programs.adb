@@ -130,6 +130,56 @@ package body GL.Objects.Programs is
       return Uniforms.Create_Uniform (Subject, Result);
    end Uniform_Location;
 
+   function Buffer_Binding
+     (Object : Program;
+      Target : Buffers.Indexed_Buffer_Target;
+      Name   : String) return Size
+   is
+      Index : UInt;
+      Iface : Enums.Program_Interface;
+
+      use all type Buffers.Indexed_Buffer_Target;
+   begin
+      case Target is
+         when Shader_Storage =>
+            Index := API.Get_Program_Resource_Index
+              (Object.Reference.GL_Id, Enums.Shader_Storage_Block, Interfaces.C.To_C (Name));
+            Iface := Enums.Shader_Storage_Block;
+         when Uniform =>
+            Index := API.Get_Program_Resource_Index
+              (Object.Reference.GL_Id, Enums.Uniform_Block, Interfaces.C.To_C (Name));
+            Iface := Enums.Uniform_Block;
+         when Atomic_Counter =>
+            Index := API.Get_Program_Resource_Index
+              (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
+            Iface := Enums.Atomic_Counter_Buffer;
+
+            if Index = -1 then
+               raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
+            end if;
+
+            declare
+               Values : constant Int_Array := API.Get_Program_Resource
+                 (Object.Reference.GL_Id, Enums.Uniform, Index,
+                   1, (1 => Enums.Atomic_Counter_Buffer_Index), 1);
+            begin
+               Index := (if Values'Length > 0 then UInt (Values (Values'First)) else -1);
+            end;
+      end case;
+
+      if Index = -1 then
+         raise Uniform_Inactive_Error with "Buffer " & Name & " is inactive (unused)";
+      end if;
+
+      declare
+         Values : constant Int_Array := API.Get_Program_Resource
+           (Object.Reference.GL_Id, Iface, Index,
+            1, (1 => Enums.Buffer_Binding), 1);
+      begin
+         return Size (Values (Values'First));
+      end;
+   end Buffer_Binding;
+
    function Uniform_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type is
       Index : constant UInt := API.Get_Program_Resource_Index
@@ -146,7 +196,7 @@ package body GL.Objects.Programs is
          function Convert is new Ada.Unchecked_Conversion
            (Source => Int, Target => Low_Level.Enums.Resource_Type);
       begin
-         return Convert (Values (1));
+         return Convert (Values (Values'First));
       end;
    end Uniform_Type;
 
@@ -177,7 +227,7 @@ package body GL.Objects.Programs is
          function Convert is new Ada.Unchecked_Conversion
            (Source => Int, Target => Low_Level.Enums.Resource_Type);
       begin
-         return Convert (Values (1));
+         return Convert (Values (Values'First));
       end;
    end Attribute_Type;
 

@@ -52,6 +52,10 @@ package GL.Objects.Buffers is
        and (if Storage_Bits.Persistent then Storage_Bits.Read or Storage_Bits.Write);
 
    type Buffer_Target (<>) is tagged limited private;
+
+   type Indexed_Buffer_Target is (Atomic_Counter, Shader_Storage, Uniform);
+
+   function Kind (Target : Buffer_Target) return Indexed_Buffer_Target;
    
    type Buffer is new GL_Object with private;
 

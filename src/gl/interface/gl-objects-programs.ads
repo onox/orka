@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with GL.Low_Level.Enums;
+with GL.Objects.Buffers;
 with GL.Objects.Shaders.Lists;
 with GL.Types.Compute;
 
@@ -76,6 +77,11 @@ package GL.Objects.Programs is
      return Low_Level.Enums.Resource_Type;
    --  Raises the Attribute_Inactive_Error exception if the name
    --  does not exist or is unused.
+
+   function Buffer_Binding
+     (Object : Program;
+      Target : Buffers.Indexed_Buffer_Target;
+      Name   : String) return Size;
 
    function Attached_Shaders (Object : Program) return Shaders.Lists.List;
 
