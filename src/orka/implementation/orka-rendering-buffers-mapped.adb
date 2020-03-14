@@ -87,7 +87,7 @@ package body Orka.Rendering.Buffers.Mapped is
    overriding
    procedure Bind
      (Object : Mapped_Buffer;
-      Target : Indexable_Buffer_Target;
+      Target : Indexed_Buffer_Target;
       Index  : Natural)
    is
       Buffer_Target : access constant GL.Objects.Buffers.Buffer_Target;

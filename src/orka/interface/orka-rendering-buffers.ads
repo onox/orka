@@ -29,7 +29,7 @@ package Orka.Rendering.Buffers is
 
    type Bindable_Buffer is interface;
 
-   type Indexable_Buffer_Target is (Atomic_Counter, Shader_Storage, Uniform);
+   type Indexed_Buffer_Target is (Atomic_Counter, Shader_Storage, Uniform);
    --  Buffer targets that can be read/written in shaders
 
    type Buffer_Target is
@@ -37,12 +37,15 @@ package Orka.Rendering.Buffers is
 
    procedure Bind
      (Object : Bindable_Buffer;
-      Target : Indexable_Buffer_Target;
+      Target : Indexed_Buffer_Target;
       Index  : Natural) is abstract;
+   --  Bind the buffer object to the binding point at the given index of
+   --  the target
 
    procedure Bind
      (Object : Bindable_Buffer;
       Target : Buffer_Target) is abstract;
+   --  Bind the buffer object to the target
 
    function Length (Object : Bindable_Buffer) return Natural is abstract;
 
@@ -115,9 +118,9 @@ package Orka.Rendering.Buffers is
      with Inline;
 
    overriding
-   procedure Bind (Object : Buffer; Target : Indexable_Buffer_Target; Index : Natural);
-   --  Bind the buffer object to the index of the target as well as to
-   --  the target itself.
+   procedure Bind (Object : Buffer; Target : Indexed_Buffer_Target; Index : Natural);
+   --  Bind the buffer object to the binding point at the given index of
+   --  the target
 
    overriding
    procedure Bind (Object : Buffer; Target : Buffer_Target);

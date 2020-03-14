@@ -45,7 +45,7 @@ package body Orka.Rendering.Debug.Lines is
       Transforms, Colors, Points : Rendering.Buffers.Bindable_Buffer'Class)
    is
       use all type GL.Types.Compare_Function;
-      use all type Rendering.Buffers.Indexable_Buffer_Target;
+      use all type Rendering.Buffers.Indexed_Buffer_Target;
 
       Reverse_Function : constant array (GL.Types.Compare_Function) of GL.Types.Compare_Function :=
         (Never     => Always,

@@ -62,7 +62,7 @@ package body Orka.Rendering.Debug.Spheres is
       use all type GL.Blending.Equation;
 
       use all type GL.Types.Compare_Function;
-      use all type Rendering.Buffers.Indexable_Buffer_Target;
+      use all type Rendering.Buffers.Indexed_Buffer_Target;
 
       Reverse_Function : constant array (GL.Types.Compare_Function) of GL.Types.Compare_Function :=
         (Never     => Always,

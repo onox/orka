@@ -199,7 +199,7 @@ package body Orka.Rendering.Buffers is
    function Length (Object : Buffer) return Natural is (Object.Length);
 
    overriding
-   procedure Bind (Object : Buffer; Target : Indexable_Buffer_Target; Index : Natural) is
+   procedure Bind (Object : Buffer; Target : Indexed_Buffer_Target; Index : Natural) is
    begin
       case Target is
          when Uniform =>
