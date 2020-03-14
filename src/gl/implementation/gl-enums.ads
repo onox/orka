@@ -36,11 +36,6 @@ private package GL.Enums is
 
    type Program_Set_Param is (Program_Binary_Retrievable_Hint, Program_Separable);
 
-   type Program_Stage_Param is (Active_Subroutines, Active_Subroutine_Uniforms,
-                                Active_Subroutine_Uniform_Locations,
-                                Active_Subroutine_Max_Length,
-                                Active_Subroutine_Uniform_Max_Length);
-
    type Program_Pipeline_Param is (Active_Program,
                                    Fragment_Shader, Vertex_Shader,
                                    Validate_Status, Info_Log_Length,
@@ -162,13 +157,6 @@ private
    for Program_Set_Param use (Program_Binary_Retrievable_Hint => 16#8257#,
                               Program_Separable               => 16#8258#);
    for Program_Set_Param'Size use Low_Level.Enum'Size;
-
-   for Program_Stage_Param use (Active_Subroutines                   => 16#8DE5#,
-                                Active_Subroutine_Uniforms           => 16#8DE6#,
-                                Active_Subroutine_Uniform_Locations  => 16#8E47#,
-                                Active_Subroutine_Max_Length         => 16#8E48#,
-                                Active_Subroutine_Uniform_Max_Length => 16#8E49#);
-   for Program_Stage_Param'Size use Low_Level.Enum'Size;
 
    for Program_Pipeline_Param use (Active_Program         => 16#8259#,
                                    Fragment_Shader        => 16#8B30#,
