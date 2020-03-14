@@ -143,40 +143,46 @@ package body GL.Objects.Buffers is
       end if;
    end Current_Object;
 
-   procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
-                       Kind : Numeric_Type; Storage_Flags : Storage_Bits) is
+   procedure Allocate_Storage
+     (Object : Buffer;
+      Length : Long;
+      Kind   : Numeric_Type;
+      Flags  : Storage_Bits)
+   is
       use type Low_Level.Bitfield;
 
       function Convert is new Ada.Unchecked_Conversion
         (Source => Storage_Bits, Target => Low_Level.Bitfield);
-      Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Storage_Flags) and 2#0000001111000011#;
 
-      Bytes : Long;
+      Raw_Bits : constant Low_Level.Bitfield :=
+        Convert (Flags) and 2#0000001111000011#;
+
+      Number_Of_Bytes : Long;
    begin
       case Kind is
          when Half_Type =>
-            Bytes := Number_Of_Elements * Half'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Half'Size / System.Storage_Unit;
          when Single_Type =>
-            Bytes := Number_Of_Elements * Single'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Single'Size / System.Storage_Unit;
          when Double_Type =>
-            Bytes := Number_Of_Elements * Double'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Double'Size / System.Storage_Unit;
          when UInt_Type =>
-            Bytes := Number_Of_Elements * UInt'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * UInt'Size / System.Storage_Unit;
          when UByte_Type =>
-            Bytes := Number_Of_Elements * UByte'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * UByte'Size / System.Storage_Unit;
          when UShort_Type =>
-            Bytes := Number_Of_Elements * UShort'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * UShort'Size / System.Storage_Unit;
          when Int_Type =>
-            Bytes := Number_Of_Elements * Int'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Int'Size / System.Storage_Unit;
          when Byte_Type =>
-            Bytes := Number_Of_Elements * Byte'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Byte'Size / System.Storage_Unit;
          when Short_Type =>
-            Bytes := Number_Of_Elements * Short'Size / System.Storage_Unit;
+            Number_Of_Bytes := Length * Short'Size / System.Storage_Unit;
       end case;
-      API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Bytes),
-                                System.Null_Address, Raw_Bits);
-   end Allocate;
+      API.Named_Buffer_Storage
+        (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
+         System.Null_Address, Raw_Bits);
+   end Allocate_Storage;
 
    function Access_Type (Object : Buffer) return Access_Kind is
       Ret : Access_Kind := Access_Kind'First;
@@ -186,12 +192,13 @@ package body GL.Objects.Buffers is
       return Ret;
    end Access_Type;
 
-   function Immutable (Object : Buffer) return Boolean is
+   function Allocated (Object : Buffer) return Boolean is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
-      API.Get_Named_Buffer_Parameter_Bool (Object.Reference.GL_Id, Enums.Buffer_Immutable_Storage, Ret);
+      API.Get_Named_Buffer_Parameter_Bool
+        (Object.Reference.GL_Id, Enums.Buffer_Immutable_Storage, Ret);
       return Boolean (Ret);
-   end Immutable;
+   end Allocated;
 
    function Mapped (Object : Buffer) return Boolean is
       Ret : Low_Level.Bool := Low_Level.Bool (False);
@@ -259,8 +266,12 @@ package body GL.Objects.Buffers is
 
    package body Buffer_Pointers is
 
-      procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
-                            Offset, Length : Types.Size) is
+      procedure Bind_Range
+        (Target : Buffer_Target;
+         Object : Buffer'Class;
+         Index : Natural;
+         Offset, Length : Types.Size)
+      is
          Holder : Buffer_Holder.Holder := Current_Buffers (Target.Kind);
 
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
@@ -274,35 +285,43 @@ package body GL.Objects.Buffers is
          end if;
       end Bind_Range;
 
-      procedure Load_To_Immutable_Buffer (Object : Buffer;
-                                          Data   : Pointers.Element_Array;
-                                          Storage_Flags : Storage_Bits) is
+      procedure Allocate_And_Load_From_Data
+        (Object : Buffer;
+         Data   : Pointers.Element_Array;
+         Flags  : Storage_Bits)
+      is
          use type Low_Level.Bitfield;
 
          function Convert is new Ada.Unchecked_Conversion
            (Source => Storage_Bits, Target => Low_Level.Bitfield);
-         Raw_Bits : constant Low_Level.Bitfield :=
-           Convert (Storage_Flags) and 2#0000001111000011#;
 
-         Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
+         Raw_Bits : constant Low_Level.Bitfield :=
+           Convert (Flags) and 2#0000001111000011#;
+
+         Number_Of_Bytes : constant Long :=
+           Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
          API.Named_Buffer_Storage (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
                                    Data (Data'First)'Address, Raw_Bits);
-      end Load_To_Immutable_Buffer;
+      end Allocate_And_Load_From_Data;
 
-      procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
-                     Offset, Length : Types.Size;
-                     Pointer : out Pointers.Pointer) is
+      procedure Map_Range
+        (Object : in out Buffer;
+         Flags  : Access_Bits;
+         Offset, Length : Types.Size;
+         Pointer : out Pointers.Pointer)
+      is
          use type Low_Level.Bitfield;
 
          function Convert is new Ada.Unchecked_Conversion
            (Source => Access_Bits, Target => Low_Level.Bitfield);
+
          Raw_Bits : constant Low_Level.Bitfield :=
-           Convert (Access_Flags) and 2#0000000011111111#;
+           Convert (Flags) and 2#0000000011111111#;
 
          function Map_Named_Buffer_Range is new API.Loader.Function_With_4_Params
-           ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr, Low_Level.Bitfield,
-            Pointers.Pointer);
+           ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
+            Low_Level.Bitfield, Pointers.Pointer);
 
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;

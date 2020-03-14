@@ -59,6 +59,8 @@ package GL.Objects.Buffers is
    
    type Buffer is new GL_Object with private;
 
+   function Allocated (Object : Buffer) return Boolean;
+
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class);
    --  Bind the buffer object to the target
    --
@@ -75,15 +77,19 @@ package GL.Objects.Buffers is
    --    * Uniform_Buffer
    --    * Shader_Storage_Buffer
 
-   procedure Allocate (Object : Buffer; Number_Of_Elements : Long;
-                       Kind : Numeric_Type; Storage_Flags : Storage_Bits);
-   --  Use this instead of Load_To_Immutable_Buffer when you don't want
+   procedure Allocate_Storage
+     (Object : Buffer;
+      Length : Long;
+      Kind   : Numeric_Type;
+      Flags  : Storage_Bits)
+   with Pre  => not Object.Allocated,
+        Post => Object.Allocated;
+   --  Use this instead of Allocate_And_Load_From_Data if you don't want
    --  to copy any data
 
    function Current_Object (Target : Buffer_Target) return Buffer'Class;
 
    function Access_Type   (Object : Buffer) return Access_Kind;
-   function Immutable     (Object : Buffer) return Boolean;
    function Mapped        (Object : Buffer) return Boolean;
    function Size          (Object : Buffer) return Long_Size;
    function Storage_Flags (Object : Buffer) return Storage_Bits;
@@ -110,10 +116,13 @@ package GL.Objects.Buffers is
 
       subtype Pointer is Pointers.Pointer;
 
-      procedure Bind_Range (Target : Buffer_Target; Object : Buffer'Class; Index : Natural;
-                            Offset, Length : Types.Size);
+      procedure Bind_Range
+        (Target : Buffer_Target;
+         Object : Buffer'Class;
+         Index  : Natural;
+         Offset, Length : Types.Size);
       --  Bind a part of the buffer object to the index of the target as
-      --  well as to the target itself.
+      --  well as to the target itself
       --
       --  Target must be one of the following:
       --
@@ -121,13 +130,19 @@ package GL.Objects.Buffers is
       --    * Uniform_Buffer
       --    * Shader_Storage_Buffer
 
-      procedure Load_To_Immutable_Buffer (Object : Buffer;
-                                          Data   : Pointers.Element_Array;
-                                          Storage_Flags : Storage_Bits);
+      procedure Allocate_And_Load_From_Data
+        (Object : Buffer;
+         Data   : Pointers.Element_Array;
+         Flags  : Storage_Bits)
+      with Pre  => not Object.Allocated,
+           Post => Object.Allocated;
 
-      procedure Map_Range (Object : in out Buffer; Access_Flags : Access_Bits;
-                           Offset, Length : Types.Size;
-                           Pointer : out Pointers.Pointer);
+      procedure Map_Range
+        (Object : in out Buffer;
+         Flags  : Access_Bits;
+         Offset, Length : Types.Size;
+         Pointer : out Pointers.Pointer)
+      with Pre => Object.Allocated;
 
       function Get_Mapped_Data
         (Pointer : not null Pointers.Pointer;

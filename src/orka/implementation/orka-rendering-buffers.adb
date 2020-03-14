@@ -63,7 +63,7 @@ package body Orka.Rendering.Buffers is
                Storage_Kind   := Convert (Kind);
          end case;
 
-         Result.Buffer.Allocate (Long (Storage_Length), Storage_Kind, Flags);
+         Result.Buffer.Allocate_Storage (Long (Storage_Length), Storage_Kind, Flags);
          Result.Length := Length;
       end return;
    end Create_Buffer;
@@ -75,7 +75,7 @@ package body Orka.Rendering.Buffers is
       Data   : Half_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Half_Type) do
-         Pointers.Half.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Half.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -85,7 +85,7 @@ package body Orka.Rendering.Buffers is
       Data   : Single_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Type) do
-         Pointers.Single.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Single.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -95,7 +95,7 @@ package body Orka.Rendering.Buffers is
       Data   : Double_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Type) do
-         Pointers.Double.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Double.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -105,7 +105,7 @@ package body Orka.Rendering.Buffers is
       Data   : Int_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Int_Type) do
-         Pointers.Int.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Int.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -115,7 +115,7 @@ package body Orka.Rendering.Buffers is
       Data   : UInt_Array) return Buffer is
    begin
       return Result : Buffer (Kind => UInt_Type) do
-         Pointers.UInt.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.UInt.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -125,7 +125,7 @@ package body Orka.Rendering.Buffers is
       Data   : Orka.Types.Singles.Vector4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Vector_Type) do
-         Pointers.Single_Vector4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Single_Vector4.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -135,7 +135,7 @@ package body Orka.Rendering.Buffers is
       Data   : Orka.Types.Singles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Matrix_Type) do
-         Pointers.Single_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Single_Matrix4.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -145,7 +145,7 @@ package body Orka.Rendering.Buffers is
       Data   : Orka.Types.Doubles.Vector4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Vector_Type) do
-         Pointers.Double_Vector4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Double_Vector4.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -155,7 +155,7 @@ package body Orka.Rendering.Buffers is
       Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Matrix_Type) do
-         Pointers.Double_Matrix4.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Double_Matrix4.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -165,7 +165,7 @@ package body Orka.Rendering.Buffers is
       Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Arrays_Command_Type) do
-         Pointers.Arrays_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Arrays_Command.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -175,7 +175,7 @@ package body Orka.Rendering.Buffers is
       Data   : Indirect.Elements_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Elements_Command_Type) do
-         Pointers.Elements_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Elements_Command.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -185,7 +185,7 @@ package body Orka.Rendering.Buffers is
       Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Dispatch_Command_Type) do
-         Pointers.Dispatch_Command.Load_To_Immutable_Buffer (Result.Buffer, Data, Flags);
+         Pointers.Dispatch_Command.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
