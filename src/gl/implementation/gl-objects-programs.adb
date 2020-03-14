@@ -287,19 +287,6 @@ package body GL.Objects.Programs is
       end case;
    end Subroutine_Uniform_Interface;
 
-   function Subroutines_Indices
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size
-   is
-      Indices : GL.Low_Level.Int_Array (1 .. 1);
-   begin
-      API.Get_Program_Interface
-        (Object.Reference.GL_Id,
-         Subroutine_Interface (Shader),
-         Enums.Active_Resources, Indices);
-      return Size (Indices (1));
-   end Subroutines_Indices;
-
    function Subroutine_Uniforms_Indices
      (Object : Program;
       Shader : Shaders.Shader_Type) return Size
@@ -312,6 +299,10 @@ package body GL.Objects.Programs is
          Enums.Active_Resources, Indices);
       return Size (Indices (1));
    end Subroutine_Uniforms_Indices;
+   --  Return total number of subroutine uniforms indices
+   --
+   --  A subroutine uniform that is an array has multiple locations, but
+   --  has one index.
 
    function Subroutine_Uniform_Locations
      (Object : Program;
@@ -326,6 +317,7 @@ package body GL.Objects.Programs is
    begin
       return Locations;
    end Subroutine_Uniform_Locations;
+   --  Return number of locations for a specific active subroutine uniform
 
    function Subroutine_Uniform_Locations
      (Object : Program;
@@ -421,62 +413,9 @@ package body GL.Objects.Programs is
       end;
    end Subroutine_Indices_Uniform;
 
-   function Subroutine_Name
-     (Object : Program; Shader : Shaders.Shader_Type;
-      Index  : Subroutine_Index_Type) return String
-   is
-      Values : constant Int_Array := API.Get_Program_Resource
-        (Object.Reference.GL_Id,
-         Subroutine_Interface (Shader), Index,
-         1, (1 => Enums.Name_Length), 1);
-      --  Received length includes null termination character
-      Name_Length : Size := Size (Values (1));
-   begin
-      declare
-         Name : String (1 .. Integer (Name_Length));
-      begin
-         API.Get_Program_Resource_Name (Object.Reference.GL_Id,
-                                        Subroutine_Interface (Shader), Index,
-                                        Name_Length, Name_Length, Name);
-         return Name (1 .. Integer (Name_Length));
-      end;
-   end Subroutine_Name;
-
-   function Subroutine_Uniform_Name
-     (Object : Program;
-      Shader : Shaders.Shader_Type;
-      Index  : Subroutine_Index_Type) return String
-   is
-      Values : constant Int_Array := API.Get_Program_Resource
-        (Object.Reference.GL_Id,
-         Subroutine_Uniform_Interface (Shader), Index,
-         1, (1 => Enums.Name_Length), 1);
-      --  Received length includes null termination character
-      Name_Length : Size := Size (Values (1));
-   begin
-      declare
-         Name : String (1 .. Integer (Name_Length));
-      begin
-         API.Get_Program_Resource_Name (Object.Reference.GL_Id,
-                                        Subroutine_Uniform_Interface (Shader),
-                                        Index, Name_Length, Name_Length, Name);
-         return Name (1 .. Integer (Name_Length));
-      end;
-   end Subroutine_Uniform_Name;
-
    procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array) is
    begin
       API.Uniform_Subroutines (Shader, Indices'Length, Indices);
    end Set_Uniform_Subroutines;
-
-   function Uniform_Subroutine
-     (Shader   : Shaders.Shader_Type;
-      Location : Uniform_Location_Type) return Subroutine_Index_Type
-   is
-      Value : Subroutine_Index_Type := Invalid_Index;
-   begin
-      API.Get_Uniform_Subroutine (Shader, Location, Value);
-      return Value;
-   end Uniform_Subroutine;
 
 end GL.Objects.Programs;

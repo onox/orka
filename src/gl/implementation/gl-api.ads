@@ -28,7 +28,6 @@ with GL.Fences;
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
-with GL.Objects.Programs;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;
 with GL.Objects.Textures;
@@ -735,10 +734,6 @@ private package GL.API is
    procedure Uniform_Subroutines is new Loader.Procedure_With_3_Params
      ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
 
-   procedure Get_Uniform_Subroutine is new Loader.Getter_With_3_Params
-     ("glGetUniformSubroutineuiv", Objects.Shaders.Shader_Type,
-      Objects.Programs.Uniform_Location_Type, Objects.Programs.Subroutine_Index_Type);
-
    procedure Use_Program is new Loader.Procedure_With_1_Param
      ("glUseProgram", UInt);
 
@@ -772,9 +767,6 @@ private package GL.API is
    function Get_Program_Resource_Index is new Loader.Function_With_3_Params
      ("glGetProgramResourceIndex", UInt, Enums.Program_Interface,
       C.char_array, UInt);
-
-   procedure Get_Program_Resource_Name is new Loader.String_Getter_With_6_Params
-     ("glGetProgramResourceName", Size, UInt, Enums.Program_Interface, UInt);
 
    function Get_Program_Resource is new Loader.Array_Getter_With_8_Params
      ("glGetProgramResourceiv", UInt, Enums.Program_Interface,
