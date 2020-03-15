@@ -13,9 +13,9 @@ in VS_OUT {
     vec2 uv;
 } fs_in;
 
-uniform sampler2DArray diffuseTexture;
+layout(binding = 0) uniform sampler2DArray diffuseTexture;
 
-uniform sampler2D ditherTexture;
+layout(binding = 1) uniform sampler2D ditherTexture;
 // Bayer [5] ordered dithering pattern [6]
 
 out vec4 out_Color;

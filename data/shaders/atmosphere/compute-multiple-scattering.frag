@@ -36,8 +36,8 @@ layout(location = 1) out vec4 scattering;
 // computed by the functions in functions.glsl to luminance values
 uniform mat3 luminance_from_radiance;
 
-uniform sampler2D transmittance_texture;
-uniform sampler3D scattering_density_texture;
+layout(binding = 0) uniform sampler2D transmittance_texture;
+layout(binding = 5) uniform sampler3D scattering_density_texture;
 
 void main(void) {
     float nu;

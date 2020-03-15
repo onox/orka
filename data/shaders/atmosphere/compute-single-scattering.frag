@@ -38,7 +38,7 @@ layout(location = 3) out vec3 single_mie_scattering;
 // computed by the functions in functions.glsl to luminance values
 uniform mat3 luminance_from_radiance;
 
-uniform sampler2D transmittance_texture;
+layout(binding = 0) uniform sampler2D transmittance_texture;
 
 void main(void) {
     ComputeSingleScatteringTexture(

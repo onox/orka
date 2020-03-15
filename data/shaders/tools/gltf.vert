@@ -13,7 +13,7 @@ layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 matrices[];
 };
 
-uniform sampler2DArray diffuseTexture;
+layout(binding = 0) uniform sampler2DArray diffuseTexture;
 
 uniform mat4 view;
 uniform mat4 proj;

@@ -32,7 +32,7 @@
 layout(location = 0) out vec3 delta_irradiance;
 layout(location = 1) out vec3 irradiance;
 
-uniform sampler2D transmittance_texture;
+layout(binding = 0) uniform sampler2D transmittance_texture;
 
 void main(void) {
     delta_irradiance = ComputeDirectIrradianceTexture(

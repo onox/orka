@@ -283,9 +283,7 @@ package Orka.Features.Atmosphere is
 
    type Precomputed_Textures is private;
 
-   procedure Set_Program_Uniforms
-     (Object  : Precomputed_Textures;
-      Subject : Rendering.Programs.Program);
+   procedure Bind_Textures (Object : Precomputed_Textures);
 
    type Model (Data : not null access constant Model_Data) is tagged limited private;
 

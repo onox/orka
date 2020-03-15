@@ -29,10 +29,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-uniform sampler2D transmittance_texture;
-uniform sampler3D scattering_texture;
-uniform sampler3D single_mie_scattering_texture;
-uniform sampler2D irradiance_texture;
+layout(binding = 0) uniform sampler2D transmittance_texture;
+layout(binding = 1) uniform sampler3D scattering_texture;
+layout(binding = 2) uniform sampler2D irradiance_texture;
+layout(binding = 3) uniform sampler3D single_mie_scattering_texture;
 
 #ifdef RADIANCE_API_ENABLED
 RadianceSpectrum GetSolarRadiance() {

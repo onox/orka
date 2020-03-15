@@ -36,9 +36,9 @@ layout(location = 1) out vec3 irradiance;
 // computed by the functions in functions.glsl to luminance values
 uniform mat3 luminance_from_radiance;
 
-uniform sampler3D single_rayleigh_scattering_texture;
-uniform sampler3D single_mie_scattering_texture;
-uniform sampler3D multiple_scattering_texture;
+layout(binding = 1) uniform sampler3D single_rayleigh_scattering_texture;
+layout(binding = 2) uniform sampler3D single_mie_scattering_texture;
+layout(binding = 3) uniform sampler3D multiple_scattering_texture;
 uniform int scattering_order;
 
 void main(void) {

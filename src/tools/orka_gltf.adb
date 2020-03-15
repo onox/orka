@@ -285,18 +285,20 @@ begin
          Sampler_1.Set_Minifying_Filter (Nearest);
          Sampler_1.Set_Magnifying_Filter (Nearest);
 
-         Sampler_1.Bind (1);
-         Sampler_2.Bind (2);
+         Sampler_1.Bind (0);
+         Sampler_2.Bind (1);
 
          FB_1.Attach (Texture_3);
          FB_1.Attach (Texture_4);
 
          --  Load checkerboard texture array
          Load_Texture (Texture_1);
-         Uni_Texture.Set_Texture (Texture_1, 1);
 
-         --  Set dithering texture
-         Uni_Dither.Set_Texture (Texture_2, 2);
+         Uni_Texture.Verify_Compatibility (Texture_1);
+         Uni_Dither.Verify_Compatibility (Texture_2);
+
+         Orka.Rendering.Textures.Bind (Texture_1, Orka.Rendering.Textures.Texture, 0);
+         Orka.Rendering.Textures.Bind (Texture_2, Orka.Rendering.Textures.Texture, 1);
 
          Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 

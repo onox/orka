@@ -38,6 +38,7 @@ with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.Textures;
 with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Textures.KTX;
@@ -181,7 +182,8 @@ begin
 
          VF_1.Bind;
 
-         Uni_Texture.Set_Texture (T_1, 0);
+         Uni_Texture.Verify_Compatibility (T_1);
+         Orka.Rendering.Textures.Bind (T_1, Orka.Rendering.Textures.Texture, 0);
 
          Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
          Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);

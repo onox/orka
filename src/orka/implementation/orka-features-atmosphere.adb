@@ -52,6 +52,7 @@ with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Vertex_Formats;
+with Orka.Rendering.Textures;
 with Orka.Types;
 
 package body Orka.Features.Atmosphere is
@@ -541,9 +542,25 @@ package body Orka.Features.Atmosphere is
 
       use all type GL.Blending.Equation;
       use all type GL.Blending.Blend_Factor;
+      use all type Rendering.Textures.Indexed_Texture_Target;
    begin
       GL.Blending.Set_Blend_Equation ((Func_Add, Func_Add));
       GL.Blending.Set_Blend_Func ((One, One, One, One));
+
+      Rendering.Textures.Bind (Result.Transmittance_Texture, Texture, 0);
+      --  transmittance_texture
+      Rendering.Textures.Bind (Delta_Rayleigh_Scattering_Texture, Texture, 1);
+      --  single_rayleigh_scattering_texture
+
+      Rendering.Textures.Bind (Delta_Mie_Scattering_Texture, Texture, 2);
+      --  single_mie_scattering_texture
+      Rendering.Textures.Bind (Delta_Multiple_Scattering_Texture, Texture, 3);
+      --  multiple_scattering_texture
+      Rendering.Textures.Bind (Delta_Irradiance_Texture, Texture, 4);
+      --  irradiance_texture
+
+      Rendering.Textures.Bind (Delta_Scattering_Density_Texture, Texture, 5);
+      --  scattering_density_texture
 
       --  Compute the transmittance and store it in Transmittance_Texture
       FBO_Transmittance.Use_Framebuffer;
@@ -568,8 +585,6 @@ package body Orka.Features.Atmosphere is
           1 => GL.Buffers.Color_Attachment1));
 
       Program_Direct_Irradiance.Use_Program;
-      Program_Direct_Irradiance.Uniform_Sampler ("transmittance_texture").Set_Texture
-        (Result.Transmittance_Texture, 0);
       Draw_Quad ((False, Blend), VF_Quad);
 
       -------------------------------------------------------------------------
@@ -601,8 +616,6 @@ package body Orka.Features.Atmosphere is
       Program_Single_Scattering.Use_Program;
       Program_Single_Scattering.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
         (Luminance_From_Radiance_Mat3);
-      Program_Single_Scattering.Uniform_Sampler ("transmittance_texture").Set_Texture
-        (Result.Transmittance_Texture, 0);
       for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
          Program_Single_Scattering.Uniform ("layer").Set_Int (Layer);
          Draw_Quad ((False, False, Blend, Blend), VF_Quad);
@@ -624,16 +637,6 @@ package body Orka.Features.Atmosphere is
            ((0 => GL.Buffers.Color_Attachment0));
 
          Program_Scattering_Density.Use_Program;
-         Program_Scattering_Density.Uniform_Sampler ("transmittance_texture").Set_Texture
-           (Result.Transmittance_Texture, 0);
-         Program_Scattering_Density.Uniform_Sampler ("single_rayleigh_scattering_texture").Set_Texture
-           (Delta_Rayleigh_Scattering_Texture, 1);
-         Program_Scattering_Density.Uniform_Sampler ("single_mie_scattering_texture").Set_Texture
-           (Delta_Mie_Scattering_Texture, 2);
-         Program_Scattering_Density.Uniform_Sampler ("multiple_scattering_texture").Set_Texture
-           (Delta_Multiple_Scattering_Texture, 3);
-         Program_Scattering_Density.Uniform_Sampler ("irradiance_texture").Set_Texture
-           (Delta_Irradiance_Texture, 4);
          Program_Scattering_Density.Uniform ("scattering_order").Set_Int (Scattering_Order);
          for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
             Program_Scattering_Density.Uniform ("layer").Set_Int (Layer);
@@ -652,12 +655,6 @@ package body Orka.Features.Atmosphere is
          Program_Indirect_Irradiance.Use_Program;
          Program_Indirect_Irradiance.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
           (Luminance_From_Radiance_Mat3);
-         Program_Indirect_Irradiance.Uniform_Sampler ("single_rayleigh_scattering_texture").Set_Texture
-           (Delta_Rayleigh_Scattering_Texture, 0);
-         Program_Indirect_Irradiance.Uniform_Sampler ("single_mie_scattering_texture").Set_Texture
-           (Delta_Mie_Scattering_Texture, 1);
-         Program_Indirect_Irradiance.Uniform_Sampler ("multiple_scattering_texture").Set_Texture
-           (Delta_Multiple_Scattering_Texture, 2);
          Program_Indirect_Irradiance.Uniform ("scattering_order").Set_Int (Scattering_Order - 1);
          Draw_Quad ((False, True), VF_Quad);
 
@@ -676,10 +673,6 @@ package body Orka.Features.Atmosphere is
          Program_Multiple_Scattering.Use_Program;
          Program_Multiple_Scattering.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
           (Luminance_From_Radiance_Mat3);
-         Program_Multiple_Scattering.Uniform_Sampler ("transmittance_texture").Set_Texture
-           (Result.Transmittance_Texture, 0);
-         Program_Multiple_Scattering.Uniform_Sampler ("scattering_density_texture").Set_Texture
-           (Delta_Scattering_Density_Texture, 1);
          for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
             Program_Multiple_Scattering.Uniform ("layer").Set_Int (Layer);
             Draw_Quad ((False, True), VF_Quad);
@@ -917,40 +910,24 @@ package body Orka.Features.Atmosphere is
       return Rendering.Programs.Modules.Create_Module_From_Sources (FS => Shader_Source);
    end Get_Shader;
 
-   procedure Set_Program_Uniforms
-     (Object  : Precomputed_Textures;
-      Subject : Rendering.Programs.Program) is
+   procedure Bind_Textures (Object : Precomputed_Textures) is
+      use all type Rendering.Textures.Indexed_Texture_Target;
    begin
       Object.Sampler.Bind (0);
       Object.Sampler.Bind (1);
       Object.Sampler.Bind (2);
       Object.Sampler.Bind (3);
 
-      Subject.Uniform_Sampler ("transmittance_texture").Set_Texture
-        (Object.Transmittance_Texture, 0);
-      Subject.Uniform_Sampler ("scattering_texture").Set_Texture
-        (Object.Scattering_Texture, 1);
+      Rendering.Textures.Bind (Object.Transmittance_Texture, Texture, 0);
+      Rendering.Textures.Bind (Object.Scattering_Texture, Texture, 1);
 
       --  Only used by GetSunAndSkyIrradiance to compute radiance
       --  reflected by the ground
-      begin
-         Subject.Uniform_Sampler ("irradiance_texture").Set_Texture
-           (Object.Irradiance_Texture, 2);
-      exception
-         when Rendering.Programs.Uniforms.Uniform_Inactive_Error =>
-            null;
-      end;
+      Rendering.Textures.Bind (Object.Irradiance_Texture, Texture, 2);
 
-      --  Defined in shader but unused if Object.Combine_Scattering
-      begin
-         Subject.Uniform_Sampler ("single_mie_scattering_texture").Set_Texture
-           (Object.Optional_Single_Mie_Scattering_Texture, 3);
-      exception
-         when Rendering.Programs.Uniforms.Uniform_Inactive_Error =>
-            if not Object.Combine_Scattering then
-               raise;
-            end if;
-      end;
-   end Set_Program_Uniforms;
+      if not Object.Combine_Scattering then
+         Rendering.Textures.Bind (Object.Optional_Single_Mie_Scattering_Texture, Texture, 3);
+      end if;
+   end Bind_Textures;
 
 end Orka.Features.Atmosphere;
