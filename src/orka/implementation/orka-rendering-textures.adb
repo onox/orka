@@ -22,12 +22,24 @@ with Orka.Strings;
 
 package body Orka.Rendering.Textures is
 
-   use GL.Objects.Textures;
-   use GL.Objects.Samplers;
+   procedure Bind
+     (Object : GL.Objects.Textures.Texture_Base'Class;
+      Target : Indexed_Texture_Target;
+      Index  : Natural) is
+   begin
+      case Target is
+         when Texture =>
+            Object.Bind_Texture_Unit (GL.Types.UInt (Index));
+         when Image =>
+            Object.Bind_Image_Texture (GL.Types.UInt (Index));
+      end case;
+   end Bind;
 
    function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler is
+      use all type GL.Objects.Textures.Minifying_Function;
+      use all type GL.Objects.Textures.Wrapping_Mode;
    begin
-      return Result : Sampler do
+      return Result : GL.Objects.Samplers.Sampler do
          Result.Set_X_Wrapping (Repeat);
          Result.Set_Y_Wrapping (Repeat);
 
@@ -51,7 +63,7 @@ package body Orka.Rendering.Textures is
       --    (Vol. 26, pp. 11-15).
       --  * http://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
    begin
-      return Result : Texture (GL.Low_Level.Enums.Texture_2D) do
+      return Result : GL.Objects.Textures.Texture (GL.Low_Level.Enums.Texture_2D) do
          Result.Allocate_Storage (1, 1, GL.Pixels.R8, Width => 8, Height => 8, Depth => 1);
          Result.Load_From_Data
            (Level => 0,

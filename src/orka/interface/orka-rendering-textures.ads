@@ -22,6 +22,14 @@ package Orka.Rendering.Textures is
 
    use all type GL.Objects.Textures.Dimension_Count;
 
+   type Indexed_Texture_Target is (Texture, Image);
+
+   procedure Bind
+     (Object : GL.Objects.Textures.Texture_Base'Class;
+      Target : Indexed_Texture_Target;
+      Index  : Natural);
+   --  Bind the texture or image to the binding point at the given index
+
    function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler;
    --  Return a sampler for sampling a texture containing the Bayer ordered
    --  dithering pattern
