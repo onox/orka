@@ -51,6 +51,8 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt);
 
+   procedure Set_Integer (Object : Uniform; Value : Integer);
+
    procedure Set_Boolean (Object : Uniform; Value : Boolean);
 
    function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform

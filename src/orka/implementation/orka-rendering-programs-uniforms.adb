@@ -131,9 +131,14 @@ package body Orka.Rendering.Programs.Uniforms is
       Object.GL_Uniform.Set_UInt (Value);
    end Set_UInt;
 
+   procedure Set_Integer (Object : Uniform; Value : Integer) is
+   begin
+      Object.GL_Uniform.Set_Int (GL.Types.Int (Value));
+   end Set_Integer;
+
    procedure Set_Boolean (Object : Uniform; Value : Boolean) is
    begin
-      Object.GL_Uniform.Set_Int ((if Value then 1 else 0));
+      Object.GL_Uniform.Set_Int (if Value then 1 else 0);
    end Set_Boolean;
 
    procedure Set_Texture
@@ -185,6 +190,8 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       return Object.Program.GL_Program.Subroutine_Index (Object.Shader, Name);
    end Index;
+
+   -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
      (Object : Program;
