@@ -28,28 +28,33 @@ package body Orka.Rendering.Programs.Uniforms is
             return Texture_2D;
          when Sampler_3D | Int_Sampler_3D | UInt_Sampler_3D =>
             return Texture_3D;
-         when Sampler_2D_Rect | Int_Sampler_2D_Rect | UInt_Sampler_2D_Rect | Sampler_2D_Rect_Shadow =>
+         when Sampler_2D_Rect | Int_Sampler_2D_Rect | UInt_Sampler_2D_Rect |
+           Sampler_2D_Rect_Shadow =>
             return Texture_Rectangle;
          when Sampler_Cube | Int_Sampler_Cube | UInt_Sampler_Cube | Sampler_Cube_Shadow =>
             return Texture_Cube_Map;
-         when Sampler_Cube_Array | Int_Sampler_Cube_Array | UInt_Sampler_Cube_Array | Sampler_Cube_Array_Shadow =>
+         when Sampler_Cube_Array | Int_Sampler_Cube_Array | UInt_Sampler_Cube_Array |
+           Sampler_Cube_Array_Shadow =>
             return Texture_Cube_Map_Array;
-         when Sampler_1D_Array | Int_Sampler_1D_Array | UInt_Sampler_1D_Array | Sampler_1D_Array_Shadow =>
+         when Sampler_1D_Array | Int_Sampler_1D_Array | UInt_Sampler_1D_Array |
+           Sampler_1D_Array_Shadow =>
             return Texture_1D_Array;
-         when Sampler_2D_Array | Int_Sampler_2D_Array | UInt_Sampler_2D_Array | Sampler_2D_Array_Shadow =>
+         when Sampler_2D_Array | Int_Sampler_2D_Array | UInt_Sampler_2D_Array |
+           Sampler_2D_Array_Shadow =>
             return Texture_2D_Array;
          when Sampler_Buffer | Int_Sampler_Buffer | UInt_Sampler_Buffer =>
             return Texture_Buffer;
          when Sampler_2D_Multisample | Int_Sampler_2D_Multisample | UInt_Sampler_2D_Multisample =>
             return Texture_2D_Multisample;
-         when Sampler_2D_Multisample_Array | Int_Sampler_2D_Multisample_Array | UInt_Sampler_2D_Multisample_Array =>
+         when Sampler_2D_Multisample_Array | Int_Sampler_2D_Multisample_Array |
+           UInt_Sampler_2D_Multisample_Array =>
             return Texture_2D_Multisample_Array;
          when others =>
             raise Constraint_Error;
       end case;
    end Texture_Kind;
 
-   function Texture_Image_Kind (Image : LE.Resource_Type) return LE.Texture_Kind is
+   function Image_Kind (Image : LE.Resource_Type) return LE.Texture_Kind is
       use LE;
    begin
       case Image is
@@ -73,12 +78,67 @@ package body Orka.Rendering.Programs.Uniforms is
             return Texture_2D_Array;
          when Image_2D_Multisample | Int_Image_2D_Multisample | UInt_Image_2D_Multisample =>
             return Texture_2D_Multisample;
-         when Image_2D_Multisample_Array | Int_Image_2D_Multisample_Array | UInt_Image_2D_Multisample_Array =>
+         when Image_2D_Multisample_Array | Int_Image_2D_Multisample_Array |
+           UInt_Image_2D_Multisample_Array =>
             return Texture_2D_Multisample_Array;
          when others =>
             raise Constraint_Error;
       end case;
-   end Texture_Image_Kind;
+   end Image_Kind;
+
+   function Sampler_Format_Type (Sampler : LE.Resource_Type) return PE.Format_Type is
+      use LE;
+      use PE;
+   begin
+      case Sampler is
+         when Sampler_1D | Sampler_2D | Sampler_3D | Sampler_2D_Rect |
+           Sampler_Cube | Sampler_Cube_Array | Sampler_Buffer |
+           Sampler_1D_Array | Sampler_2D_Array |
+           Sampler_2D_Multisample | Sampler_2D_Multisample_Array =>
+            return Float_Or_Normalized_Type;
+         when Int_Sampler_1D | Int_Sampler_2D | Int_Sampler_3D | Int_Sampler_2D_Rect |
+           Int_Sampler_Cube | Int_Sampler_Cube_Array | Int_Sampler_Buffer |
+           Int_Sampler_1D_Array | Int_Sampler_2D_Array |
+           Int_Sampler_2D_Multisample | Int_Sampler_2D_Multisample_Array =>
+            return Int_Type;
+         when UInt_Sampler_1D | UInt_Sampler_2D | UInt_Sampler_3D | UInt_Sampler_2D_Rect |
+           UInt_Sampler_Cube | UInt_Sampler_Cube_Array | UInt_Sampler_Buffer |
+           UInt_Sampler_1D_Array | UInt_Sampler_2D_Array |
+           UInt_Sampler_2D_Multisample | UInt_Sampler_2D_Multisample_Array =>
+            return Unsigned_Int_Type;
+         when Sampler_1D_Shadow | Sampler_2D_Shadow | Sampler_2D_Rect_Shadow |
+           Sampler_Cube_Shadow | Sampler_Cube_Array_Shadow |
+           Sampler_1D_Array_Shadow | Sampler_2D_Array_Shadow =>
+            return Depth_Type;
+         when others =>
+            raise Constraint_Error;
+      end case;
+   end Sampler_Format_Type;
+
+   function Image_Format_Type (Image : LE.Resource_Type) return PE.Format_Type is
+      use LE;
+      use PE;
+   begin
+      case Image is
+         when Image_1D | Image_2D | Image_3D | Image_2D_Rect |
+           Image_Cube | Image_Cube_Map_Array | Image_Buffer |
+           Image_1D_Array | Image_2D_Array |
+           Image_2D_Multisample | Image_2D_Multisample_Array =>
+            return Float_Or_Normalized_Type;
+         when Int_Image_1D | Int_Image_2D | Int_Image_3D | Int_Image_2D_Rect |
+           Int_Image_Cube | Int_Image_Cube_Map_Array | Int_Image_Buffer |
+           Int_Image_1D_Array | Int_Image_2D_Array |
+           Int_Image_2D_Multisample | Int_Image_2D_Multisample_Array =>
+            return Int_Type;
+         when UInt_Image_1D | UInt_Image_2D | UInt_Image_3D | UInt_Image_2D_Rect |
+           UInt_Image_Cube | UInt_Image_Cube_Map_Array | UInt_Image_Buffer |
+           UInt_Image_1D_Array | UInt_Image_2D_Array |
+           UInt_Image_2D_Multisample | UInt_Image_2D_Multisample_Array =>
+            return Unsigned_Int_Type;
+         when others =>
+            raise Constraint_Error;
+      end case;
+   end Image_Format_Type;
 
    function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform is
      (Object.GL_Uniform);
@@ -141,26 +201,6 @@ package body Orka.Rendering.Programs.Uniforms is
       Object.GL_Uniform.Set_Int (if Value then 1 else 0);
    end Set_Boolean;
 
-   procedure Set_Texture
-     (Object  : Uniform_Sampler;
-      Texture : GL.Objects.Textures.Texture_Base'Class;
-      Binding : Natural) is
-   begin
-      Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));
-      Texture.Bind_Texture_Unit (GL.Types.UInt (Binding));
-      --  TODO Need to rebind after changing the program
-   end Set_Texture;
-
-   procedure Set_Image
-     (Object  : Uniform_Image;
-      Texture : GL.Objects.Textures.Texture_Base'Class;
-      Binding : Natural) is
-   begin
-      Object.GL_Uniform.Set_Int (GL.Types.Int (Binding));
-      Texture.Bind_Image_Texture (GL.Types.UInt (Binding));
-      --  TODO Need to rebind after changing the program
-   end Set_Image;
-
    function Is_Compatible
      (Object : Uniform_Subroutine;
       Index  : Subroutine_Index) return Boolean
@@ -199,9 +239,8 @@ package body Orka.Rendering.Programs.Uniforms is
    is
       Sampler_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
    begin
-      --  TODO Or store Sampler_Kind?
       return Uniform_Sampler'
-        (Kind       => Texture_Kind (Sampler_Kind),
+        (Kind       => Sampler_Kind,
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
    exception
       when Constraint_Error =>
@@ -216,7 +255,7 @@ package body Orka.Rendering.Programs.Uniforms is
       Image_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
    begin
       return Uniform_Image'
-        (Kind       => Texture_Image_Kind (Image_Kind),
+        (Kind       => Image_Kind,
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
    exception
       when Constraint_Error =>

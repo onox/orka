@@ -37,6 +37,81 @@ package GL.Pixels.Extensions is
 
    -----------------------------------------------------------------------------
 
+   type Format_Type is (Float_Or_Normalized_Type, Int_Type, Unsigned_Int_Type, Depth_Type);
+
+   function Texture_Format_Type (Format : Pixels.Internal_Format) return Format_Type is
+     (case Format is
+        --  Shadow samplers
+        when Depth_Component16 | Depth_Component24 | Depth_Component32F |
+          Depth24_Stencil8 | Depth32F_Stencil8 =>
+           Depth_Type,
+
+        -- Floating point or (un)signed normalized fixed-point
+        when R8 | R8_SNorm | R16 | R16_SNorm | R16F | R32F =>
+           Float_Or_Normalized_Type,
+        when RG8 | RG8_SNorm | RG16 | RG16_SNorm | RG16F | RG32F =>
+           Float_Or_Normalized_Type,
+        when R3_G3_B2 | RGB4 | RGB5 | RGB8 | RGB8_SNorm | RGB10 | RGB12 |
+          RGB16 | RGB16_SNorm | RGB16F | RGB32F | R11F_G11F_B10F | RGB9_E5 | SRGB8 =>
+           Float_Or_Normalized_Type,
+        when RGBA2 | RGBA4 | RGB5_A1 | RGBA8 | RGBA8_SNorm | RGB10_A2 | RGBA12 |
+          RGBA16 | RGBA16_SNorm | RGBA16F | RGBA32F | SRGB8_Alpha8 =>
+           Float_Or_Normalized_Type,
+
+        --  Integer samplers
+        when R8I | R16I | R32I =>
+           Int_Type,
+        when RG8I | RG16I | RG32I =>
+           Int_Type,
+        when RGB8I | RGB16I | RGB32I =>
+           Int_Type,
+        when RGBA8I | RGBA16I | RGBA32I =>
+           Int_Type,
+
+        --  Unsigned integer samplers
+        when R8UI | R16UI | R32UI =>
+           Unsigned_Int_Type,
+        when RG8UI | RG16UI | RG32UI =>
+           Unsigned_Int_Type,
+        when RGB8UI | RGB16UI | RGB32UI =>
+           Unsigned_Int_Type,
+        when RGBA8UI | RGBA16UI | RGBA32UI | RGB10_A2UI =>
+           Unsigned_Int_Type,
+
+        when others =>
+           raise Constraint_Error with "Invalid format " & Format'Image & " for sampler");
+
+   function Image_Format_Type (Format : Pixels.Internal_Format) return Format_Type is
+     (case Format is
+        -- Floating point or (un)signed normalized fixed-point
+        when R8_SNorm | R16_SNorm | RG8_SNorm | RG16_SNorm | RGBA8_SNorm | RGBA16_SNorm =>
+           Float_Or_Normalized_Type,
+        when R8 | R16 | RG8 | RG16 =>
+           Float_Or_Normalized_Type,
+        when RGBA8 | RGB10_A2 | RGBA16 =>
+           Float_Or_Normalized_Type,
+        when R16F | R32F | R11F_G11F_B10F | RG16F | RG32F | RGBA16F | RGBA32F =>
+           Float_Or_Normalized_Type,
+
+        --  Integer samplers
+        when R8I | R16I | R32I =>
+           Int_Type,
+        when RG8I | RG16I | RG32I =>
+           Int_Type,
+        when RGBA8I | RGBA16I | RGBA32I =>
+           Int_Type,
+
+        --  Unsigned integer samplers
+        when R8UI | R16UI | R32UI =>
+           Unsigned_Int_Type,
+        when RG8UI | RG16UI | RG32UI =>
+           Unsigned_Int_Type,
+        when RGBA8UI | RGBA16UI | RGBA32UI | RGB10_A2UI =>
+           Unsigned_Int_Type,
+
+        when others =>
+           raise Constraint_Error with "Invalid format " & Format'Image & " for image sampler");
+
    function Texture_Format (Format : Pixels.Internal_Format) return Pixels.Format is
      (case Format is
         when Depth_Component16 | Depth_Component24 | Depth_Component32F =>

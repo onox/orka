@@ -19,7 +19,10 @@ with Ada.Containers.Indefinite_Holders;
 with GL.Low_Level.Enums;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Textures;
+with GL.Pixels.Extensions;
 with GL.Types;
+
+with Orka.Rendering.Textures;
 
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Matrices;
@@ -28,12 +31,24 @@ package Orka.Rendering.Programs.Uniforms is
    pragma Preelaborate;
 
    package LE renames GL.Low_Level.Enums;
+   package PE renames GL.Pixels.Extensions;
 
    use type LE.Texture_Kind;
    use type LE.Resource_Type;
+   use type PE.Format_Type;
 
    package TS renames Transforms.Singles.Matrices;
    package TD renames Transforms.Doubles.Matrices;
+
+   -----------------------------------------------------------------------------
+
+   function Texture_Kind (Sampler : LE.Resource_Type) return LE.Texture_Kind;
+   function Image_Kind   (Image   : LE.Resource_Type) return LE.Texture_Kind;
+
+   function Sampler_Format_Type (Sampler : LE.Resource_Type) return PE.Format_Type;
+   function Image_Format_Type   (Image   : LE.Resource_Type) return PE.Format_Type;
+
+   -----------------------------------------------------------------------------
 
    type Uniform (Kind : LE.Resource_Type) is tagged private;
 
@@ -60,31 +75,54 @@ package Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged private;
+   type Uniform_Sampler (Kind : LE.Resource_Type) is tagged private;
 
-   procedure Set_Texture
+   procedure Verify_Compatibility
      (Object  : Uniform_Sampler;
-      Texture : GL.Objects.Textures.Texture_Base'Class;
-      Binding : Natural)
-   with Pre => Texture.Kind = Object.Kind or else raise Constraint_Error with
-                 "Cannot bind " & Texture.Kind'Image & " to " &
-                 Object.Kind'Image & " sampler";
-   --  TODO Add pre condition to check Texture.Format matches Sampler_Kind
-   --  (see https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Sampler_types)
-   --  Set the binding point of the uniform sampler and bind the
-   --  given texture to the corresponding texture unit
+      Texture : GL.Objects.Textures.Texture) is null
+   with Pre'Class =>
+     (Texture.Kind = Texture_Kind (Object.Kind) or else
+       raise Constraint_Error with
+         "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
+         Texture_Kind (Object.Kind)'Image & " sampler")
+     and then
+       --  If the texture is a depth texture, the sampler can be a normal or shadow sampler
+       --  (The bound Sampler object must have comparison mode enabled iff the sampler in the
+       --  shader is a shadow sampler)
+       (Texture.Compressed
+          or else
+            (if PE.Texture_Format_Type (Texture.Internal_Format) = PE.Depth_Type then
+               Sampler_Format_Type (Object.Kind) in PE.Depth_Type | PE.Float_Or_Normalized_Type
+             else
+               Sampler_Format_Type (Object.Kind) = PE.Texture_Format_Type (Texture.Internal_Format))
+          or else raise Constraint_Error with
+            "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
+            Object.Kind'Image & " sampler");
 
    -----------------------------------------------------------------------------
 
-   type Uniform_Image (Kind : LE.Texture_Kind) is tagged private;
+   type Uniform_Image (Kind : LE.Resource_Type) is tagged private;
 
-   procedure Set_Image
+   use all type GL.Pixels.Internal_Format;
+
+   procedure Verify_Compatibility
      (Object  : Uniform_Image;
-      Texture : GL.Objects.Textures.Texture_Base'Class;
-      Binding : Natural)
-   with Pre => Texture.Kind = Object.Kind or else raise Constraint_Error with
-                 "Cannot bind " & Texture.Kind'Image & " to " &
-                 Object.Kind'Image & " image sampler";
+      Texture : GL.Objects.Textures.Texture) is null
+   with Pre'Class =>
+     (Texture.Kind = Image_Kind (Object.Kind) or else
+       raise Constraint_Error with
+         "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
+         Image_Kind (Object.Kind)'Image & " image sampler")
+     and then
+       --  If the texture is a depth texture, the sampler can be a normal or shadow sampler
+       --  (The bound Sampler object must have comparison mode enabled iff the sampler in the
+       --  shader is a shadow sampler)
+       (Texture.Compressed
+          or else
+            Sampler_Format_Type (Object.Kind) = PE.Image_Format_Type (Texture.Internal_Format)
+          or else raise Constraint_Error with
+            "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
+            Object.Kind'Image & " image sampler");
 
    -----------------------------------------------------------------------------
 
@@ -147,11 +185,11 @@ private
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 
-   type Uniform_Sampler (Kind : LE.Texture_Kind) is tagged record
+   type Uniform_Sampler (Kind : LE.Resource_Type) is tagged record
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 
-   type Uniform_Image (Kind : LE.Texture_Kind) is tagged record
+   type Uniform_Image (Kind : LE.Resource_Type) is tagged record
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 

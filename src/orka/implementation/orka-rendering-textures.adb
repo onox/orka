@@ -14,11 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Fixed;
-
 with GL.Low_Level.Enums;
 with GL.Pixels;
 with GL.Types;
+
+with Orka.Strings;
 
 package body Orka.Rendering.Textures is
 
@@ -66,15 +66,17 @@ package body Orka.Rendering.Textures is
      (Texture : GL.Objects.Textures.Texture;
       Level   : GL.Objects.Textures.Mipmap_Level := 0) return String
    is
-      function Trim (Value : String) return String is
-        (Ada.Strings.Fixed.Trim (Value, Ada.Strings.Both));
-
-      Width  : constant String := Trim (Texture.Width  (Level)'Image);
-      Height : constant String := Trim (Texture.Height (Level)'Image);
-      Depth  : constant String := Trim (Texture.Depth  (Level)'Image);
+      Width  : constant String := Orka.Strings.Trim (Texture.Width  (Level)'Image);
+      Height : constant String := Orka.Strings.Trim (Texture.Height (Level)'Image);
+      Depth  : constant String := Orka.Strings.Trim (Texture.Depth  (Level)'Image);
    begin
-      return (if Texture.Allocated then "allocated" else "unallocated") &
-        " " & Width & " x " & Height & " x " & Depth & " texture";
+      return (if Texture.Allocated then "" else "unallocated ") &
+        Width & " x " & Height & " x " & Depth & " " & Texture.Kind'Image &
+        " with " &
+        (if Texture.Compressed then
+           Texture.Compressed_Format'Image
+         else
+           Texture.Internal_Format'Image) & " format";
    end Image;
 
 end Orka.Rendering.Textures;
