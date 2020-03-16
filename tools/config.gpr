@@ -31,6 +31,8 @@ abstract project Config is
    Compiler_Name : Compiler_Type := external ("Compiler", "gnat");
 
    Compiler_Switches := (
+      "-fdata-sections",
+      "-ffunction-sections",
       "-fstack-check",  --  Stack overflow checking
       "-gnateE",        --  Extra information in exceptions
       "-gnatf",         --  Full errors
@@ -45,6 +47,10 @@ abstract project Config is
    Dev_Switches := (
       "-gnato13",       --  Numeric overflow checking
       "-gnata"          --  Enable assertions
+   );
+
+   Linker_Switches := (
+      "-Wl,--gc-sections"
    );
 
    package Builder is
@@ -83,5 +89,9 @@ abstract project Config is
             null;
       end case;
    end Binder;
+
+   package Linker is
+      for Switches ("ada") use Linker_Switches;
+   end Linker;
 
 end Config;

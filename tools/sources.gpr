@@ -29,15 +29,17 @@ abstract project Sources is
                     "../src/orka/implementation/x86/generic");
 
    case Config.Windowing_System is
-      when "windows" => OpenGL_Sources := OpenGL_Sources & "../src/gl/windows" & "../src/orka/windows";
-      when "egl"     => OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
+      when "windows" =>
+         OpenGL_Sources := OpenGL_Sources & "../src/gl/windows" & "../src/orka/windows";
+      when "egl"     =>
+         OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
    end case;
 
    case Config.Compiler_Name is
       when "gnat" => Orka_Sources :=
-        Orka_Sources & ("../src/orka/interface/x86/gnat");
+         Orka_Sources & ("../src/orka/interface/x86/gnat");
       when others =>
-        null;
+         null;
    end case;
 
    package Compiler renames Config.Compiler;

@@ -38,12 +38,12 @@ project Tools is
 
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
+   package Linker renames Config.Linker;
 
    package Builder extends Config.Builder is
       for Executable ("orka_gltf.adb") use "orka-gltf";
       for Executable ("orka_info.adb") use "orka-info";
       for Executable ("orka_ktx.adb") use "orka-ktx";
    end Builder;
-
 
 end Tools;

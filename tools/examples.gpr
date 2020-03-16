@@ -56,5 +56,6 @@ project Examples is
    package Compiler renames Config.Compiler;
    package Binder renames Config.Binder;
    package Builder renames Config.Builder;
+   package Linker renames Config.Linker;
 
 end Examples;
