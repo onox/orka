@@ -97,7 +97,7 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
       --  Shuffled:  Y   X   W   Z
       --            --------------- +
       --  Sum:      X+Y X+Y Z+W Z+W
-      Shuffled : constant m256d := Permute (Elements, Mask_1_0_1_0);
+      Shuffled : constant m256d := Permute_Within_Lanes (Elements, Mask_1_0_1_0);
       Sum      : constant m256d := Elements + Shuffled;
    begin
       --  Sum:      X+Y X+Y Z+W Z+W

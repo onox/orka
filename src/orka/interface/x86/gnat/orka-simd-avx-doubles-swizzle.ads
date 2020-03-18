@@ -121,9 +121,10 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --
    --  or by simply writing 2#ba#. a and b must be either 0 or 1.
 
-   function Permute (Elements : m256d; Mask : Unsigned_32) return m256d
+   function Permute_Within_Lanes (Elements : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd256";
-   --  Shuffle elements using just Elements. Similar to Shuffle (Elements, Elements, Mask):
+   --  Shuffle elements within the two 128-bit lanes. Similar to
+   --  Shuffle_Within_Lanes (Elements, Elements, Mask):
    --
    --  Result (1) := if Mask (a) = 0 then Elements (1) else Elements (2)
    --  Result (2) := if Mask (b) = 0 then Elements (1) else Elements (2)

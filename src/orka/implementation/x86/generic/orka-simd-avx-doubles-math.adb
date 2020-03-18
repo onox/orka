@@ -31,7 +31,7 @@ package body Orka.SIMD.AVX.Doubles.Math is
          Mask_1_2_0_0 : constant Unsigned_32 := 1 or 2 * 16 or 0 * 8 or 0 * 128;
          Mask_0_1_1_1 : constant Unsigned_32 := 0 or 1 * 2 or 1 * 4 or 1 * 8;
 
-         YXWZ : constant m256d := Permute (Elements, Mask_1_0_1_0);
+         YXWZ : constant m256d := Permute_Within_Lanes (Elements, Mask_1_0_1_0);
          WZXY : constant m256d := Permute_Lanes (YXWZ, Elements, Mask_1_2_0_0);
          YZXY : constant m256d := Blend (YXWZ, WZXY, Mask_0_1_1_1);
       begin
