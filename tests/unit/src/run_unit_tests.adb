@@ -21,6 +21,9 @@ with Test_SIMD_AVX_Arithmetic;
 with Test_SIMD_AVX_Compare;
 with Test_SIMD_AVX_Math;
 with Test_SIMD_AVX_Swizzle;
+with Test_SIMD_AVX2_Swizzle;
+with Test_SIMD_FMA_Doubles_Arithmetic;
+with Test_SIMD_FMA_Singles_Arithmetic;
 with Test_SIMD_SSE_Arithmetic;
 with Test_SIMD_SSE_Compare;
 with Test_SIMD_SSE_Logical;
@@ -47,6 +50,9 @@ procedure Run_Unit_Tests is
    Suite_SSE    : constant Test_Suite_Access := Create_Suite ("SSE (Singles)");
    Suite_SSE4_1 : constant Test_Suite_Access := Create_Suite ("SSE4.1 (Singles)");
    Suite_AVX    : constant Test_Suite_Access := Create_Suite ("AVX (Doubles)");
+   Suite_AVX2   : constant Test_Suite_Access := Create_Suite ("AVX2 (Doubles)");
+   Suite_FMA_S  : constant Test_Suite_Access := Create_Suite ("FMA (Singles)");
+   Suite_FMA_D  : constant Test_Suite_Access := Create_Suite ("FMA (Doubles)");
 
    Suite_Transforms_Singles : constant Test_Suite_Access := Create_Suite ("Singles");
    Suite_Transforms_Doubles : constant Test_Suite_Access := Create_Suite ("Doubles");
@@ -67,6 +73,15 @@ begin
    Suite_AVX.Add_Test (new Test_SIMD_AVX_Math.Test);
    Suite_AVX.Add_Test (new Test_SIMD_AVX_Swizzle.Test);
    Suite_SIMD.Add_Test (Suite_AVX);
+
+   Suite_AVX2.Add_Test (new Test_SIMD_AVX2_Swizzle.Test);
+   Suite_SIMD.Add_Test (Suite_AVX2);
+
+   Suite_FMA_S.Add_Test (new Test_SIMD_FMA_Singles_Arithmetic.Test);
+   Suite_FMA_D.Add_Test (new Test_SIMD_FMA_Doubles_Arithmetic.Test);
+
+   Suite_SIMD.Add_Test (Suite_FMA_S);
+   Suite_SIMD.Add_Test (Suite_FMA_D);
 
    Suite_All.Add_Test (Suite_SIMD);
 
