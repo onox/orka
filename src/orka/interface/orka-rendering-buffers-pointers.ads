@@ -16,6 +16,8 @@
 
 with GL.Types.Pointers;
 
+with Orka.Types.Pointers;
+
 private package Orka.Rendering.Buffers.Pointers is
    pragma Preelaborate;
 
@@ -50,17 +52,19 @@ private package Orka.Rendering.Buffers.Pointers is
 
    -----------------------------------------------------------------------------
 
+   use Orka.Types.Pointers;
+
    package Single_Vector4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Orka.Types.Singles.Vector4_Pointers);
+     (Single_Vector4_Pointers);
 
    package Double_Vector4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Orka.Types.Doubles.Vector4_Pointers);
+     (Double_Vector4_Pointers);
 
    package Single_Matrix4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Orka.Types.Singles.Matrix4_Pointers);
+     (Single_Matrix4_Pointers);
 
    package Double_Matrix4 is new GL.Objects.Buffers.Buffer_Pointers
-     (Orka.Types.Doubles.Matrix4_Pointers);
+     (Double_Matrix4_Pointers);
 
    -----------------------------------------------------------------------------
 

@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C.Pointers;
-
 with GL.Types;
 
 with Orka.Transforms.SIMD_Matrices;
@@ -37,11 +35,5 @@ package Orka.Algebra is
 
    type Matrix4_Array is array (GL.Types.Size range <>) of aliased Matrix4
      with Convention => C;
-
-   package Vector4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Vector4, Vector4_Array, Vector4'(others => 0.0));
-
-   package Matrix4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Matrix4, Matrix4_Array, Matrix4'(others => (others => 0.0)));
 
 end Orka.Algebra;
