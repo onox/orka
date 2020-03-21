@@ -14,15 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.API;
 with GL.Errors;
 
 package body GL is
    
-   procedure Flush renames API.Flush;
-
-   procedure Finish renames API.Finish;
-
    procedure Raise_Exception_On_OpenGL_Error is
    begin
       case Errors.Error_Flag is

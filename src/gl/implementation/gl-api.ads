@@ -69,8 +69,6 @@ private package GL.API is
 
    procedure Flush is new Loader.Procedure_Without_Params ("glFlush");
 
-   procedure Finish is new Loader.Procedure_Without_Params ("glFinish");
-
    -----------------------------------------------------------------------------
    --                            Parameter getters                            --
    -----------------------------------------------------------------------------

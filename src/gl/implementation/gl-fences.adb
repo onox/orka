@@ -128,7 +128,7 @@ package body GL.Fences is
       Timeout_Ignored : constant := 16#FFF_FFFFF_FFFF_FFFF#;
    begin
       --  Flush the pipeline to ensure that the fence has been sent to the GPU
-      GL.Flush;
+      API.Flush;
 
       API.Wait_Sync (Object.Reference.Sync_ID, 0, Timeout_Ignored);
    end Server_Wait;

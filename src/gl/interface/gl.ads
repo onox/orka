@@ -25,9 +25,6 @@ package GL is
    --                                 Basics                                  --
    -----------------------------------------------------------------------------
 
-   procedure Flush;
-   procedure Finish;
-
    --  Index types for vectors and matrices
    type Index_Homogeneous is (X, Y, Z, W);
    subtype Index_3D is Index_Homogeneous range X .. Z;
