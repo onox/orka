@@ -17,7 +17,7 @@
 with GL.Types;
 
 package Orka.SIMD.SSE.Singles is
-   pragma Preelaborate;
+   pragma Pure;
 
    type m128 is array (Index_Homogeneous) of GL.Types.Single
      with Alignment => 16;

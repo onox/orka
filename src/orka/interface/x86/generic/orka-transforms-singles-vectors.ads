@@ -29,4 +29,4 @@ package Orka.Transforms.Singles.Vectors is new Orka.Transforms.SIMD_Vectors
    SIMD.SSE.Singles.Arithmetic."abs", SIMD.SSE3.Singles.Arithmetic.Sum,
    SIMD.SSE.Singles.Arithmetic.Divide_Or_Zero,
    SIMD.SSE.Singles.Math.Cross_Product);
-pragma Preelaborate (Orka.Transforms.Singles.Vectors);
+pragma Pure (Orka.Transforms.Singles.Vectors);

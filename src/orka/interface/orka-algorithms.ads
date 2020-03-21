@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Algorithms is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Algorithms;

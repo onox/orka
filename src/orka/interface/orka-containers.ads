@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Containers is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Containers;

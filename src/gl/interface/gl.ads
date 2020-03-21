@@ -17,7 +17,7 @@
 with Interfaces.C;
 
 package GL is
-   pragma Preelaborate;
+   pragma Pure;
 
    package C renames Interfaces.C;
 

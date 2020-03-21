@@ -21,7 +21,7 @@ with Orka.Transforms.SIMD_Matrices;
 generic
    with package Transforms is new Orka.Transforms.SIMD_Matrices (<>);
 package Orka.Algebra is
-   pragma Preelaborate;
+   pragma Pure;
 
    subtype Matrix4 is Transforms.Matrix4;
    subtype Vector4 is Transforms.Vector4;

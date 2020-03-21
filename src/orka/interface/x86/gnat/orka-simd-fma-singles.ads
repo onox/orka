@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.SIMD.FMA.Singles is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.SIMD.FMA.Singles;

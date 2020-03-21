@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD.AVX.Doubles.Arithmetic is
-   pragma Preelaborate;
+   pragma Pure;
 
    function "*" (Left, Right : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_mulpd256";

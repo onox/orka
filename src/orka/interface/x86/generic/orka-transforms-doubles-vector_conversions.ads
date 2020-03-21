@@ -24,4 +24,4 @@ package Orka.Transforms.Doubles.Vector_Conversions is new Orka.Transforms.SIMD_V
   (Orka.Transforms.Doubles.Matrices,
    Orka.Transforms.Singles.Matrices,
    SIMD.AVX.Doubles.Swizzle.Convert);
-pragma Preelaborate (Orka.Transforms.Doubles.Vector_Conversions);
+pragma Pure (Orka.Transforms.Doubles.Vector_Conversions);

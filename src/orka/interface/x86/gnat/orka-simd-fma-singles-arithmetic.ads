@@ -18,7 +18,7 @@ with Orka.SIMD.SSE.Singles;
 with Orka.SIMD.AVX.Singles;
 
 package Orka.SIMD.FMA.Singles.Arithmetic is
-   pragma Preelaborate;
+   pragma Pure;
 
    use SSE.Singles;
    use AVX.Singles;

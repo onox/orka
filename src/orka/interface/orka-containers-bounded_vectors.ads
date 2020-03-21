@@ -20,7 +20,7 @@ generic
    type Index_Type is new Natural;
    type Element_Type is private;
 package Orka.Containers.Bounded_Vectors is
-   pragma Preelaborate;
+   pragma Pure;
 
    subtype Length_Type is Index_Type'Base range 0 .. Index_Type'Last;
 

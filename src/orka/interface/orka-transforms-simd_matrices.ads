@@ -27,7 +27,7 @@ generic
       Right : Vector_Transforms.Vector_Type) return Vector_Transforms.Vector_Type;
    with function Transpose_Matrix (Matrix : Matrix_Type) return Matrix_Type;
 package Orka.Transforms.SIMD_Matrices is
-   pragma Preelaborate;
+   pragma Pure;
 
    package Vectors renames Vector_Transforms;
 

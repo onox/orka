@@ -28,7 +28,7 @@ generic
    with function Divide_Or_Zero (Left, Right : Vector_Type) return Vector_Type;
    with function Cross_Product (Left, Right : Vector_Type) return Vector_Type;
 package Orka.Transforms.SIMD_Vectors is
-   pragma Preelaborate;
+   pragma Pure;
 
    subtype Vector4 is Vector_Type;
 

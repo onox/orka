@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Scenes is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Scenes;

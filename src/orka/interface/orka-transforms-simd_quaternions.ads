@@ -19,7 +19,7 @@ with Orka.Transforms.SIMD_Vectors;
 generic
    with package Vectors is new Orka.Transforms.SIMD_Vectors (<>);
 package Orka.Transforms.SIMD_Quaternions is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Quaternion is new Vectors.Vector_Type;
 

@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD.AVX.Doubles.Compare is
-   pragma Preelaborate;
+   pragma Pure;
 
    function Compare (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmppd256";

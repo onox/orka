@@ -17,7 +17,7 @@
 with Orka.SIMD.SSE2.Doubles;
 
 package Orka.SIMD.SSE3.Doubles.Arithmetic is
-   pragma Preelaborate;
+   pragma Pure;
 
    use Orka.SIMD.SSE2.Doubles;
 

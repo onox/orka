@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Transforms.Doubles is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Transforms.Doubles;

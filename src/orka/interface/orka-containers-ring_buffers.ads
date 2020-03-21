@@ -17,7 +17,7 @@
 generic
    type Element_Type is private;
 package Orka.Containers.Ring_Buffers is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Buffer (Capacity : Positive) is tagged private;
    pragma Preelaborable_Initialization (Buffer);

@@ -19,7 +19,7 @@ with Orka.Transforms.SIMD_Vector_Conversions;
 generic
    with package Conversions is new Orka.Transforms.SIMD_Vector_Conversions (<>);
 package Orka.Transforms.SIMD_Matrix_Conversions is
-   pragma Preelaborate;
+   pragma Pure;
 
    function Convert
      (Elements : Conversions.From_Matrices.Matrix_Type) return Conversions.To_Matrices.Matrix_Type

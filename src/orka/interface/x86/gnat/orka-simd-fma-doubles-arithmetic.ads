@@ -18,7 +18,7 @@ with Orka.SIMD.SSE2.Doubles;
 with Orka.SIMD.AVX.Doubles;
 
 package Orka.SIMD.FMA.Doubles.Arithmetic is
-   pragma Preelaborate;
+   pragma Pure;
 
    use SSE2.Doubles;
    use AVX.Doubles;

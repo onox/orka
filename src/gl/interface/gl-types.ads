@@ -17,7 +17,7 @@
 with GL.Algebra;
 
 package GL.Types is
-   pragma Preelaborate;
+   pragma Pure;
 
    --  These are the types you can and should use with OpenGL functions
    --  (particularly when dealing with buffer objects).

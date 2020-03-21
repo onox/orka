@@ -17,7 +17,7 @@
 with Ada.Streams;
 
 private package Orka.Base64 is
-   pragma Preelaborate;
+   pragma Pure;
 
    use Ada.Streams;
 

@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Transforms is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Transforms;

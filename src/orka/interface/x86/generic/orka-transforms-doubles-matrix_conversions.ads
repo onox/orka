@@ -19,4 +19,4 @@ with Orka.Transforms.SIMD_Matrix_Conversions;
 
 package Orka.Transforms.Doubles.Matrix_Conversions is new Orka.Transforms.SIMD_Matrix_Conversions
   (Orka.Transforms.Doubles.Vector_Conversions);
-pragma Preelaborate (Orka.Transforms.Doubles.Matrix_Conversions);
+pragma Pure (Orka.Transforms.Doubles.Matrix_Conversions);

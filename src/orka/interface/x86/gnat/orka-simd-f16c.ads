@@ -20,7 +20,7 @@ with Orka.SIMD.AVX.Singles;
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.F16C is
-   pragma Preelaborate;
+   pragma Pure;
 
    use SIMD.AVX.Singles;
    use SIMD.SSE.Singles;

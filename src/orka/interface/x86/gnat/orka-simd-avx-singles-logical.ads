@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD.AVX.Singles.Logical is
-   pragma Preelaborate;
+   pragma Pure;
 
    function And_Not (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_andnps256";

@@ -21,7 +21,7 @@ with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Matrices;
 
 package Orka.Types is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Element_Type is
       --  Numeric types

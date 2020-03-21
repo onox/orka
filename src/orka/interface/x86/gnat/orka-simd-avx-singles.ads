@@ -17,7 +17,7 @@
 with GL.Types;
 
 package Orka.SIMD.AVX.Singles is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Index_Double_Homogeneous is range 1 .. 8;
 

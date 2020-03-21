@@ -24,4 +24,4 @@ package Orka.Transforms.Doubles.Matrices is new Orka.Transforms.SIMD_Matrices
   (Orka.Transforms.Doubles.Vectors, SIMD.AVX.Doubles.m256d_Array,
    SIMD.AVX.Doubles.Arithmetic."*", SIMD.AVX.Doubles.Arithmetic."*",
    SIMD.AVX.Doubles.Swizzle.Transpose);
-pragma Preelaborate (Orka.Transforms.Doubles.Matrices);
+pragma Pure (Orka.Transforms.Doubles.Matrices);

@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.SIMD.SSE4_1.Doubles is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.SIMD.SSE4_1.Doubles;

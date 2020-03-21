@@ -18,7 +18,7 @@ generic
    type Element_Type is private;
    type Index_Type   is (<>);
 package GL.Algebra is
-   pragma Preelaborate;
+   pragma Pure;
 
    -----------------------------------------------------------------------------
    --                              Vector types                               --

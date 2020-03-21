@@ -24,4 +24,4 @@ package Orka.Transforms.Singles.Matrices is new Orka.Transforms.SIMD_Matrices
   (Orka.Transforms.Singles.Vectors, SIMD.SSE.Singles.m128_Array,
    SIMD.SSE.Singles.Arithmetic."*", SIMD.SSE.Singles.Arithmetic."*",
    SIMD.SSE.Singles.Swizzle.Transpose);
-pragma Preelaborate (Orka.Transforms.Singles.Matrices);
+pragma Pure (Orka.Transforms.Singles.Matrices);

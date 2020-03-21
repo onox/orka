@@ -24,7 +24,7 @@ generic
      (Elements : From_Matrices.Vector_Transforms.Vector_Type)
    return To_Matrices.Vector_Transforms.Vector_Type;
 package Orka.Transforms.SIMD_Vector_Conversions is
-   pragma Preelaborate;
+   pragma Pure;
 
    function Convert
      (Elements : From_Matrices.Vector_Transforms.Vector_Type)

@@ -17,7 +17,7 @@
 with GL.Types;
 
 package Orka.SIMD.SSE2.Doubles is
-   pragma Preelaborate;
+   pragma Pure;
 
    type m128d is array (Index_2D) of GL.Types.Double
      with Alignment => 16;

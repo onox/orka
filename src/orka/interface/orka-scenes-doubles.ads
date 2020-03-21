@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Scenes.Doubles is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Scenes.Doubles;

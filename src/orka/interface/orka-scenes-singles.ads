@@ -15,5 +15,5 @@
 --  limitations under the License.
 
 package Orka.Scenes.Singles is
-   pragma Preelaborate;
+   pragma Pure;
 end Orka.Scenes.Singles;

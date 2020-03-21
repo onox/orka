@@ -18,7 +18,7 @@ with Orka.SIMD.SSE.Singles;
 with Orka.SIMD.SSE2.Doubles;
 
 package Orka.SIMD.AVX.Doubles.Swizzle is
-   pragma Preelaborate;
+   pragma Pure;
 
    use SIMD.SSE2.Doubles;
    use SIMD.SSE.Singles;

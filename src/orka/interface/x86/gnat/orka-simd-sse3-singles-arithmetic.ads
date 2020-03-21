@@ -19,7 +19,7 @@ with GL.Types;
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.SSE3.Singles.Arithmetic is
-   pragma Preelaborate;
+   pragma Pure;
 
    use Orka.SIMD.SSE.Singles;
 

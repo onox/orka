@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package GL.Types.Compute is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Dimension_Size_Array is array (Index_3D) of aliased Size
      with Convention => C;

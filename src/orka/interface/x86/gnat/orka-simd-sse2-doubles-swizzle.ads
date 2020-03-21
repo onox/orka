@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD.SSE2.Doubles.Swizzle is
-   pragma Preelaborate;
+   pragma Pure;
 
    function Shuffle (Left, Right : m128d; Mask : Unsigned_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd";

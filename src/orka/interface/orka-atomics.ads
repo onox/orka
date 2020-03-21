@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.Atomics is
-   pragma Preelaborate;
+   pragma Pure;
 
    protected type Counter (Initial_Value : Natural) is
       procedure Add (Addition : Natural);

@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD is
-   pragma Preelaborate;
+   pragma Pure;
 
    type Unsigned_32 is mod 2 ** 32
      with Size => 32;

@@ -17,7 +17,7 @@
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.SSE3.Singles.Swizzle is
-   pragma Preelaborate;
+   pragma Pure;
 
    use Orka.SIMD.SSE.Singles;
 

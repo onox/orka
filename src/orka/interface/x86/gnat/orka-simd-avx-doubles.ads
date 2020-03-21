@@ -17,7 +17,7 @@
 with GL.Types;
 
 package Orka.SIMD.AVX.Doubles is
-   pragma Preelaborate;
+   pragma Pure;
 
    type m256d is array (Index_Homogeneous) of GL.Types.Double
      with Alignment => 32;

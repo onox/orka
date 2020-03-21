@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.SIMD.AVX is
-   pragma Preelaborate;
+   pragma Pure;
 
    procedure Zero_All
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vzeroall";

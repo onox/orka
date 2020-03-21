@@ -19,7 +19,7 @@ with GL.Types;
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.SSE4_1.Singles.Swizzle is
-   pragma Preelaborate;
+   pragma Pure;
 
    use Orka.SIMD.SSE.Singles;
 
