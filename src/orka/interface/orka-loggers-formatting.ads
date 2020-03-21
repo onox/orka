@@ -14,30 +14,20 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Debug;
+private package Orka.Loggers.Formatting is
 
-package Orka.Loggers is
-   pragma Preelaborate;
-
-   type Source is
-     (Worker, Game_Loop, Resource_Loader,
-      OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
-
-   type Message_Type is new GL.Debug.Message_Type;
-
-   type Severity is (Error, Warning, Info, Debug);
-
-   type Logger is synchronized interface;
-
-   procedure Log
-     (Object  : in out Logger;
-      From    : Source;
+   function Format_Message
+     (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
       ID      : Natural;
-      Message : String) is abstract
-   with Synchronization => By_Protected_Procedure;
+      Message : String) return String;
 
-   type Logger_Ptr is not null access all Logger'Class;
+   function Format_Message_No_Color
+     (From    : Source;
+      Kind    : Message_Type;
+      Level   : Severity;
+      ID      : Natural;
+      Message : String) return String;
 
-end Orka.Loggers;
+end Orka.Loggers.Formatting;

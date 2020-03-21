@@ -16,6 +16,8 @@
 
 with Ada.Text_IO;
 
+with Orka.Loggers.Formatting;
+
 package body Orka.Loggers.Terminal is
 
    protected type Logger_Object (Min_Level : Severity) is new Orka.Loggers.Logger with
@@ -40,7 +42,7 @@ package body Orka.Loggers.Terminal is
       begin
          if Level <= Min_Level then
             IO.Put_Line ((if Level = Error then IO.Standard_Error else IO.Standard_Output),
-              Format_Message (From, Kind, Level, ID, Message));
+              Formatting.Format_Message (From, Kind, Level, ID, Message));
          end if;
       end Log;
    end Logger_Object;

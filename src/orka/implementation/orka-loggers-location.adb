@@ -20,6 +20,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with Orka.Containers.Ring_Buffers;
+with Orka.Loggers.Formatting;
 with Orka.Loggers.Terminal;
 with Orka.OS;
 
@@ -67,7 +68,7 @@ package body Orka.Loggers.Location is
             Messages.Add_Last
               ((Path    => Path,
                 Message => SU.To_Unbounded_String
-                  (Format_Message_No_Color (From, Kind, Level, ID, Message) & L.LF)));
+                  (Formatting.Format_Message_No_Color (From, Kind, Level, ID, Message) & L.LF)));
          else
             Orka.Loggers.Terminal.Logger.Log (From, Kind, Level, ID, Message);
          end if;

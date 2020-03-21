@@ -16,7 +16,7 @@
 
 with Orka.Terminals;
 
-package body Orka.Loggers is
+package body Orka.Loggers.Formatting is
 
    function Format_Message
      (From    : Source;
@@ -55,4 +55,4 @@ package body Orka.Loggers is
              (if ID > 0 then ID'Image & ": " else " ") & Terminals.Strip_Line_Term (Message);
    end Format_Message_No_Color;
 
-end Orka.Loggers;
+end Orka.Loggers.Formatting;
