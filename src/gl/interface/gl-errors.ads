@@ -33,7 +33,8 @@ package GL.Errors is
 
    Internal_Error                      : exception;
 
-   function Error_Flag return Error_Code;
+   procedure Raise_Exception_On_OpenGL_Error
+     with Inline;
 
 private
 

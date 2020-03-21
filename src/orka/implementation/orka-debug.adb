@@ -14,6 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Errors;
 with GL.Debug.Logs;
 with GL.Toggles;
 with GL.Types;
@@ -59,13 +60,13 @@ package body Orka.Debug is
    begin
       if Debug_Synchronous and then Has_Seen_API_Error then
          Has_Seen_API_Error := False;
-         GL.Raise_Exception_On_OpenGL_Error;
+         GL.Errors.Raise_Exception_On_OpenGL_Error;
       end if;
 
       Logging.Log (Source, Loggers.Message_Type (Kind), Severity, Natural (ID), Message);
 
       if Debug_Synchronous and then (Source = OpenGL and Kind = Error) then
-         GL.Raise_Exception_On_OpenGL_Error;
+         GL.Errors.Raise_Exception_On_OpenGL_Error;
          Has_Seen_API_Error := True;
       end if;
    end Log_Debug_Message;

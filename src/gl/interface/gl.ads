@@ -21,10 +21,6 @@ package GL is
 
    package C renames Interfaces.C;
 
-   -----------------------------------------------------------------------------
-   --                                 Basics                                  --
-   -----------------------------------------------------------------------------
-
    --  Index types for vectors and matrices
    type Index_Homogeneous is (X, Y, Z, W);
    subtype Index_3D is Index_Homogeneous range X .. Z;
@@ -33,12 +29,5 @@ package GL is
    Feature_Not_Supported_Exception : exception;
    --  Raised when a function that is not available for the current
    --  context is called
-
-   -----------------------------------------------------------------------------
-   --                           Internal functions                            --
-   -----------------------------------------------------------------------------
-
-   procedure Raise_Exception_On_OpenGL_Error
-     with Inline;
 
 end GL;
