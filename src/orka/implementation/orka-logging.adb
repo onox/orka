@@ -26,6 +26,26 @@ package body Orka.Logging is
 
    function Trim (Value : String) return String renames Terminals.Trim;
 
+   function Image (Value : Orka.Transforms.Singles.Vectors.Vector4) return String is
+   begin
+      return "(" &
+        Trim (Value (X)'Image) & ", " &
+        Trim (Value (Y)'Image) & ", " &
+        Trim (Value (Z)'Image) & ", " &
+        Trim (Value (W)'Image) &
+      ")";
+   end Image;
+
+   function Image (Value : Orka.Transforms.Doubles.Vectors.Vector4) return String is
+   begin
+      return "(" &
+        Trim (Value (X)'Image) & ", " &
+        Trim (Value (Y)'Image) & ", " &
+        Trim (Value (Z)'Image) & ", " &
+        Trim (Value (W)'Image) &
+      ")";
+   end Image;
+
    -----------------------------------------------------------------------------
 
    Current_Logger : Loggers.Logger_Ptr := Orka.Loggers.Terminal.Logger;

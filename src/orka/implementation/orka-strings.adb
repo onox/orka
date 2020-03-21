@@ -34,7 +34,7 @@ package body Orka.Strings is
       return Value (Value'First .. Last_Index);
    end Strip_Line_Term;
 
-   function Lines (Value : String) return Natural is
+   function Lines (Value : String) return Positive is
      (SF.Count (Strip_Line_Term (Value), "" & L.LF) + 1);
 
 end Orka.Strings;

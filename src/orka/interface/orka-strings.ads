@@ -18,9 +18,12 @@ private package Orka.Strings is
    pragma Preelaborate;
 
    function Trim (Value : String) return String;
+   --  Return value with whitespace removed from both the start and end
 
    function Strip_Line_Term (Value : String) return String;
+   --  Return the value without any LF and CR characters at the end
 
-   function Lines (Value : String) return Natural;
+   function Lines (Value : String) return Positive;
+   --  Return the number of lines that the string contains
 
 end Orka.Strings;

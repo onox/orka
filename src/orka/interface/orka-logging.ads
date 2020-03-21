@@ -17,6 +17,8 @@
 with Ada.Real_Time;
 
 with Orka.Loggers;
+with Orka.Transforms.Singles.Vectors;
+with Orka.Transforms.Doubles.Vectors;
 
 package Orka.Logging is
 
@@ -30,6 +32,9 @@ package Orka.Logging is
 
    function Image (Value : Ada.Real_Time.Time_Span) return String;
    --  Return the image of the given duration with an appropriate suffix
+
+   function Image (Value : Orka.Transforms.Singles.Vectors.Vector4) return String;
+   function Image (Value : Orka.Transforms.Doubles.Vectors.Vector4) return String;
 
    function Trim (Value : String) return String;
 

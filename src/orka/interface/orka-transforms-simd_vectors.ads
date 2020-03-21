@@ -100,6 +100,4 @@ package Orka.Transforms.SIMD_Vectors is
    --  Return the interpolated unit vector on the shortest arc
    --  between the Left and Right vectors
 
-   function Image (Elements : Vector_Type) return String;
-
 end Orka.Transforms.SIMD_Vectors;
