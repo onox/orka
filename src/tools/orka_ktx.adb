@@ -254,11 +254,10 @@ begin
                Frame_Limit => Ada.Real_Time.Microseconds (16_667),
                Window      => W_Ptr,
                Camera      => Current_Camera,
-               Render      => Render'Unrestricted_Access,
                Job_Manager => Job_System);
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
-            Loops.Run_Loop;
+            Loops.Run_Loop (Render'Access);
          end;
       end;
    end;

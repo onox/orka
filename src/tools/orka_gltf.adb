@@ -371,7 +371,6 @@ begin
                Frame_Limit => Ada.Real_Time.Microseconds (8_334),
                Window      => W_Ptr,
                Camera      => Current_Camera,
-               Render      => Render_Scene'Unrestricted_Access,
                Job_Manager => Job_System);
 
             procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr) is
@@ -381,7 +380,7 @@ begin
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
             Loops.Handler.Enable_Limit (False);
-            Loops.Run_Loop;
+            Loops.Run_Loop (Render_Scene'Access);
          end;
       exception
          when Error : others =>

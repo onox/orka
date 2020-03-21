@@ -23,6 +23,7 @@ with Ada.Exceptions;
 with Orka.Futures;
 with Orka.Loggers;
 with Orka.Logging;
+with Orka.Simulation;
 with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
@@ -117,7 +118,10 @@ package body Orka.Loops is
       Handler.Stop;
    end Stop_Loop;
 
-   procedure Run_Game_Loop (Fence : not null access SJ.Fences.Buffer_Fence) is
+   procedure Run_Game_Loop
+     (Fence  : not null access SJ.Fences.Buffer_Fence;
+      Render : Simulation.Render_Ptr)
+   is
       Previous_Time : Time := Clock;
       Next_Time     : Time := Previous_Time;
 
@@ -272,7 +276,10 @@ package body Orka.Loops is
          raise;
    end Run_Game_Loop;
 
-   procedure Run_Loop is
+   procedure Run_Loop (Render : not null access procedure
+     (Scene  : not null Behaviors.Behavior_Array_Access;
+      Camera : Cameras.Camera_Ptr))
+   is
       Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence;
    begin
       declare
@@ -285,7 +292,7 @@ package body Orka.Loops is
          task body Simulation is
          begin
             System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
-            Run_Game_Loop (Fence'Unchecked_Access);
+            Run_Game_Loop (Fence'Unchecked_Access, Render);
          exception
             when Error : others =>
                Messages.Log (Loggers.Error, Exception_Information (Error));

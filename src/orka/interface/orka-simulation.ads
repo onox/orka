@@ -17,7 +17,7 @@
 with Orka.Behaviors;
 with Orka.Cameras;
 
-package Orka.Simulation is
+private package Orka.Simulation is
    pragma Preelaborate;
 
    type Stop_Ptr is not null access procedure;
