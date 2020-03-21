@@ -14,8 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Types.Pointers;
+
 private package Orka.Rendering.Buffers.Pointers is
    pragma Preelaborate;
+
+   use GL.Types.Pointers;
 
    package Half is new GL.Objects.Buffers.Buffer_Pointers
      (Half_Pointers);

@@ -21,8 +21,8 @@ with Ada.Real_Time;
 with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
-with GL.Types;
 with GL.Pixels.Extensions;
+with GL.Types.Pointers;
 
 with Orka.Jobs;
 with Orka.Logging;
@@ -325,13 +325,13 @@ package body Orka.Resources.Textures.KTX is
       Header : Orka.KTX.Header (Compressed);
 
       function Convert
-        (Bytes : in out GL.Types.UByte_Array_Access) return Byte_Array_Pointers.Pointer
+        (Bytes : in out GL.Types.Pointers.UByte_Array_Access) return Byte_Array_Pointers.Pointer
       is
          Pointer : Byte_Array_Pointers.Pointer;
          Result  : constant Byte_Array_Access := new Byte_Array (1 .. Bytes'Length);
 
          procedure Free is new Ada.Unchecked_Deallocation
-           (Object => GL.Types.UByte_Array, Name => GL.Types.UByte_Array_Access);
+           (Object => GL.Types.UByte_Array, Name => GL.Types.Pointers.UByte_Array_Access);
       begin
          for Index in Bytes'Range loop
             declare
@@ -372,7 +372,7 @@ package body Orka.Resources.Textures.KTX is
       function Get_Compressed_Data
         (Level : Textures.Mipmap_Level) return Byte_Array_Pointers.Pointer
       is
-         Data : GL.Types.UByte_Array_Access;
+         Data : GL.Types.Pointers.UByte_Array_Access;
       begin
          Data := Textures.Get_Compressed_Data (Texture, Level, 0, 0, 0,
            Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),

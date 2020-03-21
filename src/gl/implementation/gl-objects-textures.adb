@@ -660,12 +660,12 @@ package body GL.Objects.Textures is
       Level  : Mipmap_Level;
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size;
-      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
+      Format : Pixels.Compressed_Format) return not null Types.Pointers.UByte_Array_Access
    is
       Blocks : constant Int := ((Width + 3) / 4) * ((Height + 3) / 4) * Depth;
       Number_Of_Bytes : constant Int := Blocks * PE.Block_Bytes (Format);
 
-      Result : constant Types.UByte_Array_Access
+      Result : constant Types.Pointers.UByte_Array_Access
         := new UByte_Array (1 .. Number_Of_Bytes);
    begin
       API.Get_Compressed_Texture_Sub_Image

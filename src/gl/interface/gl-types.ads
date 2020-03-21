@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C.Pointers;
-
 with GL.Algebra;
 
 package GL.Types is
@@ -128,40 +126,6 @@ package GL.Types is
    package Singles is new GL.Algebra (Element_Type => Single, Index_Type => Size);
 
    package Doubles is new GL.Algebra (Element_Type => Double, Index_Type => Size);
-
-   --  Pointer types (for use with data transfer functions
-   package Byte_Pointers is new Interfaces.C.Pointers
-     (Size, Byte, Byte_Array, Byte'Last);
-
-   package Short_Pointers is new Interfaces.C.Pointers
-     (Size, Short, Short_Array, Short'Last);
-
-   package Int_Pointers is new Interfaces.C.Pointers
-     (Size, Int, Int_Array, Int'Last);
-
-   package UByte_Pointers is new Interfaces.C.Pointers
-     (Size, UByte, UByte_Array, UByte'Last);
-
-   package UShort_Pointers is new Interfaces.C.Pointers
-     (Size, UShort, UShort_Array, UShort'Last);
-
-   package UInt_Pointers is new Interfaces.C.Pointers
-     (Size, UInt, UInt_Array, UInt'Last);
-
-   package Half_Pointers is new Interfaces.C.Pointers
-     (Size, Half, Half_Array, 0);
-
-   package Single_Pointers is new Interfaces.C.Pointers
-     (Size, Single, Single_Array, 0.0);
-
-   package Double_Pointers is new Interfaces.C.Pointers
-     (Size, Double, Double_Array, 0.0);
-
-   type String_Access is not null access constant String;
-
-   type String_Array is array (Positive range <>) of String_Access;
-
-   type UByte_Array_Access is access UByte_Array;
 
 private
 

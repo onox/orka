@@ -24,7 +24,7 @@ with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
 with GL.Objects.Shaders;
 with GL.Pixels.Extensions;
-with GL.Types;
+with GL.Types.Pointers;
 
 package GL.Objects.Textures is
    pragma Preelaborate;
@@ -316,7 +316,7 @@ package GL.Objects.Textures is
       Level  : Mipmap_Level;
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size;
-      Format : Pixels.Compressed_Format) return not null Types.UByte_Array_Access
+      Format : Pixels.Compressed_Format) return not null Types.Pointers.UByte_Array_Access
    with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed
      and Object.Kind not in Texture_2D_Multisample | Texture_2D_Multisample_Array;
 

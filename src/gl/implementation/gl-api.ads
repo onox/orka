@@ -38,6 +38,7 @@ with GL.Toggles;
 with GL.Types.Colors;
 with GL.Types.Compute;
 with GL.Types.Debug;
+with GL.Types.Pointers;
 with GL.Viewports;
 
 with Interfaces.C.Strings;
@@ -425,7 +426,7 @@ private package GL.API is
 
    procedure Get_Compressed_Texture_Sub_Image is new Loader.Procedure_With_10_Params
      ("glGetCompressedTextureSubImage", UInt, Objects.Textures.Mipmap_Level,
-      Int, Int, Int, Size, Size, Size, Size, UByte_Array_Access);
+      Int, Int, Int, Size, Size, Size, Size, Types.Pointers.UByte_Array_Access);
 
    procedure Invalidate_Tex_Image is new Loader.Procedure_With_2_Params
      ("glInvalidateTexImage", UInt, Objects.Textures.Mipmap_Level);
