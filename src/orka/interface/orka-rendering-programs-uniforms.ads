@@ -103,8 +103,6 @@ package Orka.Rendering.Programs.Uniforms is
 
    type Uniform_Image (Kind : LE.Resource_Type) is tagged private;
 
-   use all type GL.Pixels.Internal_Format;
-
    procedure Verify_Compatibility
      (Object  : Uniform_Image;
       Texture : GL.Objects.Textures.Texture) is null

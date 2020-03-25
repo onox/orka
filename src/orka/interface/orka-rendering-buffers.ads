@@ -236,6 +236,32 @@ package Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0)
+   with Pre => Offset + Data'Length <= Object.Length;
+
+   -----------------------------------------------------------------------------
+
    procedure Copy_Data
      (Object : Buffer;
       Target : Buffer)

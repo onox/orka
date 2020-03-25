@@ -372,6 +372,40 @@ package body Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Single_Vector4.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Singles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Single_Matrix4.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Doubles.Vector4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Vector4.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Orka.Types.Doubles.Matrix4_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Double_Matrix4.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   -----------------------------------------------------------------------------
+
    procedure Copy_Data
      (Object : Buffer;
       Target : Buffer)
