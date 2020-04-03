@@ -30,6 +30,6 @@
 package Orka.Features.Atmosphere.Earth is
    pragma Preelaborate;
 
-   function Data (Use_Luminance : Luminance) return Model_Data;
+   function Data (Luminance : Luminance_Type) return Model_Data;
 
 end Orka.Features.Atmosphere.Earth;

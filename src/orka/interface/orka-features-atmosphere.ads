@@ -90,7 +90,7 @@
 --
 --  - the other functions return luminance and illuminance values (in
 --    $cd.m^{-2}$ and $lx$) in linear [sRGB](https://en.wikipedia.org/wiki/SRGB)
---    space (i.e. before adjustements for gamma correction)
+--    space (i.e. before adjustments for gamma correction)
 --
 --  - all the functions return the (unitless) transmittance of the atmosphere
 --    along the specified segment at the 3 wavelengths K_Lambda_R,
@@ -135,7 +135,7 @@ with Orka.Rendering.Programs.Modules;
 package Orka.Features.Atmosphere is
    pragma Preelaborate;
 
-   type Luminance is (None, Approximate, Precomputed);
+   type Luminance_Type is (None, Approximate, Precomputed);
 
    use GL.Types;
 
@@ -153,6 +153,8 @@ package Orka.Features.Atmosphere is
    package Density_Vectors is new Ada.Containers.Vectors (Natural, Density_Profile_Layer);
 
    type Model_Data (Samples : Ada.Containers.Count_Type) is record
+      Luminance : Luminance_Type;
+
       Wavelengths : Double_Vectors.Vector;
       --  The wavelength values, in nanometers, and sorted in increasing order, for
       --  which the solar_irradiance, rayleigh_scattering, mie_scattering,

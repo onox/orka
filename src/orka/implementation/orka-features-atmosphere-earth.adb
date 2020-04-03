@@ -91,7 +91,7 @@ package body Orka.Features.Atmosphere.Earth is
    Absorption_Layer_2 : constant Density_Profile_Layer
      := (0.0, 0.0, 0.0, -1.0 / 15000.0, 8.0 / 3.0);
 
-   function Data (Use_Luminance : Luminance) return Model_Data is
+   function Data (Luminance : Luminance_Type) return Model_Data is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Double);
 
       function To_Radians (Value : GL.Types.Double) return GL.Types.Double is
@@ -138,7 +138,8 @@ package body Orka.Features.Atmosphere.Earth is
       Mie_Density.Append (Mie_Layer);
 
       return
-        (Samples                     => Wavelengths.Length,
+        (Luminance                   => Luminance,
+         Samples                     => Wavelengths.Length,
          Wavelengths                 => Wavelengths,
          Solar_Irradiance            => Solar_Irradiance,
          Sun_Angular_Radius          => 0.00935 / 2.0,
@@ -155,7 +156,7 @@ package body Orka.Features.Atmosphere.Earth is
          Ground_Albedo               => Ground_Albedo,
          Max_Sun_Zenith_Angle        => To_Radians (if Half_Precision then 102.0 else 120.0),
          Length_Unit_In_Meters       => 1000.0,
-         Num_Precomputed_Wavelengths => (if Use_Luminance = Precomputed then 15 else 3),
+         Num_Precomputed_Wavelengths => (if Luminance = Precomputed then 15 else 3),
          Combine_Scattering_Textures => Combined_Textures,
          Half_Precision              => Half_Precision);
    end Data;

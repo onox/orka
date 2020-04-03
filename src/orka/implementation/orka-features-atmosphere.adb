@@ -64,14 +64,7 @@ package body Orka.Features.Atmosphere is
    K_Lambda_G : constant Double := 550.0;
    K_Lambda_B : constant Double := 440.0;
 
-   function Convert (Bytes : Resources.Byte_Array) return String is
-      subtype Bytes_String is String (1 .. Bytes'Length);
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Resources.Byte_Array, Target => Bytes_String);
-   begin
-      return Convert (Bytes);
-   end Convert;
+   function Convert (Bytes : Resources.Byte_Array) return String renames Resources.Convert;
 
    use Orka.Features.Atmosphere.Constants;
 
