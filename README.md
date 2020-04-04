@@ -95,10 +95,9 @@ tag that refers to this license:
 
     SPDX-License-Identifier: Apache-2.0
 
-The following packages (including any child packages) are licensed under
-the [BSD 3-Clause license][url-bsd-3]:
+The following packages are licensed under the [BSD 3-Clause license][url-bsd-3]:
 
-- `Orka.Features.Atmosphere`
+- `Orka.Features.Atmosphere` (and child packages `Constants` and `Earth`)
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
