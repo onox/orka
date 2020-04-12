@@ -64,7 +64,6 @@ package body Orka.Transforms.SIMD_Matrices is
    function R (Axis : Vector_Type; Angle : Element_Type) return Matrix_Type is
       CA : constant Element_Type := EF.Cos (Angle);
       SA : constant Element_Type := EF.Sin (Angle);
-      Result : Matrix_Type := Identity_Value;
 
       MCA : constant Element_Type := 1.0 - CA;
 
@@ -87,10 +86,13 @@ package body Orka.Transforms.SIMD_Matrices is
       R31 : constant Element_Type := MCARXZ + RYSA;
       R32 : constant Element_Type := MCARYZ - RXSA;
       R33 : constant Element_Type := CA + MCA * Axis (Z)**2;
+
+      Result : Matrix_Type;
    begin
       Result (X) := (R11, R12, R13, 0.0);
       Result (Y) := (R21, R22, R23, 0.0);
       Result (Z) := (R31, R32, R33, 0.0);
+      Result (W) := (0.0, 0.0, 0.0, 1.0);
       return Result;
    end R;
 
