@@ -1,0 +1,223 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2019 Jonathan Dupuy
+// Copyright (c) 2020 onox <denkpadje@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// Contributions:
+//
+//   * Replaced frustum culling test
+//
+//   * Added face culling test
+
+#define PROJECTION_RECTILINEAR 1
+#define FLAG_FRUSTUM_CULL 1
+#define FLAG_FACE_CULL 1
+#define FLAG_DISPLACE 1
+
+vec4 BarycentricInterpolation(in vec4 v[3], in vec2 u);
+vec4 planeToSphere(const int lebID, const vec4 v);
+
+layout(std140, binding = 0) uniform MatrixBuffer {
+    mat4 u_ViewMatrix;
+    mat4 u_ProjMatrix;
+};
+
+uniform float u_LodFactor;
+
+#if FLAG_DISPLACE
+layout(binding = 4) uniform sampler2D u_DmapSampler;
+uniform float u_MinLodVariance;
+#endif
+
+// TriangleLevelOfDetail -- Computes the LoD associated to a triangle
+//
+// This function is used to guarantee a user-specific pixel edge length in
+// screen space. The reference edge length is that of the longest edge of the
+// input triangle. In practice, we compute the LoD as:
+//
+//      LoD = 2 * log2(EdgePixelLength / TargetPixelLength)
+//
+// where the factor 2 is because the number of segments doubles every 2
+// subdivision level.
+float TriangleLevelOfDetail_Perspective(in const int lebID, in const vec4[3] eyespaceVertices)
+{
+    vec3 v0 = eyespaceVertices[0].xyz;
+    vec3 v2 = eyespaceVertices[2].xyz;
+
+#if 0 //  human-readable version
+    vec3 edgeCenter = (v0 + v2); // division by 2 was moved to u_LodFactor
+    vec3 edgeVector = (v2 - v0);
+    float distanceToEdgeSqr = dot(edgeCenter, edgeCenter);
+    float edgeLengthSqr = dot(edgeVector, edgeVector);
+#else // optimized version
+    float sqrMagSum = dot(v0, v0) + dot(v2, v2);
+    float twoDotAC = 2.0f * dot(v0, v2);
+    float distanceToEdgeSqr = sqrMagSum + twoDotAC;
+    float edgeLengthSqr     = sqrMagSum - twoDotAC;
+#endif
+    return u_LodFactor + log2(edgeLengthSqr / distanceToEdgeSqr);
+}
+
+// In Orthographic Mode, we have
+//     EdgePixelLength = EdgeViewSpaceLength / ImagePlaneViewSize * ImagePlanePixelResolution
+// and so using some identities we get:
+//     LoD = 2 * (log2(EdgeViewSpaceLength)
+//         + log2(ImagePlanePixelResolution / ImagePlaneViewSize)
+//         - log2(TargetPixelLength))
+//
+//         = log2(EdgeViewSpaceLength^2)
+//         + 2 * log2(ImagePlanePixelResolution / (ImagePlaneViewSize * TargetPixelLength))
+// so we precompute:
+// u_LodFactor = 2 * log2(ImagePlanePixelResolution / (ImagePlaneViewSize * TargetPixelLength))
+float TriangleLevelOfDetail_Orthographic(in const int lebID, in const vec4[3] eyespaceVertices)
+{
+    vec3 v0 = eyespaceVertices[0].xyz;
+    vec3 v2 = eyespaceVertices[2].xyz;
+
+    vec3 edgeVector = (v2 - v0);
+    float edgeLengthSqr = dot(edgeVector, edgeVector);
+
+    return u_LodFactor + log2(edgeLengthSqr);
+}
+
+float TriangleLevelOfDetail(in const int lebID, in const vec4[3] eyespaceVertices)
+{
+#if defined(PROJECTION_RECTILINEAR)
+    return TriangleLevelOfDetail_Perspective(lebID, eyespaceVertices);
+#elif defined(PROJECTION_ORTHOGRAPHIC)
+    return TriangleLevelOfDetail_Orthographic(lebID, eyespaceVertices);
+#else
+    return 0.0;
+#endif
+}
+
+#if FLAG_DISPLACE
+// DisplacementVarianceTest -- Checks if the height variance criteria is met
+//
+// Terrains tend to have locally flat regions, which don't need large amounts
+// of polygons to be represented faithfully. This function checks the
+// local flatness of the terrain.
+bool DisplacementVarianceTest(in const vec4[3] patchVertices)
+{
+#define P0 patchVertices[0].xy
+#define P1 patchVertices[1].xy
+#define P2 patchVertices[2].xy
+    vec2 P = (P0 + P1 + P2) / 3.0;
+    vec2 dx = (P0 - P1);
+    vec2 dy = (P2 - P1);
+    vec2 dmap = textureGrad(u_DmapSampler, P, dx, dy).rg;
+    float dmapVariance = clamp(dmap.y - dmap.x * dmap.x, 0.0, 1.0);
+
+    return (dmapVariance >= u_MinLodVariance);
+#undef P0
+#undef P1
+#undef P2
+}
+#endif
+
+// FrustumCullingTest -- Checks if the triangle lies inside the view frutsum
+bool FrustumCullingTest(in const int lebID, in const vec4[3] eyespaceVertices)
+{
+    const vec4 clipspaceVertices[3] = vec4[3](
+        u_ProjMatrix * eyespaceVertices[0],
+        u_ProjMatrix * eyespaceVertices[1],
+        u_ProjMatrix * eyespaceVertices[2]
+    );
+
+    uvec3 resultLt = uvec3(1u);
+    uvec3 resultGt = uvec3(1u);
+
+    for (int i = 0; i < 3; ++i) {
+        const vec3 w = vec3(clipspaceVertices[i].w);
+        resultLt &= uvec3(lessThan(clipspaceVertices[i].xyz, -w));
+        resultGt &= uvec3(greaterThan(clipspaceVertices[i].xyz, w));
+    }
+
+    return !any(bvec3(resultLt | resultGt));
+}
+
+bool FaceCullingTest(in const int lebID,
+    in const vec4[3] patchVertices, in const vec4[3] eyespaceVertices)
+{
+    vec4 vc_bar = BarycentricInterpolation(patchVertices, vec2(0.5));
+    vec3 vc = (u_ViewMatrix * planeToSphere(lebID, vc_bar)).xyz;
+    // vector from camera to center of triangle
+
+    vec3 e0 = eyespaceVertices[0].xyz - vc;
+    vec3 e1 = eyespaceVertices[1].xyz - vc;
+    vec3 e2 = eyespaceVertices[2].xyz - vc;
+
+    vec3 na = cross(e0, e2);
+    vec3 nb = cross(e2, e1);
+    vec3 nc = cross(e1, e0);
+
+    return dot(na, vc) >= 0.0 || dot(nb, vc) >= 0.0 || dot(nc, vc) >= 0.0;
+}
+
+// LevelOfDetail -- Computes the level of detail of associated to a triangle
+//
+// The first component is the actual LoD value. The second value is 0 if the
+// triangle is culled, and one otherwise.
+vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const bool invert)
+{
+    vec4 v0 = vec4(patchVertices[0].xy, 1.0, 1.0);
+    vec4 v1 = vec4(patchVertices[1].xy, 1.0, 1.0);
+    vec4 v2 = vec4(patchVertices[2].xy, 1.0, 1.0);
+
+    vec4 eyespaceVertices[3] = vec4[3](
+        u_ViewMatrix * planeToSphere(lebID, v0),
+        u_ViewMatrix * planeToSphere(lebID, v1),
+        u_ViewMatrix * planeToSphere(lebID, v2)
+    );
+
+#if FLAG_FRUSTUM_CULL
+    // culling test
+    if (!FrustumCullingTest(lebID, eyespaceVertices)) {
+        return vec2(0.0f, 0.0f);
+    }
+#endif
+
+#if FLAG_FACE_CULL
+    if (invert) {
+        vec4 tmp = eyespaceVertices[0];
+        eyespaceVertices[0] = eyespaceVertices[2];
+        eyespaceVertices[2] = tmp;
+    }
+
+    if (!FaceCullingTest(lebID, vec4[3](v0, v1, v2), eyespaceVertices)) {
+        return vec2(0.0f, 0.0f);
+    }
+#endif
+
+#if FLAG_DISPLACE
+    // variance test
+    if (!DisplacementVarianceTest(patchVertices)) {
+        return vec2(0.0f, 1.0f);
+    }
+#endif
+
+    // compute triangle LOD
+    return vec2(TriangleLevelOfDetail(lebID, eyespaceVertices), 1.0f);
+}

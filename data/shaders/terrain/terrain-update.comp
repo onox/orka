@@ -1,0 +1,107 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader               : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2019 Jonathan Dupuy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+struct leb_Node {
+    uint id;    // binary code
+    int depth;  // subdivision depth
+};
+struct leb_DiamondParent {
+    leb_Node base, top;
+};
+
+leb_Node          leb_DecodeNode(const int lebID, uint bitID);
+leb_DiamondParent leb_DecodeDiamondParent_Quad(in const leb_Node node);
+
+uint leb_NodeCount(const int lebID);
+void leb_SplitNodeConforming_Quad(const int lebID, in const leb_Node node);
+void leb_MergeNodeConforming_Quad(const int lebID,
+                                  in const leb_Node node,
+                                  in const leb_DiamondParent diamond);
+
+vec4[3] DecodeTriangleVertices(in const leb_Node node);
+vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const bool invert);
+
+uniform bool u_Split;
+uniform bool u_Freeze;
+
+uniform int u_LebID;
+
+layout(std430, binding = 2) restrict buffer NodeCounter {
+    uint u_LebNodeCounter[];
+};
+
+layout(std430, binding = 1) writeonly restrict buffer NodeBuffer {
+    uint u_LebNodeBuffer[];
+};
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+void writeNodeID(const int lebID, uint NodeID)
+{
+    uint index = atomicAdd(u_LebNodeCounter[lebID], 1u);
+    u_LebNodeBuffer[index] = NodeID;
+}
+
+void main(void)
+{
+    const int lebID = u_LebID;
+    const int lebIDBuffer = 0;
+
+    uint threadID = gl_GlobalInvocationID.x;
+
+    if (threadID < leb_NodeCount(lebIDBuffer)) {
+        // and extract triangle vertices
+        leb_Node node = leb_DecodeNode(lebIDBuffer, threadID);
+        vec4 triangleVertices[3] = DecodeTriangleVertices(node);
+
+        // compute target LoD
+        vec2 targetLod = LevelOfDetail(lebID, triangleVertices, (node.depth & 1) == 0);
+
+if (!u_Freeze) {
+        // splitting update
+        if (u_Split) {
+            if (targetLod.x > 1.0) {
+                leb_SplitNodeConforming_Quad(lebIDBuffer, node);
+            }
+        }
+        else {
+            leb_DiamondParent diamond = leb_DecodeDiamondParent_Quad(node);
+            bool mergeBase = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.base), (diamond.base.depth & 1) == 0).x < 1.0;
+            bool mergeTop = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.top), (diamond.top.depth & 1) == 0).x < 1.0;
+
+            if (mergeBase && mergeTop) {
+                leb_MergeNodeConforming_Quad(lebIDBuffer, node, diamond);
+            }
+        }
+}
+
+        // push node to stack if it's visible
+        if (targetLod.y > 0.0) {
+            writeNodeID(lebID, node.id);
+        }
+    }
+}

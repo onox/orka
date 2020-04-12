@@ -1,0 +1,96 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2019 Jonathan Dupuy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// Longest Edge Bisection GLSL library [1]
+//
+// [1] https://github.com/jdupuy/LongestEdgeBisection
+
+struct leb_Node {
+    uint id;    // binary code
+    int depth;  // subdivision depth
+};
+
+uint _leb_NodeBitID(const int lebID, in const leb_Node node);
+void _leb_HeapWriteExplicit(const int lebID, in const leb_Node node, int bitCount, uint bitData);
+
+uint _leb_GetRawBitData(const int lebID, in const uint heapIndex);
+void _leb_SetRawBitData(const int lebID, in const uint heapIndex, in const uint bitData);
+
+uniform int u_PassID;
+
+layout (local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+void main(void)
+{
+    const int lebID = 0;
+
+    uint cnt = (1u << u_PassID);
+    uint threadID = gl_GlobalInvocationID.x << 5;
+
+    if (threadID < cnt) {
+        uint nodeID = threadID + cnt;
+
+        uint alignedBitOffset = _leb_NodeBitID(lebID, leb_Node(nodeID, u_PassID));
+        uint bitField = _leb_GetRawBitData(lebID, alignedBitOffset >> 5u);
+        uint bitData = 0u;
+
+        // 2-bits
+        bitField = (bitField & 0x55555555u) + ((bitField >> 1u) & 0x55555555u);
+        bitData = bitField;
+        _leb_SetRawBitData(lebID, (alignedBitOffset - cnt) >> 5u, bitData);
+
+        // 3-bits
+        bitField = (bitField & 0x33333333u) + ((bitField >>  2u) & 0x33333333u);
+        bitData = ((bitField >> 0u) & (7u <<  0u))
+                | ((bitField >> 1u) & (7u <<  3u))
+                | ((bitField >> 2u) & (7u <<  6u))
+                | ((bitField >> 3u) & (7u <<  9u))
+                | ((bitField >> 4u) & (7u << 12u))
+                | ((bitField >> 5u) & (7u << 15u))
+                | ((bitField >> 6u) & (7u << 18u))
+                | ((bitField >> 7u) & (7u << 21u));
+        _leb_HeapWriteExplicit(lebID, leb_Node(nodeID >> 2u, u_PassID - 2), 24, bitData);
+
+        // 4-bits
+        bitField = (bitField & 0x0F0F0F0Fu) + ((bitField >>  4u) & 0x0F0F0F0Fu);
+        bitData = ((bitField >>  0u) & (15u <<  0u))
+                | ((bitField >>  4u) & (15u <<  4u))
+                | ((bitField >>  8u) & (15u <<  8u))
+                | ((bitField >> 12u) & (15u << 12u));
+        _leb_HeapWriteExplicit(lebID, leb_Node(nodeID >> 3u, u_PassID - 3), 16, bitData);
+
+        // 5-bits
+        bitField = (bitField & 0x00FF00FFu) + ((bitField >>  8u) & 0x00FF00FFu);
+        bitData = ((bitField >>  0u) & (31u << 0u))
+                | ((bitField >> 11u) & (31u << 5u));
+        _leb_HeapWriteExplicit(lebID, leb_Node(nodeID >> 4u, u_PassID - 4), 10, bitData);
+
+        // 6-bits
+        bitField = (bitField & 0x0000FFFFu) + ((bitField >> 16u) & 0x0000FFFFu);
+        bitData = bitField;
+        _leb_HeapWriteExplicit(lebID, leb_Node(nodeID >> 5u, u_PassID - 5),  6, bitData);
+    }
+}

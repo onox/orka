@@ -1,0 +1,76 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader               : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+// SPDX-License-Identifier: MIT
+//
+// Copyright (c) 2019 Jonathan Dupuy
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// This shader sets the indirect drawing commands
+
+uint leb_NodeCount(const int lebID);
+
+struct DispatchIndirectCommand {
+    uint num_groups_x;
+    uint num_groups_y;
+    uint num_groups_z;
+};
+
+struct DrawArraysIndirectCommand {
+    uint count;
+    uint instanceCount;
+    uint firstVertex;
+    uint baseInstance;
+};
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 2) restrict buffer NodeCounter {
+    uint u_LebNodeCounter[];
+};
+
+layout(std430, binding = 5) writeonly restrict buffer DrawArraysIndirectCommandBuffer {
+    DrawArraysIndirectCommand u_DrawArraysIndirectCommand[];
+};
+
+layout(std430, binding = 6) writeonly restrict buffer DispatchIndirectCommandBuffer {
+   DispatchIndirectCommand u_DispatchIndirectCommand[];
+};
+
+uniform int u_LebID;
+uniform int u_MeshletSubdivision;
+
+void main()
+{
+    const int lebID = u_LebID;
+    const int lebIDBuffer = 0;
+
+    uint nodeCount = leb_NodeCount(lebIDBuffer);
+
+    u_DispatchIndirectCommand[lebID].num_groups_x = nodeCount / 256u + 1u;
+
+    u_DrawArraysIndirectCommand[lebID].count = 3 << (2 * u_MeshletSubdivision);
+    u_DrawArraysIndirectCommand[lebID].instanceCount = u_LebNodeCounter[lebID];
+    u_DrawArraysIndirectCommand[lebID].baseInstance = lebID;
+
+    atomicExchange(u_LebNodeCounter[lebID], 0u);
+}
