@@ -38,7 +38,7 @@
 --     // atmosphere boundary in direction 'view_ray', as well as the transmittance
 --     // along this segment.
 --     vec3 GetSkyRadiance(vec3 camera, vec3 view_ray, double shadow_length,
---         vec3 sun_direction, out vec3 transmittance);
+--         vec3 sun_direction, out vec3 transmittance, out bool intersects_ground);
 --
 --     // Returns the sky radiance along the segment from 'camera' to 'p', as well as
 --     // the transmittance along this segment.
@@ -57,7 +57,7 @@
 --     // atmosphere boundary in direction 'view_ray', as well as the transmittance
 --     // along this segment.
 --     vec3 GetSkyLuminance(vec3 camera, vec3 view_ray, double shadow_length,
---         vec3 sun_direction, out vec3 transmittance);
+--         vec3 sun_direction, out vec3 transmittance, out bool intersects_ground);
 --
 --     // Returns the sky luminance along the segment from 'camera' to 'p', as well as
 --     // the transmittance along this segment.
@@ -305,6 +305,8 @@ package Orka.Features.Atmosphere is
    --  Spectrum times each CIE_2_Deg_Color_Matching_Functions (and times
    --  Max_Luminous_Efficacy) is computed to get XYZ values, which are then
    --  converted to linear sRGB with the XYZ_To_SRGB matrix.
+   --
+   --  For white balance, divide R, G, and B by the average of the three numbers
 
 private
 

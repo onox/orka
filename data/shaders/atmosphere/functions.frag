@@ -1702,7 +1702,8 @@ RadianceSpectrum GetSkyRadiance(
     IN(ReducedScatteringTexture) scattering_texture,
     IN(ReducedScatteringTexture) single_mie_scattering_texture,
     Position camera, IN(Direction) view_ray, Length shadow_length,
-    IN(Direction) sun_direction, OUT(DimensionlessSpectrum) transmittance) {
+    IN(Direction) sun_direction, OUT(DimensionlessSpectrum) transmittance,
+    OUT(bool) intersects_ground) {
   // Compute the distance to the top atmosphere boundary along the view ray,
   // assuming the viewer is in space (or NaN if the view ray does not intersect
   // the atmosphere).
@@ -1726,6 +1727,7 @@ RadianceSpectrum GetSkyRadiance(
   Number mu_s = dot(camera, sun_direction) / r;
   Number nu = dot(view_ray, sun_direction);
   bool ray_r_mu_intersects_ground = RayIntersectsGround(atmosphere, r, mu);
+  intersects_ground = ray_r_mu_intersects_ground;
 
   transmittance = ray_r_mu_intersects_ground ? DimensionlessSpectrum(0.0) :
       GetTransmittanceToTopAtmosphereBoundary(

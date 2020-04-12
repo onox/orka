@@ -42,10 +42,12 @@ RadianceSpectrum GetSolarRadiance() {
 
 RadianceSpectrum GetSkyRadiance(
     Position camera, Direction view_ray, Length shadow_length,
-    Direction sun_direction, out DimensionlessSpectrum transmittance) {
+    Direction sun_direction, out DimensionlessSpectrum transmittance,
+    out bool intersects_ground) {
   return GetSkyRadiance(ATMOSPHERE, transmittance_texture,
       scattering_texture, single_mie_scattering_texture,
-      camera, view_ray, shadow_length, sun_direction, transmittance);
+      camera, view_ray, shadow_length, sun_direction, transmittance,
+      intersects_ground);
 }
 
 RadianceSpectrum GetSkyRadianceToPoint(
@@ -72,11 +74,12 @@ Luminance3 GetSolarLuminance() {
 
 Luminance3 GetSkyLuminance(
     Position camera, Direction view_ray, Length shadow_length,
-    Direction sun_direction, out DimensionlessSpectrum transmittance) {
+    Direction sun_direction, out DimensionlessSpectrum transmittance,
+    out bool intersects_ground) {
   return GetSkyRadiance(ATMOSPHERE, transmittance_texture,
       scattering_texture, single_mie_scattering_texture,
-      camera, view_ray, shadow_length, sun_direction, transmittance) *
-      SKY_SPECTRAL_RADIANCE_TO_LUMINANCE;
+      camera, view_ray, shadow_length, sun_direction, transmittance,
+      intersects_ground) * SKY_SPECTRAL_RADIANCE_TO_LUMINANCE;
 }
 
 Luminance3 GetSkyLuminanceToPoint(
