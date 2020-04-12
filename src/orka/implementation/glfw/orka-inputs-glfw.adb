@@ -247,7 +247,7 @@ package body Orka.Inputs.GLFW is
          return new GLFW_Joystick_Input'
            (Joysticks.Default.Abstract_Joystick_Input with Joystick => Joystick,
             Present  => True,
-            Name => SU.To_Unbounded_String (Joystick.Gamepad_Name),
+            Name => SU.To_Unbounded_String (Joystick.Joystick_Name),
             GUID => SU.To_Unbounded_String (Joystick.Joystick_GUID));
       end if;
    end Create_Joystick_Input;
