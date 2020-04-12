@@ -140,18 +140,21 @@ In order to use a buffer as a TBO, the buffer must be attached to a
 Buffer_Texture_1.Attach_Buffer (GL.Pixels.RGBA32F, Buffer_3.GL_Buffer);
 ```
 
-Furthermore, a uniform must be declared in the shader:
+Furthermore, a uniform with an explicit binding index must be declared
+in the shader:
 
 ```glsl
-uniform samplerBuffer matrixBuffer;
+layout(binding = 0) uniform samplerBuffer matrixBuffer;
 ```
 
-and the buffer texture must be assigned to this uniform:
+and the buffer texture must be binded to this binding point:
 
 ```ada
-Uniform_1 : Uniform_Sampler := Program_1.Uniform_Sampler ("matrixBuffer");
-
-Uniform_1.Set_Texture (Buffer_Texture_1, 0);
+declare
+   use all type Orka.Rendering.Textures.Indexed_Texture_Target;
+begin
+   Orka.Rendering.Textures.Bind (Buffer_Texture_1, Texture, 0);
+end;
 ```
 
 Data can then be fetched via the `texelFetch` function in the shader.

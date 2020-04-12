@@ -8,7 +8,7 @@ release of 2.0 in 2004, OpenGL gained the ability to program parts of
 the pipeline with shaders, small programs written in a C-style language
 that run on the GPU. GPUs became more and more programmable and with
 the addition of compute shaders in OpenGL 4.3 in 2012, which can read and
-write from large buffers and or textures, one can easily run non-graphics
+write from large buffers or textures, one can easily run non-graphics
 workloads or do general purpose computing on the GPU (GPGPU).
 
 ## Concepts
