@@ -53,7 +53,7 @@ package body Orka.Culling is
       use all type Types.Element_Type;
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
-        := Culler.Program_Frustum.GL_Program.Compute_Work_Group_Size;
+        := Culler.Program_Frustum.Compute_Work_Group_Size;
 
       Local_Size : constant Natural := Natural (Work_Group_Size (GL.X));
       Padding    : constant Boolean := Transforms rem Local_Size /= 0;

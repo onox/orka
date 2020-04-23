@@ -18,7 +18,7 @@ with Ada.Containers.Indefinite_Holders;
 
 with GL.Objects.Programs;
 with GL.Objects.Shaders;
-with GL.Types;
+with GL.Types.Compute;
 
 with Orka.Rendering.Buffers;
 
@@ -38,9 +38,6 @@ package Orka.Rendering.Programs is
 
    function Create_Program (Modules   : Programs.Modules.Module_Array;
                             Separable : Boolean := False) return Program;
-
-   function GL_Program (Object : Program) return GL.Objects.Programs.Program
-     with Inline;
 
    function Has_Subroutines (Object : Program) return Boolean;
 
@@ -64,8 +61,17 @@ package Orka.Rendering.Programs is
      (Object : Program;
       Name   : String) return GL.Types.Attribute;
 
+   function Compute_Work_Group_Size
+     (Object : Program) return GL.Types.Compute.Dimension_Size_Array;
+
    function Uniform_Sampler (Object : Program; Name : String) return Uniforms.Uniform_Sampler;
    --  Return the uniform sampler that has the given name
+   --
+   --  This function is only needed in order to call procedure Verify_Compatibility
+   --  to verify that the kind and format of the sampler and texture are
+   --  compatible.
+   --
+   --  To bind a texture to a sampler, call Orka.Rendering.Textures.Bind.
    --
    --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
    --  exception is raised if the name is not defined in any of the attached shaders.
@@ -73,7 +79,14 @@ package Orka.Rendering.Programs is
    function Uniform_Image (Object : Program; Name : String) return Uniforms.Uniform_Image;
    --  Return the uniform image that has the given name
    --
-   --  Name must be a GLSL uniform image.
+   --  This function is only needed in order to call procedure Verify_Compatibility
+   --  to verify that the kind and format of the image sampler and texture are
+   --  compatible.
+   --
+   --  To bind a texture to a image sampler, call Orka.Rendering.Textures.Bind.
+   --
+   --  Name must be a GLSL uniform image. A Uniforms.Uniform_Inactive_Error
+   --  exception is raised if the name is not defined in any of the attached shaders.
 
    function Uniform_Subroutine
      (Object : in out Program;
@@ -96,7 +109,7 @@ package Orka.Rendering.Programs is
       Target : Buffers.Indexed_Buffer_Target;
       Name   : String) return Natural;
    --  Return the index of the binding point of a shader storage block (SSBO),
-   --  uniform block (UBO), or an atomic counter buffer.
+   --  uniform block (UBO), or an atomic counter buffer
    --
    --  Name must be a GLSL shader storage block, uniform block, or atomic
    --  uniform. A Uniforms.Uniform_Inactive_Error exception is raised if

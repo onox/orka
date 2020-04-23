@@ -72,9 +72,6 @@ package body Orka.Rendering.Programs is
       return Create_Program (Modules.Module_Array'(1 => Module), Separable);
    end Create_Program;
 
-   function GL_Program (Object : Program) return GL.Objects.Programs.Program
-     is (Object.GL_Program);
-
    function Has_Subroutines (Object : Program) return Boolean
      is (Object.Has_Subroutines);
 
@@ -107,10 +104,12 @@ package body Orka.Rendering.Programs is
    end Use_Program;
 
    function Attribute_Location (Object : Program; Name : String)
-      return GL.Types.Attribute is
-   begin
-      return Object.GL_Program.Attrib_Location (Name);
-   end Attribute_Location;
+      return GL.Types.Attribute
+   is (Object.GL_Program.Attrib_Location (Name));
+
+   function Compute_Work_Group_Size
+     (Object : Program) return GL.Types.Compute.Dimension_Size_Array
+   is (Object.GL_Program.Compute_Work_Group_Size);
 
    procedure Set_Subroutine_Function
      (Object   : in out Program;
