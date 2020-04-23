@@ -66,7 +66,7 @@ begin
 
    declare
       Local_Size : constant GL.Types.Compute.Dimension_Size_Array
-        := Program_1.GL_Program.Compute_Work_Group_Size;
+        := Program_1.Compute_Work_Group_Size;
    begin
       pragma Assert (Local_Size (GL.X) >= Size (VBO_1.Length));
    end;

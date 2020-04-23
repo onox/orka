@@ -85,7 +85,7 @@ begin
          R := GL.Compute.Max_Compute_Work_Group_Size;
          Put_Line ("Maximum size: " & R (GL.X)'Image & R (GL.Y)'Image & R (GL.Z)'Image);
 
-         R := Program_1.GL_Program.Compute_Work_Group_Size;
+         R := Program_1.Compute_Work_Group_Size;
          Put_Line ("Local size:   " & R (GL.X)'Image & R (GL.Y)'Image & R (GL.Z)'Image);
          Local_Size := R (GL.X);
       end;
