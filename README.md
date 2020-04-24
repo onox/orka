@@ -108,7 +108,7 @@ The following packages and/or files are licensed under the [MIT license][url-mit
   [url-mit]: https://opensource.org/licenses/MIT
   [url-awesome]: https://github.com/ohenley/awesome-ada#online-books
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
-  [url-contributing]: /contributing
+  [url-contributing]: /CONTRIBUTING.md
   [url-docs]: https://orka-engine.netlify.com/
   [url-glfw]: http://www.glfw.org/
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
