@@ -76,20 +76,27 @@ Optional dependencies:
 
 ### Installing dependencies
 
+#### Ubuntu 20.04 LTS
+
+Install the dependencies using apt:
+
+```sh
+$ sudo apt install gnat-9 gprbuild make pkgconf libahven8-dev lcov
+$ sudo apt install libglfw3-wayland libglfw3-dev libegl1-mesa-dev
+```
+
 #### Ubuntu 18.04 LTS
 
 Install the dependencies using apt:
 
 ```sh
-$ sudo apt install gnat-7 gprbuild make pkg-config libahven6-dev lcov
-$ sudo apt install libglfw3 libglfw3-dev libegl1-mesa-dev
+$ sudo apt install gnat-7 gprbuild make pkgconf libahven6-dev lcov libegl1-mesa-dev
 ```
 
-Compile and install [json-ada][url-json-ada] and [dcf-ada][url-dcf-ada].
+Compile and install GLFW 3.3 with Wayland support instead of installing
+the version provided in the Ubuntu repositories.
 
-!!! tip "Tip: Install GLFW 3.3"
-    It is recommended to compile and install GLFW 3.3 with Wayland support
-    instead of installing the version provided in the Ubuntu repositories.
+Compile and install [json-ada][url-json-ada] and [dcf-ada][url-dcf-ada].
 
 #### Arch Linux
 
