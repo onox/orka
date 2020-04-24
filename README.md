@@ -37,8 +37,8 @@ processing system. Resources can be loaded from directories and archive files.
 
 - **Quaternions and matrices**. Packages for applying common transformations
 to vectors, quaternions, and matrices using x86 SIMD instructions are provided.
-The various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, and F16C
-can also be used directly in your own code.
+The various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, AVX2, FMA,
+and F16C can also be used directly in your own code.
 
 Additionally, Orka provides several bindings:
 
@@ -89,18 +89,22 @@ before opening an issue or pull request.
 ## License
 
 Orka is distributed under the terms of the [Apache License 2.0][url-apache]
-except for a few packages.
-The first line of each Ada file should contain an SPDX license identifier
-tag that refers to this license:
+except for a few packages and files.
 
-    SPDX-License-Identifier: Apache-2.0
-
-The following packages are licensed under the [BSD 3-Clause license][url-bsd-3]:
+The following packages and/or files are licensed under the
+[BSD 3-Clause license][url-bsd-3]:
 
 - `Orka.Features.Atmosphere` (and child packages `Constants` and `Earth`)
 
+- Files in `data/shaders/atmosphere/`
+
+The following packages and/or files are licensed under the [MIT license][url-mit]:
+
+- Files in `data/shaders/terrain/`
+
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
+  [url-mit]: https://opensource.org/licenses/MIT
   [url-awesome]: https://github.com/ohenley/awesome-ada#online-books
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
   [url-contributing]: /contributing

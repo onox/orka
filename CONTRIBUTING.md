@@ -85,6 +85,9 @@ and making backporting fixes harder.
 * See [this blog post](https://chris.beams.io/posts/git-commit/) on how
   to write good commit messages.
 
+* Add a `Signed-off-by` with `git commit -s` to sign the
+  [Developer Certificate of Origin](#developer-certificate-of-origin) below.
+
 #### **Coding style**
 
 * Make sure your changes do not cause the compiler to fail with any new
@@ -146,6 +149,12 @@ and making backporting fixes harder.
 
 * In general, try to follow the coding style of the surrounding code.
 
+#### Licensing
+
+* Each file should contain an `SPDX-License-Identifier` tag and a license
+  header. Contributions created in whole by you should be licensed under
+  the Apache License 2.0.
+
 ## Developer Certificate of Origin
 
 By making a contribution to this project, I certify that:
@@ -158,7 +167,7 @@ knowledge, is covered under an appropriate open source license and I have
 the right under that license to submit that work with modifications,
 whether created in whole or in part by me, under the same open source
 license (unless I am permitted to submit under a different license), as
-Indicated in the file; or
+indicated in the file; or
 
 (c) The contribution was provided directly to me by some other person who
 certified (a), (b) or (c) and I have not modified it.
@@ -172,5 +181,5 @@ the open source license(s) involved.
 ## License
 
 This project is licensed under the Apache License 2.0. Some files are
-licensed under the BSD 3-Clause license. See the SPDX license identifier
-at the top of each file.
+licensed under the MIT or BSD 3-Clause license. See the SPDX license
+identifier at the top of each file.
