@@ -257,6 +257,15 @@ package GL.Objects.Textures is
    with Pre  => not Object.Allocated and Object.Kind /= Texture_Rectangle,
         Post => Object.Allocated;
 
+   procedure Allocate_Storage
+     (Object  : in out Texture;
+      Subject : Texture;
+      Fixed_Locations : Boolean := True)
+   with Pre  => not Object.Allocated and Subject.Allocated,
+        Post => Object.Allocated;
+   --  Allocate storage using the same format, mipmap levels, samples, and
+   --  dimensions of the given texture
+
    procedure Load_From_Data
      (Object : Texture;
       Level  : Mipmap_Level;

@@ -537,6 +537,18 @@ package body GL.Objects.Textures is
       Object.Allocated := True;
    end Allocate_Storage;
 
+   procedure Allocate_Storage
+     (Object  : in out Texture;
+      Subject : Texture;
+      Fixed_Locations : Boolean := True) is
+   begin
+      if Subject.Compressed then
+         Object.Allocate_Storage (Subject.Mipmap_Levels, Subject.Samples, Subject.Compressed_Format, Subject.Width (0), Subject.Height (0), Subject.Depth (0), Fixed_Locations);
+      else
+         Object.Allocate_Storage (Subject.Mipmap_Levels, Subject.Samples, Subject.Internal_Format, Subject.Width (0), Subject.Height (0), Subject.Depth (0), Fixed_Locations);
+      end if;
+   end Allocate_Storage;
+
    procedure Load_From_Data
      (Object : Texture;
       Level  : Mipmap_Level;
