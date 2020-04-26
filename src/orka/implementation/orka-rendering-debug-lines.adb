@@ -29,7 +29,7 @@ package body Orka.Rendering.Debug.Lines is
    begin
       return Result : Line :=
         (Program => Create_Program (Modules.Create_Module
-                      (Location, VS => "line.vert", FS => "line.frag")),
+           (Location, VS => "debug/line.vert", FS => "debug/line.frag")),
          others  => <>)
       do
          Result.Uniform_Visible  := Result.Program.Uniform ("visible");

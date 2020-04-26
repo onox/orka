@@ -95,7 +95,7 @@ package body Orka.Features.Terrain is
       --  Minimum and maximum depth, and the the heap elements
 
       Module_LEB : constant Modules.Module :=
-        Modules.Create_Module (Location, CS => "leb.comp");
+        Modules.Create_Module (Location, CS => "terrain/leb.comp");
 
       use Rendering.Programs.Modules;
    begin
@@ -107,33 +107,33 @@ package body Orka.Features.Terrain is
          Split_Update => True,
          Program_Leb_Update    => Create_Program (Modules.Module_Array'
            (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain-render-common.glsl"),
-            Modules.Create_Module (Location, CS => "terrain-render-sphere.glsl"),
-            Modules.Create_Module (Location, CS => "terrain-update-lod.comp"),
-            Modules.Create_Module (Location, CS => "terrain-update.comp"))),
+            Modules.Create_Module (Location, CS => "terrain/terrain-render-common.glsl"),
+            Modules.Create_Module (Location, CS => "terrain/terrain-render-sphere.glsl"),
+            Modules.Create_Module (Location, CS => "terrain/terrain-update-lod.comp"),
+            Modules.Create_Module (Location, CS => "terrain/terrain-update.comp"))),
          Program_Render        => Create_Program (Modules.Module_Array'(Render_Modules &
-           (Modules.Create_Module (Location, VS => "leb.comp"),
-            Modules.Create_Module (Location, VS => "terrain-render-common.glsl"),
-            Modules.Create_Module (Location, VS => "terrain-render-sphere.glsl"),
+           (Modules.Create_Module (Location, VS => "terrain/leb.comp"),
+            Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl"),
+            Modules.Create_Module (Location, VS => "terrain/terrain-render-sphere.glsl"),
             (if Wireframe then
                Modules.Create_Module (Location,
-                 VS => "terrain-render.vert",
-                 GS => "terrain-render-wires.geom",
-                 FS => "terrain-render-wires.frag")
+                 VS => "terrain/terrain-render.vert",
+                 GS => "terrain/terrain-render-wires.geom",
+                 FS => "terrain/terrain-render-wires.frag")
              else
                Modules.Create_Module (Location,
-                 VS => "terrain-render.vert",
-                 FS => "terrain-render.frag")
+                 VS => "terrain/terrain-render.vert",
+                 FS => "terrain/terrain-render.frag")
             )))),
          Program_Leb_Prepass   => Create_Program (Modules.Module_Array'
            (Module_LEB,
-            Modules.Create_Module (Location, CS => "leb-sum-reduction-prepass.comp"))),
+            Modules.Create_Module (Location, CS => "terrain/leb-sum-reduction-prepass.comp"))),
          Program_Leb_Reduction => Create_Program (Modules.Module_Array'
            (Module_LEB,
-            Modules.Create_Module (Location, CS => "leb-sum-reduction.comp"))),
+            Modules.Create_Module (Location, CS => "terrain/leb-sum-reduction.comp"))),
          Program_Indirect      => Create_Program (Modules.Module_Array'
            (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain-prepare-indirect.comp"))),
+            Modules.Create_Module (Location, CS => "terrain/terrain-prepare-indirect.comp"))),
          Sampler                 => Create_Sampler,
          Buffer_Leb              => (others => Create_Buffer
            ((others => False), Orka.Types.UInt_Type, Heap_Elements)),
@@ -168,7 +168,7 @@ package body Orka.Features.Terrain is
          declare
             Program_Init : Program := Create_Program (Modules.Module_Array'
               (Module_LEB,
-               Modules.Create_Module (Location, CS => "leb-init.comp")));
+               Modules.Create_Module (Location, CS => "terrain/leb-init.comp")));
          begin
             Program_Init.Uniform ("u_MinDepth").Set_Int (GL.Types.Size (Min_Depth));
             Program_Init.Uniform ("u_MaxDepth").Set_Int (GL.Types.Size (Max_Depth));

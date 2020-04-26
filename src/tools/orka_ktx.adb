@@ -124,7 +124,7 @@ begin
          ----------------------------------------------------------------------
 
          Location_Shaders : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data");
+           := Locations.Directories.Create_Location ("../data/shaders");
 
          function Get_Module (Kind : LE.Texture_Kind) return Modules.Module is
             use all type LE.Texture_Kind;
@@ -133,23 +133,23 @@ begin
                when Texture_1D =>
                   return Modules.Create_Module (Location_Shaders,
                     VS => "oversized-triangle.vert",
-                    FS => "shaders/tools/ktx-1D.frag");
+                    FS => "tools/ktx-1D.frag");
                when Texture_2D =>
                   return Modules.Create_Module (Location_Shaders,
                     VS => "oversized-triangle.vert",
-                    FS => "shaders/tools/ktx-2D.frag");
+                    FS => "tools/ktx-2D.frag");
                when Texture_3D =>
                   return Modules.Create_Module (Location_Shaders,
-                    VS => "shaders/tools/volume.vert",
-                    FS => "shaders/tools/ktx-3D.frag");
+                    VS => "tools/volume.vert",
+                    FS => "tools/ktx-3D.frag");
                when Texture_Cube_Map =>
                   return Modules.Create_Module (Location_Shaders,
-                    VS => "shaders/tools/cube.vert",
-                    FS => "shaders/tools/ktx-cube.frag");
+                    VS => "tools/cube.vert",
+                    FS => "tools/ktx-cube.frag");
                when Texture_2D_Array =>
                   return Modules.Create_Module (Location_Shaders,
                     VS => "oversized-triangle.vert",
-                    FS => "shaders/tools/ktx-2D-array.frag");
+                    FS => "tools/ktx-2D-array.frag");
                when others => raise Constraint_Error;
             end case;
          end Get_Module;

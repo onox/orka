@@ -396,8 +396,8 @@ package body Orka.Features.Atmosphere is
            (Data.Wavelengths, Data.Solar_Irradiance, Power_Sun,
             Result.Sun_K_R, Result.Sun_K_G, Result.Sun_K_B);
 
-         Result.Data_Definitions := Location.Read_Data ("definitions.frag");
-         Result.Data_Functions   := Location.Read_Data ("functions.frag");
+         Result.Data_Definitions := Location.Read_Data ("atmosphere/definitions.frag");
+         Result.Data_Functions   := Location.Read_Data ("atmosphere/functions.frag");
 
          Result.Location := Location;
       end return;
@@ -462,33 +462,33 @@ package body Orka.Features.Atmosphere is
         := Modules.Create_Module (Object.Location, VS => "oversized-triangle.vert");
 
       Module_GS : constant Modules.Module
-        := Modules.Create_Module (Object.Location, GS => "layer.geom");
+        := Modules.Create_Module (Object.Location, GS => "atmosphere/layer.geom");
 
       Header : constant String := Object.Shader_Header (Lambdas);
 
       FS_Transmittance : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-transmittance.frag").Get));
+             ("atmosphere/compute-transmittance.frag").Get));
 
       FS_Direct_Irradiance : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-direct-irradiance.frag").Get));
+             ("atmosphere/compute-direct-irradiance.frag").Get));
 
       FS_Indirect_Irradiance : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-indirect-irradiance.frag").Get));
+             ("atmosphere/compute-indirect-irradiance.frag").Get));
 
       FS_Single_Scattering : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-single-scattering.frag").Get));
+             ("atmosphere/compute-single-scattering.frag").Get));
 
       FS_Multiple_Scattering : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-multiple-scattering.frag").Get));
+             ("atmosphere/compute-multiple-scattering.frag").Get));
 
       FS_Scattering_Density : constant String
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("compute-scattering-density.frag").Get));
+             ("atmosphere/compute-scattering-density.frag").Get));
 
       Program_Transmittance : Program := Create_Program (Modules.Module_Array'
         (Module_VS,
@@ -852,7 +852,7 @@ package body Orka.Features.Atmosphere is
 
             FS_Transmittance : constant String
               := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-                ("compute-transmittance.frag").Get));
+                ("atmosphere/compute-transmittance.frag").Get));
 
             Program_Transmittance : Program := Create_Program (Modules.Module_Array'
               (Modules.Create_Module (Object.Location, VS => "oversized-triangle.vert"),
@@ -883,8 +883,8 @@ package body Orka.Features.Atmosphere is
    function Get_Shader (Object : Model) return Rendering.Programs.Modules.Module is
       Precompute_Illuminance : constant Boolean := Object.Data.Num_Precomputed_Wavelengths > 3;
 
-      Atmosphere_Fragment_Shader : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data ("atmosphere.frag").Get));
+      Atmosphere_Fragment_Shader : constant String := Convert
+        (Resources.Byte_Array'(Object.Location.Read_Data ("atmosphere/atmosphere.frag").Get));
 
       use Ada.Characters.Latin_1;
 

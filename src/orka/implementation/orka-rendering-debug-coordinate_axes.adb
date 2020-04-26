@@ -29,7 +29,7 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
    begin
       return Result : Coordinate_Axes :=
         (Program => Create_Program (Modules.Create_Module
-                      (Location, VS => "axes.vert", FS => "line.frag")),
+           (Location, VS => "debug/axes.vert", FS => "debug/line.frag")),
          others  => <>)
       do
          Result.Uniform_Visible  := Result.Program.Uniform ("visible");

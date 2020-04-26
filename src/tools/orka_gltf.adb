@@ -154,8 +154,8 @@ begin
 
          use Orka.Resources;
 
-         Location_Resources : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data");
+         Location_Shaders : constant Locations.Location_Ptr
+           := Locations.Directories.Create_Location ("../data/shaders");
 
          package Formats renames Orka.Rendering.Vertex_Formats;
          package LE renames GL.Low_Level.Enums;
@@ -167,9 +167,9 @@ begin
          use Orka.Rendering.Framebuffers;
 
          P_1 : Program := Create_Program (Modules.Create_Module
-           (Location_Resources,
-            VS => "shaders/tools/gltf.vert",
-            FS => "shaders/tools/gltf.frag"));
+           (Location_Shaders,
+            VS => "tools/gltf.vert",
+            FS => "tools/gltf.frag"));
 
          Uni_View  : constant Uniforms.Uniform := P_1.Uniform ("view");
          Uni_Proj  : constant Uniforms.Uniform := P_1.Uniform ("proj");
@@ -209,7 +209,7 @@ begin
 
          use Orka.Culling;
          Culler_1 : constant Culler_Ptr
-           := new Culler'Class'(Culler'Class (Create_Culler (Location_Resources)));
+           := new Culler'Class'(Culler'Class (Create_Culler (Location_Shaders)));
 
          ----------------------------------------------------------------------
 

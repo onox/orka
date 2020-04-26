@@ -30,7 +30,7 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
    begin
       return Result : Bounding_Box :=
         (Program => Create_Program (Modules.Create_Module
-                      (Location, VS => "bbox.vert", FS => "line.frag")),
+           (Location, VS => "debug/bbox.vert", FS => "debug/line.frag")),
          others  => <>)
       do
          Result.Program.Uniform ("color").Set_Vector (Color);

@@ -29,9 +29,9 @@ package body Orka.Algorithms.Prefix_Sums is
    begin
       return
         (Program_Prefix_Sum => Create_Program (Modules.Create_Module
-           (Location, CS => "prefix-sum.comp")),
+           (Location, CS => "algorithms/prefix-sum.comp")),
          Program_Add        => Create_Program (Modules.Create_Module
-           (Location, CS => "prefix-sum-add.comp")));
+           (Location, CS => "algorithms/prefix-sum-add.comp")));
    end Create_Factory;
 
    function Create_Prefix_Sum

@@ -36,7 +36,7 @@ package body Orka.Rendering.Debug.Spheres is
    begin
       return Result : Sphere :=
         (Program => Create_Program (Modules.Create_Module
-                      (Location, VS => "sphere.vert", FS => "sphere.frag")),
+           (Location, VS => "debug/sphere.vert", FS => "debug/sphere.frag")),
          Cells_Horizontal => Cells_Horizontal,
          Cells_Vertical   => Cells_Vertical,
          others  => <>)

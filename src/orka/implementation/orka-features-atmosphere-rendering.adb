@@ -40,8 +40,8 @@ package body Orka.Features.Atmosphere.Rendering is
    is
       Atmosphere_Model : constant Model := Create_Model (Data'Access, Location);
 
-      Sky_GLSL : constant String
-        := Resources.Convert (Orka.Resources.Byte_Array'(Location.Read_Data ("sky.frag").Get));
+      Sky_GLSL : constant String := Resources.Convert
+        (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));
 
       use Ada.Characters.Latin_1;
       use Rendering.Programs;
@@ -57,7 +57,7 @@ package body Orka.Features.Atmosphere.Rendering is
    begin
       return Result : Atmosphere :=
         (Program => Create_Program (Modules.Module_Array'
-           (Modules.Create_Module (Location, VS => "sky.vert"),
+           (Modules.Create_Module (Location, VS => "atmosphere/sky.vert"),
             Modules.Create_Module_From_Sources (FS => Sky_Shader),
             Shader_Module)),
          Module  => Shader_Module,
