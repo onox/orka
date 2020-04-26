@@ -25,8 +25,6 @@ uniform vec4 sun_direction;
 uniform vec4 star_direction;
 uniform float star_size; // cosine of angular radius
 
-uniform float exposure;
-
 in vec3 view_ray;
 
 layout(location = 0) out vec4 color;
@@ -76,5 +74,5 @@ void main() {
     const float core_rad_factor = step(star_size, dotVS);
     radiance += max(ring_rad_factor, core_rad_factor) * transmittance * GetSolarRadiance();
 
-    color = vec4(vec3(1.0) - exp(-radiance * exposure), 1.0);
+    color = vec4(radiance, 1.0);
 }

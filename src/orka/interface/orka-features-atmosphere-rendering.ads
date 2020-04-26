@@ -28,8 +28,6 @@ package Orka.Features.Atmosphere.Rendering is
 
    Sun_Radius_Meter : constant := 695_700_000.0;
 
-   type Exposure_Type is digits 6 range 0.0 .. 50.0;
-
    type Model_Parameters is record
       Semi_Major_Axis : Cameras.Distance;
       Flattening      : Cameras.Distance := 0.0;
@@ -50,11 +48,10 @@ package Orka.Features.Atmosphere.Rendering is
    --  rendering
 
    procedure Render
-     (Object   : in out Atmosphere;
-      Camera   : Cameras.Camera_Ptr;
-      Planet   : Behaviors.Behavior_Ptr;
-      Star     : Behaviors.Behavior_Ptr;
-      Exposure : Exposure_Type := 1.0);
+     (Object : in out Atmosphere;
+      Camera : Cameras.Camera_Ptr;
+      Planet : Behaviors.Behavior_Ptr;
+      Star   : Behaviors.Behavior_Ptr);
    --  Render the atmosphere on the far plane
    --
    --  This procedure assumes that the precomputed textures have been
@@ -73,7 +70,6 @@ private
 
       Bottom_Radius  : GL.Types.Double;
       Distance_Scale : GL.Types.Double;
-      Exposure_Scale : Exposure_Type;
 
       Uniform_Ground_Hack   : Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_Camera_Offset : Programs.Uniforms.Uniform (LE.Single_Vec4);
@@ -83,9 +79,7 @@ private
 
       Uniform_Star_Dir  : Programs.Uniforms.Uniform (LE.Single_Vec4);
       Uniform_Star_Size : Programs.Uniforms.Uniform (LE.Single_Type);
-
-      Uniform_Sun_Dir  : Programs.Uniforms.Uniform (LE.Single_Vec4);
-      Uniform_Exposure : Programs.Uniforms.Uniform (LE.Single_Type);
+      Uniform_Sun_Dir   : Programs.Uniforms.Uniform (LE.Single_Vec4);
 
       Uniform_View : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj : Programs.Uniforms.Uniform (LE.Single_Matrix4);

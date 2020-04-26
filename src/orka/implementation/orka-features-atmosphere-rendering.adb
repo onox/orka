@@ -29,8 +29,6 @@ package body Orka.Features.Atmosphere.Rendering is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Double);
 
-   Default_Exposure : constant := 10.0;
-
    Altitude_Hack_Threshold : constant := 8000.0;
 
    function Create_Atmosphere
@@ -64,7 +62,6 @@ package body Orka.Features.Atmosphere.Rendering is
          Parameters     => Parameters,
          Bottom_Radius  => Data.Bottom_Radius,
          Distance_Scale => 1.0 / Data.Length_Unit_In_Meters,
-         Exposure_Scale => Default_Exposure * (if Data.Luminance /= None then 1.0e-5 else 1.0),
          others => <>)
       do
          Result.Uniform_Ground_Hack   := Result.Program.Uniform ("ground_hack");
@@ -77,7 +74,6 @@ package body Orka.Features.Atmosphere.Rendering is
          Result.Uniform_Proj := Result.Program.Uniform ("proj");
 
          Result.Uniform_Sun_Dir  := Result.Program.Uniform ("sun_direction");
-         Result.Uniform_Exposure := Result.Program.Uniform ("exposure");
 
          Result.Uniform_Star_Dir  := Result.Program.Uniform ("star_direction");
          Result.Uniform_Star_Size := Result.Program.Uniform ("star_size");
@@ -109,11 +105,10 @@ package body Orka.Features.Atmosphere.Rendering is
    package Matrices renames Orka.Transforms.Doubles.Matrices;
 
    procedure Render
-     (Object   : in out Atmosphere;
-      Camera   : Cameras.Camera_Ptr;
-      Planet   : Behaviors.Behavior_Ptr;
-      Star     : Behaviors.Behavior_Ptr;
-      Exposure : Exposure_Type := 1.0)
+     (Object : in out Atmosphere;
+      Camera : Cameras.Camera_Ptr;
+      Planet : Behaviors.Behavior_Ptr;
+      Star   : Behaviors.Behavior_Ptr)
    is
       function "*" (Left : Matrices.Matrix4; Right : Matrices.Vector4) return Matrices.Vector4
         renames Matrices."*";
@@ -183,8 +178,6 @@ package body Orka.Features.Atmosphere.Rendering is
 
       Object.Uniform_View.Set_Matrix (Camera.View_Matrix);
       Object.Uniform_Proj.Set_Matrix (Camera.Lens.Projection_Matrix);
-
-      Object.Uniform_Exposure.Set_Single (GL.Types.Single (Exposure * Object.Exposure_Scale));
 
       Object.Program.Use_Program;
 
