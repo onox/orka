@@ -16,7 +16,7 @@
 
 with Ada.Strings.Fixed;
 
-with GL.Pixels;
+with GL.Pixels.Extensions;
 with GL.Viewports;
 
 with Orka.Containers.Bounded_Vectors;
@@ -174,15 +174,17 @@ package body Orka.Rendering.Framebuffers is
       if Mask.Color then
          declare
             procedure Clear_Attachments (List : GL.Buffers.Color_Buffer_List) is
+               package PE renames GL.Pixels.Extensions;
+
                use all type GL.Buffers.Color_Buffer_Selector;
 
-               Index     : GL.Buffers.Draw_Buffer_Index := GL.Buffers.Draw_Buffer_Index'First;
+               Index : GL.Buffers.Draw_Buffer_Index := GL.Buffers.Draw_Buffer_Index'First;
             begin
                for Buffer of List loop
                   if Buffer /= None then
                      if Object.Default then
                         Object.GL_Framebuffer.Clear_Color_Buffer
-                          (Index, GL.Pixels.Float_Type, Object.Defaults.Color);
+                          (Index, PE.Float_Or_Normalized_Type, Object.Defaults.Color);
                      else
                         declare
                            Point : constant FB.Attachment_Point := Color_Attachment_Point'Val
@@ -191,9 +193,13 @@ package body Orka.Rendering.Framebuffers is
                                 + Color_Attachment_Point'Pos (Color_Attachment_Point'First));
                         begin
                            if Object.Has_Attachment (Point) then
-                              Object.GL_Framebuffer.Clear_Color_Buffer
-                                (Index, Object.Attachments (Point).Element.Red_Type,
-                                 Object.Defaults.Color);
+                              declare
+                                 Format : constant GL.Pixels.Internal_Format
+                                   := Object.Attachments (Point).Element.Internal_Format;
+                              begin
+                                 Object.GL_Framebuffer.Clear_Color_Buffer
+                                   (Index, PE.Texture_Format_Type (Format), Object.Defaults.Color);
+                              end;
                            end if;
                         end;
                      end if;

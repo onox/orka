@@ -77,8 +77,35 @@ package GL.Pixels.Queries is
      (Format : Internal_Format;
       Kind   : LE.Texture_Kind) return Internal_Format;
 
-   --  Note: the size and type of components (R, G, B, A, depth, and stencil)
-   --  can be retrieved via the function *_Type and *_Size in GL.Objects.Textures
+   -----------------------------------------------------------------------------
+
+   function Red_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Green_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Blue_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Alpha_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Depth_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Stencil_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
+
+   function Shared_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size;
 
    -----------------------------------------------------------------------------
 

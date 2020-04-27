@@ -26,12 +26,8 @@ package GL.Enums.Textures is
 
    type Compare_Kind is (None, Compare_R_To_Texture);
 
-   type Level_Parameter is (Width, Height, Internal_Format, Red_Size,
-                            Green_Size, Blue_Size, Alpha_Size, Depth,
+   type Level_Parameter is (Width, Height, Internal_Format, Depth,
                             Compressed_Image_Size, Compressed,
-                            Depth_Size, Stencil_Size,
-                            Red_Type, Green_Type, Blue_Type,
-                            Alpha_Type, Depth_Type, Shared_Size,
                             Samples, Fixed_Sample_Locations,
                             Buffer_Offset, Buffer_Size);
 
@@ -61,21 +57,9 @@ private
    for Level_Parameter use (Width           => 16#1000#,
                             Height          => 16#1001#,
                             Internal_Format => 16#1003#,
-                            Red_Size        => 16#805C#,
-                            Green_Size      => 16#805D#,
-                            Blue_Size       => 16#805E#,
-                            Alpha_Size      => 16#805F#,
                             Depth           => 16#8071#,
                             Compressed_Image_Size => 16#86A0#,
                             Compressed      => 16#86A1#,
-                            Depth_Size      => 16#884A#,
-                            Stencil_Size    => 16#88F1#,
-                            Red_Type        => 16#8C10#,
-                            Green_Type      => 16#8C11#,
-                            Blue_Type       => 16#8C12#,
-                            Alpha_Type      => 16#8C13#,
-                            Depth_Type      => 16#8C16#,
-                            Shared_Size     => 16#8C3F#,
                             Samples         => 16#9106#,
                             Fixed_Sample_Locations => 16#9107#,
                             Buffer_Offset   => 16#919D#,

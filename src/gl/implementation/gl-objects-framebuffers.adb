@@ -18,7 +18,6 @@ with Ada.Unchecked_Conversion;
 
 with GL.API;
 with GL.Enums.Getter;
-with GL.Pixels.Extensions;
 with GL.Pixels.Queries;
 
 package body GL.Objects.Framebuffers is
@@ -281,15 +280,15 @@ package body GL.Objects.Framebuffers is
    end Bind;
 
    procedure Clear_Color_Buffer
-     (Object    : Framebuffer;
-      Index     : Buffers.Draw_Buffer_Index;
-      Data_Type : Pixels.Channel_Data_Type;
-      Value     : Colors.Color)
+     (Object      : Framebuffer;
+      Index       : Buffers.Draw_Buffer_Index;
+      Format_Type : Pixels.Extensions.Format_Type;
+      Value       : Colors.Color)
    is
-      use all type GL.Pixels.Channel_Data_Type;
+      use all type GL.Pixels.Extensions.Format_Type;
    begin
-      case Data_Type is
-         when Float_Type | Signed_Normalized | Unsigned_Normalized =>
+      case Format_Type is
+         when Float_Or_Normalized_Type =>
             API.Clear_Named_Framebuffer_Color_Real
               (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
          when Int_Type =>
@@ -298,7 +297,7 @@ package body GL.Objects.Framebuffers is
          when Unsigned_Int_Type =>
             API.Clear_Named_Framebuffer_Color_Unsigned_Int
               (Object.Reference.GL_Id, Enums.Color_Buffer, Index, Value);
-         when None =>
+         when Depth_Type =>
             raise Constraint_Error;
       end case;
    end Clear_Color_Buffer;

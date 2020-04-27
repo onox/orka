@@ -177,20 +177,6 @@ package GL.Objects.Textures is
    function Fixed_Sample_Locations (Object : Texture) return Boolean
      with Pre => Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array;
 
-   function Red_Type   (Object : Texture) return Pixels.Channel_Data_Type;
-   function Green_Type (Object : Texture) return Pixels.Channel_Data_Type;
-   function Blue_Type  (Object : Texture) return Pixels.Channel_Data_Type;
-   function Alpha_Type (Object : Texture) return Pixels.Channel_Data_Type;
-   function Depth_Type (Object : Texture) return Pixels.Channel_Data_Type;
-
-   function Red_Size   (Object : Texture) return Size;
-   function Green_Size (Object : Texture) return Size;
-   function Blue_Size  (Object : Texture) return Size;
-   function Alpha_Size (Object : Texture) return Size;
-   function Depth_Size (Object : Texture) return Size;
-   function Stencil_Size (Object : Texture) return Size;
-   function Shared_Size  (Object : Texture) return Size;
-
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --
    -----------------------------------------------------------------------------

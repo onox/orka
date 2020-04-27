@@ -46,7 +46,7 @@ package GL.Pixels.Extensions is
           Depth24_Stencil8 | Depth32F_Stencil8 =>
            Depth_Type,
 
-        -- Floating point or (un)signed normalized fixed-point
+        --  Floating point or (un)signed normalized fixed-point
         when R8 | R8_SNorm | R16 | R16_SNorm | R16F | R32F =>
            Float_Or_Normalized_Type,
         when RG8 | RG8_SNorm | RG16 | RG16_SNorm | RG16F | RG32F =>

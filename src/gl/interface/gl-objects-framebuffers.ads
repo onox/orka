@@ -17,7 +17,7 @@
 with GL.Buffers;
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
-with GL.Pixels;
+with GL.Pixels.Extensions;
 with GL.Types.Colors;
 
 private with GL.Enums;
@@ -175,10 +175,10 @@ package GL.Objects.Framebuffers is
    --  in Draw_Object framebuffer
 
    procedure Clear_Color_Buffer
-     (Object    : Framebuffer;
-      Index     : Buffers.Draw_Buffer_Index;
-      Data_Type : Pixels.Channel_Data_Type;
-      Value     : Colors.Color);
+     (Object      : Framebuffer;
+      Index       : Buffers.Draw_Buffer_Index;
+      Format_Type : Pixels.Extensions.Format_Type;
+      Value       : Colors.Color);
 
    procedure Clear_Depth_Buffer   (Object : Framebuffer; Value : Buffers.Depth);
 

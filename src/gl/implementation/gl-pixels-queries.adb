@@ -114,6 +114,43 @@ package body GL.Pixels.Queries is
 
    -----------------------------------------------------------------------------
 
+   function Red_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Red_Size));
+
+   function Green_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Green_Size));
+
+   function Blue_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Blue_Size));
+
+   function Alpha_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Alpha_Size));
+
+   function Depth_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Depth_Size));
+
+   function Stencil_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Stencil_Size));
+
+   function Shared_Size
+     (Format : Internal_Format;
+      Kind   : LE.Texture_Kind) return Size
+   is (Get_Size (Format, Kind, Internalformat_Shared_Size));
+
+   -----------------------------------------------------------------------------
+
    function Max_Width
      (Format : Internal_Format;
       Kind   : LE.Texture_Kind) return Size
