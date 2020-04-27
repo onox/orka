@@ -145,10 +145,14 @@ package GL.Objects.Framebuffers is
    procedure Set_Default_Layers  (Object : Framebuffer; Value : Size);
    procedure Set_Default_Samples (Object : Framebuffer; Value : Size);
 
+   procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
+
    function Default_Width   (Object : Framebuffer) return Size;
    function Default_Height  (Object : Framebuffer) return Size;
    function Default_Layers  (Object : Framebuffer) return Size;
    function Default_Samples (Object : Framebuffer) return Size;
+
+   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;
 
    function Max_Framebuffer_Width return Size
      with Post => Max_Framebuffer_Width'Result >= 16_384;
@@ -161,10 +165,6 @@ package GL.Objects.Framebuffers is
 
    function Max_Framebuffer_Samples return Size
      with Post => Max_Framebuffer_Samples'Result >= 4;
-
-   procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
-
-   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;
 
    procedure Blit (Read_Object, Draw_Object : Framebuffer;
                    Src_X0, Src_Y0, Src_X1, Src_Y1,

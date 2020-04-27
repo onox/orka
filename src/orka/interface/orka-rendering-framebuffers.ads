@@ -46,10 +46,8 @@ package Orka.Rendering.Framebuffers is
       Stencil : GL.Buffers.Stencil_Index := 0;
    end record;
 
-   type Framebuffer
-     (Default : Boolean;
-      Width, Height, Samples : Size) is tagged private
-   with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
+   type Framebuffer (Default : Boolean) is tagged private
+     with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
 
    type Framebuffer_Ptr is not null access Framebuffer;
 
@@ -78,6 +76,10 @@ package Orka.Rendering.Framebuffers is
      with Inline;
 
    -----------------------------------------------------------------------------
+
+   function Width   (Object : Framebuffer) return Size;
+   function Height  (Object : Framebuffer) return Size;
+   function Samples (Object : Framebuffer) return Size;
 
    function Image (Object : Framebuffer) return String;
    --  Return a description of the given framebuffer
@@ -240,11 +242,12 @@ private
    type Attachment_Array is array (FB.Attachment_Point)
      of Attachment_Holder.Holder;
 
-   type Framebuffer (Default : Boolean; Width, Height, Samples : Size) is tagged record
+   type Framebuffer (Default : Boolean) is tagged record
       GL_Framebuffer : FB.Framebuffer;
       Attachments    : Attachment_Array;
       Defaults       : Buffer_Values;
       Draw_Buffers   : Color_Buffer_List_Holder.Holder;
+      Width, Height, Samples : Size;
    end record;
 
 end Orka.Rendering.Framebuffers;

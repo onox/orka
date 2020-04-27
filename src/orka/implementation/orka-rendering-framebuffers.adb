@@ -31,11 +31,12 @@ package body Orka.Rendering.Framebuffers is
    function Create_Framebuffer
      (Width, Height, Samples : Size) return Framebuffer is
    begin
-      return Result : Framebuffer
+      return Result : Framebuffer :=
         (Default => False,
          Width   => Width,
          Height  => Height,
-         Samples => Samples)
+         Samples => Samples,
+         others  => <>)
       do
          Result.GL_Framebuffer.Set_Default_Width (Width);
          Result.GL_Framebuffer.Set_Default_Height (Height);
@@ -84,6 +85,10 @@ package body Orka.Rendering.Framebuffers is
      is (Object.GL_Framebuffer);
 
    -----------------------------------------------------------------------------
+
+   function Width   (Object : Framebuffer) return Size is (Object.Width);
+   function Height  (Object : Framebuffer) return Size is (Object.Height);
+   function Samples (Object : Framebuffer) return Size is (Object.Samples);
 
    function Image (Object : Framebuffer) return String is
       function Trim (Value : String) return String is
