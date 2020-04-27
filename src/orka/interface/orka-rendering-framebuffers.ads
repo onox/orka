@@ -168,6 +168,14 @@ package Orka.Rendering.Framebuffers is
    --
    --  The internal format of the texture must be valid for the given
    --  attachment point.
+   --
+   --  If one of the attached textures is layered (3D, 1D/2D array, cube
+   --  map [array], or 2D multisampled array), then all attachments must
+   --  have the same kind.
+   --
+   --  All attachments of the framebuffer must have the same amount of
+   --  samples and they must all have fixed sample locations, or none of
+   --  them must have them.
 
    procedure Attach
      (Object  : in out Framebuffer;
