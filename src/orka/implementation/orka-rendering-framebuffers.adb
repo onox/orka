@@ -81,11 +81,6 @@ package body Orka.Rendering.Framebuffers is
 
    -----------------------------------------------------------------------------
 
-   function GL_Framebuffer (Object : Framebuffer) return GL.Objects.Framebuffers.Framebuffer
-     is (Object.GL_Framebuffer);
-
-   -----------------------------------------------------------------------------
-
    function Width   (Object : Framebuffer) return Size is (Object.Width);
    function Height  (Object : Framebuffer) return Size is (Object.Height);
    function Samples (Object : Framebuffer) return Size is (Object.Samples);

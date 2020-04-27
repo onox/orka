@@ -70,11 +70,6 @@ package Orka.Rendering.Framebuffers is
 
    -----------------------------------------------------------------------------
 
-   function GL_Framebuffer (Object : Framebuffer) return FB.Framebuffer
-     with Inline;
-
-   -----------------------------------------------------------------------------
-
    function Width   (Object : Framebuffer) return Size;
    function Height  (Object : Framebuffer) return Size;
    function Samples (Object : Framebuffer) return Size;
