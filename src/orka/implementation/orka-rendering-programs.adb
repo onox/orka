@@ -21,11 +21,6 @@ with Orka.Rendering.Programs.Uniforms;
 
 package body Orka.Rendering.Programs is
 
-   package Program_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => Program);
-
-   Current_Program : Program_Holder.Holder;
-
    function Create_Program (Modules   : Programs.Modules.Module_Array;
                             Separable : Boolean := False) return Program is
       use type GL.Types.Int;
@@ -92,13 +87,8 @@ package body Orka.Rendering.Programs is
 
    procedure Use_Program (Object : in out Program) is
    begin
-      if Current_Program.Is_Empty or else Object /= Current_Program.Element then
-         Object.GL_Program.Use_Program;
-         Current_Program.Replace_Element (Object);
-         if Object.Has_Subroutines then
-            Object.Use_Subroutines;
-         end if;
-      elsif Object.Subroutines_Modified then
+      Object.GL_Program.Use_Program;
+      if Object.Has_Subroutines then
          Object.Use_Subroutines;
       end if;
    end Use_Program;
