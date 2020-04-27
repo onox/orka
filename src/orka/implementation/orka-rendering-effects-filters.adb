@@ -16,7 +16,6 @@
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
-with GL.Pixels;
 with GL.Toggles;
 
 with Orka.Rendering.Drawing;
