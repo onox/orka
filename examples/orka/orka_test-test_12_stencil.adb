@@ -213,10 +213,8 @@ procedure Orka_Test.Test_12_Stencil is
    VAO_Scene  : constant Vertex_Format := Load_Scene_Data (Program_Scene);
    VAO_Screen : constant Vertex_Format := Load_Screen_Data (Program_Screen);
 
-   FB_1 : constant Framebuffer_Ptr
-     := new Framebuffer'(Create_Framebuffer (Width, Height));
-   FB_D : constant Framebuffer_Ptr
-     := new Framebuffer'(Create_Default_Framebuffer (Width, Height));
+   FB_1 : Framebuffer := Create_Framebuffer (Width, Height);
+   FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
    use all type GL.Objects.Textures.Minifying_Function;
    use all type GL.Objects.Textures.Wrapping_Mode;

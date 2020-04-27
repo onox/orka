@@ -195,10 +195,8 @@ begin
 
          ----------------------------------------------------------------------
 
-         FB_1 : constant Framebuffer_Ptr
-           := new Framebuffer'(Create_Framebuffer (Width, Height, Samples, Context));
-         FB_D : constant Framebuffer_Ptr
-           := new Framebuffer'(Get_Default_Framebuffer (Window));
+         FB_1 : Framebuffer := Create_Framebuffer (Width, Height, Samples, Context);
+         FB_D : constant Framebuffer := Get_Default_Framebuffer (Window);
 
          use Orka.Cameras;
          Lens : constant Lens_Ptr
@@ -357,7 +355,7 @@ begin
                   Group.Render;
 
                   --  Resolve the multiple samples in the FBO
-                  Camera.FB.Resolve_To (FB_D.all);
+                  Camera.FB.Resolve_To (FB_D);
 
                   Group.After_Render;
                   for Behavior of Scene.all loop

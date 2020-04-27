@@ -76,12 +76,12 @@ package body Orka.Cameras.Rotate_Around_Cameras is
    function Create_Camera
      (Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Rotate_Around_Camera is
+      FB    : aliased Rendering.Framebuffers.Framebuffer) return Rotate_Around_Camera is
    begin
       return Rotate_Around_Camera'(Camera with
         Input  => Input,
         Lens   => Lens,
-        FB     => FB,
+        FB     => FB'Access,
         others => <>);
    end Create_Camera;
 

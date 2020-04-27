@@ -49,8 +49,6 @@ package Orka.Rendering.Framebuffers is
    type Framebuffer (Default : Boolean) is tagged private
      with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
 
-   type Framebuffer_Ptr is not null access Framebuffer;
-
    function Create_Framebuffer
      (Width, Height, Samples : Size;
       Context : Contexts.Context'Class) return Framebuffer

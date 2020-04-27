@@ -65,8 +65,8 @@ private
 
       Buffer_Weights     : Rendering.Buffers.Buffer (Types.Single_Type);
 
-      Framebuffer_H : Rendering.Framebuffers.Framebuffer_Ptr;
-      Framebuffer_V : Rendering.Framebuffers.Framebuffer_Ptr;
+      Framebuffer_H : Rendering.Framebuffers.Framebuffer (Default => False);
+      Framebuffer_V : Rendering.Framebuffers.Framebuffer (Default => False);
 
       Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
       Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);

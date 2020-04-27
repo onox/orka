@@ -36,7 +36,7 @@ package Orka.Cameras.Look_From_Cameras is
    function Create_Camera
      (Input : Inputs.Pointers.Pointer_Input_Ptr;
       Lens  : Lens_Ptr;
-      FB    : Rendering.Framebuffers.Framebuffer_Ptr) return Look_From_Camera;
+      FB    : aliased Rendering.Framebuffers.Framebuffer) return Look_From_Camera;
 
 private
 

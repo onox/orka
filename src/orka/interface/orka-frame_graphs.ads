@@ -147,7 +147,7 @@ package Orka.Frame_Graphs is
 
    procedure Initialize
      (Object  : in out Graph;
-      Default : Rendering.Framebuffers.Framebuffer_Ptr)
+      Default : Rendering.Framebuffers.Framebuffer)
    with Pre => Default.Default;
 
    procedure Render (Object : in out Graph);

@@ -121,8 +121,8 @@ package body Orka.Rendering.Effects.Filters is
          Program_Blur   => Create_Program (Modules.Module_Array'
            (Modules.Create_Module (Location, VS => "oversized-triangle.vert"),
             Modules.Create_Module (Location, FS => "effects/blur.frag"))),
-         Framebuffer_H => Framebuffer_Ptr'(new Framebuffer'(Create_Framebuffer (Width, Height))),
-         Framebuffer_V => Framebuffer_Ptr'(new Framebuffer'(Create_Framebuffer (Width, Height))),
+         Framebuffer_H => Create_Framebuffer (Width, Height),
+         Framebuffer_V => Create_Framebuffer (Width, Height),
          Texture_H     => Subject,
          others => <>)
       do

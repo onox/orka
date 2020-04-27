@@ -494,7 +494,7 @@ package body Orka.Frame_Graphs is
 
    procedure Initialize
      (Object  : in out Graph;
-      Default : Rendering.Framebuffers.Framebuffer_Ptr)
+      Default : Rendering.Framebuffers.Framebuffer)
    is
       subtype Selector_Type is GL.Buffers.Explicit_Color_Buffer_Selector;
       subtype Buffer_Type   is GL.Buffers.Draw_Buffer_Index;
@@ -708,7 +708,7 @@ package body Orka.Frame_Graphs is
                  ((Index       => Index,
                    Framebuffer => Framebuffer_Holders.To_Holder
                      (if Present_Mode = Use_Default and Last_Pass_Index = Index then
-                        Default.all
+                        Default
                       else
                         Rendering.Framebuffers.Create_Framebuffer
                           (Width  => GL.Types.Size (Width),

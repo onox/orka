@@ -97,8 +97,7 @@ begin
 
          ----------------------------------------------------------------------
 
-         FB_D : constant Framebuffer_Ptr
-           := new Framebuffer'(Get_Default_Framebuffer (Window));
+         FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 
          use Orka.Cameras;
          Lens : constant Lens_Ptr
