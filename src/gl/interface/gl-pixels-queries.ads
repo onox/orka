@@ -163,29 +163,7 @@ package GL.Pixels.Queries is
    --  internal format and texture kind when attached to a framebuffer while
    --  blending is enabled
 
-   function Read_Pixels
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Support;
-   --  Return the support for reading pixels of a resource with the given
-   --  internal format and texture kind when attached to a framebuffer
-
    -----------------------------------------------------------------------------
-
-   function Read_Pixels_Format
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Pixels.Format;
-   --  Return the format to use for Read_Pixels for best performance and
-   --  image quality
-   --
-   --  A Constraint_Error is raised if the internal format is not supported
-
-   function Read_Pixels_Type
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Pixels.Data_Type;
-   --  Return the data type to use for Read_Pixels for best performance
-   --  and image quality
-   --
-   --  A Constraint_Error is raised if the internal format is not supported
 
    function Texture_Format
      (Format : Internal_Format;

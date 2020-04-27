@@ -188,44 +188,7 @@ package body GL.Pixels.Queries is
       Kind   : LE.Texture_Kind) return Support
    is (Get_Support (Format, Kind, Framebuffer_Blend));
 
-   function Read_Pixels
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Support
-   is (Get_Support (Format, Kind, Read_Pixels));
-
    -----------------------------------------------------------------------------
-
-   function Read_Pixels_Format
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Pixels.Format
-   is
-      Result : Size := 0;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Types.Int, Target => Pixels.Format);
-   begin
-      API.Get_Internal_Format (Kind, Format, Read_Pixels_Format, 1, Result);
-      if Result = 0 then
-         raise Constraint_Error with "Invalid internal format for Read_Pixels";
-      end if;
-      return Convert (GL.Types.Int (Result));
-   end Read_Pixels_Format;
-
-   function Read_Pixels_Type
-     (Format : Internal_Format;
-      Kind   : LE.Texture_Kind) return Pixels.Data_Type
-   is
-      Result : Size := 0;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => GL.Types.Int, Target => Pixels.Data_Type);
-   begin
-      API.Get_Internal_Format (Kind, Format, Read_Pixels_Type, 1, Result);
-      if Result = 0 then
-         raise Constraint_Error with "Invalid internal format for Read_Pixels";
-      end if;
-      return Convert (GL.Types.Int (Result));
-   end Read_Pixels_Type;
 
    function Texture_Format
      (Format : Internal_Format;
