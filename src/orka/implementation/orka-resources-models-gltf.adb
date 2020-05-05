@@ -518,12 +518,12 @@ package body Orka.Resources.Models.glTF is
 
       Stream : constant JSON.Streams.Stream'class
         := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
-      Allocator : Orka.glTF.Types.Memory_Allocator (Maximum_Depth => 10);
+      Parser : Parsers.Parser := Parsers.Create (Stream);
    begin
       declare
          T1 : constant Time := Clock;
 
-         JSON : constant Orka.glTF.Types.JSON_Value := Parsers.Parse (Stream, Allocator);
+         JSON : constant Orka.glTF.Types.JSON_Value := Parser.Parse;
 
          T2 : constant Time := Clock;
 

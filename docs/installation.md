@@ -9,7 +9,7 @@ In order to build and use Orka you need to have:
 
  * GPRBuild, `make`, and `pkg-config`
 
- * [json-ada 3.0.4][url-json-ada] (for glTF)
+ * [json-ada 4.0.0][url-json-ada] (for glTF)
 
  * [dcf-ada 2.0.1][url-dcf-ada] (for loading resources in Zip archives)
 
