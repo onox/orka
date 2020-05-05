@@ -76,7 +76,6 @@ package body GL.Objects.Pipelines is
    begin
       API.Create_Program_Pipelines (1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -84,7 +83,6 @@ package body GL.Objects.Pipelines is
    begin
       API.Delete_Program_Pipelines (1, (1 => Object.Reference.GL_Id));
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
 end GL.Objects.Pipelines;

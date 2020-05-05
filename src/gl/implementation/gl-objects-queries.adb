@@ -24,18 +24,14 @@ package body GL.Objects.Queries is
       New_Id : UInt := 0;
    begin
       API.Create_Queries (Object.Target, 1, New_Id);
-
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
    procedure Delete_Id (Object : in out Query) is
    begin
       API.Delete_Queries (1, (1 => Object.Reference.GL_Id));
-
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    function Begin_Query

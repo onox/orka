@@ -141,7 +141,6 @@ package body GL.Objects.Vertex_Arrays is
    begin
       API.Create_Vertex_Arrays (1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -150,7 +149,6 @@ package body GL.Objects.Vertex_Arrays is
    begin
       API.Delete_Vertex_Arrays (1, Arr);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
 end GL.Objects.Vertex_Arrays;

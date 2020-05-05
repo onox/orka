@@ -52,7 +52,6 @@ package body GL.Objects.Textures is
       --  with a target, therefore use Gen_Textures instead of Create_Textures
       API.Gen_Textures (1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    function Create_View
@@ -225,7 +224,6 @@ package body GL.Objects.Textures is
    begin
       API.Create_Textures (Object.Kind, 1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -234,7 +232,6 @@ package body GL.Objects.Textures is
    begin
       API.Delete_Textures (1, Arr);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    procedure Invalidate_Image (Object : Texture_Base; Level : Mipmap_Level) is

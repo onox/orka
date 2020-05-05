@@ -87,7 +87,6 @@ package body GL.Objects.Shaders is
    procedure Initialize_Id (Object : in out Shader) is
    begin
       Object.Reference.GL_Id := API.Create_Shader (Object.Kind);
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -95,7 +94,6 @@ package body GL.Objects.Shaders is
    begin
       API.Delete_Shader (Object.Reference.GL_Id);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    function Create_From_Id (Id : UInt) return Shader is
@@ -104,7 +102,6 @@ package body GL.Objects.Shaders is
       API.Get_Shader_Type (Id, Enums.Shader_Type, Kind);
       return Object : Shader (Kind) do
          Object.Reference.GL_Id := Id;
-         Object.Reference.Initialized := True;
       end return;
    end Create_From_Id;
 

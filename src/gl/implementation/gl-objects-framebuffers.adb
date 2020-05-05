@@ -261,7 +261,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Create_Framebuffers (1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -270,7 +269,6 @@ package body GL.Objects.Framebuffers is
    begin
       API.Delete_Framebuffers (1, Arr);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    procedure Bind (Target : Framebuffer_Target;

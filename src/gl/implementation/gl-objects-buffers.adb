@@ -169,7 +169,6 @@ package body GL.Objects.Buffers is
    begin
       API.Create_Buffers (1, New_Id);
       Object.Reference.GL_Id := New_Id;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding procedure Delete_Id (Object : in out Buffer) is
@@ -177,7 +176,6 @@ package body GL.Objects.Buffers is
    begin
       API.Delete_Buffers (1, Arr);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    procedure Unmap (Object : in out Buffer) is

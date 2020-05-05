@@ -43,16 +43,10 @@ package GL.Objects is
    --  Delete the ID of an object. After calling this procedure,
    --  Initialized will be false.
 
-   function Initialized (Object : GL_Object) return Boolean;
-   --  Check whether the object is set up to be used with OpenGL
-   --  (i.e. whether Initialize_Id has been called on the object).
-
-   function Raw_Id (Object : GL_Object) return UInt;
+   function Raw_Id (Object : GL_Object) return UInt
+     with Inline;
    --  This getter is provided for low-level access. Its primary use is to
    --  interact with other C interfaces (e.g. OpenCL)
-
-   procedure Set_Raw_Id (Object : GL_Object; Id : UInt);
-   --  Setter for low-level access.
 
    function Identifier (Object : GL_Object)
      return Types.Debug.Identifier is abstract;
@@ -67,7 +61,6 @@ private
    type GL_Object_Reference is record
       GL_Id           : UInt;
       Reference_Count : Natural;
-      Initialized     : Boolean := False;
    end record;
 
    type GL_Object_Reference_Access is access all GL_Object_Reference;
@@ -75,8 +68,5 @@ private
    type GL_Object is abstract new Ada.Finalization.Controlled with record
       Reference : GL_Object_Reference_Access;
    end record;
-
-   pragma Inline (Raw_Id);
-   pragma Inline (Set_Raw_Id);
 
 end GL.Objects;

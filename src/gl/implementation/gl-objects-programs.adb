@@ -98,7 +98,6 @@ package body GL.Objects.Programs is
    procedure Initialize_Id (Object : in out Program) is
    begin
       Object.Reference.GL_Id := API.Create_Program;
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    procedure Initialize_Id (Object : in out Program; Kind : Shaders.Shader_Type; Source : String) is
@@ -108,7 +107,6 @@ package body GL.Objects.Programs is
    begin
       Object.Reference.GL_Id := API.Create_Shader_Program (Kind, 1, C_Source);
       C.Strings.Free (C_Shader_Source);
-      Object.Reference.Initialized := True;
    end Initialize_Id;
 
    overriding
@@ -116,7 +114,6 @@ package body GL.Objects.Programs is
    begin
       API.Delete_Program (Object.Reference.GL_Id);
       Object.Reference.GL_Id := 0;
-      Object.Reference.Initialized := False;
    end Delete_Id;
 
    function Uniform_Location (Subject : Program; Name : String)

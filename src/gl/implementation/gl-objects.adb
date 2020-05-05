@@ -20,9 +20,9 @@ package body GL.Objects is
 
    overriding procedure Initialize (Object : in out GL_Object) is
    begin
-      Object.Reference := new GL_Object_Reference'(GL_Id          => 0,
-                                                  Reference_Count => 1,
-                                                  Initialized     => False);
+      Object.Reference := new GL_Object_Reference'
+        (GL_Id           => 0,
+         Reference_Count => 1);
       GL_Object'Class (Object).Initialize_Id;
    end Initialize;
 
@@ -40,7 +40,7 @@ package body GL.Objects is
       if Object.Reference /= null then
          Object.Reference.Reference_Count := Object.Reference.Reference_Count - 1;
          if Object.Reference.Reference_Count = 0 then
-            if Object.Reference.Initialized then
+            if Object.Reference.GL_Id /= 0 then
                GL_Object'Class (Object).Delete_Id;
             end if;
             Free (Object.Reference);
@@ -50,26 +50,10 @@ package body GL.Objects is
       --  Idempotence: next call to Finalize has no effect
       Object.Reference := null;
    end Finalize;
-   
-   function Initialized (Object : GL_Object) return Boolean is
-   begin
-      return Object.Reference.Initialized;
-   end Initialized;
 
-   function Raw_Id (Object : GL_Object) return UInt is
-   begin
-      return Object.Reference.GL_Id;
-   end Raw_Id;
-   
-   procedure Set_Raw_Id (Object : GL_Object; Id : UInt) is
-   begin
-      Object.Reference.GL_Id := Id;
-   end Set_Raw_Id;
+   function Raw_Id (Object : GL_Object) return UInt is (Object.Reference.GL_Id);
 
    overriding
-   function "=" (Left, Right : GL_Object) return Boolean is
-   begin
-      return Left.Reference = Right.Reference;
-   end "=";
+   function "=" (Left, Right : GL_Object) return Boolean is (Left.Reference = Right.Reference);
 
 end GL.Objects;
