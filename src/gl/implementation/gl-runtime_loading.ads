@@ -109,16 +109,6 @@ package GL.Runtime_Loading is
    generic
       Procedure_Name : String;
       type Param1_Type (<>) is private;
-      type Element_Type is private;
-      type Array_Type is array (Types.Size range <>) of Element_Type;
-   function Array_Getter_With_4_Params (Param1   : Param1_Type;
-                                        Max_Size : Types.Size)
-                                        return Array_Type;
-   pragma Inline (Array_Getter_With_4_Params);
-
-   generic
-      Procedure_Name : String;
-      type Param1_Type (<>) is private;
       type Param2_Type (<>) is private;
       type Element_Type is private;
       type Array_Type is array (Types.Size range <>) of Element_Type;

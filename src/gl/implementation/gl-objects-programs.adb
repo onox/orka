@@ -228,20 +228,6 @@ package body GL.Objects.Programs is
       end;
    end Attribute_Type;
 
-   function Attached_Shaders (Object : Program) return Shaders.Lists.List is
-      Shader_Count : aliased Int := 0;
-   begin
-      API.Get_Program_Param (Object.Reference.GL_Id, Enums.Attached_Shaders,
-                             Shader_Count);
-
-      return List : constant Shaders.Lists.List := Shaders.Lists.Create
-        (API.Get_Attached_Shaders (Object.Reference.GL_Id,
-                                   Size (Shader_Count)))
-      do
-         null;
-      end return;
-   end Attached_Shaders;
-
    -----------------------------------------------------------------------------
    --                               Subroutines                               --
    -----------------------------------------------------------------------------

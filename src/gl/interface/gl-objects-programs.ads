@@ -16,7 +16,7 @@
 
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
-with GL.Objects.Shaders.Lists;
+with GL.Objects.Shaders;
 with GL.Types.Compute;
 
 limited with GL.Objects.Programs.Uniforms;
@@ -82,8 +82,6 @@ package GL.Objects.Programs is
      (Object : Program;
       Target : Buffers.Indexed_Buffer_Target;
       Name   : String) return Size;
-
-   function Attached_Shaders (Object : Program) return Shaders.Lists.List;
 
    overriding
    procedure Initialize_Id (Object : in out Program);
