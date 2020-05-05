@@ -1,15 +1,17 @@
-WINDOWING_BACKEND := egl
-GLFW_LIBS := $(strip $(shell pkg-config --libs glfw3))
+CFLAGS ?= -O2 -march=native
 
+WINDOWING_BACKEND := egl
 LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
-CFLAGS ?= -O2 -march=native
+GLFW_LIBS := $(strip $(shell pkg-config --libs glfw3))
+SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
 X_GLFW_LIBS := -XGLFW_Libs="$(GLFW_LIBS)"
-SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS)
+X_SIMD := -XSIMD="$(SIMD)"
+SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS) $(X_SIMD)
 
 GPRBUILD = nice gprbuild -dm -p $(SCENARIO_VARS)
 GPRCLEAN = gprclean -q $(SCENARIO_VARS)

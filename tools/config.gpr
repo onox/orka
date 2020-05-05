@@ -30,6 +30,9 @@ abstract project Config is
    type Compiler_Type is ("gnat");
    Compiler_Name : Compiler_Type := external ("Compiler", "gnat");
 
+   type SIMD_Type is ("AVX", "AVX2");
+   SIMD : SIMD_Type := external ("SIMD", "AVX2");
+
    Compiler_Switches := (
       "-fdata-sections",
       "-ffunction-sections",

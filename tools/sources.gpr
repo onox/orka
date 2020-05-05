@@ -36,8 +36,24 @@ abstract project Sources is
    end case;
 
    case Config.Compiler_Name is
-      when "gnat" => Orka_Sources :=
-         Orka_Sources & ("../src/orka/interface/x86/gnat");
+      when "gnat" =>
+         Orka_Sources := Orka_Sources & ("../src/orka/interface/x86/gnat");
+
+         case Config.SIMD is
+            when "AVX2" =>
+               Orka_Sources := Orka_Sources &
+                 ("../src/orka/interface/x86/gnat/avx2",
+                  "../src/orka/interface/x86/gnat/fma");
+            when others =>
+               null;
+         end case;
+      when others =>
+         null;
+   end case;
+
+   case Config.SIMD is
+      when "AVX2" =>
+         Orka_Sources := Orka_Sources & ("../src/orka/implementation/x86/generic/fma");
       when others =>
          null;
    end case;
