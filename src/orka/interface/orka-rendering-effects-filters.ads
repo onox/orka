@@ -55,6 +55,29 @@ package Orka.Rendering.Effects.Filters is
    --  Orka.Rendering.Framebuffers) before applying the filter to it. However,
    --  this can visibly reduce the quality of the image for very small kernels.
 
+   -----------------------------------------------------------------------------
+
+   type Moving_Average_Filter is tagged limited private;
+
+   function Create_Filter
+     (Location : Resources.Locations.Location_Ptr;
+      Subject  : GL.Objects.Textures.Texture;
+      Radius   : GL.Types.Size) return Moving_Average_Filter;
+   --  Create a filter that computes the moving average per row in a
+   --  compute shader for a O(1) time complexity, giving a consistent
+   --  performance independent of the radius
+
+   procedure Render (Object : in out Moving_Average_Filter; Passes : Positive := 2);
+   --  Apply the filter to the texture given to the constructor of the filter
+   --  in one or more passes
+   --
+   --  Passes is 2 by default to get a Gaussian blur instead of a box blur.
+   --
+   --  For better performance, it is recommended to first downsample the
+   --  texture. Due to the O(1) time complexity, for very large kernel this
+   --  filter should give better performance than the separable filter with
+   --  a Gaussian kernel.
+
 private
 
    package LE renames GL.Low_Level.Enums;
@@ -70,6 +93,16 @@ private
 
       Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
       Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
+   end record;
+
+   type Moving_Average_Filter is tagged limited record
+      Program_Blur       : Rendering.Programs.Program;
+      Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+
+      Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
+      Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
+
+      Columns, Rows : GL.Types.UInt;
    end record;
 
 end Orka.Rendering.Effects.Filters;

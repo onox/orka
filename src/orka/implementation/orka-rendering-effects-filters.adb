@@ -16,6 +16,8 @@
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
+with GL.Barriers;
+with GL.Compute;
 with GL.Toggles;
 
 with Orka.Rendering.Drawing;
@@ -160,6 +162,72 @@ package body Orka.Rendering.Effects.Filters is
       end loop;
 
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
+   end Render;
+
+   -----------------------------------------------------------------------------
+
+   function Create_Filter
+     (Location : Resources.Locations.Location_Ptr;
+      Subject  : GL.Objects.Textures.Texture;
+      Radius   : GL.Types.Size) return Moving_Average_Filter
+   is
+      use all type LE.Texture_Kind;
+      pragma Assert (Subject.Kind = LE.Texture_Rectangle);
+
+      use Rendering.Programs;
+      use type GL.Types.Single;
+
+      Width  : constant GL.Types.Size := Subject.Width  (0);
+      Height : constant GL.Types.Size := Subject.Height (0);
+   begin
+      return Result : Moving_Average_Filter :=
+        (Program_Blur => Create_Program
+           (Modules.Create_Module (Location, CS => "effects/moving-average-blur.comp")),
+         Texture_H => Subject,
+         others    => <>)
+      do
+         Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
+         Result.Program_Blur.Uniform ("radius").Set_Int (Radius);
+
+         Result.Texture_V.Allocate_Storage (Subject);
+
+         declare
+            Work_Group_Size : constant GL.Types.Single :=
+             GL.Types.Single (Result.Program_Blur.Compute_Work_Group_Size (GL.X));
+         begin
+            Result.Columns := GL.Types.UInt
+              (GL.Types.Single'Ceiling (GL.Types.Single (Width) / Work_Group_Size));
+            Result.Rows := GL.Types.UInt
+              (GL.Types.Single'Ceiling (GL.Types.Single (Height) / Work_Group_Size));
+         end;
+      end return;
+   end Create_Filter;
+
+   procedure Render (Object : in out Moving_Average_Filter; Passes : Positive := 2) is
+   begin
+      Object.Program_Blur.Use_Program;
+
+      for Pass in 1 .. Passes loop
+         --  Horizontal pass: Texture_H => Texture_V
+         Object.Uniform_Horizontal.Set_Boolean (True);
+
+         Orka.Rendering.Textures.Bind (Object.Texture_H, Orka.Rendering.Textures.Texture, 0);
+         Orka.Rendering.Textures.Bind (Object.Texture_V, Orka.Rendering.Textures.Image, 1);
+         GL.Compute.Dispatch_Compute (X => Object.Rows);
+
+         GL.Barriers.Memory_Barrier
+           ((By_Region => False, Shader_Image_Access | Texture_Fetch => True, others => False));
+
+         --  Vertical pass: Texture_V => Texture_H
+         Object.Uniform_Horizontal.Set_Boolean (False);
+
+         Orka.Rendering.Textures.Bind (Object.Texture_V, Orka.Rendering.Textures.Texture, 0);
+         Orka.Rendering.Textures.Bind (Object.Texture_H, Orka.Rendering.Textures.Image, 1);
+         GL.Compute.Dispatch_Compute (X => Object.Columns);
+
+         GL.Barriers.Memory_Barrier
+           ((By_Region => False, Shader_Image_Access | Texture_Fetch => True, others => False));
+      end loop;
    end Render;
 
 end Orka.Rendering.Effects.Filters;

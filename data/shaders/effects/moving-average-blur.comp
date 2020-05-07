@@ -1,0 +1,63 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+
+//  SPDX-License-Identifier: Apache-2.0
+//
+//  Copyright (c) 2020 onox <denkpadje@gmail.com>
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+
+layout(local_size_x = 64) in;
+
+layout(binding = 0) uniform sampler2DRect inputImage;
+
+layout(binding = 1) volatile restrict writeonly uniform image2D outputImage;
+
+uniform bool horizontal;
+uniform int radius;
+
+float scale = 1.0 / float(2 * radius + 1);
+ivec2 size = textureSize(inputImage);
+
+vec4 pixel(const in int column, const in int row) {
+    const vec2 p = vec2(column, row) + 0.5;
+    return texture(inputImage, horizontal ? p : p.yx);
+}
+
+void writePixel(const in int column, const in int row, const in vec4 color) {
+    const ivec2 p = ivec2(column, row);
+    imageStore(outputImage, horizontal ? p : p.yx, color);
+}
+
+void main(void) {
+    const int row = int(gl_GlobalInvocationID.x);
+
+    if (!horizontal) {
+        size = size.yx;
+    }
+
+    if (row < size.y) {
+        // Compute sum of the first pixel
+        vec4 sum = pixel(0, row);
+        for (int i = 1; i <= radius; i++) {
+            sum += pixel(-i, row) + pixel(i, row);
+        }
+
+        // Compute moving average by iterating over the pixels in a row
+        for (int i = 0; i < size.x; i++) {
+            writePixel(i, row, sum * scale);
+            sum += pixel(i + radius + 1, row) - pixel(i - radius, row);
+        }
+    }
+}
