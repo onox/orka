@@ -22,7 +22,7 @@ package GL.Toggles is
 
    type Toggle_State is (Disabled, Enabled);
 
-   type Toggle is (Line_Smooth, Polygon_Smooth, Cull_Face, Depth_Test,
+   type Toggle is (Cull_Face, Depth_Test,
                    Stencil_Test, Dither, Blend, Color_Logic_Op, Scissor_Test,
                    Polygon_Offset_Point, Polygon_Offset_Line,
                    Clip_Distance_0, Clip_Distance_1, Clip_Distance_2, Clip_Distance_3,
@@ -52,9 +52,7 @@ package GL.Toggles is
 
 private
 
-   for Toggle use (Line_Smooth               => 16#0B20#,
-                   Polygon_Smooth            => 16#0B41#,
-                   Cull_Face                 => 16#0B44#,
+   for Toggle use (Cull_Face                 => 16#0B44#,
                    Depth_Test                => 16#0B71#,
                    Stencil_Test              => 16#0B90#,
                    Dither                    => 16#0BD0#,
