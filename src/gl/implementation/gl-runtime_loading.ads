@@ -465,20 +465,6 @@ package GL.Runtime_Loading is
                                           Value       : in out String);
    pragma Inline (String_Getter_With_5_Params);
 
-   generic
-      Procedure_Name : String;
-      type Size_Type is (<>);
-      type Param1_Type is private;
-      type Param2_Type is private;
-      type Param3_Type is private;
-   procedure String_Getter_With_6_Params (Param1      : Param1_Type;
-                                          Param2      : Param2_Type;
-                                          Param3      : Param3_Type;
-                                          Buffer_Size : Size_Type;
-                                          Length      : out Size_Type;
-                                          Value       : in out String);
-   pragma Inline (String_Getter_With_6_Params);
-
 private
 
    generic
