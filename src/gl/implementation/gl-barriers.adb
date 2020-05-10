@@ -20,7 +20,10 @@ with GL.API;
 
 package body GL.Barriers is
 
-   procedure Texture_Barrier renames API.Texture_Barrier;
+   procedure Texture_Barrier is
+   begin
+      API.Texture_Barrier.Ref.all;
+   end Texture_Barrier;
 
    procedure Memory_Barrier (Bits : Memory_Barrier_Bits) is
       use type Low_Level.Bitfield;
@@ -30,7 +33,7 @@ package body GL.Barriers is
       Raw_Bits : constant Low_Level.Bitfield :=
         Convert (Bits) and 2#1111111111101111#;
    begin
-      API.Memory_Barrier (Raw_Bits);
+      API.Memory_Barrier.Ref (Raw_Bits);
    end Memory_Barrier;
 
    procedure Memory_Barrier_By_Region (Bits : Memory_Barrier_Bits) is
@@ -41,7 +44,7 @@ package body GL.Barriers is
       Raw_Bits : constant Low_Level.Bitfield :=
         Convert (Bits) and 2#0011010000101100#;
    begin
-      API.Memory_Barrier_By_Region (Raw_Bits);
+      API.Memory_Barrier_By_Region.Ref (Raw_Bits);
    end Memory_Barrier_By_Region;
 
 end GL.Barriers;

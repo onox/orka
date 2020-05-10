@@ -27,32 +27,32 @@ package body GL.Objects.Programs is
 
    procedure Attach (Subject : Program; Shader : Shaders.Shader) is
    begin
-      API.Attach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
+      API.Attach_Shader.Ref (Subject.Reference.GL_Id, Shader.Raw_Id);
    end Attach;
 
    procedure Detach (Subject : Program; Shader : Shaders.Shader) is
    begin
-      API.Detach_Shader (Subject.Reference.GL_Id, Shader.Raw_Id);
+      API.Detach_Shader.Ref (Subject.Reference.GL_Id, Shader.Raw_Id);
    end Detach;
 
    procedure Link (Subject : Program) is
    begin
-      API.Link_Program (Subject.Reference.GL_Id);
+      API.Link_Program.Ref (Subject.Reference.GL_Id);
    end Link;
 
    function Link_Status (Subject : Program) return Boolean is
       Status_Value : Int := 0;
    begin
-      API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Link_Status,
-                             Status_Value);
+      API.Get_Program_Param.Ref
+        (Subject.Reference.GL_Id, Enums.Link_Status, Status_Value);
       return Status_Value /= 0;
    end Link_Status;
 
    function Info_Log (Subject : Program) return String is
       Log_Length : Size := 0;
    begin
-      API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Info_Log_Length,
-                             Log_Length);
+      API.Get_Program_Param.Ref
+        (Subject.Reference.GL_Id, Enums.Info_Log_Length, Log_Length);
 
       if Log_Length = 0 then
          return "";
@@ -61,43 +61,43 @@ package body GL.Objects.Programs is
       declare
          Info_Log : String (1 .. Integer (Log_Length));
       begin
-         API.Get_Program_Info_Log (Subject.Reference.GL_Id, Log_Length,
-                                   Log_Length, Info_Log);
+         API.Get_Program_Info_Log.Ref
+           (Subject.Reference.GL_Id, Log_Length, Log_Length, Info_Log);
          return Info_Log (1 .. Integer (Log_Length));
       end;
    end Info_Log;
 
    procedure Use_Program (Subject : Program) is
    begin
-      API.Use_Program (Subject.Reference.GL_Id);
+      API.Use_Program.Ref (Subject.Reference.GL_Id);
    end Use_Program;
 
    procedure Set_Separable (Subject : Program; Separable : Boolean) is
    begin
-      API.Program_Parameter_Bool (Subject.Reference.GL_Id, Enums.Program_Separable,
+      API.Program_Parameter_Bool.Ref (Subject.Reference.GL_Id, Enums.Program_Separable,
                                   Low_Level.Bool (Separable));
    end Set_Separable;
 
    function Separable (Subject : Program) return Boolean is
       Separable_Value : Int := 0;
    begin
-      API.Get_Program_Param (Subject.Reference.GL_Id, Enums.Program_Separable,
-                             Separable_Value);
+      API.Get_Program_Param.Ref
+        (Subject.Reference.GL_Id, Enums.Program_Separable, Separable_Value);
       return Separable_Value /= 0;
    end Separable;
 
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array is
       Values : Compute.Dimension_Size_Array := (others => 0);
    begin
-      API.Get_Program_Param (Object.Reference.GL_Id, Enums.Compute_Work_Group_Size,
-                             Values);
+      API.Get_Program_Param_Compute.Ref
+        (Object.Reference.GL_Id, Enums.Compute_Work_Group_Size, Values);
       return Values;
    end Compute_Work_Group_Size;
 
    overriding
    procedure Initialize_Id (Object : in out Program) is
    begin
-      Object.Reference.GL_Id := API.Create_Program;
+      Object.Reference.GL_Id := API.Create_Program.Ref.all;
    end Initialize_Id;
 
    procedure Initialize_Id (Object : in out Program; Kind : Shaders.Shader_Type; Source : String) is
@@ -105,20 +105,20 @@ package body GL.Objects.Programs is
       C_Source : constant Low_Level.CharPtr_Array
         := (1 => C_Shader_Source);
    begin
-      Object.Reference.GL_Id := API.Create_Shader_Program (Kind, 1, C_Source);
+      Object.Reference.GL_Id := API.Create_Shader_Program.Ref (Kind, 1, C_Source);
       C.Strings.Free (C_Shader_Source);
    end Initialize_Id;
 
    overriding
    procedure Delete_Id (Object : in out Program) is
    begin
-      API.Delete_Program (Object.Reference.GL_Id);
+      API.Delete_Program.Ref (Object.Reference.GL_Id);
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform is
-      Result : constant Int := API.Get_Uniform_Location
+      Result : constant Int := API.Get_Uniform_Location.Ref
         (Subject.Reference.GL_Id, Interfaces.C.To_C (Name));
    begin
       if Result = -1 then
@@ -139,15 +139,15 @@ package body GL.Objects.Programs is
    begin
       case Target is
          when Shader_Storage =>
-            Index := API.Get_Program_Resource_Index
+            Index := API.Get_Program_Resource_Index.Ref
               (Object.Reference.GL_Id, Enums.Shader_Storage_Block, Interfaces.C.To_C (Name));
             Iface := Enums.Shader_Storage_Block;
          when Uniform =>
-            Index := API.Get_Program_Resource_Index
+            Index := API.Get_Program_Resource_Index.Ref
               (Object.Reference.GL_Id, Enums.Uniform_Block, Interfaces.C.To_C (Name));
             Iface := Enums.Uniform_Block;
          when Atomic_Counter =>
-            Index := API.Get_Program_Resource_Index
+            Index := API.Get_Program_Resource_Index.Ref
               (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
             Iface := Enums.Atomic_Counter_Buffer;
 
@@ -156,7 +156,7 @@ package body GL.Objects.Programs is
             end if;
 
             declare
-               Values : constant Int_Array := API.Get_Program_Resource
+               Values : constant Int_Array := API.Get_Program_Resource.Ref
                  (Object.Reference.GL_Id, Enums.Uniform, Index,
                    1, (1 => Enums.Atomic_Counter_Buffer_Index), 1);
             begin
@@ -169,7 +169,7 @@ package body GL.Objects.Programs is
       end if;
 
       declare
-         Values : constant Int_Array := API.Get_Program_Resource
+         Values : constant Int_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id, Iface, Index,
             1, (1 => Enums.Buffer_Binding), 1);
       begin
@@ -179,14 +179,14 @@ package body GL.Objects.Programs is
 
    function Uniform_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type is
-      Index : constant UInt := API.Get_Program_Resource_Index
+      Index : constant UInt := API.Get_Program_Resource_Index.Ref
         (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
    begin
       if Index = -1 then
          raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
       end if;
       declare
-         Values : constant Int_Array := API.Get_Program_Resource
+         Values : constant Int_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id, Enums.Uniform, Index,
             1, (1 => Enums.Resource_Type), 1);
 
@@ -199,7 +199,7 @@ package body GL.Objects.Programs is
 
    function Attrib_Location (Subject : Program; Name : String)
      return Attribute is
-      Location : constant Int := API.Get_Program_Resource_Location
+      Location : constant Int := API.Get_Program_Resource_Location.Ref
         (Subject.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
       if Location = -1 then
@@ -210,14 +210,14 @@ package body GL.Objects.Programs is
 
    function Attribute_Type (Object : Program; Name : String)
      return Low_Level.Enums.Resource_Type is
-      Index : constant UInt := API.Get_Program_Resource_Index
+      Index : constant UInt := API.Get_Program_Resource_Index.Ref
        (Object.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
    begin
       if Index = -1 then
          raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
       end if;
       declare
-         Values : constant Int_Array := API.Get_Program_Resource
+         Values : constant Int_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id, Enums.Program_Input, Index,
             1, (1 => Enums.Resource_Type), 1);
 
@@ -276,7 +276,7 @@ package body GL.Objects.Programs is
    is
       Indices : GL.Low_Level.Int_Array (1 .. 1);
    begin
-      API.Get_Program_Interface
+      API.Get_Program_Interface.Ref
         (Object.Reference.GL_Id,
          Subroutine_Uniform_Interface (Shader),
          Enums.Active_Resources, Indices);
@@ -292,7 +292,7 @@ package body GL.Objects.Programs is
       Shader : Shaders.Shader_Type;
       Index  : Subroutine_Index_Type) return Size
    is
-      Values : constant Int_Array := API.Get_Program_Resource
+      Values : constant Int_Array := API.Get_Program_Resource.Ref
         (Object.Reference.GL_Id,
          Subroutine_Uniform_Interface (Shader), Index,
          1, (1 => Enums.Array_Size), 1);
@@ -324,8 +324,8 @@ package body GL.Objects.Programs is
         := Interfaces.C.To_C (Name);
    begin
       return Index : constant Subroutine_Index_Type := Subroutine_Index_Type
-        (API.Get_Program_Resource_Index (Object.Reference.GL_Id,
-                                         Subroutine_Interface (Shader), C_String))
+        (API.Get_Program_Resource_Index.Ref (Object.Reference.GL_Id,
+                                             Subroutine_Interface (Shader), C_String))
       do
          if Index = -1 then
             raise Subroutine_Inactive_Error with "Subroutine " & Name & " is inactive (unused)";
@@ -342,7 +342,7 @@ package body GL.Objects.Programs is
         := Interfaces.C.To_C (Name);
    begin
       return Index : constant Subroutine_Index_Type
-        := Subroutine_Index_Type (API.Get_Program_Resource_Index
+        := Subroutine_Index_Type (API.Get_Program_Resource_Index.Ref
              (Object.Reference.GL_Id,
               Subroutine_Uniform_Interface (Shader),
               C_String))
@@ -362,7 +362,7 @@ package body GL.Objects.Programs is
         := Interfaces.C.To_C (Name);
    begin
       return Index : constant Uniform_Location_Type
-        := Uniform_Location_Type (API.Get_Program_Resource_Location
+        := Uniform_Location_Type (API.Get_Program_Resource_Location.Ref
              (Object.Reference.GL_Id,
               Subroutine_Uniform_Interface (Shader),
               C_String))
@@ -376,14 +376,14 @@ package body GL.Objects.Programs is
       Shader : Shaders.Shader_Type;
       Index  : Subroutine_Index_Type) return Subroutine_Index_Array
    is
-      Values : constant Int_Array := API.Get_Program_Resource
+      Values : constant Int_Array := API.Get_Program_Resource.Ref
         (Object.Reference.GL_Id,
          Subroutine_Uniform_Interface (Shader), Index,
          1, (1 => Enums.Num_Compatible_Subroutines), 1);
       Num_Subroutines : constant Size := Size (Values (1));
    begin
       declare
-         Values : constant Int_Array := API.Get_Program_Resource
+         Values : constant Int_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id,
             Subroutine_Uniform_Interface (Shader), Index,
             1, (1 => Enums.Compatible_Subroutines), Num_Subroutines);
@@ -398,7 +398,7 @@ package body GL.Objects.Programs is
 
    procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array) is
    begin
-      API.Uniform_Subroutines (Shader, Indices'Length, Indices);
+      API.Uniform_Subroutines.Ref (Shader, Indices'Length, Indices);
    end Set_Uniform_Subroutines;
 
 end GL.Objects.Programs;

@@ -57,13 +57,13 @@ package body GL.Debug is
 
    procedure Set_Message_Callback (Callback : not null Callback_Reference) is
    begin
-      API.Debug_Message_Callback (Debug_Callback'Address, System.Null_Address);
+      API.Debug_Message_Callback.Ref (Debug_Callback'Address, System.Null_Address);
       Current_Callback := Callback;
    end Set_Message_Callback;
 
    procedure Disable_Message_Callback is
    begin
-      API.Debug_Message_Callback (System.Null_Address, System.Null_Address);
+      API.Debug_Message_Callback.Ref (System.Null_Address, System.Null_Address);
       Current_Callback := null;
    end Disable_Message_Callback;
 
@@ -71,21 +71,21 @@ package body GL.Debug is
                   Enabled : Boolean) is
       Identifiers : Types.UInt_Array (1 .. 0);
    begin
-      API.Debug_Message_Control
+      API.Debug_Message_Control.Ref
         (From, Kind, Level, 0, Identifiers, Low_Level.Bool (Enabled));
    end Set;
 
    procedure Set (Level : Severity; Enabled : Boolean) is
       Identifiers : Types.UInt_Array (1 .. 0);
    begin
-      API.Debug_Message_Control
+      API.Debug_Message_Control_Level.Ref
         (Any, Any, Level, 0, Identifiers, Low_Level.Bool (Enabled));
    end Set;
 
    procedure Set (From : Source; Kind : Message_Type; Identifiers : Types.UInt_Array;
                   Enabled : Boolean) is
    begin
-      API.Debug_Message_Control
+      API.Debug_Message_Control_Any_Level.Ref
         (From, Kind, Any, Types.Size (Identifiers'Length),
          Identifiers, Low_Level.Bool (Enabled));
    end Set;
@@ -94,7 +94,7 @@ package body GL.Debug is
                              Identifier : UInt; Message : String) is
       pragma Assert (From in Third_Party | Application);
    begin
-      API.Debug_Message_Insert (From, Kind, Identifier, Level,
+      API.Debug_Message_Insert.Ref (From, Kind, Identifier, Level,
                                 Types.Size (Message'Length), C.To_C (Message));
    end Insert_Message;
 
@@ -102,7 +102,7 @@ package body GL.Debug is
      return Active_Group'Class is
       pragma Assert (From in Third_Party | Application);
    begin
-      API.Push_Debug_Group (From, Identifier,
+      API.Push_Debug_Group.Ref (From, Identifier,
                             Types.Size (Message'Length), C.To_C (Message));
       return Active_Group'(Ada.Finalization.Limited_Controlled with Finalized => False);
    end Push_Debug_Group;
@@ -111,14 +111,14 @@ package body GL.Debug is
    procedure Finalize (Object : in out Active_Group) is
    begin
       if not Object.Finalized then
-         API.Pop_Debug_Group;
+         API.Pop_Debug_Group.Ref.all;
          Object.Finalized := True;
       end if;
    end Finalize;
 
    procedure Annotate (Object : GL.Objects.GL_Object'Class; Message : String) is
    begin
-      API.Object_Label
+      API.Object_Label.Ref
         (Object.Identifier, Object.Raw_Id, Types.Size (Message'Length), C.To_C (Message));
    end Annotate;
 
@@ -129,7 +129,7 @@ package body GL.Debug is
       C_Size : GL.Low_Level.Size_Access := new Types.Size'(0);
       Label_Size : Types.Size := 0;
    begin
-      API.Get_Object_Label_Length
+      API.Get_Object_Label_Length.Ref
         (Object.Identifier, Object.Raw_Id, 0,
          C_Size, Interfaces.C.Strings.Null_Ptr);
 
@@ -144,8 +144,8 @@ package body GL.Debug is
       declare
          Label : String (1 .. Integer (Label_Size));
       begin
-         API.Get_Object_Label (Object.Identifier, Object.Raw_Id, Label_Size,
-                               Label_Size, Label);
+         API.Get_Object_Label.Ref
+           (Object.Identifier, Object.Raw_Id, Label_Size, Label_Size, Label);
          return Label;
       end;
    end Get_Label;
@@ -153,7 +153,7 @@ package body GL.Debug is
    function Max_Message_Length return Size is
       Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Max_Debug_Message_Length, Result);
+      API.Get_Integer.Ref (Enums.Getter.Max_Debug_Message_Length, Result);
       return Result;
    end Max_Message_Length;
 

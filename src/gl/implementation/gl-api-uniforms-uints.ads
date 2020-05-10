@@ -19,19 +19,19 @@ package GL.API.Uniforms.UInts is
 
    use GL.Types.UInts;
 
-   procedure Uniform1 is new Loader.Procedure_With_3_Params
+   package Uniform1 is new Loader.Procedure_With_3_Params
      ("glProgramUniform1ui", UInt, Int, UInt);
 
-   procedure Uniform1v is new Loader.Procedure_With_4_Params
+   package Uniform1v is new Loader.Procedure_With_4_Params
      ("glProgramUniform1uiv", UInt, Int, Size, UInt_Array);
 
-   procedure Uniform2v is new Loader.Procedure_With_4_Params
+   package Uniform2v is new Loader.Procedure_With_4_Params
      ("glProgramUniform2uiv", UInt, Int, Size, Vector2_Array);
 
-   procedure Uniform3v is new Loader.Procedure_With_4_Params
+   package Uniform3v is new Loader.Procedure_With_4_Params
      ("glProgramUniform3uiv", UInt, Int, Size, Vector3_Array);
 
-   procedure Uniform4v is new Loader.Procedure_With_4_Params
+   package Uniform4v is new Loader.Procedure_With_4_Params
      ("glProgramUniform4uiv", UInt, Int, Size, Vector4_Array);
 
 end GL.API.Uniforms.UInts;

@@ -19,30 +19,30 @@ package GL.API.Uniforms.Singles is
 
    use GL.Types.Singles;
 
-   procedure Uniform1 is new Loader.Procedure_With_3_Params
+   package Uniform1 is new Loader.Procedure_With_3_Params
      ("glProgramUniform1f", UInt, Int, Single);
 
-   procedure Uniform1v is new Loader.Procedure_With_4_Params
+   package Uniform1v is new Loader.Procedure_With_4_Params
      ("glProgramUniform1fv", UInt, Int, Size, Single_Array);
 
-   procedure Uniform2v is new Loader.Procedure_With_4_Params
+   package Uniform2v is new Loader.Procedure_With_4_Params
      ("glProgramUniform2fv", UInt, Int, Size, Vector2_Array);
 
-   procedure Uniform3v is new Loader.Procedure_With_4_Params
+   package Uniform3v is new Loader.Procedure_With_4_Params
      ("glProgramUniform3fv", UInt, Int, Size, Vector3_Array);
 
-   procedure Uniform4v is new Loader.Procedure_With_4_Params
+   package Uniform4v is new Loader.Procedure_With_4_Params
      ("glProgramUniform4fv", UInt, Int, Size, Vector4_Array);    
 
-   procedure Uniform_Matrix2 is new Loader.Procedure_With_5_Params
+   package Uniform_Matrix2 is new Loader.Procedure_With_5_Params
      ("glProgramUniformMatrix2fv", UInt, Int, Size, Low_Level.Bool,
       Matrix2_Array);
 
-   procedure Uniform_Matrix3 is new Loader.Procedure_With_5_Params
+   package Uniform_Matrix3 is new Loader.Procedure_With_5_Params
      ("glProgramUniformMatrix3fv", UInt, Int, Size, Low_Level.Bool,
       Matrix3_Array);
 
-   procedure Uniform_Matrix4 is new Loader.Procedure_With_5_Params
+   package Uniform_Matrix4 is new Loader.Procedure_With_5_Params
      ("glProgramUniformMatrix4fv", UInt, Int, Size, Low_Level.Bool,
       Matrix4_Array);
 

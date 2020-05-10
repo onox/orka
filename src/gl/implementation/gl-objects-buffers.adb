@@ -27,7 +27,7 @@ package body GL.Objects.Buffers is
    function Minimum_Alignment return Types.Size is
       Ret : Types.Size := 64;
    begin
-      API.Get_Size (Enums.Getter.Min_Map_Buffer_Alignment, Ret);
+      API.Get_Size.Ref (Enums.Getter.Min_Map_Buffer_Alignment, Ret);
       return Ret;
    end Minimum_Alignment;
 
@@ -110,12 +110,12 @@ package body GL.Objects.Buffers is
 
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class) is
    begin
-      API.Bind_Buffer (Target.Kind, Object.Reference.GL_Id);
+      API.Bind_Buffer.Ref (Target.Kind, Object.Reference.GL_Id);
    end Bind;
 
    procedure Bind_Base (Target : Buffer_Target; Object : Buffer'Class; Index : Natural) is
    begin
-      API.Bind_Buffer_Base (Target.Kind, UInt (Index), Object.Reference.GL_Id);
+      API.Bind_Buffer_Base.Ref (Target.Kind, UInt (Index), Object.Reference.GL_Id);
    end Bind_Base;
 
    procedure Allocate_Storage
@@ -154,7 +154,7 @@ package body GL.Objects.Buffers is
          when Short_Type =>
             Number_Of_Bytes := Length * Short'Size / System.Storage_Unit;
       end case;
-      API.Named_Buffer_Storage
+      API.Named_Buffer_Storage.Ref
         (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
          System.Null_Address, Raw_Bits);
       Object.Allocated := True;
@@ -167,20 +167,20 @@ package body GL.Objects.Buffers is
    overriding procedure Initialize_Id (Object : in out Buffer) is
       New_Id : UInt := 0;
    begin
-      API.Create_Buffers (1, New_Id);
+      API.Create_Buffers.Ref (1, New_Id);
       Object.Reference.GL_Id := New_Id;
    end Initialize_Id;
 
    overriding procedure Delete_Id (Object : in out Buffer) is
       Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
    begin
-      API.Delete_Buffers (1, Arr);
+      API.Delete_Buffers.Ref (1, Arr);
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 
    procedure Unmap (Object : in out Buffer) is
    begin
-      API.Unmap_Named_Buffer (Object.Reference.GL_Id);
+      API.Unmap_Named_Buffer.Ref (Object.Reference.GL_Id);
       Object.Mapped := False;
    end Unmap;
 
@@ -189,30 +189,43 @@ package body GL.Objects.Buffers is
       --  The internal format, format, and data type need to match
       --  each other, but are otherwise ignored because of the null
       --  address
-      API.Clear_Named_Buffer_Data
+      API.Clear_Named_Buffer_Data.Ref
         (Object.Reference.GL_Id, GL.Pixels.R8I, GL.Pixels.Red_Integer,
          GL.Pixels.Byte, System.Null_Address);
    end Clear_With_Zeros;
 
    procedure Invalidate_Data (Object : in out Buffer) is
    begin
-      API.Invalidate_Buffer_Data (Object.Reference.GL_Id);
+      API.Invalidate_Buffer_Data.Ref (Object.Reference.GL_Id);
    end Invalidate_Data;
 
    package body Buffer_Pointers is
 
+      package Map_Named_Buffer_Range is new API.Loader.Function_With_4_Params
+        ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
+         Low_Level.Bitfield, Pointers.Pointer);
+
+      package Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
+        ("glGetNamedBufferPointerv", UInt,
+         Enums.Buffer_Pointer_Param, Pointers.Pointer);
+
+      package Get_Named_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
+        ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
+         Low_Level.SizeIPtr, Pointers.Element_Array);
+
       procedure Bind_Range
         (Target : Buffer_Target;
          Object : Buffer'Class;
-         Index : Natural;
+         Index  : Natural;
          Offset, Length : Types.Size)
       is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Bind_Buffer_Range (Target.Kind, UInt (Index), Object.Reference.GL_Id,
-                                Low_Level.IntPtr (Offset_In_Bytes),
-                                Low_Level.SizeIPtr (Number_Of_Bytes));
+         API.Bind_Buffer_Range.Ref
+           (Target.Kind, UInt (Index), Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes));
       end Bind_Range;
 
       procedure Allocate_And_Load_From_Data
@@ -231,7 +244,7 @@ package body GL.Objects.Buffers is
          Number_Of_Bytes : constant Long :=
            Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Named_Buffer_Storage
+         API.Named_Buffer_Storage.Ref
            (Object.Reference.GL_Id, Low_Level.SizeIPtr (Number_Of_Bytes),
             Data (Data'First)'Address, Raw_Bits);
          Object.Allocated := True;
@@ -251,16 +264,14 @@ package body GL.Objects.Buffers is
          Raw_Bits : constant Low_Level.Bitfield :=
            Convert (Flags) and 2#0000000011111111#;
 
-         function Map_Named_Buffer_Range is new API.Loader.Function_With_4_Params
-           ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
-            Low_Level.Bitfield, Pointers.Pointer);
-
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         Pointer := Map_Named_Buffer_Range (Object.Reference.GL_Id,
-           Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
-           Raw_Bits);
+         Pointer := Map_Named_Buffer_Range.Ref
+           (Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes),
+            Raw_Bits);
          Object.Mapped := True;
       end Map_Range;
 
@@ -306,13 +317,15 @@ package body GL.Objects.Buffers is
       end Set_Mapped_Data;
 
       procedure Flush_Buffer_Range (Object : in out Buffer;
-                                    Offset, Length : Types.Size) is
+                                    Offset, Length : Types.Size)
+      is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Flush_Mapped_Named_Buffer_Range (Object.Reference.GL_Id,
-                                              Low_Level.IntPtr (Offset_In_Bytes),
-                                              Low_Level.SizeIPtr (Number_Of_Bytes));
+         API.Flush_Mapped_Named_Buffer_Range.Ref
+           (Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes));
       end Flush_Buffer_Range;
 
       procedure Clear_Data
@@ -322,7 +335,7 @@ package body GL.Objects.Buffers is
       is
          Format_Info : constant Format_Data := Get_Format_Data (Kind, Data'Length);
       begin
-         API.Clear_Named_Buffer_Data
+         API.Clear_Named_Buffer_Data.Ref
            (Object.Reference.GL_Id, Format_Info.Internal_Format,
             Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
       end Clear_Data;
@@ -338,7 +351,7 @@ package body GL.Objects.Buffers is
 
          Format_Info : constant Format_Data := Get_Format_Data (Kind, Data'Length);
       begin
-         API.Clear_Named_Buffer_Sub_Data
+         API.Clear_Named_Buffer_Sub_Data.Ref
            (Object.Reference.GL_Id, Format_Info.Internal_Format,
             Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
             Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
@@ -351,68 +364,74 @@ package body GL.Objects.Buffers is
          --  The internal format, format, and data type need to match
          --  each other, but are otherwise ignored because of the null
          --  address
-         API.Clear_Named_Buffer_Sub_Data
+         API.Clear_Named_Buffer_Sub_Data.Ref
            (Object.Reference.GL_Id, GL.Pixels.R8I,
             Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
             GL.Pixels.Red_Integer, GL.Pixels.Byte, System.Null_Address);
       end Clear_With_Zeros;
 
-      procedure Copy_Sub_Data (Object, Target_Object : Buffer;
-                               Read_Offset, Write_Offset, Length : Types.Size) is
-         Read_Offset_In_Bytes  : constant Int := Read_Offset  * Pointers.Element'Size / System.Storage_Unit;
-         Write_Offset_In_Bytes : constant Int := Write_Offset * Pointers.Element'Size / System.Storage_Unit;
+      procedure Copy_Sub_Data
+        (Object, Target_Object : Buffer;
+         Read_Offset, Write_Offset, Length : Types.Size)
+      is
+         Read_Offset_In_Bytes  : constant Int :=
+           Read_Offset  * Pointers.Element'Size / System.Storage_Unit;
+         Write_Offset_In_Bytes : constant Int :=
+           Write_Offset * Pointers.Element'Size / System.Storage_Unit;
+
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Copy_Named_Buffer_Sub_Data (Object.Reference.GL_Id, Target_Object.Reference.GL_Id,
-                                         Low_Level.IntPtr (Read_Offset_In_Bytes),
-                                         Low_Level.IntPtr (Write_Offset_In_Bytes),
-                                         Low_Level.SizeIPtr (Number_Of_Bytes));
+         API.Copy_Named_Buffer_Sub_Data.Ref
+           (Object.Reference.GL_Id, Target_Object.Reference.GL_Id,
+            Low_Level.IntPtr (Read_Offset_In_Bytes),
+            Low_Level.IntPtr (Write_Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes));
       end Copy_Sub_Data;
 
       function To_Pointer (Object : Buffer) return Pointers.Pointer is
-         procedure Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
-           ("glGetNamedBufferPointerv", UInt,
-            Enums.Buffer_Pointer_Param, Pointers.Pointer);
          Ret : Pointers.Pointer := null;
       begin
-         Named_Buffer_Pointer (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
+         Named_Buffer_Pointer.Ref (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
          return Ret;
       end To_Pointer;
 
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
-                              Data   : Pointers.Element_Array) is
+                              Data   : Pointers.Element_Array)
+      is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Named_Buffer_Sub_Data (Object.Reference.GL_Id,
-                                    Low_Level.IntPtr (Offset_In_Bytes),
-                                    Low_Level.SizeIPtr (Number_Of_Bytes), Data (Data'First)'Address);
+         API.Named_Buffer_Sub_Data.Ref
+           (Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Number_Of_Bytes),
+            Data (Data'First)'Address);
       end Set_Sub_Data;
 
       procedure Get_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
-                              Data   : out Pointers.Element_Array) is
-         procedure Get_Named_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
-           ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
-            Low_Level.SizeIPtr, Pointers.Element_Array);
-
-         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
+                              Data   : out Pointers.Element_Array)
+      is
+         Offset_In_Bytes : constant Int  := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Long := Data'Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         Get_Named_Buffer_Sub_Data (Object.Reference.GL_Id,
-                                    Low_Level.IntPtr (Offset_In_Bytes),
-                                    Low_Level.SizeIPtr (Number_Of_Bytes), Data);
+         Get_Named_Buffer_Sub_Data.Ref
+           (Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes),
+            Data);
       end Get_Sub_Data;
 
       procedure Invalidate_Sub_Data (Object : Buffer;
-                                     Offset, Length : Types.Size) is
+                                     Offset, Length : Types.Size)
+      is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Number_Of_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
       begin
-         API.Invalidate_Buffer_Sub_Data (Object.Reference.GL_Id,
-                                         Low_Level.IntPtr (Offset_In_Bytes),
-                                         Low_Level.SizeIPtr (Number_Of_Bytes));
+         API.Invalidate_Buffer_Sub_Data.Ref
+           (Object.Reference.GL_Id,
+            Low_Level.IntPtr (Offset_In_Bytes),
+            Low_Level.SizeIPtr (Number_Of_Bytes));
       end Invalidate_Sub_Data;
 
    end Buffer_Pointers;

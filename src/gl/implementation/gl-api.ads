@@ -65,175 +65,175 @@ private package GL.API is
 
    subtype Zero is Int range 0 .. 0;
 
-   function Get_Error is new Loader.Function_Without_Params
+   package Get_Error is new Loader.Function_Without_Params
      ("glGetError", Errors.Error_Code);
 
-   procedure Flush is new Loader.Procedure_Without_Params ("glFlush");
+   package Flush is new Loader.Procedure_Without_Params ("glFlush");
 
    -----------------------------------------------------------------------------
    --                            Parameter getters                            --
    -----------------------------------------------------------------------------
 
-   procedure Get_Boolean is new Loader.Getter_With_2_Params
+   package Get_Boolean is new Loader.Getter_With_2_Params
      ("glGetBooleanv", Enums.Getter.Parameter, Low_Level.Bool);
 
-   procedure Get_Double is new Loader.Getter_With_2_Params
+   package Get_Double is new Loader.Getter_With_2_Params
      ("glGetDoublev", Enums.Getter.Parameter, Double);
 
-   procedure Get_Double_Vec2_I is new Loader.Getter_With_3_Params
+   package Get_Double_Vec2_I is new Loader.Getter_With_3_Params
      ("glGetDoublei_v", Enums.Getter.Parameter, UInt, Doubles.Vector2);
 
-   procedure Get_Single is new Loader.Getter_With_2_Params
+   package Get_Single is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Single);
 
-   procedure Get_Single_Vec2 is new Loader.Getter_With_2_Params
+   package Get_Single_Vec2 is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
 
-   procedure Get_Single_Vec4_I is new Loader.Getter_With_3_Params
+   package Get_Single_Vec4_I is new Loader.Getter_With_3_Params
      ("glGetFloati_v", Enums.Getter.Parameter, UInt, Singles.Vector4);
 
-   procedure Get_Color is new Loader.Getter_With_2_Params
+   package Get_Color is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Colors.Color);
 
-   procedure Get_Enabled_Color is new Loader.Getter_With_3_Params
+   package Get_Enabled_Color is new Loader.Getter_With_3_Params
      ("glGetBooleani_v", Enums.Getter.Parameter, Buffers.Draw_Buffer_Index,
       Colors.Enabled_Color);
 
-   procedure Get_Long is new Loader.Getter_With_2_Params
+   package Get_Long is new Loader.Getter_With_2_Params
      ("glGetInteger64v", Enums.Getter.Parameter, Long);
 
-   procedure Get_Integer is new Loader.Getter_With_2_Params
+   package Get_Integer is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Int);
 
-   procedure Get_Unsigned_Integer is new Loader.Getter_With_2_Params
+   package Get_Unsigned_Integer is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, UInt);
 
-   procedure Get_Size is new Loader.Getter_With_2_Params
+   package Get_Size is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Size);
 
-   procedure Get_Size_I is new Loader.Getter_With_3_Params
+   package Get_Size_I is new Loader.Getter_With_3_Params
      ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Size);
 
-   procedure Get_Int_Vec4_I is new Loader.Getter_With_3_Params
+   package Get_Int_Vec4_I is new Loader.Getter_With_3_Params
      ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Ints.Vector4);
 
-   procedure Get_Blend_Factor is new Loader.Getter_With_2_Params
+   package Get_Blend_Factor is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Blend_Factor);
 
-   procedure Get_Alignment is new Loader.Getter_With_2_Params
+   package Get_Alignment is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Pixels.Alignment);
 
-   procedure Get_Blend_Equation is new Loader.Getter_With_2_Params
+   package Get_Blend_Equation is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Equation);
 
-   procedure Get_Clip_Origin is new Loader.Getter_With_2_Params
+   package Get_Clip_Origin is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Viewport_Origin);
 
-   procedure Get_Clip_Depth_Mode is new Loader.Getter_With_2_Params
+   package Get_Clip_Depth_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Depth_Mode);
 
-   procedure Get_Compare_Function is new Loader.Getter_With_2_Params
+   package Get_Compare_Function is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
 
-   procedure Get_Orientation is new Loader.Getter_With_2_Params
+   package Get_Orientation is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Orientation);
 
-   procedure Get_Face_Selector is new Loader.Getter_With_2_Params
+   package Get_Face_Selector is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Face_Selector);
 
-   procedure Get_Polygon_Mode is new Loader.Getter_With_2_Params
+   package Get_Polygon_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
 
-   procedure Get_Logic_Op is new Loader.Getter_With_2_Params
+   package Get_Logic_Op is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Logic_Op);
 
-   procedure Get_Stencil_Action is new Loader.Getter_With_2_Params
+   package Get_Stencil_Action is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Stencil_Action);
 
-   procedure Get_Read_Buffer_Selector is new Loader.Getter_With_2_Params
+   package Get_Read_Buffer_Selector is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Color_Buffer_Selector);
 
-   function Get_String is new Loader.Function_With_1_Param
+   package Get_String is new Loader.Function_With_1_Param
      ("glGetString", Enums.Getter.String_Parameter, C.Strings.chars_ptr);
 
-   function Get_String_I is new Loader.Function_With_2_Params
+   package Get_String_I is new Loader.Function_With_2_Params
      ("glGetStringi", Enums.Getter.String_Parameter, UInt, C.Strings.chars_ptr);
 
    -----------------------------------------------------------------------------
    --                                 Toggles                                 --
    -----------------------------------------------------------------------------
 
-   procedure Enable is new Loader.Procedure_With_1_Param
+   package Enable is new Loader.Procedure_With_1_Param
      ("glEnable", Toggles.Toggle);
 
-   procedure Disable is new Loader.Procedure_With_1_Param
+   package Disable is new Loader.Procedure_With_1_Param
      ("glDisable", Toggles.Toggle);
 
-   function Is_Enabled is new Loader.Function_With_1_Param
+   package Is_Enabled is new Loader.Function_With_1_Param
      ("glIsEnabled", Toggles.Toggle, Low_Level.Bool);
 
-   procedure Enable_I is new Loader.Procedure_With_2_Params
+   package Enable_I is new Loader.Procedure_With_2_Params
      ("glEnablei", Toggles.Toggle_Indexed, UInt);
 
-   procedure Disable_I is new Loader.Procedure_With_2_Params
+   package Disable_I is new Loader.Procedure_With_2_Params
      ("glDisablei", Toggles.Toggle_Indexed, UInt);
 
-   function Is_Enabled_I is new Loader.Function_With_2_Params
+   package Is_Enabled_I is new Loader.Function_With_2_Params
      ("glIsEnabledi", Toggles.Toggle_Indexed, UInt, Low_Level.Bool);
 
    -----------------------------------------------------------------------------
    --                                 Clipping                                --
    -----------------------------------------------------------------------------
 
-   procedure Clip_Control is new Loader.Procedure_With_2_Params
+   package Clip_Control is new Loader.Procedure_With_2_Params
      ("glClipControl", Viewports.Viewport_Origin, Viewports.Depth_Mode);
 
    -----------------------------------------------------------------------------
    --                                 Culling                                 --
    -----------------------------------------------------------------------------
 
-   procedure Cull_Face is new Loader.Procedure_With_1_Param
+   package Cull_Face is new Loader.Procedure_With_1_Param
      ("glCullFace", Rasterization.Face_Selector);
 
-   procedure Front_Face is new Loader.Procedure_With_1_Param
+   package Front_Face is new Loader.Procedure_With_1_Param
      ("glFrontFace", Rasterization.Orientation);
 
    -----------------------------------------------------------------------------
    --                               Pixel stuff                               --
    -----------------------------------------------------------------------------
 
-   procedure Pixel_Store is new Loader.Procedure_With_2_Params
+   package Pixel_Store_Bool is new Loader.Procedure_With_2_Params
      ("glPixelStorei", Enums.Pixel_Store_Param, Low_Level.Bool);
 
-   procedure Pixel_Store is new Loader.Procedure_With_2_Params
+   package Pixel_Store_Size is new Loader.Procedure_With_2_Params
      ("glPixelStorei", Enums.Pixel_Store_Param, Size);
 
-   procedure Pixel_Store is new Loader.Procedure_With_2_Params
+   package Pixel_Store_Alignment is new Loader.Procedure_With_2_Params
      ("glPixelStorei", Enums.Pixel_Store_Param, Pixels.Alignment);
 
    -----------------------------------------------------------------------------
    --                                 Drawing                                 --
    -----------------------------------------------------------------------------
 
-   procedure Draw_Arrays_Instanced_Base_Instance is new Loader.Procedure_With_5_Params
+   package Draw_Arrays_Instanced_Base_Instance is new Loader.Procedure_With_5_Params
      ("glDrawArraysInstancedBaseInstance", Connection_Mode, Int, Size, Size, UInt);
 
-   procedure Multi_Draw_Arrays_Indirect is new Loader.Procedure_With_4_Params
+   package Multi_Draw_Arrays_Indirect is new Loader.Procedure_With_4_Params
      ("glMultiDrawArraysIndirect", Connection_Mode, Int, Size, Size);
 
-   procedure Multi_Draw_Arrays_Indirect_Count is new Loader.Procedure_With_5_Params
+   package Multi_Draw_Arrays_Indirect_Count is new Loader.Procedure_With_5_Params
      ("glMultiDrawArraysIndirectCount", Connection_Mode, Int, Low_Level.IntPtr, Size, Size);
 
-   procedure Draw_Elements_Instanced_Base_Vertex_Base_Instance
+   package Draw_Elements_Instanced_Base_Vertex_Base_Instance
      is new Loader.Procedure_With_7_Params
      ("glDrawElementsInstancedBaseVertexBaseInstance", Connection_Mode, Size,
       Index_Type, Low_Level.IntPtr, Size, Int, UInt);
 
-   procedure Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
+   package Multi_Draw_Elements_Indirect is new Loader.Procedure_With_5_Params
      ("glMultiDrawElementsIndirect", Connection_Mode, Index_Type,
       Int, Size, Size);
 
-   procedure Multi_Draw_Elements_Indirect_Count is new Loader.Procedure_With_6_Params
+   package Multi_Draw_Elements_Indirect_Count is new Loader.Procedure_With_6_Params
      ("glMultiDrawElementsIndirectCount", Connection_Mode, Index_Type,
       Int, Low_Level.IntPtr, Size, Size);
 
@@ -241,22 +241,22 @@ private package GL.API is
    --                                Blending                                 --
    -----------------------------------------------------------------------------
 
-   procedure Blend_Func_Separate is new Loader.Procedure_With_4_Params
+   package Blend_Func_Separate is new Loader.Procedure_With_4_Params
      ("glBlendFuncSeparate", Blending.Blend_Factor, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor);
 
-   procedure Blend_Func_Separate_I is new Loader.Procedure_With_5_Params
+   package Blend_Func_Separate_I is new Loader.Procedure_With_5_Params
      ("glBlendFuncSeparatei", Buffers.Draw_Buffer_Index, Blending.Blend_Factor,
       Blending.Blend_Factor, Blending.Blend_Factor, Blending.Blend_Factor);
 
-   procedure Blend_Color is new Loader.Procedure_With_4_Params
+   package Blend_Color is new Loader.Procedure_With_4_Params
      ("glBlendColor", Colors.Component, Colors.Component, Colors.Component, 
       Colors.Component);
 
-   procedure Blend_Equation_Separate is new Loader.Procedure_With_2_Params
+   package Blend_Equation_Separate is new Loader.Procedure_With_2_Params
      ("glBlendEquationSeparate", Blending.Equation, Blending.Equation);
 
-   procedure Blend_Equation_Separate_I is new Loader.Procedure_With_3_Params
+   package Blend_Equation_Separate_I is new Loader.Procedure_With_3_Params
      ("glBlendEquationSeparatei", Buffers.Draw_Buffer_Index, Blending.Equation,
       Blending.Equation);
 
@@ -264,10 +264,10 @@ private package GL.API is
    --                              Rasterization                              --
    -----------------------------------------------------------------------------
 
-   procedure Polygon_Mode is new Loader.Procedure_With_2_Params
+   package Polygon_Mode is new Loader.Procedure_With_2_Params
      ("glPolygonMode", Rasterization.Face_Selector, Rasterization.Polygon_Mode_Type);
 
-   procedure Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
+   package Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
      ("glPolygonOffsetClamp", Single, Single, Single);
 
    --  TODO glSampleCoverage, glSampleMaski, glGetMultisample, glGetGraphicsResetStatus
@@ -276,17 +276,17 @@ private package GL.API is
    --                           Multisample shading                           --
    -----------------------------------------------------------------------------
 
-   procedure Min_Sample_Shading is new Loader.Procedure_With_1_Param
+   package Min_Sample_Shading is new Loader.Procedure_With_1_Param
      ("glMinSampleShading", Single);
 
    -----------------------------------------------------------------------------
    --                                 Buffers                                 --
    -----------------------------------------------------------------------------
 
-   procedure Color_Mask is new Loader.Procedure_With_4_Params
+   package Color_Mask is new Loader.Procedure_With_4_Params
      ("glColorMask", Low_Level.Bool, Low_Level.Bool, Low_Level.Bool, Low_Level.Bool);
 
-   procedure Color_Mask_Indexed is new Loader.Procedure_With_5_Params
+   package Color_Mask_Indexed is new Loader.Procedure_With_5_Params
      ("glColorMaski", Buffers.Draw_Buffer_Index,
       Low_Level.Bool, Low_Level.Bool, Low_Level.Bool, Low_Level.Bool);
 
@@ -294,179 +294,179 @@ private package GL.API is
    --                        Depth and stencil buffers                        --
    -----------------------------------------------------------------------------
 
-   procedure Depth_Mask is new Loader.Procedure_With_1_Param
+   package Depth_Mask is new Loader.Procedure_With_1_Param
      ("glDepthMask", Low_Level.Bool);
 
-   procedure Depth_Func is new Loader.Procedure_With_1_Param
+   package Depth_Func is new Loader.Procedure_With_1_Param
      ("glDepthFunc", Compare_Function);
 
-   procedure Stencil_Func_Separate is new Loader.Procedure_With_4_Params
+   package Stencil_Func_Separate is new Loader.Procedure_With_4_Params
      ("glStencilFuncSeparate", Rasterization.Face_Selector,
       Compare_Function, Int, UInt);
 
-   procedure Stencil_Op_Separate is new Loader.Procedure_With_4_Params
+   package Stencil_Op_Separate is new Loader.Procedure_With_4_Params
      ("glStencilOpSeparate", Rasterization.Face_Selector, Buffers.Stencil_Action,
       Buffers.Stencil_Action, Buffers.Stencil_Action);
 
-   procedure Stencil_Mask_Separate is new Loader.Procedure_With_2_Params
+   package Stencil_Mask_Separate is new Loader.Procedure_With_2_Params
      ("glStencilMaskSeparate", Rasterization.Face_Selector, UInt);
 
    -----------------------------------------------------------------------------
    --                                Textures                                 --
    -----------------------------------------------------------------------------
 
-   procedure Texture_Parameter_Int is new Loader.Procedure_With_3_Params
+   package Texture_Parameter_Int is new Loader.Procedure_With_3_Params
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Int);
-   procedure Get_Texture_Parameter_Int is new Loader.Getter_With_3_Params
+
+   package Get_Texture_Parameter_Int is new Loader.Getter_With_3_Params
      ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Int);
 
-   procedure Get_Texture_Level_Parameter_Size is new Loader.Getter_With_4_Params
+   package Get_Texture_Level_Parameter is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Size);
-   procedure Get_Texture_Level_Parameter_Format is new Loader.Getter_With_4_Params
+
+   package Get_Texture_Level_Parameter_Format_I is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Pixels.Internal_Format);
-   procedure Get_Texture_Level_Parameter_Format is new Loader.Getter_With_4_Params
+
+   package Get_Texture_Level_Parameter_Format_C is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Pixels.Compressed_Format);
-   procedure Get_Texture_Level_Parameter_Bool is new Loader.Getter_With_4_Params
-     ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
-      Enums.Textures.Level_Parameter, Low_Level.Bool);
 
-   procedure Delete_Textures is new Loader.Procedure_With_2_Params
+   package Delete_Textures is new Loader.Procedure_With_2_Params
      ("glDeleteTextures", Size, Low_Level.UInt_Array);
 
-   procedure Texture_Buffer is new Loader.Procedure_With_3_Params
+   package Texture_Buffer is new Loader.Procedure_With_3_Params
      ("glTextureBuffer", UInt, Pixels.Internal_Format_Buffer_Texture, UInt);
 
-   procedure Texture_Buffer_Range is new Loader.Procedure_With_5_Params
+   package Texture_Buffer_Range is new Loader.Procedure_With_5_Params
      ("glTextureBufferRange", UInt, Pixels.Internal_Format_Buffer_Texture, UInt,
       Low_Level.IntPtr, Size);
 
-   procedure Texture_Storage_1D is new Loader.Procedure_With_4_Params
+   package Texture_Storage_1D is new Loader.Procedure_With_4_Params
      ("glTextureStorage1D", UInt, Size, Pixels.Internal_Format, Size);
 
-   procedure Texture_Storage_2D is new Loader.Procedure_With_5_Params
+   package Texture_Storage_2D_I is new Loader.Procedure_With_5_Params
      ("glTextureStorage2D", UInt, Size, Pixels.Internal_Format, Size, Size);
 
-   procedure Texture_Storage_3D is new Loader.Procedure_With_6_Params
+   package Texture_Storage_3D_I is new Loader.Procedure_With_6_Params
      ("glTextureStorage3D", UInt, Size, Pixels.Internal_Format, Size, Size, Size);
 
-   procedure Texture_Storage_2D is new Loader.Procedure_With_5_Params
+   package Texture_Storage_2D_C is new Loader.Procedure_With_5_Params
      ("glTextureStorage2D", UInt, Size, Pixels.Compressed_Format, Size, Size);
 
-   procedure Texture_Storage_3D is new Loader.Procedure_With_6_Params
+   package Texture_Storage_3D_C is new Loader.Procedure_With_6_Params
      ("glTextureStorage3D", UInt, Size, Pixels.Compressed_Format, Size, Size, Size);
 
-   procedure Texture_Storage_2D_Multisample is new Loader.Procedure_With_6_Params
+   package Texture_Storage_2D_Multisample_I is new Loader.Procedure_With_6_Params
      ("glTextureStorage2DMultisample", UInt, Size, Pixels.Internal_Format,
       Size, Size, Low_Level.Bool);
 
-   procedure Texture_Storage_3D_Multisample is new Loader.Procedure_With_7_Params
+   package Texture_Storage_3D_Multisample_I is new Loader.Procedure_With_7_Params
      ("glTextureStorage3DMultisample", UInt, Size, Pixels.Internal_Format,
       Size, Size, Size, Low_Level.Bool);
 
-   procedure Texture_Storage_2D_Multisample is new Loader.Procedure_With_6_Params
+   package Texture_Storage_2D_Multisample_C is new Loader.Procedure_With_6_Params
      ("glTextureStorage2DMultisample", UInt, Size, Pixels.Compressed_Format,
       Size, Size, Low_Level.Bool);
 
-   procedure Texture_Storage_3D_Multisample is new Loader.Procedure_With_7_Params
+   package Texture_Storage_3D_Multisample_C is new Loader.Procedure_With_7_Params
      ("glTextureStorage3DMultisample", UInt, Size, Pixels.Compressed_Format,
       Size, Size, Size, Low_Level.Bool);
 
-   procedure Texture_Sub_Image_1D is new Loader.Procedure_With_7_Params
+   package Texture_Sub_Image_1D is new Loader.Procedure_With_7_Params
      ("glTextureSubImage1D", UInt, Objects.Textures.Mipmap_Level,
       Int, Size, Pixels.Format, Pixels.Data_Type,
       System.Address);
 
-   procedure Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params
+   package Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params
      ("glTextureSubImage2D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Size, Size, Pixels.Format, Pixels.Data_Type,
       System.Address);
 
-   procedure Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
+   package Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
      ("glTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
       System.Address);
 
-   procedure Compressed_Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params
+   package Compressed_Texture_Sub_Image_2D is new Loader.Procedure_With_9_Params
      ("glCompressedTextureSubImage2D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Size, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
-   procedure Compressed_Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
+   package Compressed_Texture_Sub_Image_3D is new Loader.Procedure_With_11_Params
      ("glCompressedTextureSubImage3D", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size, Pixels.Compressed_Format, Size,
       System.Address);
 
-   procedure Copy_Image_Sub_Data is new Loader.Procedure_With_15_Params
+   package Copy_Image_Sub_Data is new Loader.Procedure_With_15_Params
      ("glCopyImageSubData", UInt, Low_Level.Enums.Texture_Kind,
       Objects.Textures.Mipmap_Level, Int, Int, Int,
       UInt, Low_Level.Enums.Texture_Kind,
       Objects.Textures.Mipmap_Level, Int, Int, Int,
       Size, Size, Size);
 
-   procedure Clear_Tex_Image is new Loader.Procedure_With_5_Params
+   package Clear_Tex_Image is new Loader.Procedure_With_5_Params
      ("glClearTexImage", UInt, Objects.Textures.Mipmap_Level,
       Pixels.Format, Pixels.Data_Type, System.Address);
 
-   procedure Clear_Tex_Sub_Image is new Loader.Procedure_With_11_Params
+   package Clear_Tex_Sub_Image is new Loader.Procedure_With_11_Params
      ("glClearTexSubImage", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size, Pixels.Format, Pixels.Data_Type,
       System.Address);
 
-   procedure Generate_Texture_Mipmap is new Loader.Procedure_With_1_Param
+   package Generate_Texture_Mipmap is new Loader.Procedure_With_1_Param
      ("glGenerateTextureMipmap", UInt);
 
    --  glGetTextureSubImage uses an access value of Interfaces.C.Pointers.Element_Array,
    --  therefore declared in GL.Objects.Textures
 
-   procedure Get_Compressed_Texture_Sub_Image is new Loader.Procedure_With_10_Params
+   package Get_Compressed_Texture_Sub_Image is new Loader.Procedure_With_10_Params
      ("glGetCompressedTextureSubImage", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size, Size, Types.Pointers.UByte_Array_Access);
 
-   procedure Invalidate_Tex_Image is new Loader.Procedure_With_2_Params
+   package Invalidate_Tex_Image is new Loader.Procedure_With_2_Params
      ("glInvalidateTexImage", UInt, Objects.Textures.Mipmap_Level);
 
-   procedure Invalidate_Tex_Sub_Image is new Loader.Procedure_With_8_Params
+   package Invalidate_Tex_Sub_Image is new Loader.Procedure_With_8_Params
      ("glInvalidateTexSubImage", UInt, Objects.Textures.Mipmap_Level,
       Int, Int, Int, Size, Size, Size);
 
-   procedure Create_Textures is new Loader.Getter_With_3_Params
+   package Create_Textures is new Loader.Getter_With_3_Params
      ("glCreateTextures", Low_Level.Enums.Texture_Kind, Size, UInt);
 
-   procedure Gen_Textures is new Loader.Getter_With_2_Params
+   package Gen_Textures is new Loader.Getter_With_2_Params
      ("glGenTextures", Size, UInt);
    --  Only to be used by Texture_View
 
-   procedure Texture_View is new Loader.Procedure_With_8_Params
+   package Texture_View_I is new Loader.Procedure_With_8_Params
      ("glTextureView", UInt, Low_Level.Enums.Texture_Kind, UInt,
       Pixels.Internal_Format, UInt, UInt, UInt, UInt);
 
-   procedure Texture_View is new Loader.Procedure_With_8_Params
+   package Texture_View_C is new Loader.Procedure_With_8_Params
      ("glTextureView", UInt, Low_Level.Enums.Texture_Kind, UInt,
       Pixels.Compressed_Format, UInt, UInt, UInt, UInt);
 
-   procedure Bind_Textures is new Loader.Procedure_With_3_Params
+   package Bind_Textures is new Loader.Procedure_With_3_Params
      ("glBindTextures", Objects.Textures.Texture_Unit, Size, Low_Level.UInt_Array);
 
-   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+   package Get_Internal_Format_A is new Loader.Getter_With_5_Params
      ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
       Enums.Internalformat.Parameter, Size, Size_Array);
 
-   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+   package Get_Internal_Format is new Loader.Getter_With_5_Params
      ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
       Enums.Internalformat.Parameter, Size, Size);
 
-   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+   package Get_Internal_Format_Long is new Loader.Getter_With_5_Params
      ("glGetInternalformati64v", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
       Enums.Internalformat.Parameter, Size, Long_Size);
 
-   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+   package Get_Internal_Format_C is new Loader.Getter_With_5_Params
      ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Compressed_Format,
       Enums.Internalformat.Parameter, Size, Size);
 
-   procedure Get_Internal_Format is new Loader.Getter_With_5_Params
+   package Get_Internal_Format_Support is new Loader.Getter_With_5_Params
      ("glGetInternalformativ", Low_Level.Enums.Texture_Kind, Pixels.Internal_Format,
       Enums.Internalformat.Parameter, Size, Pixels.Queries.Support);
 
@@ -474,62 +474,62 @@ private package GL.API is
    --                                 Images                                  --
    -----------------------------------------------------------------------------
 
-   procedure Bind_Image_Textures is new Loader.Procedure_With_3_Params
+   package Bind_Image_Textures is new Loader.Procedure_With_3_Params
      ("glBindImageTextures", Objects.Textures.Image_Unit, Size, Low_Level.UInt_Array);
 
    -----------------------------------------------------------------------------
    --                             Buffer objects                              --
    -----------------------------------------------------------------------------
 
-   procedure Create_Buffers is new Loader.Getter_With_2_Params
+   package Create_Buffers is new Loader.Getter_With_2_Params
       ("glCreateBuffers", Size, UInt);
 
-   procedure Delete_Buffers is new Loader.Array_Proc_With_2_Params
+   package Delete_Buffers is new Loader.Array_Proc_With_2_Params
       ("glDeleteBuffers", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Bind_Buffer is new Loader.Procedure_With_2_Params
+   package Bind_Buffer is new Loader.Procedure_With_2_Params
       ("glBindBuffer", Enums.Buffer_Kind, UInt);
 
-   procedure Bind_Buffer_Base is new Loader.Procedure_With_3_Params
+   package Bind_Buffer_Base is new Loader.Procedure_With_3_Params
       ("glBindBufferBase", Enums.Buffer_Kind, UInt, UInt);
 
-   procedure Bind_Buffer_Range is new Loader.Procedure_With_5_Params
+   package Bind_Buffer_Range is new Loader.Procedure_With_5_Params
       ("glBindBufferRange", Enums.Buffer_Kind, UInt, UInt,
        Low_Level.IntPtr, Low_Level.SizeIPtr);
 
-   procedure Named_Buffer_Sub_Data is new Loader.Procedure_With_4_Params
+   package Named_Buffer_Sub_Data is new Loader.Procedure_With_4_Params
       ("glNamedBufferSubData", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
        System.Address);
 
-   procedure Named_Buffer_Storage is new Loader.Procedure_With_4_Params
+   package Named_Buffer_Storage is new Loader.Procedure_With_4_Params
       ("glNamedBufferStorage", UInt, Low_Level.SizeIPtr,
        System.Address, Low_Level.Bitfield);
 
    --  glMapNamedBufferRange returns an instance of generic Interfaces.C.Pointers.Pointer,
    --  therefore declared in GL.Objects.Buffers
 
-   procedure Unmap_Named_Buffer is new Loader.Procedure_With_1_Param
+   package Unmap_Named_Buffer is new Loader.Procedure_With_1_Param
      ("glUnmapNamedBuffer", UInt);
 
-   procedure Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
+   package Invalidate_Buffer_Data is new Loader.Procedure_With_1_Param
      ("glInvalidateBufferData", UInt);
 
-   procedure Invalidate_Buffer_Sub_Data is new Loader.Procedure_With_3_Params
+   package Invalidate_Buffer_Sub_Data is new Loader.Procedure_With_3_Params
      ("glInvalidateBufferSubData", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr);
 
-   procedure Flush_Mapped_Named_Buffer_Range is new Loader.Procedure_With_3_Params
+   package Flush_Mapped_Named_Buffer_Range is new Loader.Procedure_With_3_Params
      ("glFlushMappedNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr);
 
-   procedure Clear_Named_Buffer_Data is new Loader.Procedure_With_5_Params
+   package Clear_Named_Buffer_Data is new Loader.Procedure_With_5_Params
      ("glClearNamedBufferData", UInt, Pixels.Internal_Format_Buffer_Texture,
       Pixels.Format, Pixels.Data_Type, System.Address);
 
-   procedure Clear_Named_Buffer_Sub_Data is new Loader.Procedure_With_7_Params
+   package Clear_Named_Buffer_Sub_Data is new Loader.Procedure_With_7_Params
      ("glClearNamedBufferSubData", UInt, Pixels.Internal_Format_Buffer_Texture,
       Low_Level.IntPtr, Low_Level.SizeIPtr, Pixels.Format, Pixels.Data_Type,
       System.Address);
 
-   procedure Copy_Named_Buffer_Sub_Data is new Loader.Procedure_With_5_Params
+   package Copy_Named_Buffer_Sub_Data is new Loader.Procedure_With_5_Params
      ("glCopyNamedBufferSubData", UInt, UInt, Low_Level.IntPtr, Low_Level.IntPtr,
       Low_Level.SizeIPtr);
 
@@ -537,134 +537,135 @@ private package GL.API is
    --                           Vertex Array Objects                          --
    -----------------------------------------------------------------------------
 
-   procedure Create_Vertex_Arrays is new Loader.Getter_With_2_Params
+   package Create_Vertex_Arrays is new Loader.Getter_With_2_Params
      ("glCreateVertexArrays", Size, UInt);
 
-   procedure Delete_Vertex_Arrays is new Loader.Array_Proc_With_2_Params
+   package Delete_Vertex_Arrays is new Loader.Array_Proc_With_2_Params
      ("glDeleteVertexArrays", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Bind_Vertex_Array is new Loader.Procedure_With_1_Param
+   package Bind_Vertex_Array is new Loader.Procedure_With_1_Param
      ("glBindVertexArray", UInt);
 
-   procedure Vertex_Array_Attrib_Format is new Loader.Procedure_With_6_Params
+   package Vertex_Array_Attrib_Format is new Loader.Procedure_With_6_Params
      ("glVertexArrayAttribFormat", UInt, Attribute, Component_Count,
       Numeric_Type, Low_Level.Bool, UInt);
 
-   procedure Vertex_Array_AttribI_Format is new Loader.Procedure_With_5_Params
+   package Vertex_Array_AttribI_Format is new Loader.Procedure_With_5_Params
      ("glVertexArrayAttribIFormat", UInt, Attribute, Component_Count,
       Numeric_Type, UInt);
 
-   procedure Vertex_Array_AttribL_Format is new Loader.Procedure_With_5_Params
+   package Vertex_Array_AttribL_Format is new Loader.Procedure_With_5_Params
      ("glVertexArrayAttribLFormat", UInt, Attribute, Component_Count,
       Numeric_Type, UInt);
 
-   procedure Vertex_Array_Attrib_Binding is new Loader.Procedure_With_3_Params
+   package Vertex_Array_Attrib_Binding is new Loader.Procedure_With_3_Params
      ("glVertexArrayAttribBinding", UInt, Attribute, Objects.Vertex_Arrays.Binding);
 
-   procedure Vertex_Array_Binding_Divisor is new Loader.Procedure_With_3_Params
+   package Vertex_Array_Binding_Divisor is new Loader.Procedure_With_3_Params
      ("glVertexArrayBindingDivisor", UInt, Objects.Vertex_Arrays.Binding, UInt);
 
-   procedure Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
-     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding, UInt, Low_Level.IntPtr, Size);
+   package Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
+     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding,
+      UInt, Low_Level.IntPtr, Size);
 
-   procedure Vertex_Array_Element_Buffer is new Loader.Procedure_With_2_Params
+   package Vertex_Array_Element_Buffer is new Loader.Procedure_With_2_Params
      ("glVertexArrayElementBuffer", UInt, UInt);
 
-   procedure Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
+   package Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
      ("glEnableVertexArrayAttrib", UInt, Attribute);
 
-   procedure Disable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
+   package Disable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
      ("glDisableVertexArrayAttrib", UInt, Attribute);
 
    -----------------------------------------------------------------------------
    --                    Framebuffer objects and handling                     --
    -----------------------------------------------------------------------------
 
-   procedure Logic_Op is new Loader.Procedure_With_1_Param
+   package Logic_Op is new Loader.Procedure_With_1_Param
      ("glLogicOp", Blending.Logic_Op);
 
-   procedure Create_Framebuffers is new Loader.Getter_With_2_Params
+   package Create_Framebuffers is new Loader.Getter_With_2_Params
      ("glCreateFramebuffers", Size, UInt);
 
-   procedure Delete_Framebuffers is new Loader.Array_Proc_With_2_Params
+   package Delete_Framebuffers is new Loader.Array_Proc_With_2_Params
      ("glDeleteFramebuffers", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Bind_Framebuffer is new Loader.Procedure_With_2_Params
+   package Bind_Framebuffer is new Loader.Procedure_With_2_Params
      ("glBindFramebuffer", Enums.Framebuffer_Kind, UInt);
 
-   procedure Named_Framebuffer_Draw_Buffers is new Loader.Procedure_With_3_Params
+   package Named_Framebuffer_Draw_Buffers is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferDrawBuffers", UInt, Size, Buffers.Color_Buffer_List);
 
-   procedure Named_Framebuffer_Read_Buffer is new Loader.Procedure_With_2_Params
+   package Named_Framebuffer_Read_Buffer is new Loader.Procedure_With_2_Params
      ("glNamedFramebufferReadBuffer", UInt, Buffers.Color_Buffer_Selector);
 
-   function Check_Named_Framebuffer_Status is new Loader.Function_With_2_Params
+   package Check_Named_Framebuffer_Status is new Loader.Function_With_2_Params
      ("glCheckNamedFramebufferStatus", UInt, Enums.Framebuffer_Kind,
       Objects.Framebuffers.Framebuffer_Status);
 
-   procedure Named_Framebuffer_Texture is new Loader.Procedure_With_4_Params
+   package Named_Framebuffer_Texture is new Loader.Procedure_With_4_Params
      ("glNamedFramebufferTexture", UInt, Objects.Framebuffers.Attachment_Point,
       UInt, Objects.Textures.Mipmap_Level);
 
-   procedure Named_Framebuffer_Texture_Layer is new Loader.Procedure_With_5_Params
+   package Named_Framebuffer_Texture_Layer is new Loader.Procedure_With_5_Params
      ("glNamedFramebufferTextureLayer", UInt, Objects.Framebuffers.Attachment_Point,
       UInt, Objects.Textures.Mipmap_Level, Int);
 
-   procedure Blit_Named_Framebuffer is new Loader.Procedure_With_12_Params
+   package Blit_Named_Framebuffer is new Loader.Procedure_With_12_Params
      ("glBlitNamedFramebuffer", UInt, UInt, Int, Int, Int, Int, Int, Int, Int, Int,
       Low_Level.Bitfield, Objects.Textures.Magnifying_Function);
 
-   procedure Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
+   package Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
      ("glInvalidateNamedFramebufferData", UInt, Size,
       Objects.Framebuffers.Attachment_Point,
       Objects.Framebuffers.Attachment_List);
 
-   procedure Invalidate_Named_Framebuffer_Sub_Data is new Loader.Procedure_With_7_Params
-     ("glInvalidateNamedFramebufferSubData", UInt, Size,
-      Objects.Framebuffers.Attachment_List, Int, Int, Size, Size);
-
-   procedure Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
+   package Invalidate_Named_Framebuffer_Data_Default is new Loader.Array_Proc_With_3_Params
      ("glInvalidateNamedFramebufferData", UInt, Size,
       Objects.Framebuffers.Default_Attachment_Point,
       Objects.Framebuffers.Default_Attachment_List);
 
-   procedure Invalidate_Named_Framebuffer_Sub_Data is new Loader.Procedure_With_7_Params
+   package Invalidate_Named_Framebuffer_Sub_Data is new Loader.Procedure_With_7_Params
+     ("glInvalidateNamedFramebufferSubData", UInt, Size,
+      Objects.Framebuffers.Attachment_List, Int, Int, Size, Size);
+
+   package Invalidate_Named_Framebuffer_Sub_Data_Default is new Loader.Procedure_With_7_Params
      ("glInvalidateNamedFramebufferSubData", UInt, Size,
       Objects.Framebuffers.Default_Attachment_List, Int, Int, Size, Size);
 
-   procedure Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
+   package Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Size);
 
-   procedure Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
+   package Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Low_Level.Bool);
 
-   procedure Get_Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
+   package Get_Named_Framebuffer_Parameter_Size is new Loader.Procedure_With_3_Params
      ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Size_Access);
 
-   procedure Get_Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
+   package Get_Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Bool_Access);
 
-   procedure Clear_Named_Framebuffer_Color_Real is new Loader.Procedure_With_4_Params
+   package Clear_Named_Framebuffer_Color_Real is new Loader.Procedure_With_4_Params
      ("glClearNamedFramebufferfv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
-   procedure Clear_Named_Framebuffer_Color_Signed_Int is new Loader.Procedure_With_4_Params
+   package Clear_Named_Framebuffer_Color_Signed_Int is new Loader.Procedure_With_4_Params
      ("glClearNamedFramebufferiv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
-   procedure Clear_Named_Framebuffer_Color_Unsigned_Int is new Loader.Procedure_With_4_Params
+   package Clear_Named_Framebuffer_Color_Unsigned_Int is new Loader.Procedure_With_4_Params
      ("glClearNamedFramebufferuiv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);
 
-   procedure Clear_Named_Framebuffer_Depth is new Loader.Getter_With_4_Params
+   package Clear_Named_Framebuffer_Depth is new Loader.Getter_With_4_Params
      ("glClearNamedFramebufferfv", UInt, Enums.Only_Depth_Buffer,
       Zero, Buffers.Depth);
 
-   procedure Clear_Named_Framebuffer_Stencil is new Loader.Getter_With_4_Params
+   package Clear_Named_Framebuffer_Stencil is new Loader.Getter_With_4_Params
      ("glClearNamedFramebufferiv", UInt, Enums.Only_Stencil_Buffer,
       Zero, Buffers.Stencil_Index);
 
-   procedure Clear_Named_Framebuffer_Depth_Stencil is new Loader.Procedure_With_5_Params
+   package Clear_Named_Framebuffer_Depth_Stencil is new Loader.Procedure_With_5_Params
      ("glClearNamedFramebufferfi", UInt, Enums.Only_Depth_Stencil_Buffer,
       Zero, Buffers.Depth, Buffers.Stencil_Index);
 
@@ -672,104 +673,101 @@ private package GL.API is
    --                                 Shaders                                 --
    -----------------------------------------------------------------------------
 
-   procedure Get_Shader_Param is new Loader.Getter_With_3_Params
+   package Get_Shader_Param is new Loader.Getter_With_3_Params
      ("glGetShaderiv", UInt, Enums.Shader_Param, Int);
 
-   procedure Get_Shader_Type is new Loader.Getter_With_3_Params
+   package Get_Shader_Type is new Loader.Getter_With_3_Params
      ("glGetShaderiv", UInt, Enums.Shader_Param, Objects.Shaders.Shader_Type);
 
-   function Create_Shader is new Loader.Function_With_1_Param
+   package Create_Shader is new Loader.Function_With_1_Param
      ("glCreateShader", Objects.Shaders.Shader_Type, UInt);
 
-   procedure Delete_Shader is new Loader.Procedure_With_1_Param
+   package Delete_Shader is new Loader.Procedure_With_1_Param
      ("glDeleteShader", UInt);
 
-   procedure Shader_Source is new Loader.Procedure_With_4_Params
+   package Shader_Source is new Loader.Procedure_With_4_Params
      ("glShaderSource", UInt, Size, Low_Level.CharPtr_Array,
       Low_Level.Int_Array);
 
-   procedure Get_Shader_Source is
-     new Loader.String_Getter_With_4_Params
+   package Get_Shader_Source is new Loader.String_Getter_With_4_Params
      ("glGetShaderSource", Size, UInt);
 
-   procedure Compile_Shader is new Loader.Procedure_With_1_Param
+   package Compile_Shader is new Loader.Procedure_With_1_Param
      ("glCompileShader", UInt);
 
-   procedure Get_Shader_Info_Log is
-     new Loader.String_Getter_With_4_Params
+   package Get_Shader_Info_Log is new Loader.String_Getter_With_4_Params
      ("glGetShaderInfoLog", Size, UInt);
 
-   function Create_Program is new Loader.Function_Without_Params
+   package Create_Program is new Loader.Function_Without_Params
      ("glCreateProgram", UInt);
 
-   procedure Delete_Program is new Loader.Procedure_With_1_Param
+   package Delete_Program is new Loader.Procedure_With_1_Param
      ("glDeleteProgram", UInt);
 
-   procedure Get_Program_Param is new Loader.Getter_With_3_Params
+   package Get_Program_Param is new Loader.Getter_With_3_Params
      ("glGetProgramiv", UInt, Enums.Program_Param, Int);
 
-   procedure Get_Program_Param is new Loader.Getter_With_3_Params
+   package Get_Program_Param_Compute is new Loader.Getter_With_3_Params
      ("glGetProgramiv", UInt, Enums.Program_Param, Compute.Dimension_Size_Array);
 
-   procedure Program_Parameter_Bool is new Loader.Procedure_With_3_Params
+   package Program_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glProgramParameteri", UInt, Enums.Program_Set_Param, Low_Level.Bool);
 
-   procedure Attach_Shader is new Loader.Procedure_With_2_Params
+   package Attach_Shader is new Loader.Procedure_With_2_Params
      ("glAttachShader", UInt, UInt);
 
-   procedure Detach_Shader is new Loader.Procedure_With_2_Params
+   package Detach_Shader is new Loader.Procedure_With_2_Params
      ("glDetachShader", UInt, UInt);
 
-   procedure Link_Program is new Loader.Procedure_With_1_Param
+   package Link_Program is new Loader.Procedure_With_1_Param
      ("glLinkProgram", UInt);
 
-   procedure Get_Program_Info_Log is
-     new Loader.String_Getter_With_4_Params
+   package Get_Program_Info_Log is new Loader.String_Getter_With_4_Params
      ("glGetProgramInfoLog", Size, UInt);
 
-   procedure Uniform_Subroutines is new Loader.Procedure_With_3_Params
+   package Uniform_Subroutines is new Loader.Procedure_With_3_Params
      ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
 
-   procedure Use_Program is new Loader.Procedure_With_1_Param
+   package Use_Program is new Loader.Procedure_With_1_Param
      ("glUseProgram", UInt);
 
-   procedure Validate_Program is new Loader.Procedure_With_1_Param
+   package Validate_Program is new Loader.Procedure_With_1_Param
      ("glValidateProgram", UInt);
 
-   function Get_Uniform_Location is new Loader.Function_With_2_Params
+   package Get_Uniform_Location is new Loader.Function_With_2_Params
      ("glGetUniformLocation", UInt, C.char_array, Int);
 
    -----------------------------------------------------------------------------
    --                                 Compute                                 --
    -----------------------------------------------------------------------------
 
-   procedure Dispatch_Compute is new Loader.Procedure_With_3_Params
+   package Dispatch_Compute is new Loader.Procedure_With_3_Params
      ("glDispatchCompute", UInt, UInt, UInt);
 
-   procedure Dispatch_Compute_Indirect is new Loader.Procedure_With_1_Param
+   package Dispatch_Compute_Indirect is new Loader.Procedure_With_1_Param
      ("glDispatchComputeIndirect", Low_Level.IntPtr);
 
    -----------------------------------------------------------------------------
    --                    Program interfaces and resources                     --
    -----------------------------------------------------------------------------
 
-   procedure Get_Program_Interface is new Loader.Getter_With_4_Params
+   package Get_Program_Interface is new Loader.Getter_With_4_Params
      ("glGetProgramInterfaceiv", UInt, Enums.Program_Interface,
       Enums.Program_Interface_Param, Low_Level.Int_Array);
 
-   function Get_Program_Resource_Index is new Loader.Function_With_3_Params
+   package Get_Program_Resource_Index is new Loader.Function_With_3_Params
      ("glGetProgramResourceIndex", UInt, Enums.Program_Interface,
       C.char_array, UInt);
 
-   function Get_Program_Resource is new Loader.Array_Getter_With_8_Params
+   package Get_Program_Resource is new Loader.Array_Getter_With_8_Params
      ("glGetProgramResourceiv", UInt, Enums.Program_Interface,
       UInt, Size, Enums.Program_Resource_Array, Int, Int_Array);
 
-   function Get_Program_Resource_Location is new Loader.Function_With_3_Params
+   package Get_Program_Resource_Location is new Loader.Function_With_3_Params
      ("glGetProgramResourceLocation", UInt, Enums.Program_Interface,
       C.char_array, Int);
 
-   function Get_Program_Resource_Location_Index is new Loader.Function_With_3_Params
+   package Get_Program_Resource_Location_Index is new Loader.Function_With_3_Params
      ("glGetProgramResourceLocationIndex", UInt, Enums.Program_Interface,
       C.char_array, Int);
 
@@ -777,28 +775,28 @@ private package GL.API is
    --                                Pipelines                                --
    -----------------------------------------------------------------------------
 
-   procedure Use_Program_Stages is new Loader.Procedure_With_3_Params
+   package Use_Program_Stages is new Loader.Procedure_With_3_Params
      ("glUseProgramStages", UInt, Low_Level.Bitfield, UInt);
 
-   procedure Create_Program_Pipelines is new Loader.Getter_With_2_Params
+   package Create_Program_Pipelines is new Loader.Getter_With_2_Params
      ("glCreateProgramPipelines", Size, UInt);
 
-   procedure Delete_Program_Pipelines is new Loader.Array_Proc_With_2_Params
+   package Delete_Program_Pipelines is new Loader.Array_Proc_With_2_Params
      ("glDeleteProgramPipelines", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Bind_Program_Pipeline is new Loader.Procedure_With_1_Param
+   package Bind_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glBindProgramPipeline", UInt);
 
-   procedure Get_Program_Pipeline_Param is new Loader.Getter_With_3_Params
+   package Get_Program_Pipeline_Param is new Loader.Getter_With_3_Params
      ("glGetProgramPipelineiv", UInt, Enums.Program_Pipeline_Param, Int);
 
-   procedure Get_Program_Pipeline_Info_Log is new Loader.String_Getter_With_4_Params
+   package Get_Program_Pipeline_Info_Log is new Loader.String_Getter_With_4_Params
      ("glGetProgramPipelineInfoLog", Size, UInt);
 
-   procedure Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
+   package Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glValidateProgramPipeline", UInt);
 
-   function Create_Shader_Program is new Loader.Function_With_3_Params
+   package Create_Shader_Program is new Loader.Function_With_3_Params
      ("glCreateShaderProgramv", Objects.Shaders.Shader_Type, Size,
       Low_Level.CharPtr_Array, UInt);
 
@@ -806,160 +804,162 @@ private package GL.API is
    --                                 Queries                                 --
    -----------------------------------------------------------------------------
 
-   procedure Create_Queries is new Loader.Getter_With_3_Params
+   package Create_Queries is new Loader.Getter_With_3_Params
      ("glCreateQueries", Objects.Queries.Query_Type, Size, UInt);
 
-   procedure Delete_Queries is new Loader.Array_Proc_With_2_Params
+   package Delete_Queries is new Loader.Array_Proc_With_2_Params
      ("glDeleteQueries", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Begin_Query_Indexed is new Loader.Procedure_With_3_Params
+   package Begin_Query_Indexed is new Loader.Procedure_With_3_Params
      ("glBeginQueryIndexed", Objects.Queries.Async_Query_Type, UInt, UInt);
 
-   procedure End_Query_Indexed is new Loader.Procedure_With_2_Params
+   package End_Query_Indexed is new Loader.Procedure_With_2_Params
      ("glEndQueryIndexed", Objects.Queries.Async_Query_Type, UInt);
 
-   procedure Begin_Conditional_Render is new Loader.Procedure_With_2_Params
+   package Begin_Conditional_Render is new Loader.Procedure_With_2_Params
      ("glBeginConditionalRender", UInt, Objects.Queries.Query_Mode);
 
-   procedure End_Conditional_Render is new Loader.Procedure_Without_Params
+   package End_Conditional_Render is new Loader.Procedure_Without_Params
      ("glEndConditionalRender");
 
-   procedure Query_Counter is new Loader.Procedure_With_2_Params
+   package Query_Counter is new Loader.Procedure_With_2_Params
      ("glQueryCounter", UInt, Objects.Queries.Timestamp_Query_Type);
 
-   procedure Get_Query_Indexed_Param is new Loader.Getter_With_4_Params
+   package Get_Query_Indexed_Param is new Loader.Getter_With_4_Params
      ("glGetQueryIndexed", Objects.Queries.Query_Type, UInt, Objects.Queries.Target_Param, Int);
 
-   procedure Get_Query_Object_UInt is new Loader.Getter_With_3_Params
+   package Get_Query_Object_UInt is new Loader.Getter_With_3_Params
      ("glGetQueryObjectuiv", UInt, Objects.Queries.Query_Param, UInt);
 
-   procedure Get_Query_Object_UInt64 is new Loader.Getter_With_3_Params
+   package Get_Query_Object_UInt64 is new Loader.Getter_With_3_Params
      ("glGetQueryObjectui64v", UInt, Objects.Queries.Query_Param, UInt64);
 
    -----------------------------------------------------------------------------
    --                                Samplers                                 --
    -----------------------------------------------------------------------------
 
-   procedure Create_Samplers is new Loader.Getter_With_2_Params
+   package Create_Samplers is new Loader.Getter_With_2_Params
      ("glCreateSamplers", Size, UInt);
 
-   procedure Delete_Samplers is new Loader.Array_Proc_With_2_Params
+   package Delete_Samplers is new Loader.Array_Proc_With_2_Params
      ("glDeleteSamplers", Size, UInt, Low_Level.UInt_Array);
 
-   procedure Bind_Sampler is new Loader.Procedure_With_2_Params
+   package Bind_Sampler is new Loader.Procedure_With_2_Params
      ("glBindSampler", UInt, UInt);
 
-   procedure Bind_Samplers is new Loader.Array_Proc_With_3_Params
+   package Bind_Samplers is new Loader.Array_Proc_With_3_Params
      ("glBindSamplers", UInt, Size, UInt, Low_Level.UInt_Array);
 
-   procedure Sampler_Parameter_Bool is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Low_Level.Bool);
 
-   procedure Sampler_Parameter_Float is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Float is new Loader.Procedure_With_3_Params
      ("glSamplerParameterf", UInt, Enums.Textures.Parameter, Single);
 
-   procedure Sampler_Parameter_Floats is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Floats is new Loader.Procedure_With_3_Params
      ("glSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
 
-   procedure Sampler_Parameter_Minifying_Function is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Minifying_Function is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
 
-   procedure Sampler_Parameter_Magnifying_Function is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Magnifying_Function is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
 
-   procedure Sampler_Parameter_Wrapping_Mode is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Wrapping_Mode is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
 
-   procedure Sampler_Parameter_Compare_Kind is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Compare_Kind is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
 
-   procedure Sampler_Parameter_Compare_Function is new Loader.Procedure_With_3_Params
+   package Sampler_Parameter_Compare_Function is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Compare_Function);
 
-   procedure Get_Sampler_Parameter_Bool is new Loader.Getter_With_3_Params
+   package Get_Sampler_Parameter_Bool is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Low_Level.Bool);
 
-   procedure Get_Sampler_Parameter_Floats is new Loader.Getter_With_3_Params
+   package Get_Sampler_Parameter_Floats is new Loader.Getter_With_3_Params
      ("glGetSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
 
-   procedure Get_Sampler_Parameter_Minifying_Function is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
+   package Get_Sampler_Parameter_Minifying_Function is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
+      Objects.Textures.Minifying_Function);
 
-   procedure Get_Sampler_Parameter_Magnifying_Function is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
+   package Get_Sampler_Parameter_Magnifying_Function is new Loader.Getter_With_3_Params
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
+      Objects.Textures.Magnifying_Function);
 
-   procedure Get_Sampler_Parameter_Wrapping_Mode is new Loader.Getter_With_3_Params
+   package Get_Sampler_Parameter_Wrapping_Mode is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
 
-   procedure Get_Sampler_Parameter_Compare_Kind is new Loader.Getter_With_3_Params
+   package Get_Sampler_Parameter_Compare_Kind is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
 
-   procedure Get_Sampler_Parameter_Compare_Function is new Loader.Getter_With_3_Params
+   package Get_Sampler_Parameter_Compare_Function is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
 
    -----------------------------------------------------------------------------
    --                                Barriers                                 --
    -----------------------------------------------------------------------------
 
-   procedure Texture_Barrier is new Loader.Procedure_Without_Params
+   package Texture_Barrier is new Loader.Procedure_Without_Params
      ("glTextureBarrier");
 
-   procedure Memory_Barrier is new Loader.Procedure_With_1_Param
+   package Memory_Barrier is new Loader.Procedure_With_1_Param
      ("glMemoryBarrier", Low_Level.Bitfield);
 
-   procedure Memory_Barrier_By_Region is new Loader.Procedure_With_1_Param
+   package Memory_Barrier_By_Region is new Loader.Procedure_With_1_Param
      ("glMemoryBarrierByRegion", Low_Level.Bitfield);
 
    -----------------------------------------------------------------------------
    --                                  Debug                                  --
    -----------------------------------------------------------------------------
 
-   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+   package Debug_Message_Control is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
       Debug.Severity, Size, UInt_Array, Low_Level.Bool);
 
-   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+   package Debug_Message_Control_Any_Level is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
       Low_Level.Enum, Size, UInt_Array, Low_Level.Bool);
 
-   procedure Debug_Message_Control is new Loader.Procedure_With_6_Params
+   package Debug_Message_Control_Level is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Low_Level.Enum, Low_Level.Enum,
       Debug.Severity, Size, UInt_Array, Low_Level.Bool);
 
-   procedure Debug_Message_Insert is new Loader.Procedure_With_6_Params
+   package Debug_Message_Insert is new Loader.Procedure_With_6_Params
      ("glDebugMessageInsert", Debug.Source, Debug.Message_Type,
       UInt, Debug.Severity, Size, C.char_array);
 
-   procedure Debug_Message_Callback is new Loader.Procedure_With_2_Params
+   package Debug_Message_Callback is new Loader.Procedure_With_2_Params
      ("glDebugMessageCallback", System.Address, System.Address);
 
-   function Get_Debug_Message_Log is new Loader.Function_With_8_Params
+   package Get_Debug_Message_Log is new Loader.Function_With_8_Params
      ("glGetDebugMessageLog", UInt, Size, Debug_Types.Source_Array_Access,
       Debug_Types.Type_Array_Access, Debug_Types.UInt_Array_Access,
       Debug_Types.Severity_Array_Access, Debug_Types.Size_Array_Access,
       Debug_Types.String_Access, UInt);
 
-   procedure Push_Debug_Group is new Loader.Procedure_With_4_Params
+   package Push_Debug_Group is new Loader.Procedure_With_4_Params
      ("glPushDebugGroup", Debug.Source, UInt, Size, C.char_array);
 
-   procedure Pop_Debug_Group is new Loader.Procedure_Without_Params
+   package Pop_Debug_Group is new Loader.Procedure_Without_Params
     ("glPopDebugGroup");
 
-   procedure Object_Label is new Loader.Procedure_With_4_Params
+   package Object_Label is new Loader.Procedure_With_4_Params
      ("glObjectLabel", Types.Debug.Identifier, UInt, Size, C.char_array);
 
-   procedure Get_Object_Label is new Loader.String_Getter_With_5_Params
+   package Get_Object_Label is new Loader.String_Getter_With_5_Params
      ("glGetObjectLabel", Size, Types.Debug.Identifier, UInt);
 
-   procedure Get_Object_Label_Length is new Loader.Procedure_With_5_Params
+   package Get_Object_Label_Length is new Loader.Procedure_With_5_Params
      ("glGetObjectLabel", Types.Debug.Identifier, UInt, Size,
       Low_Level.Size_Access, C.Strings.chars_ptr);
 
-   procedure Object_Pointer_Label is new Loader.Procedure_With_3_Params
+   package Object_Pointer_Label is new Loader.Procedure_With_3_Params
      ("glObjectPtrLabel", System.Address, Size, C.char_array);
    --  TODO Use for Sync objects
 
-   procedure Get_Object_Pointer_Label is new Loader.String_Getter_With_4_Params
+   package Get_Object_Pointer_Label is new Loader.String_Getter_With_4_Params
      ("glGetObjectPtrLabel", Size, System.Address);
    --  TODO Use for Sync objects
 
@@ -967,33 +967,33 @@ private package GL.API is
    --                                 Syncing                                 --
    -----------------------------------------------------------------------------
 
-   function Fence_Sync is new Loader.Function_With_2_Params
+   package Fence_Sync is new Loader.Function_With_2_Params
      ("glFenceSync", Low_Level.Enum, Low_Level.Bitfield, Low_Level.Sync);
 
-   procedure Delete_Sync is new Loader.Procedure_With_1_Param
+   package Delete_Sync is new Loader.Procedure_With_1_Param
      ("glDeleteSync", Low_Level.Sync);
 
-   function Get_Sync is new Loader.Array_Getter_With_5_Params
+   package Get_Sync is new Loader.Array_Getter_With_5_Params
      ("glGetSynciv", Low_Level.Sync, Low_Level.Enum, Int, Int_Array);
 
-   function Client_Wait_Sync is new Loader.Function_With_3_Params
+   package Client_Wait_Sync is new Loader.Function_With_3_Params
      ("glClientWaitSync", Low_Level.Sync, Low_Level.Bitfield, UInt64,
       Fences.Wait_Status);
 
-   procedure Wait_Sync is new Loader.Procedure_With_3_Params
+   package Wait_Sync is new Loader.Procedure_With_3_Params
      ("glWaitSync", Low_Level.Sync, Low_Level.Bitfield, UInt64);
 
    -----------------------------------------------------------------------------
    --                  Transformation to window coordinates                   --
    -----------------------------------------------------------------------------
 
-   procedure Depth_Range_Array is new Loader.Procedure_With_3_Params
+   package Depth_Range_Array is new Loader.Procedure_With_3_Params
      ("glDepthRangeArrayv", UInt, Size, Viewports.Depth_Range_List);
 
-   procedure Viewport_Array is new Loader.Procedure_With_3_Params
+   package Viewport_Array is new Loader.Procedure_With_3_Params
      ("glViewportArrayv", UInt, Size, Viewports.Viewport_List);
 
-   procedure Scissor_Array is new Loader.Procedure_With_3_Params
+   package Scissor_Array is new Loader.Procedure_With_3_Params
      ("glScissorArrayv", UInt, Size, Viewports.Scissor_Rectangle_List);
 
 end GL.API;

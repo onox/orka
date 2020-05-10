@@ -18,36 +18,48 @@ with GL.API;
 
 package body GL.Toggles is
 
-   procedure Enable (Subject : Toggle) renames API.Enable;
+   procedure Enable (Subject : Toggle) is
+   begin
+      API.Enable.Ref (Subject);
+   end Enable;
 
-   procedure Disable (Subject : Toggle) renames API.Disable;
+   procedure Disable (Subject : Toggle) is
+   begin
+      API.Disable.Ref (Subject);
+   end Disable;
 
    procedure Set (Subject : Toggle; Value : Toggle_State) is
    begin
       if Value = Enabled then
-         API.Enable (Subject);
+         API.Enable.Ref (Subject);
       else
-         API.Disable (Subject);
+         API.Disable.Ref (Subject);
       end if;
    end Set;
 
    function State (Subject : Toggle) return Toggle_State is
-     ((if API.Is_Enabled (Subject) then Enabled else Disabled));
+     ((if API.Is_Enabled.Ref (Subject) then Enabled else Disabled));
 
-   procedure Enable  (Subject : Toggle_Indexed; Index : Types.UInt) renames API.Enable_I;
+   procedure Enable (Subject : Toggle_Indexed; Index : Types.UInt) is
+   begin
+      API.Enable_I.Ref (Subject, Index);
+   end Enable;
 
-   procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt) renames API.Disable_I;
+   procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt) is
+   begin
+      API.Disable_I.Ref (Subject, Index);
+   end Disable;
 
    procedure Set (Subject : Toggle_Indexed; Index : Types.UInt; Value : Toggle_State) is
    begin
       if Value = Enabled then
-         API.Enable_I (Subject, Index);
+         API.Enable_I.Ref (Subject, Index);
       else
-         API.Disable_I (Subject, Index);
+         API.Disable_I.Ref (Subject, Index);
       end if;
    end Set;
 
    function State (Subject : Toggle_Indexed; Index : Types.UInt) return Toggle_State is
-     ((if API.Is_Enabled_I (Subject, Index) then Enabled else Disabled));
+     ((if API.Is_Enabled_I.Ref (Subject, Index) then Enabled else Disabled));
 
 end GL.Toggles;

@@ -53,7 +53,7 @@ package body GL.Debug.Logs is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Size_Array, Name => Size_Array_Access);
    begin
-      Length := Size (API.Get_Debug_Message_Log
+      Length := Size (API.Get_Debug_Message_Log.Ref
         (UInt (Number_Messages), Log_Length,
          Sources, Types, IDs, Levels, Lengths, Log));
       pragma Assert (Length <= Number_Messages);
@@ -86,7 +86,7 @@ package body GL.Debug.Logs is
    function Logged_Messages return Size is
       Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Debug_Logged_Messages, Result);
+      API.Get_Integer.Ref (Enums.Getter.Debug_Logged_Messages, Result);
       return Result;
    end Logged_Messages;
 

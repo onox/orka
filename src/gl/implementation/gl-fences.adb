@@ -59,13 +59,13 @@ package body GL.Fences is
       if Object.Initialized then
          Object.Delete;
       end if;
-      Object.Reference.Sync_ID := API.Fence_Sync (GPU_Commands_Complete, 0);
+      Object.Reference.Sync_ID := API.Fence_Sync.Ref (GPU_Commands_Complete, 0);
       Object.Reference.Status := (if Object.Initialized then Set else Unset);
    end Set_Fence;
 
    procedure Delete (Object : in out Fence) is
    begin
-      API.Delete_Sync (Object.Reference.Sync_ID);
+      API.Delete_Sync.Ref (Object.Reference.Sync_ID);
       Object.Reference.Sync_ID := 0;
       Object.Reference.Status := Unset;
    end Delete;
@@ -99,7 +99,7 @@ package body GL.Fences is
       end if;
 
       declare
-         Value : constant Int_Array := API.Get_Sync
+         Value : constant Int_Array := API.Get_Sync.Ref
            (Object.Reference.Sync_ID, Sync_Status, 1);
       begin
          return Convert (Value (1)) = Signaled;
@@ -114,7 +114,7 @@ package body GL.Fences is
 
       Result : Wait_Status;
    begin
-      Result := API.Client_Wait_Sync
+      Result := API.Client_Wait_Sync.Ref
         (Object.Reference.Sync_ID, Flush_Commands_Bit, Timeout_Nanoseconds);
 
       if Result in Already_Signaled | Condition_Satisfied then
@@ -128,9 +128,9 @@ package body GL.Fences is
       Timeout_Ignored : constant := 16#FFF_FFFFF_FFFF_FFFF#;
    begin
       --  Flush the pipeline to ensure that the fence has been sent to the GPU
-      API.Flush;
+      API.Flush.Ref.all;
 
-      API.Wait_Sync (Object.Reference.Sync_ID, 0, Timeout_Ignored);
+      API.Wait_Sync.Ref (Object.Reference.Sync_ID, 0, Timeout_Ignored);
    end Server_Wait;
 
    overriding

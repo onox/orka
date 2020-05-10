@@ -23,38 +23,38 @@ with GL.Errors;
 package body GL.Context is
 
    function Extension (Index : Positive) return String is
-     (C.Strings.Value (API.Get_String_I (Enums.Getter.Extensions, UInt (Index - 1))));
+     (C.Strings.Value (API.Get_String_I.Ref (Enums.Getter.Extensions, UInt (Index - 1))));
 
    function GLSL_Version (Index : Positive) return String is
-     (C.Strings.Value (API.Get_String_I (Enums.Getter.Shading_Language_Version, UInt (Index - 1))));
+     (C.Strings.Value (API.Get_String_I.Ref (Enums.Getter.Shading_Language_Version, UInt (Index - 1))));
 
    function Major_Version return Int is
       Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Major_Version, Result);
+      API.Get_Integer.Ref (Enums.Getter.Major_Version, Result);
       return Result;
    end Major_Version;
 
    function Minor_Version return Int is
       Result : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Minor_Version, Result);
+      API.Get_Integer.Ref (Enums.Getter.Minor_Version, Result);
       return Result;
    end Minor_Version;
 
    function Version_String return String is
    begin
-      return C.Strings.Value (API.Get_String (Enums.Getter.Version));
+      return C.Strings.Value (API.Get_String.Ref (Enums.Getter.Version));
    end Version_String;
 
    function Vendor return String is
    begin
-      return C.Strings.Value (API.Get_String (Enums.Getter.Vendor));
+      return C.Strings.Value (API.Get_String.Ref (Enums.Getter.Vendor));
    end Vendor;
 
    function Renderer return String is
    begin
-      return C.Strings.Value (API.Get_String (Enums.Getter.Renderer));
+      return C.Strings.Value (API.Get_String.Ref (Enums.Getter.Renderer));
    end Renderer;
 
    function Extensions return String_List is
@@ -62,9 +62,9 @@ package body GL.Context is
       use type Errors.Error_Code;
       Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Extensions, Count);
+      API.Get_Integer.Ref (Enums.Getter.Num_Extensions, Count);
 
-      pragma Assert (API.Get_Error = Errors.No_Error);
+      pragma Assert (API.Get_Error.Ref.all = Errors.No_Error);
       --  We are on OpenGL 3
 
       return List : String_List (1 .. Positive (Count)) do
@@ -78,9 +78,9 @@ package body GL.Context is
       use type Errors.Error_Code;
       Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Extensions, Count);
+      API.Get_Integer.Ref (Enums.Getter.Num_Extensions, Count);
 
-      pragma Assert (API.Get_Error = Errors.No_Error);
+      pragma Assert (API.Get_Error.Ref.all = Errors.No_Error);
       --  We are on OpenGL 3
 
       return (for some I in 1 .. Positive (Count) => Extension (I) = Name);
@@ -88,7 +88,7 @@ package body GL.Context is
 
    function Primary_Shading_Language_Version return String is
       Result : constant String := C.Strings.Value
-        (API.Get_String (Enums.Getter.Shading_Language_Version));
+        (API.Get_String.Ref (Enums.Getter.Shading_Language_Version));
    begin
       return Result;
    end Primary_Shading_Language_Version;
@@ -98,8 +98,8 @@ package body GL.Context is
       use type Errors.Error_Code;
       Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count);
-      if API.Get_Error = Errors.Invalid_Enum then
+      API.Get_Integer.Ref (Enums.Getter.Num_Shading_Language_Versions, Count);
+      if API.Get_Error.Ref.all = Errors.Invalid_Enum then
          raise Feature_Not_Supported_Exception;
       end if;
       return List : String_List (1 .. Positive (Count)) do
@@ -112,7 +112,7 @@ package body GL.Context is
    function Supports_Shading_Language_Version (Name : String) return Boolean is
       Count : Int := 0;
    begin
-      API.Get_Integer (Enums.Getter.Num_Shading_Language_Versions, Count);
+      API.Get_Integer.Ref (Enums.Getter.Num_Shading_Language_Versions, Count);
       return (for some I in 1 .. Positive (Count) => GLSL_Version (I) = Name);
    end Supports_Shading_Language_Version;
 

@@ -28,7 +28,7 @@ package body GL.Drawing is
       Instances     : Size := 1;
       Base_Instance : Size := 0) is
    begin
-      API.Draw_Arrays_Instanced_Base_Instance
+      API.Draw_Arrays_Instanced_Base_Instance.Ref
         (Mode, Offset, Count, Instances, UInt (Base_Instance));
    end Draw_Arrays;
 
@@ -42,7 +42,7 @@ package body GL.Drawing is
       Offset_In_Bytes : constant Size
         := Offset * Arrays_Indirect_Command'Size / System.Storage_Unit;
    begin
-      API.Multi_Draw_Arrays_Indirect (Mode, Offset_In_Bytes, Count, 0);
+      API.Multi_Draw_Arrays_Indirect.Ref (Mode, Offset_In_Bytes, Count, 0);
    end Draw_Multiple_Arrays_Indirect;
 
    procedure Draw_Multiple_Arrays_Indirect_Count
@@ -58,7 +58,7 @@ package body GL.Drawing is
         := Offset * Size'Size / System.Storage_Unit;
       pragma Assert (Count_Offset_In_Bytes mod 4 = 0);
    begin
-      API.Multi_Draw_Arrays_Indirect_Count
+      API.Multi_Draw_Arrays_Indirect_Count.Ref
         (Mode, Offset_In_Bytes, Low_Level.IntPtr (Count_Offset), Max_Count, 0);
    end Draw_Multiple_Arrays_Indirect_Count;
 
@@ -77,7 +77,7 @@ package body GL.Drawing is
          when UShort_Type => Element_Bytes := 2;
          when UInt_Type   => Element_Bytes := 4;
       end case;
-      API.Draw_Elements_Instanced_Base_Vertex_Base_Instance
+      API.Draw_Elements_Instanced_Base_Vertex_Base_Instance.Ref
         (Mode, Count, Index_Kind, Low_Level.IntPtr (Element_Bytes * Index_Offset),
          Instances, Int (Base_Vertex), UInt (Base_Instance));
    end Draw_Elements;
@@ -93,7 +93,7 @@ package body GL.Drawing is
       Offset_In_Bytes : constant Size
         := Offset * Elements_Indirect_Command'Size / System.Storage_Unit;
    begin
-      API.Multi_Draw_Elements_Indirect
+      API.Multi_Draw_Elements_Indirect.Ref
         (Mode, Index_Kind, Offset_In_Bytes, Count, 0);
    end Draw_Multiple_Elements_Indirect;
 
@@ -111,7 +111,7 @@ package body GL.Drawing is
         := Offset * Size'Size / System.Storage_Unit;
       pragma Assert (Count_Offset_In_Bytes mod 4 = 0);
    begin
-      API.Multi_Draw_Elements_Indirect_Count
+      API.Multi_Draw_Elements_Indirect_Count.Ref
         (Mode, Index_Kind, Offset_In_Bytes,
          Low_Level.IntPtr (Count_Offset_In_Bytes), Max_Count, 0);
    end Draw_Multiple_Elements_Indirect_Count;

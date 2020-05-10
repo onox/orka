@@ -23,14 +23,14 @@ package body GL.Objects.Queries is
    procedure Initialize_Id (Object : in out Query) is
       New_Id : UInt := 0;
    begin
-      API.Create_Queries (Object.Target, 1, New_Id);
+      API.Create_Queries.Ref (Object.Target, 1, New_Id);
       Object.Reference.GL_Id := New_Id;
    end Initialize_Id;
 
    overriding
    procedure Delete_Id (Object : in out Query) is
    begin
-      API.Delete_Queries (1, (1 => Object.Reference.GL_Id));
+      API.Delete_Queries.Ref (1, (1 => Object.Reference.GL_Id));
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 
@@ -38,7 +38,7 @@ package body GL.Objects.Queries is
      (Object : in out Query;
       Index  : in     Natural := 0) return Active_Query'Class is
    begin
-      API.Begin_Query_Indexed (Object.Target, UInt (Index), Object.Reference.GL_Id);
+      API.Begin_Query_Indexed.Ref (Object.Target, UInt (Index), Object.Reference.GL_Id);
       return Active_Query'(Ada.Finalization.Limited_Controlled
         with Target => Object.Target, Index => Index, Finalized => False);
    end Begin_Query;
@@ -47,7 +47,7 @@ package body GL.Objects.Queries is
    procedure Finalize (Object : in out Active_Query) is
    begin
       if not Object.Finalized then
-         API.End_Query_Indexed (Object.Target, UInt (Object.Index));
+         API.End_Query_Indexed.Ref (Object.Target, UInt (Object.Index));
          Object.Finalized := True;
       end if;
    end Finalize;
@@ -56,7 +56,7 @@ package body GL.Objects.Queries is
                                       Mode   : in     Query_Mode)
      return Conditional_Render'Class is
    begin
-      API.Begin_Conditional_Render (Object.Reference.GL_Id, Mode);
+      API.Begin_Conditional_Render.Ref (Object.Reference.GL_Id, Mode);
       return Conditional_Render'(Ada.Finalization.Limited_Controlled
         with Finalized => False);
    end Begin_Conditional_Render;
@@ -65,7 +65,7 @@ package body GL.Objects.Queries is
    procedure Finalize (Object : in out Conditional_Render) is
    begin
       if not Object.Finalized then
-         API.End_Conditional_Render;
+         API.End_Conditional_Render.Ref.all;
          Object.Finalized := True;
       end if;
    end Finalize;
@@ -73,7 +73,7 @@ package body GL.Objects.Queries is
    function Result_Available (Object : in out Query) return Boolean is
       Available : UInt := 0;
    begin
-      API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_Available, Available);
+      API.Get_Query_Object_UInt.Ref (Object.Reference.GL_Id, Result_Available, Available);
       return Available = 1;
    end Result_Available;
 
@@ -82,21 +82,21 @@ package body GL.Objects.Queries is
    function Result_If_Available (Object : in out Query; Default : Boolean) return Boolean is
       Result : UInt := (if Default then 1 else 0);
    begin
-      API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
+      API.Get_Query_Object_UInt.Ref (Object.Reference.GL_Id, Result_No_Wait, Result);
       return Result = 1;
    end Result_If_Available;
 
    function Result_If_Available (Object : in out Query; Default : Natural) return Natural is
       Result : UInt := UInt (Default);
    begin
-      API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result_No_Wait, Result);
+      API.Get_Query_Object_UInt.Ref (Object.Reference.GL_Id, Result_No_Wait, Result);
       return Natural (Result);
    end Result_If_Available;
 
    function Result_If_Available (Object : in out Query; Default : UInt64) return UInt64 is
       Result : UInt64 := Default;
    begin
-      API.Get_Query_Object_UInt64 (Object.Reference.GL_Id, Result_No_Wait, Result);
+      API.Get_Query_Object_UInt64.Ref (Object.Reference.GL_Id, Result_No_Wait, Result);
       return Result;
    end Result_If_Available;
 
@@ -105,21 +105,21 @@ package body GL.Objects.Queries is
    function Result (Object : in out Query) return Boolean is
       Result_Value : UInt := 0;
    begin
-      API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result, Result_Value);
+      API.Get_Query_Object_UInt.Ref (Object.Reference.GL_Id, Result, Result_Value);
       return Result_Value = 1;
    end Result;
 
    function Result (Object : in out Query) return Natural is
       Result_Value : UInt := 0;
    begin
-      API.Get_Query_Object_UInt (Object.Reference.GL_Id, Result, Result_Value);
+      API.Get_Query_Object_UInt.Ref (Object.Reference.GL_Id, Result, Result_Value);
       return Natural (Result_Value);
    end Result;
 
    function Result (Object : in out Query) return UInt64 is
       Result_Value : UInt64 := 0;
    begin
-      API.Get_Query_Object_UInt64 (Object.Reference.GL_Id, Result, Result_Value);
+      API.Get_Query_Object_UInt64.Ref (Object.Reference.GL_Id, Result, Result_Value);
       return Result_Value;
    end Result;
 
@@ -128,19 +128,19 @@ package body GL.Objects.Queries is
    function Result_Bits (Target : in Query_Type) return Natural is
       Bits : Int := 0;
    begin
-      API.Get_Query_Indexed_Param (Target, 0, Counter_Bits, Bits);
+      API.Get_Query_Indexed_Param.Ref (Target, 0, Counter_Bits, Bits);
       return Natural (Bits);
    end Result_Bits;
 
    procedure Record_Current_Time (Object : in out Query) is
    begin
-      API.Query_Counter (Object.Reference.GL_Id, Timestamp);
+      API.Query_Counter.Ref (Object.Reference.GL_Id, Timestamp);
    end Record_Current_Time;
 
    function Get_Current_Time return Long is
       Result : Types.Long := 0;
    begin
-      API.Get_Long (Enums.Getter.Timestamp, Result);
+      API.Get_Long.Ref (Enums.Getter.Timestamp, Result);
       return Result;
    end Get_Current_Time;
 

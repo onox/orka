@@ -20,7 +20,7 @@ package body GL.Errors is
 
    procedure Raise_Exception_On_OpenGL_Error is
    begin
-      case API.Get_Error is
+      case API.Get_Error.Ref.all is
          when Errors.Invalid_Operation => raise Errors.Invalid_Operation_Error;
          when Errors.Invalid_Value => raise Errors.Invalid_Value_Error;
          when Errors.Invalid_Framebuffer_Operation =>

@@ -30,7 +30,7 @@ package body GL.Pixels.Queries is
    is
       Result : Support := None;
    begin
-      API.Get_Internal_Format (Kind, Format, Parameter, 1, Result);
+      API.Get_Internal_Format_Support.Ref (Kind, Format, Parameter, 1, Result);
       return Result;
    end Get_Support;
 
@@ -41,7 +41,7 @@ package body GL.Pixels.Queries is
    is
       Result : Size := 0;
    begin
-      API.Get_Internal_Format (Kind, Format, Parameter, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Parameter, 1, Result);
       return Result;
    end Get_Size;
 
@@ -52,7 +52,7 @@ package body GL.Pixels.Queries is
    is
       Result : Long_Size := 0;
    begin
-      API.Get_Internal_Format (Kind, Format, Parameter, 1, Result);
+      API.Get_Internal_Format_Long.Ref (Kind, Format, Parameter, 1, Result);
       return Result;
    end Get_Long_Size;
 
@@ -69,7 +69,7 @@ package body GL.Pixels.Queries is
    is
       Result : Size := 0;
    begin
-      API.Get_Internal_Format (Kind, Format, Parameter, 1, Result);
+      API.Get_Internal_Format_C.Ref (Kind, Format, Parameter, 1, Result);
       return Result;
    end Get_Size;
 
@@ -81,12 +81,12 @@ package body GL.Pixels.Queries is
    is
       Count : Size := 0;
    begin
-      API.Get_Internal_Format (Kind, Format, Num_Sample_Counts, 1, Count);
+      API.Get_Internal_Format.Ref (Kind, Format, Num_Sample_Counts, 1, Count);
 
       declare
          Result : Size_Array (1 .. Count) := (others => 0);
       begin
-         API.Get_Internal_Format (Kind, Format, Samples, Result'Length, Result);
+         API.Get_Internal_Format_A.Ref (Kind, Format, Samples, Result'Length, Result);
          return Result;
       end;
    end Sample_Counts;
@@ -105,7 +105,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Internal_Format);
    begin
-      API.Get_Internal_Format (Kind, Format, Internalformat_Preferred, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Internalformat_Preferred, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format";
       end if;
@@ -236,7 +236,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Format);
    begin
-      API.Get_Internal_Format (Kind, Format, Texture_Image_Format, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Texture_Image_Format, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for uploading to texture";
       end if;
@@ -252,7 +252,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Data_Type);
    begin
-      API.Get_Internal_Format (Kind, Format, Texture_Image_Type, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Texture_Image_Type, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for uploading to texture";
       end if;
@@ -268,7 +268,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Format);
    begin
-      API.Get_Internal_Format (Kind, Format, Get_Texture_Image_Format, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Get_Texture_Image_Format, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for downloading to texture";
       end if;
@@ -284,7 +284,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Data_Type);
    begin
-      API.Get_Internal_Format (Kind, Format, Get_Texture_Image_Type, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Get_Texture_Image_Type, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for downloading to texture";
       end if;
@@ -319,7 +319,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Encoding);
    begin
-      API.Get_Internal_Format (Kind, Format, Color_Encoding, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Color_Encoding, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for color encoding";
       end if;
@@ -426,7 +426,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Format);
    begin
-      API.Get_Internal_Format (Kind, Format, Image_Pixel_Format, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Image_Pixel_Format, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for image texture";
       end if;
@@ -442,7 +442,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Pixels.Data_Type);
    begin
-      API.Get_Internal_Format (Kind, Format, Image_Pixel_Type, 1, Result);
+      API.Get_Internal_Format.Ref (Kind, Format, Image_Pixel_Type, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for image texture";
       end if;
@@ -458,7 +458,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Image_Format_Compatibility_Type);
    begin
-      API.Get_Internal_Format (Kind, Format,
+      API.Get_Internal_Format.Ref (Kind, Format,
         Enums.Internalformat.Image_Format_Compatibility_Type, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for image texture";
@@ -524,7 +524,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => Image_Class);
    begin
-      API.Get_Internal_Format (Kind, Format,
+      API.Get_Internal_Format.Ref (Kind, Format,
         Enums.Internalformat.Image_Compatibility_Class, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for image texture";
@@ -541,7 +541,7 @@ package body GL.Pixels.Queries is
       function Convert is new Ada.Unchecked_Conversion
         (Source => GL.Types.Int, Target => View_Class);
    begin
-      API.Get_Internal_Format (Kind, Format,
+      API.Get_Internal_Format.Ref (Kind, Format,
         Enums.Internalformat.View_Compatibility_Class, 1, Result);
       if Result = 0 then
          raise Constraint_Error with "Invalid internal format for texture view";
