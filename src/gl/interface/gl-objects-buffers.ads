@@ -36,7 +36,11 @@ package GL.Objects.Buffers is
       Unsynchronized    : Boolean := False;
       Persistent        : Boolean := False;
       Coherent          : Boolean := False;
-   end record;
+   end record
+     with Dynamic_Predicate => (Access_Bits.Read or Access_Bits.Write)
+       and (if Access_Bits.Flush_Explicit then Access_Bits.Write)
+       and (if Access_Bits.Invalidate_Range or Access_Bits.Invalidate_Buffer then
+              not Access_Bits.Read);
 
    type Storage_Bits is record
       Read              : Boolean := False;
@@ -135,7 +139,7 @@ package GL.Objects.Buffers is
          Flags  : Access_Bits;
          Offset, Length : Types.Size;
          Pointer : out Pointers.Pointer)
-      with Pre => Object.Allocated;
+      with Pre => Object.Allocated and not Object.Mapped and Length > 0;
 
       function Get_Mapped_Data
         (Pointer : not null Pointers.Pointer;

@@ -257,6 +257,7 @@ package body GL.Objects.Buffers is
          Pointer : out Pointers.Pointer)
       is
          use type Low_Level.Bitfield;
+         use type Pointers.Pointer;
 
          function Convert is new Ada.Unchecked_Conversion
            (Source => Access_Bits, Target => Low_Level.Bitfield);
@@ -272,7 +273,7 @@ package body GL.Objects.Buffers is
             Low_Level.IntPtr (Offset_In_Bytes),
             Low_Level.SizeIPtr (Number_Of_Bytes),
             Raw_Bits);
-         Object.Mapped := True;
+         Object.Mapped := Pointer /= null;
       end Map_Range;
 
       function Get_Mapped_Data
