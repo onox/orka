@@ -131,56 +131,26 @@ package GL.Pixels is
 
    type Alignment is (Bytes, Even_Bytes, Words, Double_Words);
 
-   procedure Set_Pack_Swap_Bytes   (Value : Boolean);
-   procedure Set_Pack_LSB_First    (Value : Boolean);
-   procedure Set_Pack_Row_Length   (Value : Size);
-   procedure Set_Pack_Image_Height (Value : Size);
-   procedure Set_Pack_Skip_Pixels  (Value : Size);
-   procedure Set_Pack_Skip_Rows    (Value : Size);
-   procedure Set_Pack_Skip_Images  (Value : Size);
-   procedure Set_Pack_Alignment    (Value : Alignment);
+   procedure Set_Pack_Alignment (Value : Alignment);
+   function Pack_Alignment return Alignment;
 
    procedure Set_Pack_Compressed_Block_Width  (Value : Size);
    procedure Set_Pack_Compressed_Block_Height (Value : Size);
    procedure Set_Pack_Compressed_Block_Depth  (Value : Size);
    procedure Set_Pack_Compressed_Block_Size   (Value : Size);
 
-   function Pack_Swap_Bytes   return Boolean;
-   function Pack_LSB_First    return Boolean;
-   function Pack_Row_Length   return Size;
-   function Pack_Image_Height return Size;
-   function Pack_Skip_Pixels  return Size;
-   function Pack_Skip_Rows    return Size;
-   function Pack_Skip_Images  return Size;
-   function Pack_Alignment    return Alignment;
-
    function Pack_Compressed_Block_Width  return Size;
    function Pack_Compressed_Block_Height return Size;
    function Pack_Compressed_Block_Depth  return Size;
    function Pack_Compressed_Block_Size   return Size;
 
-   procedure Set_Unpack_Swap_Bytes   (Value : Boolean);
-   procedure Set_Unpack_LSB_First    (Value : Boolean);
-   procedure Set_Unpack_Row_Length   (Value : Size);
-   procedure Set_Unpack_Image_Height (Value : Size);
-   procedure Set_Unpack_Skip_Pixels  (Value : Size);
-   procedure Set_Unpack_Skip_Rows    (Value : Size);
-   procedure Set_Unpack_Skip_Images  (Value : Size);
-   procedure Set_Unpack_Alignment    (Value : Alignment);
+   procedure Set_Unpack_Alignment (Value : Alignment);
+   function Unpack_Alignment return Alignment;
 
    procedure Set_Unpack_Compressed_Block_Width  (Value : Size);
    procedure Set_Unpack_Compressed_Block_Height (Value : Size);
    procedure Set_Unpack_Compressed_Block_Depth  (Value : Size);
    procedure Set_Unpack_Compressed_Block_Size   (Value : Size);
-
-   function Unpack_Swap_Bytes   return Boolean;
-   function Unpack_LSB_First    return Boolean;
-   function Unpack_Row_Length   return Size;
-   function Unpack_Image_Height return Size;
-   function Unpack_Skip_Pixels  return Size;
-   function Unpack_Skip_Rows    return Size;
-   function Unpack_Skip_Images  return Size;
-   function Unpack_Alignment    return Alignment;
 
    function Unpack_Compressed_Block_Width  return Size;
    function Unpack_Compressed_Block_Height return Size;

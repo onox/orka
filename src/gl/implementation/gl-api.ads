@@ -202,9 +202,6 @@ private package GL.API is
    --                               Pixel stuff                               --
    -----------------------------------------------------------------------------
 
-   package Pixel_Store_Bool is new Loader.Procedure_With_2_Params
-     ("glPixelStorei", Enums.Pixel_Store_Param, Low_Level.Bool);
-
    package Pixel_Store_Size is new Loader.Procedure_With_2_Params
      ("glPixelStorei", Enums.Pixel_Store_Param, Size);
 
