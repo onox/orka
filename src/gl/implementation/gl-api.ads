@@ -813,17 +813,8 @@ private package GL.API is
    package End_Query_Indexed is new Loader.Procedure_With_2_Params
      ("glEndQueryIndexed", Objects.Queries.Async_Query_Type, UInt);
 
-   package Begin_Conditional_Render is new Loader.Procedure_With_2_Params
-     ("glBeginConditionalRender", UInt, Objects.Queries.Query_Mode);
-
-   package End_Conditional_Render is new Loader.Procedure_Without_Params
-     ("glEndConditionalRender");
-
    package Query_Counter is new Loader.Procedure_With_2_Params
      ("glQueryCounter", UInt, Objects.Queries.Timestamp_Query_Type);
-
-   package Get_Query_Indexed_Param is new Loader.Getter_With_4_Params
-     ("glGetQueryIndexed", Objects.Queries.Query_Type, UInt, Objects.Queries.Target_Param, Int);
 
    package Get_Query_Object_UInt is new Loader.Getter_With_3_Params
      ("glGetQueryObjectuiv", UInt, Objects.Queries.Query_Param, UInt);

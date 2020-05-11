@@ -52,24 +52,6 @@ package body GL.Objects.Queries is
       end if;
    end Finalize;
 
-   function Begin_Conditional_Render (Object : in out Query;
-                                      Mode   : in     Query_Mode)
-     return Conditional_Render'Class is
-   begin
-      API.Begin_Conditional_Render.Ref (Object.Reference.GL_Id, Mode);
-      return Conditional_Render'(Ada.Finalization.Limited_Controlled
-        with Finalized => False);
-   end Begin_Conditional_Render;
-
-   overriding
-   procedure Finalize (Object : in out Conditional_Render) is
-   begin
-      if not Object.Finalized then
-         API.End_Conditional_Render.Ref.all;
-         Object.Finalized := True;
-      end if;
-   end Finalize;
-
    function Result_Available (Object : in out Query) return Boolean is
       Available : UInt := 0;
    begin
@@ -124,13 +106,6 @@ package body GL.Objects.Queries is
    end Result;
 
    -----------------------------------------------------------------------------
-
-   function Result_Bits (Target : in Query_Type) return Natural is
-      Bits : Int := 0;
-   begin
-      API.Get_Query_Indexed_Param.Ref (Target, 0, Counter_Bits, Bits);
-      return Natural (Bits);
-   end Result_Bits;
 
    procedure Record_Current_Time (Object : in out Query) is
    begin
