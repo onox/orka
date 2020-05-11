@@ -161,8 +161,6 @@ package GL.Objects.Buffers is
       procedure Flush_Buffer_Range (Object : in out Buffer;
                                     Offset, Length : Types.Size);
 
-      function To_Pointer (Object : Buffer) return Pointers.Pointer;
-
       procedure Clear_Data
         (Object : Buffer;
          Kind : Numeric_Type;

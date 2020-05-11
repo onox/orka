@@ -205,10 +205,6 @@ package body GL.Objects.Buffers is
         ("glMapNamedBufferRange", UInt, Low_Level.IntPtr, Low_Level.SizeIPtr,
          Low_Level.Bitfield, Pointers.Pointer);
 
-      package Named_Buffer_Pointer is new API.Loader.Getter_With_3_Params
-        ("glGetNamedBufferPointerv", UInt,
-         Enums.Buffer_Pointer_Param, Pointers.Pointer);
-
       package Get_Named_Buffer_Sub_Data is new API.Loader.Getter_With_4_Params
         ("glGetNamedBufferSubData", UInt, Low_Level.IntPtr,
          Low_Level.SizeIPtr, Pointers.Element_Array);
@@ -388,13 +384,6 @@ package body GL.Objects.Buffers is
             Low_Level.IntPtr (Write_Offset_In_Bytes),
             Low_Level.SizeIPtr (Number_Of_Bytes));
       end Copy_Sub_Data;
-
-      function To_Pointer (Object : Buffer) return Pointers.Pointer is
-         Ret : Pointers.Pointer := null;
-      begin
-         Named_Buffer_Pointer.Ref (Object.Reference.GL_Id, Enums.Buffer_Map_Pointer, Ret);
-         return Ret;
-      end To_Pointer;
 
       procedure Set_Sub_Data (Object : Buffer;
                               Offset : Types.Size;
