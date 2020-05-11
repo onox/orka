@@ -224,8 +224,6 @@ package body Orka.Features.Terrain is
      (Object  : in out Terrain;
       Visible : Visible_Tile_Array)
    is
-      use type GL.Types.UInt;
-
       Depth : Integer := Integer (Object.Max_Depth);
 
       Count     : constant Integer := 2 ** Depth / 2 ** 5;

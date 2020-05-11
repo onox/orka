@@ -29,7 +29,6 @@ package body Orka.Features.Terrain.Spheres is
    is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Single);
 
-      use Orka;
       use Orka.Transforms.Singles.Vectors;
 
       Axis   : GL.Types.Single renames Parameters (1);

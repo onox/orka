@@ -302,13 +302,14 @@ package body Orka.Resources.Textures.KTX is
    --                                 Writer                                  --
    -----------------------------------------------------------------------------
 
+   package Pointers is new GL.Objects.Textures.Texture_Pointers (Byte_Pointers);
+
    procedure Write_Texture
      (Texture  : GL.Objects.Textures.Texture;
       Location : Locations.Writable_Location_Ptr;
       Path     : String)
    is
       package Textures renames GL.Objects.Textures;
-      package Pointers is new Textures.Texture_Pointers (Byte_Pointers);
 
       Format    : GL.Pixels.Format    := GL.Pixels.RGBA;
       Data_Type : GL.Pixels.Data_Type := GL.Pixels.Float;
