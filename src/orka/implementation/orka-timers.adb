@@ -30,18 +30,23 @@ package body Orka.Timers is
       return Duration (Seconds) + Duration (Nanoseconds) / 1e9;
    end Get_Duration;
 
+   procedure Record_GPU_Duration (Object : in out Timer) is
+   begin
+      declare
+         Stop_Time  : constant UInt64 := Object.Query_Stop.Result;
+         Start_Time : constant UInt64 := Object.Query_Start.Result;
+      begin
+         if Stop_Time > Start_Time then
+            Object.GPU_Duration := Get_Duration (Stop_Time - Start_Time);
+         end if;
+      end;
+   end Record_GPU_Duration;
+
    procedure Start (Object : in out Timer) is
       use GL.Objects.Queries;
    begin
       if Object.State = Waiting and then Object.Query_Stop.Result_Available then
-         declare
-            Stop_Time  : constant UInt64 := Object.Query_Stop.Result;
-            Start_Time : constant UInt64 := Object.Query_Start.Result;
-         begin
-            if Stop_Time > Start_Time then
-               Object.GPU_Duration := Get_Duration (Stop_Time - Start_Time);
-            end if;
-         end;
+         Object.Record_GPU_Duration;
          Object.State := Idle;
       end if;
 
@@ -67,6 +72,12 @@ package body Orka.Timers is
          Object.State := Waiting;
       end if;
    end Stop;
+
+   procedure Wait_For_Result (Object : in out Timer) is
+   begin
+      Object.Record_GPU_Duration;
+      Object.State := Idle;
+   end Wait_For_Result;
 
    function CPU_Duration (Object : Timer) return Duration is (Object.CPU_Duration);
 
