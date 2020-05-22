@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Fences;
+private with GL.Fences;
 
 generic
    type Index_Type is mod <>;
