@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Iterator_Interfaces;
+with Ada.Iterator_Interfaces;
 
 generic
    type Index_Type is new Natural;
@@ -26,7 +26,9 @@ package Orka.Containers.Bounded_Vectors is
 
    type Vector (Capacity : Length_Type) is tagged private
      with Constant_Indexing => Constant_Reference,
-          Variable_Indexing => Reference;
+          Variable_Indexing => Reference,
+          Default_Iterator  => Iterate,
+          Iterator_Element  => Reference_Type;
    pragma Preelaborable_Initialization (Vector);
 
    procedure Append (Container : in out Vector; Elements : Vector)
@@ -68,12 +70,24 @@ package Orka.Containers.Bounded_Vectors is
      with Implicit_Dereference => Value;
 
    function Constant_Reference
-     (Container : Vector;
+     (Container : aliased Vector;
       Index     : Index_Type) return Constant_Reference_Type;
 
    function Reference
-     (Container : in out Vector;
+     (Container : aliased in out Vector;
       Index     : Index_Type) return Reference_Type;
+
+   type Cursor is private;
+
+   No_Element : constant Cursor;
+
+   function Has_Element (Position : Cursor) return Boolean is
+     (Position /= No_Element);
+
+   package Vector_Iterator_Interfaces is new Ada.Iterator_Interfaces (Cursor, Has_Element);
+
+   function Iterate (Container : Vector)
+     return Vector_Iterator_Interfaces.Reversible_Iterator'Class;
 
    -----------------------------------------------------------------------------
 
@@ -118,20 +132,10 @@ private
 
    -----------------------------------------------------------------------------
 
-   function Has_Element (Position : Cursor) return Boolean is
-     (Position /= No_Element);
-
-   package Vector_Iterator_Interfaces is new Ada.Iterator_Interfaces (Cursor, Has_Element);
-
-   function Iterate (Container : Vector)
-     return Vector_Iterator_Interfaces.Reversible_Iterator'Class;
-
    type Vector (Capacity : Length_Type) is tagged record
       Elements : Element_Array (Index_Type'First .. Capacity) := (others => <>);
       Length   : Length_Type := 0;
-   end record
-     with Default_Iterator  => Iterate,
-          Iterator_Element  => Reference_Type;
+   end record;
    pragma Preelaborable_Initialization (Vector);
 
    -----------------------------------------------------------------------------

@@ -91,7 +91,7 @@ package body Orka.Containers.Bounded_Vectors is
    end Element;
 
    function Constant_Reference
-     (Container : Vector;
+     (Container : aliased Vector;
       Index     : Index_Type) return Constant_Reference_Type is
    begin
       return Constant_Reference_Type'(Value => Container.Elements (Index)'Access);
@@ -111,7 +111,7 @@ package body Orka.Containers.Bounded_Vectors is
    end Constant_Reference;
 
    function Reference
-     (Container : in out Vector;
+     (Container : aliased in out Vector;
       Index     : Index_Type) return Reference_Type is
    begin
       return Reference_Type'(Value => Container.Elements (Index)'Access);
