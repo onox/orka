@@ -41,7 +41,7 @@ abstract project Config is
       "-gnatf",         --  Full errors
       "-gnatVa",        --  All validity checks
       "-gnatwa",        --  All optional warnings
-      "-gnatwFl.l.n.s",
+      "-gnatwFl.l.s",
       "-gnaty",         --  Default style checks
       "-gnatyAdOSux-msbc",
       "-gnat2012"       --  Use Ada 2012
