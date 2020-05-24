@@ -134,73 +134,73 @@ package Orka.Rendering.Buffers is
      (Object : Buffer;
       Data   : Half_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Half_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Single_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Double_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Int_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Int_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : UInt_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = UInt_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Vector_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Matrix_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Orka.Types.Doubles.Vector4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Vector_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Matrix_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Indirect.Arrays_Indirect_Command_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Arrays_Command_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Indirect.Elements_Indirect_Command_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Elements_Command_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
       Data   : Indirect.Dispatch_Indirect_Command_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Dispatch_Command_Type and Offset + Data'Length <= Object.Length;
 
    -----------------------------------------------------------------------------
 
@@ -208,31 +208,31 @@ package Orka.Rendering.Buffers is
      (Object : Buffer;
       Data   : in out Half_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Half_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Single_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Double_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Int_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Int_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out UInt_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = UInt_Type and Offset + Data'Length <= Object.Length;
 
    -----------------------------------------------------------------------------
 
@@ -240,25 +240,25 @@ package Orka.Rendering.Buffers is
      (Object : Buffer;
       Data   : in out Orka.Types.Singles.Vector4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Vector_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Orka.Types.Singles.Matrix4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Single_Matrix_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Orka.Types.Doubles.Vector4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Vector_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
       Data   : in out Orka.Types.Doubles.Matrix4_Array;
       Offset : Natural := 0)
-   with Pre => Offset + Data'Length <= Object.Length;
+   with Pre => Object.Kind = Double_Matrix_Type and Offset + Data'Length <= Object.Length;
 
    -----------------------------------------------------------------------------
 
