@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Containers.Vectors;
+private with Orka.Containers.Bounded_Vectors;
 
 private with GL.Objects.Vertex_Arrays;
 
@@ -80,12 +80,15 @@ private
       Binding_Index    : GL.Objects.Vertex_Arrays.Binding;
    end record;
 
-   package Attribute_Buffers is new Ada.Containers.Vectors (Positive, Attribute_Buffer);
+   package Attribute_Buffers is new Orka.Containers.Bounded_Vectors (Positive, Attribute_Buffer);
 
    type Vertex_Format is tagged record
       Index_Kind   : Types.Index_Type;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
-      Attributes   : Attribute_Buffers.Vector;
+      Attributes   : Attribute_Buffers.Vector (Capacity => 8);
+      --  Most hardware supports 16 separate buffers, but usually
+      --  1 or 2 is sufficient. Ideally you should forget about
+      --  vertex formats and just access the data as an SSBO in a shader.
    end record;
 
 end Orka.Rendering.Vertex_Formats;

@@ -67,17 +67,7 @@ package body Orka.Rendering.Vertex_Formats is
    function Attribute_Kind
      (Object : Vertex_Format;
       Index  : Positive) return Types.Numeric_Type
-   is
-      Result : Types.Numeric_Type;
-
-      procedure Query (Element : Attribute_Buffer) is
-      begin
-         Result := Element.Kind;
-      end Query;
-   begin
-      Object.Attributes.Query_Element (Index, Query'Access);
-      return Result;
-   end Attribute_Kind;
+   is (Object.Attributes (Index).Kind);
 
    procedure Add_Attribute_Buffer
      (Object  : in out Vertex_Format;
@@ -103,7 +93,7 @@ package body Orka.Rendering.Vertex_Formats is
          Element.Set_Buffer (Buffer);
       end Update;
    begin
-      Object.Attributes.Update_Element (Index, Update'Access);
+      Object.Attributes.Update (Index, Update'Access);
    end Set_Vertex_Buffer;
 
    procedure Set_Index_Buffer (Object : in out Vertex_Format; Buffer : Buffers.Buffer) is
