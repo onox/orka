@@ -184,16 +184,6 @@ package body GL.Objects.Buffers is
       Object.Mapped := False;
    end Unmap;
 
-   procedure Clear_With_Zeros (Object : Buffer) is
-   begin
-      --  The internal format, format, and data type need to match
-      --  each other, but are otherwise ignored because of the null
-      --  address
-      API.Clear_Named_Buffer_Data.Ref
-        (Object.Reference.GL_Id, GL.Pixels.R8I, GL.Pixels.Red_Integer,
-         GL.Pixels.Byte, System.Null_Address);
-   end Clear_With_Zeros;
-
    procedure Invalidate_Data (Object : in out Buffer) is
    begin
       API.Invalidate_Buffer_Data.Ref (Object.Reference.GL_Id);
@@ -325,47 +315,23 @@ package body GL.Objects.Buffers is
             Low_Level.SizeIPtr (Number_Of_Bytes));
       end Flush_Buffer_Range;
 
-      procedure Clear_Data
-        (Object : Buffer;
-         Kind : Numeric_Type;
-         Data : in out Pointers.Element_Array)
-      is
-         Format_Info : constant Format_Data := Get_Format_Data (Kind, Data'Length);
-      begin
-         API.Clear_Named_Buffer_Data.Ref
-           (Object.Reference.GL_Id, Format_Info.Internal_Format,
-            Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
-      end Clear_Data;
-
       procedure Clear_Sub_Data
         (Object : Buffer;
+         Kind   : Numeric_Type;
          Offset, Length : Types.Size;
-         Kind : Numeric_Type;
          Data : in out Pointers.Element_Array)
       is
          Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
          Length_In_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
 
-         Format_Info : constant Format_Data := Get_Format_Data (Kind, Data'Length);
+         Format_Info : constant Format_Data := Get_Format_Data (Kind, Natural'Max (1, Data'Length));
       begin
          API.Clear_Named_Buffer_Sub_Data.Ref
            (Object.Reference.GL_Id, Format_Info.Internal_Format,
             Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
-            Format_Info.Format, Format_Info.Data_Type, Data (Data'First)'Address);
+            Format_Info.Format, Format_Info.Data_Type,
+            (if Data'Length = 0 then System.Null_Address else Data (Data'First)'Address));
       end Clear_Sub_Data;
-
-      procedure Clear_With_Zeros (Object : Buffer; Offset, Length : Types.Size) is
-         Offset_In_Bytes : constant Int := Offset * Pointers.Element'Size / System.Storage_Unit;
-         Length_In_Bytes : constant Int := Length * Pointers.Element'Size / System.Storage_Unit;
-      begin
-         --  The internal format, format, and data type need to match
-         --  each other, but are otherwise ignored because of the null
-         --  address
-         API.Clear_Named_Buffer_Sub_Data.Ref
-           (Object.Reference.GL_Id, GL.Pixels.R8I,
-            Low_Level.IntPtr (Offset_In_Bytes), Low_Level.SizeIPtr (Length_In_Bytes),
-            GL.Pixels.Red_Integer, GL.Pixels.Byte, System.Null_Address);
-      end Clear_With_Zeros;
 
       procedure Copy_Sub_Data
         (Object, Target_Object : Buffer;
