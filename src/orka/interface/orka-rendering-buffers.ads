@@ -262,6 +262,35 @@ package Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Int_Array)
+   with Pre => Object.Kind = Int_Type
+     and Data'Length in 1 .. 4
+     and Object.Length mod Data'Length = 0;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : UInt_Array)
+   with Pre => Object.Kind = UInt_Type
+     and Data'Length in 1 .. 4
+     and Object.Length mod Data'Length = 0;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Single_Array)
+   with Pre => Object.Kind = Single_Type
+     and Data'Length in 1 .. 4
+     and Object.Length mod Data'Length = 0;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Singles.Vector4)
+   with Pre => Object.Kind = Single_Vector_Type
+     or else (Object.Kind = Single_Type and Object.Length mod 4 = 0);
+
+   -----------------------------------------------------------------------------
+
    procedure Copy_Data
      (Object : Buffer;
       Target : Buffer)

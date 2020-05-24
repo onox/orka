@@ -406,6 +406,56 @@ package body Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Int_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Int_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.Int.Clear_Sub_Data (Object.Buffer, Int_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : UInt_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : UInt_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.UInt.Clear_Sub_Data (Object.Buffer, UInt_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Single_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Single_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0.0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.Single.Clear_Sub_Data (Object.Buffer, Single_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Orka.Types.Singles.Vector4)
+   is
+      Length : constant Size :=
+        Size (if Object.Kind = Single_Vector_Type then Object.Length * 4 else Object.Length);
+
+      Data_Array : Single_Array := (Data (X), Data (Y), Data (Z), Data (W));
+   begin
+      Pointers.Single.Clear_Sub_Data (Object.Buffer, Single_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   -----------------------------------------------------------------------------
+
    procedure Copy_Data
      (Object : Buffer;
       Target : Buffer)
