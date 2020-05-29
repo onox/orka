@@ -1,0 +1,194 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2020 onox <denkpadje@gmail.com>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// A compute shader which computes the Discrete Fourier Transform of a
+// vector (1D) or matrix (2D) of complex numbers using the radix-2
+// Fast Fourier Transform algorithm (FFT) [1, 2].
+//
+// The FFT (y) of a vector (x) with length N can be solved by computing
+// 2 smaller FFTs with length N / 2:
+//
+// Compute 1st FFT(N/2) for     0 .. N / 2 - 1 ( = Even (length is N / 2))
+// Compute 2nd FFT(N/2) for N / 2 .. N - 1     ( = Odd  (length is N / 2))
+//
+// and then combining them using the butterfly technique:
+//
+// Compute [Even + W * Odd, Even - W * Odd] (length is N)
+//
+// where W is a vector with length N / 2 containing weights.
+//
+// x(0) _              ______+_ y(0)
+// x(1) _ +----------+ _\___/+_ y(1)
+// x(2) _ | FFT(N/2) | _\\_//+_ y(2)
+// x(3) _ +----------+ _\\X//+_ y(3)
+//                      \XXX/
+// x(4) _              _/XXX\-_ y(4)
+// x(5) _ +----------+ _//X\\-_ y(5)
+// x(6) _ | FFT(N/2) | _//_\\-_ y(6)
+// x(7) _ +----------+ _/___\-_ y(7)
+//
+// These two smaller FFTs with length N / 2 can be solved by computing,
+// for each, again two smaller FFTs with length N / 4, etc.
+//
+// References:
+//
+// [1] McClellan, J., Schafer, R., Yoder, M. (2003). Signal Processing
+//     First. 13-9.
+// [2] Sumanaweera, T., Liu, D. (2005). Medical Image Reconstruction with
+//     the FFT. GPU gems, 2(48).
+
+layout(local_size_x = 1024) in;
+// Must be a power of two
+
+// float real, imag;
+#define ComplexNumber vec2
+
+layout(std430, binding = 0) restrict buffer inputBuffer {
+    ComplexNumber inputData[];
+};
+
+uniform uvec2 size;
+// Width (x) or height (y) (if transposeData is true) must be a power of two
+
+uniform bool transposeData = false;
+uniform bool inverseFFT = false;
+
+const float PI = 3.14159265358979323846;
+
+shared ComplexNumber data[gl_WorkGroupSize.x];
+
+uint reverseBits(const uint i, const uint n) {
+    return bitfieldReverse(i) >> (32 - bitCount(n - 1));
+}
+
+ComplexNumber addComplex(const in ComplexNumber a, const in ComplexNumber b, const in float m) {
+    // a.real + m * b.real,
+    // a.imag + m * b.imag
+    return a + m * b;
+}
+
+ComplexNumber mulComplex(const in ComplexNumber a, const in ComplexNumber b) {
+    // a.real * b.real - a.imag * b.imag,
+    // a.real * b.imag + a.imag * b.real
+    const vec2 m = vec2(-1.0, 1.0);
+    return a.xx * b + m * a.yy * b.yx;
+}
+
+ComplexNumber readData(const in uint N, in uvec2 p) {
+    const uint columns = size.x;
+    p = uvec2(p.x, reverseBits(p.y, N));
+    if (transposeData) {
+        p = p.yx;
+    }
+    return inputData[p.x * columns + p.y];
+}
+
+void writeData(in uvec2 p, const in ComplexNumber value) {
+    const uint columns = size.x;
+    if (transposeData) {
+        p = p.yx;
+    }
+    inputData[p.x * columns + p.y] = value;
+}
+
+void main(void) {
+    uint gid = gl_LocalInvocationID.x;
+
+    // Assert N <= gl_WorkGroupSize.x
+
+    const uint N = transposeData ? size.y : size.x;
+    const uint maxRowsInShared = gl_WorkGroupSize.x / N;
+
+    const uint columnID = gid % N;
+    const uint localRowID = gid / N;
+    const uint rowID = localRowID + maxRowsInShared * gl_WorkGroupID.x;
+
+    const uvec2 pos = uvec2(rowID, columnID);
+    const bool activeLane = gid < size.x * size.y;
+
+    if (activeLane) {
+        data[gid] = readData(N, pos);
+    }
+
+    groupMemoryBarrier();
+    barrier();
+
+    // Even and odd offsets:
+    //
+    // 4 = 0  0  0  0 -4 -4 -4 -4
+    //     4  4  4  4  0  0  0  0
+    // 2 = 0  0 -2 -2  0  0 -2 -2
+    //     2  2  0  0  2  2  0  0
+    // 1 = 0 -1  0 -1  0 -1  0 -1
+    //     1  0  1  0  1  0  1  0
+
+    // m (0 = even lane, 1 = odd lane):
+    //
+    // 4 = 0 0 0 0 1 1 1 1
+    // 2 = 0 0 1 1 0 0 1 1
+    // 1 = 0 1 0 1 0 1 0 1
+
+    // W^n:
+    //
+    // 4 = 0 1 2 3 0 1 2 3
+    // 2 = 0 2 0 2 0 2 0 2
+    // 1 = 0 0 0 0 0 0 0 0
+
+    const float rN = 1.0 / N;
+
+    const float WN = mix(-2.0, 2.0, inverseFFT) * PI * rN;
+
+    uint NH = N;
+
+    for (uint s = 1u; s < N; s <<= 1u) {
+        // (N / s) / 2
+        NH >>= 1u;
+
+        // (columnID / s) % 2 != 0 ? 1 : 0;
+        const uint m = min(1u, columnID & s);
+
+        const uint kn = (columnID % s) * NH;
+        const ComplexNumber w = ComplexNumber(
+            cos(WN * kn),
+            sin(WN * kn)
+        );
+
+        const uint even_offset = gid - m * s;
+
+        const ComplexNumber even = data[even_offset];
+        const ComplexNumber odd  = data[even_offset + s];
+        barrier();
+
+        // even + w * odd if m is even (0)
+        // even - w * odd if m is odd  (1)
+        data[gid] = addComplex(even, mulComplex(w, odd), mix(1.0, -1.0, m));
+
+        groupMemoryBarrier();
+        barrier();
+    }
+
+    if (activeLane) {
+        if (inverseFFT) {
+            data[gid] *= rN;
+        }
+        writeData(pos, data[gid]);
+    }
+}

@@ -115,6 +115,12 @@ package body Orka.Types is
 
    -----------------------------------------------------------------------------
 
+   function Is_Power_Of_Two (Value : Positive) return Boolean is
+      use type GL.Types.UInt;
+   begin
+      return (GL.Types.UInt (Value) and GL.Types.UInt (Value - 1)) = 0;
+   end Is_Power_Of_Two;
+
    function Clamp (Value : in Source) return Target is
       A : constant Source := Source'Min (Source (Target'Last), Value);
       B : constant Source := Source'Max (Source (Target'First), A);

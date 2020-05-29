@@ -49,16 +49,12 @@ package Orka.Types is
 
    subtype Composite_Type is Element_Type range Single_Vector_Type .. Dispatch_Command_Type;
 
-   function Convert
-     (Kind : Numeric_Type) return GL.Types.Numeric_Type;
-
-   function Convert
-     (Kind : Index_Type) return GL.Types.Index_Type;
+   function Convert (Kind : Numeric_Type) return GL.Types.Numeric_Type;
+   function Convert (Kind : Index_Type)   return GL.Types.Index_Type;
 
    -----------------------------------------------------------------------------
 
    package Singles is new Orka.Algebra (Orka.Transforms.Singles.Matrices);
-
    package Doubles is new Orka.Algebra (Orka.Transforms.Doubles.Matrices);
 
    function Convert (Elements : GL.Types.Single_Array) return GL.Types.Half_Array
@@ -67,6 +63,8 @@ package Orka.Types is
      with Post => Elements'Length = Convert'Result'Length;
 
    -----------------------------------------------------------------------------
+
+   function Is_Power_Of_Two (Value : Positive) return Boolean;
 
    generic
       type Source is digits <>;
