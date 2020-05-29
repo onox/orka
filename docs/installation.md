@@ -145,7 +145,7 @@ $ make MODE=release
 ```
 
 The default mode is `development`. Both `release` and `development` enable general
-optimizations. To enable OpenGL exceptions, disable optimizations, and include
+optimizations. To disable optimizations, and include
 debugging symbols, use the `debug` mode. See the following table:
 
 |                   | Release | Development | Debug |
