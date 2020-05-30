@@ -214,7 +214,7 @@ begin
                         Uni_Screen   : constant Uniforms.Uniform := P_1.Uniform ("screenSize");
                         Uni_Best_Fit : constant Uniforms.Uniform := P_1.Uniform ("useBestFit");
                      begin
-                        Uni_Screen.Set_Vector (Uniforms.TS.Vector4'
+                        Uni_Screen.Set_Vector (Orka.Types.Singles.Vector4'
                           (Single (Window.Width), Single (Window.Height), 0.0, 0.0)
                         );
                         Uni_Best_Fit.Set_Boolean (True);

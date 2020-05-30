@@ -328,7 +328,7 @@ package body Orka.Features.Terrain is
 
       if Object.Wireframe then
          Object.Program_Render.Uniform ("u_ScreenResolution").Set_Vector
-           (Rendering.Programs.Uniforms.TS.Vector4'
+           (Types.Singles.Vector4'
              (GL.Types.Single (Camera.Lens.Width), GL.Types.Single (Camera.Lens.Height), 0.0, 0.0));
          Object.Program_Render.Uniform ("u_ShowWires").Set_Boolean (Wires);
       end if;

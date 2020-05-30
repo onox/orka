@@ -23,9 +23,7 @@ with GL.Pixels.Extensions;
 with GL.Types;
 
 with Orka.Rendering.Textures;
-
-with Orka.Transforms.Singles.Matrices;
-with Orka.Transforms.Doubles.Matrices;
+with Orka.Types;
 
 package Orka.Rendering.Programs.Uniforms is
    pragma Preelaborate;
@@ -36,9 +34,6 @@ package Orka.Rendering.Programs.Uniforms is
    use type LE.Texture_Kind;
    use type LE.Resource_Type;
    use type PE.Format_Type;
-
-   package TS renames Transforms.Singles.Matrices;
-   package TD renames Transforms.Doubles.Matrices;
 
    -----------------------------------------------------------------------------
 
@@ -52,14 +47,14 @@ package Orka.Rendering.Programs.Uniforms is
 
    type Uniform (Kind : LE.Resource_Type) is tagged private;
 
-   procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4)
+   procedure Set_Matrix (Object : Uniform; Value : Types.Singles.Matrix4)
      with Pre => Object.Kind = LE.Single_Matrix4;
-   procedure Set_Matrix (Object : Uniform; Value : TD.Matrix4)
+   procedure Set_Matrix (Object : Uniform; Value : Types.Doubles.Matrix4)
      with Pre => Object.Kind = LE.Double_Matrix4;
 
-   procedure Set_Vector (Object : Uniform; Value : TS.Vector4)
+   procedure Set_Vector (Object : Uniform; Value : Types.Singles.Vector4)
      with Pre => Object.Kind = LE.Single_Vec4;
-   procedure Set_Vector (Object : Uniform; Value : TD.Vector4)
+   procedure Set_Vector (Object : Uniform; Value : Types.Doubles.Vector4)
      with Pre => Object.Kind = LE.Double_Vec4;
 
    -----------------------------------------------------------------------------

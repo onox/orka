@@ -142,30 +142,30 @@ package body Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4) is
+   procedure Set_Matrix (Object : Uniform; Value : Types.Singles.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
-        (Source => TS.Matrix4, Target => GL.Types.Singles.Matrix4);
+        (Source => Types.Singles.Matrix4, Target => GL.Types.Singles.Matrix4);
    begin
       Object.GL_Uniform.Set_Single_Matrix (Convert (Value));
    end Set_Matrix;
 
-   procedure Set_Matrix (Object : Uniform; Value : TD.Matrix4) is
+   procedure Set_Matrix (Object : Uniform; Value : Types.Doubles.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
-        (Source => TD.Matrix4, Target => GL.Types.Doubles.Matrix4);
+        (Source => Types.Doubles.Matrix4, Target => GL.Types.Doubles.Matrix4);
    begin
       Object.GL_Uniform.Set_Double_Matrix (Convert (Value));
    end Set_Matrix;
 
-   procedure Set_Vector (Object : Uniform; Value : TS.Vector4) is
+   procedure Set_Vector (Object : Uniform; Value : Types.Singles.Vector4) is
       function Convert is new Ada.Unchecked_Conversion
-        (Source => TS.Vector4, Target => GL.Types.Singles.Vector4);
+        (Source => Types.Singles.Vector4, Target => GL.Types.Singles.Vector4);
    begin
       Object.GL_Uniform.Set_Single_Vector (Convert (Value));
    end Set_Vector;
 
-   procedure Set_Vector (Object : Uniform; Value : TD.Vector4) is
+   procedure Set_Vector (Object : Uniform; Value : Types.Doubles.Vector4) is
       function Convert is new Ada.Unchecked_Conversion
-        (Source => TD.Vector4, Target => GL.Types.Doubles.Vector4);
+        (Source => Types.Doubles.Vector4, Target => GL.Types.Doubles.Vector4);
    begin
       Object.GL_Uniform.Set_Double_Vector (Convert (Value));
    end Set_Vector;
