@@ -250,6 +250,32 @@ package body Orka.Rendering.Programs.Uniforms is
       end case;
    end Set_Vector;
 
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Double_Array)
+   is
+      use type GL.Types.Int;
+   begin
+      case Data'Length is
+         when 2 =>
+            Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector2'
+              (Data (Data'First),
+                      Data (Data'First + 1)));
+         when 3 =>
+            Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector3'
+              (Data (Data'First),
+                      Data (Data'First + 1),
+                      Data (Data'First + 2)));
+         when 4 =>
+            Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector4'
+              (Data (Data'First),
+                      Data (Data'First + 1),
+                      Data (Data'First + 2),
+                      Data (Data'First + 3)));
+         when others => raise Constraint_Error;
+      end case;
+   end Set_Vector;
+
    -----------------------------------------------------------------------------
 
    procedure Set_Single (Object : Uniform; Value : GL.Types.Single) is

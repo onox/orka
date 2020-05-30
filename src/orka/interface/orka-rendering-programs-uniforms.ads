@@ -86,6 +86,15 @@ package Orka.Rendering.Programs.Uniforms is
                   when LE.Single_Vec4 => Data'Length = 4,
                   when others => raise Constraint_Error);
 
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Double_Array)
+   with Pre => (case Object.Kind is
+                  when LE.Double_Vec2 => Data'Length = 2,
+                  when LE.Double_Vec3 => Data'Length = 3,
+                  when LE.Double_Vec4 => Data'Length = 4,
+                  when others => raise Constraint_Error);
+
    -----------------------------------------------------------------------------
 
    procedure Set_Single (Object : Uniform; Value : GL.Types.Single)
