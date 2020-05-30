@@ -22,9 +22,6 @@ package GL.API.Uniforms.Singles is
    package Uniform1 is new Loader.Procedure_With_3_Params
      ("glProgramUniform1f", UInt, Int, Single);
 
-   package Uniform1v is new Loader.Procedure_With_4_Params
-     ("glProgramUniform1fv", UInt, Int, Size, Single_Array);
-
    package Uniform2v is new Loader.Procedure_With_4_Params
      ("glProgramUniform2fv", UInt, Int, Size, Vector2_Array);
 
@@ -33,14 +30,6 @@ package GL.API.Uniforms.Singles is
 
    package Uniform4v is new Loader.Procedure_With_4_Params
      ("glProgramUniform4fv", UInt, Int, Size, Vector4_Array);    
-
-   package Uniform_Matrix2 is new Loader.Procedure_With_5_Params
-     ("glProgramUniformMatrix2fv", UInt, Int, Size, Low_Level.Bool,
-      Matrix2_Array);
-
-   package Uniform_Matrix3 is new Loader.Procedure_With_5_Params
-     ("glProgramUniformMatrix3fv", UInt, Int, Size, Low_Level.Bool,
-      Matrix3_Array);
 
    package Uniform_Matrix4 is new Loader.Procedure_With_5_Params
      ("glProgramUniformMatrix4fv", UInt, Int, Size, Low_Level.Bool,

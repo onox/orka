@@ -180,20 +180,20 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       case Data'Length is
          when 2 =>
-            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector2_Array'
-              (1 => (Data (Data'First),
-                     Data (Data'First + 1))));
+            Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector2'
+              (Data (Data'First),
+                     Data (Data'First + 1)));
          when 3 =>
-            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector3_Array'
-              (1 => (Data (Data'First),
+            Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector3'
+              (Data (Data'First),
                      Data (Data'First + 1),
-                     Data (Data'First + 2))));
+                     Data (Data'First + 2)));
          when 4 =>
-            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector4_Array'
-              (1 => (Data (Data'First),
+            Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector4'
+              (Data (Data'First),
                      Data (Data'First + 1),
                      Data (Data'First + 2),
-                     Data (Data'First + 3))));
+                     Data (Data'First + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
@@ -206,20 +206,20 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       case Data'Length is
          when 2 =>
-            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector2_Array'
-              (1 => (Data (Data'First),
-                     Data (Data'First + 1))));
+            Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector2'
+              (Data (Data'First),
+                     Data (Data'First + 1)));
          when 3 =>
-            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector3_Array'
-              (1 => (Data (Data'First),
+            Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector3'
+              (Data (Data'First),
                      Data (Data'First + 1),
-                     Data (Data'First + 2))));
+                     Data (Data'First + 2)));
          when 4 =>
-            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector4_Array'
-              (1 => (Data (Data'First),
+            Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector4'
+              (Data (Data'First),
                      Data (Data'First + 1),
                      Data (Data'First + 2),
-                     Data (Data'First + 3))));
+                     Data (Data'First + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
@@ -232,20 +232,20 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       case Data'Length is
          when 2 =>
-            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector2_Array'
-              (1 => (Data (Data'First),
-                     Data (Data'First + 1))));
+            Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector2'
+              (Data (Data'First),
+                      Data (Data'First + 1)));
          when 3 =>
-            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector3_Array'
-              (1 => (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2))));
+            Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector3'
+              (Data (Data'First),
+                      Data (Data'First + 1),
+                      Data (Data'First + 2)));
          when 4 =>
-            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector4_Array'
-              (1 => (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2),
-                     Data (Data'First + 3))));
+            Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector4'
+              (Data (Data'First),
+                      Data (Data'First + 1),
+                      Data (Data'First + 2),
+                      Data (Data'First + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;

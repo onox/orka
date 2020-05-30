@@ -28,23 +28,11 @@ package GL.Objects.Programs.Uniforms is
 
    procedure Set_Single  (Location : Uniform; Value : Single);
 
-   procedure Set_Single_Array (Location : Uniform; Value : Single_Array);
-
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector2);
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector3);
    procedure Set_Single_Vector (Location : Uniform; Value : Singles.Vector4);
 
-   procedure Set_Single_Vectors (Location : Uniform; Value : Singles.Vector2_Array);
-   procedure Set_Single_Vectors (Location : Uniform; Value : Singles.Vector3_Array);
-   procedure Set_Single_Vectors (Location : Uniform; Value : Singles.Vector4_Array);
-
-   procedure Set_Single_Matrix (Location : Uniform; Value : Singles.Matrix2);
-   procedure Set_Single_Matrix (Location : Uniform; Value : Singles.Matrix3);
    procedure Set_Single_Matrix (Location : Uniform; Value : Singles.Matrix4);
-
-   procedure Set_Single_Matrices (Location : Uniform; Value : Singles.Matrix2_Array);
-   procedure Set_Single_Matrices (Location : Uniform; Value : Singles.Matrix3_Array);
-   procedure Set_Single_Matrices (Location : Uniform; Value : Singles.Matrix4_Array);
 
    -----------------------------------------------------------------------------
    --                                 Doubles                                 --
@@ -52,23 +40,11 @@ package GL.Objects.Programs.Uniforms is
 
    procedure Set_Double  (Location : Uniform; Value : Double);
 
-   procedure Set_Double_Array (Location : Uniform; Value : Double_Array);
-
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector2);
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector3);
    procedure Set_Double_Vector (Location : Uniform; Value : Doubles.Vector4);
 
-   procedure Set_Double_Vectors (Location : Uniform; Value : Doubles.Vector2_Array);
-   procedure Set_Double_Vectors (Location : Uniform; Value : Doubles.Vector3_Array);
-   procedure Set_Double_Vectors (Location : Uniform; Value : Doubles.Vector4_Array);
-
-   procedure Set_Double_Matrix (Location : Uniform; Value : Doubles.Matrix2);
-   procedure Set_Double_Matrix (Location : Uniform; Value : Doubles.Matrix3);
    procedure Set_Double_Matrix (Location : Uniform; Value : Doubles.Matrix4);
-
-   procedure Set_Double_Matrices (Location : Uniform; Value : Doubles.Matrix2_Array);
-   procedure Set_Double_Matrices (Location : Uniform; Value : Doubles.Matrix3_Array);
-   procedure Set_Double_Matrices (Location : Uniform; Value : Doubles.Matrix4_Array);
 
    -----------------------------------------------------------------------------
    --                                 Integers                                --
@@ -76,15 +52,9 @@ package GL.Objects.Programs.Uniforms is
 
    procedure Set_Int  (Location : Uniform; Value : Int);
 
-   procedure Set_Int_Array (Location : Uniform; Value : Int_Array);
-
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector2);
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector3);
    procedure Set_Int_Vector (Location : Uniform; Value : Ints.Vector4);
-
-   procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector2_Array);
-   procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector3_Array);
-   procedure Set_Int_Vectors (Location : Uniform; Value : Ints.Vector4_Array);
 
    -----------------------------------------------------------------------------
    --                            Unsigned Integers                            --
@@ -92,15 +62,9 @@ package GL.Objects.Programs.Uniforms is
 
    procedure Set_UInt  (Location : Uniform; Value : UInt);
 
-   procedure Set_UInt_Array (Location : Uniform; Value : UInt_Array);
-
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector2);
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector3);
    procedure Set_UInt_Vector (Location : Uniform; Value : UInts.Vector4);
-
-   procedure Set_UInt_Vectors (Location : Uniform; Value : UInts.Vector2_Array);
-   procedure Set_UInt_Vectors (Location : Uniform; Value : UInts.Vector3_Array);
-   procedure Set_UInt_Vectors (Location : Uniform; Value : UInts.Vector4_Array);
 
 private
 
