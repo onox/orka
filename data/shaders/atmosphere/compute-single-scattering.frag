@@ -36,7 +36,7 @@ layout(location = 3) out vec3 single_mie_scattering;
 
 // Used in precomputed illuminance mode to convert the radiance values
 // computed by the functions in functions.glsl to luminance values
-uniform mat3 luminance_from_radiance;
+uniform mat4 luminance_from_radiance;
 
 layout(binding = 0) uniform sampler2D transmittance_texture;
 
@@ -44,7 +44,7 @@ void main(void) {
     ComputeSingleScatteringTexture(
         ATMOSPHERE, transmittance_texture, vec3(gl_FragCoord.xy, gl_Layer + 0.5),
         delta_rayleigh, delta_mie);
-    scattering = vec4(luminance_from_radiance * delta_rayleigh.rgb,
-        (luminance_from_radiance * delta_mie).r);
-    single_mie_scattering = luminance_from_radiance * delta_mie;
+    scattering = vec4(mat3(luminance_from_radiance) * delta_rayleigh.rgb,
+        (mat3(luminance_from_radiance) * delta_mie).r);
+    single_mie_scattering = mat3(luminance_from_radiance) * delta_mie;
 }

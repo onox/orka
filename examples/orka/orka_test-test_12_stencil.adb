@@ -207,7 +207,6 @@ procedure Orka_Test.Test_12_Stencil is
    Uni_Proj   : constant Uniforms.Uniform := Program_Scene.Uniform ("proj");
    Uni_Color  : constant Uniforms.Uniform := Program_Scene.Uniform ("overrideColor");
 
-   Uni_FB     : constant Uniforms.Uniform := Program_Screen.Uniform ("texFrameBuffer");
    Uni_Effect : constant Uniforms.Uniform := Program_Screen.Uniform ("effect");
 
    VAO_Scene  : constant Vertex_Format := Load_Scene_Data (Program_Scene);
@@ -241,9 +240,6 @@ begin
 
    FB_1.Attach (Color_Texture);
    FB_1.Attach (Depth_Texture);
-
-   --  Use post-processing program
-   Uni_FB.Set_Int (0);
 
    --  Projection matrix
    Uni_Proj.Set_Matrix (Transforms.Infinite_Perspective (45.0, 1.0, 0.1));

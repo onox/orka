@@ -140,8 +140,7 @@ package body Orka.Rendering.Programs.Uniforms is
       end case;
    end Image_Format_Type;
 
-   function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform is
-     (Object.GL_Uniform);
+   -----------------------------------------------------------------------------
 
    procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4) is
       function Convert is new Ada.Unchecked_Conversion
@@ -170,6 +169,88 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       Object.GL_Uniform.Set_Double_Vector (Convert (Value));
    end Set_Vector;
+
+   -----------------------------------------------------------------------------
+
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Int_Array)
+   is
+      use type GL.Types.Int;
+   begin
+      case Data'Length is
+         when 2 =>
+            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector2_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1))));
+         when 3 =>
+            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector3_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2))));
+         when 4 =>
+            Object.GL_Uniform.Set_Int_Vectors (GL.Types.Ints.Vector4_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2),
+                     Data (Data'First + 3))));
+         when others => raise Constraint_Error;
+      end case;
+   end Set_Vector;
+
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.UInt_Array)
+   is
+      use type GL.Types.Int;
+   begin
+      case Data'Length is
+         when 2 =>
+            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector2_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1))));
+         when 3 =>
+            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector3_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2))));
+         when 4 =>
+            Object.GL_Uniform.Set_UInt_Vectors (GL.Types.UInts.Vector4_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2),
+                     Data (Data'First + 3))));
+         when others => raise Constraint_Error;
+      end case;
+   end Set_Vector;
+
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Single_Array)
+   is
+      use type GL.Types.Int;
+   begin
+      case Data'Length is
+         when 2 =>
+            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector2_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1))));
+         when 3 =>
+            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector3_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2))));
+         when 4 =>
+            Object.GL_Uniform.Set_Single_Vectors (GL.Types.Singles.Vector4_Array'
+              (1 => (Data (Data'First),
+                     Data (Data'First + 1),
+                     Data (Data'First + 2),
+                     Data (Data'First + 3))));
+         when others => raise Constraint_Error;
+      end case;
+   end Set_Vector;
+
+   -----------------------------------------------------------------------------
 
    procedure Set_Single (Object : Uniform; Value : GL.Types.Single) is
    begin
@@ -200,6 +281,8 @@ package body Orka.Rendering.Programs.Uniforms is
    begin
       Object.GL_Uniform.Set_Int (if Value then 1 else 0);
    end Set_Boolean;
+
+   -----------------------------------------------------------------------------
 
    function Is_Compatible
      (Object : Uniform_Subroutine;

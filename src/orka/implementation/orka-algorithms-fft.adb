@@ -61,8 +61,7 @@ package body Orka.Algorithms.FFT is
 
       Rows_In_Shared : constant Size := Size (Object.Local_Size / Columns);
    begin
-      Object.Uniform_Size.GL_Uniform.Set_UInt_Vector
-        (GL.Types.UInts.Vector2'(UInt (Width), UInt (Height)));
+      Object.Uniform_Size.Set_Vector (GL.Types.UInt_Array'(UInt (Width), UInt (Height)));
 
       Object.Uniform_Transpose.Set_Boolean (Transpose);
       Object.Uniform_Inverse.Set_Boolean (Inverse);

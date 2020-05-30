@@ -34,7 +34,7 @@ layout(location = 1) out vec4 scattering;
 
 // Used in precomputed illuminance mode to convert the radiance values
 // computed by the functions in functions.glsl to luminance values
-uniform mat3 luminance_from_radiance;
+uniform mat4 luminance_from_radiance;
 
 layout(binding = 0) uniform sampler2D transmittance_texture;
 layout(binding = 5) uniform sampler3D scattering_density_texture;
@@ -45,7 +45,7 @@ void main(void) {
         ATMOSPHERE, transmittance_texture, scattering_density_texture,
         vec3(gl_FragCoord.xy, gl_Layer + 0.5), nu);
     scattering = vec4(
-        luminance_from_radiance *
+        mat3(luminance_from_radiance) *
             delta_multiple_scattering.rgb / RayleighPhaseFunction(nu),
         0.0);
 }

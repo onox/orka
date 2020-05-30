@@ -449,10 +449,11 @@ package body Orka.Features.Atmosphere is
    is
       LR : Single_Array renames Luminance_From_Radiance;
 
-      Luminance_From_Radiance_Mat3 : constant Singles.Matrix3 :=
-        ((LR (0), LR (1), LR (2)),
-         (LR (3), LR (4), LR (5)),
-         (LR (6), LR (7), LR (8)));
+      Luminance_From_Radiance_Mat3 : constant Orka.Types.Singles.Matrix4 :=
+        ((LR (0), LR (1), LR (2), 0.0),
+         (LR (3), LR (4), LR (5), 0.0),
+         (LR (6), LR (7), LR (8), 0.0),
+         (0.0, 0.0, 0.0, 0.0));
 
       use Orka.Rendering.Programs;
 
@@ -607,7 +608,7 @@ package body Orka.Features.Atmosphere is
       end if;
 
       Program_Single_Scattering.Use_Program;
-      Program_Single_Scattering.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
+      Program_Single_Scattering.Uniform ("luminance_from_radiance").Set_Matrix
         (Luminance_From_Radiance_Mat3);
       for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
          Program_Single_Scattering.Uniform ("layer").Set_Int (Layer);
@@ -646,7 +647,7 @@ package body Orka.Features.Atmosphere is
              1 => GL.Buffers.Color_Attachment1));
 
          Program_Indirect_Irradiance.Use_Program;
-         Program_Indirect_Irradiance.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
+         Program_Indirect_Irradiance.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
          Program_Indirect_Irradiance.Uniform ("scattering_order").Set_Int (Scattering_Order - 1);
          Draw_Quad ((False, True), VF_Quad);
@@ -664,7 +665,7 @@ package body Orka.Features.Atmosphere is
              1 => GL.Buffers.Color_Attachment1));
 
          Program_Multiple_Scattering.Use_Program;
-         Program_Multiple_Scattering.Uniform ("luminance_from_radiance").GL_Uniform.Set_Single_Matrix
+         Program_Multiple_Scattering.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
          for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
             Program_Multiple_Scattering.Uniform ("layer").Set_Int (Layer);

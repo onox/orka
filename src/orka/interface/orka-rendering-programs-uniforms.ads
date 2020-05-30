@@ -52,26 +52,64 @@ package Orka.Rendering.Programs.Uniforms is
 
    type Uniform (Kind : LE.Resource_Type) is tagged private;
 
-   procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4);
-   procedure Set_Matrix (Object : Uniform; Value : TD.Matrix4);
+   procedure Set_Matrix (Object : Uniform; Value : TS.Matrix4)
+     with Pre => Object.Kind = LE.Single_Matrix4;
+   procedure Set_Matrix (Object : Uniform; Value : TD.Matrix4)
+     with Pre => Object.Kind = LE.Double_Matrix4;
 
-   procedure Set_Vector (Object : Uniform; Value : TS.Vector4);
-   procedure Set_Vector (Object : Uniform; Value : TD.Vector4);
+   procedure Set_Vector (Object : Uniform; Value : TS.Vector4)
+     with Pre => Object.Kind = LE.Single_Vec4;
+   procedure Set_Vector (Object : Uniform; Value : TD.Vector4)
+     with Pre => Object.Kind = LE.Double_Vec4;
 
-   procedure Set_Single (Object : Uniform; Value : GL.Types.Single);
+   -----------------------------------------------------------------------------
 
-   procedure Set_Double (Object : Uniform; Value : GL.Types.Double);
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Int_Array)
+   with Pre => (case Object.Kind is
+                  when LE.Int_Vec2 => Data'Length = 2,
+                  when LE.Int_Vec3 => Data'Length = 3,
+                  when LE.Int_Vec4 => Data'Length = 4,
+                  when others => raise Constraint_Error);
 
-   procedure Set_Int (Object : Uniform; Value : GL.Types.Int);
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.UInt_Array)
+   with Pre => (case Object.Kind is
+                  when LE.UInt_Vec2 => Data'Length = 2,
+                  when LE.UInt_Vec3 => Data'Length = 3,
+                  when LE.UInt_Vec4 => Data'Length = 4,
+                  when others => raise Constraint_Error);
 
-   procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt);
+   procedure Set_Vector
+     (Object : Uniform;
+      Data   : GL.Types.Single_Array)
+   with Pre => (case Object.Kind is
+                  when LE.Single_Vec2 => Data'Length = 2,
+                  when LE.Single_Vec3 => Data'Length = 3,
+                  when LE.Single_Vec4 => Data'Length = 4,
+                  when others => raise Constraint_Error);
 
-   procedure Set_Integer (Object : Uniform; Value : Integer);
+   -----------------------------------------------------------------------------
 
-   procedure Set_Boolean (Object : Uniform; Value : Boolean);
+   procedure Set_Single (Object : Uniform; Value : GL.Types.Single)
+     with Pre => Object.Kind = LE.Single_Type;
 
-   function GL_Uniform (Object : Uniform) return GL.Objects.Programs.Uniforms.Uniform
-     with Inline;
+   procedure Set_Double (Object : Uniform; Value : GL.Types.Double)
+     with Pre => Object.Kind = LE.Double_Type;
+
+   procedure Set_Int (Object : Uniform; Value : GL.Types.Int)
+     with Pre => Object.Kind = LE.Int_Type;
+
+   procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt)
+     with Pre => Object.Kind = LE.UInt_Type;
+
+   procedure Set_Integer (Object : Uniform; Value : Integer)
+     with Pre => Object.Kind = LE.Int_Type;
+
+   procedure Set_Boolean (Object : Uniform; Value : Boolean)
+     with Pre => Object.Kind = LE.Bool_Type;
 
    -----------------------------------------------------------------------------
 

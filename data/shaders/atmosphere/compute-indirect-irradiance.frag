@@ -34,7 +34,7 @@ layout(location = 1) out vec3 irradiance;
 
 // Used in precomputed illuminance mode to convert the radiance values
 // computed by the functions in functions.glsl to luminance values
-uniform mat3 luminance_from_radiance;
+uniform mat4 luminance_from_radiance;
 
 layout(binding = 1) uniform sampler3D single_rayleigh_scattering_texture;
 layout(binding = 2) uniform sampler3D single_mie_scattering_texture;
@@ -46,5 +46,5 @@ void main(void) {
         ATMOSPHERE, single_rayleigh_scattering_texture,
         single_mie_scattering_texture, multiple_scattering_texture,
         gl_FragCoord.xy, scattering_order);
-    irradiance = luminance_from_radiance * delta_irradiance;
+    irradiance = mat3(luminance_from_radiance) * delta_irradiance;
 }
