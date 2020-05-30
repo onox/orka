@@ -1,6 +1,5 @@
 #version 420 core
 
-#extension GL_ARB_shader_draw_parameters : require
 #extension GL_ARB_shader_storage_buffer_object : require
 
 // SPDX-License-Identifier: Apache-2.0
@@ -64,7 +63,7 @@ const uint lonOffset[] = {0, 0, 1, 0, 1, 1};
 const uint latOffset[] = {0, 1, 0, 1, 0, 1};
 
 void main() {
-    const int instanceID = gl_BaseInstanceARB + gl_InstanceID;
+    const int instanceID = gl_InstanceID;
 
     uint indexID     = gl_VertexID % 3;
     uint triangleID  = gl_VertexID / 3;

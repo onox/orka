@@ -1,6 +1,5 @@
 #version 420 core
 
-#extension GL_ARB_shader_draw_parameters : require
 #extension GL_ARB_shader_storage_buffer_object : require
 
 // SPDX-License-Identifier: Apache-2.0
@@ -43,7 +42,7 @@ out vec4  vs_color;
 out float vs_weight;
 
 void main() {
-    const int instanceID = gl_BaseInstanceARB + gl_InstanceID;
+    const int instanceID = gl_InstanceID;
 
     const vec3 vertices[] = {
         lines[instanceID].from.xyz,
