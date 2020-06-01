@@ -113,7 +113,7 @@ private package GL.Enums is
 
    type Framebuffer_Kind is (Read, Draw);
 
-   type Buffer_Kind is (Parameter_Buffer,
+   type Buffer_Kind is (Parameter_Buffer, Element_Array_Buffer,
                         Pixel_Pack_Buffer, Pixel_Unpack_Buffer, Uniform_Buffer,
                         Draw_Indirect_Buffer,
                         Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
@@ -276,6 +276,7 @@ private
    for Framebuffer_Kind'Size use Low_Level.Enum'Size;
 
    for Buffer_Kind use (Parameter_Buffer          => 16#80EE#,
+                        Element_Array_Buffer      => 16#8893#,
                         Pixel_Pack_Buffer         => 16#88EB#,
                         Pixel_Unpack_Buffer       => 16#88EC#,
                         Uniform_Buffer            => 16#8A11#,

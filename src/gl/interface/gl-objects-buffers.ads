@@ -185,10 +185,11 @@ package GL.Objects.Buffers is
 
    end Buffer_Pointers;
 
-   --  Array_Buffer, Element_Array_Buffer, Texture_Buffer,
+   --  Array_Buffer, Texture_Buffer,
    --  Copy_Read_Buffer, and Copy_Write_Buffer are no longer needed
    --  since the GL.Objects.* packages use DSA
    --  Transform_Feedback_Buffer replaced by Shader_Storage_Buffer
+   Element_Array_Buffer      : aliased constant Buffer_Target;
    Pixel_Pack_Buffer         : aliased constant Buffer_Target;
    Pixel_Unpack_Buffer       : aliased constant Buffer_Target;
    Draw_Indirect_Buffer      : aliased constant Buffer_Target;
@@ -232,7 +233,9 @@ private
    type Buffer is new GL_Object with record
       Allocated, Mapped : Boolean := False;
    end record;
-   
+
+   Element_Array_Buffer      : aliased constant Buffer_Target
+     := Buffer_Target'(Kind => Enums.Element_Array_Buffer);
    Pixel_Pack_Buffer         : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Enums.Pixel_Pack_Buffer);
    Pixel_Unpack_Buffer       : aliased constant Buffer_Target

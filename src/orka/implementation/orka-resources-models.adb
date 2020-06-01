@@ -80,15 +80,14 @@ package body Orka.Resources.Models is
    procedure Render (Object : in out Model_Group) is
       use all type Rendering.Buffers.Indexed_Buffer_Target;
    begin
-      Object.Model.Batch.Bind_Buffers_To (Object.Model.Format.all);
+      Object.Model.Batch.Data.Bind (Shader_Storage, 1);
       Object.Compacted_Transforms.Bind (Shader_Storage, 0);
 
       GL.Barriers.Memory_Barrier
         ((By_Region => False, Shader_Storage | Command => True, others => False));
 
-      Object.Model.Format.Bind;
       Rendering.Drawing.Draw_Indexed_Indirect
-        (GL.Types.Triangles, Object.Model.Format.Index_Kind, Object.Compacted_Commands);
+        (GL.Types.Triangles, Object.Model.Batch.Indices.Buffer, Object.Compacted_Commands);
    end Render;
 
    procedure After_Render (Object : in out Model_Group) is

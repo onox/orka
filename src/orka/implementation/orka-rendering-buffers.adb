@@ -215,6 +215,8 @@ package body Orka.Rendering.Buffers is
    procedure Bind (Object : Buffer; Target : Buffer_Target) is
    begin
       case Target is
+         when Index =>
+            GL.Objects.Buffers.Element_Array_Buffer.Bind (Object.Buffer);
          when Dispatch_Indirect =>
             GL.Objects.Buffers.Dispatch_Indirect_Buffer.Bind (Object.Buffer);
          when Draw_Indirect =>

@@ -51,7 +51,6 @@ with Orka.Features.Atmosphere.Constants;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Rendering.Textures;
 with Orka.Types;
 
@@ -106,13 +105,9 @@ package body Orka.Features.Atmosphere is
 
    -----------------------------------------------------------------------------
 
-   package Formats renames Orka.Rendering.Vertex_Formats;
-
    type Enable_Blend_Array is array (GL.Buffers.Draw_Buffer_Index range <>) of Boolean;
 
-   procedure Draw_Quad
-     (Blend  : Enable_Blend_Array;
-      Format : Formats.Vertex_Format) is
+   procedure Draw_Quad (Blend : Enable_Blend_Array) is
    begin
       for Index in Blend'Range loop
          if Blend (Index) then
@@ -120,7 +115,6 @@ package body Orka.Features.Atmosphere is
          end if;
       end loop;
 
-      Format.Bind;
       Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
       for Index in Blend'Range loop
@@ -529,11 +523,6 @@ package body Orka.Features.Atmosphere is
         (Width  => Constants.Scattering_Texture_Width,
          Height => Constants.Scattering_Texture_Height);
 
-      --  Create an empty vertex format. Vertex shader contains the data needed
-      --  to generate a quad
-      VF_Quad : constant Formats.Vertex_Format
-        := Formats.Create_Vertex_Format (Orka.Types.UInt_Type);
-
       use all type GL.Blending.Equation;
       use all type GL.Blending.Blend_Factor;
       use all type Rendering.Textures.Indexed_Texture_Target;
@@ -563,7 +552,7 @@ package body Orka.Features.Atmosphere is
         ((0 => GL.Buffers.Color_Attachment0));
 
       Program_Transmittance.Use_Program;
-      Draw_Quad ((1 .. 0 => <>), VF_Quad);
+      Draw_Quad ((1 .. 0 => <>));
 
       -------------------------------------------------------------------------
 
@@ -579,7 +568,7 @@ package body Orka.Features.Atmosphere is
           1 => GL.Buffers.Color_Attachment1));
 
       Program_Direct_Irradiance.Use_Program;
-      Draw_Quad ((False, Blend), VF_Quad);
+      Draw_Quad ((False, Blend));
 
       -------------------------------------------------------------------------
 
@@ -612,7 +601,7 @@ package body Orka.Features.Atmosphere is
         (Luminance_From_Radiance_Mat3);
       for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
          Program_Single_Scattering.Uniform ("layer").Set_Int (Layer);
-         Draw_Quad ((False, False, Blend, Blend), VF_Quad);
+         Draw_Quad ((False, False, Blend, Blend));
       end loop;
 
       -------------------------------------------------------------------------
@@ -634,7 +623,7 @@ package body Orka.Features.Atmosphere is
          Program_Scattering_Density.Uniform ("scattering_order").Set_Int (Scattering_Order);
          for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
             Program_Scattering_Density.Uniform ("layer").Set_Int (Layer);
-            Draw_Quad ((1 .. 0 => <>), VF_Quad);
+            Draw_Quad ((1 .. 0 => <>));
          end loop;
 
          --  Compute the indirect irradiance, store it in Delta_Irradiance_Texture
@@ -650,7 +639,7 @@ package body Orka.Features.Atmosphere is
          Program_Indirect_Irradiance.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
          Program_Indirect_Irradiance.Uniform ("scattering_order").Set_Int (Scattering_Order - 1);
-         Draw_Quad ((False, True), VF_Quad);
+         Draw_Quad ((False, True));
 
          --  Compute the multiple scattering, store it in
          --  Delta_Multiple_Scattering_Texture, and accumulate it in
@@ -669,7 +658,7 @@ package body Orka.Features.Atmosphere is
           (Luminance_From_Radiance_Mat3);
          for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
             Program_Multiple_Scattering.Uniform ("layer").Set_Int (Layer);
-            Draw_Quad ((False, True), VF_Quad);
+            Draw_Quad ((False, True));
          end loop;
       end loop;
    end Precompute;
@@ -862,11 +851,6 @@ package body Orka.Features.Atmosphere is
             FBO_Transmittance : Framebuffers.Framebuffer := Framebuffers.Create_Framebuffer
               (Width  => Constants.Transmittance_Texture_Width,
                Height => Constants.Transmittance_Texture_Height);
-
-            --  Create an empty vertex format. Vertex shader contains the data needed
-            --  to generate a quad
-            VF_Quad : constant Formats.Vertex_Format
-              := Formats.Create_Vertex_Format (Orka.Types.UInt_Type);
          begin
             FBO_Transmittance.Use_Framebuffer;
             FBO_Transmittance.Attach (Textures.Transmittance_Texture);
@@ -874,7 +858,7 @@ package body Orka.Features.Atmosphere is
               ((0 => GL.Buffers.Color_Attachment0));
 
             Program_Transmittance.Use_Program;
-            Draw_Quad ((1 .. 0 => <>), VF_Quad);
+            Draw_Quad ((1 .. 0 => <>));
          end;
       end if;
 

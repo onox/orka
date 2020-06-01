@@ -14,48 +14,25 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Objects.Buffers;
-
 package GL.Objects.Vertex_Arrays is
    pragma Preelaborate;
 
    type Binding is new UInt;
 
    type Vertex_Array_Object is new GL_Object with private;
+   --  A single VAO is manually created and binded after the context
+   --  is made current.
 
-   procedure Bind (Object : Vertex_Array_Object);
-
-   procedure Enable_Attribute  (Object : Vertex_Array_Object; Index : Attribute);
-   procedure Disable_Attribute (Object : Vertex_Array_Object; Index : Attribute);
-
-   procedure Set_Attribute_Format (Object : Vertex_Array_Object;
-                                   Index  : Attribute;
-                                   Count  : Component_Count;
-                                   Kind   : Numeric_Type;
-                                   Offset : UInt);
-
-   procedure Set_Attribute_Binding (Object : Vertex_Array_Object;
-                                    Index  : Attribute;
-                                    Binding_Index : Binding);
-
-   procedure Bind_Vertex_Buffer (Object : Vertex_Array_Object;
-                                 Binding_Index : Binding;
-                                 Buffer : Objects.Buffers.Buffer;
-                                 Kind   : Numeric_Type;
-                                 Offset, Stride : Size);
-
-   procedure Bind_Element_Buffer (Object : Vertex_Array_Object;
-                                  Buffer : Objects.Buffers.Buffer);
-
-   procedure Set_Attribute_Binding_Divisor (Object : Vertex_Array_Object;
-                                            Binding_Index : Binding;
-                                            Divisor : UInt);
+   procedure Create (Object : in out Vertex_Array_Object);
+   procedure Delete (Object : in out Vertex_Array_Object);
 
    overriding
-   procedure Initialize_Id (Object : in out Vertex_Array_Object);
+   procedure Initialize_Id (Object : in out Vertex_Array_Object) is null;
+   --  Null because VAO is created manually
 
    overriding
-   procedure Delete_Id (Object : in out Vertex_Array_Object);
+   procedure Delete_Id (Object : in out Vertex_Array_Object) is null;
+   --  Null because VAO is deleted manually
 
    overriding
    function Identifier (Object : Vertex_Array_Object) return Types.Debug.Identifier is

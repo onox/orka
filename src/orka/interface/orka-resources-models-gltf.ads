@@ -14,14 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Loaders;
 with Orka.Resources.Managers;
 
 package Orka.Resources.Models.glTF is
 
-   function Create_Loader
-     (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
+   function Create_Loader (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;
 
 end Orka.Resources.Models.glTF;

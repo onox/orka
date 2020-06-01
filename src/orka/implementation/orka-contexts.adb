@@ -36,12 +36,16 @@ package body Orka.Contexts is
    begin
       Context'Class (Object).Make_Current (True);
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+
+      Object.Vertex_Array.Create;
    end Initialize;
 
    overriding
    procedure Finalize (Object : in out Context) is
    begin
       if not Object.Finalized then
+         Object.Vertex_Array.Delete;
+
          Context'Class (Object).Make_Current (False);
          Object.Finalized := True;
       end if;

@@ -35,7 +35,7 @@ package Orka.Rendering.Buffers is
    --  Buffer targets that can be read/written in shaders
 
    type Buffer_Target is
-     (Dispatch_Indirect, Draw_Indirect, Parameter, Pixel_Pack, Pixel_Unpack, Query);
+     (Index, Dispatch_Indirect, Draw_Indirect, Parameter, Pixel_Pack, Pixel_Unpack, Query);
 
    procedure Bind
      (Object : Bindable_Buffer;

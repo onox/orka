@@ -16,6 +16,8 @@
 
 private with Ada.Finalization;
 
+private with GL.Objects.Vertex_Arrays;
+
 with Orka.Windows;
 
 package Orka.Contexts is
@@ -61,6 +63,7 @@ private
    type Context is abstract limited
      new Ada.Finalization.Limited_Controlled with
    record
+      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
       Finalized : Boolean := False;
       Features  : Feature_Array := (others => False);
    end record;

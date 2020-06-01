@@ -31,9 +31,10 @@ package Orka.Rendering.Drawing is
 
    procedure Draw_Indexed
      (Mode          : GL.Types.Connection_Mode;
-      Index_Kind    : Types.Index_Type;
+      Index_Buffer  : Buffers.Buffer;
       Offset, Count : Natural;
-      Instances     : Positive := 1);
+      Instances     : Positive := 1)
+   with Pre => Index_Buffer.Kind in Types.Index_Type;
    --  Draw primitives using an index buffer bound to the active vertex
    --  format
 
@@ -60,23 +61,26 @@ package Orka.Rendering.Drawing is
    -----------------------------------------------------------------------------
 
    procedure Draw_Indexed_Indirect
-     (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Index_Type;
-      Buffer     : Buffers.Buffer;
-      Offset, Count : Natural);
+     (Mode          : GL.Types.Connection_Mode;
+      Index_Buffer  : Buffers.Buffer;
+      Buffer        : Buffers.Buffer;
+      Offset, Count : Natural)
+   with Pre => Index_Buffer.Kind in Types.Index_Type;
    --  Draw multiple elements commands at the given offset in the bound
    --  indirect buffer
 
    procedure Draw_Indexed_Indirect
-     (Mode       : GL.Types.Connection_Mode;
-      Index_Kind : Types.Index_Type;
-      Buffer     : Buffers.Buffer);
+     (Mode         : GL.Types.Connection_Mode;
+      Index_Buffer : Buffers.Buffer;
+      Buffer       : Buffers.Buffer)
+   with Pre => Index_Buffer.Kind in Types.Index_Type;
    --  Draw all elements commands in the bound indirect buffer
 
    procedure Draw_Indexed_Indirect
      (Mode          : GL.Types.Connection_Mode;
-      Index_Kind    : Types.Index_Type;
-      Buffer, Count : Buffers.Buffer);
+      Index_Buffer  : Buffers.Buffer;
+      Buffer, Count : Buffers.Buffer)
+   with Pre => Index_Buffer.Kind in Types.Index_Type;
    --  Draw multiple elements commands in the bound indirect buffer. The
    --  number of commands is determined by the value in the Count buffer
 

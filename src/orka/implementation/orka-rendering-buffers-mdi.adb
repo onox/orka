@@ -86,12 +86,4 @@ package body Orka.Rendering.Buffers.MDI is
       Object.Commands.Unmap;
    end Finish_Batch;
 
-   procedure Bind_Buffers_To
-     (Object : in out Batch;
-      Format : in out Vertex_Formats.Vertex_Format) is
-   begin
-      Object.Data.Bind (Shader_Storage, 1);
-      Format.Set_Index_Buffer (Object.Indices.Buffer);
-   end Bind_Buffers_To;
-
 end Orka.Rendering.Buffers.MDI;

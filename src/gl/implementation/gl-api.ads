@@ -539,37 +539,6 @@ private package GL.API is
    package Bind_Vertex_Array is new Loader.Procedure_With_1_Param
      ("glBindVertexArray", UInt);
 
-   package Vertex_Array_Attrib_Format is new Loader.Procedure_With_6_Params
-     ("glVertexArrayAttribFormat", UInt, Attribute, Component_Count,
-      Numeric_Type, Low_Level.Bool, UInt);
-
-   package Vertex_Array_AttribI_Format is new Loader.Procedure_With_5_Params
-     ("glVertexArrayAttribIFormat", UInt, Attribute, Component_Count,
-      Numeric_Type, UInt);
-
-   package Vertex_Array_AttribL_Format is new Loader.Procedure_With_5_Params
-     ("glVertexArrayAttribLFormat", UInt, Attribute, Component_Count,
-      Numeric_Type, UInt);
-
-   package Vertex_Array_Attrib_Binding is new Loader.Procedure_With_3_Params
-     ("glVertexArrayAttribBinding", UInt, Attribute, Objects.Vertex_Arrays.Binding);
-
-   package Vertex_Array_Binding_Divisor is new Loader.Procedure_With_3_Params
-     ("glVertexArrayBindingDivisor", UInt, Objects.Vertex_Arrays.Binding, UInt);
-
-   package Vertex_Array_Vertex_Buffer is new Loader.Procedure_With_5_Params
-     ("glVertexArrayVertexBuffer", UInt, Objects.Vertex_Arrays.Binding,
-      UInt, Low_Level.IntPtr, Size);
-
-   package Vertex_Array_Element_Buffer is new Loader.Procedure_With_2_Params
-     ("glVertexArrayElementBuffer", UInt, UInt);
-
-   package Enable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
-     ("glEnableVertexArrayAttrib", UInt, Attribute);
-
-   package Disable_Vertex_Array_Attrib is new Loader.Procedure_With_2_Params
-     ("glDisableVertexArrayAttrib", UInt, Attribute);
-
    -----------------------------------------------------------------------------
    --                    Framebuffer objects and handling                     --
    -----------------------------------------------------------------------------

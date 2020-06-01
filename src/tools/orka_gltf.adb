@@ -41,7 +41,6 @@ with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Textures;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Loaders;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Managers;
@@ -157,11 +156,7 @@ begin
          Location_Shaders : constant Locations.Location_Ptr
            := Locations.Directories.Create_Location ("../data/shaders");
 
-         package Formats renames Orka.Rendering.Vertex_Formats;
          package LE renames GL.Low_Level.Enums;
-
-         VF_1 : constant Formats.Vertex_Format_Ptr
-           := new Formats.Vertex_Format'(Formats.Create_Vertex_Format (Orka.Types.UInt_Type));
 
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;
@@ -221,8 +216,7 @@ begin
          task body Resource_Test is
             use Ada.Real_Time;
 
-            Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
-              (VF_1, Manager);
+            Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader (Manager);
 
             Location_Models : constant Locations.Location_Ptr
               := Locations.Directories.Create_Location (Location_Path);

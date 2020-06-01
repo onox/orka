@@ -76,7 +76,6 @@ package body Orka.Resources.Models.glTF is
       Default_Scene : Long_Integer;
       Times     : Times_Data := (others => Time_Span_Zero);
       Start_Time : Time;
-      Format    : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Manager   : Managers.Manager_Ptr;
    end record;
 
@@ -92,7 +91,6 @@ package body Orka.Resources.Models.glTF is
 
    type GLTF_Parse_Job is new Jobs.Abstract_Job with record
       Data     : Loaders.Resource_Data;
-      Format   : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Manager  : Managers.Manager_Ptr;
       Location : Locations.Location_Ptr;
    end record;
@@ -385,8 +383,7 @@ package body Orka.Resources.Models.glTF is
    end Count_Parts;
 
    procedure Add_Parts
-     (Format : not null access Rendering.Vertex_Formats.Vertex_Format;
-      Batch  : in out Rendering.Buffers.MDI.Batch;
+     (Batch  : in out Rendering.Buffers.MDI.Batch;
       Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector)
@@ -396,9 +393,7 @@ package body Orka.Resources.Models.glTF is
       use Orka.glTF.Buffers;
       use all type Orka.Types.Element_Type;
 
-      pragma Assert (Format.Index_Kind = UInt_Type);
       package Index_Conversions is new Buffer_View_Conversions (UInt, UInt_Array, Indirect.UInt_Array_Access);
-      --  TODO Use Format.Index_Kind
 
       package Vertex_Conversions is new Buffer_View_Conversions (Half, Half_Array, Indirect.Half_Array_Access);
       procedure Get_Singles is new Vertex_Conversions.Get_Array (Single, Single_Array, Orka.Types.Convert);
@@ -474,7 +469,6 @@ package body Orka.Resources.Models.glTF is
    -----------------------------------------------------------------------------
 
    type GLTF_Loader is limited new Loaders.Loader with record
-      Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Manager : Managers.Manager_Ptr;
    end record;
 
@@ -491,7 +485,6 @@ package body Orka.Resources.Models.glTF is
       Job : constant Jobs.Job_Ptr := new GLTF_Parse_Job'
         (Jobs.Abstract_Job with
           Data     => Data,
-          Format   => Object.Format,
           Manager  => Object.Manager,
           Location => Location);
    begin
@@ -499,9 +492,8 @@ package body Orka.Resources.Models.glTF is
    end Load;
 
    function Create_Loader
-     (Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
-      Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
-   is (new GLTF_Loader'(Format => Format, Manager => Manager));
+     (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr
+   is (new GLTF_Loader'(Manager => Manager));
 
    -----------------------------------------------------------------------------
 
@@ -542,7 +534,6 @@ package body Orka.Resources.Models.glTF is
             Maximum_Accessors => Maximum_Nodes * 4,
             Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
             Location   => Object.Location,
-            Format     => Object.Format,
             Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
             others     => <>);
@@ -669,7 +660,6 @@ package body Orka.Resources.Models.glTF is
 
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,
-         Format => Data.Format,
          Batch  => Rendering.Buffers.MDI.Create_Batch
            (Parts, Object.Vertices, Object.Indices),
          --  Bounding boxes for culling
@@ -696,7 +686,7 @@ package body Orka.Resources.Models.glTF is
    is
       Data : GLTF_Data renames Object.Data.Get;
    begin
-      Add_Parts (Data.Format, Object.Model.Batch, Data.Views, Data.Accessors, Data.Meshes);
+      Add_Parts (Object.Model.Batch, Data.Views, Data.Accessors, Data.Meshes);
    end Execute;
 
    overriding

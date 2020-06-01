@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with Orka.Rendering.Buffers.Mapped.Unsynchronized;
-with Orka.Rendering.Vertex_Formats;
 
 package Orka.Rendering.Buffers.MDI is
    pragma Preelaborate;
@@ -51,9 +50,5 @@ package Orka.Rendering.Buffers.MDI is
    function Create_Batch (Parts, Vertices, Indices : Positive) return Batch;
 
    procedure Finish_Batch (Object : in out Batch);
-
-   procedure Bind_Buffers_To
-     (Object : in out Batch;
-      Format : in out Vertex_Formats.Vertex_Format);
 
 end Orka.Rendering.Buffers.MDI;

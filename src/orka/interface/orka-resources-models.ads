@@ -18,7 +18,6 @@ private with Ada.Containers.Indefinite_Holders;
 
 private with Orka.Instances;
 private with Orka.Rendering.Buffers.MDI;
-private with Orka.Rendering.Vertex_Formats;
 private with Orka.Scenes.Singles.Trees;
 private with Orka.Transforms.Singles.Matrices;
 private with Orka.Types;
@@ -90,7 +89,6 @@ private
    type Model is limited new Resource with record
       Scene   : Model_Scene_Ptr;
       Batch   : Rendering.Buffers.MDI.Batch;
-      Format  : Rendering.Vertex_Formats.Vertex_Format_Ptr;
       Bounds  : Rendering.Buffers.Buffer (Types.Single_Vector_Type);
    end record;
 
