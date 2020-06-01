@@ -41,7 +41,7 @@ with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Rendering.Textures;
-with Orka.Rendering.Vertex_Formats.Formats;
+with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Loaders;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Managers;
@@ -161,7 +161,7 @@ begin
          package LE renames GL.Low_Level.Enums;
 
          VF_1 : constant Formats.Vertex_Format_Ptr
-           := new Formats.Vertex_Format'(Formats.Formats.Separate_Position_Normal_UV_Half_MDI);
+           := new Formats.Vertex_Format'(Formats.Create_Vertex_Format (Orka.Types.UInt_Type));
 
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;

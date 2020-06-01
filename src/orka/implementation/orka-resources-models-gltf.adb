@@ -671,8 +671,7 @@ package body Orka.Resources.Models.glTF is
         (Scene  => Object.Scene,
          Format => Data.Format,
          Batch  => Rendering.Buffers.MDI.Create_Batch
-           (Parts, Object.Vertices, Object.Indices,
-            Format  => Data.Format.all),
+           (Parts, Object.Vertices, Object.Indices),
          --  Bounding boxes for culling
          Bounds => Rendering.Buffers.Create_Buffer
            (Flags => (others => False),
