@@ -97,8 +97,8 @@ and *far plane*. Objects between the camera and the near plane or farther than
 the far plane are clipped. This matrix is only constructed once or when
 the user changes the size of the window.
 
-The view matrix is build using the position and rotation of the camera.
-And the model matrices are build using the positions and rotations of the
+The view matrix is built using the position and rotation of the camera,
+and the model matrices are built using the positions and rotations of the
 objects in the scene. The view matrix and object matrices are usually
 constructed every frame.
 
