@@ -86,25 +86,12 @@ private package GL.Enums is
 
    type Program_Resource_Array is array (Positive range <>) of Program_Resource_Param;
 
-   type Pixel_Store_Param is (Unpack_Swap_Bytes, Unpack_LSB_First,
-                              Unpack_Row_Length, Unpack_Skip_Rows,
-                              Unpack_Skip_Pixels, Unpack_Alignment,
-                              Pack_Swap_Bytes, Pack_LSB_First, Pack_Row_Length,
-                              Pack_Skip_Rows, Pack_Skip_Pixels,
-                              Pack_Alignment, Pack_Skip_Images, Pack_Image_Height,
-                              Unpack_Skip_Images, Unpack_Image_Height,
+   type Pixel_Store_Param is (Unpack_Alignment, Pack_Alignment,
                               Unpack_Compressed_Block_Width, Unpack_Compressed_Block_Height,
                               Unpack_Compressed_Block_Depth, Unpack_Compressed_Block_Size,
                               Pack_Compressed_Block_Width, Pack_Compressed_Block_Height,
                               Pack_Compressed_Block_Depth, Pack_Compressed_Block_Size);
    --  Table 8.1 and 18.1 of the OpenGL specification
-   
-   type Buffer_Param is (Buffer_Immutable_Storage, Buffer_Storage_Flags,
-                         Buffer_Size, Buffer_Access, Buffer_Mapped,
-                         Buffer_Access_Flags, Buffer_Map_Length,
-                         Buffer_Map_Offset);
-   
-   type Buffer_Pointer_Param is (Buffer_Map_Pointer);
    
    type Framebuffer_Param is (Default_Width, Default_Height, Default_Layers,
                               Default_Samples, Default_Fixed_Sample_Locations);
@@ -223,22 +210,8 @@ private
                                    Location_Index                       => 16#930F#);
    for Program_Resource_Param'Size use Low_Level.Enum'Size;
 
-   for Pixel_Store_Param use (Unpack_Swap_Bytes   => 16#0CF0#,
-                              Unpack_LSB_First    => 16#0CF1#,
-                              Unpack_Row_Length   => 16#0CF2#,
-                              Unpack_Skip_Rows    => 16#0CF3#,
-                              Unpack_Skip_Pixels  => 16#0CF4#,
-                              Unpack_Alignment    => 16#0CF5#,
-                              Pack_Swap_Bytes     => 16#0D00#,
-                              Pack_LSB_First      => 16#0D01#,
-                              Pack_Row_Length     => 16#0D02#,
-                              Pack_Skip_Rows      => 16#0D03#,
-                              Pack_Skip_Pixels    => 16#0D04#,
+   for Pixel_Store_Param use (Unpack_Alignment    => 16#0CF5#,
                               Pack_Alignment      => 16#0D05#,
-                              Pack_Skip_Images    => 16#806B#,
-                              Pack_Image_Height   => 16#806C#,
-                              Unpack_Skip_Images  => 16#806D#,
-                              Unpack_Image_Height => 16#806E#,
                               Unpack_Compressed_Block_Width  => 16#9127#,
                               Unpack_Compressed_Block_Height => 16#9128#,
                               Unpack_Compressed_Block_Depth  => 16#9129#,
@@ -248,19 +221,6 @@ private
                               Pack_Compressed_Block_Depth  => 16#912D#,
                               Pack_Compressed_Block_Size   => 16#912E#);
    for Pixel_Store_Param'Size use Low_Level.Enum'Size;
-
-   for Buffer_Param use (Buffer_Immutable_Storage => 16#821F#,
-                         Buffer_Storage_Flags     => 16#8220#,
-                         Buffer_Size              => 16#8764#,
-                         Buffer_Access            => 16#88BB#,
-                         Buffer_Mapped            => 16#88BC#,
-                         Buffer_Access_Flags      => 16#911F#,
-                         Buffer_Map_Length        => 16#9120#,
-                         Buffer_Map_Offset        => 16#9121#);
-   for Buffer_Param'Size use Low_Level.Enum'Size;
-
-   for Buffer_Pointer_Param use (Buffer_Map_Pointer => 16#88BD#);
-   for Buffer_Pointer_Param'Size use Low_Level.Enum'Size;
 
    for Framebuffer_Param use (Default_Width                  => 16#9310#,
                               Default_Height                 => 16#9311#,
