@@ -76,9 +76,6 @@ private package GL.API is
    package Get_Boolean is new Loader.Getter_With_2_Params
      ("glGetBooleanv", Enums.Getter.Parameter, Low_Level.Bool);
 
-   package Get_Double is new Loader.Getter_With_2_Params
-     ("glGetDoublev", Enums.Getter.Parameter, Double);
-
    package Get_Double_Vec2_I is new Loader.Getter_With_3_Params
      ("glGetDoublei_v", Enums.Getter.Parameter, UInt, Doubles.Vector2);
 
@@ -148,9 +145,6 @@ private package GL.API is
 
    package Get_Stencil_Action is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Stencil_Action);
-
-   package Get_Read_Buffer_Selector is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Color_Buffer_Selector);
 
    package Get_String is new Loader.Function_With_1_Param
      ("glGetString", Enums.Getter.String_Parameter, C.Strings.chars_ptr);
