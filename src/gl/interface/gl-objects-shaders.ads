@@ -44,9 +44,6 @@ package GL.Objects.Shaders is
    function Identifier (Object : Shader) return Types.Debug.Identifier is
      (Types.Debug.Shader);
 
-   -- low-level
-   function Create_From_Id (Id : UInt) return Shader;
-
 private
 
    type Shader (Kind : Shader_Type) is new GL_Object with null record;

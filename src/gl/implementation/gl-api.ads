@@ -637,9 +637,6 @@ private package GL.API is
    package Get_Shader_Param is new Loader.Getter_With_3_Params
      ("glGetShaderiv", UInt, Enums.Shader_Param, Int);
 
-   package Get_Shader_Type is new Loader.Getter_With_3_Params
-     ("glGetShaderiv", UInt, Enums.Shader_Param, Objects.Shaders.Shader_Type);
-
    package Create_Shader is new Loader.Function_With_1_Param
      ("glCreateShader", Objects.Shaders.Shader_Type, UInt);
 
