@@ -57,10 +57,6 @@ package Orka.Rendering.Programs is
    --  If one or more shader stages have subroutines, then these are
    --  used as well (that is, Use_Subroutines is called automatically).
 
-   function Attribute_Location
-     (Object : Program;
-      Name   : String) return GL.Types.Attribute;
-
    function Compute_Work_Group_Size
      (Object : Program) return GL.Types.Compute.Dimension_Size_Array;
 

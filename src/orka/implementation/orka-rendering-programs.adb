@@ -93,10 +93,6 @@ package body Orka.Rendering.Programs is
       end if;
    end Use_Program;
 
-   function Attribute_Location (Object : Program; Name : String)
-      return GL.Types.Attribute
-   is (Object.GL_Program.Attrib_Location (Name));
-
    function Compute_Work_Group_Size
      (Object : Program) return GL.Types.Compute.Dimension_Size_Array
    is (Object.GL_Program.Compute_Work_Group_Size);

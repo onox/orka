@@ -728,10 +728,6 @@ private package GL.API is
      ("glGetProgramResourceLocation", UInt, Enums.Program_Interface,
       C.char_array, Int);
 
-   package Get_Program_Resource_Location_Index is new Loader.Function_With_3_Params
-     ("glGetProgramResourceLocationIndex", UInt, Enums.Program_Interface,
-      C.char_array, Int);
-
    -----------------------------------------------------------------------------
    --                                Pipelines                                --
    -----------------------------------------------------------------------------

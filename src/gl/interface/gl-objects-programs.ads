@@ -64,20 +64,6 @@ package GL.Objects.Programs is
    --  Raises the Uniform_Inactive_Error exception if the name
    --  does not exist or is unused.
 
-   function Attrib_Location (Subject : Program; Name : String)
-     return Attribute;
-   --  Return an Attribute given its name
-   --
-   --  The returned attribute can be used when defining a vertex format.
-   --
-   --  Raises the Attribute_Inactive_Error exception if the name
-   --  does not exist or is unused.
-
-   function Attribute_Type (Object : Program; Name : String)
-     return Low_Level.Enums.Resource_Type;
-   --  Raises the Attribute_Inactive_Error exception if the name
-   --  does not exist or is unused.
-
    function Buffer_Binding
      (Object : Program;
       Target : Buffers.Indexed_Buffer_Target;
@@ -95,7 +81,6 @@ package GL.Objects.Programs is
    function Identifier (Object : Program) return Types.Debug.Identifier is
      (Types.Debug.Program);
 
-   Attribute_Inactive_Error  : exception;
    Uniform_Inactive_Error    : exception;
    Subroutine_Inactive_Error : exception;
 

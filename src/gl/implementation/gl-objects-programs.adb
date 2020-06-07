@@ -197,37 +197,6 @@ package body GL.Objects.Programs is
       end;
    end Uniform_Type;
 
-   function Attrib_Location (Subject : Program; Name : String)
-     return Attribute is
-      Location : constant Int := API.Get_Program_Resource_Location.Ref
-        (Subject.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
-   begin
-      if Location = -1 then
-         raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
-      end if;
-      return Attribute (Location);
-   end Attrib_Location;
-
-   function Attribute_Type (Object : Program; Name : String)
-     return Low_Level.Enums.Resource_Type is
-      Index : constant UInt := API.Get_Program_Resource_Index.Ref
-       (Object.Reference.GL_Id, Enums.Program_Input, Interfaces.C.To_C (Name));
-   begin
-      if Index = -1 then
-         raise Attribute_Inactive_Error with "Attribute " & Name & " is inactive (unused)";
-      end if;
-      declare
-         Values : constant Int_Array := API.Get_Program_Resource.Ref
-           (Object.Reference.GL_Id, Enums.Program_Input, Index,
-            1, (1 => Enums.Resource_Type), 1);
-
-         function Convert is new Ada.Unchecked_Conversion
-           (Source => Int, Target => Low_Level.Enums.Resource_Type);
-      begin
-         return Convert (Values (Values'First));
-      end;
-   end Attribute_Type;
-
    -----------------------------------------------------------------------------
    --                               Subroutines                               --
    -----------------------------------------------------------------------------
