@@ -137,16 +137,9 @@ Textures are objects that contain images. Textures are mostly 2D, but can be
 1D or 3D as well. A texture can also contain an array of images or multiple
 levels where each level has half the resolution of the previous level.
 
-#### Vertex formats
-
-The vertex format describes the attributes of vertices and which buffers
-contain which attributes. Usually a vertex has attributes like the position
-vector, a normal vector (used for computing lighting), and the texture
-coordinate of some texture.
-
 #### Programs
 
-Programs are objects that contains one or more shaders that should be run
+Programs are objects that contains one or more shaders that are run
 on the GPU.
 
 #### Framebuffers
@@ -220,68 +213,46 @@ vertices to it:
 
 ```ada
 Vertices : constant Single_Array
-  := (-0.5, -0.5,     1.0, 0.0, 0.0,
-       0.5, -0.5,     0.0, 1.0, 0.0,
-       0.0,  0.5,     0.0, 0.0, 1.0);
+  := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+       0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+       0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
 
---  Upload Vertices data to buffer
 Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 ```
 
-Each vertex has a position (2D vector) and a color (3D vector).
+Each vertex has a position (2D vector) and a color (3D vector). Because of
+alignment rules in GLSL, we pack the data into 4D vectors.
 
-#### Vertex format
-
-Next step is to create a vertex format with one attribute buffer. An
-attribute buffer has one or more attributes and is given a `Buffer` where
-it can fetch its vertices from.
-
-In our case the attribute buffer has two attributes (position and color):
+Bind the buffer as an SSBO so that it can be accessed in the vertex shader:
 
 ```ada
-function Create_Format return Vertex_Format is
-   use all type Orka.Types.Element_Type;
-
-   procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-   begin
-      --  Location 0 consists of 2 singles and 1 consists of 3 singles
-      Buffer.Add_Attribute (0, 2);
-      Buffer.Add_Attribute (1, 3);
-   end Add_Vertex_Attributes;
-begin
-   --  Create mesh and its attributes
-   return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-      Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-   end return;
-end Create_Format;
-
-VF_1 : Vertex_Format := Create_Format;
-```
-
-Later we set `Buffer_1` as the buffer for the attribute buffer
-that we have created:
-
-```ada
-VF_1.Bind;
-VF_1.Set_Vertex_Buffer (1, Buffer_1);
+Buffer_1.Bind (Shader_Storage, 0);
 ```
 
 #### Program
 
-The fourth step is to create a program with a vertex shader and a fragment
+The third step is to create a program with a vertex shader and a fragment
 shader. Save the following vertex shader in `triangle.vert`:
 
 ```glsl linenums="1"
 #version 420 core
 
-layout(location = 0) in vec2 in_Position;
-layout(location = 1) in vec3 in_Color;
+#extension GL_ARB_shader_storage_buffer_object : require
+
+struct Vertex {
+    vec4 position;
+    vec4 color;
+};
+
+layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
+    Vertex in_vertices[];
+};
 
 out vec3 ex_Color;
 
 void main(void) {
-   gl_Position = vec4(in_Position, 0.0, 1.0);
-   ex_Color = in_Color;
+   gl_Position = vec4(in_vertices[gl_VertexID].position.xy, 0.0, 1.0);
+   ex_Color = in_vertices[gl_VertexID].color.xyz;
 }
 ```
 
@@ -325,17 +296,16 @@ Program_1.Use_Program;
 The last object that we need to create is the framebuffer:
 
 ```ada
-FB_1 : Framebuffer := Get_Default_Framebuffer (Window);
+FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 ```
 
 Specify the color of the background and tell OpenGL we want to use
 this framebuffer:
 
 ```ada
-FB_1.Set_Default_Values
-  ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
-FB_1.Use_Framebuffer;
+FB_D.Use_Framebuffer;
 ```
 
 ### Rendering in a loop
@@ -346,7 +316,7 @@ After we have created all the objects, we can render the triangle:
 while not Window.Should_Close loop
    Window.Process_Input;
 
-   FB_1.Clear;
+   FB_D.Clear ((Color => True, others => False));
    Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
    Window.Swap_Buffers;
@@ -367,9 +337,7 @@ and then draw the triangle. Press ++esc++ to close the application.
     with Orka.Rendering.Drawing;
     with Orka.Rendering.Framebuffers;
     with Orka.Rendering.Programs.Modules;
-    with Orka.Rendering.Vertex_Formats;
     with Orka.Resources.Locations.Directories;
-    with Orka.Types;
     with Orka.Windows.GLFW;
 
     procedure Triangle is
@@ -384,27 +352,10 @@ and then draw the triangle. Press ++esc++ to close the application.
 
        use Orka.Resources;
        use Orka.Rendering.Buffers;
-       use Orka.Rendering.Programs;
        use Orka.Rendering.Framebuffers;
-       use Orka.Rendering.Vertex_Formats;
+       use Orka.Rendering.Programs;
 
        use GL.Types;
-
-       function Create_Format return Vertex_Format is
-          use all type Orka.Types.Element_Type;
-
-          procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-          begin
-             --  Location 0 consists of 2 singles and 1 consists of 3 singles
-             Buffer.Add_Attribute (0, 2);
-             Buffer.Add_Attribute (1, 3);
-          end Add_Vertex_Attributes;
-       begin
-          --  Create mesh and its attributes
-          return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-             Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-          end return;
-       end Create_Format;
 
        Location_Shaders : constant Locations.Location_Ptr
          := Locations.Directories.Create_Location (".");
@@ -412,31 +363,26 @@ and then draw the triangle. Press ++esc++ to close the application.
        Program_1 : Program := Create_Program (Modules.Create_Module
          (Location_Shaders, VS => "triangle.vert", FS => "triangle.frag"));
 
-       FB_1 : Framebuffer := Get_Default_Framebuffer (Window);
-
-       VF_1 : Vertex_Format := Create_Format;
+       FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 
        Vertices : constant Single_Array
-         := (-0.5, -0.5,     1.0, 0.0, 0.0,
-              0.5, -0.5,     0.0, 1.0, 0.0,
-              0.0,  0.5,     0.0, 0.0, 1.0);
+         := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+              0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+              0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
 
-       --  Upload Vertices data to buffer
        Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
     begin
-       VF_1.Bind;
-       VF_1.Set_Vertex_Buffer (1, Buffer_1);
+       FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
-       FB_1.Set_Default_Values
-         ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
-
-       FB_1.Use_Framebuffer;
+       FB_D.Use_Framebuffer;
        Program_1.Use_Program;
+
+       Buffer_1.Bind (Shader_Storage, 0);
 
        while not Window.Should_Close loop
           Window.Process_Input;
 
-          FB_1.Clear;
+          FB_D.Clear ((Color => True, others => False));
           Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
           Window.Swap_Buffers;
@@ -448,11 +394,5 @@ and then draw the triangle. Press ++esc++ to close the application.
 
 ??? question "Exercise 1: Give the window a red background instead of black"
     ```ada
-    FB_1.Set_Default_Values
-      ((Color => (1.0, 0.0, 0.0, 1.0), others => <>));
-    ```
-
-??? question "Exercise 2: Try to disable the gamma correction in `triangle.frag`"
-    ```glsl
-    out_Color = vec4(ex_Color, 1.0);
+    FB_D.Set_Default_Values ((Color => (1.0, 0.0, 0.0, 1.0), others => <>));
     ```

@@ -47,7 +47,46 @@ position in the buffer of the first element of the given data.
 
 ## Downloading data
 
-!!! note "TODO Get\_Data"
+To synchronously download data, first set a barrier:
+
+```ada
+GL.Barriers.Memory_Barrier
+  ((By_Region => False, Buffer_Update => True, others => False));
+```
+
+and then call procedure `Get_Data`:
+
+```ada
+declare
+   Data : Single_Array (1 .. 16) := (others => 0.0);
+begin
+   Buffer_0.Get_Data (Data);
+end;
+```
+
+This procedure may stall the CPU.
+
+!!! note "TODO Asynchronously downloading data"
+
+## Clearing data
+
+Regardless of the value of `Dynamic_Storage`, data from a buffer can be
+cleared with the procedure `Clear_Data`:
+
+```ada
+declare
+   Data : UInt_Array := (1, 2, 0);
+begin
+   Buffer_2.Clear_Data (Data);
+end;
+```
+
+This will write (repeatedly) 1, 2, and 0 to the buffer. To efficiently
+clear the buffer with zeros, use an array with one zero:
+
+```ada
+Buffer_2.Clear_Data (Single_Array'(1 => 0.0));
+```
 
 ## Copying data to another buffer
 
@@ -100,9 +139,17 @@ recommended to use an SSBO, which does not have these limitations.
 
 !!! tip
     The targets can be made directly visible with
-    `:::ada use all type Orka.Rendering.Buffers.Indexable_Buffer_Target`.
+    `:::ada use all type Orka.Rendering.Buffers.Indexed_Buffer_Target`.
 
 ### SSBO
+
+SSBOs are large writable buffers:
+
+- Guaranteed to be at least 128 MiB. The storage size can be variable.
+
+- Can be read and written. Writes can be atomic via
+  [special functions][url-ssbo-atomics].
+  A barrier is required after a shader has written to the buffer.
 
 To use a buffer as an SSBO, create a `buffer` with a binding index in a
 shader:
@@ -121,13 +168,52 @@ Buffer_3.Bind (Shader_Storage, 0);
 
 The buffer can then be accessed in the shader via the variable `matrices`.
 
-!!! tip
-    See [Memory_qualifiers][url-memory-qlf] on the OpenGL Wiki for a list
+!!! warning "Barriers"
+    If a shader progam has written data to the buffer, you must add a
+    barrier before another program or OpenGL command reads from that buffer
+    again. The kind of barrier that is needed depends on how the buffer is
+    subsequently *read*.
+
+!!! info "Memory qualifiers"
+    See [Memory qualifiers][url-memory-qlf] on the OpenGL Wiki for a list
     of memory qualifiers that can be added to the buffer variable.
 
 ### UBO
 
-!!! note "TODO"
+A uniform buffer is a buffer that provides uniform data and can be used
+as an alternative to a set of separate uniforms. If several different
+shader programs require the same set of uniforms, a UBO is a good fit
+because it avoids having to set the same uniforms for different programs;
+the buffer needs to be binded only once.
+
+Compared to SSBOs, UBOs are severely restricted:
+
+- UBOs are at least 16 KiB, but often 64 KiB or even 2 GiB for some vendors.
+  Storage size is fixed.
+
+- Can only be read, not written.
+
+- Should be access uniformly by the shader invocations. May be faster
+  than SSBOs.
+
+To use a buffer as an UBO, create a `buffer` with a binding index in a shader:
+
+```glsl
+layout(std140, binding = 0) uniform cameraBuffer {
+    mat4 viewTM;
+    mat4 projTM;
+};
+```
+
+and then bind the buffer to the used index:
+
+```ada
+Buffer_3.Bind (Uniform, 0);
+```
+
+!!! warning "Padding"
+    Note that the `std140` layout pads vectors to 16 bytes (vec4). You should
+    avoid using vec3. See [Memory layout][url-memory-layout] on the OpenGL Wiki.
 
 ### TBO
 
@@ -167,12 +253,27 @@ what is normally required for any OpenGL subprogram. Creating and deleting
 these buffers must still happen in the rendering task, just like any other
 OpenGL object.
 
+### Writing and reading data
+
 Data can be written to the buffer with procedure `Write_Data` if discriminant
 `Mode` has the value `Write` and read with procedure `Read_Data` if the
-discriminant equals `Read`:
+discriminant equals `Read`.
+
+To write data, call `Write_Data`:
 
 ```ada
 Buffer_3.Write_Data (Matrix, Offset => Instance_Index);
+```
+
+To read elements from a mapped buffer, create an array on the stack
+and then call `Read_Data`:
+
+```ada
+declare
+   Data : Int_Array (1 .. 16) := (others => 0);
+begin
+   Buffer_4.Read_Data (Data);
+end;
 ```
 
 Data of the following types from package `GL.Types` can be read or written:
@@ -199,18 +300,6 @@ and of the following types from `Orka.Types.Singles` and `Orka.Types.Doubles`:
 * `Matrix_Array`
 
 Additionally, the non-array versions of the last five types can also be written.
-
-!!! example
-    To read elements from a mapped buffer, create an array on the stack
-    and then call `Read_Data`:
-
-    ```ada linenums="1"
-    declare
-       Data : Int_Array (1 .. 16) := (others => 0);
-    begin
-       Buffer_4.Read_Data (Data);
-    end;
-    ```
 
 ### Persistent mapped buffers
 
@@ -283,3 +372,5 @@ GL.Barriers.Memory_Barrier
 ```
 
   [url-memory-qlf]: https://www.khronos.org/opengl/wiki/Type_Qualifier_(GLSL)#Memory_qualifiers
+  [url-memory-layout]: https://www.khronos.org/opengl/wiki/Block_Layout_Query#Memory_layout
+  [url-ssbo-atomics]: https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object#Atomic_operations

@@ -61,6 +61,7 @@ nav:
   - Parallel programming: parallel-programming.md
   - Containers: containers.md
   - Logging: logging.md
+  - GPGPU: gpgpu.md
   - Rendering:
       - Introduction: rendering/index.md
       - Buffers: rendering/buffers.md
@@ -69,6 +70,8 @@ nav:
       - Textures: rendering/textures.md
       - Framebuffers: rendering/framebuffers.md
       - Cameras: rendering/cameras.md
+      - Effects: rendering/effects.md
+      - Features: rendering/features.md
   - Resources:
       - Locations: resources/locations.md
       - Loaders: resources/loaders.md

@@ -11,7 +11,7 @@ the building blocks to easily render 3D graphics or do general-purpose
 computing on the GPU, and to use input devices like gamepads.
 
 - **Object-oriented rendering API**. Renderer objects like shader programs,
-vertex formats, framebuffers, buffers, and textures can be used via an
+framebuffers, buffers, and textures can be used via an
 object-oriented API. Objects are automatically created and destroyed by using
 controlled types. Various [AZDO][url-azdo] techniques can be used to allow
 multithreaded buffer updates and batched draw calls for high performance rendering.
@@ -20,6 +20,12 @@ multithreaded buffer updates and batched draw calls for high performance renderi
 to draw bounding boxes, coordinate axes, lines, and spheres for debugging.
 Messages from the rendering API or other parts of your application can be
 logged to the terminal or files.
+
+- **Algorithms and effects**. Compute the prefix sum or Fast Fourier Transform
+using compute shaders, or apply a (Gaussian) blur to a texture.
+
+- **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
+tessellated terrain.
 
 - **Joysticks and gamepads**. Joysticks and gamepads can be managed via
 an API. Analog axes can be filtered with a low-pass filter, dead zones
@@ -38,8 +44,8 @@ processing system. Resources can be loaded from directories and archive files.
 
 - **Quaternions and matrices**. Packages for applying common transformations
 to vectors, quaternions, and matrices using x86 SIMD instructions are provided.
-The various x86 SIMD extensions like SSE, SSE2, SSE3, SSE4.1, AVX, AVX2, FMA,
-and F16C can also be used directly in your own code.
+The various x86 SIMD extensions like SSE, AVX2, FMA, F16C, etc., can also be
+used directly in your own code.
 
 Additionally, Orka provides several bindings:
 

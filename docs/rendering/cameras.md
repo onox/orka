@@ -1,7 +1,5 @@
 # Cameras
 
-## Follow
-
 ## Look at
 
 ## Look from

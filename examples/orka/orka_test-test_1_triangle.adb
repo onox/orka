@@ -47,20 +47,22 @@ procedure Orka_Test.Test_1_Triangle is
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "opengl3.vert", FS => "opengl3.frag"));
 
-   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
+   FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 
    Vertices : constant Single_Array
         := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
              0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
              0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
 
-   --  Upload Vertices data to VBO
+   --  Upload Vertices data to buffer
    Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 begin
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
-   Buffer_1.Bind (Shader_Storage, 0);
 
+   FB_D.Use_Framebuffer;
    Program_1.Use_Program;
+
+   Buffer_1.Bind (Shader_Storage, 0);
 
    while not Window.Should_Close loop
       Window.Process_Input;
