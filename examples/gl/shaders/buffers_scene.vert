@@ -1,9 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
-#version 150
+#version 420 core
 
-in vec3 position;
-in vec3 color;
-in vec2 texcoord;
+#extension GL_ARB_shader_storage_buffer_object : require
+
+struct Vertex {
+    vec4 position;
+    vec4 color_texcoord;
+    // color is shared between position (w) and color_texcoord (xy)
+};
+
+layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
+    Vertex in_vertices[];
+};
 
 out vec3 Color;
 out vec2 Texcoord;
@@ -16,7 +24,9 @@ uniform vec4 overrideColor;
 
 void main()
 {
-    Color = vec3(overrideColor) * color;
-    Texcoord = texcoord;
-    gl_Position = proj * view * model * vec4(position, 1.0);
+    const Vertex data = in_vertices[gl_VertexID];
+
+    Color = vec3(overrideColor) * vec3(data.position.w, data.color_texcoord.xy);
+    Texcoord = data.color_texcoord.zw;
+    gl_Position = proj * view * model * vec4(data.position.xyz, 1.0);
 }

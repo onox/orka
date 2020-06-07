@@ -29,8 +29,6 @@ library project Orka.Glfw is
    for Library_ALI_Dir use "../build/lib/glfw";
    for Library_Kind use Config.Library_Kind;
 
-   Shared_Example_Sources := ("../examples/shared");
-
    GLFW_Sources := ("../src/glfw");
 
    Orka_Sources := ("../src/orka/interface/glfw",

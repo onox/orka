@@ -21,9 +21,7 @@ with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
-with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_1_Triangle is
@@ -39,25 +37,9 @@ procedure Orka_Test.Test_1_Triangle is
    use Orka.Resources;
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
-   use Orka.Rendering.Vertex_Formats;
    use Orka.Rendering.Programs;
 
    use GL.Types;
-
-   function Create_Format (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
-      use all type Orka.Types.Element_Type;
-
-      procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
-      end Add_Vertex_Attributes;
-   begin
-      --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-         Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-      end return;
-   end Create_Format;
 
    Location_Shaders : constant Locations.Location_Ptr
      := Locations.Directories.Create_Location ("../examples/gl/shaders");
@@ -67,22 +49,18 @@ procedure Orka_Test.Test_1_Triangle is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
-   VF_1 : Vertex_Format := Create_Format (Program_1);
-
    Vertices : constant Single_Array
-        := (-0.5, -0.5,     1.0, 0.0, 0.0,
-             0.5, -0.5,     0.0, 1.0, 0.0,
-             0.0,  0.5,     0.0, 0.0, 1.0);
+        := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+             0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+             0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
 
    --  Upload Vertices data to VBO
    Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 begin
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+   Buffer_1.Bind (Shader_Storage, 0);
 
-   VF_1.Bind;
    Program_1.Use_Program;
-
-   VF_1.Set_Vertex_Buffer (1, Buffer_1);
 
    while not Window.Should_Close loop
       Window.Process_Input;

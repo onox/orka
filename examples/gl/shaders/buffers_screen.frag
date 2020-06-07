@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-#version 150
+#version 420 core
 
 in vec2 Texcoord;
 
 out vec4 outColor;
 
-uniform sampler2D texFrameBuffer;
+layout(binding = 0) uniform sampler2D texFrameBuffer;
 uniform int effect;
 
 const float blurSizeH = 1.0 / 300.0;

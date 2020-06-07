@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-#version 150
+#version 420 core
 
 in vec3 Color;
 in vec2 Texcoord;
 
 out vec4 outColor;
 
-uniform sampler2D tex;
+layout(binding = 0) uniform sampler2D tex;
 
 void main()
 {

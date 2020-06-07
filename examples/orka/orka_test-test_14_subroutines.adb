@@ -19,50 +19,30 @@ with Ada.Text_IO;
 with GL.Objects.Shaders;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
-with Orka.Types;
+with Orka.Windows.GLFW;
 
-with GL_Test.Display_Backend;
+--  This example renders a triangle. The position of the triangle is
+--  determined by the chosen subroutine function in the shader.
 
 procedure Orka_Test.Test_14_Subroutines is
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 2, Width => 500, Height => 500, Resizable => False, Debug => True);
-   pragma Unreferenced (Initialized);
+   Library : constant Orka.Contexts.Library'Class
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+
+   Window : aliased Orka.Windows.Window'Class
+     := Library.Create_Window (Width => 500, Height => 500, Resizable => False);
+
+   Context : constant Orka.Contexts.Context'Class := Window.Context;
+   pragma Unreferenced (Context);
 
    use Orka.Rendering.Buffers;
-   use Orka.Rendering.Vertex_Formats;
-
-   function Load_Data (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
-      use GL.Types;
-      use all type Orka.Types.Element_Type;
-
-      Vertices : constant Single_Array
-        --  Position        Color
-        := (-0.5, -0.5,     1.0, 0.0, 0.0,
-             0.5, -0.5,     0.0, 1.0, 0.0,
-             0.0,  0.5,     0.0, 0.0, 1.0);
-
-      VBO : constant Buffer := Create_Buffer ((others => False), Vertices);
-
-      procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 2);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
-         Buffer.Set_Buffer (VBO);
-      end Add_Vertex_Attributes;
-   begin
-      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-         Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-      end return;
-   end Load_Data;
-
    use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Programs;
    use Orka.Resources;
@@ -75,41 +55,40 @@ procedure Orka_Test.Test_14_Subroutines is
 
    Uniform_1 : Uniforms.Uniform_Subroutine := Program_1.Uniform_Subroutine
      (GL.Objects.Shaders.Vertex_Shader, "update_pos");
-   Uniform_2 : Uniforms.Uniform_Subroutine := Program_1.Uniform_Subroutine
-     (GL.Objects.Shaders.Vertex_Shader, "no_update_pos");
 
    Function_X : constant Subroutine_Index := Uniform_1.Index ("update_x");
    Function_Y : constant Subroutine_Index := Uniform_1.Index ("update_y");
-   Function_Z : constant Subroutine_Index := Uniform_2.Index ("update_z");
-
-   VF_1 : constant Vertex_Format := Load_Data (Program_1);
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
+
+   use GL.Types;
+
+   Vertices : constant Single_Array
+     := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+          0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+          0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
+
+   Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 begin
    Orka.Debug.Set_Log_Messages (Enable => True);
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
-   VF_1.Bind;
+   Buffer_1.Bind (Shader_Storage, 0);
 
    Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between subroutines.");
 
-   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      FB_D.Clear ((Color | Depth => True, others => False));
+   while not Window.Should_Close loop
+      Window.Process_Input;
 
-      if GL_Test.Display_Backend.Get_Effect (2) = 0 then
-         Uniform_1.Set_Function (Function_X);
-      else
-         Uniform_1.Set_Function (Function_Y);
-      end if;
-      Uniform_2.Set_Function (Function_Z);
+      FB_D.Clear ((Color => True, others => False));
 
+      --  TODO Toggle between Function_X and Function_Y via keyboard
+      Uniform_1.Set_Function (Function_X);
       Program_1.Use_Program;
 
-      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+      Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
-      -- Swap front and back buffers and process events
-      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+      --  Swap front and back buffers and process events
+      Window.Swap_Buffers;
    end loop;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_14_Subroutines;

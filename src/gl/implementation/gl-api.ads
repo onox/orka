@@ -31,7 +31,6 @@ with GL.Objects.Framebuffers;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;
 with GL.Objects.Textures;
-with GL.Objects.Vertex_Arrays;
 with GL.Pixels.Queries;
 with GL.Rasterization;
 with GL.Toggles;

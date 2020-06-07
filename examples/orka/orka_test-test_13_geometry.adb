@@ -21,9 +21,7 @@ with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
-with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_13_Geometry is
@@ -37,34 +35,6 @@ procedure Orka_Test.Test_13_Geometry is
    pragma Unreferenced (Context);
 
    use Orka.Rendering.Buffers;
-   use Orka.Rendering.Vertex_Formats;
-
-   function Load_Data (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
-      use GL.Types;
-      use all type Orka.Types.Element_Type;
-
-      Vertices : constant Single_Array
-        --  Position        Color           Sides
-        := (-0.45,  0.45,   1.0, 0.0, 0.0,  4.0,
-             0.45,  0.45,   0.0, 1.0, 0.0,  8.0,
-             0.45, -0.45,   0.0, 0.0, 1.0,  16.0,
-            -0.45, -0.45,   1.0, 1.0, 0.0,  32.0);
-
-      VBO : constant Buffer := Create_Buffer ((others => False), Vertices);
-
-      procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (Program.Attribute_Location ("position"), 2);
-         Buffer.Add_Attribute (Program.Attribute_Location ("color"), 3);
-         Buffer.Add_Attribute (Program.Attribute_Location ("sides"), 1);
-         Buffer.Set_Buffer (VBO);
-      end Add_Vertex_Attributes;
-   begin
-      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-         Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-      end return;
-   end Load_Data;
-
    use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Programs;
    use Orka.Resources;
@@ -73,14 +43,25 @@ procedure Orka_Test.Test_13_Geometry is
      := Locations.Directories.Create_Location ("../examples/gl/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
-     (Location_Shaders, VS => "geometry.vert", GS => "geometry.geom", FS => "geometry.frag"));
-
-   -- Upload vertices to GPU
-   VF_1 : constant Vertex_Format := Load_Data (Program_1);
+     (Location_Shaders,
+      VS => "geometry.vert",
+      GS => "geometry.geom",
+      FS => "geometry.frag"));
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
+
+   use GL.Types;
+
+   Vertices : constant Single_Array
+     --  Position                  Color           Sides
+     := (-0.45,  0.45, 0.0, 1.0,   1.0, 0.0, 0.0,  4.0,
+          0.45,  0.45, 0.0, 1.0,   0.0, 1.0, 0.0,  8.0,
+          0.45, -0.45, 0.0, 1.0,   0.0, 0.0, 1.0,  16.0,
+         -0.45, -0.45, 0.0, 1.0,   1.0, 1.0, 0.0,  32.0);
+
+   Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 begin
-   VF_1.Bind;
+   Buffer_1.Bind (Shader_Storage, 0);
    Program_1.Use_Program;
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
@@ -89,9 +70,9 @@ begin
       Window.Process_Input;
 
       FB_D.Clear ((Color => True, others => False));
-      Orka.Rendering.Drawing.Draw (GL.Types.Points, 0, 4);
+      Orka.Rendering.Drawing.Draw (Points, 0, 4);
 
-      -- Swap front and back buffers and process events
+      --  Swap front and back buffers and process events
       Window.Swap_Buffers;
    end loop;
 end Orka_Test.Test_13_Geometry;

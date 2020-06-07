@@ -16,31 +16,39 @@
 
 with Ada.Text_IO;
 
-with GL.Drawing;
 with GL.Types;
 with GL.Toggles;
 
+with Orka.Cameras.Rotate_Around_Cameras;
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
-with Orka.Rendering.Vertex_Formats;
 with Orka.Resources.Locations.Directories;
+with Orka.Transforms.Doubles.Vector_Conversions;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
+with Orka.Windows.GLFW;
 
-with GL_Test.Display_Backend;
+--  In this example we render many instances of a cube, each at a different
+--  position.
 
 procedure Orka_Test.Test_11_Instancing is
-   Initialized : constant Boolean := GL_Test.Display_Backend.Init
-     (Major => 3, Minor => 3, Width => 500, Height => 500, Resizable => False);
-   pragma Unreferenced (Initialized);
+   Width  : constant := 500;
+   Height : constant := 500;
 
-   package Transforms renames Orka.Transforms.Singles.Matrices;
+   Library : constant Orka.Contexts.Library'Class
+     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+
+   Window : aliased Orka.Windows.Window'Class
+     := Library.Create_Window (Width => Width, Height => Height, Resizable => False);
+
+   Context : constant Orka.Contexts.Context'Class := Window.Context;
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
-   use Orka.Rendering.Vertex_Formats;
    use Orka.Rendering.Programs;
    use GL.Types;
 
@@ -48,19 +56,23 @@ procedure Orka_Test.Test_11_Instancing is
    Space_Between_Cubes : constant := 0.2;
 
    function Create_Matrices return Orka.Types.Singles.Matrix4_Array is
+      package Transforms renames Orka.Transforms.Singles.Matrices;
+
       Distance_Multiplier : constant := 1.0 + Space_Between_Cubes;
 
       Matrices : Orka.Types.Singles.Matrix4_Array (1 .. Instances_Dimension**3);
 
       Index : Int := Matrices'First;
       X, Y, Z : Single;
+
+      Offset : constant := Instances_Dimension / 2;
    begin
       for Index_X in 1 .. Instances_Dimension loop
-         X := Single (Index_X) * Distance_Multiplier;
+         X := Single (Index_X - Offset) * Distance_Multiplier;
          for Index_Y in 1 .. Instances_Dimension loop
-            Y := Single (Index_Y) * Distance_Multiplier;
+            Y := Single (Index_Y - Offset) * Distance_Multiplier;
             for Index_Z in 1 .. Instances_Dimension loop
-               Z := Single (Index_Z) * Distance_Multiplier;
+               Z := Single (Index_Z - Offset) * Distance_Multiplier;
 
                Matrices (Index) := Transforms.T ((X, Y, Z, 0.0));
                Index := Index + 1;
@@ -84,53 +96,25 @@ procedure Orka_Test.Test_11_Instancing is
          3, 2, 7,  --  Bottom
          7, 2, 6);
 
+   Vertices : constant Single_Array
+     := (-0.5,  0.5, -0.5, 1.0,    1.0, 1.0, 1.0, 1.0,
+          0.5,  0.5, -0.5, 1.0,    0.0, 1.0, 0.0, 1.0,
+          0.5, -0.5, -0.5, 1.0,    0.0, 0.0, 1.0, 1.0,
+         -0.5, -0.5, -0.5, 1.0,    1.0, 0.0, 0.0, 1.0,
+
+         -0.5,  0.5,  0.5, 1.0,    0.0, 0.0, 1.0, 1.0,
+          0.5,  0.5,  0.5, 1.0,    1.0, 0.0, 0.0, 1.0,
+          0.5, -0.5,  0.5, 1.0,    1.0, 1.0, 1.0, 1.0,
+         -0.5, -0.5,  0.5, 1.0,    0.0, 1.0, 0.0, 1.0);
+   --  vec4 in_Position
+   --  vec4 in_Color
+
    Matrices : constant Orka.Types.Singles.Matrix4_Array := Create_Matrices;
 
-   function Load_Mesh (Program : Orka.Rendering.Programs.Program) return Vertex_Format is
-      use all type Orka.Types.Element_Type;
-
-      Vertices : constant Single_Array
-        := (-0.5,  0.5, -0.5, 1.0, 1.0, 1.0,
-             0.5,  0.5, -0.5, 0.0, 1.0, 0.0,
-             0.5, -0.5, -0.5, 0.0, 0.0, 1.0,
-            -0.5, -0.5, -0.5, 1.0, 0.0, 0.0,
-
-            -0.5,  0.5,  0.5, 0.0, 0.0, 1.0,
-             0.5,  0.5,  0.5, 1.0, 0.0, 0.0,
-             0.5, -0.5,  0.5, 1.0, 1.0, 1.0,
-            -0.5, -0.5,  0.5, 0.0, 1.0, 0.0);
-
-      --  Create buffers containing attributes and indices
-      Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
-      Buffer_2 : constant Buffer := Create_Buffer ((others => False), Indices);
-      Buffer_3 : constant Buffer := Create_Buffer ((others => False), Matrices);
-
-      procedure Add_Vertex_Attributes (Buffer : in out Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Position"), 3);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Color"), 3);
-         Buffer.Set_Buffer (Buffer_1);
-      end Add_Vertex_Attributes;
-
-      procedure Add_Matrix_Attribute (Buffer : in out Attribute_Buffer) is
-      begin
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Model") + 0, 4);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Model") + 1, 4);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Model") + 2, 4);
-         Buffer.Add_Attribute (Program.Attribute_Location ("in_Model") + 3, 4);
-         Buffer.Set_Per_Instance (True);  --  An alternative is to bind Buffer_3 as an SSBO
-         Buffer.Set_Buffer (Buffer_3);
-      end Add_Matrix_Attribute;
-   begin
-      Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
-
-      --  Create mesh and its attributes
-      return Result : Vertex_Format := Create_Vertex_Format (UInt_Type) do
-         Result.Add_Attribute_Buffer (Single_Type, Add_Vertex_Attributes'Access);
-         Result.Add_Attribute_Buffer (Single_Type, Add_Matrix_Attribute'Access);
-         Result.Set_Index_Buffer (Buffer_2);
-      end return;
-   end Load_Mesh;
+   --  Create buffers containing attributes and indices
+   Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
+   Buffer_2 : constant Buffer := Create_Buffer ((others => False), Indices);
+   Buffer_3 : constant Buffer := Create_Buffer ((others => False), Matrices);
 
    use Orka.Resources;
 
@@ -143,54 +127,60 @@ procedure Orka_Test.Test_11_Instancing is
    Uni_View  : constant Uniforms.Uniform := Program_1.Uniform ("view");
    Uni_Proj  : constant Uniforms.Uniform := Program_1.Uniform ("proj");
 
-   VF_1 : constant Vertex_Format := Load_Mesh (Program_1);
+   FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
-   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
-
-   Mouse_X, Mouse_Y, Mouse_Z, Distance_Center : Single;
+   use Orka.Cameras;
+   Lens : constant Lens_Ptr
+     := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
+   Current_Camera : constant Camera_Ptr
+     := new Camera'Class'(Camera'Class
+          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_D)));
 begin
-   Distance_Center := Single (Instances_Dimension);
-   Distance_Center := Distance_Center + (Distance_Center - 1.0) * Space_Between_Cubes;
-   Distance_Center := Distance_Center / 2.0 - 0.5 + 1.2;
+   Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
 
-   GL_Test.Display_Backend.Set_Zoom_Distance (100.0);
+   declare
+      Distance_Center : Double := Double (Instances_Dimension);
+   begin
+      Distance_Center := Distance_Center + (Distance_Center - 1.0) * Space_Between_Cubes;
+
+      Rotate_Around_Cameras.Rotate_Around_Camera (Current_Camera.all).Set_Radius
+        (1.5 * Distance_Center);
+   end;
+
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
 
    Program_1.Use_Program;
 
    --  Projection matrix
-   Uni_Proj.Set_Matrix (Transforms.Infinite_Perspective (45.0, 1.0, 10.0));
+   Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
    GL.Toggles.Enable (GL.Toggles.Cull_Face);
    GL.Toggles.Enable (GL.Toggles.Depth_Test);
 
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 0.0), Depth => 1.0, others => <>));
-   VF_1.Bind;
+   Buffer_1.Bind (Shader_Storage, 0);
+   Buffer_3.Bind (Shader_Storage, 1);
 
-   while not GL_Test.Display_Backend.Get_Window.Should_Close loop
-      FB_D.Clear ((Color | Depth => True, others => False));
+   while not Window.Should_Close loop
+      Window.Process_Input;
 
-      Mouse_X := Single (GL_Test.Display_Backend.Get_Mouse_X);
-      Mouse_Y := Single (GL_Test.Display_Backend.Get_Mouse_Y);
-      Mouse_Z := Single (GL_Test.Display_Backend.Get_Zoom_Distance);
-
-      --  View matrix
+      Current_Camera.Update (0.01666);
       declare
-         Matrix_View : Transforms.Matrix4 := Transforms.Identity_Value;
+         VP : constant Transforms.Vector4 :=
+           Orka.Transforms.Doubles.Vector_Conversions.Convert (Current_Camera.View_Position);
+
+         use Transforms.Vectors;
+         use Transforms;
+
+         TM : constant Transforms.Matrix4 := Transforms.T (Transforms.Zero_Point - VP);
       begin
-         Transforms.Translate (Matrix_View,
-           (-Distance_Center, -Distance_Center, -Distance_Center, 0.0));
-
-         Transforms.Rotate_Y_At_Origin (Matrix_View, Mouse_X);
-         Transforms.Rotate_X_At_Origin (Matrix_View, Mouse_Y);
-         Transforms.Translate (Matrix_View, (0.0, 0.0, -Mouse_Z, 0.0));
-
-         Uni_View.Set_Matrix (Matrix_View);
+         Uni_View.Set_Matrix (Current_Camera.View_Matrix * TM);
       end;
 
-      GL.Drawing.Draw_Elements (Triangles, Indices'Length, UInt_Type, Matrices'Length, 0);
+      FB_D.Clear ((Color | Depth => True, others => False));
 
-      GL_Test.Display_Backend.Swap_Buffers_And_Poll_Events;
+      Orka.Rendering.Drawing.Draw_Indexed (Triangles, Buffer_2, 0, Indices'Length, Matrices'Length);
+
+      --  Swap front and back buffers and process events
+      Window.Swap_Buffers;
    end loop;
-
-   GL_Test.Display_Backend.Shutdown;
 end Orka_Test.Test_11_Instancing;
