@@ -17,8 +17,6 @@
 package GL.Objects.Vertex_Arrays is
    pragma Preelaborate;
 
-   type Binding is new UInt;
-
    type Vertex_Array_Object is new GL_Object with private;
    --  A single VAO is manually created and binded after the context
    --  is made current.

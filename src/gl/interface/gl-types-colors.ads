@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C.Pointers;
-
 package GL.Types.Colors is
    pragma Preelaborate;
 
@@ -23,17 +21,11 @@ package GL.Types.Colors is
 
    subtype Component is Single range 0.0 .. 1.0;
 
-   type Color is array (Color_Index) of aliased Component;
-
-   pragma Convention (C, Color);
+   type Color is array (Color_Index) of aliased Component
+     with Convention => C;
 
    type Enabled_Color is array (Color_Index) of Boolean
      with Convention => C;
-
-   type Color_Array is array (Size range <>) of aliased Color;
-
-   package Color_Pointers is new Interfaces.C.Pointers
-     (Size, Color, Color_Array, Color'(others => 0.0));
 
    -----------------------------------------------------------------------------
 
