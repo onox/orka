@@ -21,34 +21,56 @@ package Orka.Rendering.Buffers.MDI is
 
    package UB renames Mapped.Unsynchronized;
 
-   type Batch is tagged record
+   type Batch
+     (Vertex_Kind : Types.Numeric_Type;
+      Index_Kind  : Types.Index_Type)
+   is tagged record
       --  Attributes
       Data : UB.Unsynchronized_Mapped_Buffer
-        (Kind => Types.Half_Type,
+        (Kind => Vertex_Kind,
          Mode => Mapped.Write);
 
-      Indices   : UB.Unsynchronized_Mapped_Buffer
-        (Kind => Types.UInt_Type,
+      Indices : UB.Unsynchronized_Mapped_Buffer
+        (Kind => Index_Kind,
          Mode => Mapped.Write);
 
-      Commands  : UB.Unsynchronized_Mapped_Buffer
+      Commands : UB.Unsynchronized_Mapped_Buffer
         (Kind => Types.Elements_Command_Type,
          Mode => Mapped.Write);
 
-      Index_Offset  : Natural := 0;
-      Vertex_Offset : Natural := 0;
-      Index         : Natural := 0;
+      Index_Offset   : Natural := 0;
+      Vertex_Offset  : Natural := 0;
+      Draw_Index     : Natural := 0;
+      Instance_Index : Natural := 0;
    end record;
+
+   procedure Append
+     (Object    : in out Batch;
+      Instances : Natural;
+      Vertices  : Natural;
+      Indices   : Natural;
+      Append_Vertices : not null access procedure (Offset, Count : Natural);
+      Append_Indices  : not null access procedure (Offset, Count : Natural));
+
+   function Create_Batch
+     (Vertex_Kind : Types.Numeric_Type;
+      Index_Kind  : Types.Index_Type;
+      Parts, Vertex_Data, Indices : Positive) return Batch;
+
+   procedure Finish_Batch (Object : in out Batch);
+
+   -----------------------------------------------------------------------------
+
+   function Create_Batch (Parts, Vertices, Indices : Positive) return Batch
+     with Post => Create_Batch'Result.Vertex_Kind = Types.Half_Type and
+                  Create_Batch'Result.Index_Kind  = Types.UInt_Type;
 
    procedure Append
      (Object : in out Batch;
       Positions : not null Indirect.Half_Array_Access;
       Normals   : not null Indirect.Half_Array_Access;
       UVs       : not null Indirect.Half_Array_Access;
-      Indices   : not null Indirect.UInt_Array_Access);
-
-   function Create_Batch (Parts, Vertices, Indices : Positive) return Batch;
-
-   procedure Finish_Batch (Object : in out Batch);
+      Indices   : not null Indirect.UInt_Array_Access)
+   with Pre => Object.Vertex_Kind = Types.Half_Type and Object.Index_Kind = Types.UInt_Type;
 
 end Orka.Rendering.Buffers.MDI;

@@ -88,7 +88,7 @@ private
 
    type Model is limited new Resource with record
       Scene   : Model_Scene_Ptr;
-      Batch   : Rendering.Buffers.MDI.Batch;
+      Batch   : Rendering.Buffers.MDI.Batch (Types.Half_Type, Types.UInt_Type);
       Bounds  : Rendering.Buffers.Buffer (Types.Single_Vector_Type);
    end record;
 
