@@ -169,8 +169,7 @@ begin
    FFT_CS.Compute_FFT (BO_1, FFT_W, FFT_H, In_Vertical_Direction, Inverse => False);
    Timer_1.Stop;
 
-   GL.Barriers.Memory_Barrier
-     ((By_Region => False, Shader_Storage | Buffer_Update => True, others => False));
+   GL.Barriers.Memory_Barrier ((Shader_Storage | Buffer_Update => True, others => False));
 
    Print_Numbers ("FFT");
 
@@ -178,8 +177,7 @@ begin
    FFT_CS.Compute_FFT (BO_1, FFT_W, FFT_H, In_Vertical_Direction, Inverse => True);
    Timer_1.Stop;
 
-   GL.Barriers.Memory_Barrier
-     ((By_Region => False, Buffer_Update => True, others => False));
+   GL.Barriers.Memory_Barrier ((Buffer_Update => True, others => False));
 
    Print_Numbers ("Inverse FFT");
 end Orka_Test.Test_6_FFT;

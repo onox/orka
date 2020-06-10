@@ -216,7 +216,7 @@ package body Orka.Rendering.Effects.Filters is
          GL.Compute.Dispatch_Compute (X => Object.Rows);
 
          GL.Barriers.Memory_Barrier
-           ((By_Region => False, Shader_Image_Access | Texture_Fetch => True, others => False));
+           ((Shader_Image_Access | Texture_Fetch => True, others => False));
 
          --  Vertical pass: Texture_V => Texture_H
          Object.Uniform_Horizontal.Set_Boolean (False);
@@ -226,7 +226,7 @@ package body Orka.Rendering.Effects.Filters is
          GL.Compute.Dispatch_Compute (X => Object.Columns);
 
          GL.Barriers.Memory_Barrier
-           ((By_Region => False, Shader_Image_Access | Texture_Fetch => True, others => False));
+           ((Shader_Image_Access | Texture_Fetch => True, others => False));
       end loop;
    end Render;
 

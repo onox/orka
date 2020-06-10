@@ -100,8 +100,7 @@ package body Orka.Algorithms.Prefix_Sums is
          Buffer_1.Bind (Shader_Storage, 0);
          Buffer_2.Bind (Shader_Storage, 1);
 
-         GL.Barriers.Memory_Barrier
-           ((By_Region => False, Shader_Storage => True, others => False));
+         GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
          GL.Compute.Dispatch_Compute (X => UInt (Work_Groups));
       end Compute_Sum;
 
@@ -111,8 +110,7 @@ package body Orka.Algorithms.Prefix_Sums is
          Buffer_1.Bind (Shader_Storage, 0);
          Buffer_2.Bind (Shader_Storage, 1);
 
-         GL.Barriers.Memory_Barrier
-           ((By_Region => False, Shader_Storage => True, others => False));
+         GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
          GL.Compute.Dispatch_Compute (X => UInt (Work_Groups));
       end Add;
    begin

@@ -70,9 +70,7 @@ package body Orka.Algorithms.FFT is
 
       Buffer.Bind (Shader_Storage, 0);
 
-      GL.Barriers.Memory_Barrier
-        ((By_Region => False, Shader_Storage => True, others => False));
-
+      GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
       GL.Compute.Dispatch_Compute
         (X => UInt (Single'Ceiling (Single (Rows) / Single (Rows_In_Shared))));
    end Compute_FFT;

@@ -101,8 +101,7 @@ package body Orka.Culling is
 
    procedure Memory_Barrier with Inline is
    begin
-      GL.Barriers.Memory_Barrier
-        ((By_Region => False, Shader_Storage | Buffer_Update => True, others => False));
+      GL.Barriers.Memory_Barrier ((Shader_Storage | Buffer_Update => True, others => False));
    end Memory_Barrier;
 
    use GL.Types;

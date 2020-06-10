@@ -180,8 +180,7 @@ package body Orka.Features.Terrain is
                GL.Compute.Dispatch_Compute (X => 1, Y => 1, Z => 1);
             end loop;
 
-            GL.Barriers.Memory_Barrier
-              ((By_Region => False, Shader_Storage => True, others => False));
+            GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
          end;
 
          if Initialize_Render /= null then
@@ -216,8 +215,7 @@ package body Orka.Features.Terrain is
             end if;
          end;
       end loop;
-      GL.Barriers.Memory_Barrier
-        ((By_Region => False, Shader_Storage => True, others => True));
+      GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
    end Update;
 
    procedure Reduce
@@ -239,8 +237,7 @@ package body Orka.Features.Terrain is
             GL.Compute.Dispatch_Compute (X => GL.Types.UInt (Num_Group));
          end if;
       end loop;
-      GL.Barriers.Memory_Barrier
-        ((By_Region => False, Shader_Storage => True, others => False));
+      GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
 
       --  Reduction
       Depth := Depth - 5;
@@ -260,8 +257,7 @@ package body Orka.Features.Terrain is
                   GL.Compute.Dispatch_Compute (X => GL.Types.UInt (Num_Group));
                end if;
             end loop;
-            GL.Barriers.Memory_Barrier
-              ((By_Region => False, Shader_Storage => True, others => False));
+            GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
          end;
       end loop;
    end Reduce;

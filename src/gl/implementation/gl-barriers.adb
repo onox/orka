@@ -31,7 +31,7 @@ package body GL.Barriers is
       function Convert is new Ada.Unchecked_Conversion
         (Source => Memory_Barrier_Bits, Target => Low_Level.Bitfield);
       Raw_Bits : constant Low_Level.Bitfield :=
-        Convert (Bits) and 2#1111111111101111#;
+        Convert (Bits) and 2#1111011111101110#;
    begin
       API.Memory_Barrier.Ref (Raw_Bits);
    end Memory_Barrier;

@@ -83,9 +83,7 @@ package body Orka.Resources.Models is
       Object.Model.Batch.Data.Bind (Shader_Storage, 1);
       Object.Compacted_Transforms.Bind (Shader_Storage, 0);
 
-      GL.Barriers.Memory_Barrier
-        ((By_Region => False, Shader_Storage | Command => True, others => False));
-
+      GL.Barriers.Memory_Barrier ((Shader_Storage | Command => True, others => False));
       Rendering.Drawing.Draw_Indexed_Indirect
         (GL.Types.Triangles, Object.Model.Batch.Indices.Buffer, Object.Compacted_Commands);
    end Render;

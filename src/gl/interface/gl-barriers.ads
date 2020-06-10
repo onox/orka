@@ -28,13 +28,11 @@ package GL.Barriers is
       Shader_Storage       : Boolean := False;
       case By_Region is
          when False =>
-            Vertex_Attrib_Array  : Boolean := False;
             Element_Array        : Boolean := False;
             Command              : Boolean := False;
             Pixel_Buffer         : Boolean := False;
             Texture_Update       : Boolean := False;
             Buffer_Update        : Boolean := False;
-            Transform_Feedback   : Boolean := False;
             Client_Mapped_Buffer : Boolean := False;
             Query_Buffer         : Boolean := False;
          when others =>
@@ -56,7 +54,6 @@ package GL.Barriers is
 private
 
    for Memory_Barrier_Bits use record
-      Vertex_Attrib_Array  at 0 range 0 .. 0;
       Element_Array        at 0 range 1 .. 1;
       Uniform              at 0 range 2 .. 2;
       Texture_Fetch        at 0 range 3 .. 3;
@@ -66,13 +63,12 @@ private
       Texture_Update       at 0 range 8 .. 8;
       Buffer_Update        at 0 range 9 .. 9;
       Framebuffer          at 0 range 10 .. 10;
-      Transform_Feedback   at 0 range 11 .. 11;
       Atomic_Counter       at 0 range 12 .. 12;
       Shader_Storage       at 0 range 13 .. 13;
       Client_Mapped_Buffer at 0 range 14 .. 14;
       Query_Buffer         at 0 range 15 .. 15;
 
-      -- Discriminant
+      --  Discriminant
       By_Region            at 2 range 0 .. 0;
    end record;
    for Memory_Barrier_Bits'Size use Low_Level.Bitfield'Size;
