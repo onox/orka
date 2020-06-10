@@ -83,7 +83,15 @@ package body Orka.KTX is
       Compressed : constant Boolean := File_Header.Data_Type = 0;
    begin
       pragma Assert (File_Header.Endianness = Endianness_Reference);
-      pragma Assert (File_Header.Type_Size in 1 | 2 | 4);
+      --  Endianness conversion is not supported in the code
+
+      if Compressed then
+         pragma Assert (File_Header.Type_Size in 0 | 1);
+         --  Compressed textures should have a Type_Size = 1, but some files
+         --  set this to 0
+      else
+         pragma Assert (File_Header.Type_Size in 1 | 2 | 4);
+      end if;
 
       return Result : Header (Compressed) do
          pragma Assert (File_Header.Width > 0);
@@ -135,7 +143,7 @@ package body Orka.KTX is
 
          if Compressed then
             pragma Assert (File_Header.Format = 0);
-            pragma Assert (File_Header.Type_Size = 1);
+            pragma Assert (File_Header.Type_Size in 0 | 1);
             pragma Assert (File_Header.Mipmap_Levels > 0);
 
             --  Format / Internal format
