@@ -95,8 +95,8 @@ package body Orka.glTF.Accessors is
          Result.Kind       := Kind;
          Result.Normalized := Object.Get ("normalized", False).Value;
          Result.Count      := Positive (Long_Integer'(Object.Get ("count").Value));
-         Result.Min_Bounds := Create_Bounds (Object.Get ("min"));
-         Result.Max_Bounds := Create_Bounds (Object.Get ("max"));
+         Result.Min_Bounds := Create_Bounds (Object.Get_Array_Or_Empty ("min"));
+         Result.Max_Bounds := Create_Bounds (Object.Get_Array_Or_Empty ("max"));
       end return;
    end Create_Accessor;
 
