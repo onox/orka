@@ -27,13 +27,15 @@ with GL.Types;
 with GL.Viewports;
 
 with Orka.Behaviors;
-with Orka.Contexts;
 with Orka.Cameras.Rotate_Around_Cameras;
-with Orka.Loops;
+with Orka.Contexts;
 with Orka.Debug;
 with Orka.Futures;
+with Orka.Inputs.GLFW;
+with Orka.Inputs.Joysticks.Gamepads;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
+with Orka.Loops;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
@@ -50,8 +52,15 @@ procedure Orka_KTX is
    Width   : constant := 1280;
    Height  : constant := 720;
 
+   type Display_Mode is (Mode_A, Mode_B);
+
    package Job_System renames Orka_Package_glTF.Job_System;
    package Loader     renames Orka_Package_glTF.Loader;
+
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
+   package Messages is new Orka.Logging.Messages (Application);
 
    use Ada.Exceptions;
 begin
@@ -73,8 +82,43 @@ begin
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
 
       Context : Orka.Contexts.Context'Class := Window.Context;
+
+      JS : Orka.Inputs.Joysticks.Joystick_Input_Access;
+
+      JS_Manager : constant Orka.Inputs.Joysticks.Joystick_Manager_Ptr :=
+        Orka.Inputs.GLFW.Create_Joystick_Manager;
+
+      use type Orka.Inputs.Joysticks.Joystick_Input_Access;
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
+
+      --  Updating the gamepad mappings database might be necessary
+      --  in order to detect some joysticks as gamepads
+      declare
+         package Locations renames Orka.Resources.Locations;
+
+         Location_Data : constant Locations.Location_Ptr
+           := Locations.Directories.Create_Location ("../data");
+      begin
+         if Location_Data.Exists ("gamecontrollerdb.txt") then
+            declare
+               Mappings : constant String
+                 := Orka.Resources.Convert (Orka.Resources.Byte_Array'(Location_Data.Read_Data
+                      ("gamecontrollerdb.txt").Get));
+            begin
+               Orka.Inputs.GLFW.Update_Gamepad_Mappings (Mappings);
+               Messages.Log (Info, "Updated gamepad mappings");
+            end;
+         end if;
+      end;
+
+      JS_Manager.Acquire (JS);
+
+      if JS /= null then
+         Messages.Log (Info, "Found " & (if JS.Is_Gamepad then "gamepad" else "joystick"));
+         Messages.Log (Info, "  name: " & JS.Name);
+         Messages.Log (Info, "  GUID: " & JS.GUID);
+      end if;
 
       declare
          Full_Path     : constant String := Ada.Command_Line.Argument (1);
@@ -114,6 +158,8 @@ begin
          T_1 : constant Texture := Orka.Resources.Textures.KTX.Read_Texture
            (Location_Textures, Texture_Path);
 
+         Maximum_Level : constant Mipmap_Level := T_1.Mipmap_Levels - 1;
+
          ----------------------------------------------------------------------
 
          Location_Shaders : constant Locations.Location_Ptr
@@ -143,7 +189,7 @@ begin
                   return Modules.Create_Module (Location_Shaders,
                     VS => "oversized-triangle.vert",
                     FS => "tools/ktx-2D-array.frag");
-               when others => raise Constraint_Error;
+               when others => raise Constraint_Error with "Unsupported texture kind";
             end case;
          end Get_Module;
 
@@ -158,6 +204,34 @@ begin
                when others => raise Constraint_Error;
             end case;
          end Draw;
+
+         procedure Update_Title
+           (Kind   : LE.Texture_Kind;
+            Mode   : Display_Mode;
+            Colors : Boolean;
+            Level, Levels : Mipmap_Level)
+         is
+            use all type LE.Texture_Kind;
+            use type Display_Mode;
+
+            Text : SU.Unbounded_String := SU.To_Unbounded_String ("KTX viewer - " & Texture_Path);
+         begin
+            if Levels > 1 then
+               SU.Append (Text, " (level " & Orka.Logging.Trim (Mipmap_Level'Image (Level + 1)) &
+                 "/" & Orka.Logging.Trim (Levels'Image) & ")");
+            end if;
+
+            case Kind is
+               when Texture_1D | Texture_2D | Texture_2D_Array =>
+                  SU.Append (Text, " (best fit: " & Boolean'Image (Mode = Mode_A) & ")");
+               when Texture_3D | Texture_Cube_Map =>
+                  SU.Append (Text, " (external view: " & Boolean'Image (Mode = Mode_B) & ")");
+                  SU.Append (Text, " (colors: " & Colors'Image & ")");
+               when others => null;
+            end case;
+
+            Window.Set_Title (SU.To_String (Text));
+         end Update_Title;
 
          P_1 : Program := Create_Program (Get_Module (T_1.Kind));
 
@@ -187,9 +261,14 @@ begin
          GL.Toggles.Enable (GL.Toggles.Depth_Test);
          GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
-         Window.Set_Title ("KTX viewer - " & Texture_Path);
-
          declare
+            package Gamepads renames Orka.Inputs.Joysticks.Gamepads;
+
+            Level : Mipmap_Level := 0;
+
+            Render_Mode   : Display_Mode := Mode_A;
+            Render_Colors : Boolean      := False;
+
             procedure Render
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
                Camera : Orka.Cameras.Camera_Ptr)
@@ -198,7 +277,42 @@ begin
             begin
                Camera.FB.Clear;
 
-               T_1.Set_Lowest_Mipmap_Level (0);
+               if JS /= null and then JS.Is_Present and then JS.Is_Gamepad then
+                  JS.Update_State (null);
+
+                  declare
+                     Last_State : constant Orka.Inputs.Joysticks.Joystick_State := JS.Last_State;
+                     State      : constant Orka.Inputs.Joysticks.Joystick_State := JS.Current_State;
+
+                     use all type Orka.Inputs.Joysticks.Button_State;
+                     use all type Gamepads.Button;
+                  begin
+                     for Index in 1 .. State.Button_Count loop
+                        if State.Buttons (Index) /= Last_State.Buttons (Index)
+                          and State.Buttons (Index) = Pressed
+                        then
+                           case Gamepads.Button'(Gamepads.Value (Index)) is
+                              when Left_Pad_Left =>
+                                 Level := Mipmap_Level'Max (0, Level - 1);
+                              when Left_Pad_Right =>
+                                 Level := Mipmap_Level'Min (Maximum_Level, Level + 1);
+                              when Right_Pad_Up =>
+                                 if Render_Mode = Display_Mode'Last then
+                                    Render_Mode := Display_Mode'First;
+                                 else
+                                    Render_Mode := Display_Mode'Succ (Render_Mode);
+                                 end if;
+                              when Right_Pad_Down =>
+                                 Render_Colors := not Render_Colors;
+                              when others => null;
+                           end case;
+                        end if;
+                     end loop;
+                  end;
+               end if;
+
+               T_1.Set_Lowest_Mipmap_Level (Level);
+               Update_Title (T_1.Kind, Render_Mode, Render_Colors, Level, Maximum_Level + 1);
 
                case T_1.Kind is
                   when Texture_1D | Texture_2D | Texture_2D_Array =>
@@ -209,7 +323,7 @@ begin
                         Uni_Screen.Set_Vector (Orka.Types.Singles.Vector4'
                           (Single (Window.Width), Single (Window.Height), 0.0, 0.0)
                         );
-                        Uni_Best_Fit.Set_Boolean (True);
+                        Uni_Best_Fit.Set_Boolean (Render_Mode = Mode_A);
                      end;
                   when Texture_3D | Texture_Cube_Map =>
                      declare
@@ -222,8 +336,8 @@ begin
                         Uni_View.Set_Matrix (Camera.View_Matrix);
                         Uni_Proj.Set_Matrix (Camera.Projection_Matrix);
 
-                        Uni_External.Set_Boolean (False);
-                        Uni_Colors.Set_Boolean (False);
+                        Uni_External.Set_Boolean (Render_Mode = Mode_B);
+                        Uni_Colors.Set_Boolean (Render_Colors);
                      end;
                   when others => null;
                end case;

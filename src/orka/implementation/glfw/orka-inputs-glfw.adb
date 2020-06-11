@@ -345,4 +345,9 @@ package body Orka.Inputs.GLFW is
       return Default_Manager'Access;
    end Create_Joystick_Manager;
 
+   procedure Update_Gamepad_Mappings (Mappings : String) is
+   begin
+      Joysticks.Update_Gamepad_Mappings (Mappings);
+   end Update_Gamepad_Mappings;
+
 end Orka.Inputs.GLFW;

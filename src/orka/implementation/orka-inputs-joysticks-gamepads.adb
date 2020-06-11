@@ -16,10 +16,16 @@
 
 package body Orka.Inputs.Joysticks.Gamepads is
 
-   function Index (Value : Button) return Positive is
+   function Value (Index : Button_Index) return Button is
+     (Button'Val (Index - Button_Index'First));
+
+   function Value (Index : Axis_Index) return Axis is
+     (Axis'Val (Index - Axis_Index'First));
+
+   function Index (Value : Button) return Button_Index is
      (Button_Index'First + Button'Pos (Value));
 
-   function Index (Value : Axis) return Positive is
+   function Index (Value : Axis) return Axis_Index is
      (Axis_Index'First + Axis'Pos (Value));
 
    procedure Normalize_Axes (Axes : in out Axis_Positions) is

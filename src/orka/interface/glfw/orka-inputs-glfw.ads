@@ -43,6 +43,8 @@ package Orka.Inputs.GLFW is
 
    function Create_Joystick_Manager return Inputs.Joysticks.Joystick_Manager_Ptr;
 
+   procedure Update_Gamepad_Mappings (Mappings : String);
+
 private
 
    type GLFW_Pointer_Input is new Pointers.Default.Abstract_Pointer_Input with record

@@ -42,9 +42,11 @@ package Orka.Inputs.Joysticks.Gamepads is
       Left_Trigger,
       Right_Trigger);
 
-   function Index (Value : Button) return Positive;
+   function Value (Index : Button_Index) return Button;
+   function Value (Index : Axis_Index) return Axis;
 
-   function Index (Value : Axis) return Positive;
+   function Index (Value : Button) return Button_Index;
+   function Index (Value : Axis) return Axis_Index;
 
    procedure Normalize_Axes (Axes : in out Axis_Positions);
 
