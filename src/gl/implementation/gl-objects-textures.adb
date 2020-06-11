@@ -458,12 +458,6 @@ package body GL.Objects.Textures is
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
    is
-      --  Data is considered to be packed. When loading it to a texture,
-      --  it will be unpacked. Therefore, each row must be a multiple of the
-      --  current unpack alignment. Call Set_Unpack_Alignment if necessary.
-      Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Unpack_Alignment);
-      pragma Assert ((Width * PE.Bytes (Source_Type)) mod Alignment = 0);
-
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
       --  according to Table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count

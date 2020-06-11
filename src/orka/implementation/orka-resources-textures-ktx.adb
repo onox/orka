@@ -178,8 +178,6 @@ package body Orka.Resources.Textures.KTX is
                   pragma Assert
                     (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes.Value'Last);
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
-                  --  TODO Unpack_Alignment must be 4, but Load_From_Data wants 1 | 2 | 4
-                  --  depending on Header.Data_Type
 
                   Level_Width  : constant GL.Types.Size := Texture.Width  (Level);
                   Level_Height : constant GL.Types.Size := Texture.Height (Level);
@@ -190,8 +188,16 @@ package body Orka.Resources.Textures.KTX is
                      Texture.Load_From_Data (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
                        Header.Compressed_Format, GL.Types.Int (Image_Size), Image_Data);
                   else
-                     Texture.Load_From_Data (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
-                       Header.Format, Header.Data_Type, Image_Data);
+                     declare
+                        Original_Alignment : constant GL.Pixels.Alignment :=
+                          GL.Pixels.Unpack_Alignment;
+                     begin
+                        GL.Pixels.Set_Unpack_Alignment (GL.Pixels.Words);
+                        Texture.Load_From_Data (Level, 0, 0, 0,
+                          Level_Width, Level_Height, Level_Depth,
+                          Header.Format, Header.Data_Type, Image_Data);
+                        GL.Pixels.Set_Unpack_Alignment (Original_Alignment);
+                     end;
                   end if;
 
                   Image_Size_Index := Image_Size_Index + Stream_Element_Offset (Mipmap_Size);

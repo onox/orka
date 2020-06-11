@@ -261,6 +261,11 @@ package GL.Objects.Textures is
       Source_Type   : Pixels.Data_Type;
       Source        : System.Address)
    with Pre => Object.Allocated and not Object.Compressed;
+   --  Load data to allocated texture
+   --
+   --  Data is considered to be packed. When loading it to a texture,
+   --  it will be unpacked. Therefore, each row in bytes must be a multiple
+   --  of the current unpack alignment. Call Set_Unpack_Alignment if necessary.
 
    procedure Load_From_Data
      (Object : Texture;
