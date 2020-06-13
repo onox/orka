@@ -93,8 +93,6 @@ procedure Orka_Test.Test_12_Stencil is
    --  vec2 texcoord
 
    function Get_Scene_Data return Single_Array is
-      use all type Orka.Types.Element_Type;
-
       V1 : constant Single_Array := (-0.5,  0.5,  0.5);
       V2 : constant Single_Array := (+0.5,  0.5,  0.5);
       V3 : constant Single_Array := (-0.5, -0.5,  0.5);

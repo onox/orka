@@ -25,7 +25,6 @@ with Orka.Contexts;
 with Orka.Debug;
 with Orka.Logging;
 with Orka.Rendering.Buffers;
-with Orka.Rendering.Programs;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
 with Orka.Timers;
@@ -55,7 +54,6 @@ procedure Orka_Test.Test_6_FFT is
    use GL.Types;
 
    use Orka.Rendering.Buffers;
-   use Orka.Rendering.Programs;
    use Orka.Resources;
 
    use all type Orka.Types.Element_Type;

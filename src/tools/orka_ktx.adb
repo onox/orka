@@ -131,7 +131,6 @@ begin
          use Orka.Resources;
 
          use GL.Types;
-         use all type Orka.Types.Index_Type;
 
          ----------------------------------------------------------------------
 
