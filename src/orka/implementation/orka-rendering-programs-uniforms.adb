@@ -177,23 +177,19 @@ package body Orka.Rendering.Programs.Uniforms is
       Data   : GL.Types.Int_Array)
    is
       use type GL.Types.Int;
+
+      Offset : constant GL.Types.Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
             Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector2'
-              (Data (Data'First),
-                     Data (Data'First + 1)));
+              (Data (Offset), Data (Offset + 1)));
          when 3 =>
             Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector3'
-              (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2)));
          when 4 =>
             Object.GL_Uniform.Set_Int_Vector (GL.Types.Ints.Vector4'
-              (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2),
-                     Data (Data'First + 3)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2), Data (Offset + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
@@ -203,23 +199,19 @@ package body Orka.Rendering.Programs.Uniforms is
       Data   : GL.Types.UInt_Array)
    is
       use type GL.Types.Int;
+
+      Offset : constant GL.Types.Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
             Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector2'
-              (Data (Data'First),
-                     Data (Data'First + 1)));
+              (Data (Offset), Data (Offset + 1)));
          when 3 =>
             Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector3'
-              (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2)));
          when 4 =>
             Object.GL_Uniform.Set_UInt_Vector (GL.Types.UInts.Vector4'
-              (Data (Data'First),
-                     Data (Data'First + 1),
-                     Data (Data'First + 2),
-                     Data (Data'First + 3)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2), Data (Offset + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
@@ -229,23 +221,19 @@ package body Orka.Rendering.Programs.Uniforms is
       Data   : GL.Types.Single_Array)
    is
       use type GL.Types.Int;
+
+      Offset : constant GL.Types.Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
             Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector2'
-              (Data (Data'First),
-                      Data (Data'First + 1)));
+              (Data (Offset), Data (Offset + 1)));
          when 3 =>
             Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector3'
-              (Data (Data'First),
-                      Data (Data'First + 1),
-                      Data (Data'First + 2)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2)));
          when 4 =>
             Object.GL_Uniform.Set_Single_Vector (GL.Types.Singles.Vector4'
-              (Data (Data'First),
-                      Data (Data'First + 1),
-                      Data (Data'First + 2),
-                      Data (Data'First + 3)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2), Data (Offset + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
@@ -255,23 +243,19 @@ package body Orka.Rendering.Programs.Uniforms is
       Data   : GL.Types.Double_Array)
    is
       use type GL.Types.Int;
+
+      Offset : constant GL.Types.Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
             Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector2'
-              (Data (Data'First),
-                      Data (Data'First + 1)));
+              (Data (Offset), Data (Offset + 1)));
          when 3 =>
             Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector3'
-              (Data (Data'First),
-                      Data (Data'First + 1),
-                      Data (Data'First + 2)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2)));
          when 4 =>
             Object.GL_Uniform.Set_Double_Vector (GL.Types.Doubles.Vector4'
-              (Data (Data'First),
-                      Data (Data'First + 1),
-                      Data (Data'First + 2),
-                      Data (Data'First + 3)));
+              (Data (Offset), Data (Offset + 1), Data (Offset + 2), Data (Offset + 3)));
          when others => raise Constraint_Error;
       end case;
    end Set_Vector;
