@@ -74,26 +74,43 @@ package body Orka.Debug is
    procedure Set_Log_Messages (Enable : Boolean; Raise_API_Error : Boolean := False) is
    begin
       if Enable then
-         declare
-            Count : constant Natural := Natural (GL.Debug.Logs.Logged_Messages);
-         begin
-            if Count > 0 then
-               Log_Debug_Message (Application, Other, Notification, 0,
-                 "Flushing" & Count'Image & " messages in the debug log:");
-            end if;
-         end;
-
-         for M of GL.Debug.Logs.Message_Log loop
-            Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, M.Message.Element);
-         end loop;
-
-         GL.Toggles.Set (GL.Toggles.Debug_Output_Synchronous,
-           (if Raise_API_Error then GL.Toggles.Enabled else GL.Toggles.Disabled));
+         --  Enable synchronous output to prevent interleaving messages while
+         --  flushing the log below
+         GL.Toggles.Enable (GL.Toggles.Debug_Output_Synchronous);
          Debug_Synchronous := Raise_API_Error;
 
          GL.Toggles.Enable (GL.Toggles.Debug_Output);
          GL.Debug.Set_Message_Callback (Log_Debug_Message'Access);
          GL.Debug.Set (GL.Debug.Low, True);
+
+         --  At this point, a callback has been set, which guarantees that no
+         --  new messages will be stored in the log while we are flushing it
+         declare
+            Count     : constant Natural := Natural (GL.Debug.Logs.Logged_Messages);
+            Remaining :          Natural := Count;
+         begin
+            if Count > 0 then
+               Log_Debug_Message (Application, Other, Notification, 0,
+                 "Flushing" & Count'Image & " messages in the debug log:");
+
+               --  Use a loop because GL may fetch less messages than stored in the log
+               while Remaining > 0 loop
+                  declare
+                     Messages : constant GL.Debug.Logs.Message_Array := GL.Debug.Logs.Message_Log;
+                  begin
+                     for M of Messages loop
+                        Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, M.Message.Element);
+                     end loop;
+                     Remaining := Remaining - Messages'Length;
+                  end;
+               end loop;
+
+               Log_Debug_Message (Application, Other, Notification, 0, "End of messages in log");
+            end if;
+         end;
+
+         GL.Toggles.Set (GL.Toggles.Debug_Output_Synchronous,
+           (if Raise_API_Error then GL.Toggles.Enabled else GL.Toggles.Disabled));
       else
          GL.Toggles.Disable (GL.Toggles.Debug_Output);
          GL.Debug.Disable_Message_Callback;
