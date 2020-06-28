@@ -13,10 +13,31 @@ In order to build and use Orka you need to have:
 
  * [dcf-ada 2.0.1][url-dcf-ada] (for loading resources in Zip archives)
 
- * Video driver with [EGL 1.5][url-egl] or WGL, and OpenGL 4.6 core profile
-   (or 4.0 + extensions below)
+ * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
+   and OpenGL 4.6 core profile (or 4.0 + extensions below)
 
-    ??? summary "Required extensions in OpenGL 4.x"
+    ??? summary "Required EGL extensions"
+        Following table shows a list of client extensions:
+
+        | Client extension                      |
+        |---------------------------------------|
+        | EGL_KHR_debug                         |
+        | EGL_KHR_client_get_all_proc_addresses |
+        | EGL_EXT_client_extensions             |
+        | EGL_EXT_device_enumeration            |
+        | EGL_EXT_device_query                  |
+        | EGL_EXT_platform_base                 |
+        | EGL_EXT_platform_device               |
+
+        Following table shows a list of platform extensions:
+
+        | Platform extension                    |
+        |---------------------------------------|
+        | EGL_KHR_create_context                |
+        | EGL_KHR_no_config_context             |
+        | EGL_KHR_surfaceless_context           |
+
+    ??? summary "Required OpenGL extensions"
         Following table shows a list of extensions that are part of OpenGL 4.x.
         Video drivers which do not officially support OpenGL 4.6 might
         still support a subset of the extensions listed below.
@@ -31,16 +52,15 @@ In order to build and use Orka you need to have:
         | ARB\_clear\_texture                  | 4.4    | Textures      |
         | KHR\_debug                           | 4.3    | Debugging     |
         | ARB\_clear\_buffer\_object           | 4.3    |               |
-        | ARB\_compute\_shader                 | 4.3    | Culling       |
+        | ARB\_compute\_shader                 | 4.3    |               |
         | ARB\_copy\_image                     | 4.3    | Textures      |
         | ARB\_multi\_draw\_indirect           | 4.3    | glTF          |
-        | ARB\_shader\_storage\_buffer\_object | 4.3    | glTF, culling |
+        | ARB\_shader\_storage\_buffer\_object | 4.3    |               |
         | ARB\_program\_interface\_query       | 4.3    | Subroutines   |
         | ARB\_internalformat\_query2          | 4.3    | KTX writer    |
-        | ARB\_vertex\_attrib\_binding         | 4.3    |               |
         | ARB\_texture\_storage\_multisample   | 4.3    | Textures      |
         | ARB\_texture\_storage                | 4.2    | Textures      |
-        | ARB\_shader\_image\_load\_store      | 4.2    | Culling       |
+        | ARB\_shader\_image\_load\_store      | 4.2    | Barriers      |
         | ARB\_map\_buffer\_alignment          | 4.2    |               |
         | ARB\_separate\_shader\_objects       | 4.1    |               |
 

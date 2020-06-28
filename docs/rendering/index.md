@@ -22,21 +22,21 @@ some other data like a normal vector, texture coordinates, or a color.
 Primitives are shapes consisting of a number of vertices. A sequence of
 vertices can be interpretated as:
 
-- **Points**: Each vertex is a point.
+- **Points**. Each vertex is a point.
 
-- **Lines**: *n* lines requiring *n* x 2 vertices.
+- **Lines**. *n* lines requiring *n* x 2 vertices.
 
-- **Line strip**: *n* - 1 lines requiring *n* vertices.
+- **Line strip**. *n* - 1 lines requiring *n* vertices.
 
-- **Line loop**: A line strip that forms a circle.
+- **Line loop**. A line strip that forms a circle.
 
-- **Triangles**: *n* triangles requiring *n* x 3 vertices.
+- **Triangles**. *n* triangles requiring *n* x 3 vertices.
 
-- **Triangle strip**: *n* - 2 triangles requiring *n* vertices.
+- **Triangle strip**. *n* - 2 triangles requiring *n* vertices.
 
-- **Triangle fan**: A cone.
+- **Triangle fan**. A cone.
 
-- **Patches**: A special primitive used in tesselation.
+- **Patches**. A special primitive used in tesselation.
 
 3D models are usually rendered using triangles or triangle strips.
 
@@ -161,22 +161,22 @@ The graphics pipeline is a conceptual model that describes how data
 of several stages, some of which are fixed-function, some are configurable,
 and some are fully programmable:
 
-1. **Vertex assembly**: Fetches the attributes (position, etc.) of a vertex.
-1. **Vertex shader**: A shader which transforms the position (3D) of the
+1. **Vertex assembly**. Fetches the attributes (position, etc.) of a vertex.
+1. **Vertex shader**. A shader which transforms the position (3D) of the
    vertex to a normalized device coordinate (2D and between -1 and 1).
-1. **Primitive assembly**: Clips primitives if they intersect with the edge
+1. **Primitive assembly**. Clips primitives if they intersect with the edge
    of the screen and hands it over to the next stage.
-1. **Rasterizer**: Turns the visible parts of primitives into a bunch of
+1. **Rasterizer**. Turns the visible parts of primitives into a bunch of
    fragments (pixels).
-1. **Fragment shader**: A shader that computes the color of each fragment.
-1. **Blending**: Blends the color of the fragment with the previous color
+1. **Fragment shader**. A shader that computes the color of each fragment.
+1. **Blending**. Blends the color of the fragment with the previous color
    if multiple primitives are rendered on top of each other.
 
 Besides the graphics pipeline, which results in an image displayed on the
 screen, there is also a separate compute pipeline which consists of just
 one stage:
 
-1. **Compute shader**: Reads from and writes to buffers and textures.
+1. **Compute shader**. Reads from and writes to buffers and textures.
    Useful for non-graphics tasks like computing if a 3D model would show
    up on the screen or if it is out of view or behind another 3D model, or
    to do image post-processing.
@@ -196,14 +196,11 @@ objects and then draw the triangle in a loop.
 First we need to initialize the OpenGL context and create a window:
 
 ```ada
-Library : constant Orka.Contexts.Library'Class :=
-  := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+  (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-Window : aliased Orka.Windows.Window'Class
-  := Library.Create_Window (Width => 500, Height => 500);
-
-Context : Orka.Contexts.Context'Class := Window.Context;
-pragma Unreferenced (Context);
+Window : constant Orka.Windows.Window'Class
+  := Context.Create_Window (Width => 500, Height => 500);
 ```
 
 #### Buffer
@@ -341,14 +338,11 @@ and then draw the triangle. Press ++esc++ to close the application.
     with Orka.Windows.GLFW;
 
     procedure Triangle is
-       Library : constant Orka.Contexts.Library'Class :=
-         := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+       Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-       Window : aliased Orka.Windows.Window'Class
-         := Library.Create_Window (Width => 500, Height => 500);
-
-       Context : Orka.Contexts.Context'Class := Window.Context;
-       pragma Unreferenced (Context);
+       Window : constant Orka.Windows.Window'Class
+         := Context.Create_Window (Width => 500, Height => 500);
 
        use Orka.Resources;
        use Orka.Rendering.Buffers;

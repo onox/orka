@@ -155,8 +155,8 @@ To make sure the driver generates messages, use the `Debug` flag when
 initializing the windowing library:
 
 ```ada
-Library : constant Orka.Contexts.Library'Class :=
-  Orka.Windows.GLFW.Initialize (Major => 4, Minor => 3, Debug => True);
+Context : Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+  (Version => (4, 3), Flags  => (Debug => True, others => False));
 ```
 
 If `Debug` is `False` then the video driver may choose to not enable
