@@ -53,6 +53,9 @@ Additionally, Orka provides several bindings:
 of OpenGL 4.6. There are no bindings for fixed function functionality
 that is deprecated or functions that have been superseded by newer extensions.
 
+- **EGL**. Thick bindings for EGL are provided to create a surfaceless
+context for rendering without the presence of a windowing system.
+
 - **GLFW 3**. Provides bindings for [GLFW 3.x][url-glfw]. This
 is a library for creating windows with an OpenGL context on them. It also
 provides functionality for capturing user input on keyboard, mouse, and
