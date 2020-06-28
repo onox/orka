@@ -32,14 +32,12 @@ with Orka.Types;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_10_Compute is
-   Library : constant Orka.Contexts.Library'Class
-     := Orka.Windows.GLFW.Initialize (Major => 3, Minor => 2, Debug => True);
+   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+     (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-   Window : aliased Orka.Windows.Window'Class := Library.Create_Window
-     (1, 1, Visible => False);
-
-   Context : constant Orka.Contexts.Context'Class := Window.Context;
-   pragma Unreferenced (Context);
+   Window : constant Orka.Windows.Window'Class
+     := Context.Create_Window (1, 1, Visible => False);
+   pragma Unreferenced (Window);
 
    ----------------------------------------------------------------------
 

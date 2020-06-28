@@ -25,14 +25,11 @@ with Orka.Resources.Locations.Directories;
 with Orka.Windows.GLFW;
 
 procedure Orka_Test.Test_3_Module_Array is
-   Library : constant Orka.Contexts.Library'Class
-     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+     (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-   Window : aliased Orka.Windows.Window'Class
-     := Library.Create_Window (Width => 500, Height => 500, Resizable => False);
-
-   Context : constant Orka.Contexts.Context'Class := Window.Context;
-   pragma Unreferenced (Context);
+   Window : constant Orka.Windows.Window'Class
+     := Context.Create_Window (Width => 500, Height => 500, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;

@@ -36,7 +36,6 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Vector_Conversions;
-with Orka.Types;
 with Orka.Windows.GLFW;
 
 --  In this example we render a floor, a cube on top of it, and the
@@ -52,13 +51,11 @@ procedure Orka_Test.Test_12_Stencil is
    Height  : constant := 500;
    Samples : constant := 8;
 
-   Library : constant Orka.Contexts.Library'Class
-     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+     (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-   Window : aliased Orka.Windows.Window'Class
-     := Library.Create_Window (Width => Width, Height => Height, Resizable => False);
-
-   Context : constant Orka.Contexts.Context'Class := Window.Context;
+   Window : constant Orka.Windows.Window'Class
+     := Context.Create_Window (Width => Width, Height => Height, Resizable => False);
 
    function Enable_MS return Boolean is
    begin

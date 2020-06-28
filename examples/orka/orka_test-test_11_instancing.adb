@@ -39,13 +39,11 @@ procedure Orka_Test.Test_11_Instancing is
    Width  : constant := 500;
    Height : constant := 500;
 
-   Library : constant Orka.Contexts.Library'Class
-     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
+   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+     (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-   Window : aliased Orka.Windows.Window'Class
-     := Library.Create_Window (Width => Width, Height => Height, Resizable => False);
-
-   Context : constant Orka.Contexts.Context'Class := Window.Context;
+   Window : constant Orka.Windows.Window'Class
+     := Context.Create_Window (Width => Width, Height => Height, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
