@@ -74,14 +74,12 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      Library : constant Orka.Contexts.Library'Class
-        := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2, Debug => True);
+      Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+        (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-      Window : constant Orka.Windows.Window'Class := Library.Create_Window
-        (Width, Height, Resizable => False);
+      Window : constant Orka.Windows.Window'Class
+        := Context.Create_Window (Width => Width, Height => Width, Resizable => False);
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
-
-      Context : Orka.Contexts.Context'Class := Window.Context;
 
       JS : Orka.Inputs.Joysticks.Joystick_Input_Access;
 

@@ -18,23 +18,20 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 
 with GL.Context;
-with GL.Types;
 
 with Orka.Contexts;
+with Orka.Debug;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 with Orka.Windows.GLFW;
 
 procedure Orka_Info is
-   Library : constant Orka.Contexts.Library'Class
-     := Orka.Windows.GLFW.Initialize (Major => 4, Minor => 2);
-
    procedure Display_Context_Information is
-      use Ada.Strings.Unbounded;
+      package SU renames Ada.Strings.Unbounded;
       use Ada.Text_IO;
    begin
-      Put_Line ("Major version: " & GL.Types.Int'Image (GL.Context.Major_Version));
-      Put_Line ("Minor version: " & GL.Types.Int'Image (GL.Context.Minor_Version));
+      Put_Line ("Major version: " & Natural'Image (GL.Context.Major_Version));
+      Put_Line ("Minor version: " & Natural'Image (GL.Context.Minor_Version));
 
       Put_Line ("  Vendor: " & GL.Context.Vendor);
       Put_Line ("Renderer: " & GL.Context.Renderer);
@@ -44,25 +41,15 @@ procedure Orka_Info is
 
       Put_Line ("Extensions: ");
 
-      for US_Name of GL.Context.Extensions loop
-         declare
-            Name : constant String := To_String (US_Name);
-         begin
-            Put_Line ("  " & Name);
-            pragma Assert (GL.Context.Has_Extension (Name));
-         end;
+      for Extension of GL.Context.Extensions loop
+         Put_Line ("  " & SU.To_String (Extension));
       end loop;
 
       Put_Line ("Supported shading language versions:");
 
       begin
-         for US_Version of GL.Context.Supported_Shading_Language_Versions loop
-            declare
-               Version : constant String := To_String (US_Version);
-            begin
-               Put_Line ("  " & Version);
-               pragma Assert (GL.Context.Supports_Shading_Language_Version (Version));
-            end;
+         for Version of GL.Context.Supported_Shading_Language_Versions loop
+            Put_Line ("  " & SU.To_String (Version));
          end loop;
       exception
          when others =>
@@ -73,12 +60,14 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      W : aliased Orka.Windows.Window'Class := Library.Create_Window
-        (1, 1, Visible => False);
+      Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+        (Version => (3, 2), Flags  => (Debug => True, others => False));
 
-      Context : Orka.Contexts.Context'Class := W.Context;
-      pragma Unreferenced (Context);
+      Window : constant Orka.Windows.Window'Class
+        := Context.Create_Window (Width => 1, Height => 1, Visible => False);
+      pragma Unreferenced (Window);
    begin
+      Orka.Debug.Set_Log_Messages (Enable => True);
       Display_Context_Information;
    end;
 end Orka_Info;
