@@ -24,7 +24,7 @@ package GL.Runtime_Loading is
    pragma Preelaborate;
 
    --  This package loads the raw API function pointers at runtime. Some GL
-   --  implementations may return a poitner even when the feature is not
+   --  implementations may return a pointer even when the feature is not
    --  supported. Therefore, the only reliable way on all platforms to find
    --  out whether a feature is supported is by using the GL.Context package.
 

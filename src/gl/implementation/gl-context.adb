@@ -19,8 +19,11 @@ with Interfaces.C.Strings;
 with GL.API;
 with GL.Enums.Getter;
 with GL.Errors;
+with GL.Types;
 
 package body GL.Context is
+
+   use GL.Types;
 
    function Extension (Index : Positive) return String is
      (C.Strings.Value (API.Get_String_I.Ref (Enums.Getter.Extensions, UInt (Index - 1))));
@@ -74,16 +77,13 @@ package body GL.Context is
       end return;
    end Extensions;
 
-   function Has_Extension (Name : String) return Boolean is
-      use type Errors.Error_Code;
-      Count : Int := 0;
+   function Has_Extension
+     (Extensions : String_List;
+      Name       : String) return Boolean
+   is
+      use type Ada.Strings.Unbounded.Unbounded_String;
    begin
-      API.Get_Integer.Ref (Enums.Getter.Num_Extensions, Count);
-
-      pragma Assert (API.Get_Error.Ref.all = Errors.No_Error);
-      --  We are on OpenGL 3
-
-      return (for some I in 1 .. Positive (Count) => Extension (I) = Name);
+      return (for some Extension of Extensions => Extension = Name);
    end Has_Extension;
 
    function Primary_Shading_Language_Version return String is
@@ -96,12 +96,15 @@ package body GL.Context is
    function Supported_Shading_Language_Versions return String_List is
       use Ada.Strings.Unbounded;
       use type Errors.Error_Code;
+
       Count : Int := 0;
    begin
       API.Get_Integer.Ref (Enums.Getter.Num_Shading_Language_Versions, Count);
+
       if API.Get_Error.Ref.all = Errors.Invalid_Enum then
          raise Feature_Not_Supported_Exception;
       end if;
+
       return List : String_List (1 .. Positive (Count)) do
          for I in List'Range loop
             List (I) := To_Unbounded_String (GLSL_Version (I));
@@ -109,11 +112,13 @@ package body GL.Context is
       end return;
    end Supported_Shading_Language_Versions;
 
-   function Supports_Shading_Language_Version (Name : String) return Boolean is
-      Count : Int := 0;
+   function Supports_Shading_Language_Version
+     (Versions : String_List;
+      Name     : String) return Boolean
+   is
+      use type Ada.Strings.Unbounded.Unbounded_String;
    begin
-      API.Get_Integer.Ref (Enums.Getter.Num_Shading_Language_Versions, Count);
-      return (for some I in 1 .. Positive (Count) => GLSL_Version (I) = Name);
+      return (for some Version of Versions => Version = Name);
    end Supports_Shading_Language_Version;
 
 end GL.Context;

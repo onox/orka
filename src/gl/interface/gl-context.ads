@@ -16,12 +16,8 @@
 
 with Ada.Strings.Unbounded;
 
-with GL.Types;
-
 package GL.Context is
    pragma Preelaborate;
-
-   use GL.Types;
 
    type String_List is array (Positive range <>) of
      Ada.Strings.Unbounded.Unbounded_String;
@@ -37,12 +33,16 @@ package GL.Context is
    function Renderer return String;
 
    function Extensions return String_List;
-   function Has_Extension (Name : String) return Boolean;
+   function Has_Extension
+     (Extensions : String_List;
+      Name       : String) return Boolean;
    --  Uses OpenGL 3 interface
 
    function Primary_Shading_Language_Version return String;
 
    function Supported_Shading_Language_Versions return String_List;
-   function Supports_Shading_Language_Version (Name : String) return Boolean;
+   function Supports_Shading_Language_Version
+     (Versions : String_List;
+      Name     : String) return Boolean;
    --  Available since OpenGL 4.3
 end GL.Context;
