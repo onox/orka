@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-limited with Orka.Contexts;
-
 with Orka.Inputs.Pointers;
 
 package Orka.Windows is
@@ -27,11 +25,6 @@ package Orka.Windows is
 
    function Pointer_Input
      (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;
-
-   function Context (Object : access Window) return Contexts.Context'Class is abstract;
-   --  Return the OpenGL context and make it current in the calling task
-   --
-   --  Task safety: The calling task should be the rendering task.
 
    function Width (Object : Window) return Positive is abstract;
 

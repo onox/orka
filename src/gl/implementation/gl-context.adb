@@ -28,18 +28,18 @@ package body GL.Context is
    function GLSL_Version (Index : Positive) return String is
      (C.Strings.Value (API.Get_String_I.Ref (Enums.Getter.Shading_Language_Version, UInt (Index - 1))));
 
-   function Major_Version return Int is
+   function Major_Version return Natural is
       Result : Int := 0;
    begin
       API.Get_Integer.Ref (Enums.Getter.Major_Version, Result);
-      return Result;
+      return Natural (Result);
    end Major_Version;
 
-   function Minor_Version return Int is
+   function Minor_Version return Natural is
       Result : Int := 0;
    begin
       API.Get_Integer.Ref (Enums.Getter.Minor_Version, Result);
-      return Result;
+      return Natural (Result);
    end Minor_Version;
 
    function Version_String return String is

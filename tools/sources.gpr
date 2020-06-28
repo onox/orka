@@ -33,6 +33,10 @@ abstract project Sources is
          OpenGL_Sources := OpenGL_Sources & "../src/gl/windows" & "../src/orka/windows";
       when "egl"     =>
          OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
+         Orka_Sources   := Orka_Sources &
+                             "../src/egl" &
+                             "../src/orka/interface/egl" &
+                             "../src/orka/implementation/egl";
    end case;
 
    case Config.Compiler_Name is

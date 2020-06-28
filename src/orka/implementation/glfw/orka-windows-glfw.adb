@@ -21,6 +21,15 @@ with Glfw.Windows.Hints;
 with Orka.Inputs.GLFW;
 with Orka.Logging;
 
+with GL.Context;
+with GL.Objects.Vertex_Arrays;
+with GL.Types;
+with GL.Viewports;
+
+with Glfw.Windows;
+with Glfw.Input.Keys;
+with Glfw.Input.Mouse;
+
 package body Orka.Windows.GLFW is
 
    use all type Orka.Logging.Source;
@@ -34,56 +43,139 @@ package body Orka.Windows.GLFW is
       Messages.Log (Error, "GLFW " & Code'Image & ": " & Trim (Description));
    end Print_Error;
 
-   function Initialize
-     (Major, Minor : Natural;
-      Debug : Boolean := False) return Contexts.Library'Class is
+   -----------------------------------------------------------------------------
+
+   type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
+      Input     : Inputs.Pointers.Pointer_Input_Ptr;
+      Finalized : Boolean;
+
+      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+
+      Position_X : GL.Types.Double := 0.0;
+      Position_Y : GL.Types.Double := 0.0;
+      Scroll_X   : GL.Types.Double := 0.0;
+      Scroll_Y   : GL.Types.Double := 0.0;
+      Width, Height : Positive;
+
+      --  Needed to workaround a GLFW bug
+      Got_Locked, Last_Locked : Boolean := False;
+   end record;
+
+   overriding
+   function Pointer_Input
+     (Object : GLFW_Window) return Inputs.Pointers.Pointer_Input_Ptr;
+
+   overriding
+   function Width (Object : GLFW_Window) return Positive;
+
+   overriding
+   function Height (Object : GLFW_Window) return Positive;
+
+   overriding
+   procedure Set_Title (Object : in out GLFW_Window; Value : String);
+
+   overriding
+   procedure Close (Object : in out GLFW_Window);
+
+   overriding
+   function Should_Close (Object : in out GLFW_Window) return Boolean;
+
+   overriding
+   procedure Process_Input (Object : in out GLFW_Window);
+
+   overriding
+   procedure Swap_Buffers (Object : in out GLFW_Window);
+
+   overriding
+   procedure Enable_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean);
+
+   overriding
+   procedure Finalize (Object : in out GLFW_Window);
+
+   overriding
+   procedure Close_Requested (Object : not null access GLFW_Window);
+
+   overriding
+   procedure Key_Changed
+     (Object   : not null access GLFW_Window;
+      Key      : Standard.Glfw.Input.Keys.Key;
+      Scancode : Standard.Glfw.Input.Keys.Scancode;
+      Action   : Standard.Glfw.Input.Keys.Action;
+      Mods     : Standard.Glfw.Input.Keys.Modifiers);
+
+   overriding
+   procedure Mouse_Position_Changed
+     (Object : not null access GLFW_Window;
+      X, Y   : Standard.Glfw.Input.Mouse.Coordinate);
+
+   overriding
+   procedure Mouse_Scrolled
+     (Object : not null access GLFW_Window;
+      X, Y   : Standard.Glfw.Input.Mouse.Scroll_Offset);
+
+   overriding
+   procedure Mouse_Button_Changed
+     (Object  : not null access GLFW_Window;
+      Button  : Standard.Glfw.Input.Mouse.Button;
+      State   : Standard.Glfw.Input.Button_State;
+      Mods    : Standard.Glfw.Input.Keys.Modifiers);
+
+   overriding
+   procedure Framebuffer_Size_Changed
+     (Object : not null access GLFW_Window;
+      Width, Height : Natural);
+
+   -----------------------------------------------------------------------------
+
+   overriding
+   procedure Finalize (Object : in out GLFW_Context) is
+   begin
+      if Object.Flags.Debug then
+         Messages.Log (Debug, "Shutting down GLFW");
+      end if;
+
+      Standard.Glfw.Shutdown;
+   end Finalize;
+
+   overriding
+   procedure Enable (Object : in out GLFW_Context; Subject : Contexts.Feature) is
+   begin
+      Contexts.Enable (Object.Features, Subject);
+   end Enable;
+
+   overriding
+   function Enabled (Object : GLFW_Context; Subject : Contexts.Feature) return Boolean
+     is (Contexts.Enabled (Object.Features, Subject));
+
+   overriding
+   function Create_Context
+     (Version : Contexts.Context_Version;
+      Flags   : Contexts.Context_Flags := (others => False)) return GLFW_Context
+   is
+      package Context_Hints renames Standard.Glfw.Windows.Context;
    begin
       --  Initialize GLFW
       Standard.Glfw.Errors.Set_Callback (Print_Error'Access);
       Standard.Glfw.Init;
 
       --  Initialize OpenGL context
-      Standard.Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Major, Minor);
+      Standard.Glfw.Windows.Hints.Set_Minimum_OpenGL_Version (Version.Major, Version.Minor);
       Standard.Glfw.Windows.Hints.Set_Forward_Compat (True);
-      Standard.Glfw.Windows.Hints.Set_Client_API (Standard.Glfw.Windows.Context.OpenGL);
-      Standard.Glfw.Windows.Hints.Set_Profile (Standard.Glfw.Windows.Context.Core_Profile);
-      Standard.Glfw.Windows.Hints.Set_Debug_Context (Debug);
+      Standard.Glfw.Windows.Hints.Set_Client_API (Context_Hints.OpenGL);
+      Standard.Glfw.Windows.Hints.Set_Profile (Context_Hints.Core_Profile);
+      Standard.Glfw.Windows.Hints.Set_Debug_Context (Flags.Debug);
+      Standard.Glfw.Windows.Hints.Set_Robustness
+        (if Flags.Robust then Context_Hints.Lose_Context_On_Reset else Context_Hints.No_Robustness);
+--      Standard.Glfw.Windows.Hints.Set_No_Error_Context (Flags.No_Error);
 
-      return GLFW_Library'(Orka.Contexts.Library with Debug => Debug);
-   end Initialize;
-
-   overriding
-   procedure Shutdown (Object : in out GLFW_Library) is
-   begin
-      if Object.Debug then
-         Messages.Log (Debug, "Shutting down GLFW");
-      end if;
-
-      Standard.Glfw.Shutdown;
-   end Shutdown;
-
-   overriding
-   procedure Make_Current (Object : in out GLFW_Context; Current : Boolean) is
-   begin
-      Standard.Glfw.Windows.Context.Make_Current (if Current then Object.Window else null);
-   end Make_Current;
-
-   overriding
-   procedure Finalize (Object : in out GLFW_Window) is
-   begin
-      if not Object.Finalized then
-         Messages.Log (Debug, "Closing GLFW window");
-         --  FIXME Requires context to be current => ask render task to release context
-         Object.Destroy;
-         Object.Finalized := True;
-      end if;
-   end Finalize;
+      return (Ada.Finalization.Limited_Controlled with Flags => Flags, Features => <>);
+   end Create_Context;
 
    overriding
    function Create_Window
-     (Object : GLFW_Library;
-      Width, Height : Positive;
-      Samples : Natural := 0;
+     (Object             : GLFW_Context;
+      Width, Height      : Positive;
+      Samples            : Natural := 0;
       Visible, Resizable : Boolean := True) return Window'Class
    is
       package Windows renames Standard.Glfw.Windows;
@@ -123,15 +215,35 @@ package body Orka.Windows.GLFW is
             Reference.Enable_Callback (Windows.Callbacks.Mouse_Scroll);
             Reference.Enable_Callback (Windows.Callbacks.Key);
             Reference.Enable_Callback (Windows.Callbacks.Framebuffer_Size);
+
+            Standard.Glfw.Windows.Context.Make_Current (Reference);
+
+            Messages.Log (Debug, "  context:");
+            Messages.Log (Debug, "    flags:    " & Orka.Contexts.Image (Object.Flags));
+            Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
+            Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
+
+            GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+            Result.Vertex_Array.Create;
          end;
       end return;
    end Create_Window;
 
    overriding
-   function Context (Object : access GLFW_Window) return Contexts.Context'Class is
+   procedure Finalize (Object : in out GLFW_Window) is
    begin
-      return Result : GLFW_Context (Object);
-   end Context;
+      if not Object.Finalized then
+         Messages.Log (Debug, "Closing GLFW window");
+
+         Object.Vertex_Array.Delete;
+
+         Standard.Glfw.Windows.Context.Make_Current (null);
+         --  FIXME Requires context to be current => ask render task to release context
+
+         Object.Destroy;
+         Object.Finalized := True;
+      end if;
+   end Finalize;
 
    overriding
    function Pointer_Input

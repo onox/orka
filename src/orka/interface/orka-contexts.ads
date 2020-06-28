@@ -14,64 +14,65 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Finalization;
-
-private with GL.Objects.Vertex_Arrays;
-
 with Orka.Windows;
 
 package Orka.Contexts is
    pragma Preelaborate;
 
-   type Library (Debug : Boolean) is abstract tagged limited private;
+   type Context_Version is record
+      Major, Minor : Natural;
+   end record
+     with Dynamic_Predicate => Context_Version.Major >= 4
+            or else (Context_Version.Major = 3 and Context_Version.Minor >= 2);
 
-   procedure Shutdown (Object : in out Library) is null;
+   type Context_Flags is record
+      Debug    : Boolean := False;
+      Robust   : Boolean := False;
+      No_Error : Boolean := False;
+   end record
+     with Dynamic_Predicate => (if Context_Flags.No_Error then
+                                  not (Context_Flags.Debug or Context_Flags.Robust));
 
-   function Create_Window
-     (Object : Library;
-      Width, Height : Positive;
-      Samples : Natural := 0;
-      Visible, Resizable : Boolean := True) return Orka.Windows.Window'Class is abstract;
+   function Image (Version : Context_Version) return String;
+
+   function Image (Flags : Context_Flags) return String;
+
+   type Context is limited interface;
+
+   function Create_Context
+     (Version : Context_Version;
+      Flags   : Context_Flags := (others => False)) return Context is abstract;
 
    -----------------------------------------------------------------------------
 
    type Feature is (Reversed_Z, Multisample, Sample_Shading);
 
-   type Context is abstract tagged limited private;
-
-   procedure Make_Current (Object : in out Context; Current : Boolean) is abstract;
-
-   procedure Enable (Object : in out Context; Subject : Feature);
+   procedure Enable (Object : in out Context; Subject : Feature) is abstract;
    --  Note: If enabling Reversed_Z, the depth must be cleared with the
    --  value 0.0
 
-   function Enabled (Object : Context; Subject : Feature) return Boolean;
+   function Enabled (Object : Context; Subject : Feature) return Boolean is abstract;
 
-private
-
-   type Library (Debug : Boolean) is abstract limited
-     new Ada.Finalization.Limited_Controlled with
-   record
-      Finalized : Boolean := False;
-   end record;
-
-   overriding
-   procedure Finalize (Object : in out Library);
+   -----------------------------------------------------------------------------
+   --                             Helper utilities                            --
+   -----------------------------------------------------------------------------
 
    type Feature_Array is array (Feature) of Boolean;
 
-   type Context is abstract limited
-     new Ada.Finalization.Limited_Controlled with
-   record
-      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
-      Finalized : Boolean := False;
-      Features  : Feature_Array := (others => False);
-   end record;
+   procedure Enable (Features : in out Feature_Array; Subject : Feature);
 
-   overriding
-   procedure Initialize (Object : in out Context);
+   function Enabled (Features : Feature_Array; Subject : Feature) return Boolean;
 
-   overriding
-   procedure Finalize (Object : in out Context);
+   -----------------------------------------------------------------------------
+   --                         Contexts with a surface                         --
+   -----------------------------------------------------------------------------
+
+   type Surface_Context is limited interface and Context;
+
+   function Create_Window
+     (Object             : Surface_Context;
+      Width, Height      : Positive;
+      Samples            : Natural := 0;
+      Visible, Resizable : Boolean := True) return Orka.Windows.Window'Class is abstract;
 
 end Orka.Contexts;

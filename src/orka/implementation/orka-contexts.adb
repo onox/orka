@@ -14,44 +14,38 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Unbounded;
+
 with GL.Buffers;
 with GL.Shading;
 with GL.Toggles;
 with GL.Types;
-with GL.Viewports;
+
+with Orka.Strings;
 
 package body Orka.Contexts is
 
-   overriding
-   procedure Finalize (Object : in out Library) is
+   function Image (Version : Context_Version) return String is
+     (Strings.Trim (Version.Major'Image) & "." & Strings.Trim (Version.Minor'Image));
+
+   function Image (Flags : Context_Flags) return String is
+      package SU renames Ada.Strings.Unbounded;
+
+      Result : SU.Unbounded_String;
    begin
-      if not Object.Finalized then
-         Library'Class (Object).Shutdown;
-         Object.Finalized := True;
+      if Flags.Debug then
+         SU.Append (Result, " debug");
       end if;
-   end Finalize;
-
-   overriding
-   procedure Initialize (Object : in out Context) is
-   begin
-      Context'Class (Object).Make_Current (True);
-      GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
-
-      Object.Vertex_Array.Create;
-   end Initialize;
-
-   overriding
-   procedure Finalize (Object : in out Context) is
-   begin
-      if not Object.Finalized then
-         Object.Vertex_Array.Delete;
-
-         Context'Class (Object).Make_Current (False);
-         Object.Finalized := True;
+      if Flags.Robust then
+         SU.Append (Result, " robust");
       end if;
-   end Finalize;
+      if Flags.No_Error then
+         SU.Append (Result, " no-error");
+      end if;
+      return Strings.Trim (SU.To_String (Result));
+   end Image;
 
-   procedure Enable (Object : in out Context; Subject : Feature) is
+   procedure Enable (Features : in out Feature_Array; Subject : Feature) is
    begin
       case Subject is
          when Reversed_Z =>
@@ -64,7 +58,7 @@ package body Orka.Contexts is
             --  Enable MSAA
             GL.Toggles.Enable (GL.Toggles.Multisample);
          when Sample_Shading =>
-            if not Object.Enabled (Multisample) then
+            if not Enabled (Features, Multisample) then
                raise Program_Error with "MSAA not enabled";
             end if;
 
@@ -74,10 +68,10 @@ package body Orka.Contexts is
             GL.Shading.Set_Minimum_Sample_Shading (1.0);
             GL.Toggles.Enable (GL.Toggles.Sample_Shading);
       end case;
-      Object.Features (Subject) := True;
+      Features (Subject) := True;
    end Enable;
 
-   function Enabled (Object : Context; Subject : Feature) return Boolean is
-     (Object.Features (Subject));
+   function Enabled (Features : Feature_Array; Subject : Feature) return Boolean is
+     (Features (Subject));
 
 end Orka.Contexts;

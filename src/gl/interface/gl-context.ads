@@ -26,8 +26,8 @@ package GL.Context is
    type String_List is array (Positive range <>) of
      Ada.Strings.Unbounded.Unbounded_String;
 
-   function Major_Version return Int;
-   function Minor_Version return Int;
+   function Major_Version return Natural;
+   function Minor_Version return Natural;
    --  These two require OpenGL 3
 
    function Version_String return String;
