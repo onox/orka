@@ -34,6 +34,13 @@ project Tools is
       "orka_ktx"
    );
 
+   case Config.Windowing_System is
+      when "windows" =>
+         null;
+      when "egl"     =>
+         Executables := Executables & "orka_egl_info";
+   end case;
+
    for Main use Executables;
 
    package Compiler renames Config.Compiler;
@@ -44,6 +51,7 @@ project Tools is
       for Executable ("orka_gltf.adb") use "orka-gltf";
       for Executable ("orka_info.adb") use "orka-info";
       for Executable ("orka_ktx.adb") use "orka-ktx";
+      for Executable ("orka_egl_info.adb") use "orka-egl-info";
    end Builder;
 
 end Tools;
