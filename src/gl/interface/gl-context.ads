@@ -16,11 +16,27 @@
 
 with Ada.Strings.Unbounded;
 
+private with GL.Low_Level;
+
 package GL.Context is
    pragma Preelaborate;
 
    type String_List is array (Positive range <>) of
      Ada.Strings.Unbounded.Unbounded_String;
+
+   type Reset_Status is (No_Error, Guilty, Innocent, Unknown);
+
+   function Status return Reset_Status;
+   --  Return the reset status of the context
+   --
+   --  If the context has been created with the Robust context flag
+   --  enabled, then any OpenGL function may raise a Context_Lost_Error
+   --  when a reset has occurred.
+   --
+   --  If a context has been lost, it must be recreated, including any
+   --  OpenGL objects. This function will return a status not equal to
+   --  No_Error while the context is still resetting and No_Error when
+   --  the reset has been completed.
 
    function Major_Version return Natural;
    function Minor_Version return Natural;
@@ -45,4 +61,14 @@ package GL.Context is
      (Versions : String_List;
       Name     : String) return Boolean;
    --  Available since OpenGL 4.3
+
+private
+
+   for Reset_Status use
+     (No_Error => 0,
+      Guilty   => 16#8253#,
+      Innocent => 16#8254#,
+      Unknown  => 16#8255#);
+   for Reset_Status'Size use Low_Level.Enum'Size;
+
 end GL.Context;

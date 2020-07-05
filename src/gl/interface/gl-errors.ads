@@ -17,12 +17,12 @@
 private with GL.Low_Level;
 
 package GL.Errors is
-   -- not Pure because Error_Flag can change with each call
+   --  not Pure because Error_Flag can change with each call
    pragma Preelaborate;
 
    type Error_Code is (No_Error, Invalid_Enum, Invalid_Value, Invalid_Operation,
                        Stack_Overflow, Stack_Underflow, Out_Of_Memory,
-                       Invalid_Framebuffer_Operation);
+                       Invalid_Framebuffer_Operation, Context_Lost);
 
    Invalid_Operation_Error             : exception;
    Out_Of_Memory_Error                 : exception;
@@ -30,6 +30,7 @@ package GL.Errors is
    Stack_Overflow_Error                : exception;
    Stack_Underflow_Error               : exception;
    Invalid_Framebuffer_Operation_Error : exception;
+   Context_Lost_Error                  : exception;
 
    Internal_Error                      : exception;
 
@@ -45,7 +46,8 @@ private
                        Stack_Overflow    => 16#0503#,
                        Stack_Underflow   => 16#0504#,
                        Out_Of_Memory     => 16#0505#,
-                       Invalid_Framebuffer_Operation => 16#0506#);
+                       Invalid_Framebuffer_Operation => 16#0506#,
+                       Context_Lost      => 16#0507#);
    for Error_Code'Size use Low_Level.Enum'Size;
 
 end GL.Errors;

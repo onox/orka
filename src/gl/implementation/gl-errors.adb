@@ -29,6 +29,7 @@ package body GL.Errors is
          when Errors.Stack_Overflow => raise Errors.Stack_Overflow_Error;
          when Errors.Stack_Underflow => raise Errors.Stack_Underflow_Error;
          when Errors.Invalid_Enum => raise Errors.Internal_Error;
+         when Errors.Context_Lost => raise Errors.Context_Lost_Error;
          when Errors.No_Error => null;
       end case;
    exception

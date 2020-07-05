@@ -18,6 +18,7 @@ with GL.Runtime_Loading;
 
 with GL.Blending;
 with GL.Buffers;
+with GL.Context;
 with GL.Debug;
 with GL.Debug_Types;
 with GL.Enums.Getter;
@@ -68,6 +69,9 @@ private package GL.API is
      ("glGetError", Errors.Error_Code);
 
    package Flush is new Loader.Procedure_Without_Params ("glFlush");
+
+   package Get_Graphics_Reset_Status is new Loader.Function_Without_Params
+     ("glGetGraphicsResetStatus", Context.Reset_Status);
 
    -----------------------------------------------------------------------------
    --                            Parameter getters                            --
@@ -260,14 +264,14 @@ private package GL.API is
    package Polygon_Offset_Clamp is new Loader.Procedure_With_3_Params
      ("glPolygonOffsetClamp", Single, Single, Single);
 
-   --  TODO glSampleCoverage, glSampleMaski, glGetMultisample, glGetGraphicsResetStatus
-
    -----------------------------------------------------------------------------
    --                           Multisample shading                           --
    -----------------------------------------------------------------------------
 
    package Min_Sample_Shading is new Loader.Procedure_With_1_Param
      ("glMinSampleShading", Single);
+
+   --  TODO glSampleMaski (replaces glSampleCoverage), glGetMultisample
 
    -----------------------------------------------------------------------------
    --                                 Buffers                                 --
