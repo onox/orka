@@ -25,7 +25,7 @@ package Orka.glTF.Meshes is
    pragma Preelaborate;
 
    subtype Primitive_Mode is GL.Types.Connection_Mode
-     range GL.Types.Points .. GL.Types.Triangle_Fan;
+     range GL.Types.Points .. GL.Types.Triangle_Strip;
 
    package Attribute_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,

@@ -34,7 +34,7 @@ package body Orka.glTF.Meshes is
          when 1 =>
             Mode_Kind := GL.Types.Lines;
          when 2 =>
-            Mode_Kind := GL.Types.Line_Loop;
+            raise Constraint_Error with "Line_Loop is not supported";
          when 3 =>
             Mode_Kind := GL.Types.Line_Strip;
          when 4 =>
@@ -42,7 +42,7 @@ package body Orka.glTF.Meshes is
          when 5 =>
             Mode_Kind := GL.Types.Triangle_Strip;
          when 6 =>
-            Mode_Kind := GL.Types.Triangle_Fan;
+            raise Constraint_Error with "Triangle_Fan is not supported";
          when others =>
             raise Constraint_Error with "Invalid primitive.mode";
       end case;

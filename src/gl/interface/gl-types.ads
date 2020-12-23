@@ -91,10 +91,9 @@ package GL.Types is
 
    type Index_Type is (UShort_Type, UInt_Type);
 
-   type Connection_Mode is (Points, Lines, Line_Loop, Line_Strip, Triangles,
-                            Triangle_Strip, Triangle_Fan, Lines_Adjacency,
-                            Line_Strip_Adjacency, Triangles_Adjacency,
-                            Triangle_Strip_Adjacency, Patches);
+   type Connection_Mode is (Points, Lines, Line_Strip, Triangles, Triangle_Strip,
+                            Lines_Adjacency, Line_Strip_Adjacency,
+                            Triangles_Adjacency, Triangle_Strip_Adjacency, Patches);
 
    type Compare_Function is (Never, Less, Equal, LEqual, Greater, Not_Equal,
                              GEqual, Always);
@@ -143,11 +142,9 @@ private
 
    for Connection_Mode use (Points                   => 16#0000#,
                             Lines                    => 16#0001#,
-                            Line_Loop                => 16#0002#,
                             Line_Strip               => 16#0003#,
                             Triangles                => 16#0004#,
                             Triangle_Strip           => 16#0005#,
-                            Triangle_Fan             => 16#0006#,
                             Lines_Adjacency          => 16#000A#,
                             Line_Strip_Adjacency     => 16#000B#,
                             Triangles_Adjacency      => 16#000C#,
