@@ -78,7 +78,7 @@ package body EGL.Objects.Devices is
          return Result : Device_List (1 .. Natural (Count)) do
             for Index in Result'Range loop
                Result (Index).Reference.ID := Devices (Index);
-               pragma Assert (Result (Index).Display = No_Fake_Display);
+               pragma Assert (Result (Index).Display = No_Display);
             end loop;
          end return;
       else
@@ -101,11 +101,11 @@ package body EGL.Objects.Devices is
             --  The device needs to keep a reference to the display,
             --  otherwise the display can get finalized and any further
             --  use of the device would then give undefined results
-            pragma Assert (Result.Display = No_Fake_Display);
+            pragma Assert (Result.Display = No_Display);
             Result.Display := (Ada.Finalization.Controlled with
                                  Reference => EGL_Object (Subject).Reference);
             Result.Display.Reference.Count := Result.Display.Reference.Count + 1;
-            pragma Assert (Result.Display /= No_Fake_Display);
+            pragma Assert (Result.Display /= No_Display);
          end return;
       else
          Errors.Raise_Exception_On_EGL_Error;

@@ -56,10 +56,10 @@ private
    --  Contains the Reference of a real Display when a Device is
    --  retrieved via function Get_Device
 
-   No_Fake_Display : constant Fake_Display := (EGL_Object with null record);
+   No_Display : constant Fake_Display := (EGL_Object with null record);
 
    type Device is new EGL_Object with record
-      Display : Fake_Display := No_Fake_Display;
+      Display : Fake_Display := No_Display;
       --  Since a device is a property of a display, the display must
       --  not get finalized while the device is still allocated. Otherwise
       --  any further use will give undefined results.
@@ -69,6 +69,6 @@ private
 
    No_Device : constant Device := (EGL_Object with Display => <>);
 
-   function In_Use (Object : Device) return Boolean is (Object.Display /= No_Fake_Display);
+   function In_Use (Object : Device) return Boolean is (Object.Display /= No_Display);
 
 end EGL.Objects.Devices;
