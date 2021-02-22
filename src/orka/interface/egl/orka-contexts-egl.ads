@@ -25,7 +25,7 @@ with EGL.Objects.Devices;
 
 package Orka.Contexts.EGL is
 
-   type EGL_Context (<>) is limited new Context with private;
+   type EGL_Context is limited new Context with private;
 
    overriding
    function Create_Context
@@ -41,13 +41,13 @@ package Orka.Contexts.EGL is
 
 private
 
-   type EGL_Context (Platform : Standard.EGL.Objects.Displays.Platform_Kind) is
+   type EGL_Context is
      limited new Ada.Finalization.Limited_Controlled and Context with
    record
       Version  : Context_Version;
       Flags    : Context_Flags;
       Features : Feature_Array := (others => False);
-      Context  : Standard.EGL.Objects.Contexts.Context (Platform);
+      Context  : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
    end record;
 

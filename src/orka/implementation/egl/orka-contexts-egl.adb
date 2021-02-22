@@ -59,7 +59,6 @@ package body Orka.Contexts.EGL is
       Standard.EGL.Debug.Set_Message_Callback (Print_Error'Access);
 
       return Result : EGL_Context := (Ada.Finalization.Limited_Controlled with
-        Platform => Standard.EGL.Objects.Displays.Device,
         Version  => Version,
         Flags    => Flags,
         others   => <>)
@@ -84,6 +83,8 @@ package body Orka.Contexts.EGL is
             Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
             Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
          end;
+
+         --  TODO Read back actual Version and Flags
 
          GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
          Result.Vertex_Array.Create;
