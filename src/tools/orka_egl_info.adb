@@ -20,8 +20,6 @@ with EGL.Objects.Displays;
 with EGL.Objects.Devices;
 with EGL.Errors;
 
-with Orka.Contexts.EGL;
-with Orka.Debug;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 

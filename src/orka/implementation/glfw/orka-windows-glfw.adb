@@ -168,7 +168,10 @@ package body Orka.Windows.GLFW is
         (if Flags.Robust then Context_Hints.Lose_Context_On_Reset else Context_Hints.No_Robustness);
 --      Standard.Glfw.Windows.Hints.Set_No_Error_Context (Flags.No_Error);
 
-      return (Ada.Finalization.Limited_Controlled with Flags => Flags, Features => <>);
+      return (Ada.Finalization.Limited_Controlled with
+        Version  => Version,
+        Flags    => Flags,
+        Features => <>);
    end Create_Context;
 
    overriding
@@ -388,5 +391,36 @@ package body Orka.Windows.GLFW is
       Object.Width  := Width;
       Object.Height := Height;
    end Framebuffer_Size_Changed;
+
+   overriding
+   function Is_Current (Object : GLFW_Context) return Boolean is
+   begin
+      raise GL.Feature_Not_Supported_Exception;
+      return True;
+   end Is_Current;
+
+   overriding
+   procedure Make_Current (Object : GLFW_Context) is
+   begin
+      raise GL.Feature_Not_Supported_Exception;
+   end Make_Current;
+
+   overriding
+   procedure Make_Current
+     (Object : GLFW_Context;
+      Window : in out Orka.Windows.Window'Class)
+   is
+      Reference : constant Standard.Glfw.Windows.Window_Reference
+        := Standard.Glfw.Windows.Window (Window)'Access;
+   begin
+      Standard.Glfw.Windows.Context.Make_Current (Reference);
+   end Make_Current;
+
+   overriding
+   procedure Make_Not_Current (Object : GLFW_Context) is
+   begin
+      Standard.Glfw.Windows.Context.Make_Current (null);
+      --  TODO Make sure Object is current on calling task
+   end Make_Not_Current;
 
 end Orka.Windows.GLFW;

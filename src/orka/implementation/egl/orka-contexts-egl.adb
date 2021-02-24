@@ -48,53 +48,64 @@ package body Orka.Contexts.EGL is
       Messages.Log (Severity, Error'Image & " in " & Command & ": " & Trim (Message));
    end Print_Error;
 
+   procedure Print_Debug
+     (Display : Standard.EGL.Objects.Displays.Display;
+      Flags   : Context_Flags) is
+   begin
+      Messages.Log (Debug, "Created EGL context");
+      Messages.Log (Debug, "  platform: " & Display.Platform'Image);
+      declare
+         Name : constant String := Display.Device.Name;
+      begin
+         Messages.Log (Debug, "  device:   " & (if Name /= "" then Name else "unknown"));
+      end;
+      Messages.Log (Debug, "  vendor:   " & Display.Vendor);
+      Messages.Log (Debug, "  version:  " & Display.Version);
+      Messages.Log (Debug, "  context:");
+      Messages.Log (Debug, "    flags:    " & Image (Flags));
+      Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
+      Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
+   end Print_Debug;
+
+   procedure Post_Initialize (Object : in out EGL_Context'Class) is
+   begin
+      --  TODO Read back actual flags
+
+      Object.Version :=
+        (Major => GL.Context.Major_Version,
+         Minor => GL.Context.Minor_Version);
+
+      GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+      Object.Vertex_Array.Create;
+   end Post_Initialize;
+
    function Create_Context
-     (Device  : Standard.EGL.Objects.Devices.Device;
-      Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return EGL_Context
+     (Device   : Standard.EGL.Objects.Devices.Device;
+      Version  : Context_Version;
+      Flags    : Context_Flags := (others => False)) return Device_EGL_Context
    is
       package EGL_Contexts renames Standard.EGL.Objects.Contexts;
       package EGL_Displays renames Standard.EGL.Objects.Displays;
    begin
       Standard.EGL.Debug.Set_Message_Callback (Print_Error'Access);
 
-      return Result : EGL_Context := (Ada.Finalization.Limited_Controlled with
-        Version  => Version,
-        Flags    => Flags,
-        others   => <>)
-      do
-         declare
-            Display : constant EGL_Displays.Display :=
-              EGL_Displays.Create_Display (EGL_Displays.Device, Device);
-         begin
+      declare
+         Display : constant EGL_Displays.Display :=
+           EGL_Displays.Create_Display (EGL_Displays.Device, Device);
+      begin
+         return Result : Device_EGL_Context do
             Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
 
-            Messages.Log (Debug, "Created EGL context");
-            Messages.Log (Debug, "  platform: " & Display.Platform'Image);
-            declare
-               Name : constant String := Display.Device.Name;
-            begin
-               Messages.Log (Debug, "  device:   " & (if Name /= "" then Name else "unknown"));
-            end;
-            Messages.Log (Debug, "  vendor:   " & Display.Vendor);
-            Messages.Log (Debug, "  version:  " & Display.Version);
-            Messages.Log (Debug, "  context:");
-            Messages.Log (Debug, "    flags:    " & Image (Flags));
-            Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
-            Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
-         end;
-
-         --  TODO Read back actual Version and Flags
-
-         GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
-         Result.Vertex_Array.Create;
-      end return;
+            Post_Initialize (Result);
+            Print_Debug (Display, Flags);
+         end return;
+      end;
    end Create_Context;
 
    overriding
    function Create_Context
      (Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return EGL_Context
+      Flags   : Context_Flags := (others => False)) return Device_EGL_Context
    is
       package EGL_Devices renames Standard.EGL.Objects.Devices;
 
@@ -108,7 +119,34 @@ package body Orka.Contexts.EGL is
             Messages.Log (Debug, "  - " & (if Name /= "" then Name else "unknown"));
          end;
       end loop;
+
       return Create_Context (Devices (Devices'First), Version, Flags);
+   end Create_Context;
+
+   overriding
+   function Create_Context
+     (Version : Context_Version;
+      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context
+   is
+      package EGL_Contexts renames Standard.EGL.Objects.Contexts;
+      package EGL_Devices  renames Standard.EGL.Objects.Devices;
+      package EGL_Displays renames Standard.EGL.Objects.Displays;
+   begin
+      Standard.EGL.Debug.Set_Message_Callback (Print_Error'Access);
+
+      declare
+         Display : constant EGL_Displays.Display :=
+           EGL_Displays.Create_Display (EGL_Displays.Wayland, EGL_Devices.No_Device);
+      begin
+         return Result : Wayland_EGL_Context do
+            Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
+
+            Result.Context.Make_Current;
+
+            Post_Initialize (Result);
+            Print_Debug (Display, Flags);
+         end return;
+      end;
    end Create_Context;
 
    overriding
@@ -130,5 +168,29 @@ package body Orka.Contexts.EGL is
    overriding
    function Enabled (Object : EGL_Context; Subject : Feature) return Boolean
      is (Contexts.Enabled (Object.Features, Subject));
+
+   overriding
+   procedure Make_Current (Object : Device_EGL_Context) is
+   begin
+      Object.Context.Make_Current;
+   end Make_Current;
+
+   overriding
+   procedure Make_Not_Current (Object : Device_EGL_Context) is
+   begin
+      Object.Context.Make_Not_Current;
+   end Make_Not_Current;
+
+   overriding
+   procedure Make_Current (Object : Wayland_EGL_Context) is
+   begin
+      Object.Context.Make_Current;
+   end Make_Current;
+
+   overriding
+   procedure Make_Not_Current (Object : Wayland_EGL_Context) is
+   begin
+      Object.Context.Make_Not_Current;
+   end Make_Not_Current;
 
 end Orka.Contexts.EGL;

@@ -32,6 +32,7 @@ private
    type GLFW_Context is
      limited new Ada.Finalization.Limited_Controlled and Contexts.Surface_Context with
    record
+      Version  : Contexts.Context_Version;
       Flags    : Contexts.Context_Flags;
       Features : Contexts.Feature_Array := (others => False);
    end record;
@@ -51,5 +52,25 @@ private
 
    overriding
    function Enabled (Object : GLFW_Context; Subject : Contexts.Feature) return Boolean;
+
+   overriding
+   function Version (Object : GLFW_Context) return Contexts.Context_Version is (Object.Version);
+
+   overriding
+   function Flags (Object : GLFW_Context) return Contexts.Context_Flags is (Object.Flags);
+
+   overriding
+   function Is_Current (Object : GLFW_Context) return Boolean;
+
+   overriding
+   procedure Make_Current (Object : GLFW_Context);
+
+   overriding
+   procedure Make_Current
+     (Object : GLFW_Context;
+      Window : in out Orka.Windows.Window'Class);
+
+   overriding
+   procedure Make_Not_Current (Object : GLFW_Context);
 
 end Orka.Windows.GLFW;

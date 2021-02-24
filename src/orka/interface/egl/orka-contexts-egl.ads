@@ -25,29 +25,36 @@ with EGL.Objects.Devices;
 
 package Orka.Contexts.EGL is
 
-   type EGL_Context is limited new Context with private;
+   type Wayland_EGL_Context is limited new Context with private;
 
    overriding
    function Create_Context
      (Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return EGL_Context;
-   --  Return a surfaceless EGL context
+      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context;
+   --  Return a Wayland EGL context
+
+   type Device_EGL_Context is limited new Context with private;
+
+   overriding
+   function Create_Context
+     (Version : Context_Version;
+      Flags   : Context_Flags := (others => False)) return Device_EGL_Context;
+   --  Return a surfaceless EGL context using the default device
 
    function Create_Context
      (Device  : Standard.EGL.Objects.Devices.Device;
       Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return EGL_Context;
+      Flags   : Context_Flags := (others => False)) return Device_EGL_Context;
    --  Return a surfaceless EGL context using the given device
 
 private
 
-   type EGL_Context is
+   type EGL_Context is abstract
      limited new Ada.Finalization.Limited_Controlled and Context with
    record
       Version  : Context_Version;
       Flags    : Context_Flags;
       Features : Feature_Array := (others => False);
-      Context  : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
    end record;
 
@@ -59,5 +66,39 @@ private
 
    overriding
    function Enabled (Object : EGL_Context; Subject : Feature) return Boolean;
+
+   overriding
+   function Version (Object : EGL_Context) return Context_Version is (Object.Version);
+
+   overriding
+   function Flags (Object : EGL_Context) return Context_Flags is (Object.Flags);
+
+   type Device_EGL_Context is limited new EGL_Context with record
+      Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);
+   end record;
+
+   overriding
+   function Is_Current (Object : Device_EGL_Context) return Boolean is
+     (Object.Context.Is_Current);
+
+   overriding
+   procedure Make_Current (Object : Device_EGL_Context);
+
+   overriding
+   procedure Make_Not_Current (Object : Device_EGL_Context);
+
+   type Wayland_EGL_Context is limited new EGL_Context with record
+      Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Wayland);
+   end record;
+
+   overriding
+   function Is_Current (Object : Wayland_EGL_Context) return Boolean is
+     (Object.Context.Is_Current);
+
+   overriding
+   procedure Make_Current (Object : Wayland_EGL_Context);
+
+   overriding
+   procedure Make_Not_Current (Object : Wayland_EGL_Context);
 
 end Orka.Contexts.EGL;

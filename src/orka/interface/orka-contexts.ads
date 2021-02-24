@@ -43,6 +43,20 @@ package Orka.Contexts is
      (Version : Context_Version;
       Flags   : Context_Flags := (others => False)) return Context is abstract;
 
+   function Version (Object : Context) return Context_Version is abstract;
+
+   function Flags (Object : Context) return Context_Flags is abstract;
+
+   function Is_Current (Object : Context) return Boolean is abstract;
+
+   procedure Make_Current (Object : Context) is abstract
+     with Pre'Class  => not Object.Is_Current,
+          Post'Class =>     Object.Is_Current;
+
+   procedure Make_Not_Current (Object : Context) is abstract
+     with Pre'Class  =>     Object.Is_Current,
+          Post'Class => not Object.Is_Current;
+
    -----------------------------------------------------------------------------
 
    type Feature is (Reversed_Z, Multisample, Sample_Shading);
@@ -74,5 +88,10 @@ package Orka.Contexts is
       Width, Height      : Positive;
       Samples            : Natural := 0;
       Visible, Resizable : Boolean := True) return Orka.Windows.Window'Class is abstract;
+
+   procedure Make_Current
+     (Object : Surface_Context;
+      Window : in out Orka.Windows.Window'Class) is abstract
+   with Post'Class => Object.Is_Current;
 
 end Orka.Contexts;
