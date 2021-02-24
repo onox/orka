@@ -19,8 +19,6 @@ with EGL.Objects.Displays;
 package EGL.Objects.Configs is
    pragma Preelaborate;
 
-   use type Displays.Display;
-
    type Sample_Size is range 0 .. 16
      with Static_Predicate => Sample_Size in 0 | 2 | 4 | 8 | 16;
 

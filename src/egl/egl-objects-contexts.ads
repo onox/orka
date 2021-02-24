@@ -74,6 +74,7 @@ private
      (None  => 16#3038#,
       Back  => 16#3084#,
       Front => 16#3085#);
+   for Buffer_Kind'Size use Int'Size;
 
    type Context (Platform : Displays.Platform_Kind) is new EGL_Object with record
       Display : Displays.Display (Platform);

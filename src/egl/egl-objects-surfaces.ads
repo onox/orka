@@ -20,8 +20,6 @@ with EGL.Objects.Displays;
 package EGL.Objects.Surfaces is
    pragma Preelaborate;
 
-   use type Displays.Display;
-
    type Surface (Platform : Displays.Platform_Kind) is new EGL_Object with private;
 
    function Create_Surface
