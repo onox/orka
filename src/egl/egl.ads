@@ -105,6 +105,14 @@ private
      (Render_Buffer => 16#3086#);
    for Context_Query_Param'Size use Int'Size;
 
+   type Surface_Query_Param is (Height, Width, Swap_Behavior);
+
+   for Surface_Query_Param use
+     (Height        => 16#3056#,
+      Width         => 16#3057#,
+      Swap_Behavior => 16#3093#);
+   for Surface_Query_Param'Size use Int'Size;
+
    type Device_Query_Param is (Extensions, DRM_Device_File);
 
    for Device_Query_Param use

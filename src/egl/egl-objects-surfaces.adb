@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Unchecked_Conversion;
+
 with EGL.API;
 with EGL.Errors;
 
@@ -49,6 +51,41 @@ package body EGL.Objects.Surfaces is
          Result.Display      := Display;
       end return;
    end Create_Surface;
+
+   function Width (Object : Surface) return Natural is
+      Result : Int;
+   begin
+      if not Boolean (API.Query_Surface (Object.Display.ID, Object.ID, Width, Result)) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+
+      return Natural (Result);
+   end Width;
+
+   function Height (Object : Surface) return Natural is
+      Result : Int;
+   begin
+      if not Boolean (API.Query_Surface (Object.Display.ID, Object.ID, Height, Result)) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+
+      return Natural (Result);
+   end Height;
+
+   function Behavior (Object : Surface) return Swap_Behavior is
+      Result : Int;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Int, Target => Swap_Behavior);
+   begin
+      if not Boolean (API.Query_Surface
+        (Object.Display.ID, Object.ID, EGL.Swap_Behavior, Result))
+      then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+
+      return Convert (Result);
+   end Behavior;
 
    procedure Swap_Buffers (Object : Surface) is
    begin

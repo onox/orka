@@ -20,6 +20,8 @@ with EGL.Objects.Displays;
 package EGL.Objects.Surfaces is
    pragma Preelaborate;
 
+   type Swap_Behavior is (Buffer_Preserved, Buffer_Destroyed);
+
    type Surface (Platform : Displays.Platform_Kind) is new EGL_Object with private;
 
    function Create_Surface
@@ -29,9 +31,24 @@ package EGL.Objects.Surfaces is
       sRGB    : Boolean) return Surface
    with Pre => Display.Is_Initialized and Config.Is_Initialized;
 
-   procedure Swap_Buffers (Object : Surface);
+   function Width (Object : Surface) return Natural
+     with Pre => Object.Is_Initialized;
+
+   function Height (Object : Surface) return Natural
+     with Pre => Object.Is_Initialized;
+
+   function Behavior (Object : Surface) return Swap_Behavior
+     with Pre => Object.Is_Initialized;
+
+   procedure Swap_Buffers (Object : Surface)
+     with Pre => Object.Is_Initialized;
 
 private
+
+   for Swap_Behavior use
+     (Buffer_Preserved => 16#3094#,
+      Buffer_Destroyed => 16#3095#);
+   for Swap_Behavior'Size use Int'Size;
 
    type Surface (Platform : Displays.Platform_Kind) is new EGL_Object with record
       Display : Displays.Display (Platform);

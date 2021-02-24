@@ -88,8 +88,14 @@ private package EGL.API is
    --                                 Surfaces                                --
    -----------------------------------------------------------------------------
 
-   --  eglQuerySurface
    --  eglSurfaceAttrib
+
+   function Query_Surface
+     (Display   : ID_Type;
+      Surface   : ID_Type;
+      Attribute : Surface_Query_Param;
+      Value     : out Int) return Bool
+   with Import, Convention => C, External_Name => "eglQuerySurface";
 
    function Query_Context
      (Display   : ID_Type;
