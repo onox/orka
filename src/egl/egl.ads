@@ -64,7 +64,14 @@ package EGL is
    Feature_Not_Supported : exception;
    --  Raised when a function that is not available is called
 
+   type Native_Window_Ptr is private;
+
 private
+
+   type Native_Window is limited null record;
+
+   type Native_Window_Ptr is access all Native_Window
+     with Convention => C;
 
    function None return Int is (16#3038#);
    function None return Attrib is (16#3038#);
@@ -91,6 +98,12 @@ private
       Extensions  => 16#3055#,
       Client_APIs => 16#308D#);
    for Display_Query_Param'Size use Int'Size;
+
+   type Context_Query_Param is (Render_Buffer);
+
+   for Context_Query_Param use
+     (Render_Buffer => 16#3086#);
+   for Context_Query_Param'Size use Int'Size;
 
    type Device_Query_Param is (Extensions, DRM_Device_File);
 

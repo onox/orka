@@ -59,7 +59,6 @@ package body EGL.Objects.Contexts is
    is
       No_Config  : constant ID_Type := ID_Type (System.Null_Address);
       No_Context : constant ID_Type := ID_Type (System.Null_Address);
-      No_Surface : constant ID_Type := ID_Type (System.Null_Address);
 
       function Convert is new Ada.Unchecked_Conversion (Flag_Bits, Int);
 
@@ -106,10 +105,6 @@ package body EGL.Objects.Contexts is
             Errors.Raise_Exception_On_EGL_Error;
          end if;
 
-         --  TODO Support attaching a surface later (+ set viewport, scissor, draw and read buffer)
-         if not API.Make_Current (Display.ID, No_Surface, No_Surface, ID) then
-            Errors.Raise_Exception_On_EGL_Error;
-         end if;
 
          return Result : Context (Display.Platform) do
             Result.Reference.ID := ID;
@@ -118,10 +113,57 @@ package body EGL.Objects.Contexts is
       end;
    end Create_Context;
 
+   function Buffer (Object : Context) return Buffer_Kind is
+      Result : Buffer_Kind;
+   begin
+      if not Boolean (API.Query_Context (Object.Display.ID, Object.ID, Render_Buffer, Result)) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+
+      return Result;
+   end Buffer;
+
+   function Is_Current (Object : Context) return Boolean is
+   begin
+      return API.Get_Current_Context = Object.ID;
+   end Is_Current;
+
+   procedure Make_Current (Object : Context) is
+      No_Surface : constant ID_Type := ID_Type (System.Null_Address);
+   begin
+      if not API.Make_Current (Object.Display.ID, No_Surface, No_Surface, Object.ID) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+   end Make_Current;
+
+   procedure Make_Current (Object : Context; Surface : Surfaces.Surface) is
+   begin
+      if not API.Make_Current (Object.Display.ID, Surface.ID, Surface.ID, Object.ID) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+   end Make_Current;
+
+   procedure Make_Not_Current (Object : Context) is
+      No_Context : constant ID_Type := ID_Type (System.Null_Address);
+      No_Surface : constant ID_Type := ID_Type (System.Null_Address);
+   begin
+      if not API.Make_Current (Object.Display.ID, No_Surface, No_Surface, No_Context) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+   end Make_Not_Current;
+
+   procedure Set_Swap_Interval (Object : Context; Value : Natural) is
+   begin
+      if not Boolean (API.Swap_Interval (Object.Display.ID, Int (Value))) then
+         Errors.Raise_Exception_On_EGL_Error;
+      end if;
+   end Set_Swap_Interval;
+
    overriding procedure Pre_Finalize (Object : in out Context) is
       No_Context : constant ID_Type := ID_Type (System.Null_Address);
    begin
       pragma Assert (Object.ID /= No_Context);
+      Object.Make_Not_Current;
       if not Boolean (API.Destroy_Context (Object.Display.ID, Object.ID)) then
          Errors.Raise_Exception_On_EGL_Error;
       end if;

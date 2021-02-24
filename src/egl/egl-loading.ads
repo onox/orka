@@ -61,6 +61,31 @@ private package EGL.Loading is
    generic
       Function_Name : String;
       type Param1_Type (<>) is private;
+      type Param2_Type (<>) is private;
+      type Param3_Type (<>) is private;
+      type Param4_Type (<>) is private;
+      type Return_Type is private;
+   package Function_With_4_Params is
+      type Function_Reference is not null access function
+        (Param1 : Param1_Type;
+         Param2 : Param2_Type;
+         Param3 : Param3_Type;
+         Param4 : Param4_Type) return Return_Type
+      with Convention => StdCall;
+
+      function Init
+        (Param1 : Param1_Type;
+         Param2 : Param2_Type;
+         Param3 : Param3_Type;
+         Param4 : Param4_Type) return Return_Type
+      with Convention => StdCall;
+
+      Ref : Function_Reference := Init'Access;
+   end Function_With_4_Params;
+
+   generic
+      Function_Name : String;
+      type Param1_Type (<>) is private;
       type Element_Type is private;
       type Array_Type is array (Natural range <>) of Element_Type;
       type Size_Type (<>) is private;

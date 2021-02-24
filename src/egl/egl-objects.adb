@@ -53,6 +53,9 @@ package body EGL.Objects is
 
    function ID (Object : EGL_Object) return ID_Type is (Object.Reference.ID);
 
+   function Is_Initialized (Object : EGL_Object) return Boolean is
+     (Object.Reference /= null and then Object.Reference.ID /= ID_Type (System.Null_Address));
+
    overriding
    function "=" (Left, Right : EGL_Object) return Boolean is (Left.Reference = Right.Reference);
 

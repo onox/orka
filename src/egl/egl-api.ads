@@ -88,12 +88,42 @@ private package EGL.API is
    --                                 Surfaces                                --
    -----------------------------------------------------------------------------
 
-   --  eglQueryContext to check if double buffered window is used
-   --  eglChooseConfig or eglGetConfigs
-   --  eglCreatePlatformWindowSurface[EXT]
-   --  eglDestroySurface
    --  eglQuerySurface
    --  eglSurfaceAttrib
+
+   function Query_Context
+     (Display   : ID_Type;
+      Context   : ID_Type;
+      Attribute : Context_Query_Param;
+      Value     : out Objects.Contexts.Buffer_Kind) return Bool
+   with Import, Convention => C, External_Name => "eglQueryContext";
+
+   function Get_Current_Context return ID_Type
+     with Import, Convention => C, External_Name => "eglGetCurrentContext";
+
+   function Get_Config_Attrib
+     (Display   : ID_Type;
+      Config    : ID_Type;
+      Attribute : Int;
+      Value     : out Int) return Bool
+   with Import, Convention => C, External_Name => "eglGetConfigAttrib";
+
+   function Choose_Config
+     (Display     : ID_Type;
+      Attributes  : Int_Array;
+      Configs     : out ID_Array;
+      Max_Configs : Int;
+      Length      : out Int) return Bool
+   with Import, Convention => C, External_Name => "eglChooseConfig";
+
+   package Create_Platform_Window_Surface is new Loading.Function_With_4_Params
+     ("eglCreatePlatformWindowSurfaceEXT",
+      ID_Type, ID_Type, Native_Window_Ptr, Int_Array, ID_Type);
+
+   function Destroy_Surface
+     (Display : ID_Type;
+      Surface : ID_Type) return Bool
+   with Import, Convention => C, External_Name => "eglDestroySurface";
 
    function Swap_Buffers
      (Display : ID_Type;

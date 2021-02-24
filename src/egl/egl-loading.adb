@@ -56,6 +56,20 @@ package body EGL.Loading is
       end Init;
    end Function_With_3_Params;
 
+   package body Function_With_4_Params is
+      function Init
+        (Param1 : Param1_Type;
+         Param2 : Param2_Type;
+         Param3 : Param3_Type;
+         Param4 : Param4_Type) return Return_Type
+      is
+         function Load_Function is new Load (Function_Reference);
+      begin
+         Ref := Load_Function (Function_Name);
+         return Ref (Param1, Param2, Param3, Param4);
+      end Init;
+   end Function_With_4_Params;
+
    package body Array_Getter_With_3_Params is
       function Init
         (Param1 : Param1_Type;

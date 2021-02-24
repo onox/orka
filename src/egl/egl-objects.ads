@@ -29,6 +29,8 @@ package EGL.Objects is
 
    function ID (Object : EGL_Object) return ID_Type;
 
+   function Is_Initialized (Object : EGL_Object) return Boolean;
+
    procedure Post_Initialize (Object : in out EGL_Object) is null;
 
    procedure Pre_Finalize (Object : in out EGL_Object) is null;
