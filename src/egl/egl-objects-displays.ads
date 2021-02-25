@@ -30,10 +30,10 @@ package EGL.Objects.Displays is
    --  Not_Initialized_Error is raised if a display for the requested
    --  platform could not be initialized
 
-   function Create_Display
-     (Platform : Platform_Kind;
-      Device   : Devices.Device := Devices.No_Device) return Display
-   with Pre => not Device.In_Use;
+   function Create_Display (Device : Devices.Device) return Display
+     with Pre => not Device.In_Use;
+
+   function Create_Display (Wayland_Display : Native_Display_Ptr) return Display;
 
    function Client_Extensions return String_List;
    --  Return a list of EGL client extensions

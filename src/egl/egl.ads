@@ -66,11 +66,18 @@ package EGL is
 
    type Native_Window_Ptr is private;
 
+   type Native_Display_Ptr is private;
+
 private
 
    type Native_Window is limited null record;
 
    type Native_Window_Ptr is access all Native_Window
+     with Convention => C;
+
+   type Native_Display is limited null record;
+
+   type Native_Display_Ptr is access all Native_Display
      with Convention => C;
 
    function None return Int is (16#3038#);

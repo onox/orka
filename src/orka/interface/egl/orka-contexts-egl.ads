@@ -31,6 +31,14 @@ package Orka.Contexts.EGL is
    function Create_Context
      (Version : Context_Version;
       Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context;
+   --  Raise Program_Error due to the missing native Wayland display
+   --
+   --  This function must be overriden and internally call the function below.
+
+   function Create_Context
+     (Window  : Standard.EGL.Native_Display_Ptr;
+      Version : Context_Version;
+      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context;
    --  Return a Wayland EGL context
 
    type Device_EGL_Context is limited new Context with private;

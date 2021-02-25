@@ -90,8 +90,7 @@ package body Orka.Contexts.EGL is
       Standard.EGL.Debug.Set_Message_Callback (Print_Error'Access);
 
       declare
-         Display : constant EGL_Displays.Display :=
-           EGL_Displays.Create_Display (EGL_Displays.Device, Device);
+         Display : constant EGL_Displays.Display := EGL_Displays.Create_Display (Device);
       begin
          return Result : Device_EGL_Context do
             Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
@@ -126,17 +125,27 @@ package body Orka.Contexts.EGL is
    overriding
    function Create_Context
      (Version : Context_Version;
+      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context is
+   begin
+      return Result : constant Wayland_EGL_Context :=
+        (Ada.Finalization.Limited_Controlled with others => <>)
+      do
+         raise Program_Error;
+      end return;
+   end Create_Context;
+
+   function Create_Context
+     (Window  : Standard.EGL.Native_Display_Ptr;
+      Version : Context_Version;
       Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context
    is
       package EGL_Contexts renames Standard.EGL.Objects.Contexts;
-      package EGL_Devices  renames Standard.EGL.Objects.Devices;
       package EGL_Displays renames Standard.EGL.Objects.Displays;
    begin
       Standard.EGL.Debug.Set_Message_Callback (Print_Error'Access);
 
       declare
-         Display : constant EGL_Displays.Display :=
-           EGL_Displays.Create_Display (EGL_Displays.Wayland, EGL_Devices.No_Device);
+         Display : constant EGL_Displays.Display := EGL_Displays.Create_Display (Window);
       begin
          return Result : Wayland_EGL_Context do
             Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
