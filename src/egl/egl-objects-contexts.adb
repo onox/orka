@@ -34,6 +34,11 @@ package body EGL.Objects.Contexts is
    OpenGL_No_Error                    : constant Int := 16#31B3#;
    OpenGL_Reset_Notification_Strategy : constant Int := 16#31BD#;
 
+   Context_Release_Behavior : constant Int := 16#2097#;
+
+   Context_Release_Behavior_None  : constant Int := 0;
+   Context_Release_Behavior_Flush : constant Int := 16#2098#;
+
    No_Reset_Notification : constant Int := 16#31BE#;
    Lose_Context_On_Reset : constant Int := 16#31BF#;
 
@@ -80,8 +85,10 @@ package body EGL.Objects.Contexts is
 
          OpenGL_Reset_Notification_Strategy,
            (if Flags.Robust then Lose_Context_On_Reset else No_Reset_Notification));
+         --  Requires EGL_KHR_create_context or EGL 1.5
 
       No_Error : constant Int_Array := (OpenGL_No_Error, 1);
+      No_Flush : constant Int_Array := (Context_Release_Behavior, Context_Release_Behavior_None);
 
       Extensions : constant String_List := Display.Extensions;
    begin
@@ -97,14 +104,20 @@ package body EGL.Objects.Contexts is
          Can_Have_No_Error : constant Boolean :=
            Flags.No_Error and then Has_Extension (Extensions, "EGL_KHR_create_context_no_error");
 
+         Can_Have_Release_Context : constant Boolean :=
+           Has_Extension (Extensions, "EGL_KHR_context_flush_control");
+
          ID : constant ID_Type :=
            API.Create_Context (Display.ID, No_Config, No_Context,
-             Attributes & (if Can_Have_No_Error then No_Error else (1 .. 0 => <>)) & None);
+             Attributes &
+             (if Can_Have_No_Error then No_Error else (1 .. 0 => <>)) &
+             (if Can_Have_Release_Context then No_Flush else (1 .. 0 => <>)) &
+             None);
+         --  TODO Support shared context (replace No_Context with Shared_Context.ID)
       begin
          if ID = No_Context then
             Errors.Raise_Exception_On_EGL_Error;
          end if;
-
 
          return Result : Context (Display.Platform) do
             Result.Reference.ID := ID;
