@@ -46,8 +46,7 @@ package Orka.Rendering.Framebuffers is
       Stencil : GL.Buffers.Stencil_Index := 0;
    end record;
 
-   type Framebuffer (Default : Boolean) is tagged private
-     with Type_Invariant => (if Framebuffer.Default then Framebuffer.Samples = 0);
+   type Framebuffer (Default : Boolean) is tagged private;
 
    function Create_Framebuffer
      (Width, Height, Samples : Size;
