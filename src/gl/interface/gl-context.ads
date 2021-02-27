@@ -21,6 +21,8 @@ private with GL.Low_Level;
 package GL.Context is
    pragma Preelaborate;
 
+   procedure Flush;
+
    type String_List is array (Positive range <>) of
      Ada.Strings.Unbounded.Unbounded_String;
 

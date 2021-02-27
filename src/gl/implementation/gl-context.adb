@@ -33,6 +33,11 @@ package body GL.Context is
    function GLSL_Version (Index : Positive) return String is
      (C.Strings.Value (API.Get_String_I.Ref (Enums.Getter.Shading_Language_Version, UInt (Index - 1))));
 
+   procedure Flush is
+   begin
+      API.Flush.Ref.all;
+   end Flush;
+
    function Status return Reset_Status is
    begin
       return API.Get_Graphics_Reset_Status.Ref.all;
