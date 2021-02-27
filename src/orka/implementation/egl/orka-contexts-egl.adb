@@ -68,12 +68,19 @@ package body Orka.Contexts.EGL is
    end Print_Debug;
 
    procedure Post_Initialize (Object : in out EGL_Context'Class) is
+      Flags : constant GL.Context.Context_Flags := GL.Context.Flags;
    begin
-      --  TODO Read back actual flags
-
       Object.Version :=
         (Major => GL.Context.Major_Version,
          Minor => GL.Context.Minor_Version);
+
+      pragma Assert (Flags.Forward_Compatible);
+
+      Object.Flags.Debug    := Flags.Debug;
+      Object.Flags.Robust   := Flags.Robust_Access;
+      Object.Flags.No_Error := Flags.No_Error;
+      --  Other information about context can be read back as well with
+      --  GL.Context.Reset_Notification and GL.Context.Release_Behavior
 
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
       Object.Vertex_Array.Create;
@@ -130,6 +137,8 @@ package body Orka.Contexts.EGL is
       return Result : constant Wayland_EGL_Context :=
         (Ada.Finalization.Limited_Controlled with others => <>)
       do
+         --  EGL context for Wayland platform requires a pointer to a native
+         --  Wayland display
          raise Program_Error;
       end return;
    end Create_Context;
