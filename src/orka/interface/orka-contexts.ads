@@ -83,12 +83,6 @@ package Orka.Contexts is
 
    type Surface_Context is limited interface and Context;
 
-   function Create_Window
-     (Object             : Surface_Context;
-      Width, Height      : Positive;
-      Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True) return Orka.Windows.Window'Class is abstract;
-
    procedure Make_Current
      (Object : Surface_Context;
       Window : in out Orka.Windows.Window'Class) is abstract

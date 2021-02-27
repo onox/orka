@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+limited with Orka.Contexts;
+
 with Orka.Inputs.Pointers;
 
 package Orka.Windows is
@@ -22,6 +24,12 @@ package Orka.Windows is
    type Window is limited interface;
 
    type Window_Ptr is not null access all Window'Class;
+
+   function Create_Window
+     (Context            : Contexts.Surface_Context'Class;
+      Width, Height      : Positive;
+      Samples            : Natural := 0;
+      Visible, Resizable : Boolean := True) return Window is abstract;
 
    function Pointer_Input
      (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;

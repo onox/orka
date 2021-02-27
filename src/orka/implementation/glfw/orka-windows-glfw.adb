@@ -22,13 +22,7 @@ with Orka.Inputs.GLFW;
 with Orka.Logging;
 
 with GL.Context;
-with GL.Objects.Vertex_Arrays;
-with GL.Types;
 with GL.Viewports;
-
-with Glfw.Windows;
-with Glfw.Input.Keys;
-with Glfw.Input.Mouse;
 
 package body Orka.Windows.GLFW is
 
@@ -42,88 +36,6 @@ package body Orka.Windows.GLFW is
    begin
       Messages.Log (Error, "GLFW " & Code'Image & ": " & Trim (Description));
    end Print_Error;
-
-   -----------------------------------------------------------------------------
-
-   type GLFW_Window is limited new Standard.Glfw.Windows.Window and Window with record
-      Input     : Inputs.Pointers.Pointer_Input_Ptr;
-      Finalized : Boolean;
-
-      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
-
-      Position_X : GL.Types.Double := 0.0;
-      Position_Y : GL.Types.Double := 0.0;
-      Scroll_X   : GL.Types.Double := 0.0;
-      Scroll_Y   : GL.Types.Double := 0.0;
-      Width, Height : Positive;
-
-      --  Needed to workaround a GLFW bug
-      Got_Locked, Last_Locked : Boolean := False;
-   end record;
-
-   overriding
-   function Pointer_Input
-     (Object : GLFW_Window) return Inputs.Pointers.Pointer_Input_Ptr;
-
-   overriding
-   function Width (Object : GLFW_Window) return Positive;
-
-   overriding
-   function Height (Object : GLFW_Window) return Positive;
-
-   overriding
-   procedure Set_Title (Object : in out GLFW_Window; Value : String);
-
-   overriding
-   procedure Close (Object : in out GLFW_Window);
-
-   overriding
-   function Should_Close (Object : in out GLFW_Window) return Boolean;
-
-   overriding
-   procedure Process_Input (Object : in out GLFW_Window);
-
-   overriding
-   procedure Swap_Buffers (Object : in out GLFW_Window);
-
-   overriding
-   procedure Enable_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean);
-
-   overriding
-   procedure Finalize (Object : in out GLFW_Window);
-
-   overriding
-   procedure Close_Requested (Object : not null access GLFW_Window);
-
-   overriding
-   procedure Key_Changed
-     (Object   : not null access GLFW_Window;
-      Key      : Standard.Glfw.Input.Keys.Key;
-      Scancode : Standard.Glfw.Input.Keys.Scancode;
-      Action   : Standard.Glfw.Input.Keys.Action;
-      Mods     : Standard.Glfw.Input.Keys.Modifiers);
-
-   overriding
-   procedure Mouse_Position_Changed
-     (Object : not null access GLFW_Window;
-      X, Y   : Standard.Glfw.Input.Mouse.Coordinate);
-
-   overriding
-   procedure Mouse_Scrolled
-     (Object : not null access GLFW_Window;
-      X, Y   : Standard.Glfw.Input.Mouse.Scroll_Offset);
-
-   overriding
-   procedure Mouse_Button_Changed
-     (Object  : not null access GLFW_Window;
-      Button  : Standard.Glfw.Input.Mouse.Button;
-      State   : Standard.Glfw.Input.Button_State;
-      Mods    : Standard.Glfw.Input.Keys.Modifiers);
-
-   overriding
-   procedure Framebuffer_Size_Changed
-     (Object : not null access GLFW_Window;
-      Width, Height : Natural);
 
    -----------------------------------------------------------------------------
 
@@ -146,6 +58,60 @@ package body Orka.Windows.GLFW is
    overriding
    function Enabled (Object : GLFW_Context; Subject : Contexts.Feature) return Boolean
      is (Contexts.Enabled (Object.Features, Subject));
+
+   overriding
+   function Is_Current (Object : GLFW_Context) return Boolean is
+   begin
+      raise GL.Feature_Not_Supported_Exception;
+      return True;
+   end Is_Current;
+
+   overriding
+   procedure Make_Current (Object : GLFW_Context) is
+   begin
+      raise GL.Feature_Not_Supported_Exception;
+   end Make_Current;
+
+   overriding
+   procedure Make_Current
+     (Object : GLFW_Context;
+      Window : in out Orka.Windows.Window'Class)
+   is
+      Reference : constant Standard.Glfw.Windows.Window_Reference
+        := Standard.Glfw.Windows.Window (Window)'Access;
+   begin
+      Standard.Glfw.Windows.Context.Make_Current (Reference);
+   end Make_Current;
+
+   overriding
+   procedure Make_Not_Current (Object : GLFW_Context) is
+   begin
+      Standard.Glfw.Windows.Context.Make_Current (null);
+      --  TODO Make sure Object is current on calling task
+   end Make_Not_Current;
+
+   overriding
+   function Version (Object : GLFW_Context) return Contexts.Context_Version is
+   begin
+      return
+        (Major => GL.Context.Major_Version,
+         Minor => GL.Context.Minor_Version);
+   end Version;
+
+   overriding
+   function Flags (Object : GLFW_Context) return Contexts.Context_Flags is
+      Flags : constant GL.Context.Context_Flags := GL.Context.Flags;
+
+      Result : Contexts.Context_Flags;
+   begin
+      pragma Assert (Flags.Forward_Compatible);
+
+      Result.Debug    := Flags.Debug;
+      Result.Robust   := Flags.Robust_Access;
+      Result.No_Error := Flags.No_Error;
+
+      return Result;
+   end Flags;
 
    overriding
    function Create_Context
@@ -174,12 +140,14 @@ package body Orka.Windows.GLFW is
         Features => <>);
    end Create_Context;
 
+   -----------------------------------------------------------------------------
+
    overriding
    function Create_Window
-     (Object             : GLFW_Context;
+     (Context            : Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True) return Window'Class
+      Visible, Resizable : Boolean := True) return GLFW_Window
    is
       package Windows renames Standard.Glfw.Windows;
    begin
@@ -222,7 +190,7 @@ package body Orka.Windows.GLFW is
             Standard.Glfw.Windows.Context.Make_Current (Reference);
 
             Messages.Log (Debug, "  context:");
-            Messages.Log (Debug, "    flags:    " & Orka.Contexts.Image (Object.Flags));
+            Messages.Log (Debug, "    flags:    " & Orka.Contexts.Image (Context.Flags));
             Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
             Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
 
@@ -391,36 +359,5 @@ package body Orka.Windows.GLFW is
       Object.Width  := Width;
       Object.Height := Height;
    end Framebuffer_Size_Changed;
-
-   overriding
-   function Is_Current (Object : GLFW_Context) return Boolean is
-   begin
-      raise GL.Feature_Not_Supported_Exception;
-      return True;
-   end Is_Current;
-
-   overriding
-   procedure Make_Current (Object : GLFW_Context) is
-   begin
-      raise GL.Feature_Not_Supported_Exception;
-   end Make_Current;
-
-   overriding
-   procedure Make_Current
-     (Object : GLFW_Context;
-      Window : in out Orka.Windows.Window'Class)
-   is
-      Reference : constant Standard.Glfw.Windows.Window_Reference
-        := Standard.Glfw.Windows.Window (Window)'Access;
-   begin
-      Standard.Glfw.Windows.Context.Make_Current (Reference);
-   end Make_Current;
-
-   overriding
-   procedure Make_Not_Current (Object : GLFW_Context) is
-   begin
-      Standard.Glfw.Windows.Context.Make_Current (null);
-      --  TODO Make sure Object is current on calling task
-   end Make_Not_Current;
 
 end Orka.Windows.GLFW;
