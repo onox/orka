@@ -38,6 +38,23 @@ package GL.Context is
    --  No_Error while the context is still resetting and No_Error when
    --  the reset has been completed.
 
+   type Context_Flags is record
+      Forward_Compatible : Boolean := False;
+      Debug              : Boolean := False;
+      Robust_Access      : Boolean := False;
+      No_Error           : Boolean := False;
+   end record;
+
+   function Flags return Context_Flags;
+
+   type Context_Reset_Notification is (Lose_Context_On_Reset, No_Reset_Notification);
+
+   function Reset_Notification return Context_Reset_Notification;
+
+   type Context_Release_Behavior is (None, Flush);
+
+   function Release_Behavior return Context_Release_Behavior;
+
    function Major_Version return Natural;
    function Minor_Version return Natural;
    --  These two require OpenGL 3
@@ -70,5 +87,23 @@ private
       Innocent => 16#8254#,
       Unknown  => 16#8255#);
    for Reset_Status'Size use Low_Level.Enum'Size;
+
+   for Context_Flags use record
+      Forward_Compatible at 0 range 0 .. 0;
+      Debug              at 0 range 1 .. 1;
+      Robust_Access      at 0 range 2 .. 2;
+      No_Error           at 0 range 3 .. 3;
+   end record;
+   for Context_Flags'Size use Low_Level.Bitfield'Size;
+
+   for Context_Reset_Notification use
+     (Lose_Context_On_Reset => 16#8252#,
+      No_Reset_Notification => 16#8261#);
+   for Context_Reset_Notification'Size use Low_Level.Enum'Size;
+
+   for Context_Release_Behavior use
+     (None  => 0,
+      Flush => 16#82FC#);
+   for Context_Release_Behavior'Size use Low_Level.Enum'Size;
 
 end GL.Context;

@@ -156,6 +156,15 @@ private package GL.API is
    package Get_String_I is new Loader.Function_With_2_Params
      ("glGetStringi", Enums.Getter.String_Parameter, UInt, C.Strings.chars_ptr);
 
+   package Get_Context_Flags is new Loader.Getter_With_2_Params
+     ("glGetIntegerv", Enums.Getter.Parameter, Low_Level.Bitfield);
+
+   package Get_Context_Reset_Notification is new Loader.Getter_With_2_Params
+     ("glGetIntegerv", Enums.Getter.Parameter, Context.Context_Reset_Notification);
+
+   package Get_Context_Release_Behavior is new Loader.Getter_With_2_Params
+     ("glGetIntegerv", Enums.Getter.Parameter, Context.Context_Release_Behavior);
+
    -----------------------------------------------------------------------------
    --                                 Toggles                                 --
    -----------------------------------------------------------------------------

@@ -16,6 +16,8 @@
 
 with Interfaces.C.Strings;
 
+with Ada.Unchecked_Conversion;
+
 with GL.API;
 with GL.Enums.Getter;
 with GL.Errors;
@@ -35,6 +37,32 @@ package body GL.Context is
    begin
       return API.Get_Graphics_Reset_Status.Ref.all;
    end Status;
+
+   function Flags return Context_Flags is
+      use type Low_Level.Bitfield;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Low_Level.Bitfield, Context.Context_Flags);
+
+      Raw_Bits : Low_Level.Bitfield := 0;
+   begin
+      API.Get_Context_Flags.Ref (Enums.Getter.Context_Flags, Raw_Bits);
+      return Convert (Raw_Bits and 2#0000000000001111#);
+   end Flags;
+
+   function Reset_Notification return Context_Reset_Notification is
+      Result : Context_Reset_Notification := No_Reset_Notification;
+   begin
+      API.Get_Context_Reset_Notification.Ref (Enums.Getter.Context_Reset_Notification, Result);
+      return Result;
+   end Reset_Notification;
+
+   function Release_Behavior return Context_Release_Behavior is
+      Result : Context_Release_Behavior := Flush;
+   begin
+      API.Get_Context_Release_Behavior.Ref (Enums.Getter.Context_Release_Behavior, Result);
+      return Result;
+   end Release_Behavior;
 
    function Major_Version return Natural is
       Result : Int := 0;
