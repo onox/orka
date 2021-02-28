@@ -16,10 +16,10 @@
 
 with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
-with Ada.Real_Time;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
 
+with Orka.OS;
 with Orka.Strings;
 
 package body Orka.Terminals is
@@ -78,12 +78,11 @@ package body Orka.Terminals is
 
    -----------------------------------------------------------------------------
 
-   Time_Zero : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+   Time_Zero : constant Duration := Orka.OS.Monotonic_Clock;
 
    Days_Since_Zero : Natural := 0;
 
    function Time_Image return String is
-      use Ada.Real_Time;
       use Ada.Calendar.Formatting;
 
       Hour       : Hour_Number;
@@ -91,7 +90,7 @@ package body Orka.Terminals is
       Second     : Second_Number;
       Sub_Second : Second_Duration;
 
-      Seconds_Since_Zero : Duration := To_Duration (Clock - Time_Zero);
+      Seconds_Since_Zero : Duration := Orka.OS.Monotonic_Clock - Time_Zero;
    begin
       if Seconds_Since_Zero > Ada.Calendar.Day_Duration'Last then
          Seconds_Since_Zero := Seconds_Since_Zero - Ada.Calendar.Day_Duration'Last;
