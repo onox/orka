@@ -38,4 +38,36 @@ package body Orka.OS is
       pragma Assert (Result = 0);
    end Set_Task_Name;
 
+   type Clock_Kind is (Realtime, Monotonic);
+
+   for Clock_Kind use
+     (Realtime  => 0,
+      Monotonic => 1);
+   for Clock_Kind'Size use Interfaces.C.int'Size;
+
+   type Timespec is record
+      Seconds     : aliased Interfaces.C.long;
+      Nanoseconds : aliased Interfaces.C.long;
+   end record
+     with Convention => C;
+
+   function C_Clock_Gettime
+     (Kind : Clock_Kind;
+      Time : access Timespec) return Interfaces.C.int
+   with Import, Convention => C, External_Name => "clock_gettime";
+
+   function Monotonic_Clock return Duration is
+      use type Interfaces.C.int;
+
+      Value  : aliased Timespec;
+      Result : Interfaces.C.int;
+   begin
+      Result := C_Clock_Gettime (Monotonic, Value'Access);
+
+      pragma Assert (Result = 0);
+      --  Makes compiler happy and can be optimized away (unlike raise Program_Error)
+
+      return Duration (Value.Seconds) + Duration (Value.Nanoseconds) / 1e9;
+   end Monotonic_Clock;
+
 end Orka.OS;

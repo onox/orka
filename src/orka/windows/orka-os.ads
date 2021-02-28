@@ -20,4 +20,7 @@ package Orka.OS is
    procedure Set_Task_Name (Name : in String)
      with Pre => Name'Length <= 15;
 
+   function Monotonic_Clock return Duration
+     with Inline;
+
 end Orka.OS;

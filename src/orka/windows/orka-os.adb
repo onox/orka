@@ -21,4 +21,10 @@ package body Orka.OS is
       null;
    end Set_Task_Name;
 
+   function Monotonic_Clock return Duration is
+   begin
+      raise Program_Error with "BUG: Monotonic_Clock not implemented yet on Windows";
+      return 0.0;
+   end Monotonic_Clock;
+
 end Orka.OS;
