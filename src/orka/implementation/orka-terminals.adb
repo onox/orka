@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
@@ -80,24 +79,28 @@ package body Orka.Terminals is
 
    Time_Zero : constant Duration := Orka.OS.Monotonic_Clock;
 
+   Day_In_Seconds : constant := 24.0 * 60.0 * 60.0;
+
    function Time_Image return String is
-      use Ada.Calendar.Formatting;
-
-      Hour       : Hour_Number;
-      Minute     : Minute_Number;
-      Second     : Second_Number;
-      Sub_Second : Second_Duration;
-
       Seconds_Since_Zero : Duration := Orka.OS.Monotonic_Clock - Time_Zero;
       Days_Since_Zero    : Natural := 0;
    begin
-      while Seconds_Since_Zero > Ada.Calendar.Day_Duration'Last loop
-         Seconds_Since_Zero := Seconds_Since_Zero - Ada.Calendar.Day_Duration'Last;
+      while Seconds_Since_Zero > Day_In_Seconds loop
+         Seconds_Since_Zero := Seconds_Since_Zero - Day_In_Seconds;
          Days_Since_Zero    := Days_Since_Zero + 1;
       end loop;
-      Split (Seconds_Since_Zero, Hour, Minute, Second, Sub_Second);
 
       declare
+         Seconds_Rounded : constant Natural :=
+           Natural (Duration'Max (0.0, Seconds_Since_Zero - 0.5));
+
+         Hour       : constant Natural := Seconds_Rounded / 3600;
+         Minute     : constant Natural := (Seconds_Rounded mod 3600) / 60;
+         Second     : constant Natural := Seconds_Rounded mod 60;
+
+         Sub_Second : constant Duration :=
+           Seconds_Since_Zero - Duration (Hour * 3600 + Minute * 60 + Second);
+
          --  Remove first character (space) from ' hhmmss' image and then pad it to six digits
          Image1 : constant String := Natural'Image
            ((Days_Since_Zero * 24 + Hour) * 1e4 + Minute * 1e2 + Second);
