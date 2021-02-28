@@ -80,8 +80,6 @@ package body Orka.Terminals is
 
    Time_Zero : constant Duration := Orka.OS.Monotonic_Clock;
 
-   Days_Since_Zero : Natural := 0;
-
    function Time_Image return String is
       use Ada.Calendar.Formatting;
 
@@ -91,11 +89,12 @@ package body Orka.Terminals is
       Sub_Second : Second_Duration;
 
       Seconds_Since_Zero : Duration := Orka.OS.Monotonic_Clock - Time_Zero;
+      Days_Since_Zero    : Natural := 0;
    begin
-      if Seconds_Since_Zero > Ada.Calendar.Day_Duration'Last then
+      while Seconds_Since_Zero > Ada.Calendar.Day_Duration'Last loop
          Seconds_Since_Zero := Seconds_Since_Zero - Ada.Calendar.Day_Duration'Last;
          Days_Since_Zero    := Days_Since_Zero + 1;
-      end if;
+      end loop;
       Split (Seconds_Since_Zero, Hour, Minute, Second, Sub_Second);
 
       declare
