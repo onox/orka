@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 private package Orka.Loggers.Formatting is
+   pragma Preelaborate;
 
    function Format_Message
      (From    : Source;

@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 private package Orka.Terminals is
+   pragma Preelaborate;
 
    type Style is (Default, Bold, Dark, Italic, Underline, Blink, Reversed, Cross_Out);
 
@@ -24,6 +25,8 @@ private package Orka.Terminals is
                       Attribute : Style := Default) return String;
    --  Colorize the given text with a foreground color, background color,
    --  and/or style using ANSI escape sequences
+
+   procedure Set_Time_Zero (Time : Duration);
 
    function Time_Image return String;
 

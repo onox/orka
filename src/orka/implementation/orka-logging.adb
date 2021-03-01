@@ -17,6 +17,7 @@
 with GL.Debug;
 
 with Orka.Loggers.Terminal;
+with Orka.OS;
 with Orka.Terminals;
 
 package body Orka.Logging is
@@ -75,4 +76,6 @@ package body Orka.Logging is
       end Log;
    end Messages;
 
+begin
+   Orka.Terminals.Set_Time_Zero (Orka.OS.Monotonic_Clock);
 end Orka.Logging;

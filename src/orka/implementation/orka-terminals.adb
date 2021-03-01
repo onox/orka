@@ -76,7 +76,12 @@ package body Orka.Terminals is
 
    -----------------------------------------------------------------------------
 
-   Time_Zero : constant Duration := Orka.OS.Monotonic_Clock;
+   Time_Zero : Duration := 0.0;
+
+   procedure Set_Time_Zero (Time : Duration) is
+   begin
+      Time_Zero := Time;
+   end Set_Time_Zero;
 
    Day_In_Seconds : constant := 24.0 * 60.0 * 60.0;
 
@@ -141,11 +146,11 @@ package body Orka.Terminals is
      := (new String'("s"),
          new String'("ms"),
          new String'("us"));
-   Last_Suffix : constant String_Access := Suffices (Suffices'Last);
 
    function Image (Value : Duration) return String is
       Number : Duration := Value;
 
+      Last_Suffix : constant String_Access := Suffices (Suffices'Last);
       Suffix : String_Access := Suffices (Suffices'First);
    begin
       for S of Suffices loop
