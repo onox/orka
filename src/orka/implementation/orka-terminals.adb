@@ -16,7 +16,6 @@
 
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
-with Ada.Text_IO;
 
 with Orka.OS;
 with Orka.Strings;
@@ -118,7 +117,23 @@ package body Orka.Terminals is
       end;
    end Time_Image;
 
-   package Duration_IO is new Ada.Text_IO.Fixed_IO (Duration);
+   function Format (Value : Duration; Fore, Aft : Positive) return String is
+      package SF renames Ada.Strings.Fixed;
+
+      Aft_Shift : constant Positive := 10 ** Aft;
+      New_Value : constant Duration := Duration (Natural (Value * Aft_Shift)) / Aft_Shift;
+
+      S1 : constant String := SF.Trim (New_Value'Image, Ada.Strings.Both);
+
+      Index_Decimal : constant Natural := SF.Index (S1, ".");
+
+      --  Following code assumes that Aft >= 1 (If Aft = 0 then Aft must
+      --  be decremented to remove the decimal point)
+      S2 : constant String := S1 (S1'First .. Natural'Min (S1'Last, Index_Decimal + Aft));
+      S3 : constant String := SF.Tail (S2, Natural'Max (S2'Length, Fore + 1 + Aft), ' ');
+   begin
+      return S3;
+   end Format;
 
    type String_Access is not null access String;
 
@@ -129,7 +144,6 @@ package body Orka.Terminals is
    Last_Suffix : constant String_Access := Suffices (Suffices'Last);
 
    function Image (Value : Duration) return String is
-      Result : String   := "-9999.999";
       Number : Duration := Value;
 
       Suffix : String_Access := Suffices (Suffices'First);
@@ -141,12 +155,11 @@ package body Orka.Terminals is
       end loop;
 
       begin
-         Duration_IO.Put (Result, Item => Number, Aft => 3);
+         return Format (Number, Fore => 5, Aft => 3) & " " & Suffix.all;
       exception
          when others =>
             return Number'Image & " " & Suffix.all;
       end;
-      return Result & " " & Suffix.all;
    end Image;
 
    function Trim (Value : String) return String renames Orka.Strings.Trim;
