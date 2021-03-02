@@ -215,8 +215,8 @@ package body Orka.Resources.Textures.KTX is
          Messages.Log (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
          Messages.Log (Info, "  dims:   " &
-            Logging.Trim (Width'Image) & " x " &
-            Logging.Trim (Height'Image) & " x " &
+            Logging.Trim (Width'Image) & " × " &
+            Logging.Trim (Height'Image) & " × " &
             Logging.Trim (Depth'Image) &
             ", mipmap levels:" & Levels'Image);
          Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Value'Length) & " bytes");
@@ -459,8 +459,8 @@ package body Orka.Resources.Textures.KTX is
          Messages.Log (Info, "Saved texture " & Path & " in " &
            Logging.Trim (Logging.Image (T4 - T1)));
          Messages.Log (Info, "  dims:   " &
-            Logging.Trim (Texture.Width (Base_Level)'Image) & " x " &
-            Logging.Trim (Texture.Height (Base_Level)'Image) & " x " &
+            Logging.Trim (Texture.Width (Base_Level)'Image) & " × " &
+            Logging.Trim (Texture.Height (Base_Level)'Image) & " × " &
             Logging.Trim (Texture.Depth (Base_Level)'Image) &
             ", mipmap levels:" & Texture.Mipmap_Levels'Image);
          Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Get.Value'Length) & " bytes");

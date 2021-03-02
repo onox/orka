@@ -131,7 +131,7 @@ package body Orka.Windows.SDL is
 
                Messages.Log (Debug, "Created SDL window and GL context");
                Messages.Log (Debug, "  size:      " &
-                 Trim (Result.Width'Image) & " x " & Trim (Result.Height'Image));
+                 Trim (Result.Width'Image) & " × " & Trim (Result.Height'Image));
                Messages.Log (Debug, "  visible:   " & (if Visible then "yes" else "no"));
                Messages.Log (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
             end;

@@ -96,7 +96,7 @@ package body Orka.Rendering.Framebuffers is
 
       Default : constant String := (if Object.Default then " default" else "");
    begin
-      return Width & " x " & Height & Default & " framebuffer";
+      return Width & " × " & Height & Default & " framebuffer";
    end Image;
 
    procedure Use_Framebuffer (Object : Framebuffer) is

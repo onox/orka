@@ -47,7 +47,7 @@ procedure Glfw_Test.Monitors is
       M.Get_Position (Param1, Param2);
       Put_Line ("Position: (" & Param1'Image & "," & Param2'Image & ")");
       M.Get_Physical_Size (Param1, Param2);
-      Put_Line ("Dimensions: " & Param1'Image & " x " & Param2'Image);
+      Put_Line ("Dimensions: " & Param1'Image & " × " & Param2'Image);
 
       Put_Line ("Video modes: ");
       for Mode of VM_List loop

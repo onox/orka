@@ -83,7 +83,7 @@ package body Orka.Rendering.Textures is
       Depth  : constant String := Orka.Strings.Trim (Texture.Depth  (Level)'Image);
    begin
       return (if Texture.Allocated then "" else "unallocated ") &
-        Width & " x " & Height & " x " & Depth & " " & Texture.Kind'Image &
+        Width & " × " & Height & " × " & Depth & " " & Texture.Kind'Image &
         " with " &
         (if Texture.Compressed then
            Texture.Compressed_Format'Image
