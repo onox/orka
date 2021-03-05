@@ -42,7 +42,7 @@ begin
       begin
          declare
             Display : constant EGL.Objects.Displays.Display :=
-               EGL.Objects.Displays.Create_Display (Platform, Devices (Devices'First));
+               EGL.Objects.Displays.Create_Display (Devices (Devices'First));
          begin
             Put_Line (Display.Platform'Image & ":");
             Put_Line ("  vendor:     " & Display.Vendor);

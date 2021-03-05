@@ -77,9 +77,10 @@ begin
       Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-      Window : constant Orka.Windows.Window'Class
-        := Context.Create_Window (Width => Width, Height => Width, Resizable => False);
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
+      Window : Orka.Windows.Window'Class
+        := Orka.Windows.GLFW.Create_Window
+             (Context, Width => Width, Height => Width, Resizable => False);
 
       JS : Orka.Inputs.Joysticks.Joystick_Input_Access;
 

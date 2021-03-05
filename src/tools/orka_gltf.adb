@@ -129,7 +129,7 @@ begin
         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
       Window : aliased constant Orka.Windows.Window'Class
-        := Context.Create_Window (Width => Width, Height => Height);
+        := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height);
       W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
