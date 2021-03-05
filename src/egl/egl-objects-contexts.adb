@@ -176,7 +176,9 @@ package body EGL.Objects.Contexts is
       No_Context : constant ID_Type := ID_Type (System.Null_Address);
    begin
       pragma Assert (Object.ID /= No_Context);
-      Object.Make_Not_Current;
+      if Object.Is_Current then
+         Object.Make_Not_Current;
+      end if;
       if not Boolean (API.Destroy_Context (Object.Display.ID, Object.ID)) then
          Errors.Raise_Exception_On_EGL_Error;
       end if;
