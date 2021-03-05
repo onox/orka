@@ -200,7 +200,7 @@ Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Conte
   (Version => (4, 2), Flags  => (Debug => True, others => False));
 
 Window : constant Orka.Windows.Window'Class
-  := Context.Create_Window (Width => 500, Height => 500);
+  := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500);
 ```
 
 #### Buffer
@@ -342,7 +342,7 @@ and then draw the triangle. Press ++esc++ to close the application.
          (Version => (4, 2), Flags  => (Debug => True, others => False));
 
        Window : constant Orka.Windows.Window'Class
-         := Context.Create_Window (Width => 500, Height => 500);
+         := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500);
 
        use Orka.Resources;
        use Orka.Rendering.Buffers;

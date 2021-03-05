@@ -13,7 +13,8 @@ object.
 
 This is all quite cumbersome and it is easier to just do programmable
 vertex pulling in the shaders instead. This is more flexible and no slower
-on modern GPUs. With vertex pulling we can completely forget about VAOs.
+on modern GPUs. With programmable vertex pulling we can completely forget
+about VAOs.
 
 ## Programmable vertex pulling
 

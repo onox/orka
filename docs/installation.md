@@ -46,6 +46,7 @@ In order to build and use Orka you need to have:
         |--------------------------------------|--------|---------------|
         | ARB\_shader\_draw\_parameters        | 4.6    | glTF          |
         | ARB\_direct\_state\_access           | 4.5    |               |
+        | KHR\_context\_flush\_control         | 4.5    |               |
         | ARB\_clip\_control                   | 4.5    | Reversed Z    |
         | ARB\_get\_texture\_sub\_image        | 4.5    | KTX writer    |
         | ARB\_buffer\_storage                 | 4.4    |               |
