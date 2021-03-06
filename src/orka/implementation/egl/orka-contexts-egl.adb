@@ -102,6 +102,8 @@ package body Orka.Contexts.EGL is
          return Result : Device_EGL_Context do
             Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
 
+            Result.Context.Make_Current;
+
             Post_Initialize (Result);
             Print_Debug (Display, Flags);
          end return;
