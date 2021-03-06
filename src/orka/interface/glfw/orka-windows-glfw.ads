@@ -48,8 +48,10 @@ package Orka.Windows.GLFW is
    function Create_Window
      (Context            : Contexts.Surface_Context'Class;
       Width, Height      : Positive;
+      Title              : String  := "";
       Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True) return GLFW_Window
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return GLFW_Window
    with Pre => Context in GLFW_Context'Class;
 
 private

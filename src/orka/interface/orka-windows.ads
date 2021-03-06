@@ -28,8 +28,10 @@ package Orka.Windows is
    function Create_Window
      (Context            : Contexts.Surface_Context'Class;
       Width, Height      : Positive;
+      Title              : String  := "";
       Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True) return Window is abstract;
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return Window is abstract;
 
    function Pointer_Input
      (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;

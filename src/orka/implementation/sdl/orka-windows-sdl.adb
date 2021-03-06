@@ -29,6 +29,7 @@ package body Orka.Windows.SDL is
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
+
    package Messages is new Orka.Logging.Messages (Window_System);
 
    function Initialize
@@ -85,12 +86,16 @@ package body Orka.Windows.SDL is
    end Finalize;
 
    function Create_Window
-     (Width, Height : Positive;
-      Samples : Natural := 0;
-      Visible, Resizable : Boolean := True) return Window'Class
+     (Context            : Contexts.Surface_Context'Class;
+      Width, Height      : Positive;
+      Title              : String  := "";
+      Samples            : Natural := 0;
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return Window'Class
    is
       package Windows renames Standard.SDL.Video.Windows;
       package GL      renames Standard.SDL.Video.GL;
+
       use type Windows.Window_Flags;
    begin
       return Result : aliased SDL_Window := SDL_Window'(Ada.Finalization.Limited_Controlled
@@ -117,7 +122,7 @@ package body Orka.Windows.SDL is
             GL.Set_Multisampling_Samples (GL.Multisample_Samples (Samples));
 
             --  Create window and make GL context current
-            Windows.Makers.Create (Reference, "", Position, Extents, Flags);
+            Windows.Makers.Create (Reference, Title, Position, Extents, Flags);
             GL.Create (Result.Context, Reference);
             pragma Assert (Windows.Exist);
 

@@ -30,12 +30,15 @@ package Orka.Windows.SDL is
       Debug : Boolean := False) return Orka.Contexts.Context'Class
    with Pre => Major > 3 or else (Major = 3 and Minor >= 2);
 
-   function Create_Window
-     (Width, Height : Positive;
-      Samples : Natural := 0;
-      Visible, Resizable : Boolean := True) return Window'Class;
-
    type SDL_Window is limited new Window with private;
+
+   function Create_Window
+     (Context            : Contexts.Surface_Context'Class;
+      Width, Height      : Positive;
+      Title              : String  := "";
+      Samples            : Natural := 0;
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return SDL_Window;
 
    overriding
    function Pointer_Input

@@ -146,8 +146,10 @@ package body Orka.Windows.GLFW is
    function Create_Window
      (Context            : Contexts.Surface_Context'Class;
       Width, Height      : Positive;
+      Title              : String  := "";
       Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True) return GLFW_Window
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return GLFW_Window
    is
       package Windows renames Standard.Glfw.Windows;
    begin
@@ -161,8 +163,9 @@ package body Orka.Windows.GLFW is
             Windows.Hints.Set_Visible (Visible);
             Windows.Hints.Set_Resizable (Resizable);
             Windows.Hints.Set_Samples (Samples);
+            Windows.Hints.Set_Transparent_Framebuffer (Transparent);
 
-            Reference.Init (Standard.Glfw.Size (Width), Standard.Glfw.Size (Height), "");
+            Reference.Init (Standard.Glfw.Size (Width), Standard.Glfw.Size (Height), Title);
 
             Inputs.GLFW.GLFW_Pointer_Input (Result.Input.all).Set_Window (Reference);
 
