@@ -126,7 +126,7 @@ package body Orka.Terminals is
       package SF renames Ada.Strings.Fixed;
 
       Aft_Shift : constant Positive := 10 ** Aft;
-      New_Value : constant Duration := Duration (Natural (Value * Aft_Shift)) / Aft_Shift;
+      New_Value : constant Duration := Duration (Integer (Value * Aft_Shift)) / Aft_Shift;
 
       S1 : constant String := SF.Trim (New_Value'Image, Ada.Strings.Both);
 
