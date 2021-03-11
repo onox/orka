@@ -1,3 +1,4 @@
+with "awt-linux";
 with "awt";
 
 project Test is

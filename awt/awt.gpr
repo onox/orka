@@ -1,16 +1,12 @@
-with "wayland_egl_ada.gpr";
-with "wayland_cursor_ada.gpr";
-with "wayland_protocols_ada.gpr";
-with "orka";
-
 project Awt is
 
    for Library_Name use "awt";
    for Library_Version use "0.1.0";
 
-   for Source_Dirs use ("src", "src/wayland", "src/wayland/linux");
-   for Object_Dir use "build/obj";
    for Create_Missing_Dirs use "True";
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "build/obj";
    for Library_Dir use "build/lib";
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
