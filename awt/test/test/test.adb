@@ -3,6 +3,7 @@ with Ada.Real_Time;
 with Ada.Text_IO;
 
 with AWT.Clipboard;
+with AWT.Drag_And_Drop;
 with AWT.Inputs;
 with AWT.Monitors;
 with AWT.Wayland.Windows.Cursors;
@@ -141,6 +142,19 @@ begin
       while not Window.Should_Close and then AWT.Process_Events (Interval) loop
 --         AWT_Window.Set_Application_Title (Index'Image & " " & Next_Cursor'Image);
          Index := Index + 1;
+
+         select
+            Package_Test.Dnd_Signal.Wait;
+
+            declare
+               Result : constant String := AWT.Drag_And_Drop.Get;
+            begin
+               Put_Line ("value: '" & Result & "'");
+               AWT.Drag_And_Drop.Finish (AWT.Inputs.Copy);
+            end;
+         else
+            null;
+         end select;
 
          if not Should_Be_Visible  then
             Put_Line (Positive'Image (Visible_Index + Visible_Index_Count) & Index'Image);

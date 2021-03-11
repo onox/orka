@@ -8,7 +8,7 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Drawing;
 with Orka.Windows;
 
-with AWT.Inputs;
+with AWT.Drag_And_Drop;
 
 package body Package_Test is
 
@@ -18,12 +18,51 @@ package body Package_Test is
 
    package Messages is new Orka.Logging.Messages (Window_System);
 
+   protected body Dnd_Signal is
+      procedure Set is
+      begin
+         Dropped := True;
+      end Set;
+
+      entry Wait when Dropped is
+      begin
+         Dropped := False;
+      end Wait;
+   end Dnd_Signal;
+
    overriding
    function On_Close (Object : in out Test_Window) return Boolean is
    begin
       Ada.Text_IO.Put_Line ("Test_Window.On_Close");
       return True;
    end On_Close;
+
+   overriding
+   procedure On_Drag
+     (Object : in out Test_Window;
+      X, Y   : AWT.Inputs.Fixed)
+   is
+      use all type AWT.Inputs.Action_Kind;
+      use type AWT.Inputs.Fixed;
+   begin
+      Messages.Log (Debug, "user dragged at " & X'Image & Y'Image);
+      AWT.Drag_And_Drop.Set_Action (if X < 300.0 and Y < 300.0 then Copy else None);
+   end On_Drag;
+
+   overriding
+   procedure On_Drop
+     (Object : in out Test_Window)
+   is
+      use all type AWT.Inputs.Action_Kind;
+
+      Action : constant AWT.Inputs.Action_Kind := AWT.Drag_And_Drop.Valid_Action;
+   begin
+      Messages.Log (Info, "user dropped! action: " & Action'Image);
+
+      if Action /= None then
+         Dnd_Signal.Set;
+      end if;
+   end On_Drop;
 
    overriding
    procedure On_Configure

@@ -4,6 +4,7 @@ with Orka.Contexts.EGL.AWT;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
 
+with AWT.Inputs;
 with AWT.Windows;
 
 package Package_Test is
@@ -19,6 +20,15 @@ package Package_Test is
 
    overriding
    function On_Close (Object : in out Test_Window) return Boolean;
+
+   overriding
+   procedure On_Drag
+     (Object : in out Test_Window;
+      X, Y   : AWT.Inputs.Fixed);
+
+   overriding
+   procedure On_Drop
+     (Object : in out Test_Window);
 
    overriding
    procedure On_Configure
@@ -37,5 +47,13 @@ package Package_Test is
    procedure Post_Initialize (Object : in out Test_Window);
 
    procedure Render (Object : in out Test_Window);
+
+   protected Dnd_Signal is
+      procedure Set;
+
+      entry Wait;
+   private
+      Dropped : Boolean := False;
+   end Dnd_Signal;
 
 end Package_Test;
