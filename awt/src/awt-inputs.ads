@@ -23,6 +23,20 @@ package AWT.Inputs with SPARK_Mode => On is
    type Button_State is (Released, Pressed);
 
    ----------------------------------------------------------------------------
+   --                              Drag-and-drop                              -
+   ----------------------------------------------------------------------------
+
+   type Actions is record
+      Copy : Boolean := False;
+      Move : Boolean := False;
+      Ask  : Boolean := False;
+   end record;
+
+   type Action_Kind is (Copy, Move, Ask, None);
+
+   ----------------------------------------------------------------------------
+   --                                 Pointer                                 -
+   ----------------------------------------------------------------------------
 
    type Pointer_Button is (Left, Right, Middle, Unknown);
 
@@ -97,6 +111,8 @@ package AWT.Inputs with SPARK_Mode => On is
       Scroll    : Coordinate      := (others => 0.0);
    end record;
 
+   ----------------------------------------------------------------------------
+   --                                Keyboard                                 -
    ----------------------------------------------------------------------------
 
    type Keyboard_Modifiers is record

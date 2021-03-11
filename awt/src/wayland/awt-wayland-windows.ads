@@ -65,7 +65,7 @@ package AWT.Wayland.Windows is
 
    procedure Restore_Cursor (Object : in out Wayland_Window);
 
-   type Surface_With_Window (Window : access Wayland_Window)
+   type Surface_With_Window (Window : not null access Wayland_Window)
      is new WP.Client.Surface with null record;
 
    procedure Update_Animated_Cursor (Window : not null access Wayland_Window);
@@ -91,13 +91,13 @@ private
 
    subtype Unsigned_32 is Standard.Wayland.Unsigned_32;
 
-   type Xdg_Surface_With_Window (Window : access Wayland_Window)
+   type Xdg_Surface_With_Window (Window : not null access Wayland_Window)
      is new WP.Xdg_Shell.Xdg_Surface with null record;
 
-   type Xdg_Toplevel_With_Window (Window : access Wayland_Window)
+   type Xdg_Toplevel_With_Window (Window : not null access Wayland_Window)
      is new WP.Xdg_Shell.Xdg_Toplevel with null record;
 
-   type Toplevel_Decoration_With_Window (Window : access Wayland_Window)
+   type Toplevel_Decoration_With_Window (Window : not null access Wayland_Window)
      is new XD.Toplevel_Decoration_V1 with null record;
 
    type Locked_Pointer_With_Window (Window : not null access Wayland_Window)

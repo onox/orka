@@ -17,48 +17,32 @@
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
+with Wayland.Enums.Client;
 with Wayland.Protocols.Client;
 
 with AWT.OS;
 with AWT.Registry;
 
-package body AWT.Clipboard is
+package body AWT.Drag_And_Drop is
 
    package WP renames Wayland.Protocols;
+   package WE renames Wayland.Enums;
 
    function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
    function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
 
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
 
-   Content : SU.Unbounded_String;
-
-   task Clipboard is
-      entry Send (FD : Wayland.File_Descriptor; Value : SU.Unbounded_String);
+   task Drag_And_Drop is
       entry Receive (FD : Wayland.File_Descriptor; CB : not null Receive_Callback);
-   end Clipboard;
+   end Drag_And_Drop;
 
-   task body Clipboard is
+   task body Drag_And_Drop is
       Process_FD    : Wayland.File_Descriptor;
-      Process_Value : SU.Unbounded_String;
       Process_CB    : Receive_Callback;
    begin
       loop
          select
-            accept Send (FD : Wayland.File_Descriptor; Value : SU.Unbounded_String) do
-               Process_FD    := FD;
-               Process_Value := Value;
-            end Send;
-
-            declare
-               File : AWT.OS.File (Process_FD);
-            begin
-               File.Write (+Process_Value);
-               File.Close;
-            end;
-
-            Process_Value := SU.Null_Unbounded_String;
-         or
             accept Receive (FD : Wayland.File_Descriptor; CB : not null Receive_Callback) do
                Process_FD := FD;
                Process_CB := CB;
@@ -100,70 +84,63 @@ package body AWT.Clipboard is
             terminate;
          end select;
       end loop;
-   end Clipboard;
+   end Drag_And_Drop;
 
-   procedure Data_Source_Send
-     (Data_Source : in out WP.Client.Data_Source'Class;
-      Mime_Type   : String;
-      FD          : Wayland.File_Descriptor) is
+   function Supported_Actions return AWT.Inputs.Actions is
+     (Global.Seat.Supported_Drag_Drop_Actions);
+
+   function Valid_Action return AWT.Inputs.Action_Kind is
+     (Global.Seat.Valid_Drag_Drop_Action);
+
+   procedure Set_Action (Action : AWT.Inputs.Action_Kind) is
+      Preferred_Action : WE.Client.Data_Device_Manager_Dnd_Action := (others => False);
    begin
-      if Mime_Type = AWT.Registry.UTF_8_Mime_Type then
-         Clipboard.Send (FD, Content);
-         --  Do not clear Content here so that we can send the content
-         --  again if requested
-      else
-         declare
-            File : AWT.OS.File (FD);
-         begin
-            File.Close;
-         end;
-      end if;
-   end Data_Source_Send;
+      case Action is
+         when Copy =>
+            Preferred_Action.Copy := True;
+         when Move =>
+            Preferred_Action.Move := True;
+         when Ask =>
+            Preferred_Action.Ask := True;
+         when None =>
+            null;
+      end case;
 
-   procedure Data_Source_Cancelled
-     (Data_Source : in out WP.Client.Data_Source'Class) is
+      Global.Seat.Data_Offer.Set_Actions (Preferred_Action, Preferred_Action);
+   end Set_Action;
+
+   procedure Finish (Action : AWT.Inputs.Action_Kind) is
    begin
-      Data_Source.Destroy;
-      Content := +"";
-   end Data_Source_Cancelled;
+      if Action /= None then
+         if Valid_Action = Ask then
+            Set_Action (Action);
+         else
+            case Action is
+               when Copy =>
+                  pragma Assert (Valid_Action = Copy);
+               when Move =>
+                  pragma Assert (Valid_Action = Move);
+               when Ask | None =>
+                  raise Program_Error;
+            end case;
+         end if;
 
-   package Data_Source_Events is new WP.Client.Data_Source_Events
-     (Send      => Data_Source_Send,
-      Cancelled => Data_Source_Cancelled);
-
-   procedure Set (Value : String) is
-   begin
-      if Global.Data_Source.Has_Proxy then
-         Global.Data_Source.Destroy;
+         Global.Seat.Data_Offer.Finish;
       end if;
 
-      Global.Data_Device_Manager.Create_Data_Source (Global.Data_Source);
-
-      if not Global.Data_Source.Has_Proxy then
-         raise Internal_Error with "Wayland: Failed to get data source";
-      end if;
-
-      Content := +Value;
-
-      Data_Source_Events.Subscribe (Global.Data_Source);
-
-      Global.Data_Source.Offer (AWT.Registry.UTF_8_Mime_Type);
-
-      Global.Seat.Data_Device.Set_Selection
-        (Global.Data_Source, Global.Seat.Keyboard_Enter_Serial);
-   end Set;
+      Global.Seat.Data_Offer.Destroy;
+   end Finish;
 
    procedure Get (Callback : not null Receive_Callback) is
       File_Descriptors : AWT.OS.Pipe;
    begin
-      if not Global.Seat.Clipboard_Mime_Type_Valid or not Global.Seat.Data_Offer.Has_Proxy then
-         Callback (+"");
-         return;
+      if not Global.Seat.Drag_Drop_Mime_Type_Valid or not Global.Seat.Data_Offer.Has_Proxy then
+         raise Program_Error;
       end if;
 
       AWT.OS.Create_Pipe (File_Descriptors);
 
-      Global.Seat.Data_Offer.Receive (AWT.Registry.UTF_8_Mime_Type, File_Descriptors.Write);
+      Global.Seat.Data_Offer.Receive (AWT.Registry.URIs_Mime_Type, File_Descriptors.Write);
       declare
          File : AWT.OS.File (File_Descriptors.Write);
       begin
@@ -172,7 +149,7 @@ package body AWT.Clipboard is
 
       Global.Display.Roundtrip;
 
-      Clipboard.Receive (File_Descriptors.Read, Callback);
+      Drag_And_Drop.Receive (File_Descriptors.Read, Callback);
    end Get;
 
    protected type Receive_Future is
@@ -211,11 +188,8 @@ package body AWT.Clipboard is
       begin
          Future.Get (Value);
 
-         --  The used Data_Offer will be destroyed when a new one comes
-         --  in in AWT.Registry
-
          return +Value;
       end;
    end Get;
 
-end AWT.Clipboard;
+end AWT.Drag_And_Drop;

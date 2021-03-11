@@ -26,7 +26,7 @@ with AWT.Windows;
 
 package Orka.Contexts.EGL.AWT is
 
-   type AWT_Context is limited new Wayland_EGL_Context and Surface_Context with private;
+   type AWT_Context is limited new Surface_Context with private;
 
    overriding
    function Create_Context

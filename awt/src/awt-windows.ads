@@ -136,4 +136,21 @@ package AWT.Windows with SPARK_Mode => On is
       Presence : Monitor_Presence) is null;
    --  Invoked when the window is moved to/from a monitor
 
+   procedure On_Drag
+     (Object : in out Window;
+      X, Y   : AWT.Inputs.Fixed) is null;
+   --  Invoked when the user drag something over the window
+   --
+   --  Call procedure Set_Action in AWT.Drag_And_Drop in response to this event.
+
+   procedure On_Drop (Object : in out Window) is null;
+   --  Invoked when the user drops something on the window
+   --
+   --  To perform the drag-and-drop, call Get in AWT.Drag_And_Drop
+   --  and then, after the given callback has been executed, accept
+   --  or reject the drag-and-drop by calling Finish.
+   --
+   --  Call procedure Get in AWT.Drag_And_Drop to receive data and
+   --  call Finish to complete the data transfer.
+
 end AWT.Windows;

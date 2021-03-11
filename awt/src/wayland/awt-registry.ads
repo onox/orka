@@ -36,6 +36,7 @@ private package AWT.Registry is
    pragma Elaborate_Body;
 
    UTF_8_Mime_Type : constant String := "text/plain;charset=utf-8";
+   URIs_Mime_Type  : constant String := "text/uri-list";
 
    subtype Unsigned_32 is Standard.Wayland.Unsigned_32;
 
@@ -70,8 +71,9 @@ private package AWT.Registry is
    type Pointer_Scrolling is array (AWT.Inputs.Dimension) of Boolean;
 
    type Seat_Devices is tagged limited record
-      Window          : access AWT.Wayland.Windows.Wayland_Window;
-      Keyboard_Window : access AWT.Wayland.Windows.Wayland_Window;
+      Window           : access AWT.Wayland.Windows.Wayland_Window;
+      Keyboard_Window  : access AWT.Wayland.Windows.Wayland_Window;
+      Drag_Drop_Window : access AWT.Wayland.Windows.Wayland_Window;
 
       Seat         : Seat_With_Seat (Seat_Devices'Access);
       Capabilities : WE.Client.Seat_Capability := (others => False);
@@ -82,7 +84,12 @@ private package AWT.Registry is
 
       Data_Device     : WP.Client.Data_Device;
       Data_Offer      : WP.Client.Data_Offer;
-      Mime_Type_Valid : Boolean := False;
+
+      Clipboard_Mime_Type_Valid : Boolean := False;
+      Drag_Drop_Mime_Type_Valid : Boolean := False;
+
+      Supported_Drag_Drop_Actions : AWT.Inputs.Actions     := (others => False);
+      Valid_Drag_Drop_Action      : AWT.Inputs.Action_Kind := AWT.Inputs.None;
 
       Relative_Pointer : Relative_Pointer_With_Seat (Seat_Devices'Access);
 

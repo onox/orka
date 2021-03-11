@@ -20,6 +20,7 @@ with Ada.Unchecked_Conversion;
 with Wayland.Enums.Pointer_Constraints_Unstable_V1;
 
 with AWT.OS;
+with AWT.Windows;
 
 package body AWT.Registry is
 
@@ -60,7 +61,7 @@ package body AWT.Registry is
       Monitor.Physical_Width  := Physical_Width;
       Monitor.Physical_Height := Physical_Height;
 
-      Monitor.Pending_State.Name      := +(Make & " " & Model);
+      Monitor.Pending_State.Name := +(Make & " " & Model);
       Monitor.Subpixel  := Subpixel;
       Monitor.Transform := Transform;
    end Output_Geometry;
@@ -567,34 +568,138 @@ package body AWT.Registry is
 
    ----------------------------------------------------------------------------
 
+   --  Clipboard
    procedure Data_Offer_Offer
      (Data_Offer  : in out WP.Client.Data_Offer'Class;
       Mime_Type   : String) is
    begin
       if Mime_Type = UTF_8_Mime_Type then
-         Global.Seat.Mime_Type_Valid := True;
+         Global.Seat.Clipboard_Mime_Type_Valid := True;
+      elsif Mime_Type = URIs_Mime_Type then
+         Global.Seat.Drag_Drop_Mime_Type_Valid := True;
       end if;
    end Data_Offer_Offer;
 
-   package Data_Offer_Events is new WP.Client.Data_Offer_Events
-     (Offer => Data_Offer_Offer);
+   --  Drag and drop
+   procedure Data_Offer_Source_Actions
+     (Data_Offer : in out WP.Client.Data_Offer'Class;
+      Actions    : WE.Client.Data_Device_Manager_Dnd_Action) is
+   begin
+      Global.Seat.Supported_Drag_Drop_Actions :=
+        (Copy => Actions.Copy,
+         Move => Actions.Move,
+         Ask  => Actions.Ask);
+   end Data_Offer_Source_Actions;
 
+   --  Drag and drop
+   procedure Data_Offer_Action
+     (Data_Offer : in out WP.Client.Data_Offer'Class;
+      Actions    : WE.Client.Data_Device_Manager_Dnd_Action)
+   is
+      use all type AWT.Inputs.Action_Kind;
+   begin
+      if Actions.Copy then
+         Global.Seat.Valid_Drag_Drop_Action := Copy;
+      elsif Actions.Move then
+         Global.Seat.Valid_Drag_Drop_Action := Move;
+      elsif Actions.Ask then
+         Global.Seat.Valid_Drag_Drop_Action := Ask;
+      else
+         Global.Seat.Valid_Drag_Drop_Action := None;
+      end if;
+   end Data_Offer_Action;
+
+   package Data_Offer_Events is new WP.Client.Data_Offer_Events
+     (Offer          => Data_Offer_Offer,
+      Source_Actions => Data_Offer_Source_Actions,
+      Action         => Data_Offer_Action);
+
+   --  Clipboard
    procedure Data_Device_Data_Offer
      (Data_Device : in out WP.Client.Data_Device'Class;
-      Data_Offer  : in out WP.Client.Data_Offer) is
+      Data_Offer  : in out WP.Client.Data_Offer)
+   is
+      use all type AWT.Inputs.Action_Kind;
    begin
       if Global.Seat.Data_Offer.Has_Proxy then
          Global.Seat.Data_Offer.Destroy;
       end if;
 
-      Global.Seat.Mime_Type_Valid := False;
+      Global.Seat.Clipboard_Mime_Type_Valid := False;
+      Global.Seat.Drag_Drop_Mime_Type_Valid := False;
+
+      Global.Seat.Supported_Drag_Drop_Actions := (others => False);
+      Global.Seat.Valid_Drag_Drop_Action      := None;
 
       Data_Offer.Move (To => Global.Seat.Data_Offer);
       Data_Offer_Events.Subscribe (Global.Seat.Data_Offer);
    end Data_Device_Data_Offer;
 
+   --  Drag and drop
+   procedure Data_Device_Enter
+     (Data_Device : in out WP.Client.Data_Device'Class;
+      Serial      : Unsigned_32;
+      Surface     : WP.Client.Surface;
+      X, Y        : Fixed;
+      Data_Offer  : in out WP.Client.Data_Offer)
+   is
+      Window : constant not null access AWT.Wayland.Windows.Wayland_Window :=
+        Surface_Data.Get_Data (Surface).Window;
+
+      use WP.Client;
+   begin
+      Global.Seat.Drag_Drop_Window := Window;
+
+      pragma Assert (Global.Seat.Data_Offer = Data_Offer);
+
+      if Global.Seat.Drag_Drop_Mime_Type_Valid then
+         Data_Offer.Do_Accept (Serial, URIs_Mime_Type);
+      end if;
+
+      AWT.Windows.Window'Class (Global.Seat.Drag_Drop_Window.all).On_Drag
+        (AWT.Inputs.Fixed (X), AWT.Inputs.Fixed (Y));
+   end Data_Device_Enter;
+
+   --  Drag and drop
+   procedure Data_Device_Motion
+     (Data_Device : in out WP.Client.Data_Device'Class;
+      Time        : Unsigned_32;
+      X, Y        : Fixed) is
+   begin
+      if Global.Seat.Drag_Drop_Mime_Type_Valid then
+         AWT.Windows.Window'Class (Global.Seat.Drag_Drop_Window.all).On_Drag
+           (AWT.Inputs.Fixed (X), AWT.Inputs.Fixed (Y));
+      end if;
+   end Data_Device_Motion;
+
+   --  Drag and drop
+   procedure Data_Device_Leave
+     (Data_Device : in out WP.Client.Data_Device'Class)
+   is
+      use all type AWT.Inputs.Action_Kind;
+   begin
+      if Global.Seat.Drag_Drop_Window = null then
+         raise Program_Error;
+      end if;
+
+      Global.Seat.Drag_Drop_Window := null;
+   end Data_Device_Leave;
+
+   --  Drag and drop
+   procedure Data_Device_Drop
+     (Data_Device : in out WP.Client.Data_Device'Class) is
+   begin
+      if Global.Seat.Drag_Drop_Mime_Type_Valid then
+         AWT.Windows.Window'Class (Global.Seat.Drag_Drop_Window.all).On_Drop;
+      end if;
+   end Data_Device_Drop;
+
    package Data_Device_Events is new WP.Client.Data_Device_Events
-     (Data_Offer => Data_Device_Data_Offer);
+     (Data_Offer => Data_Device_Data_Offer,
+      Enter      => Data_Device_Enter,
+      Motion     => Data_Device_Motion,
+      Leave      => Data_Device_Leave,
+      Drop       => Data_Device_Drop);
 
    procedure Initialize_Clipboard_And_Drag_And_Drop is
    begin
