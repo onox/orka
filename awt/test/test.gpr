@@ -1,0 +1,19 @@
+with "awt";
+
+project Test is
+
+   for Languages use ("Ada");
+
+   for Create_Missing_Dirs use "True";
+
+   for Object_Dir  use "build/obj";
+   for Exec_Dir use "bin";
+
+   for Source_Dirs use ("test");
+
+   for Main use ("test.adb");
+
+   package Compiler renames AWT.Compiler;
+   package Binder renames AWT.Binder;
+
+end Test;
