@@ -18,6 +18,6 @@ linux = ["awt-linux.gpr", "test/test.gpr"]
 
 [[depends-on]]
 [depends-on.'case(os)'.linux]
-wayland_egl_ada = "^0.1"
-wayland_cursor_ada = "^0.1"
-wayland_protocols_ada = "^0.1"
+wayland_egl_ada = "^1.0"
+wayland_cursor_ada = "^1.0"
+wayland_protocols_ada = "^1.0"
