@@ -31,7 +31,7 @@ issues or pull requests.
 
 ## License
 
-wayland-ada is distributed under the terms of the [Apache License 2.0][url-apache].
+AWT is distributed under the terms of the [Apache License 2.0][url-apache].
 
   [url-alire]: https://alire.ada.dev/
   [url-apache]: https://opensource.org/licenses/Apache-2.0
