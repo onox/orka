@@ -1,0 +1,13 @@
+name = "orka_sdl"
+description = "Orka plug-in for SDL 2"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["sdl", "opengl", "orka"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+sdlada = "^2.3.1"
