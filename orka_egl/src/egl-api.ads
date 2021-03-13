@@ -27,6 +27,8 @@ with EGL.Objects.Devices;
 private package EGL.API is
    pragma Preelaborate;
 
+   pragma Linker_Options ("-lEGL");
+
    function Get_Proc_Address (Name : C.char_array) return System.Address
      with Import, Convention => C, External_Name => "eglGetProcAddress";
 

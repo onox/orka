@@ -100,7 +100,8 @@ package body EGL.Objects.Displays is
            when Wayland         => "EGL_EXT_platform_wayland"));
 
       return Result : Display (Platform) do
-         Result.Reference.ID := API.Get_Platform_Display.Ref (Platform, Native_Display, Attributes);
+         Result.Reference.ID :=
+           API.Get_Platform_Display.Ref (Platform, Native_Display, Attributes);
 
          if Result.ID = No_Display
            or else not Boolean (API.Initialize_Display (Result.ID, Major, Minor))

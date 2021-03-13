@@ -37,7 +37,7 @@ package body EGL.Objects.Contexts is
    Context_Release_Behavior : constant Int := 16#2097#;
 
    Context_Release_Behavior_None  : constant Int := 0;
-   Context_Release_Behavior_Flush : constant Int := 16#2098#;
+--   Context_Release_Behavior_Flush : constant Int := 16#2098#;
 
    No_Reset_Notification : constant Int := 16#31BE#;
    Lose_Context_On_Reset : constant Int := 16#31BF#;

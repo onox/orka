@@ -1,9 +1,7 @@
-/build/
 /bin/
 /tests/unit/bin/
 /tests/unit/build/
 /tests/cov/
-/auto.cgpr
-*.swp
-.DS_Store
-.#*#
+build/
+config/
+alire/

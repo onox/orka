@@ -4,7 +4,7 @@ WINDOWING_BACKEND := egl
 LIBRARY_TYPE ?= relocatable
 MODE ?= development
 
-GLFW_LIBS := $(strip $(shell pkg-config --libs glfw3))
+GLFW_LIBS := $(strip $(shell pkgconf --libs glfw3))
 SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
@@ -34,6 +34,7 @@ installcmd = $(GPRINSTALL) -p \
 .PHONY: build examples tools tests coverage docs clean install uninstall
 
 build:
+	cd orka_egl && alr build
 	$(GPRBUILD) -P tools/orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS)
 
 build_test:
@@ -61,6 +62,7 @@ docs:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
+	cd orka_egl && alr clean
 	$(GPRCLEAN) -r -P tools/orka-glfw.gpr
 	$(GPRCLEAN) -P tests/unit/tests.gpr
 	$(GPRCLEAN) -P tools/examples.gpr

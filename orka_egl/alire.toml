@@ -1,0 +1,14 @@
+name = "orka_egl"
+description = "Ada 2012 bindings for EGL"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["egl", "opengl", "orka"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[available.'case(os)']
+linux = true
+'...' = false
