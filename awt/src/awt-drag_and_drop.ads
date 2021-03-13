@@ -18,7 +18,7 @@ with Ada.Strings.Unbounded;
 
 with AWT.Inputs;
 
-package AWT.Drag_And_Drop with SPARK_Mode => On is
+package AWT.Drag_And_Drop is
 
    package SU renames Ada.Strings.Unbounded;
 

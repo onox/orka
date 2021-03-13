@@ -679,7 +679,7 @@ package body AWT.Wayland.Windows is
    end Close;
 
    overriding
-   function Should_Close (Object : in out Wayland_Window) return Boolean is
+   function Should_Close (Object : Wayland_Window) return Boolean is
    begin
       return Object.Should_Close;
    end Should_Close;
@@ -718,7 +718,7 @@ package body AWT.Wayland.Windows is
    end Set_Vertical_Sync;
 
    overriding
-   function On_Close (Object : in out Wayland_Window) return Boolean is
+   function On_Close (Object : Wayland_Window) return Boolean is
    begin
       return True;
    end On_Close;
@@ -926,7 +926,7 @@ package body AWT.Wayland.Windows is
    end Set_State;
 
    overriding
-   function Raw_Pointer_Motion (Object : in out Wayland_Window) return Boolean is
+   function Raw_Pointer_Motion (Object : Wayland_Window) return Boolean is
    begin
       return Object.Raw_Pointer_Motion;
    end Raw_Pointer_Motion;

@@ -88,7 +88,7 @@ package AWT.Windows with SPARK_Mode => On is
      (Object : in out Window;
       Mode   : AWT.Inputs.Pointer_Mode) is abstract;
 
-   function Raw_Pointer_Motion (Object : in out Window) return Boolean is abstract;
+   function Raw_Pointer_Motion (Object : Window) return Boolean is abstract;
 
    function State (Object : Window) return Window_State is abstract;
 
@@ -100,7 +100,7 @@ package AWT.Windows with SPARK_Mode => On is
 
    procedure Close (Object : in out Window) is abstract;
 
-   function Should_Close (Object : in out Window) return Boolean is abstract;
+   function Should_Close (Object : Window) return Boolean is abstract;
    --  Return True if the window should be closed, False otherwise
    --
    --  If True, then it is no longer needed to process any events and an event
@@ -123,7 +123,7 @@ package AWT.Windows with SPARK_Mode => On is
    procedure On_Configure (Object : in out Window; State : Window_State) is null;
    --  Invoked when the state of the window has changed
 
-   function On_Close (Object : in out Window) return Boolean is abstract;
+   function On_Close (Object : Window) return Boolean is abstract;
    --  Invoked when the user wants to close the window
    --
    --  Return True if the window should actually be closed, or return False

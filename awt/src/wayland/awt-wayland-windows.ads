@@ -60,9 +60,6 @@ package AWT.Wayland.Windows is
 
    procedure Update_Cursor (Object : in out Wayland_Window) is null;
 
-   overriding
-   function Raw_Pointer_Motion (Object : in out Wayland_Window) return Boolean;
-
    procedure Restore_Cursor (Object : in out Wayland_Window);
 
    type Surface_With_Window (Window : not null access Wayland_Window)
@@ -263,6 +260,9 @@ private
       Mode   : AWT.Inputs.Pointer_Mode);
 
    overriding
+   function Raw_Pointer_Motion (Object : Wayland_Window) return Boolean;
+
+   overriding
    function State (Object : Wayland_Window) return AWT.Windows.Window_State;
 
    overriding
@@ -278,7 +278,7 @@ private
    procedure Close (Object : in out Wayland_Window);
 
    overriding
-   function Should_Close (Object : in out Wayland_Window) return Boolean;
+   function Should_Close (Object : Wayland_Window) return Boolean;
 
    overriding
    procedure Swap_Buffers (Object : in out Wayland_Window);
@@ -287,7 +287,7 @@ private
    procedure Set_Vertical_Sync (Object : in out Wayland_Window; Enable : Boolean);
 
    overriding
-   function On_Close (Object : in out Wayland_Window) return Boolean;
+   function On_Close (Object : Wayland_Window) return Boolean;
 
    function On_Change_Cursor
      (Object : in out Wayland_Window;

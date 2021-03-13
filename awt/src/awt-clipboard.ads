@@ -18,7 +18,7 @@ with Ada.Strings.Unbounded;
 
 with AWT.Inputs;
 
-package AWT.Clipboard with SPARK_Mode => On is
+package AWT.Clipboard is
 
    package SU renames Ada.Strings.Unbounded;
 
