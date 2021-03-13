@@ -14,16 +14,21 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Contexts;
-
 with EGL.Objects.Displays;
 with EGL.Objects.Surfaces;
 
 package EGL.Objects.Contexts is
    pragma Preelaborate;
 
-   subtype Context_Version is Orka.Contexts.Context_Version;
-   subtype Context_Flags   is Orka.Contexts.Context_Flags;
+   type Context_Version is record
+      Major, Minor : Natural;
+   end record;
+
+   type Context_Flags is record
+      Debug    : Boolean := False;
+      Robust   : Boolean := False;
+      No_Error : Boolean := False;
+   end record;
 
    type Buffer_Kind is (None, Back, Front);
 

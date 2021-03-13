@@ -100,7 +100,13 @@ package body Orka.Contexts.EGL is
          Display : constant EGL_Displays.Display := EGL_Displays.Create_Display (Device);
       begin
          return Result : Device_EGL_Context do
-            Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
+            Result.Context := EGL_Contexts.Create_Context
+              (Display,
+               (Major => Version.Major,
+                Minor => Version.Minor),
+               (Debug    => Flags.Debug,
+                Robust   => Flags.Robust,
+                No_Error => Flags.No_Error));
 
             Result.Context.Make_Current;
 
@@ -159,7 +165,13 @@ package body Orka.Contexts.EGL is
          Display : constant EGL_Displays.Display := EGL_Displays.Create_Display (Window);
       begin
          return Result : Wayland_EGL_Context do
-            Result.Context := EGL_Contexts.Create_Context (Display, Version, Flags);
+            Result.Context := EGL_Contexts.Create_Context
+              (Display,
+               (Major => Version.Major,
+                Minor => Version.Minor),
+               (Debug    => Flags.Debug,
+                Robust   => Flags.Robust,
+                No_Error => Flags.No_Error));
 
             Result.Context.Make_Current;
 
