@@ -17,6 +17,7 @@
 with "config";
 with "dcf_ada";
 with "json_ada";
+with "../orka_egl/orka_egl";
 
 abstract project Sources is
 
@@ -34,7 +35,6 @@ abstract project Sources is
       when "egl"     =>
          OpenGL_Sources := OpenGL_Sources & "../src/gl/egl" & "../src/orka/linux";
          Orka_Sources   := Orka_Sources &
-                             "../src/egl" &
                              "../src/orka/interface/egl" &
                              "../src/orka/implementation/egl";
    end case;
