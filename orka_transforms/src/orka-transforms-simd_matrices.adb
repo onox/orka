@@ -99,17 +99,26 @@ package body Orka.Transforms.SIMD_Matrices is
    function R (Quaternion : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
    begin
-      Result (X) (X) := 1.0 - 2.0 * (Quaternion (Y) * Quaternion (Y) + Quaternion (Z) * Quaternion (Z));
-      Result (X) (Y) := 2.0 * (Quaternion (X) * Quaternion (Y) - Quaternion (Z) * Quaternion (W));
-      Result (X) (Z) := 2.0 * (Quaternion (X) * Quaternion (Z) + Quaternion (Y) * Quaternion (W));
+      Result (X) (X) :=
+        1.0 - 2.0 * (Quaternion (Y) * Quaternion (Y) + Quaternion (Z) * Quaternion (Z));
+      Result (X) (Y) :=
+        2.0 * (Quaternion (X) * Quaternion (Y) - Quaternion (Z) * Quaternion (W));
+      Result (X) (Z) :=
+        2.0 * (Quaternion (X) * Quaternion (Z) + Quaternion (Y) * Quaternion (W));
 
-      Result (Y) (X) := 2.0 * (Quaternion (X) * Quaternion (Y) + Quaternion (Z) * Quaternion (W));
-      Result (Y) (Y) := 1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Z) * Quaternion (Z));
-      Result (Y) (Z) := 2.0 * (Quaternion (Y) * Quaternion (Z) - Quaternion (X) * Quaternion (W));
+      Result (Y) (X) :=
+        2.0 * (Quaternion (X) * Quaternion (Y) + Quaternion (Z) * Quaternion (W));
+      Result (Y) (Y) :=
+        1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Z) * Quaternion (Z));
+      Result (Y) (Z) :=
+        2.0 * (Quaternion (Y) * Quaternion (Z) - Quaternion (X) * Quaternion (W));
 
-      Result (Z) (X) := 2.0 * (Quaternion (X) * Quaternion (Z) - Quaternion (Y) * Quaternion (W));
-      Result (Z) (Y) := 2.0 * (Quaternion (Y) * Quaternion (Z) + Quaternion (X) * Quaternion (W));
-      Result (Z) (Z) := 1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Y) * Quaternion (Y));
+      Result (Z) (X) :=
+        2.0 * (Quaternion (X) * Quaternion (Z) - Quaternion (Y) * Quaternion (W));
+      Result (Z) (Y) :=
+        2.0 * (Quaternion (Y) * Quaternion (Z) + Quaternion (X) * Quaternion (W));
+      Result (Z) (Z) :=
+        1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Y) * Quaternion (Y));
 
       return Result;
    end R;
@@ -133,54 +142,79 @@ package body Orka.Transforms.SIMD_Matrices is
       return S ((Factor, Factor, Factor, 1.0)) * Matrix;
    end "*";
 
-   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type) is
+   procedure Rotate_At_Origin
+     (Matrix : in out Matrix_Type;
+      Axis   : Vector_Type;
+      Angle  : Element_Type) is
    begin
       Matrix := R (Axis, Angle) * Matrix;
    end Rotate_At_Origin;
 
-   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type;
-                     Angle  : Element_Type; Point : Vector_Type) is
+   procedure Rotate
+     (Matrix : in out Matrix_Type;
+      Axis   : Vector_Type;
+      Angle  : Element_Type;
+      Point  : Vector_Type) is
    begin
       Matrix := T (Point) * R (Axis, Angle) * T (-Point) * Matrix;
    end Rotate;
 
-   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Quaternion : Vector_Type) is
+   procedure Rotate_At_Origin
+     (Matrix     : in out Matrix_Type;
+      Quaternion : Vector_Type) is
    begin
       Matrix := R (Quaternion) * Matrix;
    end Rotate_At_Origin;
 
-   procedure Rotate (Matrix : in out Matrix_Type; Quaternion : Vector_Type;
-                     Point  : Vector_Type) is
+   procedure Rotate
+     (Matrix     : in out Matrix_Type;
+      Quaternion : Vector_Type;
+      Point      : Vector_Type) is
    begin
       Matrix := T (Point) * R (Quaternion) * T (-Point) * Matrix;
    end Rotate;
 
-   procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type) is
+   procedure Rotate_X_At_Origin
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type) is
    begin
       Matrix := Rx (Angle) * Matrix;
    end Rotate_X_At_Origin;
 
-   procedure Rotate_X (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type) is
+   procedure Rotate_X
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type;
+      Point  : Vector_Type) is
    begin
       Matrix := T (Point) * Rx (Angle) * T (-Point) * Matrix;
    end Rotate_X;
 
-   procedure Rotate_Y_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type) is
+   procedure Rotate_Y_At_Origin
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type) is
    begin
       Matrix := Ry (Angle) * Matrix;
    end Rotate_Y_At_Origin;
 
-   procedure Rotate_Y (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type) is
+   procedure Rotate_Y
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type;
+      Point  : Vector_Type) is
    begin
       Matrix := T (Point) * Ry (Angle) * T (-Point) * Matrix;
    end Rotate_Y;
 
-   procedure Rotate_Z_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type) is
+   procedure Rotate_Z_At_Origin
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type) is
    begin
       Matrix := Rz (Angle) * Matrix;
    end Rotate_Z_At_Origin;
 
-   procedure Rotate_Z (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type) is
+   procedure Rotate_Z
+     (Matrix : in out Matrix_Type;
+      Angle  : Element_Type;
+      Point  : Vector_Type) is
    begin
       Matrix := T (Point) * Rz (Angle) * T (-Point) * Matrix;
    end Rotate_Z;

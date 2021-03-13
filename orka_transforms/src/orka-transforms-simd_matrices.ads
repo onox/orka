@@ -110,7 +110,9 @@ package Orka.Transforms.SIMD_Matrices is
 
    function "*" (Left, Right : Matrix_Type) return Matrix_Type renames Multiply_Matrices;
 
-   function "*" (Left : Matrix_Type; Right : Vector_Type) return Vector_Type renames Multiply_Vector;
+   function "*"
+     (Left  : Matrix_Type;
+      Right : Vector_Type) return Vector_Type renames Multiply_Vector;
 
    function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type;
    --  Add a translation transformation to the matrix
@@ -120,7 +122,8 @@ package Orka.Transforms.SIMD_Matrices is
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
 
-   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
+   procedure Rotate_At_Origin
+     (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
    --  Add a rotation transformation to the matrix with the center
    --  of rotation at the origin to the matrix
 

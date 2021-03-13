@@ -1,0 +1,13 @@
+name = "orka_transforms"
+description = "Library to transform vectors, matrices, and quaternions using SIMD"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["orka", "math", "vector", "matrix", "quaternion"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+orka_simd = "^1.0.0"

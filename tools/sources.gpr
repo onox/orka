@@ -20,6 +20,7 @@ with "json_ada";
 with "../orka_egl/orka_egl";
 with "../orka_types/orka_types";
 with "../orka_simd/orka_simd";
+with "../orka_transforms/orka_transforms";
 
 abstract project Sources is
 
@@ -27,8 +28,7 @@ abstract project Sources is
                       "../src/gl/implementation");
 
    Orka_Sources := ("../src/orka/interface",
-                    "../src/orka/implementation",
-                    "../src/orka/interface/x86/generic");
+                    "../src/orka/implementation");
 
    case Config.Windowing_System is
       when "windows" =>
