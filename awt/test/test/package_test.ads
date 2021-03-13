@@ -19,7 +19,7 @@ package Package_Test is
    end record;
 
    overriding
-   function On_Close (Object : in out Test_Window) return Boolean;
+   function On_Close (Object : Test_Window) return Boolean;
 
    overriding
    procedure On_Drag

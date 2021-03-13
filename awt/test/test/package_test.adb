@@ -31,7 +31,7 @@ package body Package_Test is
    end Dnd_Signal;
 
    overriding
-   function On_Close (Object : in out Test_Window) return Boolean is
+   function On_Close (Object : Test_Window) return Boolean is
    begin
       Ada.Text_IO.Put_Line ("Test_Window.On_Close");
       return True;
