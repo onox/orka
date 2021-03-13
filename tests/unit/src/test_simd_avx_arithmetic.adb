@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.AVX.Doubles.Arithmetic;
 
 package body Test_SIMD_AVX_Arithmetic is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.AVX.Doubles;
@@ -77,10 +73,10 @@ package body Test_SIMD_AVX_Arithmetic is
       Result : constant m256d := Left / Right;
    begin
       declare
-         Result_X : constant Double := Result (X);
-         Result_Y : constant Double := Result (Y);
-         Result_Z : constant Double := Result (Z);
-         Result_W : constant Double := Result (W);
+         Result_X : constant Float_64 := Result (X);
+         Result_Y : constant Float_64 := Result (Y);
+         Result_Z : constant Float_64 := Result (Z);
+         Result_W : constant Float_64 := Result (W);
          pragma Unreferenced (Result_X);
          pragma Unreferenced (Result_Y);
          pragma Unreferenced (Result_Z);
@@ -198,10 +194,10 @@ package body Test_SIMD_AVX_Arithmetic is
    procedure Test_Sum is
       Elements  : constant m256d := (-1.0, 2.0, -3.0, 4.0);
 
-      Expected : constant GL.Types.Double := 2.0;
-      Result   : constant GL.Types.Double := Sum (Elements);
+      Expected : constant Float_64 := 2.0;
+      Result   : constant Float_64 := Sum (Elements);
    begin
-      Assert (Expected = Result, "Unexpected Double " & GL.Types.Double'Image (Result));
+      Assert (Expected = Result, "Unexpected Double " & Float_64'Image (Result));
    end Test_Sum;
 
 end Test_SIMD_AVX_Arithmetic;

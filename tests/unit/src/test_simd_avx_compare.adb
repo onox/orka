@@ -16,14 +16,10 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.AVX.Doubles.Arithmetic;
 with Orka.SIMD.AVX.Doubles.Compare;
 
 package body Test_SIMD_AVX_Compare is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.AVX.Doubles;

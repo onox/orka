@@ -16,14 +16,10 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.AVX.Doubles;
 with Orka.SIMD.FMA.Doubles.Arithmetic;
 
 package body Test_SIMD_FMA_Doubles_Arithmetic is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.AVX.Doubles;

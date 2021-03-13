@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.AVX.Doubles.Swizzle;
 
 package body Test_SIMD_AVX_Swizzle is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD;

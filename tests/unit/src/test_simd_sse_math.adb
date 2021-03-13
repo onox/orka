@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Math;
 
 package body Test_SIMD_SSE_Math is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.SSE.Singles;

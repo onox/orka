@@ -16,14 +16,10 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles;
 with Orka.SIMD.FMA.Singles.Arithmetic;
 
 package body Test_SIMD_FMA_Singles_Arithmetic is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.SSE.Singles;

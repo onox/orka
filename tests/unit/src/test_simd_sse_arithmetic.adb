@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Arithmetic;
 
 package body Test_SIMD_SSE_Arithmetic is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.SSE.Singles;
@@ -77,10 +73,10 @@ package body Test_SIMD_SSE_Arithmetic is
       Result : constant m128 := Left / Right;
    begin
       declare
-         Result_X : constant Single := Result (X);
-         Result_Y : constant Single := Result (Y);
-         Result_Z : constant Single := Result (Z);
-         Result_W : constant Single := Result (W);
+         Result_X : constant Float_32 := Result (X);
+         Result_Y : constant Float_32 := Result (Y);
+         Result_Z : constant Float_32 := Result (Z);
+         Result_W : constant Float_32 := Result (W);
          pragma Unreferenced (Result_X);
          pragma Unreferenced (Result_Y);
          pragma Unreferenced (Result_Z);
@@ -198,10 +194,10 @@ package body Test_SIMD_SSE_Arithmetic is
    procedure Test_Sum is
       Elements  : constant m128 := (-1.0, 2.0, -3.0, 4.0);
 
-      Expected : constant GL.Types.Single := 2.0;
-      Result   : constant GL.Types.Single := Sum (Elements);
+      Expected : constant Float_32 := 2.0;
+      Result   : constant Float_32 := Sum (Elements);
    begin
-      Assert (Expected = Result, "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Expected = Result, "Unexpected Single " & Float_32'Image (Result));
    end Test_Sum;
 
 end Test_SIMD_SSE_Arithmetic;

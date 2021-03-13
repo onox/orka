@@ -18,22 +18,19 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.Transforms.Singles.Vectors;
 
 package body Test_Transforms_Singles_Vectors is
 
-   use GL.Types;
    use Orka;
    use Orka.Transforms.Singles.Vectors;
 
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
 
-   function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
-      Epsilon  : constant GL.Types.Single := 2.0 ** (1 - GL.Types.Single'Model_Mantissa);
+   function Is_Equivalent (Expected, Result : Float_32) return Boolean is
+      Epsilon  : constant Float_32 := 2.0 ** (1 - Float_32'Model_Mantissa);
    begin
       return Result in Expected - Epsilon .. Expected + Epsilon;
    end Is_Equivalent;
@@ -106,29 +103,29 @@ package body Test_Transforms_Singles_Vectors is
    procedure Test_Magnitude is
       Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
 
-      Expected : constant GL.Types.Single := EF.Sqrt (1.0**2 + (-2.0)**2 + 3.0**2 + (-4.0)**2);
-      Result   : constant GL.Types.Single := Magnitude (Elements);
+      Expected : constant Float_32 := EF.Sqrt (1.0**2 + (-2.0)**2 + 3.0**2 + (-4.0)**2);
+      Result   : constant Float_32 := Magnitude (Elements);
    begin
-      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Float_32'Image (Result));
    end Test_Magnitude;
 
    procedure Test_Normalize is
       Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
 
-      Expected : constant GL.Types.Single := 1.0;
-      Result   : constant GL.Types.Single := Magnitude (Normalize (Elements));
+      Expected : constant Float_32 := 1.0;
+      Result   : constant Float_32 := Magnitude (Normalize (Elements));
    begin
-      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Float_32'Image (Result));
    end Test_Normalize;
 
    procedure Test_Distance is
       Left  : constant Vector4 := (2.0, 5.0, 0.0, 0.0);
       Right : constant Vector4 := (2.0, 2.0, 0.0, 0.0);
 
-      Expected : constant GL.Types.Single := 3.0;
-      Result   : constant GL.Types.Single := Distance (Left, Right);
+      Expected : constant Float_32 := 3.0;
+      Result   : constant Float_32 := Distance (Left, Right);
    begin
-      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Float_32'Image (Result));
    end Test_Distance;
 
    procedure Test_Projection is
@@ -159,20 +156,20 @@ package body Test_Transforms_Singles_Vectors is
       Left  : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
       Right : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
 
-      Expected : constant GL.Types.Single := To_Radians (90.0);
-      Result   : constant GL.Types.Single := Angle (Left, Right);
+      Expected : constant Float_32 := To_Radians (90.0);
+      Result   : constant Float_32 := Angle (Left, Right);
    begin
-      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Float_32'Image (Result));
    end Test_Angle;
 
    procedure Test_Dot_Product is
       Left  : constant Vector4 := (1.0, 2.0, 3.0, 4.0);
       Right : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
 
-      Expected : constant GL.Types.Single := 40.0;
-      Result   : constant GL.Types.Single := Dot (Left, Right);
+      Expected : constant Float_32 := 40.0;
+      Result   : constant Float_32 := Dot (Left, Right);
    begin
-      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & GL.Types.Single'Image (Result));
+      Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Float_32'Image (Result));
    end Test_Dot_Product;
 
    procedure Test_Cross_Product is

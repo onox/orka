@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Logical;
 
 package body Test_SIMD_SSE_Logical is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.SSE.Singles;
@@ -38,10 +34,10 @@ package body Test_SIMD_SSE_Logical is
    end Initialize;
 
    procedure Test_And is
-      A : constant Single := 2#0.1000_0100_0010_0001_1000_0100_0010_0001#;
-      B : constant Single := 2#0.1000_1001_1001_1001_1001_1001_1001_1001#;
+      A : constant Float_32 := 2#0.1000_0100_0010_0001_1000_0100_0010_0001#;
+      B : constant Float_32 := 2#0.1000_1001_1001_1001_1001_1001_1001_1001#;
 
-      C : constant Single := 2#0.1000_0000_0000_0001_1000_0000_0000_0001#;
+      C : constant Float_32 := 2#0.1000_0000_0000_0001_1000_0000_0000_0001#;
 
       Left  : constant m128 := (A, 0.0, 1.0, 2.0);
       Right : constant m128 := (B, 1.0, 0.0, 2.0);
@@ -55,10 +51,10 @@ package body Test_SIMD_SSE_Logical is
    end Test_And;
 
    procedure Test_Or is
-      A : constant Single := 2#0.1000_0100_0010_0001_1000_0100_0010_0001#;
-      B : constant Single := 2#0.1000_1001_1001_1001_1001_1001_1001_1001#;
+      A : constant Float_32 := 2#0.1000_0100_0010_0001_1000_0100_0010_0001#;
+      B : constant Float_32 := 2#0.1000_1001_1001_1001_1001_1001_1001_1001#;
 
-      C : constant Single := 2#0.1000_1101_1011_1001_1001_1101_1011_1001#;
+      C : constant Float_32 := 2#0.1000_1101_1011_1001_1001_1101_1011_1001#;
 
       Left  : constant m128 := (A, 0.0, 1.0, 2.0);
       Right : constant m128 := (B, 1.0, 0.0, 2.0);

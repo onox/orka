@@ -18,25 +18,22 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Arithmetic;
 with Orka.Transforms.Singles.Matrices;
 
 package body Test_Transforms_Singles_Matrices is
 
-   use GL.Types;
    use Orka;
    use Orka.Transforms.Singles.Matrices;
 
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
 
-   function To_Radians (Angle : Single) return Single renames Vectors.To_Radians;
+   function To_Radians (Angle : Float_32) return Float_32 renames Vectors.To_Radians;
 
-   function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
-      Epsilon  : constant GL.Types.Single := 2.0 ** (1 - GL.Types.Single'Model_Mantissa);
+   function Is_Equivalent (Expected, Result : Float_32) return Boolean is
+      Epsilon  : constant Float_32 := 2.0 ** (1 - Float_32'Model_Mantissa);
    begin
       return Result in Expected - 2.0 * Epsilon .. Expected + 2.0 * Epsilon;
    end Is_Equivalent;
@@ -94,10 +91,10 @@ package body Test_Transforms_Singles_Matrices is
    end Test_T;
 
    procedure Test_Rx is
-      Angle : constant Single := 60.0;
+      Angle : constant Float_32 := 60.0;
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0, 0.0, 0.0, 0.0),
@@ -113,10 +110,10 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Rx;
 
    procedure Test_Ry is
-      Angle : constant Single := 60.0;
+      Angle : constant Float_32 := 60.0;
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0, -SA, 0.0),
@@ -132,10 +129,10 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Ry;
 
    procedure Test_Rz is
-      Angle : constant Single := 60.0;
+      Angle : constant Float_32 := 60.0;
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,   SA, 0.0, 0.0),
@@ -151,7 +148,7 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Rz;
 
    procedure Test_R is
-      Angle : constant Single := 90.0;
+      Angle : constant Float_32 := 90.0;
 
       Expected : constant Matrix4 :=
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
@@ -199,10 +196,10 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Add_Offset;
 
    procedure Test_Multiply_Factor is
-      Factor_A : constant Single := 2.0;
-      Factor_B : constant Single := 2.0;
+      Factor_A : constant Float_32 := 2.0;
+      Factor_B : constant Float_32 := 2.0;
 
-      Total : constant Single := Factor_A * Factor_B;
+      Total : constant Float_32 := Factor_A * Factor_B;
 
       Expected : constant Matrix4
         := ((Total, 0.0, 0.0, 0.0),
@@ -218,30 +215,28 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Multiply_Factor;
 
    procedure Test_Rotate_At_Origin is
-      Angle  : constant Single := 90.0;
+      Angle  : constant Float_32 := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
       Expected : constant Matrix4 :=
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle)) * T (Offset);
-      Result   : Matrix4 := T (Offset);
+      Result   : constant Matrix4 := R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle)) * T (Offset);
    begin
-      Rotate_At_Origin (Result, (0.0, 1.0, 0.0, 1.0), To_Radians (Angle));
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_At_Origin;
 
    procedure Test_Rotate is
-      Angle  : constant Single := 90.0;
+      Angle  : constant Float_32 := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
       Expected : Matrix4 :=
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
-      Result   : Matrix4 := T (Offset);
+      Result   : constant Matrix4 :=
+        R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle), Offset) * T (Offset);
    begin
       Expected (W) := Offset;
-      Rotate (Result, (0.0, 1.0, 0.0, 1.0), To_Radians (Angle), Offset);
 
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
@@ -249,11 +244,11 @@ package body Test_Transforms_Singles_Matrices is
    end Test_Rotate;
 
    procedure Test_Rotate_X_At_Origin is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -261,21 +256,19 @@ package body Test_Transforms_Singles_Matrices is
             (0.0,  -SA,  CA, 0.0),
             (2.0, -4.0, 3.0, 1.0));
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Rx (To_Radians (Angle)) * T (Offset);
    begin
-      Rotate_X_At_Origin (Result, To_Radians (Angle));
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X_At_Origin;
 
    procedure Test_Rotate_Y_At_Origin is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -283,21 +276,19 @@ package body Test_Transforms_Singles_Matrices is
             (SA,  0.0,   CA, 0.0),
             (4.0, 3.0, -2.0, 1.0));
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Ry (To_Radians (Angle)) * T (Offset);
    begin
-      Rotate_Y_At_Origin (Result, To_Radians (Angle));
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y_At_Origin;
 
    procedure Test_Rotate_Z_At_Origin is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -305,21 +296,19 @@ package body Test_Transforms_Singles_Matrices is
             (0.0,  0.0, 1.0, 0.0),
             (-3.0, 2.0, 4.0, 1.0));
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Rz (To_Radians (Angle)) * T (Offset);
    begin
-      Rotate_Z_At_Origin (Result, To_Radians (Angle));
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Z_At_Origin;
 
    procedure Test_Rotate_X is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -327,21 +316,19 @@ package body Test_Transforms_Singles_Matrices is
             (0.0,  -SA,  CA, 0.0),
             Offset);
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Rx (To_Radians (Angle), Offset) * T (Offset);
    begin
-      Rotate_X (Result, To_Radians (Angle), Offset);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X;
 
    procedure Test_Rotate_Y is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -349,21 +336,19 @@ package body Test_Transforms_Singles_Matrices is
             (SA,  0.0,   CA, 0.0),
             Offset);
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Ry (To_Radians (Angle), Offset) * T (Offset);
    begin
-      Rotate_Y (Result, To_Radians (Angle), Offset);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y;
 
    procedure Test_Rotate_Z is
-      Angle  : constant Single  := 90.0;
+      Angle  : constant Float_32  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Single := EF.Cos (Angle, 360.0);
-      SA : constant Single := EF.Sin (Angle, 360.0);
+      CA : constant Float_32 := EF.Cos (Angle, 360.0);
+      SA : constant Float_32 := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -371,10 +356,8 @@ package body Test_Transforms_Singles_Matrices is
             (0.0,  0.0, 1.0, 0.0),
             Offset);
 
-      Result : Matrix4 := T (Offset);
+      Result : constant Matrix4 := Rz (To_Radians (Angle), Offset) * T (Offset);
    begin
-      Rotate_Z (Result, To_Radians (Angle), Offset);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
@@ -389,10 +372,8 @@ package body Test_Transforms_Singles_Matrices is
             (0.0, 0.0, 1.0, 0.0),
             Offset);
 
-      Result : Matrix4 := Identity_Value;
+      Result : constant Matrix4 := Offset + Identity_Value;
    begin
-      Translate (Result, Offset);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
@@ -407,17 +388,15 @@ package body Test_Transforms_Singles_Matrices is
             (0.0, 0.0, Factors (Z), 0.0),
             (0.0, 0.0, 0.0, 1.0));
 
-      Result : Matrix4 := Identity_Value;
+      Result : constant Matrix4 := S (Factors) * Identity_Value;
    begin
-      Scale (Result, Factors);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Scale_Factors;
 
    procedure Test_Scale_Factor is
-      Factor : constant Single := 2.0;
+      Factor : constant Float_32 := 2.0;
 
       Expected : constant Matrix4
         := ((Factor, 0.0, 0.0, 0.0),
@@ -425,10 +404,8 @@ package body Test_Transforms_Singles_Matrices is
             (0.0, 0.0, Factor, 0.0),
             (0.0, 0.0, 0.0, 1.0));
 
-      Result : Matrix4 := Identity_Value;
+      Result : constant Matrix4 := Factor * Identity_Value;
    begin
-      Scale (Result, Factor);
-
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;

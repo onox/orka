@@ -16,14 +16,10 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Arithmetic;
 with Orka.SIMD.SSE.Singles.Compare;
 
 package body Test_SIMD_SSE_Compare is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD.SSE.Singles;

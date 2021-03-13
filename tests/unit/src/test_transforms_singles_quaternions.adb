@@ -18,14 +18,11 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.Transforms.Singles.Quaternions;
 with Orka.Transforms.Singles.Vectors;
 
 package body Test_Transforms_Singles_Quaternions is
 
-   use GL.Types;
    use Orka;
    use Orka.Transforms.Singles.Quaternions;
 
@@ -33,12 +30,12 @@ package body Test_Transforms_Singles_Quaternions is
 
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Single);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
 
-   function To_Radians (Angle : Single) return Single renames Vectors.To_Radians;
+   function To_Radians (Angle : Float_32) return Float_32 renames Vectors.To_Radians;
 
-   function Is_Equivalent (Expected, Result : GL.Types.Single) return Boolean is
-      Epsilon : constant GL.Types.Single := GL.Types.Single'Model_Epsilon;
+   function Is_Equivalent (Expected, Result : Float_32) return Boolean is
+      Epsilon : constant Float_32 := Float_32'Model_Epsilon;
    begin
       return Result in Expected - Epsilon .. Expected + Epsilon;
    end Is_Equivalent;
@@ -78,13 +75,13 @@ package body Test_Transforms_Singles_Quaternions is
    end Initialize;
 
    procedure Test_Multiplication is
-      Half_Angle : constant GL.Types.Single := 45.0;
+      Half_Angle : constant Float_32 := 45.0;
    begin
       declare
          Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
 
-         Sin_Value : constant GL.Types.Single := EF.Sin (Half_Angle, 360.0);
-         Cos_Value : constant GL.Types.Single := EF.Cos (Half_Angle, 360.0);
+         Sin_Value : constant Float_32 := EF.Sin (Half_Angle, 360.0);
+         Cos_Value : constant Float_32 := EF.Cos (Half_Angle, 360.0);
 
          Result   : constant Quaternion :=
            R (Axis, To_Radians (Half_Angle)) * R (Axis, To_Radians (Half_Angle));
@@ -99,7 +96,7 @@ package body Test_Transforms_Singles_Quaternions is
 
       declare
          Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-         Angle_Radians : constant Single := To_Radians (30.0);
+         Angle_Radians : constant Float_32 := To_Radians (30.0);
 
          Rotation : constant Quaternion :=
            R (Axis, Angle_Radians) * R (Axis, Angle_Radians) * R (Axis, Angle_Radians);
@@ -126,20 +123,20 @@ package body Test_Transforms_Singles_Quaternions is
       Elements_2 : constant Quaternion := (-1.0, 2.0, -3.0, 4.0);
       Elements_3 : constant Quaternion := (0.0, 0.0, 0.0, 0.0);
 
-      Result_1   : constant GL.Types.Single := Norm (Elements_1);
-      Result_2   : constant GL.Types.Single := Norm (Elements_2);
-      Result_3   : constant GL.Types.Single := Norm (Elements_3);
+      Result_1   : constant Float_32 := Norm (Elements_1);
+      Result_2   : constant Float_32 := Norm (Elements_2);
+      Result_3   : constant Float_32 := Norm (Elements_3);
 
-      Expected_1 : constant GL.Types.Single := EF.Sqrt (30.0);
-      Expected_2 : constant GL.Types.Single := EF.Sqrt (30.0);
-      Expected_3 : constant GL.Types.Single := 0.0;
+      Expected_1 : constant Float_32 := EF.Sqrt (30.0);
+      Expected_2 : constant Float_32 := EF.Sqrt (30.0);
+      Expected_3 : constant Float_32 := 0.0;
    begin
       Assert (Is_Equivalent (Expected_1, Result_1),
-        "Unexpected Single " & GL.Types.Single'Image (Result_1));
+        "Unexpected Single " & Float_32'Image (Result_1));
       Assert (Is_Equivalent (Expected_2, Result_2),
-        "Unexpected Single " & GL.Types.Single'Image (Result_2));
+        "Unexpected Single " & Float_32'Image (Result_2));
       Assert (Is_Equivalent (Expected_3, Result_3),
-        "Unexpected Single " & GL.Types.Single'Image (Result_3));
+        "Unexpected Single " & Float_32'Image (Result_3));
    end Test_Norm;
 
    procedure Test_Normalize is
@@ -169,10 +166,10 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Rotate_Axis_Angle is
       Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
-      Angle : constant GL.Types.Single := 90.0;
+      Angle : constant Float_32 := 90.0;
 
-      Sin_Value : constant GL.Types.Single := EF.Sin (45.0, 360.0);
-      Cos_Value : constant GL.Types.Single := EF.Cos (45.0, 360.0);
+      Sin_Value : constant Float_32 := EF.Sin (45.0, 360.0);
+      Cos_Value : constant Float_32 := EF.Cos (45.0, 360.0);
 
       Result   : constant Quaternion := R (Axis, To_Radians (Angle));
       Expected : constant Quaternion := (Axis (X) * Sin_Value,
@@ -189,7 +186,7 @@ package body Test_Transforms_Singles_Quaternions is
       End_Vector   : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
 
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant GL.Types.Single := 90.0;
+      Angle : constant Float_32 := 90.0;
 
       Expected_1 : constant Quaternion := R (Axis, To_Radians (Angle));
       Result_1   : constant Quaternion := R (Start_Vector, End_Vector);
@@ -203,7 +200,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Rotate_At_Origin is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant GL.Types.Single := 90.0;
+      Angle : constant Float_32 := 90.0;
 
       Rotation : constant Quaternion := R (Axis, To_Radians (Angle));
 
@@ -216,7 +213,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Slerp is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant GL.Types.Single := 45.0;
+      Angle : constant Float_32 := 45.0;
 
       Start_Quaternion : constant Quaternion := R (Axis, To_Radians (0.0));
       End_Quaternion   : constant Quaternion := R (Axis, To_Radians (90.0));

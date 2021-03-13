@@ -16,13 +16,9 @@
 
 with Ahven; use Ahven;
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles.Swizzle;
 
 package body Test_SIMD_SSE_Swizzle is
-
-   use GL.Types;
 
    use Orka;
    use Orka.SIMD;
