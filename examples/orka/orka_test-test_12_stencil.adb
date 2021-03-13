@@ -55,7 +55,7 @@ procedure Orka_Test.Test_12_Stencil is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Context.Create_Window (Width => Width, Height => Height, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height, Resizable => False);
 
    function Enable_MS return Boolean is
    begin

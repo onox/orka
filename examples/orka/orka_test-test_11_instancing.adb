@@ -43,7 +43,7 @@ procedure Orka_Test.Test_11_Instancing is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Context.Create_Window (Width => Width, Height => Height, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;

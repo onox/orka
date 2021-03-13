@@ -29,7 +29,7 @@ procedure Orka_Test.Test_1_Triangle is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Context.Create_Window (Width => 500, Height => 500, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500, Resizable => False);
 
    use Orka.Resources;
    use Orka.Rendering.Buffers;

@@ -35,7 +35,7 @@ procedure Orka_Test.Test_6_FFT is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Context.Create_Window (1, 1, Visible => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
    pragma Unreferenced (Window);
 
    ----------------------------------------------------------------------
