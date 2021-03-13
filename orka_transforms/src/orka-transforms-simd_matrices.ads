@@ -122,21 +122,10 @@ package Orka.Transforms.SIMD_Matrices is
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
 
-   procedure Rotate_At_Origin
-     (Matrix : in out Matrix_Type; Axis : Vector_Type; Angle : Element_Type);
-   --  Add a rotation transformation to the matrix with the center
-   --  of rotation at the origin to the matrix
-
    procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type;
                      Angle  : Element_Type; Point : Vector_Type);
    --  Add a rotation transformation to the matrix with the center
    --  of rotation at the given point to the matrix
-
-   procedure Rotate_At_Origin (Matrix : in out Matrix_Type; Quaternion : Vector_Type);
-   --  Add a rotation transformation based on a quaternion to the matrix
-   --  with the center of rotation at the origin to the matrix
-   --
-   --  Note: the quaternion must be a unit quaternion (normalized).
 
    procedure Rotate (Matrix : in out Matrix_Type; Quaternion : Vector_Type;
                      Point  : Vector_Type);
@@ -144,18 +133,6 @@ package Orka.Transforms.SIMD_Matrices is
    --  with the center of rotation at the given point to the matrix
    --
    --  Note: the quaternion must be a unit quaternion (normalized).
-
-   procedure Rotate_X_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type);
-   --  Add a rotation transformation around the X axis with the center
-   --  of rotation at the origin to the matrix
-
-   procedure Rotate_Y_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type);
-   --  Add a rotation transformation around the Y axis with the center
-   --  of rotation at the origin to the matrix
-
-   procedure Rotate_Z_At_Origin (Matrix : in out Matrix_Type; Angle : Element_Type);
-   --  Add a rotation transformation around the Z axis with the center
-   --  of rotation at the origin to the matrix
 
    procedure Rotate_X (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type);
    --  Add a rotation transformation around the X axis with the center
