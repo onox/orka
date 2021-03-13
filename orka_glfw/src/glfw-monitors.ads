@@ -75,7 +75,7 @@ package Glfw.Monitors is
    --
    --  Task safety: Must only be called from the environment task.
 
-   -- used internally
+   --  Used internally
    function Raw_Pointer (Object : Monitor) return System.Address;
 private
    type Monitor is tagged limited record

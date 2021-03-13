@@ -68,6 +68,6 @@ private
                             Lose_Context_On_Reset => 16#31002#);
    for Robustness_Kind'Size use Interfaces.C.int'Size;
 
-   -- implemented with renames
+   --  Implemented with renames
    pragma Convention (C, Set_Swap_Interval);
 end Glfw.Windows.Context;

@@ -131,7 +131,10 @@ package body Orka.Windows.GLFW is
       Standard.Glfw.Windows.Hints.Set_Profile (Context_Hints.Core_Profile);
       Standard.Glfw.Windows.Hints.Set_Debug_Context (Flags.Debug);
       Standard.Glfw.Windows.Hints.Set_Robustness
-        (if Flags.Robust then Context_Hints.Lose_Context_On_Reset else Context_Hints.No_Robustness);
+        (if Flags.Robust then
+           Context_Hints.Lose_Context_On_Reset
+         else
+           Context_Hints.No_Robustness);
 --      Standard.Glfw.Windows.Hints.Set_No_Error_Context (Flags.No_Error);
 
       return (Ada.Finalization.Limited_Controlled with

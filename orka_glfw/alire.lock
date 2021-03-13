@@ -1,0 +1,12 @@
+# THIS IS A MACHINE-GENERATED FILE. DO NOT EDIT MANUALLY.
+
+[solution]
+[solution.context]
+solved = true
+[[solution.state]]
+crate = "libglfw3"
+fulfilment = "hinted"
+pinned = false
+transitivity = "direct"
+versions = "^3.3.0"
+

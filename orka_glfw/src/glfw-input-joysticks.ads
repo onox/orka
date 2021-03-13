@@ -56,7 +56,7 @@ package Glfw.Input.Joysticks is
    function Get_Joystick (Index : Joystick_Index) return Joystick;
 
    function Index (Source : Joystick) return Joystick_Index;
-   
+
    function Is_Present (Source : Joystick) return Boolean;
 
    function Is_Gamepad (Source : Joystick) return Boolean;
@@ -70,7 +70,7 @@ package Glfw.Input.Joysticks is
    function Joystick_GUID (Source : Joystick) return String;
 
    procedure Update_Gamepad_Mappings (Mappings : String);
-   
+
    function Positions (Source : Joystick) return Axis_Positions;
    function Button_States (Source : Joystick) return Joystick_Button_States;
    function Hat_States (Source : Joystick) return Joystick_Hat_States;
@@ -89,7 +89,7 @@ private
    type Joystick is tagged record
       Raw_Index : Enums.Joystick_ID := Enums.Joystick_1;
    end record;
-   
+
    for Joystick_Button_State'Size use Interfaces.C.char'Size;
 
    for Joystick_Hat_State use

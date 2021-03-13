@@ -36,7 +36,8 @@ package body Glfw.Errors is
 
    procedure Set_Callback (Handler : Callback) is
       Previous : API.Error_Callback;
-      pragma Unreferenced (Previous);
+
+      use type API.Error_Callback;
    begin
       Cur_Callback := Handler;
       if Handler = null then
@@ -44,6 +45,7 @@ package body Glfw.Errors is
       else
          Previous := API.Set_Error_Callback (Raw_Handler'Access);
       end if;
+      pragma Assert (Previous in null | Raw_Handler'Access);
    end Set_Callback;
 
 end Glfw.Errors;

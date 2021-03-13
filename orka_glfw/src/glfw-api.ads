@@ -415,31 +415,26 @@ private package Glfw.API is
 
    procedure Set_Window_Pos_Callback (Window : System.Address;
                                      CB_Fun : Window_Position_Callback);
-                                     --return Window_Position_Callback;
    pragma Import (Convention => C, Entity => Set_Window_Pos_Callback,
                   External_Name => "glfwSetWindowPosCallback");
 
    procedure Set_Window_Size_Callback (Window : System.Address;
                                       CB_Fun : Window_Size_Callback);
-                                      --return Window_Size_Callback;
    pragma Import (Convention => C, Entity => Set_Window_Size_Callback,
                   External_Name => "glfwSetWindowSizeCallback");
 
    procedure Set_Window_Close_Callback (Window : System.Address;
                                        CB_Fun : Window_Close_Callback);
-                                       --return Window_Close_Callback;
    pragma Import (Convention => C, Entity => Set_Window_Close_Callback,
                   External_Name => "glfwSetWindowCloseCallback");
 
    procedure Set_Window_Refresh_Callback (Window : System.Address;
                                          CB_Fun : Window_Refresh_Callback);
-                                         --return Window_Refresh_Callback;
    pragma Import (Convention => C, Entity => Set_Window_Refresh_Callback,
                   External_Name => "glfwSetWindowRefreshCallback");
 
    procedure Set_Window_Focus_Callback (Window : System.Address;
                                        CB_Fun : Window_Focus_Callback);
-                                       --return Window_Focus_Callback;
    pragma Import (Convention => C, Entity => Set_Window_Focus_Callback,
                   External_Name => "glfwSetWindowFocusCallback");
 

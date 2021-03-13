@@ -22,7 +22,7 @@ package Glfw.Windows.Hints is
    procedure Reset_To_Defaults;
 
    -----------------------------------------------------------------------------
-   -- Window related
+   --                                  Window                                 --
    -----------------------------------------------------------------------------
 
    procedure Set_Focused   (Value : Boolean);
@@ -38,7 +38,7 @@ package Glfw.Windows.Hints is
    procedure Set_Transparent_Framebuffer (Value : Boolean);
 
    -----------------------------------------------------------------------------
-   -- Framebuffer related
+   --                               Framebuffer                               --
    -----------------------------------------------------------------------------
 
    procedure Set_Color_Bits (Red, Green, Blue, Alpha : Natural);
@@ -55,7 +55,7 @@ package Glfw.Windows.Hints is
    procedure Set_Refresh_Rate (Value : Natural);
 
    -----------------------------------------------------------------------------
-   -- Context related
+   --                                 Context                                 --
    -----------------------------------------------------------------------------
 
    procedure Set_Client_API (Value : Context.API_Kind);

@@ -141,11 +141,14 @@ package Glfw.Input.Keys is
                 Right_Super,
                 Menu);
 
+   subtype Unused_Type is Boolean range False .. False;
+
    type Modifiers is record
       Shift   : Boolean;
       Control : Boolean;
       Alt     : Boolean;
       Super   : Boolean;
+      Unused  : Unused_Type;
    end record;
 
    type Scancode is new Interfaces.C.int;
@@ -290,10 +293,9 @@ private
       Control at 0 range 1 .. 1;
       Alt     at 0 range 2 .. 2;
       Super   at 0 range 3 .. 3;
+      Unused  at 0 range 4 .. 31;
    end record;
-   pragma Warnings (Off);
    for Modifiers'Size use Interfaces.C.int'Size;
-   pragma Warnings (On);
    pragma Convention (C_Pass_By_Copy, Modifiers);
 
    for Scancode'Size use Interfaces.C.int'Size;

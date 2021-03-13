@@ -65,7 +65,7 @@ package body Glfw.Input.Joysticks is
          raise Operation_Exception;
       end if;
    end Update_Gamepad_Mappings;
-   
+
    function Positions (Source : Joystick) return Axis_Positions is
       Count : aliased Interfaces.C.int;
       Raw : constant API.Axis_Position_List_Pointers.Pointer

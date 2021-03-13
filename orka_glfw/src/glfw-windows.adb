@@ -509,11 +509,13 @@ package body Glfw.Windows is
          when Callbacks.Maximize =>
             API.Set_Window_Maximize_Callback (Object.Handle, Raw_Maximize_Callback'Access);
          when Callbacks.Content_Scale =>
-            API.Set_Window_Content_Scale_Callback (Object.Handle, Raw_Content_Scale_Callback'Access);
+            API.Set_Window_Content_Scale_Callback
+              (Object.Handle, Raw_Content_Scale_Callback'Access);
          when Callbacks.Iconify =>
             API.Set_Window_Iconify_Callback (Object.Handle, Raw_Iconify_Callback'Access);
          when Callbacks.Framebuffer_Size =>
-            API.Set_Framebuffer_Size_Callback (Object.Handle, Raw_Framebuffer_Size_Callback'Access);
+            API.Set_Framebuffer_Size_Callback
+              (Object.Handle, Raw_Framebuffer_Size_Callback'Access);
          when Callbacks.Mouse_Button =>
             API.Set_Mouse_Button_Callback (Object.Handle, Raw_Mouse_Button_Callback'Access);
          when Callbacks.Mouse_Position =>

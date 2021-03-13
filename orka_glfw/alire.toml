@@ -1,0 +1,13 @@
+name = "orka_glfw"
+description = "Ada 2012 bindings and Orka plug-in for GLFW"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["glfw", "opengl", "orka"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+libglfw3 = "^3.3.0"

@@ -9,7 +9,7 @@ SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
-X_GLFW_LIBS := -XGLFW_Libs="$(GLFW_LIBS)"
+X_GLFW_LIBS := -XORKA_GLFW_GLFW_LIBS="$(GLFW_LIBS)"
 X_SIMD := -XORKA_SIMD_EXT="$(SIMD)"
 SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS) $(X_SIMD)
 
@@ -35,7 +35,10 @@ installcmd = $(GPRINSTALL) -p \
 
 build:
 	cd orka_egl && alr build
-	$(GPRBUILD) -P tools/orka-glfw.gpr -XMode=$(MODE) -cargs $(CFLAGS)
+	cd orka_types && alr build
+	cd orka_simd && alr build
+	cd orka_transforms && alr build
+	$(GPRBUILD) -P tools/orka.gpr -XMode=$(MODE) -cargs $(CFLAGS)
 
 build_test:
 	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native
@@ -63,6 +66,9 @@ docs:
 
 clean:
 	cd orka_egl && alr clean
+	cd orka_types && alr clean
+	cd orka_simd && alr clean
+	cd orka_transforms && alr clean
 	$(GPRCLEAN) -r -P tools/orka-glfw.gpr
 	$(GPRCLEAN) -P tests/unit/tests.gpr
 	$(GPRCLEAN) -P tools/examples.gpr
