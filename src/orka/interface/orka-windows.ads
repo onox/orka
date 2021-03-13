@@ -47,7 +47,7 @@ package Orka.Windows is
 
    procedure Close (Object : in out Window) is abstract;
 
-   function Should_Close (Object : in out Window) return Boolean is abstract;
+   function Should_Close (Object : Window) return Boolean is abstract;
 
    procedure Process_Input (Object : in out Window) is abstract;
    --  Process window and input events

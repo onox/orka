@@ -481,7 +481,7 @@ package body Glfw.Windows is
       API.Set_Window_Attrib (Object.Handle, Enums.Focus_On_Show, Bool (Enable));
    end Set_Focus_On_Show;
 
-   function Should_Close (Object : not null access Window) return Boolean is
+   function Should_Close (Object : not null access constant Window) return Boolean is
    begin
       return Boolean (API.Window_Should_Close (Object.Handle));
    end Should_Close;

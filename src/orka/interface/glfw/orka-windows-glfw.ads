@@ -42,7 +42,7 @@ package Orka.Windows.GLFW is
    procedure Set_Title (Object : in out GLFW_Window; Value : String);
 
    overriding
-   function Should_Close (Object : in out GLFW_Window) return Boolean;
+   function Should_Close (Object : GLFW_Window) return Boolean;
 
    overriding
    function Create_Window

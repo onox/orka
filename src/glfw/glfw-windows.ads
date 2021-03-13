@@ -167,7 +167,7 @@ package Glfw.Windows is
    procedure Set_Auto_Iconify  (Object : not null access Window; Enable : Boolean);
    procedure Set_Focus_On_Show (Object : not null access Window; Enable : Boolean);
 
-   function Should_Close (Object : not null access Window) return Boolean;
+   function Should_Close (Object : not null access constant Window) return Boolean;
    --  Return the close flag of the window
    --
    --  Task safety: May be called from any task.

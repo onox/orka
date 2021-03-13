@@ -243,7 +243,7 @@ package body Orka.Windows.GLFW is
    end Close;
 
    overriding
-   function Should_Close (Object : in out GLFW_Window) return Boolean is
+   function Should_Close (Object : GLFW_Window) return Boolean is
    begin
       return Standard.Glfw.Windows.Window (Object)'Access.Should_Close;
    end Should_Close;
