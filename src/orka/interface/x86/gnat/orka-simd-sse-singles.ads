@@ -14,12 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 package Orka.SIMD.SSE.Singles is
    pragma Pure;
 
-   type m128 is array (Index_Homogeneous) of GL.Types.Single
+   type m128 is array (Index_Homogeneous) of Float_32
      with Alignment => 16;
    pragma Machine_Attribute (m128, "vector_type");
 

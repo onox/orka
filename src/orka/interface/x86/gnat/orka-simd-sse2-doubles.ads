@@ -14,12 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 package Orka.SIMD.SSE2.Doubles is
    pragma Pure;
 
-   type m128d is array (Index_2D) of GL.Types.Double
+   type m128d is array (Index_2D) of Float_64
      with Alignment => 16;
    pragma Machine_Attribute (m128d, "vector_type");
 

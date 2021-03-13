@@ -80,12 +80,11 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
    function "abs" (Elements : m256d) return m256d is
       use SIMD.AVX.Doubles.Logical;
-      use type GL.Types.Double;
    begin
       return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
    end "abs";
 
-   function Sum (Elements : m256d) return GL.Types.Double is
+   function Sum (Elements : m256d) return Float_64 is
       use SIMD.AVX.Doubles.Swizzle;
       use SIMD.SSE2.Doubles.Swizzle;
 

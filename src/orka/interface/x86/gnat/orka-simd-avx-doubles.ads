@@ -14,12 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 package Orka.SIMD.AVX.Doubles is
    pragma Pure;
 
-   type m256d is array (Index_Homogeneous) of GL.Types.Double
+   type m256d is array (Index_Homogeneous) of Float_64
      with Alignment => 32;
    pragma Machine_Attribute (m256d, "vector_type");
 

@@ -38,7 +38,7 @@ package Orka.SIMD.SSE2.Doubles.Arithmetic is
    function "abs" (Elements : m128d) return m128d
      with Inline;
 
-   function Sum (Elements : m128d) return GL.Types.Double
+   function Sum (Elements : m128d) return Float_64
      with Inline;
 
 end Orka.SIMD.SSE2.Doubles.Arithmetic;

@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 with Orka.SIMD.AVX.Singles;
 with Orka.SIMD.SSE.Singles;
 
@@ -25,7 +23,7 @@ package Orka.SIMD.F16C is
    use SIMD.AVX.Singles;
    use SIMD.SSE.Singles;
 
-   type m128i is array (Index_Double_Homogeneous) of GL.Types.Short
+   type m128i is array (Index_Double_Homogeneous) of Integer_16
      with Alignment => 16;
    pragma Machine_Attribute (m128i, "vector_type");
 

@@ -20,7 +20,7 @@ with Orka.SIMD.SSE3.Singles.Swizzle;
 
 package body Orka.SIMD.SSE3.Singles.Arithmetic is
 
-   function Sum (Elements : m128) return GL.Types.Single is
+   function Sum (Elements : m128) return Float_32 is
       use SIMD.SSE.Singles.Arithmetic;
       use SIMD.SSE.Singles.Swizzle;
       use SIMD.SSE3.Singles.Swizzle;

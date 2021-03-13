@@ -16,11 +16,4 @@
 
 package Orka.SIMD is
    pragma Pure;
-
-   type Unsigned_32 is mod 2 ** 32
-     with Size => 32;
-
-   subtype Index_3D is Index_Homogeneous range X .. Z;
-   subtype Index_2D is Index_Homogeneous range X .. Y;
-
 end Orka.SIMD;

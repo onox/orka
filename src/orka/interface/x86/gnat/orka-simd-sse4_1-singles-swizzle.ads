@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 with Orka.SIMD.SSE.Singles;
 
 package Orka.SIMD.SSE4_1.Singles.Swizzle is
@@ -31,7 +29,7 @@ package Orka.SIMD.SSE4_1.Singles.Swizzle is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvps";
    --  Select elements from two sources (Left and Right) using a variable mask
 
-   function Extract (Elements : m128; Mask : Unsigned_32) return GL.Types.Single
+   function Extract (Elements : m128; Mask : Unsigned_32) return Float_32
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vec_ext_v4sf";
 
    function Insert (Left, Right : m128; Mask : Unsigned_32) return m128

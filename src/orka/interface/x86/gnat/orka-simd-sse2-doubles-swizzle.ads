@@ -40,7 +40,7 @@ package Orka.SIMD.SSE2.Doubles.Swizzle is
    --  Unpack and interleave the 64-bit doubles from the lower halves of
    --  Left and Right as follows: Left (1), Right (1)
 
-   function Extract_X (Elements : m128d; Zero : Unsigned_32) return GL.Types.Double
+   function Extract_X (Elements : m128d; Zero : Unsigned_32) return Float_64
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vec_ext_v2df";
 
 end Orka.SIMD.SSE2.Doubles.Swizzle;

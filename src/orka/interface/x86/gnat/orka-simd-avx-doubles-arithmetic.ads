@@ -49,7 +49,7 @@ package Orka.SIMD.AVX.Doubles.Arithmetic is
    function "abs" (Elements : m256d) return m256d
      with Inline;
 
-   function Sum (Elements : m256d) return GL.Types.Double
+   function Sum (Elements : m256d) return Float_64
      with Inline;
 
    function Add_Subtract (Left, Right : m256d) return m256d

@@ -16,15 +16,22 @@
 
 with Interfaces.C;
 
+with Orka;
+
 package GL is
    pragma Pure;
 
    package C renames Interfaces.C;
 
    --  Index types for vectors and matrices
-   type Index_Homogeneous is (X, Y, Z, W);
-   subtype Index_3D is Index_Homogeneous range X .. Z;
-   subtype Index_2D is Index_Homogeneous range X .. Y;
+   subtype Index_Homogeneous is Orka.Index_Homogeneous;
+
+   subtype Index_2D is Orka.Index_2D;
+   subtype Index_3D is Orka.Index_3D;
+
+   use all type Orka.Float_32;
+   use all type Orka.Float_64;
+   use all type Index_Homogeneous;
 
    Feature_Not_Supported_Exception : exception;
    --  Raised when a function that is not available for the current

@@ -18,6 +18,7 @@ with "config";
 with "dcf_ada";
 with "json_ada";
 with "../orka_egl/orka_egl";
+with "../orka_types/orka_types";
 
 abstract project Sources is
 

@@ -37,7 +37,7 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    function "abs" (Elements : m256) return m256
      with Inline;
 
-   function Sum (Elements : m256) return GL.Types.Single
+   function Sum (Elements : m256) return Float_32
      with Inline;
 
    function Add_Subtract (Left, Right : m256) return m256

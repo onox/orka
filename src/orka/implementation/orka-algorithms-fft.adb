@@ -40,7 +40,7 @@ package body Orka.Algorithms.FFT is
             Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
               := Result.Program_FFT.Compute_Work_Group_Size;
          begin
-            Result.Local_Size := Positive (Work_Group_Size (GL.X));
+            Result.Local_Size := Positive (Work_Group_Size (X));
          end;
       end return;
    end Create_FFT;

@@ -72,12 +72,11 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
 
    function "abs" (Elements : m128) return m128 is
       use SIMD.SSE.Singles.Logical;
-      use type GL.Types.Single;
    begin
       return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
    end "abs";
 
-   function Sum (Elements : m128) return GL.Types.Single is
+   function Sum (Elements : m128) return Float_32 is
       use SIMD.SSE.Singles.Swizzle;
 
       --  From https://stackoverflow.com/a/35270026

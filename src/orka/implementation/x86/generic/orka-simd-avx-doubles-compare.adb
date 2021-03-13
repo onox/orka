@@ -17,7 +17,6 @@
 package body Orka.SIMD.AVX.Doubles.Compare is
 
    function Is_True (Elements : m256d; Position : Index_Homogeneous) return Boolean is
-      use type GL.Types.Double;
    begin
       return Elements (Position) /= 0.0;
    exception

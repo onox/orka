@@ -43,13 +43,13 @@ package body Orka.Algorithms.Prefix_Sums is
 
       Work_Group_Count : constant GL.Types.Compute.Dimension_Size_Array
         := GL.Compute.Max_Compute_Work_Group_Count;
-      Max_Group_Count : constant Natural := Natural (Work_Group_Count (GL.X));
+      Max_Group_Count : constant Natural := Natural (Work_Group_Count (X));
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
         := Object.Program_Prefix_Sum.Compute_Work_Group_Size;
 
       --  Multiply by 4 because the shader processes 4 numbers per invocation
-      Local_Size : constant Natural := 4 * Natural (Work_Group_Size (GL.X));
+      Local_Size : constant Natural := 4 * Natural (Work_Group_Size (X));
 
       Padding     : constant Boolean := Length rem Local_Size /= 0;
       Work_Groups : constant Natural

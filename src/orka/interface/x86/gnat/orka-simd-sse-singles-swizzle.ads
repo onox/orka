@@ -64,7 +64,7 @@ package Orka.SIMD.SSE.Singles.Swizzle is
    function Transpose (Matrix : m128_Array) return m128_Array
      with Inline;
 
-   function Extract_X (Elements : m128; Zero : Unsigned_32) return GL.Types.Single
+   function Extract_X (Elements : m128; Zero : Unsigned_32) return Float_32
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vec_ext_v4sf";
 
 end Orka.SIMD.SSE.Singles.Swizzle;

@@ -193,7 +193,7 @@ package body Orka.Rendering.Effects.Filters is
 
          declare
             Work_Group_Size : constant GL.Types.Single :=
-             GL.Types.Single (Result.Program_Blur.Compute_Work_Group_Size (GL.X));
+             GL.Types.Single (Result.Program_Blur.Compute_Work_Group_Size (X));
          begin
             Result.Columns := GL.Types.UInt
               (GL.Types.Single'Ceiling (GL.Types.Single (Width) / Work_Group_Size));

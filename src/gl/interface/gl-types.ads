@@ -16,6 +16,8 @@
 
 with GL.Algebra;
 
+with Orka;
+
 package GL.Types is
    pragma Pure;
 
@@ -34,7 +36,7 @@ package GL.Types is
 
    --  Signed integer types
    type Byte  is new C.signed_char;
-   type Short is new C.short;
+   subtype Short is Orka.Integer_16;
    type Int   is new C.int;
    type Long  is new long_long_int;
 
@@ -50,8 +52,8 @@ package GL.Types is
 
    --  Floating point types ("Single" is used to avoid conflicts with Float)
    subtype Half is Short;  --  F16C extension can be used to convert from/to Single
-   type Single is new C.C_float;
-   type Double is new C.double;
+   subtype Single is Orka.Float_32;
+   subtype Double is Orka.Float_64;
 
    subtype Normalized_Single is Single range 0.0 .. 1.0;
 

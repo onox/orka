@@ -40,12 +40,11 @@ package body Orka.SIMD.AVX.Singles.Arithmetic is
 
    function "abs" (Elements : m256) return m256 is
       use SIMD.AVX.Singles.Logical;
-      use type GL.Types.Single;
    begin
       return And_Not ((-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0), Elements);
    end "abs";
 
-   function Sum (Elements : m256) return GL.Types.Single is
+   function Sum (Elements : m256) return Float_32 is
       use SIMD.SSE.Singles;
       use SIMD.SSE.Singles.Arithmetic;
       use SIMD.AVX.Singles.Swizzle;

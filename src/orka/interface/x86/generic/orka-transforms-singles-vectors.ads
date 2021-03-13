@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 with Orka.Transforms.SIMD_Vectors;
 
 with Orka.SIMD.SSE.Singles.Arithmetic;
@@ -23,7 +21,7 @@ with Orka.SIMD.SSE.Singles.Math;
 with Orka.SIMD.SSE3.Singles.Arithmetic;
 
 package Orka.Transforms.Singles.Vectors is new Orka.Transforms.SIMD_Vectors
-  (GL.Types.Single, SIMD.SSE.Singles.m128,
+  (Float_32, SIMD.SSE.Singles.m128,
    SIMD.SSE.Singles.Arithmetic."*", SIMD.SSE.Singles.Arithmetic."+",
    SIMD.SSE.Singles.Arithmetic."-", SIMD.SSE.Singles.Arithmetic."-",
    SIMD.SSE.Singles.Arithmetic."abs", SIMD.SSE3.Singles.Arithmetic.Sum,

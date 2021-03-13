@@ -49,7 +49,7 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
    function "abs" (Elements : m128) return m128
      with Inline;
 
-   function Sum (Elements : m128) return GL.Types.Single
+   function Sum (Elements : m128) return Float_32
      with Inline;
 
 end Orka.SIMD.SSE.Singles.Arithmetic;
