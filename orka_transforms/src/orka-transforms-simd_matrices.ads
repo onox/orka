@@ -31,6 +31,8 @@ package Orka.Transforms.SIMD_Matrices is
 
    package Vectors renames Vector_Transforms;
 
+   function "-" (Elements : Vectors.Vector_Type) return Vectors.Vector_Type renames Vectors."-";
+
    subtype Element_Type is Vectors.Element_Type;
    subtype Vector_Type is Vectors.Vector_Type;
 
@@ -114,46 +116,48 @@ package Orka.Transforms.SIMD_Matrices is
      (Left  : Matrix_Type;
       Right : Vector_Type) return Vector_Type renames Multiply_Vector;
 
-   function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type;
+   function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type is
+     (T (Offset) * Matrix);
    --  Add a translation transformation to the matrix
 
-   function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type;
+   function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type is
+     (S ((Factor, Factor, Factor, 1.0)) * Matrix);
    --  Add a scale transformation to the matrix
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
 
-   procedure Rotate (Matrix : in out Matrix_Type; Axis : Vector_Type;
-                     Angle  : Element_Type; Point : Vector_Type);
-   --  Add a rotation transformation to the matrix with the center
-   --  of rotation at the given point to the matrix
+   function R
+     (Axis  : Vector_Type;
+      Angle : Element_Type;
+      Point : Vector_Type) return Matrix_Type
+   is (T (Point) * R (Axis, Angle) * T (-Point));
+   --  Return a rotation matrix with the center of rotation at the given point
 
-   procedure Rotate (Matrix : in out Matrix_Type; Quaternion : Vector_Type;
-                     Point  : Vector_Type);
-   --  Add a rotation transformation based on a quaternion to the matrix
-   --  with the center of rotation at the given point to the matrix
+   function R
+     (Quaternion : Vector_Type;
+      Point      : Vector_Type) return Matrix_Type
+   is (T (Point) * R (Quaternion) * T (-Point));
+   --  Return rotation matrix using a quaternion with the center of rotation at the given point
    --
-   --  Note: the quaternion must be a unit quaternion (normalized).
+   --  The quaternion must be a unit quaternion (normalized).
 
-   procedure Rotate_X (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type);
+   function Rx (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+     (T (Point) * Rx (Angle) * T (-Point));
    --  Add a rotation transformation around the X axis with the center
    --  of rotation at the given point to the matrix
 
-   procedure Rotate_Y (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type);
+   function Ry (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+     (T (Point) * Ry (Angle) * T (-Point));
    --  Add a rotation transformation around the Y axis with the center
    --  of rotation at the given point to the matrix
 
-   procedure Rotate_Z (Matrix : in out Matrix_Type; Angle : Element_Type; Point : Vector_Type);
+   function Rz (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+     (T (Point) * Rz (Angle) * T (-Point));
    --  Add a rotation transformation around the Z axis with the center
    --  of rotation at the given point to the matrix
 
    --  procedure Rotate_Quaternion (Matrix : in out Matrix_Type; Quaternion : ?);
    --  procedure Rotate_Euler (Matrix : in out Matrix_Type; Euler : ?);
-
-   procedure Translate (Matrix : in out Matrix_Type; Offset : Vector_Type);
-   --  Add a translation transformation to the matrix
-
-   procedure Scale (Matrix : in out Matrix_Type; Factors : Vector_Type);
-   procedure Scale (Matrix : in out Matrix_Type; Factor : Element_Type);
 
    procedure Transpose (Matrix : in out Matrix_Type);
    --  Transpose the matrix

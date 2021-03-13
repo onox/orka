@@ -20,8 +20,6 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function "-" (Elements : Vectors.Vector_Type) return Vectors.Vector_Type renames Vectors."-";
-
    function T (Offset : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
       Old_W  : constant Element_Type := Result (W) (W);
@@ -131,72 +129,6 @@ package body Orka.Transforms.SIMD_Matrices is
       Result (Z) (Z) := Factors (Z);
       return Result;
    end S;
-
-   function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type is
-   begin
-      return T (Offset) * Matrix;
-   end "+";
-
-   function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type is
-   begin
-      return S ((Factor, Factor, Factor, 1.0)) * Matrix;
-   end "*";
-
-   procedure Rotate
-     (Matrix : in out Matrix_Type;
-      Axis   : Vector_Type;
-      Angle  : Element_Type;
-      Point  : Vector_Type) is
-   begin
-      Matrix := T (Point) * R (Axis, Angle) * T (-Point) * Matrix;
-   end Rotate;
-
-   procedure Rotate
-     (Matrix     : in out Matrix_Type;
-      Quaternion : Vector_Type;
-      Point      : Vector_Type) is
-   begin
-      Matrix := T (Point) * R (Quaternion) * T (-Point) * Matrix;
-   end Rotate;
-
-   procedure Rotate_X
-     (Matrix : in out Matrix_Type;
-      Angle  : Element_Type;
-      Point  : Vector_Type) is
-   begin
-      Matrix := T (Point) * Rx (Angle) * T (-Point) * Matrix;
-   end Rotate_X;
-
-   procedure Rotate_Y
-     (Matrix : in out Matrix_Type;
-      Angle  : Element_Type;
-      Point  : Vector_Type) is
-   begin
-      Matrix := T (Point) * Ry (Angle) * T (-Point) * Matrix;
-   end Rotate_Y;
-
-   procedure Rotate_Z
-     (Matrix : in out Matrix_Type;
-      Angle  : Element_Type;
-      Point  : Vector_Type) is
-   begin
-      Matrix := T (Point) * Rz (Angle) * T (-Point) * Matrix;
-   end Rotate_Z;
-
-   procedure Translate (Matrix : in out Matrix_Type; Offset : Vector_Type) is
-   begin
-      Matrix := Offset + Matrix;
-   end Translate;
-
-   procedure Scale (Matrix : in out Matrix_Type; Factors : Vector_Type) is
-   begin
-      Matrix := S (Factors) * Matrix;
-   end Scale;
-
-   procedure Scale (Matrix : in out Matrix_Type; Factor : Element_Type) is
-   begin
-      Matrix := Factor * Matrix;
-   end Scale;
 
    procedure Transpose (Matrix : in out Matrix_Type) is
    begin
