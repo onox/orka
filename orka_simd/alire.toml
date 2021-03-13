@@ -1,0 +1,13 @@
+name = "orka_simd"
+description = "Bindings for x86 SIMD extensions like SSE, AVX2, FMA, F16C"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["orka", "simd", "sse", "avx", "fma", "f16c"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+orka_types = "^1.0.0"

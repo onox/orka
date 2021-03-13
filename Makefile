@@ -10,7 +10,7 @@ SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
 X_GLFW_LIBS := -XGLFW_Libs="$(GLFW_LIBS)"
-X_SIMD := -XSIMD="$(SIMD)"
+X_SIMD := -XORKA_SIMD_EXT="$(SIMD)"
 SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS) $(X_SIMD)
 
 GPRBUILD = nice gprbuild -dm -p $(SCENARIO_VARS)

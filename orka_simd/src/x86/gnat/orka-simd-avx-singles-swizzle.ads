@@ -71,7 +71,7 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    function Cast (Elements : m256) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ps_ps256";
 
-   function Extract (Elements : m256; Mask : Unsigned_32) return m128 
+   function Extract (Elements : m256; Mask : Unsigned_32) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_ps256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)

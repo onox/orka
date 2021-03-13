@@ -19,6 +19,7 @@ with "dcf_ada";
 with "json_ada";
 with "../orka_egl/orka_egl";
 with "../orka_types/orka_types";
+with "../orka_simd/orka_simd";
 
 abstract project Sources is
 
@@ -27,8 +28,7 @@ abstract project Sources is
 
    Orka_Sources := ("../src/orka/interface",
                     "../src/orka/implementation",
-                    "../src/orka/interface/x86/generic",
-                    "../src/orka/implementation/x86/generic");
+                    "../src/orka/interface/x86/generic");
 
    case Config.Windowing_System is
       when "windows" =>
@@ -38,29 +38,6 @@ abstract project Sources is
          Orka_Sources   := Orka_Sources &
                              "../src/orka/interface/egl" &
                              "../src/orka/implementation/egl";
-   end case;
-
-   case Config.Compiler_Name is
-      when "gnat" =>
-         Orka_Sources := Orka_Sources & ("../src/orka/interface/x86/gnat");
-
-         case Config.SIMD is
-            when "AVX2" =>
-               Orka_Sources := Orka_Sources &
-                 ("../src/orka/interface/x86/gnat/avx2",
-                  "../src/orka/interface/x86/gnat/fma");
-            when others =>
-               null;
-         end case;
-      when others =>
-         null;
-   end case;
-
-   case Config.SIMD is
-      when "AVX2" =>
-         Orka_Sources := Orka_Sources & ("../src/orka/implementation/x86/generic/fma");
-      when others =>
-         null;
    end case;
 
    package Compiler renames Config.Compiler;
