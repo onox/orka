@@ -1,4 +1,3 @@
-[![Build status](https://img.shields.io/shippable/5c87f0065329800700799d31/master.svg)](https://app.shippable.com/github/onox/orka)
 [![Docs status](https://img.shields.io/netlify/4fa61148-e68f-41e6-b7fa-1785eaf4bcb5?label=docs)](https://app.netlify.com/sites/orka-engine/deploys)
 [![License](https://img.shields.io/github/license/onox/orka.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/onox/orka.svg)](https://github.com/onox/orka/releases/latest)
