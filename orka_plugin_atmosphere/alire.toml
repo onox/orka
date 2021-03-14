@@ -1,0 +1,10 @@
+name = "orka_plugin_atmosphere"
+description = "Orka plug-in for precomputed atmospheric scattering"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0 AND BSD-3-Clause"
+tags = ["atmosphere", "earth", "orka"]
+
+authors = ["onox", "Eric Bruneton"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
