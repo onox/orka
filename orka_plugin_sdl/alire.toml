@@ -1,4 +1,4 @@
-name = "orka_sdl"
+name = "orka_plugin_sdl"
 description = "Orka plug-in for SDL 2"
 version = "1.0.0"
 website = "https://github.com/onox/orka"

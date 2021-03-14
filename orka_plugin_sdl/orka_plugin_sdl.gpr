@@ -1,6 +1,8 @@
-project Orka_Sdl is
+with "sdlada";
 
-   for Library_Name use "orka-sdl";
+project Orka_Plugin_Sdl is
+
+   for Library_Name use "orka-plugin-sdl";
    for Library_Version use "1.0.0";
 
    for Create_Missing_Dirs use "True";
@@ -11,17 +13,17 @@ project Orka_Sdl is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_SDL_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+     external ("ORKA_PLUGIN_SDL_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");
-   Compile_Checks : Enabled_Kind := External ("ORKA_SDL_COMPILE_CHECKS", "enabled");
-   Runtime_Checks : Enabled_Kind := External ("ORKA_SDL_RUNTIME_CHECKS", "enabled");
-   Style_Checks : Enabled_Kind := External ("ORKA_SDL_STYLE_CHECKS", "enabled");
-   Contracts_Checks : Enabled_Kind := External ("ORKA_SDL_CONTRACTS", "enabled");
+   Compile_Checks : Enabled_Kind := External ("ORKA_PLUGIN_SDL_COMPILE_CHECKS", "enabled");
+   Runtime_Checks : Enabled_Kind := External ("ORKA_PLUGIN_SDL_RUNTIME_CHECKS", "enabled");
+   Style_Checks : Enabled_Kind := External ("ORKA_PLUGIN_SDL_STYLE_CHECKS", "enabled");
+   Contracts_Checks : Enabled_Kind := External ("ORKA_PLUGIN_SDL_CONTRACTS", "enabled");
 
    type Build_Kind is ("debug", "release", "coverage", "profiling");
-   Build_Mode : Build_Kind := External ("ORKA_SDL_BUILD_MODE", "release");
+   Build_Mode : Build_Kind := External ("ORKA_PLUGIN_SDL_BUILD_MODE", "release");
 
    Compile_Checks_Switches := ();
    case Compile_Checks is
@@ -96,4 +98,4 @@ project Orka_Sdl is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
    end Binder;
 
-end Orka_Sdl;
+end Orka_Plugin_Sdl;
