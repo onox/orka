@@ -20,16 +20,11 @@ with EGL.Objects.Displays;
 with EGL.Objects.Devices;
 with EGL.Errors;
 
-with Orka.Loggers.Terminal;
-with Orka.Logging;
-
 procedure Orka_EGL_Info is
    use Ada.Text_IO;
 
    Devices : constant EGL.Objects.Devices.Device_List := EGL.Objects.Devices.Devices;
 begin
-   Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Debug));
-
    Put_Line ("Client extensions:");
    for Extension of EGL.Objects.Displays.Client_Extensions loop
       Put_Line ("  " & EGL.SU.To_String (Extension));

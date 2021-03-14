@@ -5,6 +5,10 @@ website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
 tags = ["egl", "opengl", "orka"]
 
+executables = ["orka_egl_info"]
+
+project-files = ["orka_egl.gpr", "orka_egl_info.gpr"]
+
 authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]

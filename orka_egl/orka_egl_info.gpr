@@ -1,0 +1,18 @@
+with "orka_egl";
+
+project Orka_Egl_Info is
+
+   for Create_Missing_Dirs use "True";
+
+   for Source_Dirs use ("src/tools");
+   for Object_Dir use "build/tools/obj";
+   for Library_Dir use "build/tools/lib";
+
+   for Exec_Dir use "build/bin";
+
+   for Main use ("orka_egl_info.adb");
+
+   package Compiler renames Orka_Egl.Compiler;
+   package Binder   renames Orka_Egl.Binder;
+
+end Orka_Egl_Info;
