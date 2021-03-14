@@ -1,0 +1,13 @@
+name = "orka_plugin_gltf"
+description = "Orka plug-in for loading glTF models"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["gltf", "orka"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+orka_transforms = "^1.0.0"

@@ -179,13 +179,13 @@ package body Orka.Resources.Models.glTF is
                   Scene.Set_Local_Transform (Scene.To_Cursor (Parent_Name), Parent_Node.Matrix);
                else
                   declare
-                     Local_Transform : Trees.Matrix4 := Transforms.Identity_Value;
-                  begin
-                     Transforms.Scale (Local_Transform, Parent_Node.Scale);
-                     Transforms.Rotate_At_Origin (Local_Transform, Parent_Node.Rotation);
-                     Transforms.Translate (Local_Transform, Parent_Node.Translation);
+                     PN : Orka.glTF.Scenes.Node renames Parent_Node;
 
-                     Scene.Set_Local_Transform (Scene.To_Cursor (Parent_Name), Local_Transform);
+                     use Transforms;
+                  begin
+                     Scene.Set_Local_Transform
+                       (Scene.To_Cursor (Parent_Name),
+                        T (PN.Translation) * R (PN.Rotation) * S (PN.Scale));
                   end;
                end if;
 
@@ -391,7 +391,6 @@ package body Orka.Resources.Models.glTF is
       use GL.Types;
       use Orka.glTF.Accessors;
       use Orka.glTF.Buffers;
-      use all type Orka.Types.Element_Type;
 
       package Index_Conversions is new Buffer_View_Conversions (UInt, UInt_Array, Indirect.UInt_Array_Access);
 

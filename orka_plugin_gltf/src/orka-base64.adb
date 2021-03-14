@@ -72,7 +72,9 @@ package body Orka.Base64 is
          raise Encoding_Error with "Length not a multiple of 4";
       end if;
 
-      if (for some C of Input => C not in 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '+' | '/' | '=') then
+      if (for some C of Input =>
+        C not in 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '+' | '/' | '=')
+      then
          raise Encoding_Error with "Illegal character";
       end if;
 

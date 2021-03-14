@@ -1,0 +1,102 @@
+with "../orka_transforms/orka_transforms";
+with "json_ada";
+
+project Orka_Plugin_Gltf is
+
+   for Library_Name use "orka-plugin-gltf";
+   for Library_Version use "1.0.0";
+
+   for Create_Missing_Dirs use "True";
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "build/obj";
+   for Library_Dir use "build/lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("ORKA_PLUGIN_GLTF_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+   for Library_Kind use Library_Type;
+
+   type Enabled_Kind is ("enabled", "disabled");
+   Compile_Checks : Enabled_Kind := External ("ORKA_PLUGIN_GLTF_COMPILE_CHECKS", "enabled");
+   Runtime_Checks : Enabled_Kind := External ("ORKA_PLUGIN_GLTF_RUNTIME_CHECKS", "enabled");
+   Style_Checks : Enabled_Kind := External ("ORKA_PLUGIN_GLTF_STYLE_CHECKS", "enabled");
+   Contracts_Checks : Enabled_Kind := External ("ORKA_PLUGIN_GLTF_CONTRACTS", "enabled");
+
+   type Build_Kind is ("debug", "release", "coverage", "profiling");
+   Build_Mode : Build_Kind := External ("ORKA_PLUGIN_GLTF_BUILD_MODE", "release");
+
+   Compile_Checks_Switches := ();
+   case Compile_Checks is
+      when "enabled" =>
+         Compile_Checks_Switches :=
+           ("-gnatwa",  -- All warnings
+            "-gnatVa",  -- All validity checks
+            "-gnatf",   -- Full errors
+            "-gnatwFl.l.s",
+            "-gnatwe"); -- Warnings as errors
+      when others => null;
+   end case;
+
+   Runtime_Checks_Switches := ();
+   case Runtime_Checks is
+      when "enabled" => null;
+      when others =>
+         Runtime_Checks_Switches :=
+           ("-gnatp"); -- Supress checks
+   end case;
+
+   Style_Checks_Switches := ();
+   case Style_Checks is
+      when "enabled" =>
+         Style_Checks_Switches :=
+           ("-gnatyg",   -- GNAT Style checks
+            "-gnaty-Is", -- Disable check mode in and separate subprogram spec
+            "-gnatyM99", -- Maximum line length
+            "-gnatyA",   -- Array attribute indexes
+            "-gnatyO");  -- Overriding subprograms explicitly marked as such
+      when others => null;
+   end case;
+
+   Contracts_Switches := ();
+   case Contracts_Checks is
+      when "enabled" =>
+         Contracts_Switches :=
+           ("-gnata"); --  Enable assertions and contracts
+      when others => null;
+   end case;
+
+   Build_Switches := ();
+   case Build_Mode is
+      when "release" =>
+         Build_Switches := ("-O2",     -- Optimization
+                            "-march=native",
+                            "-fomit-frame-pointer",
+                            "-ffunction-sections",
+                            "-gnatn"); -- Enable inlining
+      when "debug" =>
+         Build_Switches := ("-g",   -- Debug info
+                            "-Og"); -- No optimization
+      when "coverage" =>
+         Build_Switches := ("-fprofile-arcs", "-ftest-coverage");
+      when "profiling" =>
+         Build_Switches := ("-g", "-pg");
+   end case;
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        Compile_Checks_Switches &
+        Build_Switches &
+        Runtime_Checks_Switches &
+        Style_Checks_Switches &
+        Contracts_Switches &
+        ("-gnatw.X", -- Disable warnings for No_Exception_Propagation
+         "-gnatQ");  -- Don't quit. Generate ALI and tree files even if illegalities
+      for Local_Configuration_Pragmas use "gnat.adc";
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+end Orka_Plugin_Gltf;

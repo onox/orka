@@ -70,7 +70,7 @@ package body Orka.glTF.Buffers is
       Buffer : constant Long_Integer := Object.Get ("buffer").Value;
       Offset : constant Long_Integer := Object.Get ("byteOffset", 0).Value;
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
-      Target : constant Long_Integer := Object.Get ("target").Value;
+      Target : constant Long_Integer := Object.Get ("target", 34962).Value;
       --  TODO target is optional: infer from accessors
 
       --  If byteStride is not defined, then data is tightly packed
