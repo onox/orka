@@ -18,4 +18,12 @@ versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../orka_transforms"
-
+[[solution.state]]
+crate = "orka"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "~0.2.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka"

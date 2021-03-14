@@ -1,5 +1,4 @@
-with "../tools/config";
-with "../tools/orka";
+with "orka";
 
 project Orka_Glfw is
 
@@ -14,7 +13,7 @@ project Orka_Glfw is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_GLFW_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+     external ("ORKA_GLFW_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");
@@ -99,8 +98,11 @@ project Orka_Glfw is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
    end Binder;
 
+   type Windowing_System_Type is ("windows", "egl");
+   Windowing_System : Windowing_System_Type := External ("ORKA_GLFW_WINDOWING_SYSTEM", "egl");
+
    package Linker is
-      case Config.Windowing_System is
+      case Windowing_System is
          when "windows" =>
             for Linker_Options use ("-lglfw3");
          when "egl" =>

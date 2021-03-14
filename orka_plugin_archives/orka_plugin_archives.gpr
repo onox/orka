@@ -1,4 +1,5 @@
 with "dcf";
+with "orka";
 
 project Orka_Plugin_Archives is
 

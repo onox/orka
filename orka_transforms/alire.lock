@@ -14,8 +14,10 @@ kind = "softlink"
 path = "file:../orka_simd"
 [[solution.state]]
 crate = "orka_types"
-fulfilment = "missed"
+fulfilment = "linked"
 pinned = false
 transitivity = "indirect"
 versions = "^1.0.0"
-
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_types"

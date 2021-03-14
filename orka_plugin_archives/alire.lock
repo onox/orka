@@ -36,4 +36,12 @@ hashes = [
 "sha512:9ba2652fb7ac8b2768a8c3f9b56a0f643572411f56c29b1bed3f426042750657d3edfe5fc203176f9a3a6ef1e4c82a6b883c102f5f810209afdccb303d48258f",
 ]
 url = "https://github.com/onox/dcf-ada/releases/download/v2.0.2/dcf-2.0.2.tgz"
-
+[[solution.state]]
+crate = "orka"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "~0.2.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka"

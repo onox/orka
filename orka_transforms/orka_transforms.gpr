@@ -1,4 +1,4 @@
-with "../orka_simd/orka_simd";
+with "orka_simd";
 
 project Orka_Transforms is
 
@@ -13,7 +13,7 @@ project Orka_Transforms is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_TRANSFORMS_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+     external ("ORKA_TRANSFORMS_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");
