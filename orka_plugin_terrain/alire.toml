@@ -1,0 +1,13 @@
+name = "orka_plugin_terrain"
+description = "Orka plug-in for adaptive tessellated flattened spheroids"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0 AND MIT"
+tags = ["terrain", "orka"]
+
+authors = ["onox", "Jonathan Dupuy"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[[depends-on]]
+orka_transforms = "^1.0.0"
