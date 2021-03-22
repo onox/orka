@@ -1,4 +1,5 @@
-with "../orka_transforms/orka_transforms";
+with "orka_transforms";
+with "orka";
 
 project Orka_Plugin_Terrain is
 
@@ -13,7 +14,7 @@ project Orka_Plugin_Terrain is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_PLUGIN_TERRAIN_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+     external ("ORKA_PLUGIN_TERRAIN_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");
@@ -32,8 +33,8 @@ project Orka_Plugin_Terrain is
            ("-gnatwa",  -- All warnings
             "-gnatVa",  -- All validity checks
             "-gnatf",   -- Full errors
-            "-gnatwFl.l.s",
-            "-gnatwe"); -- Warnings as errors
+            "-gnatwFl.l.s");
+--            "-gnatwe"); -- Warnings as errors
       when others => null;
    end case;
 

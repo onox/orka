@@ -1,5 +1,6 @@
-with "../orka_transforms/orka_transforms";
 with "json_ada";
+with "orka_transforms";
+with "orka";
 
 project Orka_Plugin_Gltf is
 
@@ -14,7 +15,7 @@ project Orka_Plugin_Gltf is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_PLUGIN_GLTF_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+     external ("ORKA_PLUGIN_GLTF_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");

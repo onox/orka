@@ -14,23 +14,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka_Package_glTF is
+with Orka.Jobs.System;
+with Orka.Resources.Loader;
 
-   overriding
-   procedure Execute
-     (Object  : Create_Group_Job;
-      Context : Orka.Jobs.Execution_Context'Class) is
-   begin
-      Object.Group.all := Object.Model.Create_Group (Object.Culler, Capacity => 1);
-   end Execute;
+package Orka_Package_KTX is
 
-   overriding
-   procedure After_Update
-     (Object        : in out No_Behavior;
-      Delta_Time    : Duration;
-      View_Position : Orka.Behaviors.Vector4) is
-   begin
-      Object.Update_Transforms (View_Position);
-   end After_Update;
+   package Job_System is new Orka.Jobs.System
+     (Maximum_Queued_Jobs => 16,
+      Maximum_Job_Graphs  => 4);
 
-end Orka_Package_glTF;
+   package Loader is new Orka.Resources.Loader
+     (Job_System.Queues, Job_System.Queue'Unchecked_Access, Maximum_Requests => 10);
+
+end Orka_Package_KTX;

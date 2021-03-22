@@ -228,7 +228,8 @@ package body Orka.Resources.Models.glTF is
 
    function Bounds_List
      (Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
-      Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector) return Orka.Types.Singles.Vector4_Array
+      Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector)
+     return Orka.Types.Singles.Vector4_Array
    is
       use type GL.Types.Size;
       use Orka.glTF.Accessors;
@@ -336,7 +337,8 @@ package body Orka.Resources.Models.glTF is
             Mesh_Name : String renames SU.To_String (Mesh.Name);
 
             Primitives : Orka.glTF.Meshes.Primitive_Vectors.Vector renames Mesh.Primitives;
-            pragma Assert (Primitives.Length = 1, "Mesh '" & Mesh_Name & "' has more than one primitive");
+            pragma Assert (Primitives.Length = 1,
+              "Mesh '" & Mesh_Name & "' has more than one primitive");
 
             First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
             pragma Assert (First_Primitive.Attributes.Length = 3,
@@ -392,10 +394,13 @@ package body Orka.Resources.Models.glTF is
       use Orka.glTF.Accessors;
       use Orka.glTF.Buffers;
 
-      package Index_Conversions is new Buffer_View_Conversions (UInt, UInt_Array, Indirect.UInt_Array_Access);
+      package Index_Conversions is new Buffer_View_Conversions
+        (UInt, UInt_Array, Indirect.UInt_Array_Access);
 
-      package Vertex_Conversions is new Buffer_View_Conversions (Half, Half_Array, Indirect.Half_Array_Access);
-      procedure Get_Singles is new Vertex_Conversions.Get_Array (Single, Single_Array, Orka.Types.Convert);
+      package Vertex_Conversions is new Buffer_View_Conversions
+        (Half, Half_Array, Indirect.Half_Array_Access);
+      procedure Get_Singles is new Vertex_Conversions.Get_Array
+        (Single, Single_Array, Orka.Types.Convert);
 
       function Cast (Value : UShort) return UInt is (UInt (Value));
       function Cast (Value : UInt)   return UInt is (Value);

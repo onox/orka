@@ -65,7 +65,7 @@ begin
 
       Window : constant Orka.Windows.Window'Class
         := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-      pragma Unreferenced (Window);
+      pragma Assert (Window.Width = 1 and Window.Height = 1);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
       Display_Context_Information;

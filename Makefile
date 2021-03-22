@@ -1,53 +1,40 @@
 CFLAGS ?= -O2 -march=native
 
 WINDOWING_BACKEND := egl
-LIBRARY_TYPE ?= relocatable
-MODE ?= development
 
 GLFW_LIBS := $(strip $(shell pkgconf --libs glfw3))
 SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
 X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
-X_LIBRARY_TYPE := -XLibrary_Type=$(LIBRARY_TYPE)
 X_GLFW_LIBS := -XORKA_GLFW_GLFW_LIBS="$(GLFW_LIBS)"
 X_SIMD := -XORKA_SIMD_EXT="$(SIMD)"
-SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_LIBRARY_TYPE) $(X_GLFW_LIBS) $(X_SIMD)
+SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_GLFW_LIBS) $(X_SIMD)
 
 GPRBUILD = nice gprbuild -dm -p $(SCENARIO_VARS)
 GPRCLEAN = gprclean -q $(SCENARIO_VARS)
-GPRINSTALL = gprinstall -q $(SCENARIO_VARS)
 
-PREFIX ?= /usr
+.PHONY: build examples tools tests coverage docs clean
 
-includedir = $(PREFIX)/include
-gprdir     = $(PREFIX)/share/gpr
-libdir     = $(PREFIX)/lib
-alidir     = $(libdir)
+ORKA_PATHS = ../orka:../orka_egl:../orka_simd:../orka_transforms:../orka_types
 
-installcmd = $(GPRINSTALL) -p \
-	--sources-subdir=$(includedir) \
-	--project-subdir=$(gprdir) \
-	--lib-subdir=$(libdir) \
-	--ali-subdir=$(alidir) \
-	--prefix=$(PREFIX)
-
-.PHONY: build examples tools tests coverage docs clean install uninstall
+ORKA_GLFW_PATHS = $(ORKA_PATHS):../orka_glfw
 
 build:
-	cd orka_egl && alr build
-	cd orka_types && alr build
-	cd orka_simd && alr build
-	cd orka_transforms && alr build
-	$(GPRBUILD) -P tools/orka.gpr -XMode=$(MODE) -cargs $(CFLAGS)
+	cd orka_glfw && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+#	cd orka_plugin_sdl && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+	cd orka_plugin_archives && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+	cd orka_plugin_gltf && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+	cd orka_plugin_terrain && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+	cd orka_plugin_atmosphere && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
 
 build_test:
 	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native
 
 examples: build
-	$(GPRBUILD) -P tools/examples.gpr -XMode=$(MODE) -cargs $(CFLAGS)
+	$(GPRBUILD) -P tools/examples.gpr -cargs $(CFLAGS)
 
 tools: build
-	$(GPRBUILD) -P tools/tools.gpr -XMode=$(MODE) -cargs $(CFLAGS)
+	cd orka_tools && GPR_PROJECT_PATH="$(ORKA_GLFW_PATHS):`pwd`" alr build $(SCENARIO_VARS)
 
 tests: build_test
 	./tests/unit/bin/run_unit_tests
@@ -69,16 +56,15 @@ clean:
 	cd orka_types && alr clean
 	cd orka_simd && alr clean
 	cd orka_transforms && alr clean
-	$(GPRCLEAN) -r -P tools/orka-glfw.gpr
-	$(GPRCLEAN) -P tests/unit/tests.gpr
-	$(GPRCLEAN) -P tools/examples.gpr
-	$(GPRCLEAN) -P tools/tools.gpr
-	rm -rf bin build tests/unit/build tests/unit/bin tests/cov
 
-install:
-	$(installcmd) -f --install-name='orka' -P tools/orka.gpr
-	$(installcmd) -f --install-name='orka-glfw' -P tools/orka-glfw.gpr
+	cd orka_tools && GPR_PROJECT_PATH="$(ORKA_GLFW_PATHS):`pwd`" alr clean
+	cd orka_glfw && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka_plugin_sdl && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka_plugin_archives && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka_plugin_gltf && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka_plugin_terrain && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka_plugin_atmosphere && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
 
-uninstall:
-	$(installcmd) --uninstall --install-name='orka-glfw' -P tools/orka-glfw.gpr
-	$(installcmd) --uninstall --install-name='orka' -P tools/orka.gpr
+#	$(GPRCLEAN) -P tests/unit/tests.gpr
+#	$(GPRCLEAN) -P tools/examples.gpr
+#	rm -rf bin build tests/unit/build tests/unit/bin tests/cov

@@ -46,7 +46,7 @@ with Orka.Resources.Textures.KTX;
 with Orka.Types;
 with Orka.Windows.GLFW;
 
-with Orka_Package_glTF;
+with Orka_Package_KTX;
 
 procedure Orka_KTX is
    Width   : constant := 1280;
@@ -54,8 +54,8 @@ procedure Orka_KTX is
 
    type Display_Mode is (Mode_A, Mode_B);
 
-   package Job_System renames Orka_Package_glTF.Job_System;
-   package Loader     renames Orka_Package_glTF.Loader;
+   package Job_System renames Orka_Package_KTX.Job_System;
+   package Loader     renames Orka_Package_KTX.Loader;
 
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
@@ -77,10 +77,11 @@ begin
       Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
       Window : Orka.Windows.Window'Class
         := Orka.Windows.GLFW.Create_Window
              (Context, Width => Width, Height => Width, Resizable => False);
+      W_Ptr : constant Orka.Windows.Window_Ptr :=
+        Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
 
       JS : Orka.Inputs.Joysticks.Joystick_Input_Access;
 
@@ -97,7 +98,7 @@ begin
          package Locations renames Orka.Resources.Locations;
 
          Location_Data : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data");
+           := Locations.Directories.Create_Location ("data");
       begin
          if Location_Data.Exists ("gamecontrollerdb.txt") then
             declare
@@ -161,7 +162,7 @@ begin
          ----------------------------------------------------------------------
 
          Location_Shaders : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data/shaders");
+           := Locations.Directories.Create_Location ("data/shaders");
 
          function Get_Module (Kind : LE.Texture_Kind) return Modules.Module is
             use all type LE.Texture_Kind;
@@ -280,7 +281,7 @@ begin
 
                   declare
                      Last_State : constant Orka.Inputs.Joysticks.Joystick_State := JS.Last_State;
-                     State      : constant Orka.Inputs.Joysticks.Joystick_State := JS.Current_State;
+                     State : constant Orka.Inputs.Joysticks.Joystick_State := JS.Current_State;
 
                      use all type Orka.Inputs.Joysticks.Button_State;
                      use all type Gamepads.Button;
