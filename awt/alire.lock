@@ -1,0 +1,134 @@
+# THIS IS A MACHINE-GENERATED FILE. DO NOT EDIT MANUALLY.
+
+[solution]
+[solution.context]
+solved = true
+[[solution.state]]
+crate = "libwayland"
+fulfilment = "solved"
+pinned = false
+transitivity = "indirect"
+versions = "^1.16"
+[solution.state.release]
+description = "Wayland libraries and protocol"
+licenses = "MIT"
+maintainers = [
+"onox <denkpadje@gmail.com>",
+]
+maintainers-logins = [
+"onox",
+]
+name = "libwayland"
+notes = "Provided by system package: libwayland-dev"
+tags = [
+"wayland",
+"client",
+"egl",
+"server",
+"cursor",
+]
+version = "1.16.0"
+website = "https://wayland.freedesktop.org"
+[solution.state.release.origin]
+url = "system:libwayland-dev"
+[[solution.state]]
+crate = "orka"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "~0.2.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka/orka"
+relative = true
+[[solution.state]]
+crate = "orka_egl"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka/orka_egl"
+relative = true
+[[solution.state]]
+crate = "orka_simd"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka/orka_simd"
+relative = true
+[[solution.state]]
+crate = "orka_transforms"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka/orka_transforms"
+relative = true
+[[solution.state]]
+crate = "orka_types"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka/orka_types"
+relative = true
+[[solution.state]]
+crate = "wayland_ada_scanner"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../wayland-ada/wayland_ada_scanner"
+relative = true
+[[solution.state]]
+crate = "wayland_client_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../wayland-ada/wayland_client_ada"
+relative = true
+[[solution.state]]
+crate = "wayland_cursor_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../wayland-ada/wayland_cursor_ada"
+relative = true
+[[solution.state]]
+crate = "wayland_egl_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../wayland-ada/wayland_egl_ada"
+relative = true
+[[solution.state]]
+crate = "wayland_protocols_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../wayland-ada/wayland_protocols_ada"
+relative = true
+

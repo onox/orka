@@ -16,5 +16,5 @@ dump:
 	apitrace dump test.trace
 clean:
 	alr clean
-	rm -rf build
-	rmdir bin
+	rm -rf build test/build
+	rmdir test/bin

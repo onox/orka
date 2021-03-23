@@ -1,7 +1,8 @@
 with "wayland_egl_ada";
 with "wayland_cursor_ada";
 with "wayland_protocols_ada";
-with "orka";
+with "orka_egl";
+with "orka-egl";
 with "awt";
 
 project Awt.Linux is

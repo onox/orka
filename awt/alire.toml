@@ -21,3 +21,7 @@ linux = ["awt-linux.gpr", "test/test.gpr"]
 wayland_egl_ada = "^1.0"
 wayland_cursor_ada = "^1.0"
 wayland_protocols_ada = "^1.0"
+orka_egl = "^1.0.0"
+
+[[depends-on]]
+orka = "~0.2.0"
