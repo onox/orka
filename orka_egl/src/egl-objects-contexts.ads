@@ -39,7 +39,7 @@ package EGL.Objects.Contexts is
       Version : Context_Version;
       Flags   : Context_Flags) return Context
    with Pre  => Display.Is_Initialized,
-        Post => Create_Context'Result.Is_Current;
+        Post => not Create_Context'Result.Is_Current;
 
    function Display (Object : Context) return Displays.Display
      with Post => Display'Result.Is_Initialized;
