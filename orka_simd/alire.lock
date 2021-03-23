@@ -12,4 +12,5 @@ versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../orka_types"
+relative = true
 

@@ -15,17 +15,14 @@ GPRCLEAN = gprclean -q $(SCENARIO_VARS)
 
 .PHONY: build examples tools tests coverage docs clean
 
-ORKA_PATHS = ../orka:../orka_egl:../orka_simd:../orka_transforms:../orka_types
-
-ORKA_GLFW_PATHS = $(ORKA_PATHS):../orka_glfw
-
 build:
-	cd orka_glfw && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
-#	cd orka_plugin_sdl && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
-	cd orka_plugin_archives && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
-	cd orka_plugin_gltf && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
-	cd orka_plugin_terrain && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
-	cd orka_plugin_atmosphere && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr build
+	cd orka && alr build
+#	cd orka_glfw && alr build $(SCENARIO_VARS)
+#	cd orka_plugin_sdl && alr build
+	cd orka_plugin_archives && alr build
+	cd orka_plugin_gltf && alr build
+	cd orka_plugin_terrain && alr build
+	cd orka_plugin_atmosphere && alr build
 
 build_test:
 	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native
@@ -34,7 +31,7 @@ examples: build
 	$(GPRBUILD) -P tools/examples.gpr -cargs $(CFLAGS)
 
 tools: build
-	cd orka_tools && GPR_PROJECT_PATH="$(ORKA_GLFW_PATHS):`pwd`" alr build $(SCENARIO_VARS)
+	cd orka_tools && alr build $(SCENARIO_VARS)
 
 tests: build_test
 	./tests/unit/bin/run_unit_tests
@@ -56,14 +53,14 @@ clean:
 	cd orka_types && alr clean
 	cd orka_simd && alr clean
 	cd orka_transforms && alr clean
-
-	cd orka_tools && GPR_PROJECT_PATH="$(ORKA_GLFW_PATHS):`pwd`" alr clean
-	cd orka_glfw && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
-	cd orka_plugin_sdl && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
-	cd orka_plugin_archives && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
-	cd orka_plugin_gltf && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
-	cd orka_plugin_terrain && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
-	cd orka_plugin_atmosphere && GPR_PROJECT_PATH="$(ORKA_PATHS):`pwd`" alr clean
+	cd orka && alr clean
+	cd orka_glfw && alr clean
+	cd orka_tools && alr clean
+	cd orka_plugin_sdl && alr clean
+	cd orka_plugin_archives && alr clean
+	cd orka_plugin_gltf && alr clean
+	cd orka_plugin_terrain && alr clean
+	cd orka_plugin_atmosphere && alr clean
 
 #	$(GPRCLEAN) -P tests/unit/tests.gpr
 #	$(GPRCLEAN) -P tools/examples.gpr

@@ -9,6 +9,10 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+[project-files.'case(os)']
+linux = ["orka-linux.gpr"]
+windows = ["orka-windows.gpr"]
+
 [available.'case(os)']
 linux = true
 windows = true

@@ -45,3 +45,45 @@ versions = "~0.2.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../orka"
+relative = true
+[[solution.state]]
+crate = "orka_egl"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_egl"
+relative = true
+[[solution.state]]
+crate = "orka_simd"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_simd"
+relative = true
+[[solution.state]]
+crate = "orka_transforms"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_transforms"
+relative = true
+[[solution.state]]
+crate = "orka_types"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_types"
+relative = true
+
