@@ -5,10 +5,9 @@ WINDOWING_BACKEND := egl
 GLFW_LIBS := $(strip $(shell pkgconf --libs glfw3))
 SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
-X_WINDOWING_SYSTEM := -XWindowing_System=$(WINDOWING_BACKEND)
 X_GLFW_LIBS := -XORKA_GLFW_GLFW_LIBS="$(GLFW_LIBS)"
 X_SIMD := -XORKA_SIMD_EXT="$(SIMD)"
-SCENARIO_VARS = $(X_WINDOWING_SYSTEM) $(X_GLFW_LIBS) $(X_SIMD)
+SCENARIO_VARS = $(X_GLFW_LIBS) $(X_SIMD)
 
 GPRBUILD = nice gprbuild -dm -p $(SCENARIO_VARS)
 GPRCLEAN = gprclean -q $(SCENARIO_VARS)
@@ -17,7 +16,7 @@ GPRCLEAN = gprclean -q $(SCENARIO_VARS)
 
 build:
 	cd orka && alr build
-#	cd orka_glfw && alr build $(SCENARIO_VARS)
+	cd orka_glfw && alr build $(SCENARIO_VARS)
 #	cd orka_plugin_sdl && alr build
 	cd orka_plugin_archives && alr build
 	cd orka_plugin_gltf && alr build

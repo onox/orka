@@ -9,9 +9,13 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+[gpr-set-externals.'case(os)']
+linux = { ALR_OS = "linux" }
+windows = { ALR_OS = "windows" }
+
 [project-files.'case(os)']
-linux = ["orka-linux.gpr"]
-windows = ["orka-windows.gpr"]
+linux = ["orka.gpr", "orka-egl.gpr"]
+windows = ["orka.gpr"]
 
 [available.'case(os)']
 linux = true

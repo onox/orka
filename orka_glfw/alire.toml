@@ -9,6 +9,10 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+[gpr-set-externals.'case(os)']
+linux = { ALR_OS = "linux" }
+windows = { ALR_OS = "windows" }
+
 [[depends-on]]
 libglfw3 = "^3.3.0"
 orka = "~0.2.0"

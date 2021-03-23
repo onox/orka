@@ -2,7 +2,7 @@ with "orka_types";
 with "orka_simd";
 with "orka_transforms";
 
-abstract project Orka is
+project Orka is
 
    for Library_Name use "orka";
    for Library_Version use "0.2.0";
@@ -14,6 +14,21 @@ abstract project Orka is
 
    Orka_Sources := ("src/orka/interface",
                     "src/orka/implementation");
+
+   type OS_Type is ("windows", "linux");
+   OS : OS_Type := External ("ALR_OS");
+
+   case OS is
+      when "linux"     =>
+         OpenGL_Sources := OpenGL_Sources & "src/gl/egl" & "src/orka/linux";
+      when "windows" =>
+         OpenGL_Sources := OpenGL_Sources & "src/gl/windows" & "src/orka/windows";
+   end case;
+
+   for Source_Dirs use OpenGL_Sources & Orka_Sources;
+
+   for Object_Dir use "build/obj";
+   for Library_Dir use "build/lib";
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=

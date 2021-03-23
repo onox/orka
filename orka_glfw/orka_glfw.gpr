@@ -98,15 +98,15 @@ project Orka_Glfw is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
    end Binder;
 
-   type Windowing_System_Type is ("windows", "egl");
-   Windowing_System : Windowing_System_Type := External ("ORKA_GLFW_WINDOWING_SYSTEM", "egl");
+   type OS_Type is ("windows", "linux");
+   OS : OS_Type := External ("ALR_OS");
 
    package Linker is
-      case Windowing_System is
+      case OS is
+         when "linux" =>
+            for Linker_Options use external_as_list ("ORKA_GLFW_GLFW_LIBS", " ");
          when "windows" =>
             for Linker_Options use ("-lglfw3");
-         when "egl" =>
-            for Linker_Options use external_as_list ("ORKA_GLFW_GLFW_LIBS", " ");
       end case;
    end Linker;
 
