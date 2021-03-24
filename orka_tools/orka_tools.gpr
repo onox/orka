@@ -1,4 +1,5 @@
 with "orka_glfw";
+with "orka_plugin_gltf";
 
 project Orka_Tools is
 
@@ -9,7 +10,7 @@ project Orka_Tools is
 
    for Exec_Dir use "build/bin";
 
-   for Main use ("orka_info.adb", "orka_ktx.adb");
+   for Main use ("orka_info.adb", "orka_ktx.adb", "orka_gltf.adb");
 
    type Enabled_Kind is ("enabled", "disabled");
    Compile_Checks : Enabled_Kind := External ("ORKA_TOOLS_COMPILE_CHECKS", "enabled");

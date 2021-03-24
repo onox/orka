@@ -152,7 +152,7 @@ begin
          use Orka.Resources;
 
          Location_Shaders : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("../data/shaders");
+           := Locations.Directories.Create_Location ("data/shaders");
 
          package LE renames GL.Low_Level.Enums;
 
@@ -251,7 +251,7 @@ begin
                      Job_System.Queue.Enqueue (Create_Instance_Job, Handle);
                   end;
                or
-                  delay until T1 + Milliseconds (2000);
+                  delay until T1 + Milliseconds (4000);
                   Ada.Text_IO.Put_Line ("Not completed loading: " & Future_Ref.Current_Status'Image);
                end select;
             end;

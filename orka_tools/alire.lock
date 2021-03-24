@@ -40,6 +40,16 @@ kind = "softlink"
 path = "file:../orka_glfw"
 relative = true
 [[solution.state]]
+crate = "orka_plugin_gltf"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../orka_plugin_gltf"
+relative = true
+[[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
 pinned = false

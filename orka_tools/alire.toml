@@ -13,3 +13,4 @@ executables = ["orka_info", "orka_ktx"]
 
 [[depends-on]]
 orka_glfw = "^1.0.0"
+orka_plugin_gltf = "^1.0.0"
