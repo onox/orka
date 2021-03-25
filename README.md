@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/github/license/onox/orka.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/onox/orka.svg)](https://github.com/onox/orka/releases/latest)
 [![IRC](https://img.shields.io/badge/IRC-%23ada%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=ada)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/ada-lang/Lobby)
 
 # Orka
 
@@ -97,22 +98,19 @@ before opening an issue or pull request.
 
 ## License
 
-Orka is distributed under the terms of the [Apache License 2.0][url-apache]
-except for a few packages and files.
+Most Orka crates are distributed under the terms of the [Apache License 2.0][url-apache]
+except for a few separate Alire crates:
 
-The following packages and/or files are licensed under the
-[BSD 3-Clause license][url-bsd-3]:
+- Crate [orka_plugin_atmosphere][url-crate-atmosphere] is licensed under
+the [Apache License 2.0][url-apache] AND [BSD 3-Clause license][url-bsd-3].
 
-- `Orka.Features.Atmosphere` (and child packages `Constants` and `Earth`)
-
-- Files in `data/shaders/atmosphere/`
-
-The following packages and/or files are licensed under the [MIT license][url-mit]:
-
-- Files in `data/shaders/terrain/`
+- Crate [orka_plugin_terrain][url-crate-terrain] is licensed under
+the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
+  [url-crate-atmosphere]: https://github.com/onox/orka/tree/master/orka_plugin_atmosphere
+  [url-crate-terrain]: https://github.com/onox/orka/tree/master/orka_plugin_terrain
   [url-mit]: https://opensource.org/licenses/MIT
   [url-awesome]: https://github.com/ohenley/awesome-ada#online-books
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
