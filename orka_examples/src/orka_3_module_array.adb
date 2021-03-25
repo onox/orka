@@ -24,7 +24,7 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Resources.Locations.Directories;
 with Orka.Windows.GLFW;
 
-procedure Orka_Test.Test_3_Module_Array is
+procedure Orka_3_Module_Array is
    Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
@@ -38,7 +38,7 @@ procedure Orka_Test.Test_3_Module_Array is
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../examples/orka/shaders");
+     := Locations.Directories.Create_Location ("data/shaders");
 
    Program_1 : Program := Create_Program (Modules.Module_Array'(
      Modules.Create_Module (Location_Shaders,
@@ -50,6 +50,7 @@ procedure Orka_Test.Test_3_Module_Array is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
+   use type Orka.Float_32;
    use GL.Types;
 
    Vertices : constant Single_Array
@@ -73,4 +74,4 @@ begin
 
       Window.Swap_Buffers;
    end loop;
-end Orka_Test.Test_3_Module_Array;
+end Orka_3_Module_Array;

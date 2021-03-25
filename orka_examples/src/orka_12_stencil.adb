@@ -46,7 +46,7 @@ with Orka.Windows.GLFW;
 --  resulting fullscreen texture is then postprocessed and written to the
 --  default framebuffer.
 
-procedure Orka_Test.Test_12_Stencil is
+procedure Orka_12_Stencil is
    Width   : constant := 500;
    Height  : constant := 500;
    Samples : constant := 8;
@@ -55,7 +55,7 @@ procedure Orka_Test.Test_12_Stencil is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width, Height, Resizable => False);
 
    function Enable_MS return Boolean is
    begin
@@ -64,9 +64,10 @@ procedure Orka_Test.Test_12_Stencil is
    end Enable_MS;
 
    MS_Enabled : constant Boolean := Enable_MS;
-   pragma Unreferenced (MS_Enabled);
+   pragma Assert (MS_Enabled);
    --  Simple hack to enable MS before Create_Framebuffer is called
 
+   use type Orka.Float_32;
    use GL.Buffers;
    use GL.Types;
 
@@ -111,7 +112,7 @@ procedure Orka_Test.Test_12_Stencil is
       C8 : constant Single_Array := (0.0, 1.0, 1.0);
 
       Vertices : constant Single_Array
-            -- Back
+            --  Back
         := (V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 0.0,
             V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 1.0,
             V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 0.0,
@@ -119,7 +120,7 @@ procedure Orka_Test.Test_12_Stencil is
             V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 1.0,
             V5 (0), V5 (1), V5 (2),   C5 (0), C5 (1), C5 (2),   0.0, 1.0,
 
-            -- Top
+            --  Top
             V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 0.0,
             V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
             V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   0.0, 0.0,
@@ -127,7 +128,7 @@ procedure Orka_Test.Test_12_Stencil is
             V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
             V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 1.0,
 
-            -- Front
+            --  Front
             V8 (0), V8 (1), V8 (2),   C8 (0), C8 (1), C8 (2),   1.0, 0.0,
             V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 1.0,
             V7 (0), V7 (1), V7 (2),   C7 (0), C7 (1), C7 (2),   0.0, 0.0,
@@ -135,7 +136,7 @@ procedure Orka_Test.Test_12_Stencil is
             V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   1.0, 1.0,
             V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   0.0, 1.0,
 
-            -- Right
+            --  Right
             V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 0.0,
             V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
             V8 (0), V8 (1), V8 (2),   C8 (0), C8 (1), C8 (2),   0.0, 0.0,
@@ -143,7 +144,7 @@ procedure Orka_Test.Test_12_Stencil is
             V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 1.0,
             V4 (0), V4 (1), V4 (2),   C4 (0), C4 (1), C4 (2),   0.0, 1.0,
 
-            -- Left
+            --  Left
             V7 (0), V7 (1), V7 (2),   C7 (0), C7 (1), C7 (2),   1.0, 0.0,
             V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   1.0, 1.0,
             V5 (0), V5 (1), V5 (2),   C5 (0), C5 (1), C5 (2),   0.0, 0.0,
@@ -151,7 +152,7 @@ procedure Orka_Test.Test_12_Stencil is
             V3 (0), V3 (1), V3 (2),   C3 (0), C3 (1), C3 (2),   1.0, 1.0,
             V1 (0), V1 (1), V1 (2),   C1 (0), C1 (1), C1 (2),   0.0, 1.0,
 
-            -- Floor
+            --  Floor
             -1.0, -1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0,
              1.0, -1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0,
              1.0,  1.0, -0.5,    0.2, 0.2, 0.2,   0.0, 0.0,
@@ -193,7 +194,7 @@ procedure Orka_Test.Test_12_Stencil is
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../examples/gl/shaders");
+     := Locations.Directories.Create_Location ("data/shaders");
 
    Program_Scene : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "buffers_scene.vert", FS => "buffers_scene.frag"));
@@ -380,4 +381,4 @@ begin
          Window.Swap_Buffers;
       end loop;
    end;
-end Orka_Test.Test_12_Stencil;
+end Orka_12_Stencil;

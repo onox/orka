@@ -1,0 +1,108 @@
+with "orka_glfw";
+
+project Orka_Examples is
+
+   for Create_Missing_Dirs use "True";
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "build/obj";
+
+   for Exec_Dir use "build/bin";
+
+   for Main use
+     ("orka_1_triangle.adb",
+      "orka_3_module_array.adb",
+      "orka_4_mdi.adb",
+      "orka_5_scene_tree.adb",
+      "orka_6_fft.adb",
+      "orka_7_half.adb",
+      "orka_9_jobs.adb",
+      "orka_10_compute.adb",
+      "orka_11_instancing.adb",
+      "orka_12_stencil.adb",
+      "orka_13_geometry.adb",
+      "orka_14_subroutines.adb");
+
+   type Enabled_Kind is ("enabled", "disabled");
+   Compile_Checks : Enabled_Kind := External ("ORKA_EXAMPLES_COMPILE_CHECKS", "enabled");
+   Runtime_Checks : Enabled_Kind := External ("ORKA_EXAMPLES_RUNTIME_CHECKS", "enabled");
+   Style_Checks : Enabled_Kind := External ("ORKA_EXAMPLES_STYLE_CHECKS", "enabled");
+   Contracts_Checks : Enabled_Kind := External ("ORKA_EXAMPLES_CONTRACTS", "enabled");
+
+   type Build_Kind is ("debug", "release", "coverage", "profiling");
+   Build_Mode : Build_Kind := External ("ORKA_EXAMPLES_BUILD_MODE", "release");
+
+   Compile_Checks_Switches := ();
+   case Compile_Checks is
+      when "enabled" =>
+         Compile_Checks_Switches :=
+           ("-gnatwa",  -- All warnings
+            "-gnatVa",  -- All validity checks
+            "-gnatf",   -- Full errors
+            "-gnatwFl.l.s",
+            "-gnatwe"); -- Warnings as errors
+      when others => null;
+   end case;
+
+   Runtime_Checks_Switches := ();
+   case Runtime_Checks is
+      when "enabled" => null;
+      when others =>
+         Runtime_Checks_Switches :=
+           ("-gnatp"); -- Supress checks
+   end case;
+
+   Style_Checks_Switches := ();
+   case Style_Checks is
+      when "enabled" =>
+         Style_Checks_Switches :=
+           ("-gnatyg",   -- GNAT Style checks
+            "-gnaty-Is", -- Disable check mode in and separate subprogram spec
+            "-gnatyM99", -- Maximum line length
+            "-gnatyA",   -- Array attribute indexes
+            "-gnatyO");  -- Overriding subprograms explicitly marked as such
+      when others => null;
+   end case;
+
+   Contracts_Switches := ();
+   case Contracts_Checks is
+      when "enabled" =>
+         Contracts_Switches :=
+           ("-gnata"); --  Enable assertions and contracts
+      when others => null;
+   end case;
+
+   Build_Switches := ();
+   case Build_Mode is
+      when "release" =>
+         Build_Switches := ("-O2",     -- Optimization
+                            "-march=native",
+                            "-fomit-frame-pointer",
+                            "-ffunction-sections",
+                            "-gnatn"); -- Enable inlining
+      when "debug" =>
+         Build_Switches := ("-g",   -- Debug info
+                            "-Og"); -- No optimization
+      when "coverage" =>
+         Build_Switches := ("-fprofile-arcs", "-ftest-coverage");
+      when "profiling" =>
+         Build_Switches := ("-g", "-pg");
+   end case;
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        Compile_Checks_Switches &
+        Build_Switches &
+        Runtime_Checks_Switches &
+        Style_Checks_Switches &
+        Contracts_Switches &
+        ("-gnatw.X", -- Disable warnings for No_Exception_Propagation
+         "-gnatQ");  -- Don't quit. Generate ALI and tree files even if illegalities
+      for Local_Configuration_Pragmas use "gnat.adc";
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+end Orka_Examples;

@@ -20,9 +20,10 @@ with Ada.Text_IO;
 
 with Orka.Futures;
 with Orka.Jobs;
-with Orka_Test.Package_9_Jobs;
 
-procedure Orka_Test.Test_9_Jobs is
+with Package_9_Jobs;
+
+procedure Orka_9_Jobs is
    Job_0 : constant Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
      (Orka.Jobs.Abstract_Job with ID => 0);
    Job_1 : constant Orka.Jobs.Job_Ptr := new Package_9_Jobs.Test_Sequential_Job'
@@ -75,4 +76,4 @@ begin
 
    Put_Line ("CPU Queue:   " & Job_System.Queue.Length (Job_System.Queues.CPU)'Image);
    Put_Line ("GPU Queue:   " & Job_System.Queue.Length (Job_System.Queues.GPU)'Image);
-end Orka_Test.Test_9_Jobs;
+end Orka_9_Jobs;

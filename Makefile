@@ -1,7 +1,5 @@
 CFLAGS ?= -O2 -march=native
 
-WINDOWING_BACKEND := egl
-
 GLFW_LIBS := $(strip $(shell pkgconf --libs glfw3))
 SIMD := $(shell ((gcc $(CFLAGS) -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
@@ -27,7 +25,7 @@ build_test:
 	$(GPRBUILD) -P tests/unit/tests.gpr -XMode=coverage -cargs -O0 -march=native
 
 examples: build
-	$(GPRBUILD) -P tools/examples.gpr -cargs $(CFLAGS)
+	cd orka_examples && alr build $(SCENARIO_VARS)
 
 tools: build
 	cd orka_tools && alr build $(SCENARIO_VARS)
@@ -55,6 +53,7 @@ clean:
 	cd orka && alr clean
 	cd orka_glfw && alr clean
 	cd orka_tools && alr clean
+	cd orka_examples && alr clean
 	cd orka_plugin_sdl && alr clean
 	cd orka_plugin_archives && alr clean
 	cd orka_plugin_gltf && alr clean
@@ -62,5 +61,4 @@ clean:
 	cd orka_plugin_atmosphere && alr clean
 
 #	$(GPRCLEAN) -P tests/unit/tests.gpr
-#	$(GPRCLEAN) -P tools/examples.gpr
 #	rm -rf bin build tests/unit/build tests/unit/bin tests/cov

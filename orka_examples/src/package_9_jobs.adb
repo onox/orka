@@ -16,7 +16,7 @@
 
 with Ada.Text_IO;
 
-package body Orka_Test.Package_9_Jobs is
+package body Package_9_Jobs is
 
    function Clone_Job
      (Job    : Orka.Jobs.Parallel_Job_Ptr;
@@ -45,4 +45,4 @@ package body Orka_Test.Package_9_Jobs is
       Ada.Text_IO.Put_Line ("Parallel job (" & From'Image & " .. " & To'Image & ")");
    end Execute;
 
-end Orka_Test.Package_9_Jobs;
+end Package_9_Jobs;

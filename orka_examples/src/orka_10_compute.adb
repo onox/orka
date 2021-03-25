@@ -31,13 +31,13 @@ with Orka.Types;
 
 with Orka.Windows.GLFW;
 
-procedure Orka_Test.Test_10_Compute is
+procedure Orka_10_Compute is
    Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
      := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-   pragma Unreferenced (Window);
+   pragma Assert (Window.Width = 1 and Window.Height = 1);
 
    ----------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ begin
       use Orka.Resources;
 
       Location_Shaders : constant Locations.Location_Ptr
-        := Locations.Directories.Create_Location ("../examples/orka/shaders");
+        := Locations.Directories.Create_Location ("data/shaders");
 
       Program_1 : Program := Create_Program (Modules.Create_Module
         (Location_Shaders, CS => "test-10-module-1.comp"));
@@ -75,17 +75,19 @@ begin
 
       declare
          R : GL.Types.Compute.Dimension_Size_Array;
+
+         use all type Orka.Index_Homogeneous;
       begin
          R := GL.Compute.Max_Compute_Work_Group_Count;
-         Put_Line ("Maximum count:" & R (GL.X)'Image & R (GL.Y)'Image & R (GL.Z)'Image);
-         Max_Work_Groups := R (GL.X);
+         Put_Line ("Maximum count:" & R (X)'Image & R (Y)'Image & R (Z)'Image);
+         Max_Work_Groups := R (X);
 
          R := GL.Compute.Max_Compute_Work_Group_Size;
-         Put_Line ("Maximum size: " & R (GL.X)'Image & R (GL.Y)'Image & R (GL.Z)'Image);
+         Put_Line ("Maximum size: " & R (X)'Image & R (Y)'Image & R (Z)'Image);
 
          R := Program_1.Compute_Work_Group_Size;
-         Put_Line ("Local size:   " & R (GL.X)'Image & R (GL.Y)'Image & R (GL.Z)'Image);
-         Local_Size := R (GL.X);
+         Put_Line ("Local size:   " & R (X)'Image & R (Y)'Image & R (Z)'Image);
+         Local_Size := R (X);
       end;
 
       declare
@@ -167,4 +169,4 @@ begin
          Put_Line (Duration'Image (1e3 * Ada.Real_Time.To_Duration (B - A)) & " ms");
       end;
    end;
-end Orka_Test.Test_10_Compute;
+end Orka_10_Compute;

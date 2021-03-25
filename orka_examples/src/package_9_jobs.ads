@@ -16,7 +16,7 @@
 
 with Orka.Jobs.System;
 
-package Orka_Test.Package_9_Jobs is
+package Package_9_Jobs is
 
    package Job_System is new Orka.Jobs.System
      (Maximum_Queued_Jobs     => 4,
@@ -43,4 +43,4 @@ package Orka_Test.Package_9_Jobs is
      (Object  : Test_Sequential_Job;
       Context : Orka.Jobs.Execution_Context'Class);
 
-end Orka_Test.Package_9_Jobs;
+end Package_9_Jobs;

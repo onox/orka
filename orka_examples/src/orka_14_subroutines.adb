@@ -32,12 +32,13 @@ with Orka.Windows.GLFW;
 --  This example renders a triangle. The position of the triangle is
 --  determined by the chosen subroutine function in the shader.
 
-procedure Orka_Test.Test_14_Subroutines is
+procedure Orka_14_Subroutines is
    Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window
+          (Context, Width => 500, Height => 500, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
@@ -45,7 +46,7 @@ procedure Orka_Test.Test_14_Subroutines is
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../examples/gl/shaders");
+     := Locations.Directories.Create_Location ("data/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "subroutines.vert", FS => "subroutines.frag"));
@@ -58,6 +59,7 @@ procedure Orka_Test.Test_14_Subroutines is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
+   use type Orka.Float_32;
    use GL.Types;
 
    Vertices : constant Single_Array
@@ -88,4 +90,4 @@ begin
       --  Swap front and back buffers and process events
       Window.Swap_Buffers;
    end loop;
-end Orka_Test.Test_14_Subroutines;
+end Orka_14_Subroutines;

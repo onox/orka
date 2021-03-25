@@ -35,7 +35,7 @@ with Orka.Windows.GLFW;
 --  In this example we render many instances of a cube, each at a different
 --  position.
 
-procedure Orka_Test.Test_11_Instancing is
+procedure Orka_11_Instancing is
    Width  : constant := 500;
    Height : constant := 500;
 
@@ -43,11 +43,13 @@ procedure Orka_Test.Test_11_Instancing is
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height, Resizable => False);
+     := Orka.Windows.GLFW.Create_Window (Context, Width, Height, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Programs;
+   use type Orka.Float_32;
+   use type Orka.Float_64;
    use GL.Types;
 
    Instances_Dimension : constant := 40;
@@ -117,7 +119,7 @@ procedure Orka_Test.Test_11_Instancing is
    use Orka.Resources;
 
    Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../examples/gl/shaders");
+     := Locations.Directories.Create_Location ("data/shaders");
 
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "instancing.vert", FS => "instancing.frag"));
@@ -176,9 +178,10 @@ begin
 
       FB_D.Clear ((Color | Depth => True, others => False));
 
-      Orka.Rendering.Drawing.Draw_Indexed (Triangles, Buffer_2, 0, Indices'Length, Matrices'Length);
+      Orka.Rendering.Drawing.Draw_Indexed
+        (Triangles, Buffer_2, 0, Indices'Length, Matrices'Length);
 
       --  Swap front and back buffers and process events
       Window.Swap_Buffers;
    end loop;
-end Orka_Test.Test_11_Instancing;
+end Orka_11_Instancing;

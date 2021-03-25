@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2015 onox <denkpadje@gmail.com>
+--  Copyright (c) 2016 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -24,52 +24,50 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Resources.Locations.Directories;
 with Orka.Windows.GLFW;
 
-procedure Orka_Test.Test_13_Geometry is
+procedure Orka_1_Triangle is
    Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
      := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500, Resizable => False);
 
+   use Orka.Resources;
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Programs;
-   use Orka.Resources;
 
-   Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../examples/gl/shaders");
-
-   Program_1 : Program := Create_Program (Modules.Create_Module
-     (Location_Shaders,
-      VS => "geometry.vert",
-      GS => "geometry.geom",
-      FS => "geometry.frag"));
-
-   FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
-
+   use type Orka.Float_32;
    use GL.Types;
 
-   Vertices : constant Single_Array
-     --  Position                  Color           Sides
-     := (-0.45,  0.45, 0.0, 1.0,   1.0, 0.0, 0.0,  4.0,
-          0.45,  0.45, 0.0, 1.0,   0.0, 1.0, 0.0,  8.0,
-          0.45, -0.45, 0.0, 1.0,   0.0, 0.0, 1.0,  16.0,
-         -0.45, -0.45, 0.0, 1.0,   1.0, 1.0, 0.0,  32.0);
+   Location_Shaders : constant Locations.Location_Ptr
+     := Locations.Directories.Create_Location ("data/shaders");
 
+   Program_1 : Program := Create_Program (Modules.Create_Module
+     (Location_Shaders, VS => "opengl3.vert", FS => "opengl3.frag"));
+
+   FB_D : Framebuffer := Get_Default_Framebuffer (Window);
+
+   Vertices : constant Single_Array
+        := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+             0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+             0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
+
+   --  Upload Vertices data to buffer
    Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
 begin
-   Buffer_1.Bind (Shader_Storage, 0);
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+
+   FB_D.Use_Framebuffer;
    Program_1.Use_Program;
 
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+   Buffer_1.Bind (Shader_Storage, 0);
 
    while not Window.Should_Close loop
       Window.Process_Input;
 
       FB_D.Clear ((Color => True, others => False));
-      Orka.Rendering.Drawing.Draw (Points, 0, 4);
+      Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 
-      --  Swap front and back buffers and process events
       Window.Swap_Buffers;
    end loop;
-end Orka_Test.Test_13_Geometry;
+end Orka_1_Triangle;

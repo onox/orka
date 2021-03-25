@@ -30,13 +30,13 @@ with Orka.Types;
 with Orka.Timers;
 with Orka.Windows.GLFW;
 
-procedure Orka_Test.Test_6_FFT is
+procedure Orka_6_FFT is
    Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
      := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-   pragma Unreferenced (Window);
+   pragma Assert (Window.Width = 1 and Window.Height = 1);
 
    ----------------------------------------------------------------------
 
@@ -48,6 +48,7 @@ procedure Orka_Test.Test_6_FFT is
 
    ----------------------------------------------------------------------
 
+   use type Orka.Float_32;
    use GL.Types;
 
    use Orka.Rendering.Buffers;
@@ -113,7 +114,7 @@ procedure Orka_Test.Test_6_FFT is
    package Fourier_Transforms renames Orka.Algorithms.FFT;
 
    Location_Shaders : constant Locations.Location_Ptr
-     := Locations.Directories.Create_Location ("../data/shaders");
+     := Locations.Directories.Create_Location ("../orka/data/shaders");
 
    FFT_CS : Fourier_Transforms.FFT := Fourier_Transforms.Create_FFT (Location_Shaders);
 
@@ -175,4 +176,4 @@ begin
    GL.Barriers.Memory_Barrier ((Buffer_Update => True, others => False));
 
    Print_Numbers ("Inverse FFT");
-end Orka_Test.Test_6_FFT;
+end Orka_6_FFT;

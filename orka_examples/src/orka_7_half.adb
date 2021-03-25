@@ -20,7 +20,7 @@ with GL.Types;
 
 with Orka.Types;
 
-procedure Orka_Test.Test_7_Half is
+procedure Orka_7_Half is
    use type GL.Types.Single;
 
    Numbers : constant GL.Types.Single_Array
@@ -37,4 +37,4 @@ begin
    for Number of Single_Numbers loop
       Ada.Text_IO.Put_Line (GL.Types.Single'Image (Number));
    end loop;
-end Orka_Test.Test_7_Half;
+end Orka_7_Half;

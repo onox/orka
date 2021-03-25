@@ -1,0 +1,28 @@
+name = "orka_examples"
+description = "Examples for the Orka rendering kernel"
+version = "0.2.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["opengl", "orka"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+executables = [
+    "orka_1_triangle",
+    "orka_3_module_array",
+    "orka_4_mdi",
+    "orka_5_scene_tree",
+    "orka_6_fft",
+    "orka_7_half",
+    "orka_9_jobs",
+    "orka_10_compute",
+    "orka_11_instancing",
+    "orka_12_stencil",
+    "orka_13_geometry",
+    "orka_14_subroutines"
+]
+
+[[depends-on]]
+orka_glfw = "^1.0.0"

@@ -20,7 +20,7 @@ with Ada.Real_Time;
 with Orka.Scenes.Singles.Trees;
 --  with Orka.Scenes.Doubles.Trees;
 
-procedure Orka_Test.Test_5_Scene_Tree is
+procedure Orka_5_Scene_Tree is
    use type Ada.Real_Time.Time;
 
    package Trees renames Orka.Scenes.Singles.Trees;
@@ -32,25 +32,29 @@ begin
    A := Ada.Real_Time.Clock;
    for Index_One in 1 .. 25 loop
       declare
-         Name_One : constant String := "N1" & Integer'Image (Index_One);
+         Name_One : constant String :=
+           "N1" & Integer'Image (Index_One);
       begin
          T.Add_Node (Name_One, "root");
 
          for Index_Two in 1 .. 4 loop
             declare
-               Name_Two : constant String := Name_One & "N2" & Integer'Image (Index_Two);
+               Name_Two : constant String :=
+                 Name_One & "N2" & Integer'Image (Index_Two);
             begin
                T.Add_Node (Name_Two, Name_One);
 
                for Index_Three in 1 .. 5 loop
                   declare
-                     Name_Three : constant String := Name_Two & "N3" & Integer'Image (Index_Three);
+                     Name_Three : constant String :=
+                       Name_Two & "N3" & Integer'Image (Index_Three);
                   begin
                      T.Add_Node (Name_Three, Name_Two);
 
                      for Index_Four in 1 .. 20 loop
                         declare
-                           Name_Four : constant String := Name_Three & "N4" & Integer'Image (Index_Four);
+                           Name_Four : constant String :=
+                             Name_Three & "N4" & Integer'Image (Index_Four);
                         begin
                            T.Add_Node (Name_Four, Name_Three);
                         end;
@@ -75,4 +79,4 @@ begin
    for Level_Index in 1 .. T.Depth loop
       Ada.Text_IO.Put_Line ("Width: " & Natural'Image (T.Width (Level_Index)));
    end loop;
-end Orka_Test.Test_5_Scene_Tree;
+end Orka_5_Scene_Tree;
