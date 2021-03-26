@@ -37,6 +37,41 @@ with AWT.Inputs;
 with AWT.Monitors;
 with AWT.Windows;
 
+--  To display a window on the screen via Wayland quite a few objects
+--  are needed:
+--
+--  - Objects wl_compositor and xdg_wm_base are globals that are binded
+--  in package AWT.Registry.
+--
+--  - Objects xdg_surface and xdg_toplevel are objects from the xdg-shell
+--  protocol that will cause the compositor to eventually display a window
+--  (the wl_surface object) on the screen.
+--
+--  - Object wl_egl_window is created via the libwayland-egl library and
+--  is used to get an EGLSurface, which is attached to an EGLContext for
+--  use by eglSwapBuffers(). When this function is called, it attaches a
+--  buffer (the default framebuffer) to the wl_surface and then commits
+--  this surface.
+--
+--   wl_display
+--       |
+--       v
+--  wl_registry
+--       |  \
+--       |   -> wl_compositor
+--       |            |
+--       v            v
+--  xdg_wm_base + wl_surface
+--              |           \
+--              v            -> wl_egl_window
+--         xdg_surface                |
+--              |                     v
+--              v                 EGLSurface (via eglCreatePlatformWindowSurfaceEXT())
+--         xdg_toplevel               |
+--                                    v
+--                     attach EGLSurface to EGLContext
+--                          with eglMakeCurrent()
+
 package AWT.Wayland.Windows is
    pragma Preelaborate;
 
