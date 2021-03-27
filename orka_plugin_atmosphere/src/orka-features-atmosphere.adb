@@ -150,7 +150,7 @@ package body Orka.Features.Atmosphere is
       declare
          U   : Double := (Wavelength - K_Lambda_Min) / 5.0;
          Row : constant Size := Int (Double'Floor (U));
-         pragma Assert (Row >= 0 and Row + 1 < 95);
+         pragma Assert (Row + 1 < 95);
 
          pragma Assert (CIE_2_Deg_Color_Matching_Functions (4 * Row) <= Wavelength);
          pragma Assert (CIE_2_Deg_Color_Matching_Functions (4 * (Row + 1)) >= Wavelength);

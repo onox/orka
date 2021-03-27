@@ -71,12 +71,12 @@ Texture_1 : constant Textures.Texture_Ptr
 ### glTF
 
 Package `:::ada Orka.Resources.Models.glTF` provides a loader to load
-[glTF][url-gltf] models. To create a loader you need a `Vertex_Format`
-object and a `Manager` to take ownership of the loaded model:
+[glTF][url-gltf] models. To create a loader you need a `Manager` to
+take ownership of the loaded model:
 
 ```ada
 Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
-  (Format => VF_1, Manager => Manager);
+  (Manager => Manager);
 ```
 
 !!! example

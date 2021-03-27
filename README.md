@@ -22,13 +22,13 @@ Messages from the rendering API or other parts of your application can be
 logged to the terminal or files.
 
 - **Algorithms and effects**. Compute the prefix sum or Fast Fourier Transform
-using compute shaders, or apply a (Gaussian) blur to a texture.
+using compute shaders, or apply a blurring effect to a texture.
 
 - **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
 tessellated terrain.
 
-- **Joysticks and gamepads**. Joysticks and gamepads can be managed via
-an API. Analog axes can be filtered with a low-pass filter, dead zones
+- **Joysticks and gamepads**. Manage joysticks and gamepads.
+Analog axes can be filtered with a low-pass filter, dead zones
 can be removed, and axes and triggers can be inverted or normalized.
 It is possible to detect chords (groups of buttons), button sequences,
 and rapid button tapping.
@@ -89,9 +89,9 @@ If you would like to learn Ada, then here are a few resources to get started:
 
 ## Contributing
 
-If you would like to fix a bug, add an improvement, or have suggestions
-or advice regarding the architecture, APIs, performance, or code comments
-and documentation, then do not hesitate to open a new [issue][url-issue].
+If you would like to fix a bug, add a feature, improve the documentation or
+have suggestions or advice about the architecture, APIs, or performance,
+then do not hesitate to open a new [issue][url-issue].
 
 Make sure you have read the [contributing guidelines][url-contributing]
 before opening an issue or pull request.

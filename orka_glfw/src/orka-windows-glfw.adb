@@ -181,8 +181,9 @@ package body Orka.Windows.GLFW is
                Messages.Log (Debug, "Created GLFW window and GL context");
                Messages.Log (Debug, "  size:      " &
                  Trim (Width'Image) & " × " & Trim (Height'Image));
-               Messages.Log (Debug, "  visible:   " & (if Visible then "yes" else "no"));
-               Messages.Log (Debug, "  resizable: " & (if Resizable then "yes" else "no"));
+               Messages.Log (Debug, "  visible:     " & (if Visible then "yes" else "no"));
+               Messages.Log (Debug, "  resizable:   " & (if Resizable then "yes" else "no"));
+               Messages.Log (Debug, "  transparent: " & (if Transparent then "yes" else "no"));
             end;
 
             --  Callbacks
