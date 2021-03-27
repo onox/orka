@@ -75,7 +75,7 @@ project Orka_Types is
          Build_Switches := ("-g",   -- Debug info
                             "-Og"); -- No optimization
       when "coverage" =>
-         Build_Switches := ("-fprofile-arcs", "-ftest-coverage");
+         Build_Switches := ("-O0", "-march=native", "-fprofile-arcs", "-ftest-coverage");
       when "profiling" =>
          Build_Switches := ("-g", "-pg");
    end case;

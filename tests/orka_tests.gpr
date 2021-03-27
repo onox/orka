@@ -1,0 +1,33 @@
+with "orka_simd";
+with "orka_transforms";
+with "orka";
+with "aunit";
+
+project Orka_Tests is
+
+   for Create_Missing_Dirs use "True";
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "build/obj";
+   for Library_Dir use "build/lib";
+
+   for Exec_Dir use "build/bin";
+
+   for Main use ("orka_tests.adb");
+
+   package Compiler extends Orka_SIMD.Compiler is
+      for Local_Configuration_Pragmas use "gnat.adc";
+   end Compiler;
+
+   package Binder renames Orka_SIMD.Binder;
+
+   package Linker is
+      case Orka.Build_Mode is
+         when "coverage" =>
+            for Switches ("Ada") use ("-lgcov");
+         when others =>
+            null;
+      end case;
+   end Linker;
+
+end Orka_Tests;

@@ -1,0 +1,15 @@
+name = "orka_tests"
+description = "Unit tests for various Orka crates"
+version = "1.0.0"
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+executables = ["orka_tests"]
+
+[[depends-on]]
+aunit = "^21.0.0"
+orka_simd = "^1.0.0"
+orka_transforms = "^1.0.0"
+orka = "~0.2.0"
