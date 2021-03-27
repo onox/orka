@@ -19,7 +19,7 @@ build:
 	cd orka_plugin_atmosphere && alr build
 
 examples:
-	cd orka_examples && alr build $(SCENARIO_VARS)
+	cd examples && alr build $(SCENARIO_VARS)
 
 tools:
 	cd orka_tools && alr build $(SCENARIO_VARS)
@@ -46,11 +46,11 @@ clean:
 	cd orka && alr clean
 	cd orka_glfw && alr clean
 	cd orka_tools && alr clean
-	cd orka_examples && alr clean
 #	cd orka_plugin_sdl && alr clean
 	cd orka_plugin_archives && alr clean
 	cd orka_plugin_gltf && alr clean
 	cd orka_plugin_terrain && alr clean
 	cd orka_plugin_atmosphere && alr clean
+	cd examples && alr clean
 	cd tests && alr clean
-	rm -rf orka*/build tests/build orka*/config tests/config tests/cov
+	rm -rf orka*/build examples/build tests/build orka*/config examples/config tests/config tests/cov
