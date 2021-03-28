@@ -85,8 +85,12 @@ package Orka.Loops is
       Scene_Camera  : Cameras.Camera_Ptr := Orka.Loops.Camera;
    end Scene;
 
-   procedure Run_Loop (Render : not null access procedure
-     (Scene  : not null Behaviors.Behavior_Array_Access;
-      Camera : Cameras.Camera_Ptr));
+   procedure Stop_Loop;
+
+   procedure Run_Loop
+     (Render : not null access procedure
+        (Scene  : not null Behaviors.Behavior_Array_Access;
+         Camera : Cameras.Camera_Ptr);
+      Stop   : not null access procedure);
 
 end Orka.Loops;
