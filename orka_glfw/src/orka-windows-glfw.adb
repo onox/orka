@@ -179,7 +179,7 @@ package body Orka.Windows.GLFW is
                Result.Framebuffer_Size_Changed (Natural (Width), Natural (Height));
 
                Messages.Log (Debug, "Created GLFW window and GL context");
-               Messages.Log (Debug, "  size:      " &
+               Messages.Log (Debug, "  size:        " &
                  Trim (Width'Image) & " × " & Trim (Height'Image));
                Messages.Log (Debug, "  visible:     " & (if Visible then "yes" else "no"));
                Messages.Log (Debug, "  resizable:   " & (if Resizable then "yes" else "no"));
