@@ -145,7 +145,7 @@ package body Package_Test is
       Transparent        : Boolean := False) return Test_Window is
    begin
       return Result : constant Test_Window :=
-        (Orka.Contexts.EGL.AWT.Create_Window
+        (Orka.Contexts.AWT.Create_Window
           (Context, Width, Height, Title, Samples,
            Visible     => Visible,
            Resizable   => Resizable,

@@ -1,6 +1,6 @@
 with GL.Low_Level.Enums;
 
-with Orka.Contexts.EGL.AWT;
+with Orka.Contexts.AWT;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
 
@@ -11,7 +11,7 @@ package Package_Test is
 
    package LE renames GL.Low_Level.Enums;
 
-   type Test_Window is limited new Orka.Contexts.EGL.AWT.AWT_Window with record
+   type Test_Window is limited new Orka.Contexts.AWT.AWT_Window with record
       FB      : Orka.Rendering.Framebuffers.Framebuffer (Default => True);
       Program : Orka.Rendering.Programs.Program;
       Cursor  : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);

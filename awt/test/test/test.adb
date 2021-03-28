@@ -6,13 +6,9 @@ with AWT.Clipboard;
 with AWT.Drag_And_Drop;
 with AWT.Inputs;
 with AWT.Monitors;
-with AWT.Wayland.Windows.Cursors;
 with AWT.Windows;
 
-with Wayland.Enums.Client;
-with Wayland.Protocols.Client;
-
-with Orka.Contexts.EGL.AWT;
+with Orka.Contexts.AWT;
 with Orka.Debug;
 
 with Package_Test;
@@ -88,7 +84,7 @@ begin
       Flip_Size : Boolean := False;
 
       Context : constant Orka.Contexts.Surface_Context'Class :=
-        Orka.Contexts.EGL.AWT.Create_Context
+        Orka.Contexts.AWT.Create_Context
           (Version => (4, 2),
            Flags   => (Debug | Robust => True, others => False));
 
@@ -138,7 +134,7 @@ begin
       Put_Line ("Render task started by main task");
 
       Window.Set_Margin (Border_Size);
-      Put_Line ("Starting Wayland event loop...");
+      Put_Line ("Starting event loop...");
       while not Window.Should_Close and then AWT.Process_Events (Interval) loop
 --         AWT_Window.Set_Title (Index'Image & " " & Next_Cursor'Image);
          Index := Index + 1;
@@ -319,7 +315,7 @@ begin
             Last_Keyboard := Keyboard;
          end;
       end loop;
-      Put_Line ("Exited Wayland event loop");
+      Put_Line ("Exited event loop");
    exception
       when E : others =>
          Put_Line ("main: " & Ada.Exceptions.Exception_Information (E));
