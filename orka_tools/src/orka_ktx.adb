@@ -361,7 +361,7 @@ begin
                Job_Manager => Job_System);
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
-            Loops.Run_Loop (Render'Access);
+            Loops.Run_Loop (Render'Access, Loops.Stop_Loop'Access);
          end;
       end;
    end;

@@ -293,6 +293,7 @@ package body Orka.Features.Terrain is
    is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Single);
       use all type GL.Types.Single;
+      use all type GL.Types.Connection_Mode;
 
       Subdivision  : constant GL.Types.Size   := GL.Types.Size (Parameters.Meshlet_Subdivision);
       Height_Scale : constant GL.Types.Single := GL.Types.Single (Object.Scale);
@@ -325,7 +326,7 @@ package body Orka.Features.Terrain is
       if Object.Wireframe then
          Object.Program_Render.Uniform ("u_ScreenResolution").Set_Vector
            (Types.Singles.Vector4'
-             (GL.Types.Single (Camera.Lens.Width), GL.Types.Single (Camera.Lens.Height), 0.0, 0.0));
+             (Float_32 (Camera.Lens.Width), Float_32 (Camera.Lens.Height), 0.0, 0.0));
          Object.Program_Render.Uniform ("u_ShowWires").Set_Boolean (Wires);
       end if;
 
@@ -361,7 +362,7 @@ package body Orka.Features.Terrain is
          if Visible_Tiles (ID) then
             Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
             Object.Uniform_Render_Leb_ID.Set_Int (GL.Types.Size (ID - 1));
-            Orka.Rendering.Drawing.Draw_Indirect (GL.Types.Triangles, Object.Buffer_Draw, ID - 1, 1);
+            Orka.Rendering.Drawing.Draw_Indirect (Triangles, Object.Buffer_Draw, ID - 1, 1);
          end if;
       end loop;
 

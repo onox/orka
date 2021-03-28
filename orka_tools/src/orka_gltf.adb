@@ -130,15 +130,15 @@ begin
 
       Window : aliased constant Orka.Windows.Window'Class
         := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height);
-      W_Ptr : constant Orka.Windows.Window_Ptr := Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
+      W_Ptr : constant Orka.Windows.Window_Ptr :=
+        Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
 
       --  Enable some features
       Context.Enable (Orka.Contexts.Reversed_Z);
-      if Samples > 0 then
-         Context.Enable (Orka.Contexts.Multisample);
-      end if;
+      pragma Assert (Samples > 0);
+      Context.Enable (Orka.Contexts.Multisample);
 
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
       GL.Toggles.Enable (GL.Toggles.Depth_Test);
@@ -252,7 +252,8 @@ begin
                   end;
                or
                   delay until T1 + Milliseconds (4000);
-                  Ada.Text_IO.Put_Line ("Not completed loading: " & Future_Ref.Current_Status'Image);
+                  Ada.Text_IO.Put_Line
+                    ("Not completed loading: " & Future_Ref.Current_Status'Image);
                end select;
             end;
          exception
@@ -370,7 +371,7 @@ begin
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
             Loops.Handler.Enable_Limit (False);
-            Loops.Run_Loop (Render_Scene'Access);
+            Loops.Run_Loop (Render_Scene'Access, Loops.Stop_Loop'Access);
          end;
       exception
          when Error : others =>

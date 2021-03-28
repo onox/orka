@@ -148,7 +148,7 @@ package body Orka.Features.Atmosphere.Rendering is
          Expected_Surface : constant Vector4 := Camera_Normal_Inert * Object.Bottom_Radius;
 
          Offset   : constant Vector4 := Expected_Surface - Actual_Surface;
-         Altitude : constant GL.Types.Double := Length (Planet_To_Camera) - Length (Actual_Surface);
+         Altitude : constant Double  := Length (Planet_To_Camera) - Length (Actual_Surface);
       begin
          Object.Uniform_Ground_Hack.Set_Boolean (Altitude < Altitude_Hack_Threshold);
          Object.Uniform_Camera_Offset.Set_Vector (Convert (Offset * Object.Distance_Scale));
