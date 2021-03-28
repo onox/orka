@@ -10,13 +10,16 @@ COVERAGE_VARS = -XORKA_TYPES_BUILD_MODE=coverage -XORKA_SIMD_BUILD_MODE=coverage
 .PHONY: build examples tools tests coverage docs clean
 
 build:
-	cd orka && alr build
+	cd orka_types && alr build $(SCENARIO_VARS)
+	cd orka_simd && alr build $(SCENARIO_VARS)
+	cd orka_transforms && alr build $(SCENARIO_VARS)
+	cd orka && alr build $(SCENARIO_VARS)
 	cd orka_glfw && alr build $(SCENARIO_VARS)
-#	cd orka_plugin_sdl && alr build
-	cd orka_plugin_archives && alr build
-	cd orka_plugin_gltf && alr build
-	cd orka_plugin_terrain && alr build
-	cd orka_plugin_atmosphere && alr build
+#	cd orka_plugin_sdl && alr build $(SCENARIO_VARS)
+	cd orka_plugin_archives && alr build $(SCENARIO_VARS)
+	cd orka_plugin_gltf && alr build $(SCENARIO_VARS)
+	cd orka_plugin_terrain && alr build $(SCENARIO_VARS)
+	cd orka_plugin_atmosphere && alr build $(SCENARIO_VARS)
 
 examples:
 	cd examples && alr build $(SCENARIO_VARS)
@@ -26,7 +29,7 @@ tools:
 
 tests:
 	cd tests && alr build $(SCENARIO_VARS) $(COVERAGE_VARS)
-	cd tests && alr	run
+	cd tests && alr run -s
 
 coverage: tests
 	mkdir -p tests/cov
