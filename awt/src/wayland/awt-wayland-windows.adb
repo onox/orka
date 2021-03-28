@@ -471,7 +471,7 @@ package body AWT.Wayland.Windows is
       Object.Set_Pointer_Cursor (Object.Cursor);
 
       Object.Set_Application_ID (ID);
-      Object.Set_Application_Title (Title);
+      Object.Set_Title (Title);
 
       -------------------------------------------------------------------------
 
@@ -663,14 +663,14 @@ package body AWT.Wayland.Windows is
    end Set_Application_ID;
 
    overriding
-   procedure Set_Application_Title (Object : in out Wayland_Window; Title : String) is
+   procedure Set_Title (Object : in out Wayland_Window; Title : String) is
    begin
       Object.Restore_Title := +Title;
 
       if Object.XDG_Toplevel.Has_Proxy then
          Object.XDG_Toplevel.Set_Title (Title);
       end if;
-   end Set_Application_Title;
+   end Set_Title;
 
    overriding
    procedure Close (Object : in out Wayland_Window) is

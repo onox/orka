@@ -109,14 +109,6 @@ private
      return Orka.Inputs.Pointers.Pointer_Input_Ptr;
 
    overriding
-   procedure Set_Title (Object : in out AWT_Window; Value : String)
-     renames Set_Application_Title;
-
-   overriding
-   procedure Enable_Vertical_Sync (Object : in out AWT_Window; Enable : Boolean)
-     renames Set_Vertical_Sync;
-
-   overriding
    procedure Process_Input (Object : in out AWT_Window);
 
    ----------------------------------------------------------------------------

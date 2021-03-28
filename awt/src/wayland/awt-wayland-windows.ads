@@ -140,7 +140,7 @@ private
    type Feedback_With_Frame (Data : not null access Frame)
      is new WP.Presentation_Time.Presentation_Feedback with null record;
 
-   type Frame_Index is mod 16;
+   type Frame_Index is mod 4;
 
    type Frame is limited record
       Window      : access Wayland_Window;
@@ -251,7 +251,7 @@ private
    procedure Set_Application_ID (Object : in out Wayland_Window; ID : String);
 
    overriding
-   procedure Set_Application_Title (Object : in out Wayland_Window; Title : String);
+   procedure Set_Title (Object : in out Wayland_Window; Title : String);
 
    overriding
    procedure Set_Size (Object : in out Wayland_Window; Width, Height : Positive);

@@ -140,7 +140,7 @@ begin
       Window.Set_Margin (Border_Size);
       Put_Line ("Starting Wayland event loop...");
       while not Window.Should_Close and then AWT.Process_Events (Interval) loop
---         AWT_Window.Set_Application_Title (Index'Image & " " & Next_Cursor'Image);
+--         AWT_Window.Set_Title (Index'Image & " " & Next_Cursor'Image);
          Index := Index + 1;
 
          select
@@ -160,7 +160,7 @@ begin
             Put_Line (Positive'Image (Visible_Index + Visible_Index_Count) & Index'Image);
             if Index > Visible_Index + Visible_Index_Count then
                Should_Be_Visible := True;
-               AWT_Window.Set_Application_Title ("visible! " & Visible_Index'Image);
+               AWT_Window.Set_Title ("visible! " & Visible_Index'Image);
                AWT_Window.Set_Visible (True);
                Put_Line ("window visible");
             end if;

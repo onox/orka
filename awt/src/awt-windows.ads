@@ -48,7 +48,7 @@ package AWT.Windows with SPARK_Mode => On is
 
    procedure Set_Application_ID (Object : in out Window; ID : String) is abstract;
 
-   procedure Set_Application_Title (Object : in out Window; Title : String) is abstract;
+   procedure Set_Title (Object : in out Window; Title : String) is abstract;
 
    procedure Set_Margin
      (Object : in out Window;
