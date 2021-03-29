@@ -4,6 +4,42 @@
 [solution.context]
 solved = true
 [[solution.state]]
+crate = "json"
+fulfilment = "solved"
+pinned = false
+transitivity = "direct"
+versions = "^4.0.1"
+[solution.state.release]
+authors = [
+"onox",
+]
+description = "An Ada 2012 library for parsing JSON"
+executables = [
+"pretty_print",
+]
+licenses = "Apache-2.0"
+maintainers = [
+"onox <denkpadje@gmail.com>",
+]
+maintainers-logins = [
+"onox",
+]
+name = "json"
+project-files = [
+"json.gpr",
+"json_pretty_print.gpr",
+]
+tags = [
+"json",
+]
+version = "4.0.1"
+website = "https://github.com/onox/json-ada"
+[solution.state.release.origin]
+hashes = [
+"sha512:60937e87a233ba1986849e838dc84010453dae5930c7dc2fa5fbd7f9c15e5b2c20e8014b9ddf5c08dbce4dfc06747d2744af2b81849636416464fc63cd56f597",
+]
+url = "https://github.com/onox/json-ada/releases/download/v4.0.1/json-4.0.1.tgz"
+[[solution.state]]
 crate = "orka"
 fulfilment = "linked"
 pinned = false

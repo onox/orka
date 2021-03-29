@@ -10,5 +10,6 @@ maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
 [[depends-on]]
+json = "^4.0.1"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
