@@ -298,10 +298,10 @@ package body Orka.Windows.GLFW is
    end Swap_Buffers;
 
    overriding
-   procedure Enable_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean) is
+   procedure Set_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean) is
    begin
       Standard.Glfw.Windows.Context.Set_Swap_Interval (if Enable then 1 else 0);
-   end Enable_Vertical_Sync;
+   end Set_Vertical_Sync;
 
    overriding
    procedure Close_Requested (Object : not null access GLFW_Window) is

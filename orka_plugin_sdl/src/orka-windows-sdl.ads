@@ -71,7 +71,7 @@ package Orka.Windows.SDL is
    procedure Swap_Buffers (Object : in out SDL_Window);
 
    overriding
-   procedure Enable_Vertical_Sync (Object : in out SDL_Window; Enable : Boolean);
+   procedure Set_Vertical_Sync (Object : in out SDL_Window; Enable : Boolean);
 
 private
 

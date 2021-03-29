@@ -335,7 +335,7 @@ package body Orka.Windows.SDL is
    end Swap_Buffers;
 
    overriding
-   procedure Enable_Vertical_Sync (Object : in out SDL_Window; Enable : Boolean) is
+   procedure Set_Vertical_Sync (Object : in out SDL_Window; Enable : Boolean) is
       use all type Standard.SDL.Video.GL.Swap_Intervals;
    begin
       if not Standard.SDL.Video.GL.Set_Swap_Interval
@@ -344,6 +344,6 @@ package body Orka.Windows.SDL is
          Messages.Log (Debug,
            (if Enable then "Enabling" else "Disabling") & " vertical sync failed");
       end if;
-   end Enable_Vertical_Sync;
+   end Set_Vertical_Sync;
 
 end Orka.Windows.SDL;

@@ -129,7 +129,7 @@ private
    procedure Swap_Buffers (Object : in out GLFW_Window);
 
    overriding
-   procedure Enable_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean);
+   procedure Set_Vertical_Sync (Object : in out GLFW_Window; Enable : Boolean);
 
    overriding
    procedure Finalize (Object : in out GLFW_Window);

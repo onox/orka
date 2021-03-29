@@ -59,7 +59,7 @@ package Orka.Windows is
    --
    --  Task safety: Must only be called from the rendering task.
 
-   procedure Enable_Vertical_Sync (Object : in out Window; Enable : Boolean) is abstract;
+   procedure Set_Vertical_Sync (Object : in out Window; Enable : Boolean) is abstract;
    --  Request the vertical retrace synchronization or vsync to be enabled
    --  or disabled
    --
