@@ -7,11 +7,9 @@ In order to build and use Orka you need to have:
  * Ada 2012 compiler ([GNAT FSF][url-fsf] from
    your Linux distribution or [GNAT CE][url-ce])
 
- * GPRBuild, `make`, and `pkg-config`
+ * [Alire][url-alire]
 
- * [json-ada 4.0.0][url-json-ada] (for glTF)
-
- * [dcf-ada 2.0.1][url-dcf-ada] (for loading resources in Zip archives)
+ * `make` and `pkgconf` (on Linux)
 
  * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
    and OpenGL 4.6 core profile (or 4.0 + extensions below)
@@ -69,16 +67,16 @@ In order to build and use Orka you need to have:
 
 Recommended dependencies:
 
+ * [AWT][url-awt], or
+
  * [GLFW 3][url-glfw] for the GLFW bindings, tools, and examples
 
 Optional dependencies:
 
- * [Ahven 2][url-ahven] if you want to build and run the unit tests
-
  * `lcov` to generate a coverage report for the unit tests
 
 !!! info "SDL 2"
-    Although the use of GLFW is recommended, alternatively
+    Although the use of AWT or GLFW is recommended, alternatively
     [SDLAda][url-sdlada] can be used to manage windows and input via SDL 2.
 
 !!! warning "CPU and OpenGL requirements"
@@ -97,97 +95,47 @@ Optional dependencies:
 
 ### Installing dependencies
 
-#### Ubuntu 20.04 LTS
+#### Ubuntu
 
 Install the dependencies using apt:
 
 ```sh
-$ sudo apt install gnat-9 gprbuild make pkgconf libahven8-dev lcov
-$ sudo apt install libglfw3-wayland libglfw3-dev libegl1-mesa-dev
+$ sudo apt install gnat gprbuild make pkgconf libegl1-mesa-dev
 ```
 
-#### Ubuntu 18.04 LTS
+and then install Alire.
 
-Install the dependencies using apt:
-
-```sh
-$ sudo apt install gnat-7 gprbuild make pkgconf libahven6-dev lcov libegl1-mesa-dev
-```
-
-Compile and install GLFW 3.3 with Wayland support instead of installing
-the version provided in the Ubuntu repositories.
-
-Compile and install [json-ada][url-json-ada] and [dcf-ada][url-dcf-ada].
+On 18.04 LTs, if you wish to use GLFW, compile and install GLFW 3.3 with
+Wayland support instead of installing the version provided in the Ubuntu
+repositories.
 
 #### Arch Linux
 
-Install the dependencies using pacman and makepkg:
+Install the dependencies using pacman:
 
 ```sh
-$ sudo pacman -S gcc-ada glfw-wayland
+$ sudo pacman -S gcc-ada make pkgconf mesa
 ```
 
-You also need to compile and install GPRBuild:
-
-```sh
-$ sudo pacman -S --needed base-devel git
-$ git clone https://aur.archlinux.org/gprbuild-bootstrap.git
-$ git clone https://aur.archlinux.org/xmlada.git
-$ git clone https://aur.archlinux.org/libgpr.git
-$ git clone https://aur.archlinux.org/gprbuild.git
-```
-
-Go to each folder (`gprbuild-bootstrap`, then `xmlada`, `libgpr`, and `gprbuild`),
-inspect the content of the files and then execute `makepkg -si`.
-
-Compile and install [json-ada][url-json-ada] and [dcf-ada][url-dcf-ada].
+Compile and install `gprbuild-bootstrap`, then `xmlada`, `libgpr`, and `gprbuild`
+from the AUR.
 
 #### Windows 10
 
-See #10 for instructions on how to install Orka on Windows 10.
+Install [GNAT CE][url-ce] and Alire.
 
-## Installing from source
+## Using Orka in your application
 
-A Makefile is provided to build the source code, examples, and tools.
-Use `make` to build the source code:
-
-```sh
-$ make
-```
-
-You can override CFLAGS if desired. The Makefile determines which
-system-dependent API ([EGL][url-egl] or WGL) to use for fetching OpenGL
-function pointers.
-
-To disable assertions use the `release` mode:
+Add Orka to your application:
 
 ```sh
-$ make MODE=release
+$ alr with orka
 ```
 
-The default mode is `development`. Both `release` and `development` enable general
-optimizations. To disable optimizations, and include
-debugging symbols, use the `debug` mode. See the following table:
+You may need to add `--use=path/to/orka/crate` to use unpublished versions.
 
-|                   | Release | Development | Debug |
-|-------------------|---------|-------------|-------|
-| Optimizations     | Yes     | Yes         | No    |
-| Assertions        | No      | Yes         | Yes   |
-| Debugging symbols | No      | No          | Yes   |
-
-After having compiled the source code, the library can be installed by
-executing:
-
-```sh
-$ make PREFIX=/usr install
-```
-
-Change `PREFIX` to the preferred destination folder. Import `orka-glfw` (or
-`orka-sdl`) in your \*.gpr project file:
-
-```ada
-with "orka-glfw";
-```
+To create an OpenGL context and window, add `awt` for AWT, `orka_glfw` for
+GLFW, or `orka_plugin_sdl` for SDL.
 
 ###  Tools and examples
 
@@ -198,6 +146,9 @@ display the OpenGL version and list the available extensions:
 $ make tools
 ```
 
+and then go to the `orka_tools` folder and run one of the provided executables
+from there. See `alr run --list` for a list.
+
 The project contains some examples that demonstrate the basic usage of
 the library. Build the example programs as follows:
 
@@ -205,34 +156,33 @@ the library. Build the example programs as follows:
 $ make examples
 ```
 
-You can execute them in the `bin` directory. Some tools and examples load shader
-files from the source directory using relative paths, so they only work
-with `bin` as the current directory.
+and then go to the `examples` folder and run one of the provided executables
+from there.
 
 ### Running tests
 
 The project contains a set of unit tests. Use `make tests` to build and
-run the unit tests. A coverage report can be generated with `make coverage`:
+run the unit tests. A coverage report can be generated if `lcov` is installed:
 
 ```sh
+$ make clean
 $ make tests
 $ make coverage
+$ make clean
 ```
-
-  [url-ce]: http://libre.adacore.com/
-  [url-fsf]: https://gcc.gnu.org/wiki/GNAT
-  [url-ahven]: http://ahven.stronglytyped.org
-  [url-json-ada]: https://github.com/onox/json-ada
-  [url-dcf-ada]: https://github.com/onox/dcf-ada
-  [url-glfw]: http://www.glfw.org/
-  [url-sdl]: http://www.libsdl.org/
-  [url-sdlada]: https://github.com/Lucretia/sdlada
-  [url-egl]: https://www.khronos.org/egl
-  [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
-  [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities
 
 ## Rendering your first triangle
 
 After having installed Orka, you might want to skip the next few chapters
 and jump to [Rendering](/rendering) to get an introduction to rendering
 and learn how you can render your first triangle on the screen.
+
+  [url-alire]: https://alire.ada.dev/
+  [url-awt]: https://github.com/onox/awt
+  [url-ce]: http://libre.adacore.com/
+  [url-fsf]: https://gcc.gnu.org/wiki/GNAT
+  [url-glfw]: http://www.glfw.org/
+  [url-sdlada]: https://github.com/Lucretia/sdlada
+  [url-egl]: https://www.khronos.org/egl
+  [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
+  [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities
