@@ -9,7 +9,7 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
-executables = ["orka_info", "orka_ktx"]
+executables = ["orka_info", "orka_gltf", "orka_ktx"]
 
 [[depends-on]]
 orka_glfw = "^1.0.0"
