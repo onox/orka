@@ -18,28 +18,14 @@ private with Ada.Finalization;
 
 private with GL.Objects.Vertex_Arrays;
 
+private with EGL.Debug;
+private with EGL.Errors;
 private with EGL.Objects.Displays;
 private with EGL.Objects.Contexts;
 
 with EGL.Objects.Devices;
 
 package Orka.Contexts.EGL is
-
-   type Wayland_EGL_Context is limited new Context with private;
-
-   overriding
-   function Create_Context
-     (Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context;
-   --  Raise Program_Error due to the missing native Wayland display
-   --
-   --  This function must be overriden and internally call the function below.
-
-   function Create_Context
-     (Window  : Standard.EGL.Native_Display_Ptr;
-      Version : Context_Version;
-      Flags   : Context_Flags := (others => False)) return Wayland_EGL_Context;
-   --  Return a Wayland EGL context
 
    type Device_EGL_Context is limited new Context with private;
 
@@ -95,18 +81,17 @@ private
    overriding
    procedure Make_Not_Current (Object : Device_EGL_Context);
 
-   type Wayland_EGL_Context is limited new EGL_Context with record
-      Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Wayland);
-   end record;
+   ----------------------------------------------------------------------------
 
-   overriding
-   function Is_Current (Object : Wayland_EGL_Context) return Boolean is
-     (Object.Context.Is_Current);
+   procedure Print_Debug
+     (Display : Standard.EGL.Objects.Displays.Display;
+      Flags   : Context_Flags);
 
-   overriding
-   procedure Make_Current (Object : Wayland_EGL_Context);
+   procedure Print_Error
+     (Error : Standard.EGL.Errors.Error_Code;
+      Level : Standard.EGL.Debug.Severity;
+      Command, Message : String);
 
-   overriding
-   procedure Make_Not_Current (Object : Wayland_EGL_Context);
+   procedure Post_Initialize (Object : in out EGL_Context'Class);
 
 end Orka.Contexts.EGL;
