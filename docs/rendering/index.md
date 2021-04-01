@@ -195,7 +195,7 @@ objects and then draw the triangle in a loop.
 
 First we need to initialize the OpenGL context and create a window:
 
-```ada
+```ada linenums="1"
 Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
   (Version => (4, 2), Flags  => (Debug => True, others => False));
 
@@ -208,7 +208,7 @@ Window : constant Orka.Windows.Window'Class
 Next we will create a buffer and upload the data of the three
 vertices to it:
 
-```ada
+```ada linenums="1"
 Vertices : constant Single_Array
   := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
        0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
@@ -272,7 +272,7 @@ void main(void) {
 
 The program is then created as follows:
 
-```ada
+```ada linenums="1"
 Location_Shaders : constant Locations.Location_Ptr
   := Locations.Directories.Create_Location (".");
 
@@ -299,9 +299,8 @@ FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 Specify the color of the background and tell OpenGL we want to use
 this framebuffer:
 
-```ada
+```ada linenums="1"
 FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
-
 FB_D.Use_Framebuffer;
 ```
 
@@ -309,7 +308,7 @@ FB_D.Use_Framebuffer;
 
 After we have created all the objects, we can render the triangle:
 
-```ada
+```ada linenums="1"
 while not Window.Should_Close loop
    Window.Process_Input;
 
@@ -367,8 +366,8 @@ and then draw the triangle. Press ++esc++ to close the application.
        Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
     begin
        FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
-
        FB_D.Use_Framebuffer;
+
        Program_1.Use_Program;
 
        Buffer_1.Bind (Shader_Storage, 0);

@@ -26,7 +26,7 @@ of bytes. The size of a buffer can be queried with the function `Length`.
 Alternatively, `Create_Buffer` can be called with the parameters `Flags`
 and `Data` to initialize the buffer with the given data:
 
-```ada
+```ada linenums="1"
 Indices  : UInt_Array := (1, 2, 0, 0, 2, 3);
 
 Buffer_2 : Buffer := Create_Buffer ((others => False), Indices);
@@ -56,7 +56,7 @@ GL.Barriers.Memory_Barrier
 
 and then call procedure `Get_Data`:
 
-```ada
+```ada linenums="1"
 declare
    Data : Single_Array (1 .. 16) := (others => 0.0);
 begin
@@ -73,7 +73,7 @@ This procedure may stall the CPU.
 Regardless of the value of `Dynamic_Storage`, data from a buffer can be
 cleared with the procedure `Clear_Data`:
 
-```ada
+```ada linenums="1"
 declare
    Data : UInt_Array := (1, 2, 0);
 begin
@@ -154,7 +154,7 @@ SSBOs are large writable buffers:
 To use a buffer as an SSBO, create a `buffer` with a binding index in a
 shader:
 
-```glsl
+```glsl linenums="1"
 layout(std430, binding = 0) buffer matrixBuffer {
     mat4 matrices[];
 };
@@ -198,7 +198,7 @@ Compared to SSBOs, UBOs are severely restricted:
 
 To use a buffer as an UBO, create a `buffer` with a binding index in a shader:
 
-```glsl
+```glsl linenums="1"
 layout(std140, binding = 0) uniform cameraBuffer {
     mat4 viewTM;
     mat4 projTM;
@@ -235,7 +235,7 @@ layout(binding = 0) uniform samplerBuffer matrixBuffer;
 
 and the buffer texture must be binded to this binding point:
 
-```ada
+```ada linenums="1"
 declare
    use all type Orka.Rendering.Textures.Indexed_Texture_Target;
 begin
@@ -268,7 +268,7 @@ Buffer_3.Write_Data (Matrix, Offset => Instance_Index);
 To read elements from a mapped buffer, create an array on the stack
 and then call `Read_Data`:
 
-```ada
+```ada linenums="1"
 declare
    Data : Int_Array (1 .. 16) := (others => 0);
 begin
@@ -326,7 +326,7 @@ or dispatch commands and wait for it to complete before reading the data.
 To create a persistent mapped buffer, first instantiate
 generic package `Orka.Rendering.Buffers.Mapped.Persistent`:
 
-```ada
+```ada linenums="1"
 type Region_Type is mod 3;
 
 package PMB is new Orka.Rendering.Buffers.Mapped.Persistent (Region_Type);
@@ -356,7 +356,7 @@ See [Fences](#fences) on how to set and wait for a fence.
 
 ### Fences
 
-```ada
+```ada linenums="1"
 type Region_Type is mod 3;
 
 package Fences is new Orka.Rendering.Fences (Region_Type);

@@ -45,7 +45,7 @@ Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
 The manager can be queried for the existence of a resource given its
 path:
 
-```ada
+```ada linenums="1"
 if Manager.Contains (Texture_Path) then
    --  Retrieve the texture here
 end if;
@@ -78,6 +78,14 @@ take ownership of the loaded model:
 Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
   (Manager => Manager);
 ```
+
+!!! note
+    To use package `:::ada Orka.Resources.Models.glTF` add
+    Alire crate `orka_plugins_gltf` to your list of dependencies:
+
+    ```sh
+    $ alr with orka_plugins_gltf
+    ```
 
 !!! example
     ```ada linenums="1"

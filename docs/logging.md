@@ -117,7 +117,7 @@ number.
 
 Alternatively, the generic package `Messages` can be instantiated:
 
-```ada
+```ada linenums="1"
 use all type Orka.Logging.Source;
 use all type Orka.Logging.Severity;
 use Orka.Logging;

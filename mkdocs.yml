@@ -9,7 +9,7 @@ repo_url: "https://github.com/onox/orka"
 # Disable edit button
 edit_uri: ""
 
-copyright: "Copyright &copy; 2016 - 2019 onox"
+copyright: "Copyright &copy; 2016 - 2021 onox"
 
 theme:
   name: "material"
@@ -58,6 +58,7 @@ markdown_extensions:
 nav:
   - Orka: index.md
   - Installation: installation.md
+  - Contexts: contexts.md
   - Parallel programming: parallel-programming.md
   - Containers: containers.md
   - Logging: logging.md
@@ -71,7 +72,6 @@ nav:
       - Framebuffers: rendering/framebuffers.md
       - Cameras: rendering/cameras.md
       - Effects: rendering/effects.md
-      - Features: rendering/features.md
   - Resources:
       - Locations: resources/locations.md
       - Loaders: resources/loaders.md
@@ -80,4 +80,9 @@ nav:
       - Matrices: transforms/matrices.md
       - Quaternions: transforms/quaternions.md
       - Scene trees: transforms/scene-trees.md
+  - Plugins:
+      - Archives: plugins/archives.md
+      - Atmosphere: plugins/atmosphere.md
+      - glTF: plugins/gltf.md
+      - Terrain: plugins/terrain.md
   - Contributing: contributing.md
