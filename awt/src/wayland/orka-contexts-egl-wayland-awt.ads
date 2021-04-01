@@ -24,7 +24,7 @@ private with AWT.Wayland.Windows.Cursors;
 
 with AWT.Windows;
 
-package Orka.Contexts.EGL.AWT is
+package Orka.Contexts.EGL.Wayland.AWT is
 
    type AWT_Context is limited new Surface_Context with private;
 
@@ -124,4 +124,4 @@ private
       Monitor  : Standard.AWT.Monitors.Monitor'Class;
       Presence : Standard.AWT.Windows.Monitor_Presence);
 
-end Orka.Contexts.EGL.AWT;
+end Orka.Contexts.EGL.Wayland.AWT;

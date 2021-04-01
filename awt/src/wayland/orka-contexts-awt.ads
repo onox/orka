@@ -14,6 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Contexts.EGL.AWT;
+with Orka.Contexts.EGL.Wayland.AWT;
 
-package Orka.Contexts.AWT renames Orka.Contexts.EGL.AWT;
+package Orka.Contexts.AWT renames Orka.Contexts.EGL.Wayland.AWT;

@@ -26,7 +26,7 @@ with EGL.Objects.Surfaces;
 
 with Wayland.Protocols.Client.AWT;
 
-package body Orka.Contexts.EGL.AWT is
+package body Orka.Contexts.EGL.Wayland.AWT is
 
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
@@ -215,7 +215,7 @@ package body Orka.Contexts.EGL.AWT is
       Flags   : Orka.Contexts.Context_Flags := (others => False)) return AWT_Context is
    begin
       return Create_Context
-        (Wayland.Protocols.Client.AWT.Get_Display (Standard.AWT.Wayland.Get_Display.all),
+        (Standard.Wayland.Protocols.Client.AWT.Get_Display (Standard.AWT.Wayland.Get_Display.all),
          Version, Flags);
    end Create_Context;
 
@@ -289,4 +289,4 @@ package body Orka.Contexts.EGL.AWT is
       end return;
    end Create_Window;
 
-end Orka.Contexts.EGL.AWT;
+end Orka.Contexts.EGL.Wayland.AWT;
