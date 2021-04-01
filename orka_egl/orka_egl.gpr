@@ -11,7 +11,7 @@ project Orka_Egl is
 
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
-     external ("ORKA_EGL_LIBRARY_TYPE", external ("LIBRARY_TYPE", "relocatable"));
+     external ("ORKA_EGL_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
    type Enabled_Kind is ("enabled", "disabled");
