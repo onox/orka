@@ -72,8 +72,11 @@ private
    end record;
 
    overriding
-   function Is_Current (Object : Device_EGL_Context) return Boolean is
-     (Object.Context.Is_Current);
+   function Is_Current (Object : Device_EGL_Context; Kind : Task_Kind) return Boolean is
+     (Object.Context.Is_Current
+        (case Kind is
+           when Current_Task => Standard.EGL.Objects.Contexts.Current_Task,
+           when Any_Task     => Standard.EGL.Objects.Contexts.Any_Task));
 
    overriding
    procedure Make_Current (Object : Device_EGL_Context);

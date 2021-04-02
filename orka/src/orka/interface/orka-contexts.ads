@@ -47,15 +47,17 @@ package Orka.Contexts is
 
    function Flags (Object : Context) return Context_Flags is abstract;
 
-   function Is_Current (Object : Context) return Boolean is abstract;
+   type Task_Kind is (Current_Task, Any_Task);
+
+   function Is_Current (Object : Context; Kind : Task_Kind) return Boolean is abstract;
 
    procedure Make_Current (Object : Context) is abstract
-     with Pre'Class  => not Object.Is_Current,
-          Post'Class =>     Object.Is_Current;
+     with Pre'Class  => not Object.Is_Current (Any_Task),
+          Post'Class =>     Object.Is_Current (Current_Task);
 
    procedure Make_Not_Current (Object : Context) is abstract
-     with Pre'Class  =>     Object.Is_Current,
-          Post'Class => not Object.Is_Current;
+     with Pre'Class  =>     Object.Is_Current (Current_Task),
+          Post'Class => not Object.Is_Current (Any_Task);
 
    -----------------------------------------------------------------------------
 
@@ -86,6 +88,7 @@ package Orka.Contexts is
    procedure Make_Current
      (Object : Surface_Context;
       Window : in out Orka.Windows.Window'Class) is abstract
-   with Post'Class => Object.Is_Current;
+   with Pre'Class  => Object.Is_Current (Current_Task) or not Object.Is_Current (Any_Task),
+        Post'Class => Object.Is_Current (Current_Task);
 
 end Orka.Contexts;

@@ -60,7 +60,7 @@ package body Orka.Windows.GLFW is
      is (Contexts.Enabled (Object.Features, Subject));
 
    overriding
-   function Is_Current (Object : GLFW_Context) return Boolean is
+   function Is_Current (Object : GLFW_Context; Kind : Orka.Contexts.Task_Kind) return Boolean is
    begin
       raise GL.Feature_Not_Supported_Exception;
       return True;

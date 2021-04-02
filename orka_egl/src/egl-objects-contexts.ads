@@ -32,6 +32,8 @@ package EGL.Objects.Contexts is
 
    type Buffer_Kind is (None, Back, Front);
 
+   type Task_Kind is (Current_Task, Any_Task);
+
    type Context (Platform : Displays.Platform_Kind) is new EGL_Object with private;
 
    function Create_Context
@@ -39,7 +41,7 @@ package EGL.Objects.Contexts is
       Version : Context_Version;
       Flags   : Context_Flags) return Context
    with Pre  => Display.Is_Initialized,
-        Post => not Create_Context'Result.Is_Current;
+        Post => not Create_Context'Result.Is_Current (Any_Task);
 
    function Display (Object : Context) return Displays.Display
      with Post => Display'Result.Is_Initialized;
@@ -47,23 +49,23 @@ package EGL.Objects.Contexts is
    function Buffer (Object : Context) return Buffer_Kind
      with Pre => Object.Is_Initialized;
 
-   function Is_Current (Object : Context) return Boolean
+   function Is_Current (Object : Context; Kind : Task_Kind) return Boolean
      with Pre => Object.Is_Initialized;
 
    procedure Make_Current (Object : Context)
      with Pre  => Object.Is_Initialized,
-          Post => Object.Is_Current;
+          Post => Object.Is_Current (Current_Task);
 
    procedure Make_Current (Object : Context; Surface : Surfaces.Surface)
      with Pre  => Object.Is_Initialized and Surface.Is_Initialized,
-          Post => Object.Is_Current;
+          Post => Object.Is_Current (Current_Task);
 
    procedure Make_Not_Current (Object : Context)
-     with Pre  => Object.Is_Initialized and then Object.Is_Current,
-          Post => not Object.Is_Current;
+     with Pre  => Object.Is_Initialized and then Object.Is_Current (Current_Task),
+          Post => not Object.Is_Current (Any_Task);
 
    procedure Set_Swap_Interval (Object : Context; Value : Natural)
-     with Pre => Object.Is_Initialized and then Object.Is_Current;
+     with Pre => Object.Is_Initialized and then Object.Is_Current (Current_Task);
 
    type Client_API is private;
 

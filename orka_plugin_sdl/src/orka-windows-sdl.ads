@@ -99,7 +99,7 @@ private
    function Flags (Object : SDL_Context) return Contexts.Context_Flags;
 
    overriding
-   function Is_Current (Object : SDL_Context) return Boolean;
+   function Is_Current (Object : SDL_Context; Kind : Orka.Contexts.Task_Kind) return Boolean;
 
    overriding
    procedure Make_Current (Object : SDL_Context);

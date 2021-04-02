@@ -80,7 +80,7 @@ private
    function Flags (Object : GLFW_Context) return Contexts.Context_Flags;
 
    overriding
-   function Is_Current (Object : GLFW_Context) return Boolean;
+   function Is_Current (Object : GLFW_Context; Kind : Orka.Contexts.Task_Kind) return Boolean;
 
    overriding
    procedure Make_Current (Object : GLFW_Context);

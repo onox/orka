@@ -136,9 +136,14 @@ package body EGL.Objects.Contexts is
       return Result;
    end Buffer;
 
-   function Is_Current (Object : Context) return Boolean is
+   function Is_Current (Object : Context; Kind : Task_Kind) return Boolean is
    begin
-      return API.Get_Current_Context = Object.ID;
+      case Kind is
+         when Current_Task =>
+            return API.Get_Current_Context = Object.ID;
+         when Any_Task =>
+            return Object.Reference.Active;
+      end case;
    end Is_Current;
 
    procedure Make_Current (Object : Context) is
@@ -147,6 +152,7 @@ package body EGL.Objects.Contexts is
       if not API.Make_Current (Object.Display.ID, No_Surface, No_Surface, Object.ID) then
          Errors.Raise_Exception_On_EGL_Error;
       end if;
+      Object.Reference.Active := True;
    end Make_Current;
 
    procedure Make_Current (Object : Context; Surface : Surfaces.Surface) is
@@ -154,6 +160,7 @@ package body EGL.Objects.Contexts is
       if not API.Make_Current (Object.Display.ID, Surface.ID, Surface.ID, Object.ID) then
          Errors.Raise_Exception_On_EGL_Error;
       end if;
+      Object.Reference.Active := True;
    end Make_Current;
 
    procedure Make_Not_Current (Object : Context) is
@@ -163,6 +170,7 @@ package body EGL.Objects.Contexts is
       if not API.Make_Current (Object.Display.ID, No_Surface, No_Surface, No_Context) then
          Errors.Raise_Exception_On_EGL_Error;
       end if;
+      Object.Reference.Active := False;
    end Make_Not_Current;
 
    procedure Set_Swap_Interval (Object : Context; Value : Natural) is
@@ -176,7 +184,7 @@ package body EGL.Objects.Contexts is
       No_Context : constant ID_Type := ID_Type (System.Null_Address);
    begin
       pragma Assert (Object.ID /= No_Context);
-      if Object.Is_Current then
+      if Object.Is_Current (Current_Task) then
          Object.Make_Not_Current;
       end if;
       if not Boolean (API.Destroy_Context (Object.Display.ID, Object.ID)) then

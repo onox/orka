@@ -21,8 +21,9 @@ package body EGL.Objects is
    overriding procedure Initialize (Object : in out EGL_Object) is
    begin
       Object.Reference := new EGL_Object_Reference'
-        (ID    => ID_Type (System.Null_Address),
-         Count => 1);
+        (ID     => ID_Type (System.Null_Address),
+         Count  => 1,
+         Active => False);
       EGL_Object'Class (Object).Post_Initialize;
    end Initialize;
 

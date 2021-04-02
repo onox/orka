@@ -41,8 +41,12 @@ package EGL.Objects is
 private
 
    type EGL_Object_Reference is record
-      ID    : ID_Type;
-      Count : Natural;
+      ID     : ID_Type;
+      Count  : Natural with Atomic;
+
+      Active : Boolean with Atomic;
+      --  Currently only used for contexts to record whether context
+      --  is current on any task
    end record;
 
    type EGL_Object_Reference_Access is access all EGL_Object_Reference;
