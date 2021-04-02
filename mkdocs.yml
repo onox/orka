@@ -80,7 +80,7 @@ nav:
       - Matrices: transforms/matrices.md
       - Quaternions: transforms/quaternions.md
       - Scene trees: transforms/scene-trees.md
-  - Plugins:
+  - Plug-ins:
       - Archives: plugins/archives.md
       - Atmosphere: plugins/atmosphere.md
       - glTF: plugins/gltf.md

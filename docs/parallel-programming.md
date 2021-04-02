@@ -72,7 +72,7 @@ whether it is the dependent of another job.
 
 A job should inherit from `Abstract_Job`, which implements the interface `Job`:
 
-```ada
+```ada linenums="1"
 type Example_Job is new Orka.Jobs.Abstract_Job with record
    ...
 end record;
@@ -142,7 +142,7 @@ are considered to be in the same graph if they share a smart pointer to
 an instance of the synchronized interface `Future`. If a smart point is
 null, it is set by `Queue.Enqueue`:
 
-```ada
+```ada linenums="1"
 declare
    Future_Pointer : Orka.Futures.Pointers.Mutable_Pointer;
    --  Future_Pointer.Is_Null is True
@@ -163,7 +163,7 @@ skip execution.
 
 To get the current status of a future, call function `Current_Status`:
 
-```ada
+```ada linenums="1"
 if Future_Pointer.Get.Current_Status = Orka.Futures.Done then
    --  All jobs in the job graph have been executed
 end if;
@@ -175,7 +175,7 @@ Sometimes you need to wait until a job graph has finished before
 continuing. The entry `Wait_Until_Done` can be used to block until the
 status becomes `Done` or `Failed`:
 
-```ada
+```ada linenums="1"
 declare
    Status : Orka.Futures.Status;
    Future : constant Orka.Futures.Future_Access := Future_Pointer.Get.Value;
@@ -214,7 +214,7 @@ parallel if there are multiple workers.
 Jobs wishing to implement the interface `Parallel_Job` should inherit from
 `Abstract_Parallel_Job` and override a different procedure:
 
-```ada
+```ada linenums="1"
 type Example_Parallel_Job is new Jobs.Abstract_Parallel_Job with record
    ...
 end record;
@@ -228,7 +228,7 @@ procedure Execute
 
 A function to clone the job must be defined as well:
 
-```ada
+```ada linenums="1"
 function Clone_Job
   (Job    : Orka.Jobs.Parallel_Job_Ptr;
    Length : Positive) return Orka.Jobs.Dependency_Array
@@ -243,7 +243,7 @@ end Clone_Job;
 An instance of this job can then be created and parallelized with the
 function `Parallelize`:
 
-```ada
+```ada linenums="1"
 Job_1 : Jobs.Parallel_Job_Ptr := new Example_Parallel_Job;
 
 Job_2 : Jobs.Job_Ptr := Jobs.Parallelize
@@ -260,7 +260,7 @@ Some jobs may use subprograms from packages `:::ada Orka.Rendering` or `GL`,
 and thus need to run in a task that holds the OpenGL context. A job can
 specify this is the case by implementing the empty interface `GPU_Job`:
 
-```ada
+```ada linenums="1"
 type Render_Scene_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
    ...
 end record;
