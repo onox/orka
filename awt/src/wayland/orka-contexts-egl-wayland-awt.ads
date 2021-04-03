@@ -58,39 +58,10 @@ private
      is limited new Orka.Inputs.Pointers.Pointer_Input with null record;
 
    overriding
-   function Position_X (Object : AWT_Pointer) return GL.Types.Double;
+   function State (Object : AWT_Pointer) return Orka.Inputs.Pointers.Pointer_State;
 
    overriding
-   function Position_Y (Object : AWT_Pointer) return GL.Types.Double;
-
-   overriding
-   function Delta_X (Object : AWT_Pointer) return GL.Types.Double;
-
-   overriding
-   function Delta_Y (Object : AWT_Pointer) return GL.Types.Double;
-
-   overriding
-   function Scroll_X (Object : AWT_Pointer) return GL.Types.Double;
-
-   overriding
-   function Scroll_Y (Object : AWT_Pointer) return GL.Types.Double;
-
-   overriding
-   function Locked (Object : AWT_Pointer) return Boolean;
-
-   overriding
-   function Visible (Object : AWT_Pointer) return Boolean;
-
-   overriding
-   procedure Set_Visible (Object : in out AWT_Pointer; Visible : Boolean);
-
-   overriding
-   function Button_Pressed
-     (Object  : AWT_Pointer;
-      Subject : Orka.Inputs.Pointers.Button) return Boolean;
-
-   overriding
-   procedure Lock_Pointer (Object : in out AWT_Pointer; Locked : Boolean);
+   procedure Set_Mode (Object : in out AWT_Pointer; Mode : Orka.Inputs.Pointers.Pointer_Mode);
 
    type AWT_Window is limited new Standard.AWT.Wayland.Windows.Cursors.Animated_Cursor_Window
      and Orka.Windows.Window with

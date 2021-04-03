@@ -48,11 +48,6 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       Messages.Log (Debug, "  refresh: " & Orka.Terminals.Image (State.Refresh));
    end Print_Monitor;
 
-   use all type Standard.AWT.Inputs.Dimension;
-   use all type Standard.AWT.Inputs.Button_State;
-   use all type Standard.AWT.Inputs.Pointer_Button;
-   use all type Standard.AWT.Inputs.Pointer_Mode;
-
    ----------------------------------------------------------------------------
 
    overriding
@@ -69,77 +64,52 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       return State.Height;
    end Height;
 
-   overriding
-   function Position_X (Object : AWT_Pointer) return GL.Types.Double is
-   begin
-      return GL.Types.Double (Object.Window.State.Position (X));
-   end Position_X;
+   use all type Standard.AWT.Inputs.Pointer_Mode;
 
    overriding
-   function Position_Y (Object : AWT_Pointer) return GL.Types.Double is
+   function State (Object : AWT_Pointer) return Orka.Inputs.Pointers.Pointer_State is
+      State : constant Standard.AWT.Inputs.Pointer_State := Object.Window.State;
+
+      use all type Standard.AWT.Inputs.Dimension;
+      use all type Standard.AWT.Inputs.Button_State;
+      use all type Standard.AWT.Inputs.Pointer_Button;
+
+      use all type Orka.Inputs.Pointers.Button;
+      use all type Orka.Inputs.Pointers.Dimension;
+      use all type Orka.Inputs.Pointers.Pointer_Mode;
+
+      function To_Button
+        (Value : Standard.AWT.Inputs.Button_State) return Orka.Inputs.Pointers.Button_State
+      is (case Value is
+            when Pressed  => Orka.Inputs.Pointers.Pressed,
+            when Released => Orka.Inputs.Pointers.Released);
    begin
-      return GL.Types.Double (Object.Window.State.Position (Y));
-   end Position_Y;
+      return
+        (Buttons => (Left   => To_Button (State.Buttons (Left)),
+                     Right  => To_Button (State.Buttons (Right)),
+                     Middle => To_Button (State.Buttons (Middle))),
+         Mode    => (case State.Mode is
+                       when Visible => Visible,
+                       when Hidden  => Hidden,
+                       when Locked  => Locked),
+         Position => (X => GL.Types.Double (State.Position (X)),
+                      Y => GL.Types.Double (State.Position (Y))),
+         Relative => (X => GL.Types.Double (State.Relative (X)),
+                      Y => GL.Types.Double (State.Relative (Y))),
+         Scroll   => (X => GL.Types.Double (State.Scroll   (X)),
+                      Y => GL.Types.Double (State.Scroll   (Y))));
+   end State;
 
    overriding
-   function Delta_X (Object : AWT_Pointer) return GL.Types.Double is
+   procedure Set_Mode (Object : in out AWT_Pointer; Mode : Orka.Inputs.Pointers.Pointer_Mode) is
+      use all type Orka.Inputs.Pointers.Pointer_Mode;
    begin
-      return GL.Types.Double (Object.Window.State.Relative (X));
-   end Delta_X;
-
-   overriding
-   function Delta_Y (Object : AWT_Pointer) return GL.Types.Double is
-   begin
-      return GL.Types.Double (Object.Window.State.Relative (Y));
-   end Delta_Y;
-
-   overriding
-   function Scroll_X (Object : AWT_Pointer) return GL.Types.Double is
-   begin
-      return GL.Types.Double (Object.Window.State.Scroll (X));
-   end Scroll_X;
-
-   overriding
-   function Scroll_Y (Object : AWT_Pointer) return GL.Types.Double is
-   begin
-      return GL.Types.Double (Object.Window.State.Scroll (Y));
-   end Scroll_Y;
-
-   overriding
-   function Locked (Object : AWT_Pointer) return Boolean is
-   begin
-      return Object.Window.State.Mode = Locked;
-   end Locked;
-
-   overriding
-   function Visible (Object : AWT_Pointer) return Boolean is
-   begin
-      return Object.Window.State.Mode = Visible;
-   end Visible;
-
-   overriding
-   function Button_Pressed
-     (Object  : AWT_Pointer;
-      Subject : Orka.Inputs.Pointers.Button) return Boolean is
-   begin
-      return Object.Window.State.Buttons
-         (case Subject is
-            when Orka.Inputs.Pointers.Left   => Left,
-            when Orka.Inputs.Pointers.Right  => Right,
-            when Orka.Inputs.Pointers.Middle => Middle) = Pressed;
-   end Button_Pressed;
-
-   overriding
-   procedure Lock_Pointer (Object : in out AWT_Pointer; Locked : Boolean) is
-   begin
-      Object.Window.Set_Pointer_Mode (if Locked then Standard.AWT.Inputs.Locked else Visible);
-   end Lock_Pointer;
-
-   overriding
-   procedure Set_Visible (Object : in out AWT_Pointer; Visible : Boolean) is
-   begin
-      Object.Window.Set_Pointer_Mode (if Visible then Standard.AWT.Inputs.Visible else Hidden);
-   end Set_Visible;
+      Object.Window.Set_Pointer_Mode
+        (case Mode is
+           when Visible => Standard.AWT.Inputs.Visible,
+           when Hidden  => Standard.AWT.Inputs.Hidden,
+           when Locked  => Standard.AWT.Inputs.Locked);
+   end Set_Mode;
 
    ----------------------------------------------------------------------------
 
@@ -202,11 +172,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
          raise Constraint_Error;
       end if;
 
-      declare
-         Subject : AWT_Window renames AWT_Window (Window);
-      begin
-         Subject.Make_Current (Object.Context);
-      end;
+      AWT_Window (Window).Make_Current (Object.Context);
    end Make_Current;
 
    overriding
