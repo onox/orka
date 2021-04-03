@@ -30,13 +30,20 @@ package body Orka.Cameras.Look_From_Cameras is
 
    overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Inputs.Pointers.Right);
+      use all type Inputs.Pointers.Button_State;
+      use all type Inputs.Pointers.Dimension;
+      use all type Inputs.Pointers.Pointer_Mode;
+
+      Pointer_State : constant Inputs.Pointers.Pointer_State := Object.Input.State;
+      Using_Camera  : constant Boolean := Pointer_State.Buttons (Inputs.Pointers.Right) = Pressed;
+
+      Relative      : Inputs.Pointers.Coordinate renames Pointer_State.Relative;
    begin
-      Object.Input.Lock_Pointer (Using_Camera);
+      Object.Input.Set_Mode (if Using_Camera then Locked else Visible);
 
       if Using_Camera then
-         Object.Yaw   := Normalize_Angle (Object.Yaw   + Object.Input.Delta_X * Object.Scale (X));
-         Object.Pitch := Normalize_Angle (Object.Pitch + Object.Input.Delta_Y * Object.Scale (Y));
+         Object.Yaw   := Normalize_Angle (Object.Yaw   + Relative (X) * Object.Scale (X));
+         Object.Pitch := Normalize_Angle (Object.Pitch + Relative (Y) * Object.Scale (Y));
       end if;
    end Update;
 

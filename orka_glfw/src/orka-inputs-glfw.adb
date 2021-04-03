@@ -26,18 +26,18 @@ package body Orka.Inputs.GLFW is
    overriding
    procedure Set_Cursor_Mode
      (Object  : in out GLFW_Pointer_Input;
-      Mode    : Pointers.Default.Cursor_Mode)
+      Mode    : Pointers.Pointer_Mode)
    is
       package Mouse renames Standard.Glfw.Input.Mouse;
 
-      use all type Pointers.Default.Cursor_Mode;
+      use all type Pointers.Pointer_Mode;
    begin
       case Mode is
-         when Normal =>
+         when Visible =>
             Object.Window.Set_Cursor_Mode (Mouse.Normal);
          when Hidden =>
             Object.Window.Set_Cursor_Mode (Mouse.Hidden);
-         when Disabled =>
+         when Locked =>
             Object.Window.Set_Cursor_Mode (Mouse.Disabled);
       end case;
    end Set_Cursor_Mode;

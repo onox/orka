@@ -37,16 +37,24 @@ package body Orka.Cameras.Rotate_Around_Cameras is
 
    overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
-      Using_Camera : constant Boolean := Object.Input.Button_Pressed (Inputs.Pointers.Right);
+      use all type Inputs.Pointers.Button_State;
+      use all type Inputs.Pointers.Dimension;
+      use all type Inputs.Pointers.Pointer_Mode;
+
+      Pointer_State : constant Inputs.Pointers.Pointer_State := Object.Input.State;
+      Using_Camera  : constant Boolean := Pointer_State.Buttons (Inputs.Pointers.Right) = Pressed;
+
+      Relative      : Inputs.Pointers.Coordinate renames Pointer_State.Relative;
+      Scroll        : Inputs.Pointers.Coordinate renames Pointer_State.Scroll;
    begin
-      Object.Input.Lock_Pointer (Using_Camera);
+      Object.Input.Set_Mode (if Using_Camera then Locked else Visible);
 
       if Using_Camera then
-         Object.Alpha := Normalize_Angle (Object.Alpha + Object.Input.Delta_X * Object.Scale (X));
-         Object.Beta  := Normalize_Angle (Object.Beta  + Object.Input.Delta_Y * Object.Scale (Y));
+         Object.Alpha := Normalize_Angle (Object.Alpha + Relative (X) * Object.Scale (X));
+         Object.Beta  := Normalize_Angle (Object.Beta  + Relative (Y) * Object.Scale (Y));
       end if;
 
-      Object.Radius := Clamp_Distance (Object.Radius - Object.Input.Scroll_Y * Object.Scale (Z));
+      Object.Radius := Clamp_Distance (Object.Radius - Scroll (Y) * Object.Scale (Z));
    end Update;
 
    use Orka.Transforms.Doubles.Matrices;

@@ -63,9 +63,13 @@ package body Orka.Inputs.Joysticks.Default is
    overriding
    function State (Object : in out Pointer_Joystick_Input) return Joystick_State is
       use type GL.Types.Double;
+      use all type Inputs.Pointers.Dimension;
+      use all type Inputs.Pointers.Pointer_Mode;
 
-      function To_Button (Value : Boolean) return Button_State is
-        (if Value then Pressed else Released);
+      function To_Button (Value : Inputs.Pointers.Button_State) return Button_State is
+        (case Value is
+           when Inputs.Pointers.Pressed  => Pressed,
+           when Inputs.Pointers.Released => Released);
 
       function Clamp (Value, Minimum, Maximum : GL.Types.Double) return GL.Types.Double is
         (GL.Types.Double'Max (Minimum, GL.Types.Double'Min (Value, Maximum)));
@@ -74,22 +78,26 @@ package body Orka.Inputs.Joysticks.Default is
       Limit_Y : constant GL.Types.Double := 1.0 / Object.Scales (Y);
       Limit_Z : constant GL.Types.Double := 1.0 / Object.Scales (Z);
       Limit_W : constant GL.Types.Double := 1.0 / Object.Scales (W);
+
+      Pointer_State : constant Inputs.Pointers.Pointer_State := Object.Pointer.State;
    begin
-      if Object.Pointer.Locked then
-         Object.Axes (X) := Clamp (Object.Axes (X) + Object.Pointer.Delta_X, -Limit_X, Limit_X);
-         Object.Axes (Y) := Clamp (Object.Axes (Y) - Object.Pointer.Delta_Y, -Limit_Y, Limit_Y);
+      if Pointer_State.Mode = Locked then
+         Object.Axes (X) :=
+           Clamp (Object.Axes (X) + Pointer_State.Relative (X), -Limit_X, Limit_X);
+         Object.Axes (Y) :=
+           Clamp (Object.Axes (Y) - Pointer_State.Relative (Y), -Limit_Y, Limit_Y);
       end if;
-      Object.Axes (Z) := Clamp (Object.Axes (Z) + Object.Pointer.Scroll_X, -Limit_Z, Limit_Z);
-      Object.Axes (W) := Clamp (Object.Axes (W) - Object.Pointer.Scroll_Y, -Limit_W, Limit_W);
+      Object.Axes (Z) := Clamp (Object.Axes (Z) + Pointer_State.Relative (X), -Limit_Z, Limit_Z);
+      Object.Axes (W) := Clamp (Object.Axes (W) - Pointer_State.Relative (Y), -Limit_W, Limit_W);
 
       return Result : Joystick_State
         (Button_Count => 3,
          Axis_Count   => 4,
          Hat_Count    => 0)
       do
-         Result.Buttons (1) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Left));
-         Result.Buttons (2) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Right));
-         Result.Buttons (3) := To_Button (Object.Pointer.Button_Pressed (Inputs.Pointers.Middle));
+         Result.Buttons (1) := To_Button (Pointer_State.Buttons (Inputs.Pointers.Left));
+         Result.Buttons (2) := To_Button (Pointer_State.Buttons (Inputs.Pointers.Right));
+         Result.Buttons (3) := To_Button (Pointer_State.Buttons (Inputs.Pointers.Middle));
 
          Result.Axes (1) := Axis_Position (Object.Axes (X) * Object.Scales (X));
          Result.Axes (2) := Axis_Position (Object.Axes (Y) * Object.Scales (Y));

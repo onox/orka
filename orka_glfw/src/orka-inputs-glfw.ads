@@ -28,7 +28,7 @@ package Orka.Inputs.GLFW is
    overriding
    procedure Set_Cursor_Mode
      (Object  : in out GLFW_Pointer_Input;
-      Mode    : Pointers.Default.Cursor_Mode);
+      Mode    : Pointers.Pointer_Mode);
 
    procedure Set_Button_State
      (Object  : in out GLFW_Pointer_Input;

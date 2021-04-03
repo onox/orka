@@ -23,48 +23,29 @@ package Orka.Inputs.Pointers is
 
    type Button_State is (Released, Pressed);
 
+   type Pointer_Buttons is array (Button) of Button_State;
+
+   type Pointer_Mode is (Visible, Hidden, Locked);
+
+   type Dimension is (X, Y);
+
+   type Coordinate is array (Dimension) of GL.Types.Double;
+
+   type Pointer_State is record
+      Buttons  : Pointer_Buttons := (others => Released);
+      Mode     : Pointer_Mode    := Visible;
+
+      Position : Coordinate := (others => 0.0);
+      Relative : Coordinate := (others => 0.0);
+      Scroll   : Coordinate := (others => 0.0);
+   end record;
+
    type Pointer_Input is limited interface;
 
    type Pointer_Input_Ptr is not null access Pointer_Input'Class;
 
-   function Position_X (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  The X position of the pointer. Does not change while the pointer
-   --  is locked.
+   function State (Object : Pointer_Input) return Pointer_State is abstract;
 
-   function Position_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  The Y position of the pointer. Does not change while the pointer
-   --  is locked.
-
-   function Delta_X (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  Pointer movement in the X direction since previous frame. May
-   --  change irrespective of whether pointer is locked or not.
-
-   function Delta_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  Pointer movement in the Y direction since previous frame. May
-   --  change irrespective of whether pointer is locked or not.
-
-   function Scroll_X (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  Scroll movement of pointer in the X direction since the previous frame
-
-   function Scroll_Y (Object : Pointer_Input) return GL.Types.Double is abstract;
-   --  Scroll movement of pointer in the Y direction since the previous frame
-
-   function Locked (Object : Pointer_Input) return Boolean is abstract;
-
-   function Visible (Object : Pointer_Input) return Boolean is abstract;
-
-   procedure Lock_Pointer (Object : in out Pointer_Input; Locked : Boolean) is abstract;
-   --  Lock the pointer to the current position
-   --
-   --  The position of the pointer when queried via Position_X / Position_Y
-   --  will no longer change, but the movement relative to the previous
-   --  frame (Delta_X / Delta_Y) still can. The delta movement can be used
-   --  to control a camera using the pointer.
-
-   procedure Set_Visible (Object : in out Pointer_Input; Visible : Boolean) is abstract;
-
-   function Button_Pressed
-     (Object  : Pointer_Input;
-      Subject : Button) return Boolean is abstract;
+   procedure Set_Mode (Object : in out Pointer_Input; Mode : Pointer_Mode) is abstract;
 
 end Orka.Inputs.Pointers;

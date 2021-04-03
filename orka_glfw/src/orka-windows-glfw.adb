@@ -258,6 +258,7 @@ package body Orka.Windows.GLFW is
       Prev_Position_Y : constant GL.Types.Double := Object.Position_Y;
 
       use type GL.Types.Double;
+      use all type Orka.Inputs.Pointers.Pointer_Mode;
    begin
       Object.Scroll_X := 0.0;
       Object.Scroll_Y := 0.0;
@@ -269,12 +270,12 @@ package body Orka.Windows.GLFW is
         (Object.Position_X, Object.Position_Y);
 
       --  Keep track of Locked transitioned to True
-      if Object.Input.Locked then
+      if Object.Input.State.Mode = Locked then
          Object.Got_Locked := Object.Got_Locked or not Object.Last_Locked;
       else
          Object.Got_Locked := False;
       end if;
-      Object.Last_Locked := Object.Input.Locked;
+      Object.Last_Locked := Object.Input.State.Mode = Locked;
 
       if Object.Got_Locked and then
         (Object.Position_X /= Prev_Position_X or Object.Position_Y /= Prev_Position_Y)

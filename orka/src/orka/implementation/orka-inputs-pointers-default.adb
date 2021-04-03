@@ -17,92 +17,32 @@
 package body Orka.Inputs.Pointers.Default is
 
    overriding
-   function Position_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
-     (Object.X);
-
-   overriding
-   function Position_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
-     (Object.Y);
-
-   overriding
-   function Delta_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
-      use type GL.Types.Double;
+   function State (Object : Abstract_Pointer_Input) return Pointer_State is
    begin
-      return Object.Last_X - Object.Prev_X;
-   end Delta_X;
+      return Object.State;
+   end State;
 
    overriding
-   function Delta_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
-      use type GL.Types.Double;
+   procedure Set_Mode (Object : in out Abstract_Pointer_Input; Mode : Pointer_Mode) is
    begin
-      return Object.Last_Y - Object.Prev_Y;
-   end Delta_Y;
-
-   overriding
-   function Scroll_X (Object : Abstract_Pointer_Input) return GL.Types.Double is
-     (Object.Scroll_X);
-
-   overriding
-   function Scroll_Y (Object : Abstract_Pointer_Input) return GL.Types.Double is
-     (Object.Scroll_Y);
-
-   overriding
-   function Locked (Object : Abstract_Pointer_Input) return Boolean is
-     (Object.Locked);
-
-   overriding
-   function Visible (Object : Abstract_Pointer_Input) return Boolean is
-     (Object.Visible);
-
-   overriding
-   procedure Lock_Pointer (Object : in out Abstract_Pointer_Input; Locked : Boolean) is
-   begin
-      if Object.Locked /= Locked then
-         Object.Locked := Locked;
-         if Locked then
-            Abstract_Pointer_Input'Class (Object).Set_Cursor_Mode (Disabled);
-         else
-            Abstract_Pointer_Input'Class (Object).Set_Cursor_Mode
-              ((if Object.Visible then Normal else Hidden));
-         end if;
+      if Object.State.Mode /= Mode then
+         Object.State.Mode := Mode;
+         Abstract_Pointer_Input'Class (Object).Set_Cursor_Mode (Mode);
       end if;
-   end Lock_Pointer;
-
-   overriding
-   procedure Set_Visible (Object : in out Abstract_Pointer_Input; Visible : Boolean) is
-   begin
-      if Object.Visible /= Visible then
-         Object.Visible := Visible;
-         Abstract_Pointer_Input'Class (Object).Set_Cursor_Mode
-           ((if Visible then Normal else Hidden));
-      end if;
-   end Set_Visible;
-
-   overriding
-   function Button_Pressed
-     (Object  : Abstract_Pointer_Input;
-      Subject : Button) return Boolean is
-   begin
-      return Object.Buttons (Subject);
-   end Button_Pressed;
+   end Set_Mode;
 
    procedure Set_Position (Object : in out Abstract_Pointer_Input; X, Y : GL.Types.Double) is
    begin
-      if not Object.Locked then
-         Object.X := X;
-         Object.Y := Y;
-      end if;
+      Object.State.Relative :=
+        (X - Object.State.Position (Dimension'First),
+         Y - Object.State.Position (Dimension'Last));
 
-      Object.Prev_X := Object.Last_X;
-      Object.Prev_Y := Object.Last_Y;
-      Object.Last_X := X;
-      Object.Last_Y := Y;
+      Object.State.Position := (X, Y);
    end Set_Position;
 
    procedure Set_Scroll_Offset (Object : in out Abstract_Pointer_Input; X, Y : GL.Types.Double) is
    begin
-      Object.Scroll_X := X;
-      Object.Scroll_Y := Y;
+      Object.State.Scroll := (X, Y);
    end Set_Scroll_Offset;
 
    procedure Set_Button_State
@@ -110,7 +50,7 @@ package body Orka.Inputs.Pointers.Default is
       Subject : Button;
       State   : Button_State) is
    begin
-      Object.Buttons (Subject) := State = Pressed;
+      Object.State.Buttons (Subject) := State;
    end Set_Button_State;
 
 end Orka.Inputs.Pointers.Default;
