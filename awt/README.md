@@ -8,7 +8,11 @@
 
 Ada 2012 library for managing input devices and windows that can display 3D graphics.
 
-To display content rendered by OpenGL it is recommended to use [Orka][url-orka].
+It has a similar purpose as GLFW and SDL. To display graphics with OpenGL you need
+to use [Orka][url-orka].
+
+Currently there is only a Wayland backend for Linux. Hopefully in the future a
+backend for Windows will be added.
 
 ## Dependencies
 
@@ -18,11 +22,18 @@ In order to build awt, you need to have:
 
  * [Alire][url-alire]
 
-The Wayland backend requires Wayland 1.16 or higher.
+On Linux:
+
+ * Wayland 1.16 or higher
 
 ## Using the library
 
-TODO
+Clone this repository, [orka][url-orka], and [wayland-ada][url-wayland-ada],
+and make sure they are all in the same folder. Then add AWT to your application:
+
+```sh
+$ alr with awt --use=path/to/awt
+```
 
 ## Contributing
 
@@ -37,3 +48,4 @@ AWT is distributed under the terms of the [Apache License 2.0][url-apache].
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-contributing]: /CONTRIBUTING.md
   [url-orka]: https://github.com/onox/orka
+  [url-wayland-ada]: https://github.com/onox/wayland-ada
