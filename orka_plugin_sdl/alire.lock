@@ -89,6 +89,7 @@ versions = "~0.2.0"
 kind = "softlink"
 path = "file:../orka"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_egl"
 fulfilment = "linked"
@@ -99,6 +100,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka_egl"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
@@ -109,6 +111,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka_simd"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_transforms"
 fulfilment = "linked"
@@ -119,6 +122,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka_transforms"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -129,6 +133,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka_types"
 relative = true
+remote = false
 [[solution.state]]
 crate = "sdlada"
 fulfilment = "solved"

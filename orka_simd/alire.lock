@@ -13,4 +13,5 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka_types"
 relative = true
+remote = false
 
