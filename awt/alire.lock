@@ -41,6 +41,7 @@ versions = "~0.2.0"
 kind = "softlink"
 path = "file:../orka/orka"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_egl"
 fulfilment = "linked"
@@ -51,6 +52,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka/orka_egl"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
@@ -61,6 +63,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka/orka_simd"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_transforms"
 fulfilment = "linked"
@@ -71,6 +74,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka/orka_transforms"
 relative = true
+remote = false
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -81,6 +85,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../orka/orka_types"
 relative = true
+remote = false
 [[solution.state]]
 crate = "wayland_ada_scanner"
 fulfilment = "linked"
@@ -91,6 +96,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../wayland-ada/wayland_ada_scanner"
 relative = true
+remote = false
 [[solution.state]]
 crate = "wayland_client_ada"
 fulfilment = "linked"
@@ -101,6 +107,7 @@ versions = "^1.0.0"
 kind = "softlink"
 path = "file:../wayland-ada/wayland_client_ada"
 relative = true
+remote = false
 [[solution.state]]
 crate = "wayland_cursor_ada"
 fulfilment = "linked"
@@ -111,6 +118,7 @@ versions = "^1.0"
 kind = "softlink"
 path = "file:../wayland-ada/wayland_cursor_ada"
 relative = true
+remote = false
 [[solution.state]]
 crate = "wayland_egl_ada"
 fulfilment = "linked"
@@ -121,6 +129,7 @@ versions = "^1.0"
 kind = "softlink"
 path = "file:../wayland-ada/wayland_egl_ada"
 relative = true
+remote = false
 [[solution.state]]
 crate = "wayland_protocols_ada"
 fulfilment = "linked"
@@ -131,4 +140,5 @@ versions = "^1.0"
 kind = "softlink"
 path = "file:../wayland-ada/wayland_protocols_ada"
 relative = true
+remote = false
 
