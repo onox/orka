@@ -36,10 +36,7 @@ package body Test_Transforms_Singles_Matrices is
    function To_Radians (Angle : Float_32) return Float_32 renames Vectors.To_Radians;
 
    function Is_Equivalent (Expected, Result : Float_32) return Boolean is
-      Epsilon  : constant Float_32 := 2.0 ** (1 - Float_32'Model_Mantissa);
-   begin
-      return Result in Expected - 2.0 * Epsilon .. Expected + 2.0 * Epsilon;
-   end Is_Equivalent;
+     (abs (Result - Expected) <= 2.0 * Float_32'Model_Epsilon);
 
    procedure Assert_Equivalent (Expected, Result : Vector4; Column : Index_Homogeneous) is
    begin

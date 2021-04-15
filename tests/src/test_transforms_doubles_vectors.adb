@@ -31,10 +31,7 @@ package body Test_Transforms_Doubles_Vectors is
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
    function Is_Equivalent (Expected, Result : Float_64) return Boolean is
-      Epsilon  : constant Float_64 := 2.0 ** (1 - Float_64'Model_Mantissa);
-   begin
-      return Result in Expected - Epsilon .. Expected + Epsilon;
-   end Is_Equivalent;
+     (abs (Result - Expected) <= Float_64'Model_Epsilon);
 
    use AUnit.Assertions;
 

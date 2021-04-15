@@ -38,10 +38,7 @@ package body Test_Transforms_Singles_Quaternions is
    function To_Radians (Angle : Float_32) return Float_32 renames Vectors.To_Radians;
 
    function Is_Equivalent (Expected, Result : Float_32) return Boolean is
-      Epsilon : constant Float_32 := Float_32'Model_Epsilon;
-   begin
-      return Result in Expected - Epsilon .. Expected + Epsilon;
-   end Is_Equivalent;
+     (abs (Result - Expected) <= Float_32'Model_Epsilon);
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
