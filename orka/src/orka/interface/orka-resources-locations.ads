@@ -53,7 +53,7 @@ package Orka.Resources.Locations is
    --  If the file at the given path could not be created or written to
    --  for any reason then any kind of error is raised.
 
-   type Location_Access is access Location'Class;
+   type Location_Access is access all Location'Class;
 
    subtype Location_Ptr is not null Location_Access;
 
