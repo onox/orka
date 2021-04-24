@@ -374,7 +374,7 @@ package body Orka.Features.Terrain is
       Flattening      : GL.Types.Single := 0.0;
       Side            : Boolean         := True) return Spheroid_Parameters
    is
-      use type GL.Types.Single;
+      use type GL.Types.Single_Array;
 
       --  Convert from geodetic coordinates to geocentric coordinates
       --  using the semi-major axis and the flattening of the sphere.

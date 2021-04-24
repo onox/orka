@@ -66,7 +66,7 @@ package Orka.Features.Terrain is
       Min_LoD_Standard_Dev : LoD_Deviation;
    end record;
 
-   type Spheroid_Parameters is array (Positive range 1 .. 4) of GL.Types.Single;
+   subtype Spheroid_Parameters is GL.Types.Single_Array (1 .. 4);
 
    type Visible_Tile_Array is array (Positive range <>) of Boolean;
 
