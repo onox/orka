@@ -455,7 +455,7 @@ package body Orka.Features.Atmosphere is
       --  The precomputations require specific GLSL programs for each
       --  precomputation step
       Module_VS : constant Modules.Module
-        := Modules.Create_Module (Object.Location, VS => "oversized-triangle.vert");
+        := Modules.Create_Module (Object.Location, VS => "atmosphere/oversized-triangle.vert");
 
       Module_GS : constant Modules.Module
         := Modules.Create_Module (Object.Location, GS => "atmosphere/layer.geom");
