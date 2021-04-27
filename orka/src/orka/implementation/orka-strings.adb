@@ -37,4 +37,41 @@ package body Orka.Strings is
    function Lines (Value : String) return Positive is
      (SF.Count (Strip_Line_Term (Value), "" & L.LF) + 1);
 
+   function Split
+     (Value     : String;
+      Separator : String  := " ";
+      Maximum   : Natural := 0) return String_List
+   is
+      Lines : constant String := Strip_Line_Term (Value);
+
+      Index : Positive := Lines'First;
+
+      Auto_Count : constant Positive := SF.Count (Lines, Separator) + 1;
+      Count : constant Positive :=
+        (if Maximum > 0 then Positive'Min (Maximum, Auto_Count) else Auto_Count);
+   begin
+      return Result : String_List (1 .. Count) do
+         for I in Result'First .. Result'Last - 1 loop
+            declare
+               Next_Index : constant Positive := SF.Index (Lines, Separator, Index);
+            begin
+               Result (I) := SU.To_Unbounded_String (Lines (Index .. Next_Index - 1));
+               Index := Next_Index + Separator'Length;
+            end;
+         end loop;
+         Result (Result'Last) := SU.To_Unbounded_String (Lines (Index .. Lines'Last));
+      end return;
+   end Split;
+
+   function Join (List : String_List; Separator : String) return String is
+      Result : SU.Unbounded_String;
+   begin
+      for Index in List'First .. List'Last - 1 loop
+         SU.Append (Result, List (Index));
+         SU.Append (Result, Separator);
+      end loop;
+      SU.Append (Result, List (List'Last));
+      return +Result;
+   end Join;
+
 end Orka.Strings;

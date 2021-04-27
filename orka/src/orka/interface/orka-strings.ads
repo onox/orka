@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Unbounded;
+
 private package Orka.Strings is
    pragma Preelaborate;
 
@@ -25,5 +27,19 @@ private package Orka.Strings is
 
    function Lines (Value : String) return Positive;
    --  Return the number of lines that the string contains
+
+   package SU renames Ada.Strings.Unbounded;
+
+   function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
+   function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
+
+   type String_List is array (Positive range <>) of SU.Unbounded_String;
+
+   function Split
+     (Value     : String;
+      Separator : String  := " ";
+      Maximum   : Natural := 0) return String_List;
+
+   function Join (List : String_List; Separator : String) return String;
 
 end Orka.Strings;
