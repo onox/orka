@@ -18,7 +18,6 @@ with System.Multiprocessors.Dispatching_Domains;
 
 with Ada.Exceptions;
 with Ada.Strings.Fixed;
-with Ada.Text_IO;
 
 with Orka.OS;
 
@@ -40,7 +39,7 @@ package body Orka.Jobs.Workers is
       Executors.Execute_Jobs (Name, Executors.Queues.CPU, Queue);
    exception
       when Error : others =>
-         Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
+         Orka.OS.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
    end Worker_Task;
 
    function Make_Workers return Worker_Array is

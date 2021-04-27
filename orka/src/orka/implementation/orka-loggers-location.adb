@@ -17,7 +17,6 @@
 with Ada.Characters.Latin_1;
 with Ada.Exceptions;
 with Ada.Strings.Unbounded;
-with Ada.Text_IO;
 
 with Orka.Containers.Ring_Buffers;
 with Orka.Loggers.Formatting;
@@ -119,7 +118,7 @@ package body Orka.Loggers.Location is
       end loop;
    exception
       when Error : others =>
-         Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
+         Orka.OS.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
    end Logger_Task;
 
    protected type Location_Logger (Min_Level : Severity) is new Logger with

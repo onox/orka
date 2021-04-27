@@ -17,7 +17,6 @@
 with Ada.Containers.Vectors;
 with Ada.Exceptions;
 with Ada.Real_Time;
-with Ada.Text_IO;
 
 with Orka.Containers.Ring_Buffers;
 with Orka.OS;
@@ -262,7 +261,7 @@ package body Orka.Resources.Loader is
             end;
          exception
             when Error : others =>
-               Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
+               Orka.OS.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
                Promise.Set_Failed (Error);
          end;
 
@@ -272,7 +271,7 @@ package body Orka.Resources.Loader is
       end loop;
    exception
       when Error : others =>
-         Ada.Text_IO.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
+         Orka.OS.Put_Line (Name & ": " & Ada.Exceptions.Exception_Information (Error));
    end Loader;
 
 end Orka.Resources.Loader;

@@ -14,9 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
-
 with Orka.Loggers.Formatting;
+with Orka.OS;
 
 package body Orka.Loggers.Terminal is
 
@@ -28,11 +27,12 @@ package body Orka.Loggers.Terminal is
          ID      : Natural;
          Message : String)
       is
-         package IO renames Ada.Text_IO;
+         use all type Orka.OS.File_Kind;
       begin
          if Level <= Min_Level then
-            IO.Put_Line ((if Level = Error then IO.Standard_Error else IO.Standard_Output),
-              Formatting.Format_Message (From, Kind, Level, ID, Message));
+            Orka.OS.Put_Line
+              (Formatting.Format_Message (From, Kind, Level, ID, Message),
+               (if Level = Error then Standard_Error else Standard_Output));
          end if;
       end Log;
    end Logger_Object;

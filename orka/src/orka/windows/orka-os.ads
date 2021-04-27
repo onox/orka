@@ -23,4 +23,8 @@ package Orka.OS is
    function Monotonic_Clock return Duration
      with Inline;
 
+   type File_Kind is (Standard_Error, Standard_Output);
+
+   procedure Put_Line (Value : String; Kind : File_Kind := Standard_Output);
+
 end Orka.OS;
