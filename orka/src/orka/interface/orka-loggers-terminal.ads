@@ -23,7 +23,6 @@ package Orka.Loggers.Terminal is
         (From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String);
    end Logger_Object;
 

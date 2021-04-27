@@ -73,10 +73,9 @@ package body Orka.Logging is
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) is
    begin
-      Current_Logger.Log (From, Kind, Level, ID, Message);
+      Current_Logger.Log (From, Kind, Level, Message);
    end Log;
 
    package body Messages is
@@ -85,7 +84,7 @@ package body Orka.Logging is
 
       procedure Log (Level : Severity; Message : String) is
       begin
-         Orka.Logging.Log (From, Kind, Level, ID, Message);
+         Orka.Logging.Log (From, Kind, Level, Message);
       end Log;
    end Messages;
 

@@ -45,7 +45,6 @@ package Orka.Logging is
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String);
    --  Log the message using the logger
    --
@@ -53,7 +52,6 @@ package Orka.Logging is
 
    generic
       From : Source;
-      ID   : Natural := 0;
    package Messages is
       procedure Log (Level : Severity; Message : String);
    end Messages;

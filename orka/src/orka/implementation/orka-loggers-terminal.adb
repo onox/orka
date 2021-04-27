@@ -24,14 +24,13 @@ package body Orka.Loggers.Terminal is
         (From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String)
       is
          use all type Orka.OS.File_Kind;
       begin
          if Level <= Min_Level then
             Orka.OS.Put_Line
-              (Formatting.Format_Message (From, Kind, Level, ID, Message),
+              (Formatting.Format_Message (From, Kind, Level, Message),
                (if Level = Error then Standard_Error else Standard_Output));
          end if;
       end Log;

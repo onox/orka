@@ -41,7 +41,6 @@ package body Orka.Loggers.Location is
          From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String);
 
       entry Dequeue (Request : out Log_Request; Stop : out Boolean);
@@ -60,16 +59,15 @@ package body Orka.Loggers.Location is
          From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String) is
       begin
          if not Messages.Is_Full and not Has_Stopped then
             Messages.Add_Last
               ((Path    => Path,
                 Message => SU.To_Unbounded_String
-                  (Formatting.Format_Message_No_Color (From, Kind, Level, ID, Message) & L.LF)));
+                  (Formatting.Format_Message_No_Color (From, Kind, Level, Message) & L.LF)));
          else
-            Orka.Loggers.Terminal.Logger.Log (From, Kind, Level, ID, Message);
+            Orka.Loggers.Terminal.Logger.Log (From, Kind, Level, Message);
          end if;
       end Enqueue;
 
@@ -127,7 +125,6 @@ package body Orka.Loggers.Location is
         (From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String);
 
       procedure Set_Path (Path : String);
@@ -140,11 +137,10 @@ package body Orka.Loggers.Location is
         (From    : Source;
          Kind    : Message_Type;
          Level   : Severity;
-         ID      : Natural;
          Message : String) is
       begin
          if Level <= Min_Level then
-            Queue.Enqueue (File_Path, From, Kind, Level, ID, Message);
+            Queue.Enqueue (File_Path, From, Kind, Level, Message);
          end if;
       end Log;
 

@@ -22,7 +22,6 @@ package body Orka.Loggers.Formatting is
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) return String
    is
       Level_Color : constant Terminals.Color
@@ -37,14 +36,13 @@ package body Orka.Loggers.Formatting is
       return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
              " " &
              Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             (if ID > 0 then ID'Image & ": " else " ") & Terminals.Strip_Line_Term (Message);
+             " " & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 
    function Format_Message_No_Color
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) return String
    is
       Time_Image : constant String := Terminals.Time_Image;
@@ -52,7 +50,7 @@ package body Orka.Loggers.Formatting is
       return "[" & Time_Image & " " & Level'Image & "]" &
              " " &
              "[" & From'Image & ":" & Kind'Image & "]" &
-             (if ID > 0 then ID'Image & ": " else " ") & Terminals.Strip_Line_Term (Message);
+             " " & Terminals.Strip_Line_Term (Message);
    end Format_Message_No_Color;
 
 end Orka.Loggers.Formatting;

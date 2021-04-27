@@ -63,7 +63,7 @@ package body Orka.Debug is
          GL.Errors.Raise_Exception_On_OpenGL_Error;
       end if;
 
-      Logging.Log (Source, Loggers.Message_Type (Kind), Severity, Natural (ID), Message);
+      Logging.Log (Source, Loggers.Message_Type (Kind), Severity, Message);
 
       if Debug_Synchronous and then (Source = OpenGL and Kind = Error) then
          GL.Errors.Raise_Exception_On_OpenGL_Error;

@@ -21,14 +21,12 @@ private package Orka.Loggers.Formatting is
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) return String;
 
    function Format_Message_No_Color
      (From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) return String;
 
 end Orka.Loggers.Formatting;

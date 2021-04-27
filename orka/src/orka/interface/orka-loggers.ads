@@ -34,7 +34,6 @@ package Orka.Loggers is
       From    : Source;
       Kind    : Message_Type;
       Level   : Severity;
-      ID      : Natural;
       Message : String) is abstract
    with Synchronization => By_Protected_Procedure;
 
