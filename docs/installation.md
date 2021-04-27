@@ -55,7 +55,7 @@ In order to build and use Orka you need to have:
         | ARB\_copy\_image                     | 4.3    | Textures      |
         | ARB\_multi\_draw\_indirect           | 4.3    | glTF          |
         | ARB\_shader\_storage\_buffer\_object | 4.3    |               |
-        | ARB\_program\_interface\_query       | 4.3    | Subroutines   |
+        | ARB\_program\_interface\_query       | 4.3    |               |
         | ARB\_internalformat\_query2          | 4.3    | KTX writer    |
         | ARB\_texture\_storage\_multisample   | 4.3    | Textures      |
         | ARB\_texture\_storage                | 4.2    | Textures      |

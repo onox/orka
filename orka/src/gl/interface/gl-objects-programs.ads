@@ -38,10 +38,6 @@ package GL.Objects.Programs is
 
    procedure Use_Program (Subject : Program);
    --  Use the shaders of the given program during rendering
-   --
-   --  If you have subroutines in some of its shaders, you must
-   --  subsequently call Set_Uniform_Subroutines, because the subroutine
-   --  state is completely lost after having called Use_Program.
 
    procedure Set_Separable (Subject : Program; Separable : Boolean);
    function Separable (Subject : Program) return Boolean;
@@ -82,89 +78,8 @@ package GL.Objects.Programs is
      (Types.Debug.Program);
 
    Uniform_Inactive_Error    : exception;
-   Subroutine_Inactive_Error : exception;
-
-   -----------------------------------------------------------------------------
-   --                               Subroutines                               --
-   -----------------------------------------------------------------------------
-
-   subtype Subroutine_Index_Type is UInt;
-   subtype Uniform_Location_Type is Int range -1 .. Int'Last;
-
-   type Subroutine_Index_Array is array (Size range <>) of Subroutine_Index_Type;
-
-   Invalid_Index : constant Subroutine_Index_Type;
-
-   function Subroutine_Index
-     (Object : Program;
-      Shader : Shaders.Shader_Type;
-      Name   : String) return Subroutine_Index_Type;
-   --  Return the index of the subroutine function given its name
-   --
-   --  Raises the Subroutine_Inactive_Error exception if the name
-   --  does not exist or is unused.
-
-   function Subroutine_Uniform_Index
-     (Object : Program;
-      Shader : Shaders.Shader_Type;
-      Name   : String) return Subroutine_Index_Type;
-   --  Return the index of the subroutine uniform given its name
-   --
-   --  Raises the Uniform_Inactive_Error exception if the name
-   --  does not exist or is unused.
-
-   function Subroutine_Uniform_Location
-     (Object : Program;
-      Shader : Shaders.Shader_Type;
-      Name   : String) return Uniform_Location_Type;
-   --  Return the location of a subroutine uniform
-   --
-   --  The location of the uniform is used when setting the subroutine
-   --  function (using the index of the function) that should be used
-   --  during rendering.
-
-   function Subroutine_Indices_Uniform
-     (Object : Program;
-      Shader : Shaders.Shader_Type;
-      Index  : Subroutine_Index_Type) return Subroutine_Index_Array;
-   --  Return the indices of compatible subroutines for the given subroutine uniform
-
-   function Subroutine_Uniform_Locations
-     (Object : Program;
-      Shader : Shaders.Shader_Type) return Size;
-   --  Return number of active subroutine uniform locations
-   --
-   --  All locations between 0 .. Subroutine_Uniform_Locations'Result - 1
-   --  are active locations. A subroutine uniform that is an array has one
-   --  index, but multiple locations.
-   --
-   --  This function is used to determine length of array given to
-   --  Set_Uniform_Subroutines.
-
-   procedure Set_Uniform_Subroutines (Shader : Shaders.Shader_Type; Indices : UInt_Array)
-     with Pre => Indices'First = 0;
-   --  Use the given indices of the subroutine functions to set the active
-   --  subroutine uniforms
-   --
-   --  Size of Indices must be equal to Subroutine_Uniform_Locations.
-   --  You must call this program after Programs.Use_Program, Pipelines.Bind,
-   --  or Pipelines.Use_Program_Stages.
-   --
-   --  This procedure can be used as follows:
-   --
-   --  1. Use Subroutine_Uniform_Locations to create a new UInt_Array
-   --     with the correct length.
-   --  2. Call Subroutine_Index to get the index of a subroutine function.
-   --     This will be a *value* in the array.
-   --  3. Call Subroutine_Uniform_Location to get the location of a subroutine
-   --     uniform. This will be a *key* in the array.
-   --  4. Assign the value (function index) to the key (uniform location) in
-   --     the array.
-   --  5. Repeat steps 2 to 4 for all active subroutine uniforms.
 
 private
-
-   Invalid_Index : constant Subroutine_Index_Type := 16#FFFFFFFF#;
 
    type Program is new GL_Object with null record;
 

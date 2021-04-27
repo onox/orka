@@ -48,26 +48,9 @@ private package GL.Enums is
                               Program_Input,
                               Program_Output,
                               Buffer_Variable,
-                              Shader_Storage_Block,
-                              Vertex_Subroutine,
-                              Tess_Control_Subroutine,
-                              Tess_Evaluation_Subroutine,
-                              Geometry_Subroutine,
-                              Fragment_Subroutine,
-                              Compute_Subroutine,
-                              Vertex_Subroutine_Uniform,
-                              Tess_Control_Subroutine_Uniform,
-                              Tess_Evaluation_Subroutine_Uniform,
-                              Geometry_Subroutine_Uniform,
-                              Fragment_Subroutine_Uniform,
-                              Compute_Subroutine_Uniform);
+                              Shader_Storage_Block);
 
-   type Program_Interface_Param is (Active_Resources, Max_Name_Length,
-                                    Max_Num_Active_Variables, Max_Num_Compatible_Subroutines);
-
-   type Program_Resource_Param is (Num_Compatible_Subroutines,
-                                   Compatible_Subroutines,
-                                   Is_Per_Patch,
+   type Program_Resource_Param is (Is_Per_Patch,
                                    Name_Length, Resource_Type,
                                    Array_Size, Offset, Block_Index,
                                    Array_Stride, Matrix_Stride, Is_Row_Major,
@@ -161,30 +144,10 @@ private
                               Program_Input                      => 16#92E3#,
                               Program_Output                     => 16#92E4#,
                               Buffer_Variable                    => 16#92E5#,
-                              Shader_Storage_Block               => 16#92E6#,
-                              Vertex_Subroutine                  => 16#92E8#,
-                              Tess_Control_Subroutine            => 16#92E9#,
-                              Tess_Evaluation_Subroutine         => 16#92EA#,
-                              Geometry_Subroutine                => 16#92EB#,
-                              Fragment_Subroutine                => 16#92EC#,
-                              Compute_Subroutine                 => 16#92ED#,
-                              Vertex_Subroutine_Uniform          => 16#92EE#,
-                              Tess_Control_Subroutine_Uniform    => 16#92EF#,
-                              Tess_Evaluation_Subroutine_Uniform => 16#92F0#,
-                              Geometry_Subroutine_Uniform        => 16#92F1#,
-                              Fragment_Subroutine_Uniform        => 16#92F2#,
-                              Compute_Subroutine_Uniform         => 16#92F3#);
+                              Shader_Storage_Block               => 16#92E6#);
    for Program_Interface'Size use Low_Level.Enum'Size;
 
-   for Program_Interface_Param use (Active_Resources               => 16#92F5#,
-                                    Max_Name_Length                => 16#92F6#,
-                                    Max_Num_Active_Variables       => 16#92F7#,
-                                    Max_Num_Compatible_Subroutines => 16#92F8#);
-   for Program_Interface_Param'Size use Low_Level.Enum'Size;
-
-   for Program_Resource_Param use (Num_Compatible_Subroutines           => 16#8E4A#,
-                                   Compatible_Subroutines               => 16#8E4B#,
-                                   Is_Per_Patch                         => 16#92E7#,
+   for Program_Resource_Param use (Is_Per_Patch                         => 16#92E7#,
                                    Name_Length                          => 16#92F9#,
                                    Resource_Type                        => 16#92FA#,
                                    Array_Size                           => 16#92FB#,

@@ -690,9 +690,6 @@ private package GL.API is
    package Get_Program_Info_Log is new Loader.String_Getter_With_4_Params
      ("glGetProgramInfoLog", Size, UInt);
 
-   package Uniform_Subroutines is new Loader.Procedure_With_3_Params
-     ("glUniformSubroutinesuiv", Objects.Shaders.Shader_Type, Size, UInt_Array);
-
    package Use_Program is new Loader.Procedure_With_1_Param
      ("glUseProgram", UInt);
 
@@ -716,10 +713,6 @@ private package GL.API is
    --                    Program interfaces and resources                     --
    -----------------------------------------------------------------------------
 
-   package Get_Program_Interface is new Loader.Getter_With_4_Params
-     ("glGetProgramInterfaceiv", UInt, Enums.Program_Interface,
-      Enums.Program_Interface_Param, Low_Level.Int_Array);
-
    package Get_Program_Resource_Index is new Loader.Function_With_3_Params
      ("glGetProgramResourceIndex", UInt, Enums.Program_Interface,
       C.char_array, UInt);
@@ -727,10 +720,6 @@ private package GL.API is
    package Get_Program_Resource is new Loader.Array_Getter_With_8_Params
      ("glGetProgramResourceiv", UInt, Enums.Program_Interface,
       UInt, Size, Enums.Program_Resource_Array, Int, Int_Array);
-
-   package Get_Program_Resource_Location is new Loader.Function_With_3_Params
-     ("glGetProgramResourceLocation", UInt, Enums.Program_Interface,
-      C.char_array, Int);
 
    -----------------------------------------------------------------------------
    --                                Pipelines                                --

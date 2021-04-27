@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
-
 with GL.Low_Level.Enums;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Textures;
@@ -167,38 +165,6 @@ package Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   type Uniform_Subroutine (<>) is tagged limited private;
-
-   function Is_Compatible
-     (Object : Uniform_Subroutine;
-      Index  : Subroutine_Index) return Boolean;
-   --  Return True if the index is a compatible subroutine function
-   --  for the subroutine uniform, False otherwise
-
-   procedure Set_Function
-     (Object : Uniform_Subroutine;
-      Name   : String)
-   with Inline;
-   --  Select the given subroutine function to be used by the
-   --  subroutine uniform
-   --
-   --  This procedure is a shortcut for Set_Function (Index (Name)).
-
-   procedure Set_Function
-     (Object : Uniform_Subroutine;
-      Index  : Subroutine_Index)
-   with Pre => Object.Is_Compatible (Index);
-   --  Select the given subroutine function to be used by the
-   --  subroutine uniform
-
-   function Index
-     (Object : Uniform_Subroutine;
-      Name   : String) return Subroutine_Index;
-   --  Return the index of the subroutine function identified
-   --  by the given name
-
-   -----------------------------------------------------------------------------
-
    function Create_Uniform_Sampler
      (Object : Program;
       Name   : String) return Uniform_Sampler;
@@ -206,11 +172,6 @@ package Orka.Rendering.Programs.Uniforms is
    function Create_Uniform_Image
      (Object : Program;
       Name   : String) return Uniform_Image;
-
-   function Create_Uniform_Subroutine
-     (Object : in out Program;
-      Shader : GL.Objects.Shaders.Shader_Type;
-      Name   : String) return Uniform_Subroutine;
 
    function Create_Uniform_Variable
      (Object : Program;
@@ -232,16 +193,6 @@ private
 
    type Uniform_Image (Kind : LE.Resource_Type) is tagged record
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
-   end record;
-
-   package Indices_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => GL.Objects.Programs.Subroutine_Index_Array,
-      "=" => GL.Objects.Programs."=");
-
-   type Uniform_Subroutine (Program : access Programs.Program) is tagged limited record
-      Location : Uniform_Location;
-      Indices  : Indices_Holder.Holder;
-      Shader   : GL.Objects.Shaders.Shader_Type;
    end record;
 
 end Orka.Rendering.Programs.Uniforms;

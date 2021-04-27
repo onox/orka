@@ -294,38 +294,6 @@ package body Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   function Is_Compatible
-     (Object : Uniform_Subroutine;
-      Index  : Subroutine_Index) return Boolean
-   is
-      use type GL.Types.UInt;
-   begin
-      return (for some Function_Index of Object.Indices.Element => Index = Function_Index);
-   end Is_Compatible;
-
-   procedure Set_Function
-     (Object : Uniform_Subroutine;
-      Name   : String) is
-   begin
-      Object.Set_Function (Object.Index (Name));
-   end Set_Function;
-
-   procedure Set_Function
-     (Object : Uniform_Subroutine;
-      Index  : Subroutine_Index) is
-   begin
-      Object.Program.Set_Subroutine_Function (Object.Shader, Object.Location, Index);
-   end Set_Function;
-
-   function Index
-     (Object : Uniform_Subroutine;
-      Name   : String) return Subroutine_Index is
-   begin
-      return Object.Program.GL_Program.Subroutine_Index (Object.Shader, Name);
-   end Index;
-
-   -----------------------------------------------------------------------------
-
    function Create_Uniform_Sampler
      (Object : Program;
       Name   : String) return Uniform_Sampler
@@ -355,24 +323,6 @@ package body Orka.Rendering.Programs.Uniforms is
          raise Uniform_Type_Error with
            "Uniform " & Name & " has unexpected image type " & Image_Kind'Image;
    end Create_Uniform_Image;
-
-   function Create_Uniform_Subroutine
-     (Object : in out Program;
-      Shader : GL.Objects.Shaders.Shader_Type;
-      Name   : String) return Uniform_Subroutine
-   is
-      Index : constant GL.Objects.Programs.Subroutine_Index_Type
-        := Object.GL_Program.Subroutine_Uniform_Index (Shader, Name);
-
-      Indices : constant GL.Objects.Programs.Subroutine_Index_Array
-        := Object.GL_Program.Subroutine_Indices_Uniform (Shader, Index);
-   begin
-      return Uniform_Subroutine'
-        (Location => Object.GL_Program.Subroutine_Uniform_Location (Shader, Name),
-         Indices  => Indices_Holder.To_Holder (Indices),
-         Program  => Object'Access,
-         Shader   => Shader);
-   end Create_Uniform_Subroutine;
 
    function Create_Uniform_Variable
      (Object : Program;

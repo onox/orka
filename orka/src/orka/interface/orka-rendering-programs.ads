@@ -14,10 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
+private with GL.Objects.Programs;
 
-with GL.Objects.Programs;
-with GL.Objects.Shaders;
 with GL.Types.Compute;
 
 with Orka.Rendering.Buffers;
@@ -28,9 +26,6 @@ limited with Orka.Rendering.Programs.Uniforms;
 package Orka.Rendering.Programs is
    pragma Preelaborate;
 
-   subtype Uniform_Location is GL.Objects.Programs.Uniform_Location_Type;
-   subtype Subroutine_Index is GL.Objects.Programs.Subroutine_Index_Type;
-
    type Program is tagged private;
 
    function Create_Program (Module    : Programs.Modules.Module;
@@ -39,23 +34,8 @@ package Orka.Rendering.Programs is
    function Create_Program (Modules   : Programs.Modules.Module_Array;
                             Separable : Boolean := False) return Program;
 
-   function Has_Subroutines (Object : Program) return Boolean;
-
-   procedure Use_Subroutines (Object : in out Program)
-     with Pre => Object.Has_Subroutines;
-   --  Use the selected subroutines in the current program
-   --
-   --  This procedure only needs to be called if a different
-   --  subroutine function has been selected _after_ Use_Program
-   --  was called. If you select the subroutine functions before
-   --  calling Use_Program, then Use_Subroutines will be called
-   --  automatically.
-
    procedure Use_Program (Object : in out Program);
    --  Use the program during rendering
-   --
-   --  If one or more shader stages have subroutines, then these are
-   --  used as well (that is, Use_Subroutines is called automatically).
 
    function Compute_Work_Group_Size
      (Object : Program) return GL.Types.Compute.Dimension_Size_Array;
@@ -84,16 +64,6 @@ package Orka.Rendering.Programs is
    --  Name must be a GLSL uniform image. A Uniforms.Uniform_Inactive_Error
    --  exception is raised if the name is not defined in any of the attached shaders.
 
-   function Uniform_Subroutine
-     (Object : in out Program;
-      Shader : GL.Objects.Shaders.Shader_Type;
-      Name   : String) return Uniforms.Uniform_Subroutine;
-   --  Return the uniform subroutine that has the given name
-   --
-   --  Name must be a GLSL uniform subroutine. A Uniforms.Uniform_Inactive_Error
-   --  exception is raised if the name is not defined in any of the attached
-   --  shaders.
-
    function Uniform (Object : Program; Name : String) return Uniforms.Uniform;
    --  Return the uniform that has the given name
    --
@@ -115,27 +85,8 @@ package Orka.Rendering.Programs is
 
 private
 
-   package Subroutines_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => GL.Types.UInt_Array,
-      "=" => GL.Types."=");
-
-   type Subroutines_Array is array (GL.Objects.Shaders.Shader_Type) of Subroutines_Holder.Holder;
-
-   type Stages_Array is array (GL.Objects.Shaders.Shader_Type) of Boolean;
-
    type Program is tagged record
-      GL_Program  : GL.Objects.Programs.Program;
-      Subroutines : Subroutines_Array;
-      Stages      : Stages_Array := (others => False);
-      Has_Subroutines      : Boolean := False;
-      Subroutines_Modified : Boolean := False;
+      GL_Program : GL.Objects.Programs.Program;
    end record;
-
-   procedure Set_Subroutine_Function
-     (Object   : in out Program;
-      Shader   : GL.Objects.Shaders.Shader_Type;
-      Location : Uniform_Location;
-      Index    : Subroutine_Index)
-   with Pre => Object.Has_Subroutines and then not Object.Subroutines (Shader).Is_Empty;
 
 end Orka.Rendering.Programs;

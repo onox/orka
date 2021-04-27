@@ -37,27 +37,6 @@ package body Orka.Rendering.Programs is
          if not Result.GL_Program.Link_Status then
             raise Program_Link_Error with Result.GL_Program.Info_Log;
          end if;
-
-         --  Construct arrays of subroutine indices per shader kind
-         Result.Has_Subroutines := False;
-         Result.Subroutines_Modified := False;
-
-         for Shader_Kind in Result.Stages'Range loop
-            if Result.Stages (Shader_Kind) then
-               declare
-                  Locations : constant GL.Types.Size
-                    := Result.GL_Program.Subroutine_Uniform_Locations (Shader_Kind);
-                  subtype Indices_Array is GL.Types.UInt_Array (0 .. Locations - 1);
-               begin
-                  if Indices_Array'Length > 0 then
-                     Result.Has_Subroutines := True;
-                     Result.Subroutines (Shader_Kind)
-                       := Subroutines_Holder.To_Holder
-                            (Indices_Array'(others => GL.Types.UInt'Last));
-                  end if;
-               end;
-            end if;
-         end loop;
       end return;
    end Create_Program;
 
@@ -67,50 +46,14 @@ package body Orka.Rendering.Programs is
       return Create_Program (Modules.Module_Array'(1 => Module), Separable);
    end Create_Program;
 
-   function Has_Subroutines (Object : Program) return Boolean
-     is (Object.Has_Subroutines);
-
-   procedure Use_Subroutines (Object : in out Program) is
-   begin
-      for Shader_Kind in Object.Subroutines'Range loop
-         if not Object.Subroutines (Shader_Kind).Is_Empty then
-            declare
-               Indices : GL.Types.UInt_Array renames Object.Subroutines (Shader_Kind).Element;
-            begin
-               pragma Assert (Indices'Length > 0);
-               GL.Objects.Programs.Set_Uniform_Subroutines (Shader_Kind, Indices);
-            end;
-         end if;
-      end loop;
-      Object.Subroutines_Modified := False;
-   end Use_Subroutines;
-
    procedure Use_Program (Object : in out Program) is
    begin
       Object.GL_Program.Use_Program;
-      if Object.Has_Subroutines then
-         Object.Use_Subroutines;
-      end if;
    end Use_Program;
 
    function Compute_Work_Group_Size
      (Object : Program) return GL.Types.Compute.Dimension_Size_Array
    is (Object.GL_Program.Compute_Work_Group_Size);
-
-   procedure Set_Subroutine_Function
-     (Object   : in out Program;
-      Shader   : GL.Objects.Shaders.Shader_Type;
-      Location : Uniform_Location;
-      Index    : Subroutine_Index)
-   is
-      procedure Set_Index (Indices : in out GL.Types.UInt_Array) is
-      begin
-         Indices (Location) := Index;
-      end Set_Index;
-   begin
-      Object.Subroutines (Shader).Update_Element (Set_Index'Access);
-      Object.Subroutines_Modified := True;
-   end Set_Subroutine_Function;
 
    function Uniform_Sampler (Object : Program; Name : String)
      return Uniforms.Uniform_Sampler is
@@ -123,14 +66,6 @@ package body Orka.Rendering.Programs is
    begin
       return Uniforms.Create_Uniform_Image (Object, Name);
    end Uniform_Image;
-
-   function Uniform_Subroutine
-     (Object : in out Program;
-      Shader : GL.Objects.Shaders.Shader_Type;
-      Name   : String) return Uniforms.Uniform_Subroutine is
-   begin
-      return Uniforms.Create_Uniform_Subroutine (Object, Shader, Name);
-   end Uniform_Subroutine;
 
    function Uniform (Object : Program; Name : String)
      return Uniforms.Uniform is

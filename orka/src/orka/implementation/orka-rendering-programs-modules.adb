@@ -226,7 +226,6 @@ package body Orka.Rendering.Programs.Modules is
       begin
          if not Holder.Is_Empty then
             Program.GL_Program.Attach (Holder.Element);
-            Program.Stages (Stage) := True;
          end if;
       end Attach;
    begin

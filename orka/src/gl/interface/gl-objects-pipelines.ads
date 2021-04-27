@@ -38,17 +38,9 @@ package GL.Objects.Pipelines is
       Program : Programs.Program)
    with Pre => Program.Separable;
    --  Use the specified stages from the given program in the pipeline
-   --
-   --  If you have subroutines in some of its stages, you must
-   --  subsequently call Set_Uniform_Subroutines, because the subroutine
-   --  state is completely lost after having called Use_Program_Stages.
 
    procedure Bind (Object : Pipeline);
    --  Bind the pipeline to the current context
-   --
-   --  If you have subroutines in some of its shaders, you must
-   --  subsequently call Set_Uniform_Subroutines, because the subroutine
-   --  state is completely lost after having called Bind.
 
    function Validate (Object : Pipeline) return Boolean;
 
