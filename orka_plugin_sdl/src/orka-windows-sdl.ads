@@ -25,6 +25,7 @@ private with SDL.Video.Windows;
 with Orka.Contexts;
 
 package Orka.Windows.SDL is
+   pragma Preelaborate;
 
    type SDL_Context is limited new Contexts.Surface_Context with private;
 
