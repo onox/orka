@@ -19,6 +19,7 @@ with Orka.Transforms.Singles.Vectors;
 with Orka.Transforms.Doubles.Vectors;
 
 package Orka.Logging is
+   pragma Preelaborate;
 
    subtype Source is Loggers.Source;
 

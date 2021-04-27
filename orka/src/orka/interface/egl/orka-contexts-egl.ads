@@ -26,6 +26,7 @@ private with EGL.Objects.Contexts;
 with EGL.Objects.Devices;
 
 package Orka.Contexts.EGL is
+   pragma Preelaborate;
 
    type Device_EGL_Context is limited new Context with private;
 

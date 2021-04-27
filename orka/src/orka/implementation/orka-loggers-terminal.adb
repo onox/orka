@@ -20,16 +20,6 @@ with Orka.Loggers.Formatting;
 
 package body Orka.Loggers.Terminal is
 
-   protected type Logger_Object (Min_Level : Severity) is new Orka.Loggers.Logger with
-      overriding
-      procedure Log
-        (From    : Source;
-         Kind    : Message_Type;
-         Level   : Severity;
-         ID      : Natural;
-         Message : String);
-   end Logger_Object;
-
    protected body Logger_Object is
       procedure Log
         (From    : Source;
@@ -46,10 +36,6 @@ package body Orka.Loggers.Terminal is
          end if;
       end Log;
    end Logger_Object;
-
-   Default_Logger : aliased Logger_Object (Min_Level => Debug);
-
-   function Logger return Logger_Ptr is (Default_Logger'Access);
 
    function Create_Logger (Level : Severity := Debug) return Logger_Ptr is
    begin

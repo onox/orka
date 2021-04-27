@@ -15,9 +15,20 @@
 --  limitations under the License.
 
 package Orka.Loggers.Terminal is
+   pragma Preelaborate;
 
-   function Logger return Logger_Ptr;
-   --  Return a logger that logs messages to the terminal
+   protected type Logger_Object (Min_Level : Severity) is new Orka.Loggers.Logger with
+      overriding
+      procedure Log
+        (From    : Source;
+         Kind    : Message_Type;
+         Level   : Severity;
+         ID      : Natural;
+         Message : String);
+   end Logger_Object;
+
+   Logger : aliased Logger_Object (Min_Level => Debug);
+   --  A logger that logs messages to the terminal
 
    function Create_Logger (Level : Severity := Debug) return Logger_Ptr;
    --  Create and return a logger that only logs messages to the terminal

@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 package Orka.Contexts.EGL.Wayland is
+   pragma Preelaborate;
 
    type Wayland_EGL_Context is limited new Context with private;
 

@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 package Orka.Debug is
+   pragma Preelaborate;
 
    procedure Set_Log_Messages (Enable : Boolean; Raise_API_Error : Boolean := False);
    --  Enable or disable receiving messages from the video driver

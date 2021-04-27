@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Finalization;
+
 with GL.Debug;
 
 with Orka.Loggers.Terminal;
@@ -48,7 +50,19 @@ package body Orka.Logging is
 
    -----------------------------------------------------------------------------
 
-   Current_Logger : Loggers.Logger_Ptr := Orka.Loggers.Terminal.Logger;
+   type Clock_Initializer is new Ada.Finalization.Limited_Controlled with null record;
+
+   overriding
+   procedure Initialize (Object : in out Clock_Initializer) is
+   begin
+      Orka.Terminals.Set_Time_Zero (Orka.OS.Monotonic_Clock);
+   end Initialize;
+
+   Initialize_Clock : Clock_Initializer;
+
+   -----------------------------------------------------------------------------
+
+   Current_Logger : Loggers.Logger_Ptr := Orka.Loggers.Terminal.Logger'Access;
 
    procedure Set_Logger (Logger : Loggers.Logger_Ptr) is
    begin
@@ -75,6 +89,4 @@ package body Orka.Logging is
       end Log;
    end Messages;
 
-begin
-   Orka.Terminals.Set_Time_Zero (Orka.OS.Monotonic_Clock);
 end Orka.Logging;
