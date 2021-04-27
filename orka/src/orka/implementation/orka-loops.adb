@@ -34,6 +34,9 @@ package body Orka.Loops is
 
    package Messages is new Orka.Logging.Messages (Game_Loop);
 
+   function "+" (Value : Ada.Real_Time.Time_Span) return Duration
+     renames Ada.Real_Time.To_Duration;
+
    procedure Free is new Ada.Unchecked_Deallocation
      (Behaviors.Behavior_Array, Behaviors.Behavior_Array_Access);
 
@@ -143,7 +146,7 @@ package body Orka.Loops is
    begin
       Scene.Replace_Array (Scene_Array);
 
-      Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
+      Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (+Tick)));
 
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -197,7 +200,7 @@ package body Orka.Loops is
                      or
                         delay until Current_Time + Maximum_Frame_Time;
                         raise Program_Error with
-                          "Maximum frame time of " & Trim (Image (Maximum_Frame_Time)) &
+                          "Maximum frame time of " & Trim (Image (+Maximum_Frame_Time)) &
                           " exceeded";
                      end select;
                   end;
@@ -227,20 +230,20 @@ package body Orka.Loops is
                      FPS        : constant Integer   := Integer (1.0 / To_Duration (Frame_Time));
                   begin
                      Messages.Log (Debug, Trim (FPS'Image) & " FPS, frame time: " &
-                       Trim (Image (Frame_Time)));
+                       Trim (Image (+Frame_Time)));
                   end;
 
                   if Exceeded_Frame_Counter > 0 then
                      declare
-                        Stat_Avg : constant Time_Span := Stat_Sum / Exceeded_Frame_Counter;
+                        Stat_Avg : constant Duration := +(Stat_Sum / Exceeded_Frame_Counter);
                      begin
                         Messages.Log (Debug, "  deadline missed: " &
                           Trim (Exceeded_Frame_Counter'Image) & " (limit is " &
-                          Trim (Image (Handler.Frame_Limit)) & ")");
+                          Trim (Image (+Handler.Frame_Limit)) & ")");
                         Messages.Log (Debug, "    avg/min/max: " &
                           Image (Stat_Avg) &
-                          Image (To_Time_Span (Stat_Min)) &
-                          Image (To_Time_Span (Stat_Max)));
+                          Image (Stat_Min) &
+                          Image (Stat_Max));
                      end;
                   end if;
 

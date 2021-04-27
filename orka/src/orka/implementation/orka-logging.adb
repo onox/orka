@@ -22,8 +22,7 @@ with Orka.Terminals;
 
 package body Orka.Logging is
 
-   function Image (Value : Ada.Real_Time.Time_Span) return String is
-     (Terminals.Image (Ada.Real_Time.To_Duration (Value)));
+   function Image (Value : Duration) return String renames Terminals.Image;
 
    function Trim (Value : String) return String renames Terminals.Trim;
 

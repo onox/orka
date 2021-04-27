@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-
 with Orka.Loggers;
 with Orka.Transforms.Singles.Vectors;
 with Orka.Transforms.Doubles.Vectors;
@@ -30,7 +28,7 @@ package Orka.Logging is
 
    -----------------------------------------------------------------------------
 
-   function Image (Value : Ada.Real_Time.Time_Span) return String;
+   function Image (Value : Duration) return String;
    --  Return the image of the given duration with an appropriate suffix
 
    function Image (Value : Orka.Transforms.Singles.Vectors.Vector4) return String;

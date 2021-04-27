@@ -39,6 +39,9 @@ package body Orka.Resources.Textures.KTX is
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
 
+   function "+" (Value : Ada.Real_Time.Time_Span) return Duration
+     renames Ada.Real_Time.To_Duration;
+
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Data    : Loaders.Resource_Data;
       Manager : Managers.Manager_Ptr;
@@ -214,7 +217,7 @@ package body Orka.Resources.Textures.KTX is
          T6 := Clock;
 
          Messages.Log (Info, "Loaded texture " & Path & " in " &
-           Logging.Trim (Logging.Image (T6 - T1)));
+           Logging.Trim (Logging.Image (+(T6 - T1))));
          Messages.Log (Info, "  dims:   " &
             Logging.Trim (Width'Image) & " × " &
             Logging.Trim (Height'Image) & " × " &
@@ -231,12 +234,12 @@ package body Orka.Resources.Textures.KTX is
          end if;
 
          Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
-         Messages.Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
-         Messages.Log (Info, "    storage:        " & Logging.Image (T4 - T3));
-         Messages.Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
+         Messages.Log (Info, "    reading file:   " & Logging.Image (+(T2 - T1)));
+         Messages.Log (Info, "    parsing header: " & Logging.Image (+(T3 - T2)));
+         Messages.Log (Info, "    storage:        " & Logging.Image (+(T4 - T3)));
+         Messages.Log (Info, "    buffers:        " & Logging.Image (+(T5 - T4)));
          if Header.Mipmap_Levels = 0 then
-            Messages.Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
+            Messages.Log (Info, "    generating mipmap:" & Logging.Image (+(T6 - T5)));
          end if;
 
          return Texture;
@@ -458,7 +461,7 @@ package body Orka.Resources.Textures.KTX is
          T4 := Clock;
 
          Messages.Log (Info, "Saved texture " & Path & " in " &
-           Logging.Trim (Logging.Image (T4 - T1)));
+           Logging.Trim (Logging.Image (+(T4 - T1))));
          Messages.Log (Info, "  dims:   " &
             Logging.Trim (Texture.Width (Base_Level)'Image) & " × " &
             Logging.Trim (Texture.Height (Base_Level)'Image) & " × " &
@@ -475,9 +478,9 @@ package body Orka.Resources.Textures.KTX is
          end if;
 
          Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    creating header: " & Logging.Image (T2 - T1));
-         Messages.Log (Info, "    retrieving data: " & Logging.Image (T3 - T2));
-         Messages.Log (Info, "    writing file:    " & Logging.Image (T4 - T3));
+         Messages.Log (Info, "    creating header: " & Logging.Image (+(T2 - T1)));
+         Messages.Log (Info, "    retrieving data: " & Logging.Image (+(T3 - T2)));
+         Messages.Log (Info, "    writing file:    " & Logging.Image (+(T4 - T3)));
       end;
    end Write_Texture;
 

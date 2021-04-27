@@ -44,6 +44,9 @@ package body Orka.Resources.Models.glTF is
 
    package Messages is new Orka.Logging.Messages (Resource_Loader);
 
+   function "+" (Value : Ada.Real_Time.Time_Span) return Duration
+     renames Ada.Real_Time.To_Duration;
+
    Default_Root_Name : constant String := "root";
 
    package String_Maps is new Ada.Containers.Indefinite_Hashed_Maps
@@ -712,17 +715,17 @@ package body Orka.Resources.Models.glTF is
          Times : Times_Data renames Data.Times;
       begin
          Messages.Log (Info, "Loaded model " & Path & " in " &
-           Logging.Trim (Logging.Image (Clock - Data.Start_Time)));
+           Logging.Trim (Logging.Image (To_Duration (Clock - Data.Start_Time))));
          Messages.Log (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
          Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    reading file:    " & Logging.Image (Times.Reading));
-         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (Times.Parsing));
-         Messages.Log (Info, "    processing glTF: " & Logging.Image (Times.Processing));
-         Messages.Log (Info, "    scene tree:      " & Logging.Image (Times.Scene));
-         Messages.Log (Info, "    buffers:         " & Logging.Image (Times.Buffers));
+         Messages.Log (Info, "    reading file:    " & Logging.Image (+Times.Reading));
+         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (+Times.Parsing));
+         Messages.Log (Info, "    processing glTF: " & Logging.Image (+Times.Processing));
+         Messages.Log (Info, "    scene tree:      " & Logging.Image (+Times.Scene));
+         Messages.Log (Info, "    buffers:         " & Logging.Image (+Times.Buffers));
       end;
    end Execute;
 
