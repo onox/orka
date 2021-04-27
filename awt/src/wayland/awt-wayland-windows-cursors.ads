@@ -14,16 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Real_Time;
+private with Orka.OS;
 
 package AWT.Wayland.Windows.Cursors is
+   pragma Preelaborate;
 
    type Animated_Cursor_Window is abstract limited new Wayland_Window with private;
 
 private
 
    type Animated_Cursor_Window is abstract limited new Wayland_Window with record
-      Start_Time, Next_Time : Ada.Real_Time.Time := Ada.Real_Time.Clock;
+      Start_Time, Next_Time : Duration := Orka.OS.Monotonic_Clock;
    end record;
 
    overriding

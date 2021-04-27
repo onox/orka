@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
 with Ada.Strings.Fixed;
 
 with Orka.Logging;
@@ -92,12 +91,12 @@ package body Orka.Contexts.EGL.Wayland.AWT is
                        when Visible => Visible,
                        when Hidden  => Hidden,
                        when Locked  => Locked),
-         Position => (X => GL.Types.Double (State.Position (X)),
-                      Y => GL.Types.Double (State.Position (Y))),
-         Relative => (X => GL.Types.Double (State.Relative (X)),
-                      Y => GL.Types.Double (State.Relative (Y))),
-         Scroll   => (X => GL.Types.Double (State.Scroll   (X)),
-                      Y => GL.Types.Double (State.Scroll   (Y))));
+         Position => (X => Orka.Float_64 (State.Position (X)),
+                      Y => Orka.Float_64 (State.Position (Y))),
+         Relative => (X => Orka.Float_64 (State.Relative (X)),
+                      Y => Orka.Float_64 (State.Relative (Y))),
+         Scroll   => (X => Orka.Float_64 (State.Scroll   (X)),
+                      Y => Orka.Float_64 (State.Scroll   (Y))));
    end State;
 
    overriding
@@ -137,10 +136,8 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       Time_To_Swap : Duration)
    is
       Sleep : constant Duration := Time_To_Swap - Orka.OS.Monotonic_Clock;
-
-      use Ada.Real_Time;
    begin
-      delay until Clock + To_Time_Span (Sleep);
+      delay Sleep;
    end Sleep_Until_Swap;
 
    overriding

@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with GL.Types;
-
 private with Orka.Inputs.Pointers;
 
 private with AWT.Inputs;
@@ -25,6 +23,7 @@ private with AWT.Wayland.Windows.Cursors;
 with AWT.Windows;
 
 package Orka.Contexts.EGL.Wayland.AWT is
+   pragma Preelaborate;
 
    type AWT_Context is limited new Surface_Context with private;
 

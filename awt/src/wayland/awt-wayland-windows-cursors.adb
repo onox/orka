@@ -22,23 +22,22 @@ package body AWT.Wayland.Windows.Cursors is
       Name   : AWT.Inputs.Cursors.Pointer_Cursor;
       Cursor : WC.Cursor'Class) return WC.Cursor_Image'Class
    is
-      use Ada.Real_Time;
       use all type AWT.Inputs.Cursors.Pointer_Cursor;
 
-      Current_Time : constant Time := Clock;
+      Current_Time : constant Duration := Orka.OS.Monotonic_Clock;
    begin
       if Name /= Object.Cursor then
          Object.Start_Time := Current_Time;
       end if;
 
       declare
-         Elapsed_Time : constant Duration := To_Duration (Current_Time - Object.Start_Time);
+         Elapsed_Time : constant Duration := Current_Time - Object.Start_Time;
          Remaining    : Duration;
 
          Index : constant WC.Image_Index :=
            Cursor.Index_At_Elapsed_Time (Elapsed_Time, Remaining);
       begin
-         Object.Next_Time := Current_Time + To_Time_Span (Remaining);
+         Object.Next_Time := Current_Time + Remaining;
          --  TODO Use timerfd to make sure Global.Display.Check_For_Events
          --  in AWT.Registry.Process_Events returns at Object.Next_Time?
          return Result : WC.Cursor_Image'Class := Cursor.Image (Index);
@@ -47,9 +46,8 @@ package body AWT.Wayland.Windows.Cursors is
 
    overriding
    procedure Update_Cursor (Object : in out Animated_Cursor_Window) is
-      use Ada.Real_Time;
    begin
-      if Clock > Object.Next_Time then
+      if Orka.OS.Monotonic_Clock > Object.Next_Time then
          Object.Set_Pointer_Cursor (Object.Cursor);
       end if;
    end Update_Cursor;
