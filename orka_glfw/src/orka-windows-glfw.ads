@@ -28,6 +28,7 @@ private with Glfw.Input.Mouse;
 with Orka.Contexts;
 
 package Orka.Windows.GLFW is
+   pragma Preelaborate;
 
    type GLFW_Context is limited new Contexts.Surface_Context with private;
 
