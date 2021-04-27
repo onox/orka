@@ -14,9 +14,13 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Characters.Latin_1;
+with Ada.Strings.Fixed;
+
 with GL.Debug;
 
 with Orka.Strings;
+with Orka.Terminals;
 
 package body Orka.Rendering.Programs.Modules is
 
@@ -25,6 +29,92 @@ package body Orka.Rendering.Programs.Modules is
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
+
+   procedure Log_Error_With_Source (Text, Info_Log, Message : String) is
+      package SF renames Ada.Strings.Fixed;
+      package L1 renames Ada.Characters.Latin_1;
+
+      Extra_Rows          : constant := 2;
+      Line_Number_Padding : constant := 2;
+
+      Separator : constant String := " | ";
+
+      use Orka.Strings;
+      use SF;
+
+      use all type Orka.Terminals.Color;
+      use all type Orka.Terminals.Style;
+   begin
+      declare
+         Log_Parts : constant Orka.Strings.String_List := Split (Info_Log, ":", 3);
+
+         Message_Parts : constant String_List := Split (Trim (+Log_Parts (3)), ": ", 2);
+
+         Message_Kind_Color : constant Orka.Terminals.Color :=
+           (if +Message_Parts (1) = "error" then
+              Red
+            elsif +Message_Parts (2) = "warning" then
+              Yellow
+            elsif +Message_Parts (2) = "note" then
+              Cyan
+            else
+              Default);
+
+         Message_Kind : constant String :=
+           Orka.Terminals.Colorize (+Message_Parts (1) & ":", Foreground => Message_Kind_Color);
+         Message_Value : constant String :=
+           Orka.Terminals.Colorize (+Message_Parts (2), Attribute => Bold);
+
+         -------------------------------------------------------------------------
+
+         Lines : constant Orka.Strings.String_List := Orka.Strings.Split (Text, "" & L1.LF);
+
+         Error_Row : constant Positive :=
+           Positive'Value (+Orka.Strings.Split (+Log_Parts (2), "(", 2) (1));
+         First_Row : constant Positive := Positive'Max (Lines'First, Error_Row - Extra_Rows);
+         Last_Row  : constant Positive := Positive'Min (Lines'Last, Error_Row + Extra_Rows);
+
+         Line_Digits : constant Positive := Trim (Last_Row'Image)'Length + Line_Number_Padding;
+      begin
+         Messages.Log (High, Message);
+
+         for Row_Index in First_Row .. Last_Row loop
+            declare
+               Row_Image : constant String :=
+                 SF.Tail (Trim (Row_Index'Image), Line_Digits);
+               Row_Image_Colorized : constant String :=
+                  Orka.Terminals.Colorize (Row_Image, Attribute => Dark);
+
+               Line_Image : constant String := +Lines (Row_Index);
+
+               First_Index_Line : constant Natural :=
+                 SF.Index_Non_Blank (Line_Image, Going => Ada.Strings.Forward);
+               Last_Index_Line : constant Natural :=
+                 SF.Index_Non_Blank (Line_Image, Going => Ada.Strings.Backward);
+
+               Error_Indicator : constant String :=
+                 Orka.Terminals.Colorize
+                   (Natural'Max (0, First_Index_Line - 1) * " " &
+                    (Last_Index_Line - First_Index_Line + 1) * "^",
+                    Foreground => Green,
+                    Attribute  => Bold);
+
+               Prefix_Image : constant String :=
+                 (Row_Image'Length + Separator'Length) * " ";
+            begin
+               Messages.Log (High, Row_Image_Colorized  & Separator & Line_Image);
+               if Row_Index = Error_Row then
+                  Messages.Log (High, Prefix_Image  & Error_Indicator);
+                  Messages.Log (High, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
+               end if;
+            end;
+         end loop;
+      end;
+   exception
+      when others =>
+         --  Continue if parsing Info_Log fails
+         null;
+   end Log_Error_With_Source;
 
    procedure Load_And_Compile
      (Object      : in out Module;
@@ -45,7 +135,13 @@ package body Orka.Rendering.Programs.Modules is
 
             Shader.Compile;
             if not Shader.Compile_Status then
-               raise Shader_Compile_Error with Path & ":" & Shader.Info_Log;
+               declare
+                  Log : constant String := Shader.Info_Log;
+               begin
+                  Log_Error_With_Source (Text, Log, "Compiling shader " & Path & " failed:");
+
+                  raise Shader_Compile_Error with Path & ":" & Log;
+               end;
             end if;
             Messages.Log (Notification, "Compiled shader " & Path);
             Messages.Log (Notification, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
@@ -71,7 +167,14 @@ package body Orka.Rendering.Programs.Modules is
 
             Shader.Compile;
             if not Shader.Compile_Status then
-               raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader.Info_Log;
+               declare
+                  Log : constant String := Shader.Info_Log;
+               begin
+                  Log_Error_With_Source (Source, Log,
+                    "Compiling " & Shader_Kind'Image & " shader failed:");
+
+                  raise Shader_Compile_Error with Shader_Kind'Image & ":" & Log;
+               end;
             end if;
             Messages.Log (Notification, "Compiled string with " &
               Trim_Image (Source'Length) & " characters");
