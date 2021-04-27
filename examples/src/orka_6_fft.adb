@@ -108,7 +108,7 @@ procedure Orka_6_FFT is
       Timer_1.Wait_For_Result;
 
       Ada.Text_IO.Put_Line ("Duration " & Title & ": " & Orka.Logging.Image
-        (Ada.Real_Time.To_Time_Span (Timer_1.GPU_Duration)));
+        (Timer_1.GPU_Duration));
    end Print_Numbers;
 
    package Fourier_Transforms renames Orka.Algorithms.FFT;

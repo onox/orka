@@ -20,8 +20,7 @@ project Orka_Examples is
       "orka_10_compute.adb",
       "orka_11_instancing.adb",
       "orka_12_stencil.adb",
-      "orka_13_geometry.adb",
-      "orka_14_subroutines.adb");
+      "orka_13_geometry.adb");
 
    type Enabled_Kind is ("enabled", "disabled");
    Compile_Checks : Enabled_Kind := External ("ORKA_EXAMPLES_COMPILE_CHECKS", "enabled");
