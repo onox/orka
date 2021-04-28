@@ -13,7 +13,7 @@ with Orka.Debug;
 
 with Package_Test;
 
-procedure Test is
+procedure Example is
    use Ada.Text_IO;
 
    Index : Positive := 1;
@@ -321,4 +321,4 @@ begin
          Put_Line ("main: " & Ada.Exceptions.Exception_Information (E));
          raise;
    end;
-end Test;
+end Example;

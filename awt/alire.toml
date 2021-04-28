@@ -14,7 +14,7 @@ linux = true
 '...' = false
 
 [project-files.'case(os)']
-linux = ["awt-linux.gpr", "test/test.gpr"]
+linux = ["awt-linux.gpr", "example/example.gpr"]
 
 [[depends-on]]
 [depends-on.'case(os)'.linux]

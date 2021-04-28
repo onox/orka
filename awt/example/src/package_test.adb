@@ -77,7 +77,7 @@ package body Package_Test is
 
    procedure Post_Initialize (Object : in out Test_Window) is
       Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
-        Orka.Resources.Locations.Directories.Create_Location ("./");
+        Orka.Resources.Locations.Directories.Create_Location ("data");
 
       Alpha : constant GL.Types.Single := (if Object.State.Transparent then 0.5 else 1.0);
    begin
