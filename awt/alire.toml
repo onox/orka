@@ -1,6 +1,6 @@
 name = "awt"
 description = "Ada Window Toolkit"
-version = "0.1.0"
+version = "1.0.0"
 website = "https://github.com/onox/awt"
 licenses = "Apache-2.0"
 tags = ["egl", "wayland", "windows", "graphics", "opengl"]
@@ -18,9 +18,9 @@ linux = ["awt-linux.gpr", "example/example.gpr"]
 
 [[depends-on]]
 [depends-on.'case(os)'.linux]
-wayland_egl_ada = "^1.0"
-wayland_cursor_ada = "^1.0"
-wayland_protocols_ada = "^1.0"
+wayland_egl_ada = "^1.0.0"
+wayland_cursor_ada = "^1.0.0"
+wayland_protocols_ada = "^1.0.0"
 orka_egl = "^1.0.0"
 
 [[depends-on]]

@@ -113,7 +113,7 @@ crate = "wayland_cursor_ada"
 fulfilment = "linked"
 pinned = false
 transitivity = "direct"
-versions = "^1.0"
+versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../wayland-ada/wayland_cursor_ada"
@@ -124,7 +124,7 @@ crate = "wayland_egl_ada"
 fulfilment = "linked"
 pinned = false
 transitivity = "direct"
-versions = "^1.0"
+versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../wayland-ada/wayland_egl_ada"
@@ -135,7 +135,7 @@ crate = "wayland_protocols_ada"
 fulfilment = "linked"
 pinned = false
 transitivity = "direct"
-versions = "^1.0"
+versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../wayland-ada/wayland_protocols_ada"

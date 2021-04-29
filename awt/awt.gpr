@@ -1,7 +1,7 @@
 project Awt is
 
    for Library_Name use "awt";
-   for Library_Version use "0.1.0";
+   for Library_Version use "1.0.0";
 
    for Create_Missing_Dirs use "True";
 
