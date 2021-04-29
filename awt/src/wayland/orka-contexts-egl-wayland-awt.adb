@@ -177,6 +177,10 @@ package body Orka.Contexts.EGL.Wayland.AWT is
      (Version : Orka.Contexts.Context_Version;
       Flags   : Orka.Contexts.Context_Flags := (others => False)) return AWT_Context is
    begin
+      if not Standard.AWT.Is_Initialized then
+         Standard.AWT.Initialize;
+      end if;
+
       return Create_Context
         (Standard.Wayland.Protocols.Client.AWT.Get_Display (Standard.AWT.Wayland.Get_Display.all),
          Version, Flags);
