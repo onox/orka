@@ -196,11 +196,12 @@ objects and then draw the triangle in a loop.
 First we need to initialize the OpenGL context and create a window:
 
 ```ada linenums="1"
-Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
-  (Version => (4, 2), Flags  => (Debug => True, others => False));
+Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
+  (Version => (4, 2),
+   Flags   => (Debug => True, others => False));
 
-Window : constant Orka.Windows.Window'Class
-  := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500);
+Window : constant Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
+  (Context, Width => 500, Height => 500);
 ```
 
 #### Buffer
@@ -328,20 +329,21 @@ and then draw the triangle. Press ++esc++ to close the application.
     ```ada linenums="1"
     with GL.Types;
 
-    with Orka.Contexts;
+    with Orka.Contexts.AWT;
     with Orka.Rendering.Buffers;
     with Orka.Rendering.Drawing;
     with Orka.Rendering.Framebuffers;
     with Orka.Rendering.Programs.Modules;
     with Orka.Resources.Locations.Directories;
-    with Orka.Windows.GLFW;
+    with Orka.Windows;
 
     procedure Triangle is
-       Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
-         (Version => (4, 2), Flags  => (Debug => True, others => False));
+       Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
+         (Version => (4, 2),
+          Flags   => (Debug => True, others => False));
 
-       Window : constant Orka.Windows.Window'Class
-         := Orka.Windows.GLFW.Create_Window (Context, Width => 500, Height => 500);
+       Window : constant Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
+         (Context, Width => 500, Height => 500);
 
        use Orka.Resources;
        use Orka.Rendering.Buffers;

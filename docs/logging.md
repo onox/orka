@@ -154,9 +154,10 @@ implementation-defined ID, and a human-readable description:
 To make sure the driver generates messages, use the `Debug` flag when
 initializing the windowing library:
 
-```ada
-Context : Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
-  (Version => (4, 3), Flags => (Debug => True, others => False));
+```ada linenums="1"
+Context : Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
+  (Version => (4, 3),
+   Flags   => (Debug => True, others => False));
 ```
 
 If `Debug` is `False` then the video driver may choose to not enable

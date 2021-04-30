@@ -9,7 +9,7 @@ In order to build and use Orka you need to have:
 
  * [Alire][url-alire]
 
- * `make` and `pkgconf` (on Linux)
+ * `make` (on Linux)
 
  * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
    and OpenGL 4.6 core profile (or 4.0 + extensions below)
@@ -67,16 +67,14 @@ In order to build and use Orka you need to have:
 
 Recommended dependencies:
 
- * [AWT][url-awt], or
-
- * [GLFW 3][url-glfw] for the GLFW bindings, tools, and examples
+ * [AWT][url-awt]
 
 Optional dependencies:
 
  * `lcov` to generate a coverage report for the unit tests
 
 !!! info "SDL 2"
-    Although the use of AWT or GLFW is recommended, alternatively
+    Although the use of AWT is recommended, alternatively
     [SDLAda][url-sdlada] can be used to manage windows and input via SDL 2.
 
 !!! warning "CPU and OpenGL requirements"
@@ -100,21 +98,17 @@ Optional dependencies:
 Install the dependencies using apt:
 
 ```sh
-$ sudo apt install gnat gprbuild make pkgconf libegl1-mesa-dev
+$ sudo apt install gnat gprbuild make libegl1-mesa-dev
 ```
 
 and then install Alire.
-
-On 18.04 LTs, if you wish to use GLFW, compile and install GLFW 3.3 with
-Wayland support instead of installing the version provided in the Ubuntu
-repositories.
 
 #### Arch Linux
 
 Install the dependencies using pacman:
 
 ```sh
-$ sudo pacman -S gcc-ada make pkgconf mesa
+$ sudo pacman -S gcc-ada make mesa
 ```
 
 Compile and install `gprbuild-bootstrap`, then `xmlada`, `libgpr`, and `gprbuild`
@@ -134,8 +128,7 @@ $ alr with orka
 
 You may need to add `--use=path/to/orka/crate` to use unpublished versions.
 
-To create an OpenGL context and window, add `awt` for AWT, `orka_glfw` for
-GLFW, or `orka_plugin_sdl` for SDL.
+To create an OpenGL context and window, add `awt` for AWT or `orka_plugin_sdl` for SDL.
 
 ###  Tools and examples
 
@@ -181,7 +174,6 @@ and learn how you can render your first triangle on the screen.
   [url-awt]: https://github.com/onox/awt
   [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
-  [url-glfw]: http://www.glfw.org/
   [url-sdlada]: https://github.com/Lucretia/sdlada
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview

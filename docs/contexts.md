@@ -17,14 +17,14 @@ the context has been attached.
 
 ## Creating a context
 
-An OpenGL context can be created using either AWT or GLFW, or EGL.
-Using AWT or GLFW requires the presence of a windowing system such
+An OpenGL context can be created using either AWT or SDL, or EGL.
+Using AWT or SDL requires the presence of a windowing system such
 as Wayland or the windowing system of Windows.
 EGL supports multiple platforms and can be used on Wayland as well
 as without any windowing system by directly using a GPU device.
 
 A context is created by calling the function `Create_Context` in the packages
-`:::ada Orka.Windows.AWT`, `:::ada Orka.Windows.GLFW` or `:::ada Orka.Contexts.EGL`.
+`:::ada Orka.Windows.AWT`, `:::ada Orka.Windows.SDL` or `:::ada Orka.Contexts.EGL`.
 The requested version of OpenGL must be given and optionally some flags.
 The following flags can be used:
 
@@ -54,23 +54,77 @@ Context : constant Orka.Contexts.Surface_Context'Class := Orka.Contexts.AWT.Crea
 The context is created and made current on the calling task by the `Create_Context`
 function.
 
-!!! note "TODO" Create window and render task
-!!! note "TODO" Multiple windows
+```ada linenums="1"
+Window : aliased Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
+  (Context, Width => 1280, Height => 720);
+```
 
-### GLFW
-
-When using GLFW, an OpenGL context can be created by creating a window:
+Although this is sufficient if the size of the window never changes, you most
+likely want to extend `:::ada Orka.Contexts.AWT.AWT_Window` and override
+`On_Configure`:
 
 ```ada linenums="1"
-Context : constant Orka.Contexts.Surface_Context'Class := Orka.Windows.GLFW.Create_Context
+type My_Window is limited new Orka.Contexts.AWT.AWT_Window with record
+  Resize : Boolean := True with Atomic;
+end record;
+
+overriding
+procedure On_Configure
+ (Object : in out My_Window;
+  State  : Standard.AWT.Windows.Window_State);
+```
+
+You can then set `Resize` when the window is visible and has a valid size:
+
+```ada linenums="1"
+overriding
+procedure On_Configure
+ (Object : in out My_Window;
+  State  : Standard.AWT.Windows.Window_State) is
+begin
+  Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
+end On_Configure;
+```
+
+In your render subprogram you can then create a new default framebuffer
+and projection matrix if `Resize` is true.
+
+!!! note
+    You may need to override function `Create_Window` as well:
+
+    ```ada linenums="1"
+    overriding
+    function Create_Window
+     (Context            : Orka.Contexts.Surface_Context'Class;
+      Width, Height      : Positive;
+      Title              : String  := "";
+      Samples            : Natural := 0;
+      Visible, Resizable : Boolean := True;
+      Transparent        : Boolean := False) return My_Window is
+    begin
+      return Result : constant My_Window :=
+        (Orka.Contexts.AWT.Create_Window
+          (Context, Width, Height, Title, Samples,
+           Visible     => Visible,
+           Resizable   => Resizable,
+           Transparent => Transparent) with others => <>);
+    end Create_Window;
+    ```
+
+### SDL
+
+When using SDL, an OpenGL context can be created by creating a window:
+
+```ada linenums="1"
+Context : constant Orka.Contexts.Surface_Context'Class := Orka.Windows.SDL.Create_Context
   (Version => (4, 2),
    Flags   => (Debug => True, others => False));
 
 Window : constant Orka.Windows.Window'Class
-  := Orka.Windows.GLFW.Create_Window (Context, Width => 1280, Height => 720);
+  := Orka.Windows.SDL.Create_Window (Context, Width => 1280, Height => 720);
 ```
 
-When using GLFW, the actual context is created and made current on the calling
+When using SDL, the actual context is created and made current on the calling
 task by the `Create_Window` function and depends on the active windowing system.
 
 ### EGL
