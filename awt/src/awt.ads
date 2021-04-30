@@ -32,9 +32,11 @@ package AWT with SPARK_Mode => On is
 
    function Process_Events return Boolean
      with Pre => Is_Initialized;
+   --  Process events until an unspecified timeout is reached
 
    function Process_Events (Timeout : Duration) return Boolean
      with Pre => Is_Initialized;
+   --  Process events until the given timeout is reached
 
    Initialization_Error : exception;
 

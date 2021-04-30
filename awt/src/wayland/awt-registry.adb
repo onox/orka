@@ -22,6 +22,8 @@ with Wayland.Enums.Pointer_Constraints_Unstable_V1;
 with AWT.OS;
 with AWT.Windows;
 
+with Orka.OS;
+
 package body AWT.Registry is
 
    use Standard.Wayland;
@@ -1033,14 +1035,30 @@ package body AWT.Registry is
    function Is_Initialized return Boolean is (Global.Initialized);
 
    function Process_Events return Boolean is
+      Result : Standard.Wayland.Optional_Result;
+
+      Timeout : constant := 0.016667;
+
+      Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
    begin
       if Global.Seat.Window /= null then
          AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
       end if;
-      return Global.Display.Dispatch.Is_Success;
+
+      loop
+         Result := Global.Display.Dispatch;
+
+         if not Result.Is_Success then
+            raise Internal_Error with "Wayland: Failed dispatching events";
+         end if;
+
+         exit when Result.Count = 0 or else Orka.OS.Monotonic_Clock > Clock_Timeout;
+      end loop;
+
+      return True;
    end Process_Events;
 
-   function Process_Events (Timeout : Duration) return Boolean is
+   function Dispatch_Events (Timeout : Duration) return Standard.Wayland.Optional_Result is
       use all type WP.Client.Check_For_Events_Status;
    begin
       if Global.Seat.Window /= null then
@@ -1074,14 +1092,39 @@ package body AWT.Registry is
                if not Global.Display.Dispatch_Pending.Is_Success then
                   raise Internal_Error with "Wayland: Failed dispatching pending events";
                end if;
+
+               return (Is_Success => True, Count => 1);
             when No_Events =>
                Global.Display.Cancel_Read;
+
+               return (Is_Success => True, Count => 0);
             when Error =>
                Global.Display.Cancel_Read;
                raise Internal_Error with "Wayland: Failed dispatching pending events";
          end case;
-         return Events_Status /= Error;
       end;
+   end Dispatch_Events;
+
+   function Process_Events (Timeout : Duration) return Boolean is
+      Result : Standard.Wayland.Optional_Result;
+
+      Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
+   begin
+      if Global.Seat.Window /= null then
+         AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
+      end if;
+
+      loop
+         Result := Dispatch_Events (Clock_Timeout - Orka.OS.Monotonic_Clock);
+
+         if not Result.Is_Success then
+            raise Internal_Error with "Wayland: Failed dispatching events";
+         end if;
+
+         exit when Result.Count = 0;
+      end loop;
+
+      return True;
    end Process_Events;
 
    function Monitors return AWT.Monitors.Monitor_Array is

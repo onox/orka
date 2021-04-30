@@ -484,10 +484,10 @@ package body AWT.Wayland.Windows is
          Interval : constant Duration := 0.001;
          Timeout  : constant Duration := 2.0;
 
-         Clock_Start : constant Duration := Orka.OS.Monotonic_Clock;
+         Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
       begin
          while Object.Initial_Configure and then AWT.Process_Events (Interval) loop
-            if Orka.OS.Monotonic_Clock - Clock_Start > Timeout then
+            if Orka.OS.Monotonic_Clock > Clock_Timeout then
                raise Internal_Error with "Wayland: Failed to receive configure event";
             end if;
          end loop;
