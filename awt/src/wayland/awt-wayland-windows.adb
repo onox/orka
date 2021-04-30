@@ -839,7 +839,7 @@ package body AWT.Wayland.Windows is
       Object.Cursor := Cursor;
       Object.Cursor_Images := Cursor_Object.Length;
 
-      Object.Set_Cursor;
+      Object.Restore_Cursor;
    end Set_Pointer_Cursor;
 
    overriding
@@ -884,10 +884,10 @@ package body AWT.Wayland.Windows is
                   Object.Locked_Position := Object.Pointer_State.Position;
 
                   Locked_Pointer_Events.Subscribe (Object.Locked_Pointer);
-
-                  Unset_Cursor;
                end if;
             end if;
+
+            Unset_Cursor;
       end case;
    end Set_Pointer_Mode;
 
