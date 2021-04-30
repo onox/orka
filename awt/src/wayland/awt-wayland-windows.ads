@@ -307,7 +307,7 @@ private
    function State (Object : Wayland_Window) return AWT.Inputs.Pointer_State;
 
    overriding
-   function State (Object : Wayland_Window) return AWT.Inputs.Keyboard_State;
+   function State (Object : in out Wayland_Window) return AWT.Inputs.Keyboard_State;
 
    overriding
    procedure Close (Object : in out Wayland_Window);

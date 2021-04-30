@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Unchecked_Conversion;
+
 with Wayland.Enums.Client;
 with Wayland.Enums.Presentation_Time;
 with Wayland.Enums.Pointer_Constraints_Unstable_V1;
@@ -898,9 +900,14 @@ package body AWT.Wayland.Windows is
    end State;
 
    overriding
-   function State (Object : Wayland_Window) return AWT.Inputs.Keyboard_State is
+   function State (Object : in out Wayland_Window) return AWT.Inputs.Keyboard_State is
    begin
-      return Object.Keyboard_State;
+      return Result : constant AWT.Inputs.Keyboard_State := Object.Keyboard_State do
+         --  Reset Pressed and Released after the state has been read by
+         --  the application. New state will be accumulated in procedure Set_State
+         Object.Keyboard_State.Pressed  := (others => False);
+         Object.Keyboard_State.Released := (others => False);
+      end return;
    end State;
 
    procedure Set_State
@@ -920,9 +927,24 @@ package body AWT.Wayland.Windows is
 
    procedure Set_State
      (Object : in out Wayland_Window;
-      State  : AWT.Inputs.Keyboard_State) is
+      State  : AWT.Inputs.Keyboard_State)
+   is
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => AWT.Inputs.Keyboard_Buttons,
+         Target => AWT.Inputs.Changed_Buttons);
+
+      use type AWT.Inputs.Changed_Buttons;
+
+      Old_State : constant AWT.Inputs.Keyboard_State := Object.Keyboard_State;
+
+      Old_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (Old_State.Buttons);
+      New_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (State.Buttons);
+
+      Changed : constant AWT.Inputs.Changed_Buttons := Old_State_Buttons xor New_State_Buttons;
    begin
       Object.Keyboard_State := State;
+      Object.Keyboard_State.Pressed  := Old_State.Pressed or (Changed and New_State_Buttons);
+      Object.Keyboard_State.Released := Old_State.Released or (Changed and not New_State_Buttons);
    end Set_State;
 
    overriding
