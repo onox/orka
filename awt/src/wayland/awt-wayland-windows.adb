@@ -894,9 +894,14 @@ package body AWT.Wayland.Windows is
    end Set_Pointer_Mode;
 
    overriding
-   function State (Object : Wayland_Window) return AWT.Inputs.Pointer_State is
+   function State (Object : in out Wayland_Window) return AWT.Inputs.Pointer_State is
    begin
-      return Object.Pointer_State;
+      return Result : constant AWT.Inputs.Pointer_State := Object.Pointer_State do
+         --  Reset scroll and relative motion after the state has been read by
+         --  the application
+         Object.Pointer_State.Relative := (others => 0.0);
+         Object.Pointer_State.Scroll   := (others => 0.0);
+      end return;
    end State;
 
    overriding

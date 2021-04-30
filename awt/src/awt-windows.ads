@@ -94,7 +94,7 @@ package AWT.Windows with SPARK_Mode => On is
 
    function State (Object : Window) return Framebuffer_State is abstract;
 
-   function State (Object : Window) return AWT.Inputs.Pointer_State is abstract;
+   function State (Object : in out Window) return AWT.Inputs.Pointer_State is abstract;
 
    function State (Object : in out Window) return AWT.Inputs.Keyboard_State is abstract;
 
