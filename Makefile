@@ -1,9 +1,6 @@
-GLFW_LIBS := $(strip $(shell pkgconf --libs glfw3))
 SIMD := $(shell ((gcc -march=native -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
 
-X_GLFW_LIBS := -XORKA_GLFW_GLFW_LIBS="$(GLFW_LIBS)"
-X_SIMD := -XORKA_SIMD_EXT="$(SIMD)"
-SCENARIO_VARS = $(X_GLFW_LIBS) $(X_SIMD)
+SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
 
 COVERAGE_VARS = -XORKA_TYPES_BUILD_MODE=coverage -XORKA_SIMD_BUILD_MODE=coverage  -XORKA_TRANSFORMS_BUILD_MODE=coverage -XORKA_BUILD_MODE=coverage
 
@@ -14,7 +11,6 @@ build:
 	cd orka_simd && alr build $(SCENARIO_VARS)
 	cd orka_transforms && alr build $(SCENARIO_VARS)
 	cd orka && alr build $(SCENARIO_VARS)
-	cd orka_glfw && alr build $(SCENARIO_VARS)
 #	cd orka_plugin_sdl && alr build $(SCENARIO_VARS)
 	cd orka_plugin_archives && alr build $(SCENARIO_VARS)
 	cd orka_plugin_gltf && alr build $(SCENARIO_VARS)
@@ -47,7 +43,6 @@ clean:
 	cd orka_simd && alr clean
 	cd orka_transforms && alr clean
 	cd orka && alr clean
-	cd orka_glfw && alr clean
 	cd orka_tools && alr clean
 #	cd orka_plugin_sdl && alr clean
 	cd orka_plugin_archives && alr clean

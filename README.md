@@ -56,11 +56,10 @@ that is deprecated or functions that have been superseded by newer extensions.
 - **EGL**. Thick bindings for EGL are provided to create a surfaceless
 context for rendering without the presence of a windowing system.
 
-- **GLFW 3**. Provides bindings for [GLFW 3.x][url-glfw]. This
-is a library for creating windows with an OpenGL context on them. It also
-provides functionality for capturing user input on keyboard, mouse, and
-joystick. Alternatively, libraries like [SDL][url-sdl] can be
-used instead to create windows and process input.
+To display 3D graphics on the screen you need a library like [AWT][url-awt]
+to create windows with an OpenGL context and to manage input devices like
+the pointer, keyboard, and gamepads. Alternatively, a library like
+[SDL][url-sdl] can be used instead to create windows and process input.
 
 ## Documentation
 
@@ -108,6 +107,7 @@ the [Apache License 2.0][url-apache] AND [BSD 3-Clause license][url-bsd-3].
 the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
+  [url-awt]: https://github.com/onox/awt
   [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
   [url-crate-atmosphere]: https://github.com/onox/orka/tree/master/orka_plugin_atmosphere
   [url-crate-terrain]: https://github.com/onox/orka/tree/master/orka_plugin_terrain
@@ -116,7 +116,6 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-azdo]: https://www.khronos.org/assets/uploads/developers/library/2014-gdc/Khronos-OpenGL-Efficiency-GDC-Mar14.pdf
   [url-contributing]: /CONTRIBUTING.md
   [url-docs]: https://orka-engine.netlify.com/
-  [url-glfw]: http://www.glfw.org/
   [url-gltf]: https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md
   [url-issue]: https://github.com/onox/orka/issues
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
