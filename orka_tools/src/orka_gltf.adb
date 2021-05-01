@@ -28,7 +28,7 @@ with GL.Toggles;
 with GL.Types;
 
 with Orka.Behaviors;
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Cameras.Rotate_Around_Cameras;
 with Orka.Culling;
 with Orka.Debug;
@@ -47,7 +47,9 @@ with Orka.Resources.Managers;
 with Orka.Resources.Models.glTF;
 with Orka.Scenes.Singles.Trees;
 with Orka.Types;
-with Orka.Windows.GLFW;
+with Orka.Windows;
+
+with AWT.Inputs;
 
 with Orka_Package_glTF;
 
@@ -125,13 +127,11 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Debug));
 
    declare
-      Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+      Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-      Window : aliased constant Orka.Windows.Window'Class
-        := Orka.Windows.GLFW.Create_Window (Context, Width => Width, Height => Height);
-      W_Ptr : constant Orka.Windows.Window_Ptr :=
-        Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
+      Window : constant Orka.Windows.Window'Class
+        := Orka.Contexts.AWT.Create_Window (Context, Width, Height);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True, Raise_API_Error => True);
 
@@ -360,7 +360,7 @@ begin
             package Loops is new Orka.Loops
               (Time_Step   => Ada.Real_Time.Microseconds (2_083),
                Frame_Limit => Ada.Real_Time.Microseconds (8_334),
-               Window      => W_Ptr,
+               Window      => Window'Unchecked_Access,
                Camera      => Current_Camera,
                Job_Manager => Job_System);
 
@@ -371,7 +371,42 @@ begin
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
             Loops.Handler.Enable_Limit (False);
-            Loops.Run_Loop (Render_Scene'Access, Loops.Stop_Loop'Access);
+
+            declare
+               task Render_Task is
+                  entry Start_Rendering;
+               end Render_Task;
+
+               task body Render_Task is
+               begin
+                  accept Start_Rendering;
+
+                  Context.Make_Current (Window);
+                  Loops.Run_Loop (Render_Scene'Access, Loops.Stop_Loop'Access);
+                  Context.Make_Not_Current;
+               exception
+                  when Error : others =>
+                     Ada.Text_IO.Put_Line ("Error: " &
+                       Ada.Exceptions.Exception_Information (Error));
+                     Context.Make_Not_Current;
+                     raise;
+               end Render_Task;
+            begin
+               Context.Make_Not_Current;
+               Render_Task.Start_Rendering;
+
+               while not Window.Should_Close and then AWT.Process_Events (0.016667) loop
+                  declare
+                     Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
+
+                     use all type AWT.Inputs.Keyboard_Button;
+                  begin
+                     if Keyboard.Pressed (Key_Escape) then
+                        Window.Close;
+                     end if;
+                  end;
+               end loop;
+            end;
          end;
       exception
          when Error : others =>
@@ -381,9 +416,9 @@ begin
 
    Job_System.Shutdown;
    Loader.Shutdown;
-
-   Ada.Text_IO.Put_Line ("Shutdown job system and loader");
 exception
    when Error : others =>
       Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));
+      Job_System.Shutdown;
+      Loader.Shutdown;
 end Orka_GLTF;

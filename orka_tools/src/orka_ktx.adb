@@ -28,11 +28,8 @@ with GL.Viewports;
 
 with Orka.Behaviors;
 with Orka.Cameras.Rotate_Around_Cameras;
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Debug;
-with Orka.Futures;
-with Orka.Inputs.GLFW;
-with Orka.Inputs.Joysticks.Gamepads;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 with Orka.Loops;
@@ -44,7 +41,9 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations.Directories;
 with Orka.Resources.Textures.KTX;
 with Orka.Types;
-with Orka.Windows.GLFW;
+with Orka.Windows;
+
+with AWT.Inputs;
 
 with Orka_Package_KTX;
 
@@ -61,8 +60,6 @@ procedure Orka_KTX is
    use all type Orka.Logging.Severity;
 
    package Messages is new Orka.Logging.Messages (Application);
-
-   use Ada.Exceptions;
 begin
    if Ada.Command_Line.Argument_Count /= 1 then
       Ada.Text_IO.Put_Line ("Usage: <path to .ktx file>");
@@ -74,51 +71,13 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+      Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
         (Version => (4, 2), Flags  => (Debug => True, others => False));
 
-      Window : Orka.Windows.Window'Class
-        := Orka.Windows.GLFW.Create_Window
-             (Context, Width => Width, Height => Width, Resizable => False);
-      W_Ptr : constant Orka.Windows.Window_Ptr :=
-        Orka.Windows.Window_Ptr'(Window'Unchecked_Access);
-
-      JS : Orka.Inputs.Joysticks.Joystick_Input_Access;
-
-      JS_Manager : constant Orka.Inputs.Joysticks.Joystick_Manager_Ptr :=
-        Orka.Inputs.GLFW.Create_Joystick_Manager;
-
-      use type Orka.Inputs.Joysticks.Joystick_Input_Access;
+      Window : constant Orka.Windows.Window'Class
+        := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
-
-      --  Updating the gamepad mappings database might be necessary
-      --  in order to detect some joysticks as gamepads
-      declare
-         package Locations renames Orka.Resources.Locations;
-
-         Location_Data : constant Locations.Location_Ptr
-           := Locations.Directories.Create_Location ("data");
-      begin
-         if Location_Data.Exists ("gamecontrollerdb.txt") then
-            declare
-               Mappings : constant String
-                 := Orka.Resources.Convert (Orka.Resources.Byte_Array'(Location_Data.Read_Data
-                      ("gamecontrollerdb.txt").Get));
-            begin
-               Orka.Inputs.GLFW.Update_Gamepad_Mappings (Mappings);
-               Messages.Log (Info, "Updated gamepad mappings");
-            end;
-         end if;
-      end;
-
-      JS_Manager.Acquire (JS);
-
-      if JS /= null then
-         Messages.Log (Info, "Found " & (if JS.Is_Gamepad then "gamepad" else "joystick"));
-         Messages.Log (Info, "  name: " & JS.Name);
-         Messages.Log (Info, "  GUID: " & JS.GUID);
-      end if;
 
       declare
          Full_Path     : constant String := Ada.Command_Line.Argument (1);
@@ -261,12 +220,10 @@ begin
          GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
          declare
-            package Gamepads renames Orka.Inputs.Joysticks.Gamepads;
+            Level : Mipmap_Level := 0 with Atomic;
 
-            Level : Mipmap_Level := 0;
-
-            Render_Mode   : Display_Mode := Mode_A;
-            Render_Colors : Boolean      := False;
+            Render_Mode   : Display_Mode := Mode_A with Atomic;
+            Render_Colors : Boolean      := False  with Atomic;
 
             procedure Render
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
@@ -275,40 +232,6 @@ begin
                use all type LE.Texture_Kind;
             begin
                Camera.FB.Clear;
-
-               if JS /= null and then JS.Is_Present and then JS.Is_Gamepad then
-                  JS.Update_State (null);
-
-                  declare
-                     Last_State : constant Orka.Inputs.Joysticks.Joystick_State := JS.Last_State;
-                     State : constant Orka.Inputs.Joysticks.Joystick_State := JS.Current_State;
-
-                     use all type Orka.Inputs.Joysticks.Button_State;
-                     use all type Gamepads.Button;
-                  begin
-                     for Index in 1 .. State.Button_Count loop
-                        if State.Buttons (Index) /= Last_State.Buttons (Index)
-                          and State.Buttons (Index) = Pressed
-                        then
-                           case Gamepads.Button'(Gamepads.Value (Index)) is
-                              when Left_Pad_Left =>
-                                 Level := Mipmap_Level'Max (0, Level - 1);
-                              when Left_Pad_Right =>
-                                 Level := Mipmap_Level'Min (Maximum_Level, Level + 1);
-                              when Right_Pad_Up =>
-                                 if Render_Mode = Display_Mode'Last then
-                                    Render_Mode := Display_Mode'First;
-                                 else
-                                    Render_Mode := Display_Mode'Succ (Render_Mode);
-                                 end if;
-                              when Right_Pad_Down =>
-                                 Render_Colors := not Render_Colors;
-                              when others => null;
-                           end case;
-                        end if;
-                     end loop;
-                  end;
-               end if;
 
                T_1.Set_Lowest_Mipmap_Level (Level);
                Update_Title (T_1.Kind, Render_Mode, Render_Colors, Level, Maximum_Level + 1);
@@ -356,12 +279,67 @@ begin
             package Loops is new Orka.Loops
               (Time_Step   => Ada.Real_Time.Microseconds (2_083),
                Frame_Limit => Ada.Real_Time.Microseconds (16_667),
-               Window      => W_Ptr,
+               Window      => Window'Unchecked_Access,
                Camera      => Current_Camera,
                Job_Manager => Job_System);
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
-            Loops.Run_Loop (Render'Access, Loops.Stop_Loop'Access);
+
+            declare
+               task Render_Task is
+                  entry Start_Rendering;
+               end Render_Task;
+
+               task body Render_Task is
+               begin
+                  accept Start_Rendering;
+
+                  Context.Make_Current (Window);
+                  Loops.Run_Loop (Render'Access, Loops.Stop_Loop'Access);
+                  Context.Make_Not_Current;
+               exception
+                  when Error : others =>
+                     Ada.Text_IO.Put_Line ("Error: " &
+                       Ada.Exceptions.Exception_Information (Error));
+                     Context.Make_Not_Current;
+                     raise;
+               end Render_Task;
+            begin
+               Context.Make_Not_Current;
+               Render_Task.Start_Rendering;
+
+               while not Window.Should_Close and then AWT.Process_Events (0.016667) loop
+                  declare
+                     Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
+
+                     use all type AWT.Inputs.Keyboard_Button;
+                  begin
+                     if Keyboard.Pressed (Key_Escape) then
+                        Window.Close;
+                     end if;
+
+                     if Keyboard.Pressed (Key_Arrow_Left) then
+                        Level := Mipmap_Level'Max (0, Level - 1);
+                     end if;
+
+                     if Keyboard.Pressed (Key_Arrow_Right) then
+                        Level := Mipmap_Level'Min (Maximum_Level, Level + 1);
+                     end if;
+
+                     if Keyboard.Pressed (Key_F) then
+                        if Render_Mode = Display_Mode'Last then
+                           Render_Mode := Display_Mode'First;
+                        else
+                           Render_Mode := Display_Mode'Succ (Render_Mode);
+                        end if;
+                     end if;
+
+                     if Keyboard.Pressed (Key_C) then
+                        Render_Colors := not Render_Colors;
+                     end if;
+                  end;
+               end loop;
+            end;
          end;
       end;
    end;
@@ -370,5 +348,7 @@ begin
    Loader.Shutdown;
 exception
    when Error : others =>
-      Ada.Text_IO.Put_Line ("Error: " & Exception_Information (Error));
+      Ada.Text_IO.Put_Line ("Error: " & Ada.Exceptions.Exception_Information (Error));
+      Job_System.Shutdown;
+      Loader.Shutdown;
 end Orka_KTX;

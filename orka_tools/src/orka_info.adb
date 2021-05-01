@@ -15,20 +15,19 @@
 --  limitations under the License.
 
 with Ada.Strings.Unbounded;
-with Ada.Text_IO;
 
 with GL.Context;
 
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Debug;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
-with Orka.Windows.GLFW;
+with Orka.OS;
 
 procedure Orka_Info is
    procedure Display_Context_Information is
       package SU renames Ada.Strings.Unbounded;
-      use Ada.Text_IO;
+      use Orka.OS;
    begin
       Put_Line ("Major version: " & Natural'Image (GL.Context.Major_Version));
       Put_Line ("Minor version: " & Natural'Image (GL.Context.Minor_Version));
@@ -60,12 +59,8 @@ begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 
    declare
-      Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+      Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
         (Version => (3, 2), Flags  => (Debug => True, others => False));
-
-      Window : constant Orka.Windows.Window'Class
-        := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-      pragma Assert (Window.Width = 1 and Window.Height = 1);
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
       Display_Context_Information;
