@@ -1,4 +1,5 @@
-with "orka_glfw";
+with "awt";
+with "awt-linux";
 
 project Orka_Examples is
 

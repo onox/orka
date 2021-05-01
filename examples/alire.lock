@@ -4,11 +4,44 @@
 [solution.context]
 solved = true
 [[solution.state]]
-crate = "libglfw3"
-fulfilment = "hinted"
+crate = "awt"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../awt"
+relative = true
+remote = false
+[[solution.state]]
+crate = "libwayland"
+fulfilment = "solved"
 pinned = false
 transitivity = "indirect"
-versions = "^3.3.0"
+versions = "^1.16"
+[solution.state.release]
+description = "Wayland libraries and protocol"
+licenses = "MIT"
+maintainers = [
+"onox <denkpadje@gmail.com>",
+]
+maintainers-logins = [
+"onox",
+]
+name = "libwayland"
+notes = "Provided by system package: libwayland-dev"
+tags = [
+"wayland",
+"client",
+"egl",
+"server",
+"cursor",
+]
+version = "1.16.0"
+website = "https://wayland.freedesktop.org"
+[solution.state.release.origin]
+url = "system:libwayland-dev"
 [[solution.state]]
 crate = "orka"
 fulfilment = "linked"
@@ -29,17 +62,6 @@ versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../orka_egl"
-relative = true
-remote = false
-[[solution.state]]
-crate = "orka_glfw"
-fulfilment = "linked"
-pinned = false
-transitivity = "direct"
-versions = "^1.0.0"
-[solution.state.link]
-kind = "softlink"
-path = "file:../orka_glfw"
 relative = true
 remote = false
 [[solution.state]]
@@ -73,6 +95,61 @@ versions = "^1.0.0"
 [solution.state.link]
 kind = "softlink"
 path = "file:../orka_types"
+relative = true
+remote = false
+[[solution.state]]
+crate = "wayland_ada_scanner"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../wayland-ada/wayland_ada_scanner"
+relative = true
+remote = false
+[[solution.state]]
+crate = "wayland_client_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../wayland-ada/wayland_client_ada"
+relative = true
+remote = false
+[[solution.state]]
+crate = "wayland_cursor_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../wayland-ada/wayland_cursor_ada"
+relative = true
+remote = false
+[[solution.state]]
+crate = "wayland_egl_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../wayland-ada/wayland_egl_ada"
+relative = true
+remote = false
+[[solution.state]]
+crate = "wayland_protocols_ada"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.0"
+[solution.state.link]
+kind = "softlink"
+path = "file:../../wayland-ada/wayland_protocols_ada"
 relative = true
 remote = false
 

@@ -24,4 +24,4 @@ executables = [
 ]
 
 [[depends-on]]
-orka_glfw = "^1.0.0"
+awt = "^1.0.0"
