@@ -21,7 +21,7 @@ with GL.Barriers;
 with GL.Compute;
 with GL.Types.Compute;
 
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
@@ -29,15 +29,9 @@ with Orka.Rendering.Programs.Uniforms;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
 
-with Orka.Windows.GLFW;
-
 procedure Orka_10_Compute is
-   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
-
-   Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-   pragma Assert (Window.Width = 1 and Window.Height = 1);
 
    ----------------------------------------------------------------------
 

@@ -16,21 +16,20 @@
 
 with GL.Types;
 
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Resources.Locations.Directories;
-with Orka.Windows.GLFW;
+with Orka.Windows;
 
 procedure Orka_13_Geometry is
-   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window
-          (Context, Width => 500, Height => 500, Resizable => False);
+     := Orka.Contexts.AWT.Create_Window (Context, Width => 500, Height => 500, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;

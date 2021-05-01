@@ -26,7 +26,7 @@ with GL.Types;
 with GL.Toggles;
 
 with Orka.Cameras.Rotate_Around_Cameras;
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
@@ -36,7 +36,9 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Vector_Conversions;
-with Orka.Windows.GLFW;
+with Orka.Windows;
+
+with AWT.Inputs;
 
 --  In this example we render a floor, a cube on top of it, and the
 --  reflection of the cube on the floor using a stencil buffer.
@@ -51,11 +53,11 @@ procedure Orka_12_Stencil is
    Height  : constant := 500;
    Samples : constant := 8;
 
-   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width, Height, Resizable => False);
+     := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
 
    function Enable_MS return Boolean is
    begin
@@ -228,6 +230,10 @@ procedure Orka_12_Stencil is
    World_TM : constant Transforms.Matrix4 := Transforms.Rx (-0.5 * Ada.Numerics.Pi);
 
    Default_Distance : constant := 3.0;
+
+   type Effect_Type is mod 4;
+
+   Effect : Effect_Type := Effect_Type'First;
 begin
    Rotate_Around_Cameras.Rotate_Around_Camera (Current_Camera.all).Set_Radius (Default_Distance);
 
@@ -260,6 +266,8 @@ begin
    --  Projection matrix
    Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
+   Uni_Effect.Set_Int (Int (Effect));
+
    Ada.Text_IO.Put_Line ("Usage: Right click and drag mouse to move camera around cube.");
    Ada.Text_IO.Put_Line ("Usage: Use scroll wheel to zoom in and out.");
    Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between post-processing effects.");
@@ -267,6 +275,21 @@ begin
    begin
       while not Window.Should_Close loop
          Window.Process_Input;
+
+         declare
+            Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
+
+            use all type AWT.Inputs.Keyboard_Button;
+         begin
+            if Keyboard.Pressed (Key_Escape) then
+               Window.Close;
+            end if;
+
+            if Keyboard.Pressed (Key_Space) then
+               Effect := Effect + 1;
+               Uni_Effect.Set_Int (Int (Effect));
+            end if;
+         end;
 
          Current_Camera.Update (0.01666);
          declare
@@ -280,8 +303,6 @@ begin
          begin
             Uni_View.Set_Matrix (Current_Camera.View_Matrix * TM);
          end;
-
-         Uni_Effect.Set_Int (0);  --  TODO Allow changing effect with keyboard
 
          ---------------------------------------------------------------
          --                           Cube                            --

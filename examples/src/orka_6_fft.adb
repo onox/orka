@@ -14,29 +14,23 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
 with Ada.Text_IO;
 
 with GL.Barriers;
 with GL.Types;
 
 with Orka.Algorithms.FFT;
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Debug;
 with Orka.Logging;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
 with Orka.Timers;
-with Orka.Windows.GLFW;
 
 procedure Orka_6_FFT is
-   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
-
-   Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width => 1, Height => 1, Visible => False);
-   pragma Assert (Window.Width = 1 and Window.Height = 1);
 
    ----------------------------------------------------------------------
 

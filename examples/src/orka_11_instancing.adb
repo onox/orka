@@ -20,7 +20,7 @@ with GL.Types;
 with GL.Toggles;
 
 with Orka.Cameras.Rotate_Around_Cameras;
-with Orka.Contexts;
+with Orka.Contexts.AWT;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
@@ -30,7 +30,7 @@ with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Doubles.Vector_Conversions;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
-with Orka.Windows.GLFW;
+with Orka.Windows;
 
 --  In this example we render many instances of a cube, each at a different
 --  position.
@@ -39,11 +39,11 @@ procedure Orka_11_Instancing is
    Width  : constant := 500;
    Height : constant := 500;
 
-   Context : constant Orka.Contexts.Context'Class := Orka.Windows.GLFW.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
-     := Orka.Windows.GLFW.Create_Window (Context, Width, Height, Resizable => False);
+     := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
