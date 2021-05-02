@@ -20,8 +20,6 @@ with Orka.Cameras;
 private package Orka.Simulation is
    pragma Preelaborate;
 
-   type Stop_Ptr is not null access procedure;
-
    type Render_Ptr is not null access procedure
      (Scene  : not null Behaviors.Behavior_Array_Access;
       Camera : Cameras.Camera_Ptr);

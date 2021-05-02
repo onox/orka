@@ -67,7 +67,6 @@ package body Orka.Simulation_Jobs is
 
    type Start_Render_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr;
    end record;
 
    type Scene_Render_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
@@ -78,8 +77,6 @@ package body Orka.Simulation_Jobs is
 
    type Finish_Render_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr;
-      Stop   : Simulation.Stop_Ptr;
    end record;
 
    overriding
@@ -138,10 +135,8 @@ package body Orka.Simulation_Jobs is
    -----------------------------------------------------------------------------
 
    function Create_Start_Render_Job
-     (Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr) return Jobs.Job_Ptr
-   is (new Start_Render_Job'(Jobs.Abstract_Job with
-        Fence => Fence, Window => Window));
+     (Fence  : not null access Fences.Buffer_Fence) return Jobs.Job_Ptr
+   is (new Start_Render_Job'(Jobs.Abstract_Job with Fence => Fence));
 
    function Create_Scene_Render_Job
      (Render : Simulation.Render_Ptr;
@@ -151,11 +146,8 @@ package body Orka.Simulation_Jobs is
         Render => Render, Scene => Scene, Camera => Camera));
 
    function Create_Finish_Render_Job
-     (Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr;
-      Stop   : Simulation.Stop_Ptr) return Jobs.Job_Ptr
-   is (new Finish_Render_Job'(Jobs.Abstract_Job with
-        Fence => Fence, Window => Window, Stop => Stop));
+     (Fence  : not null access Fences.Buffer_Fence) return Jobs.Job_Ptr
+   is (new Finish_Render_Job'(Jobs.Abstract_Job with Fence => Fence));
 
    -----------------------------------------------------------------------------
    --                            EXECUTE PROCEDURES                           --
@@ -278,11 +270,6 @@ package body Orka.Simulation_Jobs is
       Context : Jobs.Execution_Context'Class) is
    begin
       Object.Fence.Advance_Index;
-      Object.Window.Swap_Buffers;
-
-      if Object.Window.Should_Close then
-         Object.Stop.all;
-      end if;
    end Execute;
 
 end Orka.Simulation_Jobs;

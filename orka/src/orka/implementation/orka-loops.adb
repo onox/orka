@@ -123,8 +123,7 @@ package body Orka.Loops is
 
    procedure Run_Game_Loop
      (Fence  : not null access SJ.Fences.Buffer_Fence;
-      Render : Simulation.Render_Ptr;
-      Stop   : Simulation.Stop_Ptr)
+      Render : Simulation.Render_Ptr)
    is
       Previous_Time : Time := Clock;
       Next_Time     : Time := Previous_Time;
@@ -179,9 +178,9 @@ package body Orka.Loops is
                     := SJ.Create_Scene_Render_Job (Render, Scene_Array, Scene.Camera);
 
                   Render_Start_Job  : constant Jobs.Job_Ptr
-                    := SJ.Create_Start_Render_Job (Fence, Window);
+                    := SJ.Create_Start_Render_Job (Fence);
                   Render_Finish_Job : constant Jobs.Job_Ptr
-                    := SJ.Create_Finish_Render_Job (Fence, Window, Stop);
+                    := SJ.Create_Finish_Render_Job (Fence);
 
                   Handle : Futures.Pointers.Mutable_Pointer;
                   Status : Futures.Status;
@@ -282,8 +281,7 @@ package body Orka.Loops is
    procedure Run_Loop
      (Render : not null access procedure
         (Scene  : not null Behaviors.Behavior_Array_Access;
-         Camera : Cameras.Camera_Ptr);
-      Stop   : not null access procedure)
+         Camera : Cameras.Camera_Ptr))
    is
       Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence;
    begin
@@ -292,15 +290,13 @@ package body Orka.Loops is
          --  will be used to dequeue and execute GPU jobs.
          task Simulation;
 
-         use Ada.Exceptions;
-
          task body Simulation is
          begin
             System.Multiprocessors.Dispatching_Domains.Set_CPU (1);
-            Run_Game_Loop (Fence'Unchecked_Access, Render, Stop);
+            Run_Game_Loop (Fence'Unchecked_Access, Render);
          exception
             when Error : others =>
-               Messages.Log (Loggers.Error, Exception_Information (Error));
+               Messages.Log (Loggers.Error, Ada.Exceptions.Exception_Information (Error));
          end Simulation;
       begin
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);

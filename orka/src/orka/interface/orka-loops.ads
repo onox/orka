@@ -20,14 +20,12 @@ with Ada.Real_Time;
 with Orka.Behaviors;
 with Orka.Cameras;
 with Orka.Jobs.System;
-with Orka.Windows;
 
 use Ada.Real_Time;
 
 generic
    Time_Step, Frame_Limit : Time_Span;
 
-   Window : Windows.Window_Ptr;
    Camera : Cameras.Camera_Ptr;
 
    with package Job_Manager is new Orka.Jobs.System (<>);
@@ -90,7 +88,6 @@ package Orka.Loops is
    procedure Run_Loop
      (Render : not null access procedure
         (Scene  : not null Behaviors.Behavior_Array_Access;
-         Camera : Cameras.Camera_Ptr);
-      Stop   : not null access procedure);
+         Camera : Cameras.Camera_Ptr));
 
 end Orka.Loops;

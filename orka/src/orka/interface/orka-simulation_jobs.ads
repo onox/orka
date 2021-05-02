@@ -54,8 +54,7 @@ private package Orka.Simulation_Jobs is
    -----------------------------------------------------------------------------
 
    function Create_Start_Render_Job
-     (Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr) return Jobs.Job_Ptr;
+     (Fence  : not null access Fences.Buffer_Fence) return Jobs.Job_Ptr;
 
    function Create_Scene_Render_Job
      (Render : Simulation.Render_Ptr;
@@ -63,8 +62,6 @@ private package Orka.Simulation_Jobs is
       Camera : Cameras.Camera_Ptr) return Jobs.Job_Ptr;
 
    function Create_Finish_Render_Job
-     (Fence  : not null access Fences.Buffer_Fence;
-      Window : Windows.Window_Ptr;
-      Stop   : Simulation.Stop_Ptr) return Jobs.Job_Ptr;
+     (Fence  : not null access Fences.Buffer_Fence) return Jobs.Job_Ptr;
 
 end Orka.Simulation_Jobs;

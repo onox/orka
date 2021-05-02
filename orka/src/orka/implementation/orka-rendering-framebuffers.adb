@@ -62,7 +62,6 @@ package body Orka.Rendering.Framebuffers is
    function Get_Default_Framebuffer
      (Window : Orka.Windows.Window'Class) return Framebuffer
    is (Create_Default_Framebuffer (Size (Window.Width), Size (Window.Height)));
-   --  TODO Or store a Window_Ptr so we can adjust viewport when window gets resized?
 
    function Create_Default_Framebuffer
      (Width, Height : Size) return Framebuffer is
