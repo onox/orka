@@ -262,7 +262,6 @@ package body Orka.Simulation_Jobs is
       Status : Fences.Fence_Status;
    begin
       Object.Fence.Prepare_Index (Status);
-      Object.Window.Process_Input;
    end Execute;
 
    overriding
