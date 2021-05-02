@@ -301,6 +301,12 @@ begin
             Group_Added : Boolean := False;
             use Ada.Real_Time;
 
+            package Loops is new Orka.Loops
+              (Time_Step   => Ada.Real_Time.Microseconds (2_083),
+               Frame_Limit => Ada.Real_Time.Microseconds (8_334),
+               Camera      => Current_Camera,
+               Job_Manager => Job_System);
+
             procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr);
 
             procedure Render_Scene
@@ -355,14 +361,13 @@ begin
                      Behavior.After_Render;
                   end loop;
                end if;
-            end Render_Scene;
 
-            package Loops is new Orka.Loops
-              (Time_Step   => Ada.Real_Time.Microseconds (2_083),
-               Frame_Limit => Ada.Real_Time.Microseconds (8_334),
-               Window      => Window'Unchecked_Access,
-               Camera      => Current_Camera,
-               Job_Manager => Job_System);
+               Window.Swap_Buffers;
+
+               if Window.Should_Close then
+                  Loops.Stop_Loop;
+               end if;
+            end Render_Scene;
 
             procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr) is
             begin
@@ -382,7 +387,7 @@ begin
                   accept Start_Rendering;
 
                   Context.Make_Current (Window);
-                  Loops.Run_Loop (Render_Scene'Access, Loops.Stop_Loop'Access);
+                  Loops.Run_Loop (Render_Scene'Access);
                   Context.Make_Not_Current;
                exception
                   when Error : others =>

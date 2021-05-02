@@ -275,6 +275,12 @@ begin
             Render_View   : View_Mode := External with Atomic;
             Render_Colors : Boolean   := False  with Atomic;
 
+            package Loops is new Orka.Loops
+              (Time_Step   => Ada.Real_Time.Microseconds (2_083),
+               Frame_Limit => Ada.Real_Time.Microseconds (16_667),
+               Camera      => Current_Camera,
+               Job_Manager => Job_System);
+
             procedure Render
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
                Camera : Orka.Cameras.Camera_Ptr)
@@ -352,14 +358,13 @@ begin
                  ));
 
                Draw (T_1.Constant_Reference.Kind);
-            end Render;
 
-            package Loops is new Orka.Loops
-              (Time_Step   => Ada.Real_Time.Microseconds (2_083),
-               Frame_Limit => Ada.Real_Time.Microseconds (16_667),
-               Window      => Window'Unchecked_Access,
-               Camera      => Current_Camera,
-               Job_Manager => Job_System);
+               Window.Swap_Buffers;
+
+               if Window.Should_Close then
+                  Loops.Stop_Loop;
+               end if;
+            end Render;
          begin
             Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
 
@@ -373,7 +378,7 @@ begin
                   accept Start_Rendering;
 
                   Context.Make_Current (Window);
-                  Loops.Run_Loop (Render'Access, Loops.Stop_Loop'Access);
+                  Loops.Run_Loop (Render'Access);
                   Context.Make_Not_Current;
                exception
                   when Error : others =>
