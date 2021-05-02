@@ -330,7 +330,9 @@ begin
 
                         Uni_External : constant Uniforms.Uniform := P_1.Uniform ("showExternal");
                         Uni_Colors   : constant Uniforms.Uniform := P_1.Uniform ("showColors");
+                        Uni_Invert   : constant Uniforms.Uniform := P_1.Uniform ("invertView");
                      begin
+                        Uni_Invert.Set_Boolean (Render_View = Internal);
                         Uni_View.Set_Matrix (Camera.View_Matrix);
                         Uni_Proj.Set_Matrix (Camera.Projection_Matrix);
 
