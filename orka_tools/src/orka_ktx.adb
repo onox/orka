@@ -15,10 +15,13 @@
 --  limitations under the License.
 
 with Ada.Command_Line;
+with Ada.Containers.Indefinite_Holders;
 with Ada.Directories;
 with Ada.Exceptions;
 with Ada.Real_Time;
+with Ada.Strings.Unbounded;
 with Ada.Text_IO;
+with Ada.Containers.Vectors;
 
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
@@ -62,6 +65,10 @@ procedure Orka_KTX is
    use all type Orka.Logging.Severity;
 
    package Messages is new Orka.Logging.Messages (Application);
+
+   package SU renames Ada.Strings.Unbounded;
+
+   use type SU.Unbounded_String;
 begin
    if Ada.Command_Line.Argument_Count /= 1 then
       Ada.Text_IO.Put_Line ("Usage: <path to .ktx file>");
@@ -85,7 +92,50 @@ begin
          Full_Path     : constant String := Ada.Command_Line.Argument (1);
 
          Location_Path : constant String := Ada.Directories.Containing_Directory (Full_Path);
-         Texture_Path  : constant String := Ada.Directories.Simple_Name (Full_Path);
+
+         Texture_Path      : SU.Unbounded_String :=
+           SU.To_Unbounded_String (Ada.Directories.Simple_Name (Full_Path));
+         Load_Texture_Path : SU.Unbounded_String := Texture_Path;
+
+         type Load_Action_Kind is (Previous_File, Next_File);
+
+         procedure Load_File (Action : Load_Action_Kind) is
+            package String_Vectors is new Ada.Containers.Vectors
+              (Positive, SU.Unbounded_String);
+
+            Files : String_Vectors.Vector;
+
+            procedure Process_File (File : Ada.Directories.Directory_Entry_Type) is
+               Name : constant String := Ada.Directories.Simple_Name (File);
+            begin
+               Files.Append (SU.To_Unbounded_String (Name));
+            end Process_File;
+
+            use all type Ada.Directories.File_Kind;
+         begin
+            Ada.Directories.Search
+              (Directory => Location_Path,
+               Pattern   => "*.ktx",
+               Filter    => (Ordinary_File => True, others => False),
+               Process   => Process_File'Access);
+
+            declare
+               Cursor : String_Vectors.Cursor := Files.Find (Texture_Path);
+
+               use type String_Vectors.Cursor;
+            begin
+               case Action is
+                  when Previous_File =>
+                     Cursor := String_Vectors.Previous (Cursor);
+                  when Next_File =>
+                     Cursor := String_Vectors.Next (Cursor);
+               end case;
+
+               if Cursor /= String_Vectors.No_Element then
+                  Load_Texture_Path := Files (Cursor);
+               end if;
+            end;
+         end Load_File;
 
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;
@@ -115,10 +165,12 @@ begin
          Location_Textures : constant Locations.Location_Ptr :=
            Locations.Directories.Create_Location (Location_Path);
 
-         T_1 : constant Texture := Orka.Resources.Textures.KTX.Read_Texture
-           (Location_Textures, Texture_Path);
+         package Texture_Holders is new Ada.Containers.Indefinite_Holders
+           (Element_Type => GL.Objects.Textures.Texture);
 
-         Maximum_Level : constant Mipmap_Level := T_1.Mipmap_Levels - 1;
+         T_1 : Texture_Holders.Holder;
+
+         Maximum_Level : Mipmap_Level;
 
          ----------------------------------------------------------------------
 
@@ -176,7 +228,7 @@ begin
             use type Zoom_Mode;
             use type View_Mode;
 
-            Text : SU.Unbounded_String := SU.To_Unbounded_String ("KTX viewer - " & Texture_Path);
+            Text : SU.Unbounded_String := "KTX viewer - " & Texture_Path;
          begin
             if Levels > 1 then
                SU.Append (Text, " (level " & Orka.Logging.Trim (Mipmap_Level'Image (Level + 1)) &
@@ -195,9 +247,7 @@ begin
             Window.Set_Title (SU.To_String (Text));
          end Update_Title;
 
-         P_1 : Program := Create_Program (Get_Module (T_1.Kind));
-
-         Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("colorTexture");
+         P_1 : Program;
       begin
          --  Clear color to black and depth to 0.0 (if using reversed Z)
          FB_D.Set_Default_Values
@@ -206,11 +256,6 @@ begin
              others => <>));
 
          FB_D.Use_Framebuffer;
-
-         P_1.Use_Program;
-
-         Uni_Texture.Verify_Compatibility (T_1);
-         Orka.Rendering.Textures.Bind (T_1, Orka.Rendering.Textures.Texture, 0);
 
          Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
          Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
@@ -238,11 +283,36 @@ begin
             begin
                Camera.FB.Clear;
 
-               T_1.Set_Lowest_Mipmap_Level (Level);
-               Update_Title
-                 (T_1.Kind, Render_Zoom, Render_View, Render_Colors, Level, Maximum_Level + 1);
+               if Load_Texture_Path /= SU.Null_Unbounded_String then
+                  T_1 := Texture_Holders.To_Holder (Orka.Resources.Textures.KTX.Read_Texture
+                    (Location_Textures, SU.To_String (Load_Texture_Path)));
 
-               case T_1.Kind is
+                  P_1 := Create_Program (Get_Module (T_1.Constant_Reference.Kind));
+                  P_1.Use_Program;
+
+                  declare
+                     Uni_Texture : constant Uniforms.Uniform_Sampler :=
+                       P_1.Uniform_Sampler ("colorTexture");
+                  begin
+                     Uni_Texture.Verify_Compatibility (T_1.Constant_Reference);
+                     Orka.Rendering.Textures.Bind
+                       (T_1.Constant_Reference, Orka.Rendering.Textures.Texture, 0);
+                  end;
+
+                  Maximum_Level := T_1.Constant_Reference.Mipmap_Levels - 1;
+                  Level         := Mipmap_Level'Min (Level, Maximum_Level);
+
+                  Texture_Path      := Load_Texture_Path;
+                  Load_Texture_Path := SU.Null_Unbounded_String;
+               end if;
+
+               T_1.Constant_Reference.Set_Lowest_Mipmap_Level (Level);
+
+               Update_Title
+                 (T_1.Constant_Reference.Kind, Render_Zoom, Render_View, Render_Colors,
+                  Level, Maximum_Level + 1);
+
+               case T_1.Constant_Reference.Kind is
                   when Texture_1D | Texture_2D | Texture_2D_Array =>
                      declare
                         Uni_Screen   : constant Uniforms.Uniform := P_1.Uniform ("screenSize");
@@ -279,7 +349,7 @@ begin
                          Height => Single (Window.Height))
                  ));
 
-               Draw (T_1.Kind);
+               Draw (T_1.Constant_Reference.Kind);
             end Render;
 
             package Loops is new Orka.Loops
@@ -330,6 +400,14 @@ begin
 
                      if Keyboard.Pressed (Key_Arrow_Up) then
                         Level := Mipmap_Level'Min (Maximum_Level, Level + 1);
+                     end if;
+
+                     if Keyboard.Pressed (Key_Arrow_Left) then
+                        Load_File (Previous_File);
+                     end if;
+
+                     if Keyboard.Pressed (Key_Arrow_Right) then
+                        Load_File (Next_File);
                      end if;
 
                      if Keyboard.Pressed (Key_Z) then
