@@ -30,16 +30,18 @@ package body Orka.Rendering.Programs.Modules is
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
 
+   package L1 renames Ada.Characters.Latin_1;
+
+   use Orka.Strings;
+
    procedure Log_Error_With_Source (Text, Info_Log, Message : String) is
       package SF renames Ada.Strings.Fixed;
-      package L1 renames Ada.Characters.Latin_1;
 
-      Extra_Rows          : constant := 2;
+      Extra_Rows          : constant := 1;
       Line_Number_Padding : constant := 2;
 
       Separator : constant String := " | ";
 
-      use Orka.Strings;
       use SF;
 
       use all type Orka.Terminals.Color;
@@ -53,9 +55,9 @@ package body Orka.Rendering.Programs.Modules is
          Message_Kind_Color : constant Orka.Terminals.Color :=
            (if +Message_Parts (1) = "error" then
               Red
-            elsif +Message_Parts (2) = "warning" then
+            elsif +Message_Parts (1) = "warning" then
               Yellow
-            elsif +Message_Parts (2) = "note" then
+            elsif +Message_Parts (1) = "note" then
               Cyan
             else
               Default);
@@ -137,8 +139,12 @@ package body Orka.Rendering.Programs.Modules is
             if not Shader.Compile_Status then
                declare
                   Log : constant String := Shader.Info_Log;
+
+                  Log_Parts : constant Orka.Strings.String_List := Split (Log, "" & L1.LF);
                begin
-                  Log_Error_With_Source (Text, Log, "Compiling shader " & Path & " failed:");
+                  for Part of Log_Parts loop
+                     Log_Error_With_Source (Text, +Part, "Compiling shader " & Path & " failed:");
+                  end loop;
 
                   raise Shader_Compile_Error with Path & ":" & Log;
                end;
@@ -169,9 +175,13 @@ package body Orka.Rendering.Programs.Modules is
             if not Shader.Compile_Status then
                declare
                   Log : constant String := Shader.Info_Log;
+
+                  Log_Parts : constant Orka.Strings.String_List := Split (Log, "" & L1.LF);
                begin
-                  Log_Error_With_Source (Source, Log,
-                    "Compiling " & Shader_Kind'Image & " shader failed:");
+                  for Part of Log_Parts loop
+                     Log_Error_With_Source (Source, +Part,
+                       "Compiling " & Shader_Kind'Image & " shader failed:");
+                  end loop;
 
                   raise Shader_Compile_Error with Shader_Kind'Image & ":" & Log;
                end;
