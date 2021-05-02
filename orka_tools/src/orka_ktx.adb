@@ -51,7 +51,9 @@ procedure Orka_KTX is
    Width   : constant := 1280;
    Height  : constant := 720;
 
-   type Display_Mode is (Mode_A, Mode_B);
+   type Zoom_Mode is (Best_Fit, Actual_Size);
+
+   type View_Mode is (External, Internal);
 
    package Job_System renames Orka_Package_KTX.Job_System;
    package Loader     renames Orka_Package_KTX.Loader;
@@ -165,12 +167,14 @@ begin
 
          procedure Update_Title
            (Kind   : LE.Texture_Kind;
-            Mode   : Display_Mode;
+            Mode   : Zoom_Mode;
+            View   : View_Mode;
             Colors : Boolean;
             Level, Levels : Mipmap_Level)
          is
             use all type LE.Texture_Kind;
-            use type Display_Mode;
+            use type Zoom_Mode;
+            use type View_Mode;
 
             Text : SU.Unbounded_String := SU.To_Unbounded_String ("KTX viewer - " & Texture_Path);
          begin
@@ -181,9 +185,9 @@ begin
 
             case Kind is
                when Texture_1D | Texture_2D | Texture_2D_Array =>
-                  SU.Append (Text, " (best fit: " & Boolean'Image (Mode = Mode_A) & ")");
+                  SU.Append (Text, " (zoom: " & Mode'Image & ")");
                when Texture_3D | Texture_Cube_Map =>
-                  SU.Append (Text, " (external view: " & Boolean'Image (Mode = Mode_B) & ")");
+                  SU.Append (Text, " (view: " & View'Image & ")");
                   SU.Append (Text, " (colors: " & Colors'Image & ")");
                when others => null;
             end case;
@@ -222,8 +226,9 @@ begin
          declare
             Level : Mipmap_Level := 0 with Atomic;
 
-            Render_Mode   : Display_Mode := Mode_A with Atomic;
-            Render_Colors : Boolean      := False  with Atomic;
+            Render_Zoom   : Zoom_Mode := Best_Fit with Atomic;
+            Render_View   : View_Mode := External with Atomic;
+            Render_Colors : Boolean   := False  with Atomic;
 
             procedure Render
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
@@ -234,7 +239,8 @@ begin
                Camera.FB.Clear;
 
                T_1.Set_Lowest_Mipmap_Level (Level);
-               Update_Title (T_1.Kind, Render_Mode, Render_Colors, Level, Maximum_Level + 1);
+               Update_Title
+                 (T_1.Kind, Render_Zoom, Render_View, Render_Colors, Level, Maximum_Level + 1);
 
                case T_1.Kind is
                   when Texture_1D | Texture_2D | Texture_2D_Array =>
@@ -245,7 +251,7 @@ begin
                         Uni_Screen.Set_Vector (Orka.Types.Singles.Vector4'
                           (Single (Window.Width), Single (Window.Height), 0.0, 0.0)
                         );
-                        Uni_Best_Fit.Set_Boolean (Render_Mode = Mode_A);
+                        Uni_Best_Fit.Set_Boolean (Render_Zoom = Best_Fit);
                      end;
                   when Texture_3D | Texture_Cube_Map =>
                      declare
@@ -258,7 +264,7 @@ begin
                         Uni_View.Set_Matrix (Camera.View_Matrix);
                         Uni_Proj.Set_Matrix (Camera.Projection_Matrix);
 
-                        Uni_External.Set_Boolean (Render_Mode = Mode_B);
+                        Uni_External.Set_Boolean (Render_View = External);
                         Uni_Colors.Set_Boolean (Render_Colors);
                      end;
                   when others => null;
@@ -318,19 +324,27 @@ begin
                         Window.Close;
                      end if;
 
-                     if Keyboard.Pressed (Key_Arrow_Left) then
+                     if Keyboard.Pressed (Key_Arrow_Down) then
                         Level := Mipmap_Level'Max (0, Level - 1);
                      end if;
 
-                     if Keyboard.Pressed (Key_Arrow_Right) then
+                     if Keyboard.Pressed (Key_Arrow_Up) then
                         Level := Mipmap_Level'Min (Maximum_Level, Level + 1);
                      end if;
 
-                     if Keyboard.Pressed (Key_F) then
-                        if Render_Mode = Display_Mode'Last then
-                           Render_Mode := Display_Mode'First;
+                     if Keyboard.Pressed (Key_Z) then
+                        if Render_Zoom = Zoom_Mode'Last then
+                           Render_Zoom := Zoom_Mode'First;
                         else
-                           Render_Mode := Display_Mode'Succ (Render_Mode);
+                           Render_Zoom := Zoom_Mode'Succ (Render_Zoom);
+                        end if;
+                     end if;
+
+                     if Keyboard.Pressed (Key_V) then
+                        if Render_View = View_Mode'Last then
+                           Render_View := View_Mode'First;
+                        else
+                           Render_View := View_Mode'Succ (Render_View);
                         end if;
                      end if;
 
