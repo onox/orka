@@ -24,6 +24,8 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Resources.Locations.Directories;
 with Orka.Windows;
 
+with AWT;
+
 procedure Orka_13_Geometry is
    Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
@@ -64,9 +66,7 @@ begin
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
-   while not Window.Should_Close loop
-      Window.Process_Input;
-
+   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
       FB_D.Clear ((Color => True, others => False));
       Orka.Rendering.Drawing.Draw (Points, 0, 4);
 

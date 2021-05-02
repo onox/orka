@@ -17,6 +17,7 @@
 with GL.Types;
 
 with Orka.Contexts.AWT;
+with Orka.OS;
 with Orka.Rendering.Buffers.MDI;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
@@ -25,6 +26,8 @@ with Orka.Rendering.Programs.Uniforms;
 with Orka.Resources.Locations.Directories;
 with Orka.Types;
 with Orka.Windows;
+
+with AWT.Inputs;
 
 procedure Orka_4_MDI is
    Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
@@ -90,7 +93,7 @@ procedure Orka_4_MDI is
 
    type Color_Mode is (Draw_ID, Instance_ID, Object_ID);
 
-   Mode : constant Color_Mode := Object_ID;
+   Mode : Color_Mode := Object_ID;
 begin
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
@@ -103,8 +106,26 @@ begin
 
    Batch_1.Data.Bind (Shader_Storage, 0);
 
-   while not Window.Should_Close loop
-      Window.Process_Input;
+   Orka.OS.Put_Line ("Usage: Press space key to cycle between coloring modes");
+
+   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
+      declare
+         Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
+
+         use all type AWT.Inputs.Keyboard_Button;
+      begin
+         if Keyboard.Pressed (Key_Escape) then
+            Window.Close;
+         end if;
+
+         if Keyboard.Pressed (Key_Space) then
+            if Mode /= Color_Mode'Last then
+               Mode := Color_Mode'Succ (Mode);
+            else
+               Mode := Color_Mode'First;
+            end if;
+         end if;
+      end;
 
       Uniform_Mode.Set_Integer (Color_Mode'Pos (Mode));
       Window.Set_Title ("Color mode: " & Mode'Image);

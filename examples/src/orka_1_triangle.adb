@@ -24,6 +24,8 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Resources.Locations.Directories;
 with Orka.Windows;
 
+with AWT;
+
 procedure Orka_1_Triangle is
    Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
@@ -62,9 +64,7 @@ begin
 
    Buffer_1.Bind (Shader_Storage, 0);
 
-   while not Window.Should_Close loop
-      Window.Process_Input;
-
+   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
       FB_D.Clear ((Color => True, others => False));
       Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 

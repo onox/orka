@@ -32,6 +32,8 @@ with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 with Orka.Windows;
 
+with AWT;
+
 --  In this example we render many instances of a cube, each at a different
 --  position.
 
@@ -160,9 +162,7 @@ begin
    Buffer_1.Bind (Shader_Storage, 0);
    Buffer_3.Bind (Shader_Storage, 1);
 
-   while not Window.Should_Close loop
-      Window.Process_Input;
-
+   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
       Current_Camera.Update (0.01666);
       declare
          VP : constant Transforms.Vector4 :=

@@ -273,9 +273,7 @@ begin
    Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between post-processing effects.");
 
    begin
-      while not Window.Should_Close loop
-         Window.Process_Input;
-
+      while not Window.Should_Close and then AWT.Process_Events (0.001) loop
          declare
             Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 
