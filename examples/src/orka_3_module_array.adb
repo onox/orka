@@ -68,7 +68,9 @@ begin
    Program_1.Use_Program;
    Buffer_1.Bind (Shader_Storage, 0);
 
-   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
+   while not Window.Should_Close loop
+      AWT.Process_Events (0.001);
+
       FB_D.Clear ((Color => True, others => False));
       Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 

@@ -66,7 +66,9 @@ begin
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 
-   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
+   while not Window.Should_Close loop
+      AWT.Process_Events (0.001);
+
       FB_D.Clear ((Color => True, others => False));
       Orka.Rendering.Drawing.Draw (Points, 0, 4);
 

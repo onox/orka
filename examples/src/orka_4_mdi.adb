@@ -108,7 +108,9 @@ begin
 
    Orka.OS.Put_Line ("Usage: Press space key to cycle between coloring modes");
 
-   while not Window.Should_Close and then AWT.Process_Events (0.001) loop
+   while not Window.Should_Close loop
+      AWT.Process_Events (0.001);
+
       declare
          Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 
