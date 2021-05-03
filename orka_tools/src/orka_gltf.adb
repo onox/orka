@@ -400,7 +400,9 @@ begin
                Context.Make_Not_Current;
                Render_Task.Start_Rendering;
 
-               while not Window.Should_Close and then AWT.Process_Events (0.016667) loop
+               while not Window.Should_Close loop
+                  AWT.Process_Events (0.016667);
+
                   declare
                      Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 

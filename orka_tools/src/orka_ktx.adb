@@ -348,8 +348,8 @@ begin
                   when others => null;
                end case;
 
-               --  TODO When the window gets resized, it should automatically update
-               --  the default framebuffer
+               --  The viewport of the default framebuffer could be adjusted
+               --  automatically by implementing Window's procedure On_Configure
                GL.Viewports.Set_Viewports
                  ((0 => (X      => 0.0,
                          Y      => 0.0,
@@ -391,7 +391,9 @@ begin
                Context.Make_Not_Current;
                Render_Task.Start_Rendering;
 
-               while not Window.Should_Close and then AWT.Process_Events (0.016667) loop
+               while not Window.Should_Close loop
+                  AWT.Process_Events (0.016667);
+
                   declare
                      Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 
