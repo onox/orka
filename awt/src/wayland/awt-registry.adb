@@ -1034,30 +1034,6 @@ package body AWT.Registry is
 
    function Is_Initialized return Boolean is (Global.Initialized);
 
-   function Process_Events return Boolean is
-      Result : Standard.Wayland.Optional_Result;
-
-      Timeout : constant := 0.016667;
-
-      Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
-   begin
-      if Global.Seat.Window /= null then
-         AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
-      end if;
-
-      loop
-         Result := Global.Display.Dispatch;
-
-         if not Result.Is_Success then
-            raise Internal_Error with "Wayland: Failed dispatching events";
-         end if;
-
-         exit when Result.Count = 0 or else Orka.OS.Monotonic_Clock > Clock_Timeout;
-      end loop;
-
-      return True;
-   end Process_Events;
-
    function Dispatch_Events (Timeout : Duration) return Standard.Wayland.Optional_Result is
       use all type WP.Client.Check_For_Events_Status;
    begin
@@ -1105,7 +1081,7 @@ package body AWT.Registry is
       end;
    end Dispatch_Events;
 
-   function Process_Events (Timeout : Duration) return Boolean is
+   procedure Process_Events (Timeout : Duration) is
       Result : Standard.Wayland.Optional_Result;
 
       Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
@@ -1123,8 +1099,6 @@ package body AWT.Registry is
 
          exit when Result.Count = 0;
       end loop;
-
-      return True;
    end Process_Events;
 
    function Monitors return AWT.Monitors.Monitor_Array is

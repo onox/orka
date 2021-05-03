@@ -120,17 +120,6 @@ package body Orka.Contexts.EGL.Wayland.AWT is
    end Pointer_Input;
 
    overriding
-   procedure Process_Input (Object : in out AWT_Window) is
-      Interval : constant Duration := 0.016_667;
-
-      Result : constant Boolean := Standard.AWT.Process_Events (Interval);
-   begin
-      if not Result then
-         raise Program_Error;
-      end if;
-   end Process_Input;
-
-   overriding
    procedure Sleep_Until_Swap
      (Object       : in out AWT_Window;
       Time_To_Swap : Duration)

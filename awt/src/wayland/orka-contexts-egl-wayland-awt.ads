@@ -78,9 +78,6 @@ private
    function Pointer_Input (Object : AWT_Window)
      return Orka.Inputs.Pointers.Pointer_Input_Ptr;
 
-   overriding
-   procedure Process_Input (Object : in out AWT_Window);
-
    ----------------------------------------------------------------------------
 
    overriding

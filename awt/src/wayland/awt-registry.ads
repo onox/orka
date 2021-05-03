@@ -181,9 +181,7 @@ private package AWT.Registry is
 
    function Is_Initialized return Boolean;
 
-   function Process_Events return Boolean;
-
-   function Process_Events (Timeout : Duration) return Boolean;
+   procedure Process_Events (Timeout : Duration);
 
    function Monitors return AWT.Monitors.Monitor_Array;
 

@@ -22,9 +22,6 @@ package body AWT is
 
    function Is_Initialized return Boolean renames AWT.Registry.Is_Initialized;
 
-   function Process_Events return Boolean renames AWT.Registry.Process_Events;
-
-   function Process_Events
-     (Timeout : Duration) return Boolean renames AWT.Registry.Process_Events;
+   procedure Process_Events (Timeout : Duration) renames AWT.Registry.Process_Events;
 
 end AWT;

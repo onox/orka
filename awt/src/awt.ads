@@ -30,11 +30,7 @@ package AWT with SPARK_Mode => On is
    --  with which AWT is not familiar, set a callback with
    --  AWT.Wayland.Set_Callback before calling this procedure.
 
-   function Process_Events return Boolean
-     with Pre => Is_Initialized;
-   --  Process events until an unspecified timeout is reached
-
-   function Process_Events (Timeout : Duration) return Boolean
+   procedure Process_Events (Timeout : Duration)
      with Pre => Is_Initialized;
    --  Process events until the given timeout is reached
 
