@@ -142,7 +142,7 @@ is 0 by default.
 
 To trim a string, use the function `Trim`.
 
-To format a variable of type `:::ada Ada.Real_Time.Time_Span`, use the
+To format a variable of type `:::ada Duration`, use the
 function `Image`.
 
 ## OpenGL debugging
