@@ -160,10 +160,10 @@ package body GL.Objects.Framebuffers is
    end Set_Default_Width;
 
    function Default_Width (Object : Framebuffer) return Size is
-      Ret : aliased Size;
+      Ret : Size := 0;
    begin
       API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Width, Ret'Unchecked_Access);
+        (Object.Reference.GL_Id, Enums.Default_Width, Ret);
       return Ret;
    end Default_Width;
 
@@ -182,10 +182,10 @@ package body GL.Objects.Framebuffers is
    end Set_Default_Height;
 
    function Default_Height (Object : Framebuffer) return Size is
-      Ret : aliased Size;
+      Ret : Size := 0;
    begin
       API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Height, Ret'Unchecked_Access);
+        (Object.Reference.GL_Id, Enums.Default_Height, Ret);
       return Ret;
    end Default_Height;
 
@@ -203,10 +203,10 @@ package body GL.Objects.Framebuffers is
    end Set_Default_Layers;
 
    function Default_Layers (Object : Framebuffer) return Size is
-      Ret : aliased Size;
+      Ret : Size := 0;
    begin
       API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Layers, Ret'Unchecked_Access);
+        (Object.Reference.GL_Id, Enums.Default_Layers, Ret);
       return Ret;
    end Default_Layers;
 
@@ -225,10 +225,10 @@ package body GL.Objects.Framebuffers is
    end Set_Default_Samples;
 
    function Default_Samples (Object : Framebuffer) return Size is
-      Ret : aliased Size;
+      Ret : Size := 0;
    begin
       API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Samples, Ret'Unchecked_Access);
+        (Object.Reference.GL_Id, Enums.Default_Samples, Ret);
       return Ret;
    end Default_Samples;
 
@@ -247,11 +247,10 @@ package body GL.Objects.Framebuffers is
    end Set_Default_Fixed_Sample_Locations;
 
    function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean is
-      Ret : aliased Low_Level.Bool;
+      Ret : Low_Level.Bool := Low_Level.Bool (False);
    begin
       API.Get_Named_Framebuffer_Parameter_Bool.Ref
-        (Object.Reference.GL_Id, Enums.Default_Fixed_Sample_Locations,
-         Ret'Unchecked_Access);
+        (Object.Reference.GL_Id, Enums.Default_Fixed_Sample_Locations, Ret);
       return Boolean (Ret);
    end Default_Fixed_Sample_Locations;
 
