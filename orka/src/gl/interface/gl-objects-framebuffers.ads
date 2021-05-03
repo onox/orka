@@ -140,19 +140,33 @@ package GL.Objects.Framebuffers is
       Width, Height : Size)
    with Pre => Object = Default_Framebuffer;
 
-   procedure Set_Default_Width   (Object : Framebuffer; Value : Size);
-   procedure Set_Default_Height  (Object : Framebuffer; Value : Size);
-   procedure Set_Default_Layers  (Object : Framebuffer; Value : Size);
-   procedure Set_Default_Samples (Object : Framebuffer; Value : Size);
+   ----------------------------------------------------------------------------
 
-   procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean);
+   procedure Set_Default_Width   (Object : Framebuffer; Value : Size)
+     with Pre => Object /= Default_Framebuffer;
+   procedure Set_Default_Height  (Object : Framebuffer; Value : Size)
+     with Pre => Object /= Default_Framebuffer;
+   procedure Set_Default_Layers  (Object : Framebuffer; Value : Size)
+     with Pre => Object /= Default_Framebuffer;
+   procedure Set_Default_Samples (Object : Framebuffer; Value : Size)
+     with Pre => Object /= Default_Framebuffer;
 
-   function Default_Width   (Object : Framebuffer) return Size;
-   function Default_Height  (Object : Framebuffer) return Size;
-   function Default_Layers  (Object : Framebuffer) return Size;
-   function Default_Samples (Object : Framebuffer) return Size;
+   procedure Set_Default_Fixed_Sample_Locations (Object : Framebuffer; Value : Boolean)
+     with Pre => Object /= Default_Framebuffer;
 
-   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean;
+   function Default_Width   (Object : Framebuffer) return Size
+     with Pre => Object /= Default_Framebuffer;
+   function Default_Height  (Object : Framebuffer) return Size
+     with Pre => Object /= Default_Framebuffer;
+   function Default_Layers  (Object : Framebuffer) return Size
+     with Pre => Object /= Default_Framebuffer;
+   function Default_Samples (Object : Framebuffer) return Size
+     with Pre => Object /= Default_Framebuffer;
+
+   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean
+     with Pre => Object /= Default_Framebuffer;
+
+   ----------------------------------------------------------------------------
 
    function Max_Framebuffer_Width return Size
      with Post => Max_Framebuffer_Width'Result >= 16_384;
