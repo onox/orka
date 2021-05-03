@@ -23,8 +23,6 @@ package Orka.Windows is
 
    type Window is limited interface;
 
-   type Window_Ptr is not null access all Window'Class;
-
    function Create_Window
      (Context            : Contexts.Surface_Context'Class;
       Width, Height      : Positive;
@@ -48,11 +46,6 @@ package Orka.Windows is
    procedure Close (Object : in out Window) is abstract;
 
    function Should_Close (Object : Window) return Boolean is abstract;
-
-   procedure Process_Input (Object : in out Window) is abstract;
-   --  Process window and input events
-   --
-   --  Task safety: Must only be called from the environment task.
 
    procedure Swap_Buffers (Object : in out Window) is abstract;
    --  Swap the front and back buffers of the window
