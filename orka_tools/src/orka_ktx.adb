@@ -153,7 +153,7 @@ begin
                 (Width, Height, Transforms.FOV (36.0, 50.0), Context));
          Current_Camera : constant Camera_Ptr
               := new Camera'Class'(Camera'Class
-                   (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_D)));
+                   (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
 
          ----------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ begin
             is
                use all type LE.Texture_Kind;
             begin
-               Camera.FB.Clear;
+               FB_D.Clear;
 
                if Load_Texture_Path /= SU.Null_Unbounded_String then
                   T_1 := Texture_Holders.To_Holder (Orka.Resources.Textures.KTX.Read_Texture

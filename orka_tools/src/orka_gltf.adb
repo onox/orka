@@ -196,7 +196,7 @@ begin
            := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
          Current_Camera : constant Camera_Ptr
            := new Camera'Class'(Camera'Class
-                (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_1)));
+                (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
 
          use Orka.Culling;
          Culler_1 : constant Culler_Ptr
@@ -313,8 +313,8 @@ begin
               (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
                Camera : Orka.Cameras.Camera_Ptr) is
             begin
-               Camera.FB.Use_Framebuffer;
-               Camera.FB.Clear;
+               FB_1.Use_Framebuffer;
+               FB_1.Clear;
 
                Uni_View.Set_Matrix (Camera.View_Matrix);
 
@@ -354,7 +354,7 @@ begin
                   Group.Render;
 
                   --  Resolve the multiple samples in the FBO
-                  Camera.FB.Resolve_To (FB_D);
+                  FB_1.Resolve_To (FB_D);
 
                   Group.After_Render;
                   for Behavior of Scene.all loop
