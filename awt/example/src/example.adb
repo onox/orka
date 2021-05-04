@@ -76,7 +76,6 @@ begin
         AWT.Inputs.Cursors.Pointer_Cursor'First;
 
       Last_Pointer  : AWT.Inputs.Pointer_State;
-      Last_Keyboard : AWT.Inputs.Keyboard_State;
 
       use Ada.Real_Time;
 
@@ -126,7 +125,6 @@ begin
       end Render_Task;
    begin
       Last_Pointer  := AWT_Window.State;
-      Last_Keyboard := AWT_Window.State;
 
       Context.Make_Not_Current;
       Put_Line ("Context made not current in main task");
@@ -135,7 +133,8 @@ begin
 
       Window.Set_Margin (Border_Size);
       Put_Line ("Starting event loop...");
-      while not Window.Should_Close and then AWT.Process_Events (Interval) loop
+      while not Window.Should_Close loop
+         AWT.Process_Events (Interval);
 --         AWT_Window.Set_Title (Index'Image & " " & Next_Cursor'Image);
          Index := Index + 1;
 
@@ -232,10 +231,7 @@ begin
             use all type AWT.Inputs.Button_State;
             use all type AWT.Inputs.Keyboard_Button;
          begin
-            if Keyboard.Modifiers.Ctrl
-              and Last_Keyboard.Buttons (Key_C) = Pressed
-              and Keyboard.Buttons (Key_C) = Released
-            then
+            if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_C) then
                declare
                   Value : constant String := "foobar" & Index'Image;
                begin
@@ -244,10 +240,7 @@ begin
                end;
             end if;
 
-            if Keyboard.Modifiers.Ctrl
-              and Last_Keyboard.Buttons (Key_V) = Pressed
-              and Keyboard.Buttons (Key_V) = Released
-            then
+            if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_V) then
                Put_Line ("Get clipboard: '" & AWT.Clipboard.Get & "'");
             end if;
 
@@ -267,10 +260,7 @@ begin
             declare
                use all type AWT.Windows.Size_Mode;
             begin
-               if Keyboard.Modifiers.Ctrl
-                 and Last_Keyboard.Buttons (Key_F) = Pressed
-                 and Keyboard.Buttons (Key_F) = Released
-               then
+               if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_F) then
                   if AWT_Window.State.Mode = Fullscreen then
                      AWT_Window.Set_Size_Mode (Default);
                   else
@@ -278,10 +268,7 @@ begin
                   end if;
                end if;
 
-               if Keyboard.Modifiers.Ctrl
-                 and Last_Keyboard.Buttons (Key_M) = Pressed
-                 and Keyboard.Buttons (Key_M) = Released
-               then
+               if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_M) then
                   if AWT_Window.State.Mode = Maximized then
                      AWT_Window.Set_Size_Mode (Default);
                   else
@@ -289,10 +276,7 @@ begin
                   end if;
                end if;
 
-               if Keyboard.Modifiers.Ctrl
-                 and Last_Keyboard.Buttons (Key_S) = Pressed
-                 and Keyboard.Buttons (Key_S) = Released
-               then
+               if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_S) then
                   Flip_Size := not Flip_Size;
                   if Flip_Size then
                      AWT_Window.Set_Size (1280, 720);
@@ -301,18 +285,13 @@ begin
                   end if;
                end if;
 
-               if Keyboard.Modifiers.Ctrl
-                 and Last_Keyboard.Buttons (Key_H) = Pressed
-                 and Keyboard.Buttons (Key_H) = Released
-               then
+               if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_H) then
                   Should_Be_Visible := False;
                   Visible_Index := Index;
                   AWT_Window.Set_Visible (False);
                   Put_Line ("window hidden");
                end if;
             end;
-
-            Last_Keyboard := Keyboard;
          end;
       end loop;
       Put_Line ("Exited event loop");
