@@ -30,6 +30,15 @@ package EGL.Objects.Displays is
    --  Not_Initialized_Error is raised if a display for the requested
    --  platform could not be initialized
 
+   function Create_Display (Platform : Platform_Kind) return Display;
+   --  Create a display using the first device or default connection to
+   --  the given platform
+   --
+   --  This function primarily exists for the Orka_EGL_Info tool to query
+   --  a list of platform extensions and other info about the platform.
+   --  To create an actual useful connection to a platform, one of the
+   --  functions below must be used.
+
    function Create_Display (Device : Devices.Device) return Display
      with Pre => not Device.In_Use;
 

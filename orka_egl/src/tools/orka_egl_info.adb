@@ -37,7 +37,7 @@ begin
       begin
          declare
             Display : constant EGL.Objects.Displays.Display :=
-               EGL.Objects.Displays.Create_Display (Devices (Devices'First));
+              EGL.Objects.Displays.Create_Display (Platform);
          begin
             Put_Line (Display.Platform'Image & ":");
             Put_Line ("  vendor:     " & Display.Vendor);
@@ -50,6 +50,8 @@ begin
       exception
          when EGL.Errors.Not_Initialized_Error =>
             Put_Line (Platform'Image & ": not supported");
+         when EGL.Errors.Invalid_Value_Error =>
+            Put_Line (Platform'Image & ": creating display failed");
       end;
    end loop;
    Put_Line ("");

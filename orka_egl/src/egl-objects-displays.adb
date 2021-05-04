@@ -125,6 +125,23 @@ package body EGL.Objects.Displays is
       return Create_Display (Displays.Wayland, Convert (Wayland_Display), Devices.No_Device);
    end Create_Display;
 
+   function Create_Display (Platform : Platform_Kind) return Display is
+      function Convert is new Ada.Unchecked_Conversion (ID_Type, Void_Ptr);
+
+      function Get_First_Device return Devices.Device is
+         All_Devices : constant EGL.Objects.Devices.Device_List := EGL.Objects.Devices.Devices;
+      begin
+         return All_Devices (All_Devices'First);
+      end Get_First_Device;
+
+      Native_Display : constant Void_Ptr :=
+        (case Platform is
+           when GBM | Wayland   => Void_Ptr (System.Null_Address),
+           when Displays.Device => Convert (Get_First_Device.ID));
+   begin
+      return Create_Display (Platform, Native_Display, Devices.No_Device);
+   end Create_Display;
+
    overriding procedure Pre_Finalize (Object : in out Display) is
       No_Display : constant ID_Type := ID_Type (System.Null_Address);
    begin

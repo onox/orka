@@ -7,6 +7,7 @@ COVERAGE_VARS = -XORKA_TYPES_BUILD_MODE=coverage -XORKA_SIMD_BUILD_MODE=coverage
 .PHONY: build examples tools tests coverage docs clean
 
 build:
+	cd orka_egl && alr build
 	cd orka_types && alr build $(SCENARIO_VARS)
 	cd orka_simd && alr build $(SCENARIO_VARS)
 	cd orka_transforms && alr build $(SCENARIO_VARS)
