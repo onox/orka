@@ -220,7 +220,7 @@ procedure Orka_12_Stencil is
      := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
    Current_Camera : constant Camera_Ptr
      := new Camera'Class'(Camera'Class
-          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_1)));
+          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
 
    use all type Textures.Minifying_Function;
    use all type Textures.Wrapping_Mode;

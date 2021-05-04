@@ -136,7 +136,7 @@ procedure Orka_11_Instancing is
      := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
    Current_Camera : constant Camera_Ptr
      := new Camera'Class'(Camera'Class
-          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens, FB_D)));
+          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
 begin
    Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
 
