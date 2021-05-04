@@ -50,13 +50,11 @@ package body Orka.Cameras.Look_At_Cameras is
    overriding
    function Create_Camera
      (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr;
-      FB    : aliased Rendering.Framebuffers.Framebuffer) return Look_At_Camera is
+      Lens  : Lens_Ptr) return Look_At_Camera is
    begin
       return Look_At_Camera'(Camera with
         Input  => Input,
         Lens   => Lens,
-        FB     => FB'Access,
         others => <>);
    end Create_Camera;
 

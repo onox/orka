@@ -35,8 +35,7 @@ package Orka.Cameras.Look_From_Cameras is
    overriding
    function Create_Camera
      (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr;
-      FB    : aliased Rendering.Framebuffers.Framebuffer) return Look_From_Camera;
+      Lens  : Lens_Ptr) return Look_From_Camera;
 
 private
 

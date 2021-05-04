@@ -43,8 +43,7 @@ package Orka.Cameras.Rotate_Around_Cameras is
    overriding
    function Create_Camera
      (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr;
-      FB    : aliased Rendering.Framebuffers.Framebuffer) return Rotate_Around_Camera;
+      Lens  : Lens_Ptr) return Rotate_Around_Camera;
 
 private
 
