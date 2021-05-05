@@ -63,11 +63,6 @@ private
    ----------------------------------------------------------------------------
 
    overriding
-   procedure Sleep_Until_Swap
-     (Object       : in out AWT_Window;
-      Time_To_Swap : Duration);
-
-   overriding
    procedure On_Move
      (Object   : in out AWT_Window;
       Monitor  : Standard.AWT.Monitors.Monitor'Class;

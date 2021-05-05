@@ -66,16 +66,6 @@ package body Orka.Contexts.EGL.Wayland.AWT is
    ----------------------------------------------------------------------------
 
    overriding
-   procedure Sleep_Until_Swap
-     (Object       : in out AWT_Window;
-      Time_To_Swap : Duration)
-   is
-      Sleep : constant Duration := Time_To_Swap - Orka.OS.Monotonic_Clock;
-   begin
-      delay Sleep;
-   end Sleep_Until_Swap;
-
-   overriding
    procedure On_Move
      (Object   : in out AWT_Window;
       Monitor  : Standard.AWT.Monitors.Monitor'Class;

@@ -77,10 +77,6 @@ package AWT.Wayland.Windows is
 
    type Wayland_Window is abstract limited new AWT.Windows.Window with private;
 
-   procedure Sleep_Until_Swap
-     (Object       : in out Wayland_Window;
-      Time_To_Swap : Duration) is abstract;
-
    ----------------------------------------------------------------------------
    --                          Internal Subprograms                          --
    ----------------------------------------------------------------------------

@@ -708,7 +708,7 @@ package body AWT.Wayland.Windows is
       Do_Swap      : Boolean;
    begin
       Object.Frame_Handler.Before_Swap_Buffers (Time_To_Swap, Do_Swap);
-      Wayland_Window'Class (Object).Sleep_Until_Swap (Time_To_Swap);
+      delay Time_To_Swap - Orka.OS.Monotonic_Clock;
       if Do_Swap then
          Object.EGL_Surface.Swap_Buffers;
       end if;
