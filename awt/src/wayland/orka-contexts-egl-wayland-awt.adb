@@ -63,61 +63,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       return State.Height;
    end Height;
 
-   use all type Standard.AWT.Inputs.Pointer_Mode;
-
-   overriding
-   function State (Object : AWT_Pointer) return Orka.Inputs.Pointers.Pointer_State is
-      State : constant Standard.AWT.Inputs.Pointer_State := Object.Window.State;
-
-      use all type Standard.AWT.Inputs.Dimension;
-      use all type Standard.AWT.Inputs.Button_State;
-      use all type Standard.AWT.Inputs.Pointer_Button;
-
-      use all type Orka.Inputs.Pointers.Button;
-      use all type Orka.Inputs.Pointers.Dimension;
-      use all type Orka.Inputs.Pointers.Pointer_Mode;
-
-      function To_Button
-        (Value : Standard.AWT.Inputs.Button_State) return Orka.Inputs.Pointers.Button_State
-      is (case Value is
-            when Pressed  => Orka.Inputs.Pointers.Pressed,
-            when Released => Orka.Inputs.Pointers.Released);
-   begin
-      return
-        (Buttons => (Left   => To_Button (State.Buttons (Left)),
-                     Right  => To_Button (State.Buttons (Right)),
-                     Middle => To_Button (State.Buttons (Middle))),
-         Mode    => (case State.Mode is
-                       when Visible => Visible,
-                       when Hidden  => Hidden,
-                       when Locked  => Locked),
-         Position => (X => Orka.Float_64 (State.Position (X)),
-                      Y => Orka.Float_64 (State.Position (Y))),
-         Relative => (X => Orka.Float_64 (State.Relative (X)),
-                      Y => Orka.Float_64 (State.Relative (Y))),
-         Scroll   => (X => Orka.Float_64 (State.Scroll   (X)),
-                      Y => Orka.Float_64 (State.Scroll   (Y))));
-   end State;
-
-   overriding
-   procedure Set_Mode (Object : in out AWT_Pointer; Mode : Orka.Inputs.Pointers.Pointer_Mode) is
-      use all type Orka.Inputs.Pointers.Pointer_Mode;
-   begin
-      Object.Window.Set_Pointer_Mode
-        (case Mode is
-           when Visible => Standard.AWT.Inputs.Visible,
-           when Hidden  => Standard.AWT.Inputs.Hidden,
-           when Locked  => Standard.AWT.Inputs.Locked);
-   end Set_Mode;
-
    ----------------------------------------------------------------------------
-
-   overriding
-   function Pointer_Input (Object : AWT_Window)
-     return Orka.Inputs.Pointers.Pointer_Input_Ptr is
-   begin
-      return Object.Pointer'Unrestricted_Access;
-   end Pointer_Input;
 
    overriding
    procedure Sleep_Until_Swap

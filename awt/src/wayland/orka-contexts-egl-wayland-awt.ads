@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Orka.Inputs.Pointers;
-
 private with AWT.Inputs;
 private with AWT.Monitors;
 private with AWT.Wayland.Windows.Cursors;
@@ -53,30 +51,14 @@ private
      (Object : AWT_Context;
       Window : in out Orka.Windows.Window'Class);
 
-   type AWT_Pointer (Window : not null access AWT_Window)
-     is limited new Orka.Inputs.Pointers.Pointer_Input with null record;
-
-   overriding
-   function State (Object : AWT_Pointer) return Orka.Inputs.Pointers.Pointer_State;
-
-   overriding
-   procedure Set_Mode (Object : in out AWT_Pointer; Mode : Orka.Inputs.Pointers.Pointer_Mode);
-
    type AWT_Window is limited new Standard.AWT.Wayland.Windows.Cursors.Animated_Cursor_Window
-     and Orka.Windows.Window with
-   record
-      Pointer : aliased AWT_Pointer (AWT_Window'Access);
-   end record;
+     and Orka.Windows.Window with null record;
 
    overriding
    function Width (Object : AWT_Window) return Positive;
 
    overriding
    function Height (Object : AWT_Window) return Positive;
-
-   overriding
-   function Pointer_Input (Object : AWT_Window)
-     return Orka.Inputs.Pointers.Pointer_Input_Ptr;
 
    ----------------------------------------------------------------------------
 
