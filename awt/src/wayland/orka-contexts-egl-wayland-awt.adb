@@ -17,7 +17,6 @@
 with Ada.Strings.Fixed;
 
 with Orka.Logging;
-with Orka.OS;
 with Orka.Terminals;
 
 with EGL.Objects.Configs;
