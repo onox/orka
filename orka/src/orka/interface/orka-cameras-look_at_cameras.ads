@@ -40,9 +40,7 @@ package Orka.Cameras.Look_At_Cameras is
    --  the camera's and target's positions)
 
    overriding
-   function Create_Camera
-     (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) return Look_At_Camera;
+   function Create_Camera (Lens : Lens_Ptr) return Look_At_Camera;
 
 private
 

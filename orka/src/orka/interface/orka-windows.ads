@@ -16,8 +16,6 @@
 
 limited with Orka.Contexts;
 
-with Orka.Inputs.Pointers;
-
 package Orka.Windows is
    pragma Preelaborate;
 
@@ -30,9 +28,6 @@ package Orka.Windows is
       Samples            : Natural := 0;
       Visible, Resizable : Boolean := True;
       Transparent        : Boolean := False) return Window is abstract;
-
-   function Pointer_Input
-     (Object : Window) return Inputs.Pointers.Pointer_Input_Ptr is abstract;
 
    function Width (Object : Window) return Positive is abstract;
 

@@ -20,7 +20,6 @@ with GL.Types;
 
 with Orka.Behaviors;
 with Orka.Contexts;
-with Orka.Inputs.Pointers;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Vectors;
 
@@ -61,10 +60,7 @@ package Orka.Cameras is
 
    -----------------------------------------------------------------------------
 
-   type Camera
-     (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr)
-   is abstract tagged private;
+   type Camera (Lens : Lens_Ptr) is abstract tagged private;
 
    type Camera_Ptr is not null access Camera'Class;
 
@@ -90,9 +86,7 @@ package Orka.Cameras is
      (Object.Lens.Projection_Matrix)
    with Inline;
 
-   function Create_Camera
-     (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) return Camera is abstract;
+   function Create_Camera (Lens : Lens_Ptr) return Camera is abstract;
 
    type Observing_Camera is interface;
 
@@ -140,10 +134,7 @@ private
       Reversed_Z : Boolean;
    end record;
 
-   type Camera
-     (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) is abstract tagged
-   record
+   type Camera (Lens  : Lens_Ptr) is abstract tagged record
       Scale : Vector4 := Default_Scale;
       Up    : Vector4 := (0.0, 1.0, 0.0, 0.0);
    end record;

@@ -60,12 +60,9 @@ package body Orka.Cameras.Look_From_Cameras is
         Ry (-Object.Yaw) * Rx (-Object.Pitch) * Ry (-Object.Roll)));
 
    overriding
-   function Create_Camera
-     (Input : Inputs.Pointers.Pointer_Input_Ptr;
-      Lens  : Lens_Ptr) return Look_From_Camera is
+   function Create_Camera (Lens : Lens_Ptr) return Look_From_Camera is
    begin
       return Look_From_Camera'(Camera with
-        Input  => Input,
         Lens   => Lens,
         others => <>);
    end Create_Camera;
