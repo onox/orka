@@ -23,6 +23,10 @@ package Orka.Cameras.Look_From_Cameras is
      (Object : in out Look_From_Camera;
       Roll, Pitch, Yaw : Angle);
 
+   procedure Change_Orientation
+     (Object : in out Look_From_Camera;
+      Change : Vector4);
+
    overriding
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4;
 

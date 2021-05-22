@@ -35,26 +35,21 @@ package body Orka.Cameras.Rotate_Around_Cameras is
       Object.Radius := Radius;
    end Set_Radius;
 
+   procedure Change_Orientation
+     (Object : in out Rotate_Around_Camera;
+      Change : Vector4) is
+   begin
+      Object.Alpha := Normalize_Angle (Object.Alpha + Change (X) * Object.Scale (X));
+      Object.Beta  := Normalize_Angle (Object.Beta  + Change (Y) * Object.Scale (Y));
+
+      Object.Radius := Clamp_Distance (Object.Radius - Change (Z) * Object.Scale (Z));
+   end Change_Orientation;
+
    overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
-      use all type Inputs.Pointers.Button_State;
-      use all type Inputs.Pointers.Dimension;
-      use all type Inputs.Pointers.Pointer_Mode;
-
-      Pointer_State : constant Inputs.Pointers.Pointer_State := Object.Input.State;
-      Using_Camera  : constant Boolean := Pointer_State.Buttons (Inputs.Pointers.Right) = Pressed;
-
-      Relative      : Inputs.Pointers.Coordinate renames Pointer_State.Relative;
-      Scroll        : Inputs.Pointers.Coordinate renames Pointer_State.Scroll;
    begin
-      Object.Input.Set_Mode (if Using_Camera then Locked else Visible);
-
-      if Using_Camera then
-         Object.Alpha := Normalize_Angle (Object.Alpha + Relative (X) * Object.Scale (X));
-         Object.Beta  := Normalize_Angle (Object.Beta  + Relative (Y) * Object.Scale (Y));
-      end if;
-
-      Object.Radius := Clamp_Distance (Object.Radius - Scroll (Y) * Object.Scale (Z));
+      --  FIXME Still needed?
+      null;
    end Update;
 
    use Orka.Transforms.Doubles.Matrices;

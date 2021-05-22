@@ -28,23 +28,19 @@ package body Orka.Cameras.Look_From_Cameras is
       Object.Yaw   := Yaw;
    end Set_Orientation;
 
+   procedure Change_Orientation
+     (Object : in out Look_From_Camera;
+      Change : Vector4) is
+   begin
+      Object.Yaw   := Normalize_Angle (Object.Yaw   + Change (X) * Object.Scale (X));
+      Object.Pitch := Normalize_Angle (Object.Pitch + Change (Y) * Object.Scale (Y));
+   end Change_Orientation;
+
    overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
-      use all type Inputs.Pointers.Button_State;
-      use all type Inputs.Pointers.Dimension;
-      use all type Inputs.Pointers.Pointer_Mode;
-
-      Pointer_State : constant Inputs.Pointers.Pointer_State := Object.Input.State;
-      Using_Camera  : constant Boolean := Pointer_State.Buttons (Inputs.Pointers.Right) = Pressed;
-
-      Relative      : Inputs.Pointers.Coordinate renames Pointer_State.Relative;
    begin
-      Object.Input.Set_Mode (if Using_Camera then Locked else Visible);
-
-      if Using_Camera then
-         Object.Yaw   := Normalize_Angle (Object.Yaw   + Relative (X) * Object.Scale (X));
-         Object.Pitch := Normalize_Angle (Object.Pitch + Relative (Y) * Object.Scale (Y));
-      end if;
+      --  FIXME Still needed?
+      null;
    end Update;
 
    use Orka.Transforms.Doubles.Matrices;
