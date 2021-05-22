@@ -196,7 +196,7 @@ begin
            := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
          Current_Camera : constant Camera_Ptr
            := new Camera'Class'(Camera'Class
-                (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
+                (Rotate_Around_Cameras.Create_Camera (Lens)));
 
          use Orka.Culling;
          Culler_1 : constant Culler_Ptr
@@ -396,6 +396,8 @@ begin
                      Context.Make_Not_Current;
                      raise;
                end Render_Task;
+
+               Did_Rotate_Camera : Boolean := False;
             begin
                Context.Make_Not_Current;
                Render_Task.Start_Rendering;
@@ -404,13 +406,34 @@ begin
                   AWT.Process_Events (0.016667);
 
                   declare
+                     Pointer  : constant AWT.Inputs.Pointer_State  := Window.State;
                      Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 
+                     use all type AWT.Inputs.Button_State;
                      use all type AWT.Inputs.Keyboard_Button;
+                     use all type AWT.Inputs.Pointer_Button;
+                     use all type AWT.Inputs.Pointer_Mode;
+                     use all type AWT.Inputs.Dimension;
+
+                     Rotate_Camera : constant Boolean :=
+                       Pointer.Focused and Pointer.Buttons (Right) = Pressed;
                   begin
                      if Keyboard.Pressed (Key_Escape) then
                         Window.Close;
                      end if;
+
+                     if Rotate_Camera /= Did_Rotate_Camera then
+                        Window.Set_Pointer_Mode (if Rotate_Camera then Locked else Visible);
+                     end if;
+                     Did_Rotate_Camera := Rotate_Camera;
+
+                     --  FIXME Update with PO?
+                     Rotate_Around_Cameras.Rotate_Around_Camera'Class
+                       (Current_Camera.all).Change_Orientation
+                          (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
+                            (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
+                            Orka.Float_64 (Pointer.Scroll (Y)),
+                            0.0));
                   end;
                end loop;
             end;
