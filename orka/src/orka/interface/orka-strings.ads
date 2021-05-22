@@ -16,7 +16,7 @@
 
 with Ada.Strings.Unbounded;
 
-private package Orka.Strings is
+package Orka.Strings is
    pragma Preelaborate;
 
    function Trim (Value : String) return String;
