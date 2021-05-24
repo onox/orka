@@ -1,8 +1,6 @@
 pragma Restrictions (No_Implicit_Aliasing);
 pragma Restrictions (No_Implicit_Dynamic_Code);
 
-pragma Restrictions (No_Obsolescent_Features);
-
 pragma Restrictions (No_Anonymous_Allocators);
 pragma Restrictions (No_Access_Parameter_Allocators);
 
@@ -12,8 +10,5 @@ pragma Restrictions (Max_Asynchronous_Select_Nesting => 0);
 pragma Restrictions (No_Dependence => Ada.Asynchronous_Task_Control);
 pragma Restrictions (No_Reentrancy);
 
-pragma Restrictions (No_Implementation_Aspect_Specifications);
-pragma Restrictions (No_Implementation_Attributes);
-pragma Restrictions (No_Implementation_Identifiers);
-pragma Restrictions (No_Implementation_Pragmas);
-pragma Restrictions (No_Implementation_Units);
+pragma Restrictions (No_Obsolescent_Features);
+pragma Profile (No_Implementation_Extensions);
