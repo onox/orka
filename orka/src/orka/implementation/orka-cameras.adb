@@ -18,14 +18,6 @@ with Orka.Transforms.Doubles.Quaternions;
 
 package body Orka.Cameras is
 
-   procedure Set_FOV (Object : in out Camera_Lens; FOV : GL.Types.Single) is
-   begin
-      Object.FOV := FOV;
-   end Set_FOV;
-
-   function FOV (Object : Camera_Lens) return GL.Types.Single is
-     (Object.FOV);
-
    function Projection_Matrix (Object : Camera_Lens) return Transforms.Matrix4 is
       Width  : constant GL.Types.Single := GL.Types.Single (Object.Width);
       Height : constant GL.Types.Single := GL.Types.Single (Object.Height);
@@ -54,6 +46,13 @@ package body Orka.Cameras is
    begin
       Object.Up := Direction;
    end Set_Up_Direction;
+
+   function Lens (Object : Camera) return Camera_Lens is (Object.Lens);
+
+   procedure Set_Lens (Object : in out Camera; Lens : Camera_Lens) is
+   begin
+      Object.Lens := Lens;
+   end Set_Lens;
 
    procedure Set_Position
      (Object   : in out First_Person_Camera;
@@ -84,14 +83,18 @@ package body Orka.Cameras is
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV : GL.Types.Single;
-      Context : Contexts.Context'Class) return Camera_Lens'Class is
+      FOV           : GL.Types.Single;
+      Context       : Contexts.Context'Class) return Camera_Lens is
    begin
-      return Result : Camera_Lens (Width, Height) do
-         Result.FOV := FOV;
-         Result.Reversed_Z := Context.Enabled (Contexts.Reversed_Z);
-      end return;
+      return
+        (Width      => Width,
+         Height     => Height,
+         FOV        => FOV,
+         Reversed_Z => Context.Enabled (Contexts.Reversed_Z));
    end Create_Lens;
+
+   function Projection_Matrix (Object : Camera) return Transforms.Matrix4 is
+     (Projection_Matrix (Object.Lens));
 
    function Look_At (Target, Camera, Up_World : Vector4) return Matrix4 is
       use Orka.Transforms.Doubles.Vectors;

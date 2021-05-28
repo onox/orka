@@ -37,7 +37,7 @@ package Orka.Cameras.Look_From_Cameras is
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration);
 
    overriding
-   function Create_Camera (Lens : Lens_Ptr) return Look_From_Camera;
+   function Create_Camera (Lens : Camera_Lens) return Look_From_Camera;
 
 private
 

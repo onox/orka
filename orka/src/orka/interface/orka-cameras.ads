@@ -43,26 +43,24 @@ package Orka.Cameras is
 
    -----------------------------------------------------------------------------
 
-   type Camera_Lens (Width, Height : Positive) is tagged private;
-
-   type Lens_Ptr is not null access Camera_Lens'Class;
-
-   procedure Set_FOV (Object : in out Camera_Lens; FOV : GL.Types.Single);
-
-   function FOV (Object : Camera_Lens) return GL.Types.Single;
+   type Camera_Lens is record
+      Width, Height : Positive;
+      FOV           : GL.Types.Single;
+      Reversed_Z    : Boolean;
+   end record;
 
    function Projection_Matrix (Object : Camera_Lens) return Transforms.Matrix4;
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV : GL.Types.Single;
-      Context : Contexts.Context'Class) return Camera_Lens'Class;
+      FOV           : GL.Types.Single;
+      Context       : Contexts.Context'Class) return Camera_Lens;
 
    -----------------------------------------------------------------------------
 
-   type Camera (Lens : Lens_Ptr) is abstract tagged private;
+   type Camera is abstract tagged private;
 
-   type Camera_Ptr is not null access Camera'Class;
+   type Camera_Ptr is not null access all Camera'Class;
 
    procedure Update (Object : in out Camera; Delta_Time : Duration) is abstract;
 
@@ -74,6 +72,10 @@ package Orka.Cameras is
      (Object    : in out Camera;
       Direction : Vector4);
 
+   function Lens (Object : Camera) return Camera_Lens;
+
+   procedure Set_Lens (Object : in out Camera; Lens : Camera_Lens);
+
    function View_Matrix (Object : Camera) return Transforms.Matrix4 is abstract;
 
    function View_Matrix_Inverse (Object : Camera) return Transforms.Matrix4 is abstract;
@@ -82,11 +84,9 @@ package Orka.Cameras is
    function View_Position (Object : Camera) return Vector4 is abstract;
    --  Return the position of the camera in world space
 
-   function Projection_Matrix (Object : Camera) return Transforms.Matrix4 is
-     (Object.Lens.Projection_Matrix)
-   with Inline;
+   function Projection_Matrix (Object : Camera) return Transforms.Matrix4;
 
-   function Create_Camera (Lens : Lens_Ptr) return Camera is abstract;
+   function Create_Camera (Lens : Camera_Lens) return Camera is abstract;
 
    type Observing_Camera is interface;
 
@@ -129,12 +129,8 @@ package Orka.Cameras is
 
 private
 
-   type Camera_Lens (Width, Height : Positive) is tagged record
-      FOV : GL.Types.Single;
-      Reversed_Z : Boolean;
-   end record;
-
-   type Camera (Lens  : Lens_Ptr) is abstract tagged record
+   type Camera is abstract tagged record
+      Lens  : Camera_Lens;
       Scale : Vector4 := Default_Scale;
       Up    : Vector4 := (0.0, 1.0, 0.0, 0.0);
    end record;

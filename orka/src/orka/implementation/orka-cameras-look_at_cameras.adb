@@ -48,11 +48,9 @@ package body Orka.Cameras.Look_At_Cameras is
      (Object.Target.Position);
 
    overriding
-   function Create_Camera (Lens : Lens_Ptr) return Look_At_Camera is
+   function Create_Camera (Lens : Camera_Lens) return Look_At_Camera is
    begin
-      return Look_At_Camera'(Camera with
-        Lens   => Lens,
-        others => <>);
+      return (Lens => Lens, others => <>);
    end Create_Camera;
 
 end Orka.Cameras.Look_At_Cameras;

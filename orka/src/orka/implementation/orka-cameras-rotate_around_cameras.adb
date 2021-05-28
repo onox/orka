@@ -76,11 +76,9 @@ package body Orka.Cameras.Rotate_Around_Cameras is
    end View_Position;
 
    overriding
-   function Create_Camera (Lens : Lens_Ptr) return Rotate_Around_Camera is
+   function Create_Camera (Lens : Camera_Lens) return Rotate_Around_Camera is
    begin
-      return Rotate_Around_Camera'(Camera with
-        Lens   => Lens,
-        others => <>);
+      return (Lens => Lens, others => <>);
    end Create_Camera;
 
 end Orka.Cameras.Rotate_Around_Cameras;

@@ -45,7 +45,7 @@ package Orka.Cameras.Rotate_Around_Cameras is
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration);
 
    overriding
-   function Create_Camera (Lens : Lens_Ptr) return Rotate_Around_Camera;
+   function Create_Camera (Lens : Camera_Lens) return Rotate_Around_Camera;
 
 private
 
