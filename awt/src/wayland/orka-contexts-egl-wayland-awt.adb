@@ -37,8 +37,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
       use Standard.AWT.Monitors;
    begin
-      Messages.Log (Debug, "Window visible on monitor");
-      Messages.Log (Debug, "  name:       " & (+State.Name));
+      Messages.Log (Debug, "Window visible on monitor " & (+State.Name));
       Messages.Log (Debug, "  offset:     " &
         Trim (State.X'Image) & ", " & Trim (State.Y'Image));
       Messages.Log (Debug, "  size:       " &
@@ -77,8 +76,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
          when Entered =>
             Print_Monitor (Monitor);
          when Left =>
-            Messages.Log (Debug, "Window no longer visible on monitor");
-            Messages.Log (Debug, "  name:       " & (+Monitor.State.Name));
+            Messages.Log (Debug, "Window no longer visible on monitor " & (+Monitor.State.Name));
       end case;
    end On_Move;
 
