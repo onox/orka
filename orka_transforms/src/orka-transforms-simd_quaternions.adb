@@ -54,6 +54,13 @@ package body Orka.Transforms.SIMD_Quaternions is
       end return;
    end Conjugate;
 
+   function Inverse (Elements : Quaternion) return Quaternion is
+      Length : constant Vectors.Element_Type := Vectors.Magnitude2 (Vector4 (Elements));
+   begin
+      return Quaternion (Vectors.Divide_Or_Zero
+        (Vector4 (Conjugate (Elements)), (Length, Length, Length, Length)));
+   end Inverse;
+
    function Norm (Elements : Quaternion) return Vectors.Element_Type is
      (Vectors.Magnitude (Vector4 (Elements)));
 

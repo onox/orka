@@ -38,6 +38,8 @@ package Orka.Transforms.SIMD_Quaternions is
 
    function Conjugate (Elements : Quaternion) return Quaternion;
 
+   function Inverse (Elements : Quaternion) return Quaternion;
+
    function Norm (Elements : Quaternion) return Vectors.Element_Type;
 
    function Normalize (Elements : Quaternion) return Quaternion;
