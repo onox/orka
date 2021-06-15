@@ -132,11 +132,9 @@ procedure Orka_11_Instancing is
    FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
    use Orka.Cameras;
-   Lens : constant Lens_Ptr
-     := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
-   Current_Camera : constant Camera_Ptr
-     := new Camera'Class'(Camera'Class
-          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
+   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0, Context);
+   Current_Camera : Rotate_Around_Cameras.Rotate_Around_Camera :=
+     Rotate_Around_Cameras.Create_Camera (Lens);
 begin
    Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
 
@@ -145,8 +143,7 @@ begin
    begin
       Distance_Center := Distance_Center + (Distance_Center - 1.0) * Space_Between_Cubes;
 
-      Rotate_Around_Cameras.Rotate_Around_Camera (Current_Camera.all).Set_Radius
-        (1.5 * Distance_Center);
+      Current_Camera.Set_Radius (1.5 * Distance_Center);
    end;
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));

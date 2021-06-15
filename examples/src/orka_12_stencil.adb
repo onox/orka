@@ -216,11 +216,9 @@ procedure Orka_12_Stencil is
    FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
    use Orka.Cameras;
-   Lens : constant Lens_Ptr
-     := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
-   Current_Camera : constant Camera_Ptr
-     := new Camera'Class'(Camera'Class
-          (Rotate_Around_Cameras.Create_Camera (Window.Pointer_Input, Lens)));
+   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0, Context);
+   Current_Camera : Rotate_Around_Cameras.Rotate_Around_Camera :=
+     Rotate_Around_Cameras.Create_Camera (Lens);
 
    use all type Textures.Minifying_Function;
    use all type Textures.Wrapping_Mode;
@@ -235,7 +233,7 @@ procedure Orka_12_Stencil is
 
    Effect : Effect_Type := Effect_Type'First;
 begin
-   Rotate_Around_Cameras.Rotate_Around_Camera (Current_Camera.all).Set_Radius (Default_Distance);
+   Current_Camera.Set_Radius (Default_Distance);
 
    FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 1.0, others => <>));
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
