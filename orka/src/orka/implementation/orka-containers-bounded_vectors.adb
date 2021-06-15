@@ -83,7 +83,7 @@ package body Orka.Containers.Bounded_Vectors is
    begin
       if Position = No_Element then
          raise Constraint_Error;
-      elsif Position.Object /= Container'Access then
+      elsif Position.Object.all /= Container then
          raise Program_Error;
       else
          return Element (Container, Position.Index);
@@ -103,7 +103,7 @@ package body Orka.Containers.Bounded_Vectors is
    begin
       if Position = No_Element then
          raise Constraint_Error;
-      elsif Position.Object /= Container'Access then
+      elsif Position.Object.all /= Container then
          raise Program_Error;
       else
          return Constant_Reference (Container, Position.Index);
@@ -123,7 +123,7 @@ package body Orka.Containers.Bounded_Vectors is
    begin
       if Position = No_Element then
          raise Constraint_Error;
-      elsif Position.Object /= Container'Access then
+      elsif Position.Object.all /= Container then
          raise Program_Error;
       else
          return Reference (Container, Position.Index);
