@@ -31,7 +31,7 @@ package Orka.Culling is
 
    type Culler is tagged private;
 
-   type Culler_Ptr is not null access Culler'Class;
+   type Culler_Ptr is not null access all Culler'Class;
 
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4);
 

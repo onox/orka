@@ -148,12 +148,10 @@ begin
          FB_D : Framebuffer := Get_Default_Framebuffer (Window);
 
          use Orka.Cameras;
-         Lens : constant Lens_Ptr
-           := new Camera_Lens'Class'(Create_Lens
-                (Width, Height, Transforms.FOV (36.0, 50.0), Context));
-         Current_Camera : constant Camera_Ptr
-              := new Camera'Class'(Camera'Class
-                   (Rotate_Around_Cameras.Create_Camera (Lens)));
+         Lens : constant Camera_Lens :=
+           Create_Lens (Width, Height, Transforms.FOV (36.0, 50.0), Context);
+         Current_Camera : aliased Rotate_Around_Cameras.Rotate_Around_Camera :=
+           Rotate_Around_Cameras.Create_Camera (Lens);
 
          ----------------------------------------------------------------------
 
@@ -278,7 +276,7 @@ begin
             package Loops is new Orka.Loops
               (Time_Step   => Ada.Real_Time.Microseconds (2_083),
                Frame_Limit => Ada.Real_Time.Microseconds (16_667),
-               Camera      => Current_Camera,
+               Camera      => Current_Camera'Unchecked_Access,
                Job_Manager => Job_System);
 
             procedure Render
@@ -456,7 +454,7 @@ begin
 
                      --  FIXME Update with PO?
                      Rotate_Around_Cameras.Rotate_Around_Camera'Class
-                       (Current_Camera.all).Change_Orientation
+                       (Current_Camera).Change_Orientation
                           (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
                             (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
                             Orka.Float_64 (Pointer.Scroll (Y)),

@@ -192,15 +192,13 @@ begin
          FB_D : constant Framebuffer := Get_Default_Framebuffer (Window);
 
          use Orka.Cameras;
-         Lens : constant Lens_Ptr
-           := new Camera_Lens'Class'(Create_Lens (Width, Height, 45.0, Context));
-         Current_Camera : constant Camera_Ptr
-           := new Camera'Class'(Camera'Class
-                (Rotate_Around_Cameras.Create_Camera (Lens)));
+         Lens : constant Camera_Lens :=
+           Create_Lens (Width, Height, Transforms.FOV (36.0, 50.0), Context);
+         Current_Camera : aliased Rotate_Around_Cameras.Rotate_Around_Camera :=
+           Rotate_Around_Cameras.Create_Camera (Lens);
 
          use Orka.Culling;
-         Culler_1 : constant Culler_Ptr
-           := new Culler'Class'(Culler'Class (Create_Culler (Location_Shaders)));
+         Culler_1 : aliased Culler := Create_Culler (Location_Shaders);
 
          ----------------------------------------------------------------------
 
@@ -245,7 +243,9 @@ begin
 
                      Create_Instance_Job : constant Orka.Jobs.Job_Ptr
                        := new Orka_Package_glTF.Create_Group_Job'
-                           (Orka.Jobs.Abstract_Job with Model => Model_1, Culler => Culler_1,
+                           (Orka.Jobs.Abstract_Job with
+                              Model  => Model_1,
+                              Culler => Culler_1'Unchecked_Access,
                            Group => Group'Unchecked_Access);
                   begin
                      Job_System.Queue.Enqueue (Create_Instance_Job, Handle);
@@ -304,7 +304,7 @@ begin
             package Loops is new Orka.Loops
               (Time_Step   => Ada.Real_Time.Microseconds (2_083),
                Frame_Limit => Ada.Real_Time.Microseconds (8_334),
-               Camera      => Current_Camera,
+               Camera      => Current_Camera'Unchecked_Access,
                Job_Manager => Job_System);
 
             procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr);
@@ -428,12 +428,11 @@ begin
                      Did_Rotate_Camera := Rotate_Camera;
 
                      --  FIXME Update with PO?
-                     Rotate_Around_Cameras.Rotate_Around_Camera'Class
-                       (Current_Camera.all).Change_Orientation
-                          (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
-                            (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
-                            Orka.Float_64 (Pointer.Scroll (Y)),
-                            0.0));
+                     Current_Camera.Change_Orientation
+                       (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
+                         (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
+                         Orka.Float_64 (Pointer.Scroll (Y)),
+                         0.0));
                   end;
                end loop;
             end;

@@ -177,7 +177,7 @@ package body Orka.Features.Atmosphere.Rendering is
       end;
 
       Object.Uniform_View.Set_Matrix (Camera.View_Matrix);
-      Object.Uniform_Proj.Set_Matrix (Camera.Lens.Projection_Matrix);
+      Object.Uniform_Proj.Set_Matrix (Camera.Projection_Matrix);
 
       Object.Program.Use_Program;
 
