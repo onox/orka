@@ -28,7 +28,7 @@ tests:
 	cd tests && alr build $(SCENARIO_VARS) $(COVERAGE_VARS)
 	cd tests && alr run -s
 
-coverage: tests
+coverage:
 	mkdir -p tests/cov
 	lcov -q -c -d orka_types/build/obj -d orka_simd/build/obj -d orka_transforms/build/obj -d orka/build/obj -o tests/cov/unit.info
 	lcov -q -r tests/cov/unit.info */adainclude/* -o tests/cov/unit.info
