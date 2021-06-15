@@ -1,4 +1,4 @@
-name: Build
+name: Test
 
 on:
   push:
@@ -12,12 +12,12 @@ on:
 
 jobs:
   build:
-    name: Building on ${{matrix.os}} using ${{matrix.compiler}}
+    name: Testing on ${{matrix.os}} using ${{matrix.compiler}}
     runs-on: ${{matrix.os}}
     continue-on-error: true
     strategy:
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
         compiler: [fsf, community]
         exclude:
           - os: windows-latest
@@ -34,5 +34,15 @@ jobs:
     - name: Install Alire
       uses: alire-project/setup-alire@latest-devel
 
-    - name: Build crates
-      run: make
+    - name: Run tests
+      run: make tests
+
+    - name: Install lcov
+      run: sudo apt install lcov
+      continue-on-error: true
+      if: ${{ matrix.os != 'windows-latest'}}
+
+    - name: Generate coverage
+      run: make coverage
+      continue-on-error: true
+      if: ${{ matrix.os != 'windows-latest'}}
