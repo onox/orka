@@ -16,8 +16,11 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        compiler: [fsf]
+        os: [ubuntu-18.04, ubuntu-latest, windows-latest]
+        compiler: [fsf, community]
+        exclude:
+          - os: windows-latest
+            compiler: fsf
     steps:
     - uses: actions/checkout@v2
 
