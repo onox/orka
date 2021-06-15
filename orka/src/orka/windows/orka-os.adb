@@ -14,6 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with System;
+
+with Ada.Characters.Latin_1;
+
 package body Orka.OS is
 
    procedure Set_Task_Name (Name : in String) is
