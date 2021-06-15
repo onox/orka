@@ -9,12 +9,13 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
+  release:
+    types: [created]
 
 jobs:
   build:
     name: Building on ${{matrix.os}} using ${{matrix.compiler}}
     runs-on: ${{matrix.os}}
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-18.04, ubuntu-latest, windows-latest]

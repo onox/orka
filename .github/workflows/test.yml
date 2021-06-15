@@ -14,7 +14,6 @@ jobs:
   build:
     name: Testing on ${{matrix.os}} using ${{matrix.compiler}}
     runs-on: ${{matrix.os}}
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
