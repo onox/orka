@@ -16,7 +16,7 @@
 
 package body GL.Loader is
 
-   pragma Linker_Options ("-lkernel32", "-lopengl32");
+   pragma Linker_Options ("-lkernel32 -lopengl32");
 
    function Get_Proc_Address (Name : Interfaces.C.char_array) return System.Address is
       use type System.Address;
