@@ -31,7 +31,7 @@ jobs:
         target: native
 
     - name: Install Alire
-      uses: alire-project/setup-alire@latest-stable
+      uses: alire-project/setup-alire@latest-devel
 
     - name: Run tests
       run: make tests
