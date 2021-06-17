@@ -14,12 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Characters.Latin_1;
+
 package body C_Binding is
 
    subtype Size_Type is Interfaces.C.unsigned_long;
    subtype SSize_Type is Interfaces.C.long;
 
    use type SSize_Type;
+
+   function C_Open
+     (Path_Name : String;
+      Flags     : Access_Flag) return Interfaces.C.int
+   with Import, Convention => C, External_Name => "open";
 
    function C_Close
      (File_Descriptor : Interfaces.C.int) return Interfaces.C.int
@@ -37,44 +44,60 @@ package body C_Binding is
       Count           : Size_Type) return SSize_Type
    with Import, Convention => C, External_Name => "write";
 
-   procedure Close (This : in out File) is
+   function Open (Path : String; Flags : Access_Flag) return File is
+      package L1 renames Ada.Characters.Latin_1;
+
       Result : Interfaces.C.int;
    begin
-      Result := C_Close (Interfaces.C.int (This.File_Descriptor));
-      pragma Assert (Result /= -1);
-      This.Open := False;
+      Result := C_Open (Path & L1.NUL, Flags);
+      return (File_Descriptor => Wayland.File_Descriptor (Result), Open => Result /= -1);
+   end Open;
+
+   procedure Close (Object : in out File) is
+      Result : constant Interfaces.C.int
+        := C_Close (Interfaces.C.int (Object.File_Descriptor));
+   begin
+      if Result /= -1 then
+         Object.Open := False;
+      end if;
    end Close;
 
-   procedure Write
-     (This : File;
-      Bytes : Ada.Streams.Stream_Element_Array)
+   function Write
+     (Object : File;
+      Bytes  : Ada.Streams.Stream_Element_Array) return Result
    is
-      Result : SSize_Type;
+      Count : constant SSize_Type
+        := C_Write
+             (File_Descriptor => Interfaces.C.int (Object.File_Descriptor),
+              Buffer          => Bytes,
+              Count           => Bytes'Length);
    begin
-      Result :=
-        C_Write
-          (File_Descriptor => Interfaces.C.int (This.File_Descriptor),
-           Buffer          => Bytes,
-           Count           => Bytes'Length);
-      pragma Assert (Result /= -1);
+      case Count is
+         when SSize_Type'First .. -1 =>
+            return (Kind => Failure);
+         when 0 =>
+            return (Kind => EOF);
+         when 1 .. SSize_Type'Last =>
+            return (Kind  => Success,
+                    Count => Ada.Streams.Stream_Element_Count (Count));
+      end case;
    end Write;
 
    function Read
-     (This : File;
-      Bytes : in out Ada.Streams.Stream_Element_Array) return Read_Result
+     (Object : File;
+      Bytes  : in out Ada.Streams.Stream_Element_Array) return Result
    is
-      Result : constant SSize_Type
-        := C_Read (Interfaces.C.int (This.File_Descriptor), Bytes, Bytes'Length);
+      Count : constant SSize_Type
+        := C_Read (Interfaces.C.int (Object.File_Descriptor), Bytes, Bytes'Length);
    begin
-      case Result is
+      case Count is
          when SSize_Type'First .. -1 =>
-            return (Kind_Id => Read_Failure);
+            return (Kind => Failure);
          when 0 =>
-            return (Kind_Id => End_Of_File_Reached);
+            return (Kind => EOF);
          when 1 .. SSize_Type'Last =>
-            return (Kind_Id       => Read_Success,
-                    Element_Count =>
-                       Ada.Streams.Stream_Element_Count (Result));
+            return (Kind  => Success,
+                    Count => Ada.Streams.Stream_Element_Count (Count));
       end case;
    end Read;
 

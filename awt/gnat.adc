@@ -11,4 +11,9 @@ pragma Restrictions (No_Dependence => Ada.Asynchronous_Task_Control);
 pragma Restrictions (No_Reentrancy);
 
 pragma Restrictions (No_Obsolescent_Features);
-pragma Profile (No_Implementation_Extensions);
+
+pragma Restrictions (No_Implementation_Aspect_Specifications);
+--  pragma Restrictions (No_Implementation_Attributes);
+pragma Restrictions (No_Implementation_Identifiers);
+pragma Restrictions (No_Implementation_Pragmas);
+pragma Restrictions (No_Implementation_Units);

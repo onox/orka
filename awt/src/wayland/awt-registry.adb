@@ -19,6 +19,7 @@ with Ada.Unchecked_Conversion;
 
 with Wayland.Enums.Pointer_Constraints_Unstable_V1;
 
+with AWT.Gamepads;
 with AWT.OS;
 with AWT.Windows;
 
@@ -1034,8 +1035,12 @@ package body AWT.Registry is
 
    function Is_Initialized return Boolean is (Global.Initialized);
 
-   function Dispatch_Events (Timeout : Duration) return Standard.Wayland.Optional_Result is
-      use all type WP.Client.Check_For_Events_Status;
+   function Dispatch_Events
+     (Timeout     : Duration;
+      Descriptors : WP.Client.File_Descriptor_Array;
+      Events      : out WP.Client.Events_Status_Array) return Standard.Wayland.Optional_Result
+   is
+      use all type WP.Client.Events_Status;
    begin
       if Global.Seat.Window /= null then
          AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
@@ -1053,14 +1058,19 @@ package body AWT.Registry is
       end if;
 
       declare
-         Events_Status : WP.Client.Check_For_Events_Status := No_Events;
+         use type WP.Client.Events_Status_Array;
+
+         Events_Statuses : WP.Client.Events_Status_Array :=
+           No_Events & (Descriptors'Range => No_Events);
       begin
          if Timeout > 0.0 then
-            Events_Status := Global.Display.Check_For_Events (Timeout);
+            Events_Statuses := Global.Display.Check_For_Events (Timeout, Descriptors);
          end if;
 
-         case Events_Status is
-            when Events_Need_Processing =>
+         Events := Events_Statuses (Events_Statuses'First + 1 .. Events_Statuses'Last);
+
+         case Events_Statuses (Events_Statuses'First) is
+            when Has_Events =>
                if Global.Display.Read_Events = Error then
                   raise Internal_Error with "Wayland: Failed reading events";
                end if;
@@ -1084,14 +1094,29 @@ package body AWT.Registry is
    procedure Process_Events (Timeout : Duration) is
       Result : Standard.Wayland.Optional_Result;
 
+      use all type WP.Client.Events_Status;
+
+      Count : constant Natural := (if Gamepad_Notify_Callback /= null then 1 else 0);
+
+      Events      : WP.Client.Events_Status_Array (1 .. Count);
+      Descriptors : WP.Client.File_Descriptor_Array (1 .. Count);
+
       Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
    begin
       if Global.Seat.Window /= null then
          AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
       end if;
 
+      if Count = 1 then
+         Descriptors (1) := Gamepad_Notify_FD;
+      end if;
+
       loop
-         Result := Dispatch_Events (Clock_Timeout - Orka.OS.Monotonic_Clock);
+         Result := Dispatch_Events (Clock_Timeout - Orka.OS.Monotonic_Clock, Descriptors, Events);
+
+         if Gamepad_Notify_Callback /= null and then Events (Events'First) = Has_Events then
+            Gamepad_Notify_Callback.all;
+         end if;
 
          if not Result.Is_Success then
             raise Internal_Error with "Wayland: Failed dispatching events";

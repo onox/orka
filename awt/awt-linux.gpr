@@ -4,12 +4,17 @@ with "wayland_protocols_ada";
 with "orka_egl";
 with "orka-egl";
 with "awt";
+with "evdev";
+with "inotify";
 
 project Awt.Linux is
 
-   for Source_Dirs use ("src/wayland", "src/wayland/linux");
+   for Source_Dirs use ("src/wayland", "src/wayland/linux", "src/shared");
 
    for Object_Dir use "build/linux/obj";
    for Library_Dir use "build/linux/lib";
+
+   package Compiler renames Awt.Compiler;
+   package Binder   renames Awt.Binder;
 
 end Awt.Linux;

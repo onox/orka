@@ -14,7 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Pointers;
+
+with Ada.Characters.Latin_1;
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
 
 package body AWT.OS is
 
@@ -157,19 +161,19 @@ package body AWT.OS is
       end if;
    end Create_Pipe;
 
-   function Read (Object : in out File) return Ada.Streams.Stream_Element_Array is
+   function Read (Object : File) return Ada.Streams.Stream_Element_Array is
       Content : Ada.Streams.Stream_Element_Array (1 .. 1024);
 
-      Result : constant C_Binding.Read_Result := C_Binding.Read (Object.Handle, Content);
+      Result : constant C_Binding.Result := C_Binding.Read (Object.Handle, Content);
 
-      use all type C_Binding.Read_Result_Kind_Id;
+      use all type C_Binding.Result_Kind;
    begin
-      case Result.Kind_Id is
-         when Read_Success =>
-            return Content (1 .. Result.Element_Count);
-         when End_Of_File_Reached =>
+      case Result.Kind is
+         when Success =>
+            return Content (1 .. Result.Count);
+         when EOF =>
             return Content (1 .. 0);
-         when Read_Failure =>
+         when Failure =>
             raise Constraint_Error;
       end case;
    end Read;
@@ -179,13 +183,140 @@ package body AWT.OS is
 
       function Convert is new Ada.Unchecked_Conversion
         (Source => String, Target => Byte_Array);
+
+      Result : constant C_Binding.Result := C_Binding.Write (Object.Handle, Convert (Value));
+
+      use all type C_Binding.Result_Kind;
+      use type Ada.Streams.Stream_Element_Offset;
    begin
-      C_Binding.Write (Object.Handle, Convert (Value));
+      if Result.Kind /= Success or else Result.Count < Value'Length then
+         raise Constraint_Error;
+      end if;
    end Write;
+
+   function Open (Path : String; Flags : Access_Flag := Read) return File is
+      Result : constant C_Binding.File := C_Binding.Open
+        (Path, (case Flags is
+                  when Read       => C_Binding.Read_Only,
+                  when Write      => C_Binding.Write_Only,
+                  when Read_Write => C_Binding.Read_Write));
+   begin
+      return (File_Descriptor => Result.File_Descriptor, Handle => Result);
+   end Open;
 
    procedure Close (Object : in out File) is
    begin
       C_Binding.Close (Object.Handle);
    end Close;
+
+   function Is_Open (Object : File) return Boolean is (C_Binding.Is_Open (Object.Handle));
+
+   ----------------------------------------------------------------------------
+
+   use Interfaces.C;
+
+   subtype Name_C_String is char_array (1 .. 256);
+
+   type Dir_Entry is record
+      Inode  : unsigned_long;
+      Offset : long;
+      Length : unsigned_short;
+      Kind   : C_Binding.Entry_Kind;
+      Name   : Name_C_String;
+   end record
+     with Convention => C_Pass_By_Copy;
+
+   type Dir_Entry_Access is access Dir_Entry;
+
+   type Dir_Entry_Array is array (Natural range <>) of aliased Dir_Entry_Access
+     with Convention => C;
+
+   package Dir_Entry_Pointers is new Interfaces.C.Pointers
+     (Natural, Dir_Entry_Access, Dir_Entry_Array, null);
+
+   function C_Scandir
+     (Path    : String;
+      Names   : access Dir_Entry_Pointers.Pointer;
+      Filter  : access function (Node : Dir_Entry_Access) return int;
+      Compare : access function (Left, Right : access Dir_Entry_Access) return int)
+   return int
+     with Import, Convention => C, External_Name => "scandir";
+
+   function Convert (Kind : C_Binding.Entry_Kind) return Entry_Kind is
+     (case Kind is
+        when C_Binding.Unknown          => raise Program_Error,
+        when C_Binding.Directory        => Directory,
+        when C_Binding.Regular_File     => Regular_File,
+        when C_Binding.Character_Device => Device_File,
+        when C_Binding.Block_Device     => Device_File,
+        when C_Binding.Link             => Symbolic_Link,
+        when C_Binding.FIFO             => Named_Pipe,
+        when C_Binding.Socket           => Socket);
+
+   Directory_Filter : Filter_Type;
+
+   function Is_Match_Filter (Node : Dir_Entry_Access) return int
+     with Convention => C;
+
+   function Is_Match_Filter (Node : Dir_Entry_Access) return int is
+   begin
+      return (if Directory_Filter (Convert (Node.Kind)) then 1 else 0);
+   exception
+      when Program_Error =>
+         return 0;
+   end Is_Match_Filter;
+
+   function Scan_Directory
+     (Path   : String;
+      Filter : Filter_Type := (others => True)) return Directory_Entry_Array
+   is
+      package L1 renames Ada.Characters.Latin_1;
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Dir_Entry, Dir_Entry_Access);
+
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Dir_Entry_Access, Dir_Entry_Pointers.Pointer);
+
+      Names : aliased Dir_Entry_Pointers.Pointer;
+
+      Count : int;
+
+      use type Dir_Entry_Pointers.Pointer;
+   begin
+      --  This global is a bit unfortunate; an 'Access of a nested subprogram
+      --  with a foreign language convention requires a trampoline, which is
+      --  forbidden because of the No_Implicit_Dynamic_Code restriction.
+      Directory_Filter := Filter;
+      Count := C_Scandir (Path & L1.NUL, Names'Access, Is_Match_Filter'Access, null);
+
+      if Count = -1 then
+         raise Constraint_Error;
+      end if;
+
+      if Names = null then
+         return Result : Directory_Entry_Array (1 .. 0);
+      end if;
+
+      declare
+         Entries : constant Dir_Entry_Array :=
+           Dir_Entry_Pointers.Value (Names, ptrdiff_t (Count));
+      begin
+         return Result : Directory_Entry_Array (Entries'Range) do
+            for Index in Entries'Range loop
+               declare
+                  Node : Dir_Entry_Access := Entries (Index);
+               begin
+                  Result (Index).Kind := Convert (Node.all.Kind);
+                  Result (Index).Name := SU.To_Unbounded_String (To_Ada (Node.all.Name));
+
+                  Free (Node);
+               end;
+            end loop;
+
+            Free (Names);
+         end return;
+      end;
+   end Scan_Directory;
 
 end AWT.OS;

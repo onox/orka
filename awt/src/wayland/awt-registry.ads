@@ -185,4 +185,11 @@ private package AWT.Registry is
 
    function Monitors return AWT.Monitors.Monitor_Array;
 
+   ----------------------------------------------------------------------------
+
+   use type Standard.Wayland.File_Descriptor;
+
+   Gamepad_Notify_FD       : Standard.Wayland.File_Descriptor := -1;
+   Gamepad_Notify_Callback : access procedure := null;
+
 end AWT.Registry;

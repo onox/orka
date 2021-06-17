@@ -35,7 +35,7 @@ package body AWT.Wayland.Windows is
 
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
 
-   package Output_Data  renames AWT.Registry.Output_Data;
+   package Output_Data renames AWT.Registry.Output_Data;
 
    ----------------------------------------------------------------------------
 

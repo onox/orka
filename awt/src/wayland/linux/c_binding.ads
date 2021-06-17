@@ -23,48 +23,72 @@ with Wayland;
 package C_Binding is
    pragma Preelaborate;
 
-   type File (File_Descriptor : Wayland.File_Descriptor) is limited private;
+   type File (File_Descriptor : Wayland.File_Descriptor) is private;
 
-   type Read_Result_Kind_Id is
-     (Read_Success,
-      End_Of_File_Reached,
-      Read_Failure);
+   type Result_Kind is (Success, EOF, Failure);
 
-   type Read_Result (Kind_Id : Read_Result_Kind_Id) is record
-      case Kind_Id is
-         when Read_Success =>
-            Element_Count : Ada.Streams.Stream_Element_Count;
-         when End_Of_File_Reached =>
-            null;
-         when Read_Failure =>
+   type Result (Kind : Result_Kind) is record
+      case Kind is
+         when Success =>
+            Count : Ada.Streams.Stream_Element_Count;
+         when EOF | Failure =>
             null;
       end case;
    end record;
 
+   type Access_Flag is (Read_Only, Write_Only, Read_Write);
+
+   function Open (Path : String; Flags : Access_Flag) return File
+     with Pre => Path'Length > 0;
+
    function Read
-     (This  : File;
-      Bytes : in out Ada.Streams.Stream_Element_Array) return Read_Result
-   with Pre => Is_Open (This);
+     (Object : File;
+      Bytes  : in out Ada.Streams.Stream_Element_Array) return Result
+   with Pre => Is_Open (Object);
 
-   procedure Write
-     (This  : File;
-      Bytes : Ada.Streams.Stream_Element_Array)
-   with Pre => Is_Open (This);
+   function Write
+     (Object : File;
+      Bytes  : Ada.Streams.Stream_Element_Array) return Result
+   with Pre => Is_Open (Object);
 
-   procedure Close (This : in out File)
-     with Pre  =>     Is_Open (This),
-          Post => not Is_Open (This);
+   procedure Close (Object : in out File)
+     with Pre  =>     Is_Open (Object),
+          Post => not Is_Open (Object);
 
-   function Is_Open (This : File) return Boolean;
+   function Is_Open (Object : File) return Boolean;
+
+   ----------------------------------------------------------------------------
+
+   type Entry_Kind is
+     (Unknown, FIFO, Character_Device, Directory, Block_Device, Regular_File, Link, Socket);
 
 private
 
    use type Interfaces.C.int;
 
-   type File (File_Descriptor : Wayland.File_Descriptor) is limited record
+   type File (File_Descriptor : Wayland.File_Descriptor) is record
       Open : Boolean := True;
    end record;
 
-   function Is_Open (This : File) return Boolean is (This.Open);
+   function Is_Open (Object : File) return Boolean is (Object.Open);
+
+   ----------------------------------------------------------------------------
+
+   for Entry_Kind use
+     (Unknown          => 0,
+      FIFO             => 1,
+      Character_Device => 2,
+      Directory        => 4,
+      Block_Device     => 6,
+      Regular_File     => 8,
+      Link             => 10,
+      Socket           => 12);
+   for Entry_Kind'Size use Interfaces.C.unsigned_char'Size;
+
+   for Access_Flag use
+     (Read_Only  => 0,
+      Write_Only => 1,
+      Read_Write => 2);
+   for Access_Flag'Size use Interfaces.C.int'Size;
 
 end C_Binding;
