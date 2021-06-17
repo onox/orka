@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Characters.Latin_1;
+
 package AWT with SPARK_Mode => On is
    pragma Preelaborate;
 
@@ -37,5 +39,9 @@ package AWT with SPARK_Mode => On is
    Initialization_Error : exception;
 
    Internal_Error : exception;
+
+private
+
+   package L1 renames Ada.Characters.Latin_1;
 
 end AWT;
