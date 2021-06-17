@@ -4,6 +4,51 @@
 [solution.context]
 solved = true
 [[solution.state]]
+crate = "evdev"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.1"
+[solution.state.link]
+kind = "softlink"
+path = "file:../evdev-ada"
+relative = true
+remote = false
+[[solution.state]]
+crate = "inotify"
+fulfilment = "solved"
+pinned = false
+transitivity = "direct"
+versions = "^2.0.0"
+[solution.state.release]
+authors = [
+"onox",
+]
+description = "Ada 2012 library to monitor filesystem events using Linux' inotify API"
+executables = [
+"inotify-ada",
+]
+licenses = "Apache-2.0"
+maintainers = [
+"onox <denkpadje@gmail.com>",
+]
+maintainers-logins = [
+"onox",
+]
+name = "inotify"
+project-files = [
+"inotify.gpr",
+"monitor.gpr",
+]
+tags = [
+"inotify",
+]
+version = "2.0.0"
+website = "https://github.com/onox/inotify-ada"
+[solution.state.release.origin]
+commit = "482c5dadef833b56ae07fdbd6562b62037d4accc"
+url = "git+https://github.com/onox/inotify-ada.git"
+[[solution.state]]
 crate = "libwayland"
 fulfilment = "solved"
 pinned = false
