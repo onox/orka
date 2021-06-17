@@ -11,3 +11,6 @@ maintainers-logins = ["onox"]
 
 [[depends-on]]
 orka_types = "^1.0.0"
+
+[[pins]]
+orka_types = { path = "../orka_types" }

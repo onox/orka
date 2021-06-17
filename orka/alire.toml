@@ -30,3 +30,9 @@ orka_transforms = "^1.0.0"
 [[depends-on]]
 [depends-on.'case(os)'.linux]
 orka_egl = "^1.0.0"
+
+[[pins]]
+orka_egl = { path = "../orka_egl" }
+orka_simd = { path = "../orka_simd" }
+orka_transforms = { path = "../orka_transforms" }
+orka_types = { path = "../orka_types" }

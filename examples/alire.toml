@@ -25,3 +25,6 @@ executables = [
 
 [[depends-on]]
 awt = "^1.0.0"
+
+[[pins]]
+awt = { path = "../../awt" }

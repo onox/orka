@@ -13,3 +13,8 @@ aunit = "^21.0.0"
 orka_simd = "^1.0.0"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
+
+[[pins]]
+orka = { path = "../orka" }
+orka_simd = { path = "../orka_simd" }
+orka_transforms = { path = "../orka_transforms" }

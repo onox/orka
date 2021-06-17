@@ -13,3 +13,7 @@ maintainers-logins = ["onox"]
 json = "^4.0.1"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
+
+[[pins]]
+orka = { path = "../orka" }
+orka_transforms = { path = "../orka_transforms" }

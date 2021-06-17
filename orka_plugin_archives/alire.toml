@@ -12,3 +12,6 @@ maintainers-logins = ["onox"]
 [[depends-on]]
 dcf = "^2.0.2"
 orka = "~0.2.0"
+
+[[pins]]
+orka = { path = "../orka" }
