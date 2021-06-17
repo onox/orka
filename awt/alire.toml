@@ -21,9 +21,19 @@ linux = ["awt-linux.gpr", "example/example.gpr"]
 wayland_egl_ada = "^1.0.0"
 wayland_cursor_ada = "^1.0.0"
 wayland_protocols_ada = "^1.0.0"
+wayland_client_ada = "^1.0.0"
 orka_egl = "^1.0.0"
 evdev = "^1.0.1"
 inotify = "^2.0.0"
 
 [[depends-on]]
 orka = "~0.2.0"
+
+[[pins]]
+evdev = { path = "../evdev-ada" }
+orka = { path = "../orka/orka" }
+orka_egl = { path = "../orka/orka_egl" }
+wayland_client_ada = { path = "../wayland-ada/wayland_client_ada" }
+wayland_cursor_ada = { path = "../wayland-ada/wayland_cursor_ada" }
+wayland_egl_ada = { path = "../wayland-ada/wayland_egl_ada" }
+wayland_protocols_ada = { path = "../wayland-ada/wayland_protocols_ada" }

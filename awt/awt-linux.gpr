@@ -1,5 +1,6 @@
 with "wayland_egl_ada";
 with "wayland_cursor_ada";
+with "wayland_client_ada";
 with "wayland_protocols_ada";
 with "orka_egl";
 with "orka-egl";
