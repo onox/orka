@@ -108,7 +108,6 @@ Orka.Logging.Log
   (From    => Application,
    Kind    => Other,
    Level   => Info,
-   ID      => 0,
    Message => "FPS: " & FPS'Image);
 ```
 
@@ -134,9 +133,6 @@ Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
 This will log the following text:
 
 `[00:00:13.370042 DEBUG] [GAME_LOOP:OTHER] 0: Simulation tick resolution: 0.001 us`
-
-The generic package has an optional second generic parameter `ID`, which
-is 0 by default.
 
 ### Formatting
 

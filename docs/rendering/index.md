@@ -28,13 +28,9 @@ vertices can be interpretated as:
 
 - **Line strip**. *n* - 1 lines requiring *n* vertices.
 
-- **Line loop**. A line strip that forms a circle.
-
 - **Triangles**. *n* triangles requiring *n* x 3 vertices.
 
 - **Triangle strip**. *n* - 2 triangles requiring *n* vertices.
-
-- **Triangle fan**. A cone.
 
 - **Patches**. A special primitive used in tesselation.
 
