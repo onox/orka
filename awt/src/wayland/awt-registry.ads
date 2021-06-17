@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with Ada.Finalization;
-with Ada.Strings.Unbounded;
 
 with Wayland.Cursor;
 with Wayland.Enums.Client;
@@ -39,8 +38,6 @@ private package AWT.Registry is
    URIs_Mime_Type  : constant String := "text/uri-list";
 
    subtype Unsigned_32 is Standard.Wayland.Unsigned_32;
-
-   package SU renames Ada.Strings.Unbounded;
 
    package WC renames Standard.Wayland.Cursor;
    package WE renames Standard.Wayland.Enums;

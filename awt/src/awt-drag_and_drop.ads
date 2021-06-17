@@ -14,13 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Unbounded;
-
 with AWT.Inputs;
 
 package AWT.Drag_And_Drop is
-
-   package SU renames Ada.Strings.Unbounded;
 
    type Receive_Callback is access protected procedure (Value : SU.Unbounded_String);
 

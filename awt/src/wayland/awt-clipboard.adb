@@ -26,9 +26,6 @@ package body AWT.Clipboard is
 
    package WP renames Wayland.Protocols;
 
-   function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
-   function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
-
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
 
    Content : SU.Unbounded_String;

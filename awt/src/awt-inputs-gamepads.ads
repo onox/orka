@@ -189,11 +189,6 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
 
 private
 
-   package SU renames Ada.Strings.Unbounded;
-
-   function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
-   function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
-
    type Axis_Value is delta 2.0 ** (-16)
      range -(2.0 ** 47) ..
            +(2.0 ** 47 - 2.0 ** (-16));

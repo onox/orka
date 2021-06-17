@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 private with Ada.Finalization;
-private with Ada.Strings.Unbounded;
 
 private with Wayland.Cursor;
 private with Wayland.EGL;
@@ -109,8 +108,6 @@ package AWT.Wayland.Windows is
       Context : Standard.EGL.Objects.Contexts.Context);
 
 private
-
-   package SU renames Ada.Strings.Unbounded;
 
    package II renames WP.Idle_Inhibit_Unstable_V1;
    package XD renames WP.Xdg_Decoration_Unstable_V1;

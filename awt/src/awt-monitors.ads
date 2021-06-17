@@ -14,14 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Unbounded;
-
 private with Ada.Finalization;
 
 package AWT.Monitors is
    pragma Preelaborate;
-
-   package SU renames Ada.Strings.Unbounded;
 
    function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
 

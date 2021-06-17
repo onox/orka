@@ -28,9 +28,6 @@ package body AWT.Drag_And_Drop is
    package WP renames Wayland.Protocols;
    package WE renames Wayland.Enums;
 
-   function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
-   function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
-
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
 
    task Drag_And_Drop is

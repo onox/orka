@@ -14,13 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Unbounded;
-
 with AWT.Inputs;
 
 package AWT.Clipboard is
-
-   package SU renames Ada.Strings.Unbounded;
 
    procedure Set (Value : String)
      with Pre => AWT.Inputs.Keyboard_Has_Focus;

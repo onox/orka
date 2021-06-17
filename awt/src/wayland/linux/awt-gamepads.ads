@@ -15,14 +15,12 @@
 --  limitations under the License.
 
 with Ada.Containers.Vectors;
-with Ada.Strings.Unbounded;
 
 with Event_Device.Force_Feedbacks;
 
 private package AWT.Gamepads is
    pragma Preelaborate;
 
-   package SU renames Ada.Strings.Unbounded;
    package ED renames Event_Device;
    package FF renames ED.Force_Feedbacks;
 

@@ -53,8 +53,6 @@ package body AWT.Registry is
       Model           : String;
       Transform       : WE.Client.Output_Transform)
    is
-      function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
-
       Monitor : constant not null access Monitor_Device :=
         Output_With_Monitor (Output).Monitor;
    begin

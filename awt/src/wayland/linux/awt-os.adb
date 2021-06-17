@@ -16,7 +16,6 @@
 
 with Interfaces.C.Pointers;
 
-with Ada.Characters.Latin_1;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
@@ -270,8 +269,6 @@ package body AWT.OS is
      (Path   : String;
       Filter : Filter_Type := (others => True)) return Directory_Entry_Array
    is
-      package L1 renames Ada.Characters.Latin_1;
-
       procedure Free is new Ada.Unchecked_Deallocation
         (Dir_Entry, Dir_Entry_Access);
 
@@ -308,7 +305,7 @@ package body AWT.OS is
                   Node : Dir_Entry_Access := Entries (Index);
                begin
                   Result (Index).Kind := Convert (Node.all.Kind);
-                  Result (Index).Name := SU.To_Unbounded_String (To_Ada (Node.all.Name));
+                  Result (Index).Name := +To_Ada (Node.all.Name);
 
                   Free (Node);
                end;

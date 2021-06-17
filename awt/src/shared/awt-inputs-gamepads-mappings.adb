@@ -17,8 +17,6 @@
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 
-with Ada.Characters.Latin_1;
-
 with Orka.Strings;
 with Orka.Logging;
 
@@ -29,8 +27,6 @@ package body AWT.Inputs.Gamepads.Mappings is
    use Orka.Logging;
 
    package Messages is new Orka.Logging.Messages (Window_System);
-
-   package L1 renames Ada.Characters.Latin_1;
 
    function GUID_Hash (Key : GUID_String) return Ada.Containers.Hash_Type is
      (Ada.Strings.Hash (String (Key)));

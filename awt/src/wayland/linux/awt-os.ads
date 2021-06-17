@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with Ada.Streams;
-with Ada.Strings.Unbounded;
 
 with Wayland;
 
@@ -53,8 +52,6 @@ private package AWT.OS is
    function Is_Open (Object : File) return Boolean;
 
    ----------------------------------------------------------------------------
-
-   package SU renames Ada.Strings.Unbounded;
 
    package Paths is
       subtype Path is String;

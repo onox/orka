@@ -30,9 +30,6 @@ with Orka.OS;
 
 package body AWT.Wayland.Windows is
 
-   function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
-   function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
-
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
 
    package Output_Data renames AWT.Registry.Output_Data;
