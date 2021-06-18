@@ -7,12 +7,23 @@
 # Ada Window Toolkit
 
 Ada 2012 library for managing input devices and windows that can display 3D graphics.
-
 It has a similar purpose as GLFW and SDL. To display graphics with OpenGL you need
 to use [Orka][url-orka].
 
 Currently there is only a Wayland backend for Linux. Hopefully in the future a
 backend for Windows will be added.
+
+AWT also supports gamepads:
+
+- **Mappings**. Use mappings from the [SDL gamecontroller database][url-sdl-gamecontroller-db].
+
+- **Events**. Listen for (dis)connection events.
+
+- **Force-feedback**. Play and cancel rumble and periodic force-feedback effects.
+
+- **Battery**. Retrieve the capacity and charging state of the battery of a gamepad.
+
+- **LED**. Get and set the LED color of a gamepad.
 
 ## Dependencies
 
@@ -35,6 +46,9 @@ and make sure they are all in the same folder. Then add AWT to your application:
 $ alr with awt --use=path/to/awt
 ```
 
+On Linux you need to copy the data/99-leds.rules file to /etc/udev/rules.d/
+in order to be able to set the LED color of a gamepad.
+
 ## Contributing
 
 Please read the [contributing guidelines][url-contributing] before opening
@@ -48,4 +62,5 @@ AWT is distributed under the terms of the [Apache License 2.0][url-apache].
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-contributing]: /CONTRIBUTING.md
   [url-orka]: https://github.com/onox/orka
+  [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
   [url-wayland-ada]: https://github.com/onox/wayland-ada
