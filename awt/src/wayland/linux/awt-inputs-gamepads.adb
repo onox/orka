@@ -789,6 +789,9 @@ package body AWT.Inputs.Gamepads is
       Maximum_Color : constant Normalized :=
         Normalized'Max (Normalized'Max (Color (Red), Color (Green)), Color (Blue));
 
+      Max_Brightness : constant Normalized :=
+        (if Maximum_Color > 0.0 then 1.0 / Maximum_Color else 0.0) * Brightness;
+
       function Image (Value : Normalized) return String is
          Text : constant String := Natural'Image (Natural (Float (Value) * Last_Brightness));
       begin
@@ -800,17 +803,17 @@ package body AWT.Inputs.Gamepads is
       B_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Blue) / "brightness", AWT.OS.Write);
    begin
       if R_File.Is_Open then
-         R_File.Write (Image (Color (Red) / Maximum_Color * Brightness));
+         R_File.Write (Image (Color (Red) * Max_Brightness));
          R_File.Close;
       end if;
 
       if G_File.Is_Open then
-         G_File.Write (Image (Color (Green) / Maximum_Color * Brightness));
+         G_File.Write (Image (Color (Green) * Max_Brightness));
          G_File.Close;
       end if;
 
       if B_File.Is_Open then
-         B_File.Write (Image (Color (Blue) / Maximum_Color * Brightness));
+         B_File.Write (Image (Color (Blue) * Max_Brightness));
          B_File.Close;
       end if;
    end Set_LED;
