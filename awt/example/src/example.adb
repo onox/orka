@@ -4,12 +4,13 @@ with Ada.Text_IO;
 
 with AWT.Clipboard;
 with AWT.Drag_And_Drop;
-with AWT.Inputs;
+with AWT.Inputs.Gamepads;
 with AWT.Monitors;
 with AWT.Windows;
 
 with Orka.Contexts.AWT;
 with Orka.Debug;
+with Orka.Resources.Locations.Directories;
 
 with Package_Test;
 
@@ -21,6 +22,13 @@ procedure Example is
    Border_Size : constant := 50;
    Should_Be_Visible : Boolean := True;
    Visible_Index : Positive := 1;
+
+   Print_Axes_And_Triggers : constant Boolean := False;
+
+   subtype Normalized is AWT.Inputs.Gamepads.Normalized;
+
+   Color      : AWT.Inputs.Gamepads.RGB_Color := (others => 0.0);
+   Brightness : Normalized := 0.0;
 
    Visible_Index_Count : constant := 100;
 
@@ -62,6 +70,47 @@ procedure Example is
    end On_Disconnect;
 
    Monitor_Listener : Test_Listener;
+
+   type Print_Gamepad_Listener is new AWT.Inputs.Gamepads.Gamepad_Event_Listener with null record;
+
+   overriding
+   procedure On_Connect
+     (Object  : Print_Gamepad_Listener;
+      Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr);
+
+   overriding
+   procedure On_Disconnect
+     (Object  : Print_Gamepad_Listener;
+      Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr);
+
+   overriding
+   procedure On_Connect
+     (Object  : Print_Gamepad_Listener;
+      Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr) is
+   begin
+      Gamepad.Log_Information;
+   end On_Connect;
+
+   overriding
+   procedure On_Disconnect
+     (Object  : Print_Gamepad_Listener;
+      Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr) is
+   begin
+      Gamepad.Log_Information;
+   end On_Disconnect;
+
+   Test_Print_Gamepad_Listener : Print_Gamepad_Listener;
+
+   Effect_1 : constant AWT.Inputs.Gamepads.Effect :=
+     AWT.Inputs.Gamepads.Rumble_Effect (0.15, 0.0, 0.7, 1.0);
+
+   Effect_2 : constant AWT.Inputs.Gamepads.Effect :=
+     AWT.Inputs.Gamepads.Periodic_Effect (8.0, 0.0, 0.8, 3.0, 2.0);
+
+   Location_Data : constant Orka.Resources.Locations.Location_Ptr :=
+     (Orka.Resources.Locations.Directories.Create_Location ("./"));
+
+   use all type AWT.Inputs.Gamepads.Connection_Kind;
 begin
    Put_Line ("Initializing...");
    AWT.Initialize;
@@ -69,6 +118,18 @@ begin
 
    for Monitor of AWT.Monitors.Monitors loop
       Print_Monitor (Monitor);
+   end loop;
+
+   if Location_Data.Exists ("gamecontrollerdb.txt") then
+      AWT.Inputs.Gamepads.Set_Mappings
+        (Orka.Resources.Convert (Location_Data.Read_Data ("gamecontrollerdb.txt").Get));
+      Put_Line ("Mappings added");
+   end if;
+   AWT.Inputs.Gamepads.Initialize;
+
+   AWT.Inputs.Gamepads.Poll;
+   for Gamepad of AWT.Inputs.Gamepads.Gamepads loop
+      Gamepad.Log_Information;
    end loop;
 
    declare
@@ -119,10 +180,33 @@ begin
          Put_Line ("Render task, context made not current");
       exception
          when E : others =>
-            Put_Line (Ada.Exceptions.Exception_Information (E));
+            Put_Line ("Error render task: " & Ada.Exceptions.Exception_Information (E));
             Context.Make_Not_Current;
             raise;
       end Render_Task;
+
+      task Poll_Joysticks;
+
+      task body Poll_Joysticks is
+         Poll_Interval : constant Time_Span := Milliseconds (4);
+
+         Next_Time : Time := Clock + Poll_Interval;
+      begin
+         Put_Line ("Polling joysticks...");
+         loop
+            exit when Window.Should_Close;
+
+            AWT.Inputs.Gamepads.Poll;
+
+            delay until Next_Time;
+            Next_Time := Next_Time + Poll_Interval;
+         end loop;
+         Put_Line ("Polling done");
+      exception
+         when E : others =>
+            Put_Line ("Error joystick task: " & Ada.Exceptions.Exception_Information (E));
+            raise;
+      end Poll_Joysticks;
    begin
       Last_Pointer  := AWT_Window.State;
 
@@ -231,6 +315,10 @@ begin
             use all type AWT.Inputs.Button_State;
             use all type AWT.Inputs.Keyboard_Button;
          begin
+            if Keyboard.Pressed (Key_Escape) then
+               Window.Close;
+            end if;
+
             if Keyboard.Modifiers.Ctrl and Keyboard.Pressed (Key_C) then
                declare
                   Value : constant String := "foobar" & Index'Image;
@@ -292,12 +380,117 @@ begin
                   Put_Line ("window hidden");
                end if;
             end;
+
+            declare
+               Gamepads : constant AWT.Inputs.Gamepads.Gamepad_Array :=
+                 AWT.Inputs.Gamepads.Gamepads;
+
+               Title : AWT.SU.Unbounded_String;
+            begin
+               if Gamepads'Length > 0 then
+                  declare
+                     Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr renames Gamepads (1);
+
+                     State   : constant AWT.Inputs.Gamepads.Gamepad_State := Gamepad.State;
+                     Battery : constant AWT.Inputs.Gamepads.Battery_State := Gamepad.State;
+                     LED     : constant AWT.Inputs.Gamepads.LED_State     := Gamepad.State;
+
+                     use all type AWT.Inputs.Gamepads.Gamepad_Button;
+                     use all type AWT.Inputs.Gamepads.Gamepad_Trigger;
+                     use all type AWT.Inputs.Gamepads.Color_Kind;
+                     use type Normalized;
+                  begin
+                     AWT.SU.Append (Title,
+                       "serial: " & Gamepad.Serial_Number &
+                       " connected? " & Gamepad.Connection'Image &
+                       Natural'Image (Gamepads'Length) & " gamepads:");
+
+                     if State.Pressed (Shoulder_Right) then
+                        Gamepad.Play_Effect (Effect_1);
+                     elsif State.Released (Shoulder_Right) then
+                        Gamepad.Cancel_Effect (Effect_1);
+                     end if;
+
+                     if State.Pressed (Shoulder_Left) then
+                        Gamepad.Play_Effect (Effect_2);
+                     elsif State.Released (Shoulder_Left) then
+                        Gamepad.Cancel_Effect (Effect_2);
+                     end if;
+
+                     --  Toggle LED red when pressing button B
+                     if State.Pressed (Action_Right) then
+                        Color (Red) := 1.0 - Color (Red);
+                     end if;
+
+                     --  Toggle LED green when pressing button Y
+                     if State.Pressed (Action_Up) then
+                        Color (Green) := 1.0 - Color (Green);
+                     end if;
+
+                     --  Toggle LED blue when pressing button A
+                     if State.Pressed (Action_Down) then
+                        Color (Blue) := 1.0 - Color (Blue);
+                     end if;
+
+                     --  Set brightness with left trigger while holding button X
+                     if State.Buttons (Action_Left) = Pressed then
+                        Brightness := Normalized (State.Triggers (Trigger_Left));
+                     end if;
+
+                     Gamepad.Set_LED (Brightness, Color);
+
+                     for Button in State.Buttons'Range loop
+                        if State.Pressed (Button) then
+--                           pragma Assert (State.Buttons (Button) = Pressed);
+                           Put_Line ("pressed " & Button'Image);
+                        end if;
+
+                        if State.Released (Button) then
+--                           pragma Assert (State.Buttons (Button) = Released);
+                           Put_Line ("released " & Button'Image);
+                        end if;
+
+                        if State.Buttons (Button) = Pressed then
+                           AWT.SU.Append (Title, " " & Button'Image);
+                        end if;
+                     end loop;
+
+                     if Battery.Is_Present then
+                        AWT.SU.Append (Title, " battery: " & Battery.Capacity'Image &
+                          " (" & Battery.Status'Image & ")");
+                     end if;
+
+                     if LED.Is_Present then
+                        AWT.SU.Append (Title, "L: " & LED.Brightness'Image & " color: " &
+                          LED.Color (Red)'Image &
+                          LED.Color (Green)'Image &
+                          LED.Color (Blue)'Image);
+                     end if;
+
+                     if Print_Axes_And_Triggers then
+                        for Axis in State.Axes'Range loop
+                           Put (Axis'Image & ": " & State.Axes (Axis)'Image & " ");
+                        end loop;
+                        for Trigger in State.Triggers'Range loop
+                           Put (Trigger'Image & ": " & State.Triggers (Trigger)'Image & " ");
+                        end loop;
+                        New_Line;
+                     end if;
+                  end;
+               end if;
+
+               if Gamepads'Length > 0 then
+                  AWT_Window.Set_Title (AWT.SU.To_String (Title));
+               else
+                  AWT_Window.Set_Title ("No gamepads");
+               end if;
+            end;
          end;
       end loop;
       Put_Line ("Exited event loop");
    exception
       when E : others =>
-         Put_Line ("main: " & Ada.Exceptions.Exception_Information (E));
+         Put_Line ("Error in main task: " & Ada.Exceptions.Exception_Information (E));
          raise;
    end;
 end Example;
