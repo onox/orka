@@ -80,6 +80,14 @@ package body AWT.Inputs.Gamepads is
      (Trigger_Left  => Z,
       Trigger_Right => Rz);
 
+   Axis_To_Sensor_Axis : constant array (AWT.Gamepads.Sensor_Axis) of Sensor_Axis :=
+     (X  => X,
+      Y  => Y,
+      Z  => Z,
+      Rx => Rx,
+      Ry => Ry,
+      Rz => Rz);
+
    function Read_File (File : AWT.OS.File) return String is
    begin
       declare
@@ -404,6 +412,21 @@ package body AWT.Inputs.Gamepads is
       Scale      => 1.0 / Axis_Value (Info.Maximum - Info.Minimum),
       Resolution => 1.0 / Axis_Value'Max (1.0, Axis_Value (Info.Resolution)));
 
+   procedure Set_Motion_Sensor_Modifiers (Object : in out Gamepad) is
+      Features : constant ED.Absolute_Axis_Features := Object.Sensor_Device.Features;
+   begin
+      for Axis in AWT.Gamepads.Sensor_Axis loop
+         if Features (Axis) then
+            declare
+               Info : constant ED.Axis_Info := Object.Sensor_Device.Axis (Axis);
+            begin
+               Object.Sensors (Axis) := Info_To_Modifier (Info);
+               Object.Sensor_Data.Absolute (Axis) := Info.Value;
+            end;
+         end if;
+      end loop;
+   end Set_Motion_Sensor_Modifiers;
+
    function Initialize (Object : in out Gamepad; Path : String) return Boolean is
    begin
       pragma Assert (not Object.Device.Is_Open);
@@ -515,6 +538,30 @@ package body AWT.Inputs.Gamepads is
                   end if;
                end if;
             end loop;
+
+            Find_Motion_Input_Event :
+            for Input_File of AWT.OS.Scan_Directory (HID_Path / "input", Filter_Dir) loop
+               for File of AWT.OS.Scan_Directory
+                 (HID_Path / "input" / (+Input_File.Name), Filter_Dir)
+               loop
+                  if SU.Index (File.Name, "event") = 1 then
+                     declare
+                        Sensor_Path : constant String := Input_Folder / (+File.Name);
+                     begin
+                        if Sensor_Path /= Path
+                          and then Object.Sensor_Device.Open (Sensor_Path)
+                        then
+                           if not Object.Sensor_Device.Properties.Accelerometer then
+                              Object.Sensor_Device.Close;
+                           else
+                              Object.Set_Motion_Sensor_Modifiers;
+                              exit Find_Motion_Input_Event;
+                           end if;
+                        end if;
+                     end;
+                  end if;
+               end loop;
+            end loop Find_Motion_Input_Event;
          end if;
       end;
 
@@ -558,11 +605,18 @@ package body AWT.Inputs.Gamepads is
       Changed : constant Changed_Gamepad_Buttons := Old_State_Buttons xor New_State_Buttons;
    begin
       Object.Gamepad := State;
-      Object.Gamepad.Pressed  := Old_State.Pressed or (Changed and New_State_Buttons);
+      Object.Gamepad.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
       Object.Gamepad.Released := Old_State.Released or (Changed and not New_State_Buttons);
    end Set_State;
 
-   procedure Poll_State (Object : in out Gamepad) is
+   procedure Set_State
+     (Object : in out Gamepad;
+      State  : Motion_State) is
+   begin
+      Object.Sensor := State;
+   end Set_State;
+
+   procedure Poll_State_Gamepad (Object : in out Gamepad) is
       State : Gamepad_State;
 
       procedure Set_Value (Value : Axis_Value; Output : Output_Mapping) is
@@ -664,6 +718,38 @@ package body AWT.Inputs.Gamepads is
       end loop;
 
       Object.Set_State (State);
+   end Poll_State_Gamepad;
+
+   procedure Poll_State_Sensor (Object : in out Gamepad) is
+   begin
+      if not Object.Sensor_Device.Read (Object.Sensor_Data) then
+         Object.Set_State (Motion_State'(Is_Present => False));
+         return;
+      end if;
+
+      declare
+         State : Motion_State (Is_Present => True);
+      begin
+         for Absolute_Axis in Object.Sensors'Range loop
+            declare
+               Modifier : Axis_Modifier renames Object.Sensors (Absolute_Axis);
+               Value : Axis_Value := Axis_Value (Object.Sensor_Data.Absolute (Absolute_Axis));
+            begin
+               Value := Value * Modifier.Resolution;
+               State.Axes (Axis_To_Sensor_Axis (Absolute_Axis)) := Sensor_Axis_Value (Value);
+            end;
+         end loop;
+
+         --  TODO Numerical Integration for orientation and position?
+
+         Object.Set_State (State);
+      end;
+   end Poll_State_Sensor;
+
+   procedure Poll_State (Object : in out Gamepad) is
+   begin
+      Object.Poll_State_Gamepad;
+      Object.Poll_State_Sensor;
    end Poll_State;
 
    function State (Object : in out Gamepad) return Gamepad_State is
@@ -674,6 +760,11 @@ package body AWT.Inputs.Gamepads is
          Object.Gamepad.Pressed  := (others => False);
          Object.Gamepad.Released := (others => False);
       end return;
+   end State;
+
+   function State (Object : Gamepad) return Motion_State is
+   begin
+      return Object.Sensor;
    end State;
 
    function State (Object : Gamepad) return Battery_State is

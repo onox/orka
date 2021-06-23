@@ -41,11 +41,16 @@ private package AWT.Gamepads is
 
    subtype Input_Button is ED.Key_Kind;
 
+   subtype Sensor_Axis is ED.Absolute_Axis_Kind range ED.X .. ED.Rz;
+
    type Abstract_Gamepad is abstract tagged limited record
       Device  : ED.Input_Device;
       Data    : ED.State;
       Path    : SU.Unbounded_String;
       Effects : Uploaded_Effect_Vectors.Vector;
+
+      Sensor_Device : ED.Input_Device;
+      Sensor_Data   : ED.State;
 
       Battery : SU.Unbounded_String;
 
