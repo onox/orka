@@ -30,6 +30,10 @@ procedure Example is
    Color      : AWT.Inputs.Gamepads.RGB_Color := (others => 0.0);
    Brightness : Normalized := 0.0;
 
+   type Extra_Info_Kind is (Info_Motion, Info_Battery, Info_LED);
+
+   Extra_Info : Extra_Info_Kind := Extra_Info_Kind'First;
+
    Visible_Index_Count : constant := 100;
 
    procedure Print_Monitor (Monitor : AWT.Monitors.Monitor_Ptr) is
@@ -392,6 +396,7 @@ begin
                      Gamepad : AWT.Inputs.Gamepads.Gamepad_Ptr renames Gamepads (1);
 
                      State   : constant AWT.Inputs.Gamepads.Gamepad_State := Gamepad.State;
+                     Motion  : constant AWT.Inputs.Gamepads.Motion_State  := Gamepad.State;
                      Battery : constant AWT.Inputs.Gamepads.Battery_State := Gamepad.State;
                      LED     : constant AWT.Inputs.Gamepads.LED_State     := Gamepad.State;
 
@@ -399,11 +404,13 @@ begin
                      use all type AWT.Inputs.Gamepads.Gamepad_Trigger;
                      use all type AWT.Inputs.Gamepads.Color_Kind;
                      use type Normalized;
+
+                     Show_Extra_Info : constant Boolean := State.Buttons (Center_Right) /= Pressed;
                   begin
                      AWT.SU.Append (Title,
                        "serial: " & Gamepad.Serial_Number &
                        " connected? " & Gamepad.Connection'Image &
-                       Natural'Image (Gamepads'Length) & " gamepads:");
+                       " (" & Natural'Image (Gamepads'Length) & " gamepads) ");
 
                      if State.Pressed (Shoulder_Right) then
                         Gamepad.Play_Effect (Effect_1);
@@ -415,6 +422,13 @@ begin
                         Gamepad.Play_Effect (Effect_2);
                      elsif State.Released (Shoulder_Left) then
                         Gamepad.Cancel_Effect (Effect_2);
+                     end if;
+
+                     if State.Pressed (Center_Right) then
+                        Extra_Info := (if Extra_Info = Extra_Info_Kind'Last then
+                                         Extra_Info_Kind'First
+                                       else
+                                         Extra_Info_Kind'Succ (Extra_Info));
                      end if;
 
                      --  Toggle LED red when pressing button B
@@ -455,16 +469,25 @@ begin
                         end if;
                      end loop;
 
-                     if Battery.Is_Present then
-                        AWT.SU.Append (Title, " battery: " & Battery.Capacity'Image &
-                          " (" & Battery.Status'Image & ")");
-                     end if;
+                     if Show_Extra_Info then
+                        if Extra_Info = Info_Motion and Motion.Is_Present then
+                           AWT.SU.Append (Title, "motion:");
+                           for Axis in Motion.Axes'Range loop
+                              AWT.SU.Append (Title, " " & Motion.Axes (Axis)'Image);
+                           end loop;
+                        end if;
 
-                     if LED.Is_Present then
-                        AWT.SU.Append (Title, "L: " & LED.Brightness'Image & " color: " &
-                          LED.Color (Red)'Image &
-                          LED.Color (Green)'Image &
-                          LED.Color (Blue)'Image);
+                        if Extra_Info = Info_Battery and Battery.Is_Present then
+                           AWT.SU.Append (Title, "battery: " & Battery.Capacity'Image &
+                             " (" & Battery.Status'Image & ")");
+                        end if;
+
+                        if Extra_Info = Info_LED and LED.Is_Present then
+                           AWT.SU.Append (Title, "L: " & LED.Brightness'Image & " color: " &
+                             LED.Color (Red)'Image &
+                             LED.Color (Green)'Image &
+                             LED.Color (Blue)'Image);
+                        end if;
                      end if;
 
                      if Print_Axes_And_Triggers then
