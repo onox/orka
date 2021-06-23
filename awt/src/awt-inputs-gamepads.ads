@@ -27,8 +27,6 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
    type GUID_String is new String (1 .. 32)
      with Dynamic_Predicate => (for all C of GUID_String => C in '0' .. '9' | 'a' .. 'f');
 
-   --  FIXME Support motion sensor
-
    type Normalized is new Float range 0.0 .. 1.0;
 
    ----------------------------------------------------------------------------
@@ -121,6 +119,25 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
 
    ----------------------------------------------------------------------------
 
+   type Sensor_Axis_Value is delta 2.0 ** (-16) range -(2.0 ** 15) .. +(2.0 ** 15 - 2.0 ** (-16))
+     with Small => 2.0 ** (-16),
+          Size  => 32;
+
+   type Sensor_Axis is (X, Y, Z, Rx, Ry, Rz);
+
+   type Sensor_Axes is array (Sensor_Axis) of Sensor_Axis_Value;
+
+   type Motion_State (Is_Present : Boolean := False)  is record
+      case Is_Present is
+         when True =>
+            Axes : Sensor_Axes := (others => 0.0);
+         when False =>
+            null;
+      end case;
+   end record;
+
+   ----------------------------------------------------------------------------
+
    type Gamepad is tagged limited private;
 
    function Name (Object : Gamepad) return String;
@@ -132,6 +149,8 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
    function Connection (Object : Gamepad) return Connection_Kind;
 
    function State (Object : in out Gamepad) return Gamepad_State;
+
+   function State (Object : Gamepad) return Motion_State;
 
    function State (Object : Gamepad) return Battery_State;
 
@@ -234,14 +253,20 @@ private
    type Key_Mappings  is array (AWT.Gamepads.Input_Button) of Mapping;
    type Hat_Mappings  is array (AWT.Gamepads.Input_Hat, Hat_Side) of Mapping;
 
+   type Sensor_Modifiers is array (AWT.Gamepads.Sensor_Axis) of Axis_Modifier;
+
    type Gamepad is limited new AWT.Gamepads.Abstract_Gamepad with record
       Name, ID    : SU.Unbounded_String;
       GUID        : GUID_String;
-      Gamepad     : Gamepad_State;
+
+      Gamepad : Gamepad_State;
+      Sensor  : Motion_State;
 
       Axes : Axis_Mappings;
       Keys : Key_Mappings;
       Hats : Hat_Mappings;
+
+      Sensors : Sensor_Modifiers;
 
       Has_Rumble  : Boolean := False;
       Initialized : Boolean := False;
