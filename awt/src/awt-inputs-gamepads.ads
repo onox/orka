@@ -178,7 +178,7 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
 
    function Effects (Object : Gamepad) return Natural;
 
-   procedure Log_Information (Object : Gamepad);
+   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad'Class);
 
    ----------------------------------------------------------------------------
 

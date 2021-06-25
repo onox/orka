@@ -909,15 +909,7 @@ package body AWT.Inputs.Gamepads is
       end if;
    end Set_LED;
 
-   procedure Log_Information (Object : Gamepad) is
-      Is_Connected : constant Boolean := Object.Connection /= Disconnected;
-   begin
-      Messages.Log (Info,
-        (if Is_Connected then "Connected" else "Disconnected") & " " & Name (Object));
-      Messages.Log (Info, "  serial:     " & Object.Serial_Number);
-      Messages.Log (Info, "  GUID:       " & String (Object.GUID));
-      Messages.Log (Info, "  connection: " & Object.Connection'Image);
-   end Log_Information;
+   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad'Class) is separate;
 
    ----------------------------------------------------------------------------
 
