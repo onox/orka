@@ -577,14 +577,18 @@ package body AWT.Inputs.Gamepads is
    function Connection (Object : Gamepad) return Connection_Kind is
       function Uses_USB (Location : String) return Boolean is
         (SF.Index (Source => Location, Pattern => "usb") > 0);
-
-      Location : constant String := Object.Device.Location;
    begin
-      if Location'Length > 0 then
-         return (if Uses_USB (Location) then Wired else Wireless);
-      else
-         return Disconnected;
+      if Object.Initialized and Object.Device.Is_Open then
+         declare
+            Location : constant String := Object.Device.Location;
+         begin
+            if Location'Length > 0 then
+               return (if Uses_USB (Location) then Wired else Wireless);
+            end if;
+         end;
       end if;
+
+      return Disconnected;
    end Connection;
 
    procedure Set_State
@@ -633,8 +637,10 @@ package body AWT.Inputs.Gamepads is
                raise Program_Error;
          end case;
       end Set_Value;
+
+      Device : ED.Input_Device renames Object.Device;
    begin
-      if not Object.Device.Read (Object.Data) then
+      if not Device.Is_Open or else not Device.Read (Object.Data) then
          Object.Set_State (State);
          return;
       end if;
@@ -721,8 +727,9 @@ package body AWT.Inputs.Gamepads is
    end Poll_State_Gamepad;
 
    procedure Poll_State_Sensor (Object : in out Gamepad) is
+      Device : ED.Input_Device renames Object.Sensor_Device;
    begin
-      if not Object.Sensor_Device.Read (Object.Sensor_Data) then
+      if not Device.Is_Open or else not Device.Read (Object.Sensor_Data) then
          Object.Set_State (Motion_State'(Is_Present => False));
          return;
       end if;
@@ -995,11 +1002,14 @@ package body AWT.Inputs.Gamepads is
             when Deleted =>
                for Gamepad of All_Gamepads loop
                   if Gamepad.Initialized and Gamepad.Path = Path then
+                     Gamepad.Initialized := False;
                      if Gamepad_Listener /= null then
                         Gamepad_Listener.On_Disconnect (Gamepad'Access);
                      end if;
+                     if Gamepad.Sensor_Device.Is_Open then
+                        Gamepad.Sensor_Device.Close;
+                     end if;
                      Gamepad.Device.Close;
-                     Gamepad.Initialized := False;
                      return;
                   end if;
                end loop;
