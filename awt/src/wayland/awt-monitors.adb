@@ -18,6 +18,8 @@ with AWT.Registry;
 
 package body AWT.Monitors is
 
+   procedure Log_Information (Monitor : AWT.Monitors.Monitor'Class) is separate;
+
    function Monitors return AWT.Monitors.Monitor_Array renames AWT.Registry.Monitors;
 
    overriding procedure Initialize (Object : in out Monitor_Event_Listener) is

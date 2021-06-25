@@ -36,18 +36,6 @@ procedure Example is
 
    Visible_Index_Count : constant := 100;
 
-   procedure Print_Monitor (Monitor : AWT.Monitors.Monitor_Ptr) is
-      State : constant AWT.Monitors.Monitor_State := Monitor.State;
-
-      use AWT.Monitors;
-   begin
-      Put_Line ("monitor:" & Monitor.ID'Image);
-      Put_Line ("      name: " & (+State.Name));
-      Put_Line ("      x, y: " & State.X'Image & ", " & State.Y'Image);
-      Put_Line ("      w x h: " & State.Width'Image & " × " & State.Height'Image);
-      Put_Line ("      refresh: " & State.Refresh'Image);
-   end Print_Monitor;
-
    type Test_Listener is new AWT.Monitors.Monitor_Event_Listener with null record;
 
    overriding procedure On_Connect    (Object : Test_Listener; Monitor : AWT.Monitors.Monitor_Ptr);
@@ -59,7 +47,7 @@ procedure Example is
       Monitor : AWT.Monitors.Monitor_Ptr) is
    begin
       Put_Line ("connected:");
-      Print_Monitor (Monitor);
+      Monitor.Log_Information;
       Monitor_Events := Monitor_Events + 1;
    end On_Connect;
 
@@ -69,7 +57,7 @@ procedure Example is
       Monitor : AWT.Monitors.Monitor_Ptr) is
    begin
       Put_Line ("disconnected:");
-      Print_Monitor (Monitor);
+      Monitor.Log_Information;
       Monitor_Events := Monitor_Events + 1;
    end On_Disconnect;
 
@@ -121,7 +109,7 @@ begin
    Put_Line ("Initialized");
 
    for Monitor of AWT.Monitors.Monitors loop
-      Print_Monitor (Monitor);
+      Monitor.Log_Information;
    end loop;
 
    if Location_Data.Exists ("gamecontrollerdb.txt") then

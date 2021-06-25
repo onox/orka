@@ -76,7 +76,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
          when Entered =>
             Print_Monitor (Monitor);
          when Left =>
-            Messages.Log (Debug, "Window no longer visible on monitor " & (+Monitor.State.Name));
+            Messages.Log (Debug, "Window not visible on monitor " & (+Monitor.State.Name));
       end case;
    end On_Move;
 

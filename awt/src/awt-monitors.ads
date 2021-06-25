@@ -40,6 +40,8 @@ package AWT.Monitors is
 
    function State (Object : Monitor) return Monitor_State is abstract;
 
+   procedure Log_Information (Monitor : AWT.Monitors.Monitor'Class);
+
    ----------------------------------------------------------------------------
 
    type Monitor_Array is array (Positive range <>) of Monitor_Ptr;
