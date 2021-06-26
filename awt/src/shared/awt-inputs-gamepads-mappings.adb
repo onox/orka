@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
 
 with Orka.Strings;
@@ -27,6 +28,8 @@ package body AWT.Inputs.Gamepads.Mappings is
    use Orka.Logging;
 
    package Messages is new Orka.Logging.Messages (Window_System);
+
+   package SF renames Ada.Strings.Fixed;
 
    function GUID_Hash (Key : GUID_String) return Ada.Containers.Hash_Type is
      (Ada.Strings.Hash (String (Key)));
@@ -148,5 +151,99 @@ package body AWT.Inputs.Gamepads.Mappings is
          raise Constraint_Error;
       end if;
    end Name_To_Output;
+
+   function Parse_Mapping
+     (Line        : String;
+      Set_Mapping : not null access procedure
+        (Kind       : Mapping_Kind;
+         Input_Map  : Input_Mapping;
+         Output_Map : Output_Mapping;
+         Name       : String)) return String
+   is
+      Index : constant Natural := SF.Index (Line, ",");
+      pragma Assert (Index > 0);
+
+      Name  : constant String := Line (Line'First .. Index - 1);
+      Value : constant String := Line (Index + 1 .. Line'Last);
+   begin
+      for Mapping of Orka.Strings.Split (Value, ",") loop
+         declare
+            Button_Input : constant Orka.Strings.String_List := Orka.Strings.Split (+Mapping, ":");
+            pragma Assert (Button_Input'Length = 2);
+
+            Button : constant String := (+Button_Input (1));
+            Input  : constant String := (+Button_Input (2));
+
+            Index : Natural := Button'First;
+            Last  : Natural := Input'Last;
+
+            Output_Positive : Boolean := False;
+            Output_Negative : Boolean := False;
+
+            Input_Positive : Boolean := False;
+            Input_Negative : Boolean := False;
+            Input_Invert   : Boolean := False;
+
+            Input_Map  : Input_Mapping;
+            Output_Map : Output_Mapping;
+         begin
+            if Button (Index) = '+' then
+               Output_Positive := True;
+               Index := Index + 1;
+            elsif Button (Index) = '-' then
+               Output_Negative := True;
+               Index := Index + 1;
+            end if;
+
+            Output_Map := Name_To_Output (Button (Index .. Button'Last));
+
+            if Output_Map.Kind = Axis then
+               if Output_Positive then
+                  Output_Map.Scale := 1.0;
+                  Output_Map.Offset := 0.0;
+               elsif Output_Negative then
+                  Output_Map.Scale := -1.0;
+                  Output_Map.Offset := 0.0;
+               end if;
+            end if;
+
+            Index := Input'First;
+
+            if Input (Index) in '+' then
+               Input_Positive := True;
+               Index := Index + 1;
+            elsif Input (Index) in '-' then
+               Input_Negative := True;
+               Index := Index + 1;
+            end if;
+
+            if Input (Last) in '~' then
+               Input_Invert := True;
+               Last := Last - 1;
+            end if;
+
+            if Input (Index) = 'a' then
+               if Input_Positive then
+                  Input_Map.Side := Positive_Half;
+               elsif Input_Negative then
+                  Input_Map.Side := Negative_Half;
+               end if;
+               if Input_Invert then
+                  Input_Map.Invert := True;
+               end if;
+
+               Set_Mapping (Axis_Mapping, Input_Map, Output_Map, Input (Index + 1 .. Last));
+            elsif Input (Index) = 'b' then
+               Set_Mapping (Button_Mapping, Input_Map, Output_Map, Input (Index + 1 .. Last));
+            elsif Input (Index) = 'h' then
+               Set_Mapping (Hat_Mapping, Input_Map, Output_Map, Input (Index + 1 .. Last));
+            else
+               raise Constraint_Error;
+            end if;
+         end;
+      end loop;
+
+      return Name;
+   end Parse_Mapping;
 
 end AWT.Inputs.Gamepads.Mappings;

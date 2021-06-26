@@ -25,6 +25,14 @@ private package AWT.Inputs.Gamepads.Mappings is
 
    function Get (GUID : GUID_String) return String;
 
-   function Name_To_Output (Name : String) return Output_Mapping;
+   type Mapping_Kind is (Axis_Mapping, Button_Mapping, Hat_Mapping);
+
+   function Parse_Mapping
+     (Line        : String;
+      Set_Mapping : not null access procedure
+        (Kind       : Mapping_Kind;
+         Input_Map  : Input_Mapping;
+         Output_Map : Output_Mapping;
+         Name       : String)) return String;
 
 end AWT.Inputs.Gamepads.Mappings;

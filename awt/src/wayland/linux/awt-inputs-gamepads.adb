@@ -241,97 +241,24 @@ package body AWT.Inputs.Gamepads is
          raise Constraint_Error with "Unknown button index " & Index'Image;
       end Name_To_Button;
 
-      Index : constant Natural := SF.Index (Line, ",");
-      pragma Assert (Index > 0);
-
-      Name  : constant String := Line (Line'First .. Index - 1);
-      Value : constant String := Line (Index + 1 .. Line'Last);
-
-      Button_Mappings : constant Orka.Strings.String_List := Orka.Strings.Split (Value, ",");
-   begin
-      for Mapping of Button_Mappings loop
-         declare
-            Button_Input : constant Orka.Strings.String_List := Orka.Strings.Split (+Mapping, ":");
-            pragma Assert (Button_Input'Length = 2);
-
-            Button : constant String := (+Button_Input (1));
-            Input  : constant String := (+Button_Input (2));
-
-            Index : Natural := Button'First;
-            Last  : Natural := Input'Last;
-
-            Output_Positive : Boolean := False;
-            Output_Negative : Boolean := False;
-
-            Input_Positive : Boolean := False;
-            Input_Negative : Boolean := False;
-            Input_Invert   : Boolean := False;
-
-            Input_Map  : Input_Mapping;
-            Output_Map : Output_Mapping;
-         begin
-            if Button (Index) = '+' then
-               Output_Positive := True;
-               Index := Index + 1;
-            elsif Button (Index) = '-' then
-               Output_Negative := True;
-               Index := Index + 1;
-            end if;
-
-            Output_Map := Mappings.Name_To_Output (Button (Index .. Button'Last));
-
-            if Output_Map.Kind = Axis then
-               if Output_Positive then
-                  Output_Map.Scale := 1.0;
-                  Output_Map.Offset := 0.0;
-               elsif Output_Negative then
-                  Output_Map.Scale := -1.0;
-                  Output_Map.Offset := 0.0;
-               end if;
-            end if;
-
-            Index := Input'First;
-
-            if Input (Index) in '+' then
-               Input_Positive := True;
-               Index := Index + 1;
-            elsif Input (Index) in '-' then
-               Input_Negative := True;
-               Index := Index + 1;
-            end if;
-
-            if Input (Last) in '~' then
-               Input_Invert := True;
-               Last := Last - 1;
-            end if;
-
-            if Input (Index) = 'a' then
+      procedure Set_Mapping
+        (Kind       : Mappings.Mapping_Kind;
+         Input_Map  : Input_Mapping;
+         Output_Map : Output_Mapping;
+         Name       : String)
+      is
+         use all type Mappings.Mapping_Kind;
+      begin
+         case Kind is
+            when Axis_Mapping =>
+               Object.Axes (Name_To_Axis (Name)) :=
+                 (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
+            when Button_Mapping =>
+               Object.Keys (Name_To_Button (Name)) :=
+                 (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
+            when Hat_Mapping =>
                declare
-                  Axis : constant AWT.Gamepads.Input_Axis :=
-                    Name_To_Axis (Input (Index + 1 .. Last));
-               begin
-                  if Input_Positive then
-                     Input_Map.Side := Positive_Half;
-                  elsif Input_Negative then
-                     Input_Map.Side := Negative_Half;
-                  end if;
-                  if Input_Invert then
-                     Input_Map.Invert := True;
-                  end if;
-
-                  Object.Axes (Axis) :=
-                    (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
-               end;
-            elsif Input (Index) = 'b' then
-               declare
-                  Key : constant ED.Key_Kind := Name_To_Button (Input (Index + 1 .. Last));
-               begin
-                  Object.Keys (Key) :=
-                    (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
-               end;
-            elsif Input (Index) = 'h' then
-               declare
-                  Hat : constant Hat_Mask := Name_To_Hat (Input (Index + 1 .. Last));
+                  Hat : constant Hat_Mask := Name_To_Hat (Name);
                begin
                   Object.Axes (Hat.Axis) :=
                     (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
@@ -340,13 +267,10 @@ package body AWT.Inputs.Gamepads is
                   Object.Hats (Hat.Axis, Hat.Side) :=
                     (Kind => Output_Map.Kind, Input => Input_Map, Output => Output_Map);
                end;
-            else
-               raise Constraint_Error;
-            end if;
-         end;
-      end loop;
-
-      Object.Name := +Name;
+         end case;
+      end Set_Mapping;
+   begin
+      Object.Name := +Mappings.Parse_Mapping (Line, Set_Mapping'Access);
    end Apply_Mapping;
 
    function Info_To_Modifier (Info : ED.Axis_Info) return Axis_Modifier is
