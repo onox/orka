@@ -25,4 +25,6 @@ private package AWT.Inputs.Gamepads.Mappings is
 
    function Get (GUID : GUID_String) return String;
 
+   function Name_To_Output (Name : String) return Output_Mapping;
+
 end AWT.Inputs.Gamepads.Mappings;

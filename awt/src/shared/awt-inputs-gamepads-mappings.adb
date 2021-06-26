@@ -89,4 +89,64 @@ package body AWT.Inputs.Gamepads.Mappings is
 
    function Get (GUID : GUID_String) return String is (Mappings (GUID));
 
+   function Name_To_Output (Name : String) return Output_Mapping is
+   begin
+      --  Buttons
+      if Name = "a" then
+         return (Kind => Button, Button => Action_Down);
+      elsif Name = "b" then
+         return (Kind => Button, Button => Action_Right);
+      elsif Name = "x" then
+         return (Kind => Button, Button => Action_Left);
+      elsif Name = "y" then
+         return (Kind => Button, Button => Action_Up);
+
+      elsif Name = "dpup" then
+         return (Kind => Button, Button => Direction_Up);
+      elsif Name = "dpright" then
+         return (Kind => Button, Button => Direction_Right);
+      elsif Name = "dpdown" then
+         return (Kind => Button, Button => Direction_Down);
+      elsif Name = "dpleft" then
+         return (Kind => Button, Button => Direction_Left);
+
+      elsif Name = "leftshoulder" then
+         return (Kind => Button, Button => Shoulder_Left);
+      elsif Name = "rightshoulder" then
+         return (Kind => Button, Button => Shoulder_Right);
+
+      elsif Name = "back" then
+         return (Kind => Button, Button => Center_Left);
+      elsif Name = "start" then
+         return (Kind => Button, Button => Center_Right);
+      elsif Name = "guide" then
+         return (Kind => Button, Button => Center_Logo);
+
+      elsif Name = "leftstick" then
+         return (Kind => Button, Button => Thumb_Left);
+      elsif Name = "rightstick" then
+         return (Kind => Button, Button => Thumb_Right);
+
+      --  Axes
+      elsif Name = "leftx" then
+         return (Kind => Axis, Axis => Stick_Left_X, others => <>);
+      elsif Name = "lefty" then
+         return (Kind => Axis, Axis => Stick_Left_Y, others => <>);
+
+      elsif Name = "rightx" then
+         return (Kind => Axis, Axis => Stick_Right_X, others => <>);
+      elsif Name = "righty" then
+         return (Kind => Axis, Axis => Stick_Right_Y, others => <>);
+
+      --  Triggers
+      elsif Name = "lefttrigger" then
+         return (Kind => Trigger, Trigger => Trigger_Left);
+      elsif Name = "righttrigger" then
+         return (Kind => Trigger, Trigger => Trigger_Right);
+
+      else
+         raise Constraint_Error;
+      end if;
+   end Name_To_Output;
+
 end AWT.Inputs.Gamepads.Mappings;
