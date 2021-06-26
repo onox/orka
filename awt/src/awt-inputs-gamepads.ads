@@ -217,13 +217,13 @@ private
    type Output_Mapping (Kind : Output_Kind := None) is record
       case Kind is
          when Axis =>
-            Axis    : AWT.Inputs.Gamepads.Gamepad_Axis;
+            Axis    : Gamepad_Axis;
             Scale   : Axis_Value := 2.0;
             Offset  : Axis_Value := 1.0;
          when Trigger =>
-            Trigger : AWT.Inputs.Gamepads.Gamepad_Trigger;
+            Trigger : Gamepad_Trigger;
          when Button =>
-            Button  : AWT.Inputs.Gamepads.Gamepad_Button;
+            Button  : Gamepad_Button;
          when None =>
             null;
       end case;

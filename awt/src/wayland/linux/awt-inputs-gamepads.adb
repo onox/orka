@@ -165,7 +165,7 @@ package body AWT.Inputs.Gamepads is
       Features_Axes : constant ED.Absolute_Axis_Features := Object.Device.Features;
       Features_Keys : constant ED.Key_Features           := Object.Device.Features;
 
-      function Name_To_Axis (Number : String) return ED.Absolute_Axis_Kind is
+      function Name_To_Axis (Number : String) return AWT.Gamepads.Input_Axis is
          Index : constant Natural := Natural'Value (Number);
 
          Count : Natural := 0;
@@ -225,12 +225,12 @@ package body AWT.Inputs.Gamepads is
            "Unknown hat index " & Index'Image & " or mask " & Mask'Image;
       end Name_To_Hat;
 
-      function Name_To_Button (Number : String) return ED.Key_Kind is
+      function Name_To_Button (Number : String) return AWT.Gamepads.Input_Button is
          Index : constant Natural := Natural'Value (Number);
 
          Count : Natural := 0;
       begin
-         for Key in ED.Key_Kind'Range loop
+         for Key in AWT.Gamepads.Input_Button'Range loop
             if Features_Keys (Key) then
                if Count = Index then
                   return Key;
@@ -307,7 +307,7 @@ package body AWT.Inputs.Gamepads is
 
             if Input (Index) = 'a' then
                declare
-                  Axis : constant ED.Absolute_Axis_Kind :=
+                  Axis : constant AWT.Gamepads.Input_Axis :=
                     Name_To_Axis (Input (Index + 1 .. Last));
                begin
                   if Input_Positive then
@@ -345,6 +345,8 @@ package body AWT.Inputs.Gamepads is
             end if;
          end;
       end loop;
+
+      Object.Name := +Name;
    end Apply_Mapping;
 
    function Info_To_Modifier (Info : ED.Axis_Info) return Axis_Modifier is
