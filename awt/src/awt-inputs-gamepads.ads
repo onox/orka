@@ -138,6 +138,19 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
 
    ----------------------------------------------------------------------------
 
+   type Effect is private;
+
+   function Rumble_Effect
+     (Length, Offset : Duration;
+      Strong, Weak   : Normalized) return Effect;
+
+   function Periodic_Effect
+     (Length, Offset : Duration;
+      Magnitude      : Normalized;
+      Attack, Fade   : Duration) return Effect;
+
+   ----------------------------------------------------------------------------
+
    type Gamepad is tagged limited private;
 
    function Name (Object : Gamepad) return String;
@@ -160,17 +173,6 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
      (Object     : in out Gamepad;
       Brightness : Normalized;
       Color      : RGB_Color);
-
-   type Effect is private;
-
-   function Rumble_Effect
-     (Length, Offset : Duration;
-      Strong, Weak   : Normalized) return Effect;
-
-   function Periodic_Effect
-     (Length, Offset : Duration;
-      Magnitude      : Normalized;
-      Attack, Fade   : Duration) return Effect;
 
    procedure Play_Effect (Object : in out Gamepad; Subject : Effect);
 

@@ -88,6 +88,57 @@ package body AWT.Inputs.Gamepads is
       Ry => Ry,
       Rz => Rz);
 
+   ----------------------------------------------------------------------------
+
+   All_Effects : AWT.Gamepads.Effect_Vectors.Vector;
+
+   All_Gamepads : array (1 .. 16) of aliased Gamepad;
+
+   Input_Notifier : Inotify.Instance;
+
+   type Gamepad_Event_Listener_Ptr is access all Gamepad_Event_Listener'Class;
+
+   Gamepad_Listener : Gamepad_Event_Listener_Ptr;
+
+   ----------------------------------------------------------------------------
+   --                             Force Feedback                             --
+   ----------------------------------------------------------------------------
+
+   package FF renames ED.Force_Feedbacks;
+
+   use all type FF.Direction_Kind;
+   use all type FF.Force_Feedback_Effect_Kind;
+   use type Event_Device.Force_Feedback_Effect_ID;
+
+   subtype Unsigned_16 is Event_Device.Unsigned_16;
+   subtype short is Interfaces.C.short;
+
+   function Sort_Stop (Left, Right : AWT.Gamepads.Uploaded_Effect) return Boolean is
+     (Left.Stop_At < Right.Stop_At);
+
+   package Effect_Sorting is new AWT.Gamepads.Uploaded_Effect_Vectors.Generic_Sorting (Sort_Stop);
+   --  The effect with the earliest stop time needs to be removed if the
+   --  application tries to play more effects than the device can support
+
+   procedure Play_Uploaded_Effect (Object : in out Gamepad; Subject : Effect; Count : Natural) is
+      use type AWT.Gamepads.Effect_Vectors.Cursor;
+   begin
+      for Effect of Object.Effects loop
+         if Effect.Cursor = Subject.Cursor then
+            if Object.Device.Play_Force_Feedback_Effect (Effect.Effect.ID, Count) then
+               Effect.Stop_At := Orka.OS.Monotonic_Clock +
+                 (if Count > 0 then Count * FF.To_Duration (Effect.Effect.Replay.Length) else 0.0);
+            else
+               Messages.Log (Error,
+                 "Failed to play " & Effect.Effect.Kind'Image & " force-feedback effect");
+            end if;
+            exit;
+         end if;
+      end loop;
+   end Play_Uploaded_Effect;
+
+   ----------------------------------------------------------------------------
+
    function Read_File (File : AWT.OS.File) return String is
    begin
       declare
@@ -782,33 +833,74 @@ package body AWT.Inputs.Gamepads is
       end if;
    end Set_LED;
 
+   procedure Play_Effect (Object : in out Gamepad; Subject : Effect) is
+      Uploaded_OK : Boolean := True;
+
+      procedure Upload_Effect (Element : in out AWT.Gamepads.Uploaded_Effect) is
+      begin
+         pragma Assert (Element.Effect.ID = -1);
+
+         FF.Upload_Force_Feedback_Effect (Object.Device, Element.Effect);
+         Uploaded_OK := Element.Effect.ID /= -1;
+
+         if not Uploaded_OK then
+            Messages.Log (Error,
+              "Failed to upload " & Element.Effect.Kind'Image & " force-feedback effect");
+         end if;
+      end Upload_Effect;
+
+      use type AWT.Gamepads.Effect_Vectors.Cursor;
+   begin
+      --  If the maximum number of effects have been uploaded to the
+      --  device, remove the effect with the earliest stop time. It may
+      --  or may not be the case that the stop time is already in the past.
+      if Object.Max_Effects = Natural (Object.Effects.Length) then
+         Effect_Sorting.Sort (Object.Effects);
+         FF.Remove_Force_Feedback_Effect (Object.Device, Object.Effects.First_Element.Effect.ID);
+         Object.Effects.Delete_First;
+      end if;
+
+      if not (for some Effect of Object.Effects => Effect.Cursor = Subject.Cursor) then
+         Object.Effects.Append
+           ((Stop_At => 0.0,
+             Cursor  => Subject.Cursor,
+             Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
+
+         Object.Effects.Update_Element (Object.Effects.Last, Upload_Effect'Access);
+
+         if not Uploaded_OK then
+            Object.Effects.Delete_Last;
+            return;
+         end if;
+      end if;
+
+      Object.Play_Uploaded_Effect (Subject, 1);
+   end Play_Effect;
+
+   procedure Cancel_Effect (Object : in out Gamepad; Subject : Effect) is
+   begin
+      Object.Play_Uploaded_Effect (Subject, 0);
+   end Cancel_Effect;
+
+   function Effects (Object : Gamepad) return Natural is (Object.Max_Effects);
+
    procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad'Class) is separate;
 
    ----------------------------------------------------------------------------
 
-   All_Effects : AWT.Gamepads.Effect_Vectors.Vector;
-
-   All_Gamepads : array (1 .. 16) of aliased Gamepad;
-
-   Input_Notifier : Inotify.Instance;
-
-   type Gamepad_Event_Listener_Ptr is access all Gamepad_Event_Listener'Class;
-
-   Gamepad_Listener : Gamepad_Event_Listener_Ptr;
-
-   function Get_ID (Path : String) return String is
-      Device : ED.Input_Device;
-   begin
-      if not Device.Open (Path) then
-         return "";
-      end if;
-
-      return Result : constant String := Device.Unique_ID do
-         Device.Close;
-      end return;
-   end Get_ID;
-
    procedure Process_Events is
+      function Get_ID (Path : String) return String is
+         Device : ED.Input_Device;
+      begin
+         if not Device.Open (Path) then
+            return "";
+         end if;
+
+         return Result : constant String := Device.Unique_ID do
+            Device.Close;
+         end return;
+      end Get_ID;
+
       procedure Handle_Events
         (Subject      : Inotify.Watch;
          Event        : Inotify.Event_Kind;
@@ -960,15 +1052,8 @@ package body AWT.Inputs.Gamepads is
    end Gamepads;
 
    ----------------------------------------------------------------------------
-
-   package FF renames ED.Force_Feedbacks;
-
-   use all type FF.Direction_Kind;
-   use all type FF.Force_Feedback_Effect_Kind;
-   use type Event_Device.Force_Feedback_Effect_ID;
-
-   subtype Unsigned_16 is Event_Device.Unsigned_16;
-   subtype short is Interfaces.C.short;
+   --                             Force Feedback                             --
+   ----------------------------------------------------------------------------
 
    function Rumble_Effect
      (Length, Offset : Duration;
@@ -1024,81 +1109,6 @@ package body AWT.Inputs.Gamepads is
       All_Effects.Append (Periodic_Effect (Length, Offset, Magnitude, Attack, Fade));
       return (Cursor => All_Effects.Last);
    end Periodic_Effect;
-
-   procedure Play_Uploaded_Effect (Object : in out Gamepad; Subject : Effect; Count : Natural) is
-      use type AWT.Gamepads.Effect_Vectors.Cursor;
-   begin
-      for Effect of Object.Effects loop
-         if Effect.Cursor = Subject.Cursor then
-            if Object.Device.Play_Force_Feedback_Effect (Effect.Effect.ID, Count) then
-               Effect.Stop_At := Orka.OS.Monotonic_Clock +
-                 (if Count > 0 then Count * FF.To_Duration (Effect.Effect.Replay.Length) else 0.0);
-            else
-               Messages.Log (Error,
-                 "Failed to play " & Effect.Effect.Kind'Image & " force-feedback effect");
-            end if;
-            exit;
-         end if;
-      end loop;
-   end Play_Uploaded_Effect;
-
-   function Sort_Stop (Left, Right : AWT.Gamepads.Uploaded_Effect) return Boolean is
-     (Left.Stop_At < Right.Stop_At);
-
-   package Effect_Sorting is new AWT.Gamepads.Uploaded_Effect_Vectors.Generic_Sorting (Sort_Stop);
-   --  The effect with the earliest stop time needs to be removed if the
-   --  application tries to play more effects than the device can support
-
-   procedure Play_Effect (Object : in out Gamepad; Subject : Effect) is
-      Uploaded_OK : Boolean := True;
-
-      procedure Upload_Effect (Element : in out AWT.Gamepads.Uploaded_Effect) is
-      begin
-         pragma Assert (Element.Effect.ID = -1);
-
-         FF.Upload_Force_Feedback_Effect (Object.Device, Element.Effect);
-         Uploaded_OK := Element.Effect.ID /= -1;
-
-         if not Uploaded_OK then
-            Messages.Log (Error,
-              "Failed to upload " & Element.Effect.Kind'Image & " force-feedback effect");
-         end if;
-      end Upload_Effect;
-
-      use type AWT.Gamepads.Effect_Vectors.Cursor;
-   begin
-      --  If the maximum number of effects have been uploaded to the
-      --  device, remove the effect with the earliest stop time. It may
-      --  or may not be the case that the stop time is already in the past.
-      if Object.Max_Effects = Natural (Object.Effects.Length) then
-         Effect_Sorting.Sort (Object.Effects);
-         FF.Remove_Force_Feedback_Effect (Object.Device, Object.Effects.First_Element.Effect.ID);
-         Object.Effects.Delete_First;
-      end if;
-
-      if not (for some Effect of Object.Effects => Effect.Cursor = Subject.Cursor) then
-         Object.Effects.Append
-           ((Stop_At => 0.0,
-             Cursor  => Subject.Cursor,
-             Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
-
-         Object.Effects.Update_Element (Object.Effects.Last, Upload_Effect'Access);
-
-         if not Uploaded_OK then
-            Object.Effects.Delete_Last;
-            return;
-         end if;
-      end if;
-
-      Object.Play_Uploaded_Effect (Subject, 1);
-   end Play_Effect;
-
-   procedure Cancel_Effect (Object : in out Gamepad; Subject : Effect) is
-   begin
-      Object.Play_Uploaded_Effect (Subject, 0);
-   end Cancel_Effect;
-
-   function Effects (Object : Gamepad) return Natural is (Object.Max_Effects);
 
    ----------------------------------------------------------------------------
 
