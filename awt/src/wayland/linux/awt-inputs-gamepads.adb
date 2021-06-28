@@ -48,6 +48,7 @@ package body AWT.Inputs.Gamepads is
 
    use all type ED.Key_Kind;
    use all type ED.Absolute_Axis_Kind;
+   use all type ED.Read_Result;
    use all type AWT.OS.Entry_Kind;
    use AWT.OS.Paths;
 
@@ -120,7 +121,11 @@ package body AWT.Inputs.Gamepads is
    --  The effect with the earliest stop time needs to be removed if the
    --  application tries to play more effects than the device can support
 
-   procedure Play_Uploaded_Effect (Object : in out Gamepad; Subject : Effect; Count : Natural) is
+   procedure Play_Uploaded_Effect
+     (Object  : in out Gamepad_Object;
+      Subject : Effect;
+      Count   : Natural)
+   is
       use type AWT.Gamepads.Effect_Vectors.Cursor;
    begin
       for Effect of Object.Effects loop
@@ -188,7 +193,7 @@ package body AWT.Inputs.Gamepads is
       return "";
    end Find_HID_Device;
 
-   procedure Apply_Default_Mapping (Object : in out Gamepad) is
+   procedure Apply_Default_Mapping (Object : in out Gamepad_Object) is
    begin
       for GP_Axis in Gamepad_Axis'Range loop
          Object.Axes (Gamepad_Axis_To_Axis (GP_Axis)) :=
@@ -212,7 +217,7 @@ package body AWT.Inputs.Gamepads is
       end loop;
    end Apply_Default_Mapping;
 
-   procedure Apply_Mapping (Object : in out Gamepad; Line : String) is
+   procedure Apply_Mapping (Object : in out Gamepad_Object; Line : String) is
       Features_Axes : constant ED.Absolute_Axis_Features := Object.Device.Features;
       Features_Keys : constant ED.Key_Features           := Object.Device.Features;
 
@@ -329,7 +334,7 @@ package body AWT.Inputs.Gamepads is
       Scale      => 1.0 / Axis_Value (Info.Maximum - Info.Minimum),
       Resolution => 1.0 / Axis_Value'Max (1.0, Axis_Value (Info.Resolution)));
 
-   procedure Set_Motion_Sensor_Modifiers (Object : in out Gamepad) is
+   procedure Set_Motion_Sensor_Modifiers (Object : in out Gamepad_Object) is
       Features : constant ED.Absolute_Axis_Features := Object.Sensor_Device.Features;
    begin
       for Axis in AWT.Gamepads.Sensor_Axis loop
@@ -344,11 +349,11 @@ package body AWT.Inputs.Gamepads is
       end loop;
    end Set_Motion_Sensor_Modifiers;
 
-   function Initialize (Object : in out Gamepad; Path : String) return Boolean is
+   function Initialize (Object : in out Gamepad_Object; Path : String) return Boolean is
    begin
       pragma Assert (not Object.Device.Is_Open);
 
-      if not Object.Device.Open (Path) then
+      if not Object.Device.Open (Path, Blocking => False) then
          return False;
       end if;
 
@@ -387,10 +392,9 @@ package body AWT.Inputs.Gamepads is
             end loop;
          end;
 
-         Object.Has_Rumble  := Events.Force_Feedback;
          Object.Max_Effects := Object.Device.Force_Feedback_Effects;
 
-         if Object.Has_Rumble then
+         if Events.Force_Feedback then
             Object.Device.Set_Force_Feedback_Gain (1.0);
          end if;
       end;
@@ -426,7 +430,6 @@ package body AWT.Inputs.Gamepads is
          end loop;
       end;
 
-      Object.Initialized := True;
       Object.Path := +Path;
 
       declare
@@ -435,7 +438,7 @@ package body AWT.Inputs.Gamepads is
          function Is_Color (Name : SU.Unbounded_String; Color : String) return Boolean is
            (SU.Index (Name, ":" & Color) = SU.Length (Name) - Color'Length);
 
-         HID_Path : constant String := Find_HID_Device (Object.Serial_Number);
+         HID_Path : constant String := Find_HID_Device (+Object.ID);
       begin
          if HID_Path /= "" then
             for File of AWT.OS.Scan_Directory (HID_Path / "power_supply", Filter_Dir) loop
@@ -466,7 +469,7 @@ package body AWT.Inputs.Gamepads is
                         Sensor_Path : constant String := Input_Folder / (+File.Name);
                      begin
                         if Sensor_Path /= Path
-                          and then Object.Sensor_Device.Open (Sensor_Path)
+                          and then Object.Sensor_Device.Open (Sensor_Path, Blocking => False)
                         then
                            if not Object.Sensor_Device.Properties.Accelerometer then
                               Object.Sensor_Device.Close;
@@ -485,406 +488,495 @@ package body AWT.Inputs.Gamepads is
       return True;
    end Initialize;
 
-   function Name (Object : Gamepad) return String is (+Object.Name);
-
-   function Serial_Number (Object : Gamepad) return String is (+Object.ID);
-
-   function GUID (Object : Gamepad) return GUID_String is (Object.GUID);
-
-   function Connection (Object : Gamepad) return Connection_Kind is
-      function Uses_USB (Location : String) return Boolean is
-        (SF.Index (Source => Location, Pattern => "usb") > 0);
-   begin
-      if Object.Initialized and Object.Device.Is_Open then
-         declare
-            Location : constant String := Object.Device.Location;
-         begin
-            if Location'Length > 0 then
-               return (if Uses_USB (Location) then Wired else Wireless);
-            end if;
-         end;
-      end if;
-
-      return Disconnected;
-   end Connection;
-
-   procedure Set_State
-     (Object : in out Gamepad;
-      State  : Gamepad_State)
-   is
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Gamepad_Buttons,
-         Target => Changed_Gamepad_Buttons);
-
-      use type Changed_Gamepad_Buttons;
-
-      Old_State : constant Gamepad_State := Object.Gamepad;
-
-      Old_State_Buttons : constant Changed_Gamepad_Buttons := Convert (Old_State.Buttons);
-      New_State_Buttons : constant Changed_Gamepad_Buttons := Convert (State.Buttons);
-
-      Changed : constant Changed_Gamepad_Buttons := Old_State_Buttons xor New_State_Buttons;
-   begin
-      Object.Gamepad := State;
-      Object.Gamepad.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
-      Object.Gamepad.Released := Old_State.Released or (Changed and not New_State_Buttons);
-   end Set_State;
-
-   procedure Set_State
-     (Object : in out Gamepad;
-      State  : Motion_State) is
-   begin
-      Object.Sensor := State;
-   end Set_State;
-
-   procedure Poll_State_Gamepad (Object : in out Gamepad) is
-      State : Gamepad_State;
-
-      procedure Set_Value (Value : Axis_Value; Output : Output_Mapping) is
+   protected body Gamepad_Hardware is
+      procedure Initialize (Path : String; Result : out Boolean) is
       begin
-         case Output.Kind is
-            when Axis =>
-               State.Axes (Output.Axis) :=
-                 Axis_Position (Axis_Value'(Value * Output.Scale - Output.Offset));
-            when Trigger =>
-               State.Triggers (Output.Trigger) := Trigger_Position (Value);
-            when Button =>
-               State.Buttons (Output.Button) := (if Value >= 0.5 then Pressed else Released);
-            when None =>
-               raise Program_Error;
-         end case;
-      end Set_Value;
+         Result := Initialize (Object, Path);
+      end Initialize;
 
-      Device : ED.Input_Device renames Object.Device;
-   begin
-      if not Device.Is_Open or else not Device.Read (Object.Data) then
-         Object.Set_State (State);
-         return;
-      end if;
-
-      for Absolute_Axis in Object.Axes'Range loop
-         declare
-            Map : Mapping renames Object.Axes (Absolute_Axis);
-         begin
-            if Map.Kind /= None then
-               declare
-                  Modifier : Axis_Modifier renames Map.Input.Modifier;
-                  Value : Axis_Value := Axis_Value (Object.Data.Absolute (Absolute_Axis));
-
-                  Valid : Boolean := True;
-               begin
-                  Value := Value * Modifier.Resolution;
-                  Value := (Value - Modifier.Offset) * Modifier.Scale;
-
-                  case Map.Input.Side is
-                     when Positive_Half =>
-                        if Value in 0.5 .. 1.0 then
-                           Value := (Value - 0.5) * 2.0;
-                        else
-                           Valid := False;
-                        end if;
-                     when Negative_Half =>
-                        if Value in 0.0 .. 0.5 then
-                           Value := Value * 2.0;
-                        else
-                           Valid := False;
-                        end if;
-                     when Full_Range =>
-                        null;
-                  end case;
-
-                  if Map.Input.Invert then
-                     Value := 1.0 - Value;
-                  end if;
-
-                  if Valid then
-                     if Absolute_Axis in AWT.Gamepads.Input_Hat then
-                        if Value in 0.5 .. 1.0 then
-                           Value := (Value - 0.5) * 2.0;
-
-                           declare
-                              Map : Mapping renames Object.Hats (Absolute_Axis, Positive_Half);
-                           begin
-                              Set_Value (Value, Map.Output);
-                           end;
-                        else
-                           Value := 1.0 - Value * 2.0;
-
-                           declare
-                              Map : Mapping renames Object.Hats (Absolute_Axis, Negative_Half);
-                           begin
-                              Set_Value (Value, Map.Output);
-                           end;
-                        end if;
-                     else
-                        Set_Value (Value, Map.Output);
-                     end if;
-                  end if;
-               end;
-            end if;
-         end;
-      end loop;
-
-      for Key in Object.Keys'Range loop
-         declare
-            Map : Mapping renames Object.Keys (Key);
-         begin
-            if Map.Kind /= None then
-               declare
-                  use type ED.Key_State;
-                  Is_Pressed : constant Boolean := Object.Data.Keys (Key) = ED.Pressed;
-               begin
-                  Set_Value (Axis_Value (if Is_Pressed then 1.0 else 0.0), Map.Output);
-               end;
-            end if;
-         end;
-      end loop;
-
-      Object.Set_State (State);
-   end Poll_State_Gamepad;
-
-   procedure Poll_State_Sensor (Object : in out Gamepad) is
-      Device : ED.Input_Device renames Object.Sensor_Device;
-   begin
-      if not Device.Is_Open or else not Device.Read (Object.Sensor_Data) then
-         Object.Set_State (Motion_State'(Is_Present => False));
-         return;
-      end if;
-
-      declare
-         State : Motion_State (Is_Present => True);
+      procedure Finalize is
       begin
-         for Absolute_Axis in Object.Sensors'Range loop
+         if Object.Sensor_Device.Is_Open then
+            Object.Sensor_Device.Close;
+         end if;
+         Object.Device.Close;
+      end Finalize;
+
+      function Initialized return Boolean is (Object.Device.Is_Open);
+
+      function Path return String is (+Object.Path);
+
+      -------------------------------------------------------------------------
+
+      function Name return String is (+Object.Name);
+
+      function Serial_Number return String is (+Object.ID);
+
+      function GUID return GUID_String is (Object.GUID);
+
+      function Connection return Connection_Kind is
+         function Uses_USB (Location : String) return Boolean is
+           (SF.Index (Source => Location, Pattern => "usb") > 0);
+      begin
+         if Object.Device.Is_Open then
             declare
-               Modifier : Axis_Modifier renames Object.Sensors (Absolute_Axis);
-               Value : Axis_Value := Axis_Value (Object.Sensor_Data.Absolute (Absolute_Axis));
+               Location : constant String := Object.Device.Location;
             begin
-               Value := Value * Modifier.Resolution;
-               State.Axes (Axis_To_Sensor_Axis (Absolute_Axis)) := Sensor_Axis_Value (Value);
+               if Location'Length > 0 then
+                  return (if Uses_USB (Location) then Wired else Wireless);
+               end if;
+            end;
+         end if;
+
+         return Disconnected;
+      end Connection;
+
+      procedure Set_State
+        (Object : in out Gamepad_Object;
+         State  : Gamepad_State)
+      is
+         function Convert is new Ada.Unchecked_Conversion
+           (Source => Gamepad_Buttons,
+            Target => Changed_Gamepad_Buttons);
+
+         use type Changed_Gamepad_Buttons;
+
+         Old_State : constant Gamepad_State := Object.Gamepad;
+
+         Old_State_Buttons : constant Changed_Gamepad_Buttons := Convert (Old_State.Buttons);
+         New_State_Buttons : constant Changed_Gamepad_Buttons := Convert (State.Buttons);
+
+         Changed : constant Changed_Gamepad_Buttons := Old_State_Buttons xor New_State_Buttons;
+      begin
+         Object.Gamepad := State;
+         Object.Gamepad.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
+         Object.Gamepad.Released := Old_State.Released or (Changed and not New_State_Buttons);
+      end Set_State;
+
+      procedure Set_State
+        (Object : in out Gamepad_Object;
+         State  : Motion_State) is
+      begin
+         Object.Sensor := State;
+      end Set_State;
+
+      procedure Poll_State_Gamepad (Object : in out Gamepad_Object) is
+         State : Gamepad_State;
+
+         procedure Set_Value (Value : Axis_Value; Output : Output_Mapping) is
+         begin
+            case Output.Kind is
+               when Axis =>
+                  State.Axes (Output.Axis) :=
+                    Axis_Position (Axis_Value'(Value * Output.Scale - Output.Offset));
+               when Trigger =>
+                  State.Triggers (Output.Trigger) := Trigger_Position (Value);
+               when Button =>
+                  State.Buttons (Output.Button) := (if Value >= 0.5 then Pressed else Released);
+               when None =>
+                  raise Program_Error;
+            end case;
+         end Set_Value;
+
+         Device : ED.Input_Device renames Object.Device;
+      begin
+         if not Device.Is_Open then
+            Set_State (Object, State);
+            return;
+         end if;
+
+         case Device.Read (Object.Data) is
+            when Error =>
+               Set_State (Object, State);
+               return;
+            when Would_Block =>
+               return;
+            when OK =>
+               null;
+         end case;
+
+         for Absolute_Axis in Object.Axes'Range loop
+            declare
+               Map : Mapping renames Object.Axes (Absolute_Axis);
+            begin
+               if Map.Kind /= None then
+                  declare
+                     Modifier : Axis_Modifier renames Map.Input.Modifier;
+                     Value : Axis_Value := Axis_Value (Object.Data.Absolute (Absolute_Axis));
+
+                     Valid : Boolean := True;
+                  begin
+                     Value := Value * Modifier.Resolution;
+                     Value := (Value - Modifier.Offset) * Modifier.Scale;
+
+                     case Map.Input.Side is
+                        when Positive_Half =>
+                           if Value in 0.5 .. 1.0 then
+                              Value := (Value - 0.5) * 2.0;
+                           else
+                              Valid := False;
+                           end if;
+                        when Negative_Half =>
+                           if Value in 0.0 .. 0.5 then
+                              Value := Value * 2.0;
+                           else
+                              Valid := False;
+                           end if;
+                        when Full_Range =>
+                           null;
+                     end case;
+
+                     if Map.Input.Invert then
+                        Value := 1.0 - Value;
+                     end if;
+
+                     if Valid then
+                        if Absolute_Axis in AWT.Gamepads.Input_Hat then
+                           if Value in 0.5 .. 1.0 then
+                              Value := (Value - 0.5) * 2.0;
+
+                              declare
+                                 Map : Mapping renames Object.Hats (Absolute_Axis, Positive_Half);
+                              begin
+                                 Set_Value (Value, Map.Output);
+                              end;
+                           else
+                              Value := 1.0 - Value * 2.0;
+
+                              declare
+                                 Map : Mapping renames Object.Hats (Absolute_Axis, Negative_Half);
+                              begin
+                                 Set_Value (Value, Map.Output);
+                              end;
+                           end if;
+                        else
+                           Set_Value (Value, Map.Output);
+                        end if;
+                     end if;
+                  end;
+               end if;
             end;
          end loop;
 
-         --  TODO Numerical Integration for orientation and position?
+         for Key in Object.Keys'Range loop
+            declare
+               Map : Mapping renames Object.Keys (Key);
+            begin
+               if Map.Kind /= None then
+                  declare
+                     use type ED.Key_State;
+                     Is_Pressed : constant Boolean := Object.Data.Keys (Key) = ED.Pressed;
+                  begin
+                     Set_Value (Axis_Value (if Is_Pressed then 1.0 else 0.0), Map.Output);
+                  end;
+               end if;
+            end;
+         end loop;
 
-         Object.Set_State (State);
-      end;
-   end Poll_State_Sensor;
+         Set_State (Object, State);
+      end Poll_State_Gamepad;
 
-   procedure Poll_State (Object : in out Gamepad) is
-   begin
-      Object.Poll_State_Gamepad;
-      Object.Poll_State_Sensor;
-   end Poll_State;
+      procedure Poll_State_Sensor (Object : in out Gamepad_Object) is
+         Device : ED.Input_Device renames Object.Sensor_Device;
+      begin
+         if not Device.Is_Open then
+            Set_State (Object, Motion_State'(Is_Present => False));
+            return;
+         end if;
 
-   function State (Object : in out Gamepad) return Gamepad_State is
-   begin
-      return Result : constant Gamepad_State := Object.Gamepad do
+         case Device.Read (Object.Sensor_Data) is
+            when Error =>
+               Set_State (Object, Motion_State'(Is_Present => False));
+               return;
+            when Would_Block =>
+               return;
+            when OK =>
+               null;
+         end case;
+
+         declare
+            State : Motion_State (Is_Present => True);
+         begin
+            for Absolute_Axis in Object.Sensors'Range loop
+               declare
+                  Modifier : Axis_Modifier renames Object.Sensors (Absolute_Axis);
+                  Value : Axis_Value := Axis_Value (Object.Sensor_Data.Absolute (Absolute_Axis));
+               begin
+                  Value := Value * Modifier.Resolution;
+                  State.Axes (Axis_To_Sensor_Axis (Absolute_Axis)) := Sensor_Axis_Value (Value);
+               end;
+            end loop;
+
+            --  TODO Numerical Integration for orientation and position?
+
+            Set_State (Object, State);
+         end;
+      end Poll_State_Sensor;
+
+      procedure Poll_State is
+      begin
+         Poll_State_Gamepad (Object);
+         Poll_State_Sensor (Object);
+      end Poll_State;
+
+      procedure State (Result : in out Gamepad_State) is
+      begin
+         Result := Object.Gamepad;
+
          --  Reset Pressed and Released after the state has been read by
          --  the application. New state will be accumulated in procedure Set_State
          Object.Gamepad.Pressed  := (others => False);
          Object.Gamepad.Released := (others => False);
-      end return;
-   end State;
+      end State;
 
-   function State (Object : Gamepad) return Motion_State is
-   begin
-      return Object.Sensor;
-   end State;
-
-   function State (Object : Gamepad) return Battery_State is
-      type Pair is record
-         Key, Value : SU.Unbounded_String;
-      end record;
-
-      function Get (Source : String) return Pair is
-         Index : constant Natural := SF.Index (Source, "=");
+      function State return Motion_State is
       begin
-         return
-           (Key   => +Source (Source'First .. Index - 1),
-            Value => +Source (Index + 1 .. Source'Last));
-      end Get;
+         return Object.Sensor;
+      end State;
 
-      Present  : Boolean := False;
-      Capacity : Battery_Capacity := Battery_Capacity'First;
-      Status   : Battery_Status   := Battery_Status'First;
+      function State return Battery_State is
+         type Pair is record
+            Key, Value : SU.Unbounded_String;
+         end record;
 
-      UEvent_File : AWT.OS.File := AWT.OS.Open ((+Object.Battery) / "uevent");
-   begin
-      if UEvent_File.Is_Open then
-         declare
-            Lines : constant Orka.Strings.String_List :=
-              Orka.Strings.Split (Read_File (UEvent_File), "" & L1.LF);
+         function Get (Source : String) return Pair is
+            Index : constant Natural := SF.Index (Source, "=");
          begin
-            UEvent_File.Close;
+            return
+              (Key   => +Source (Source'First .. Index - 1),
+               Value => +Source (Index + 1 .. Source'Last));
+         end Get;
 
-            for Line of Lines loop
-               declare
-                  Key_Value : constant Pair := Get (+Line);
+         Present  : Boolean := False;
+         Capacity : Battery_Capacity := Battery_Capacity'First;
+         Status   : Battery_Status   := Battery_Status'First;
 
-                  use type SU.Unbounded_String;
-               begin
-                  if Key_Value.Key = "POWER_SUPPLY_PRESENT" then
-                     Present := True;
-                  elsif Key_Value.Key = "POWER_SUPPLY_CAPACITY" then
-                     Capacity := Battery_Capacity'Value (+Key_Value.Value);
-                  elsif Key_Value.Key = "POWER_SUPPLY_STATUS" then
-                     if +Key_Value.Value in "Full" | "Not charging" then
-                        Status := Not_Charging;
-                     elsif +Key_Value.Value in "Charging" then
-                        Status := Charging;
-                     elsif +Key_Value.Value in  "Discharging" | "Unknown" then
-                        Status := Discharging;
-                     end if;
-                  end if;
-               end;
-            end loop;
-         end;
-      end if;
-
-      return Result : Battery_State (Present) do
-         if Present then
-            Result.Capacity := Capacity;
-            Result.Status   := Status;
-         end if;
-      end return;
-   end State;
-
-   function State (Object : Gamepad) return LED_State is
-      use type SU.Unbounded_String;
-
-      R_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Red) / "brightness");
-      G_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Green) / "brightness");
-      B_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Blue) / "brightness");
-
-      R_Text, G_Text, B_Text : SU.Unbounded_String;
-   begin
-      if R_File.Is_Open then
-         R_Text := +Orka.Strings.Strip_Line_Term (Read_File (R_File));
-         R_File.Close;
-      end if;
-
-      if G_File.Is_Open then
-         G_Text := +Orka.Strings.Strip_Line_Term (Read_File (G_File));
-         G_File.Close;
-      end if;
-
-      if B_File.Is_Open then
-         B_Text := +Orka.Strings.Strip_Line_Term (Read_File (B_File));
-         B_File.Close;
-      end if;
-
-      return Result : LED_State (R_Text /= "" and G_Text /= "" and B_Text /= "") do
-         if Result.Is_Present then
+         UEvent_File : AWT.OS.File := AWT.OS.Open ((+Object.Battery) / "uevent");
+      begin
+         if UEvent_File.Is_Open then
             declare
-               R : constant Float := Float'Value (+R_Text);
-               G : constant Float := Float'Value (+G_Text);
-               B : constant Float := Float'Value (+B_Text);
-
-               Maximum_Brightness : constant Float := Float'Max (Float'Max (R, G), B);
+               Lines : constant Orka.Strings.String_List :=
+                 Orka.Strings.Split (Read_File (UEvent_File), "" & L1.LF);
             begin
-               Result.Brightness := Normalized (Maximum_Brightness / Last_Brightness);
-               if Maximum_Brightness > 0.0 then
-                  Result.Color :=
-                    (Red   => Normalized (R / Maximum_Brightness),
-                     Green => Normalized (G / Maximum_Brightness),
-                     Blue  => Normalized (B / Maximum_Brightness));
-               else
-                  Result.Color := (0.0, 0.0, 0.0);
-               end if;
+               UEvent_File.Close;
+
+               for Line of Lines loop
+                  declare
+                     Key_Value : constant Pair := Get (+Line);
+
+                     use type SU.Unbounded_String;
+                  begin
+                     if Key_Value.Key = "POWER_SUPPLY_PRESENT" then
+                        Present := True;
+                     elsif Key_Value.Key = "POWER_SUPPLY_CAPACITY" then
+                        Capacity := Battery_Capacity'Value (+Key_Value.Value);
+                     elsif Key_Value.Key = "POWER_SUPPLY_STATUS" then
+                        if +Key_Value.Value in "Full" | "Not charging" then
+                           Status := Not_Charging;
+                        elsif +Key_Value.Value in "Charging" then
+                           Status := Charging;
+                        elsif +Key_Value.Value in  "Discharging" | "Unknown" then
+                           Status := Discharging;
+                        end if;
+                     end if;
+                  end;
+               end loop;
             end;
          end if;
+
+         return Result : Battery_State (Present) do
+            if Present then
+               Result.Capacity := Capacity;
+               Result.Status   := Status;
+            end if;
+         end return;
+      end State;
+
+      function State return LED_State is
+         use type SU.Unbounded_String;
+
+         R_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Red) / "brightness");
+         G_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Green) / "brightness");
+         B_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Blue) / "brightness");
+
+         R_Text, G_Text, B_Text : SU.Unbounded_String;
+      begin
+         if R_File.Is_Open then
+            R_Text := +Orka.Strings.Strip_Line_Term (Read_File (R_File));
+            R_File.Close;
+         end if;
+
+         if G_File.Is_Open then
+            G_Text := +Orka.Strings.Strip_Line_Term (Read_File (G_File));
+            G_File.Close;
+         end if;
+
+         if B_File.Is_Open then
+            B_Text := +Orka.Strings.Strip_Line_Term (Read_File (B_File));
+            B_File.Close;
+         end if;
+
+         return Result : LED_State (R_Text /= "" and G_Text /= "" and B_Text /= "") do
+            if Result.Is_Present then
+               declare
+                  R : constant Float := Float'Value (+R_Text);
+                  G : constant Float := Float'Value (+G_Text);
+                  B : constant Float := Float'Value (+B_Text);
+
+                  Maximum_Brightness : constant Float := Float'Max (Float'Max (R, G), B);
+               begin
+                  Result.Brightness := Normalized (Maximum_Brightness / Last_Brightness);
+                  if Maximum_Brightness > 0.0 then
+                     Result.Color :=
+                       (Red   => Normalized (R / Maximum_Brightness),
+                        Green => Normalized (G / Maximum_Brightness),
+                        Blue  => Normalized (B / Maximum_Brightness));
+                  else
+                     Result.Color := (0.0, 0.0, 0.0);
+                  end if;
+               end;
+            end if;
+         end return;
+      end State;
+
+      procedure Set_LED
+        (Brightness : Normalized;
+         Color      : RGB_Color)
+      is
+         Maximum_Color : constant Normalized :=
+           Normalized'Max (Normalized'Max (Color (Red), Color (Green)), Color (Blue));
+
+         Max_Brightness : constant Normalized :=
+           (if Maximum_Color > 0.0 then 1.0 / Maximum_Color else 0.0) * Brightness;
+
+         function Image (Value : Normalized) return String is
+            Text : constant String := Natural'Image (Natural (Float (Value) * Last_Brightness));
+         begin
+            return Text (Text'First + 1 .. Text'Last);
+         end Image;
+
+         R_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Red) / "brightness", AWT.OS.Write);
+         G_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Green) / "brightness", AWT.OS.Write);
+         B_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Blue) / "brightness", AWT.OS.Write);
+      begin
+         if R_File.Is_Open then
+            R_File.Write (Image (Color (Red) * Max_Brightness));
+            R_File.Close;
+         end if;
+
+         if G_File.Is_Open then
+            G_File.Write (Image (Color (Green) * Max_Brightness));
+            G_File.Close;
+         end if;
+
+         if B_File.Is_Open then
+            B_File.Write (Image (Color (Blue) * Max_Brightness));
+            B_File.Close;
+         end if;
+      end Set_LED;
+
+      procedure Play_Effect (Subject : Effect) is
+         Uploaded_OK : Boolean := True;
+
+         procedure Upload_Effect (Element : in out AWT.Gamepads.Uploaded_Effect) is
+         begin
+            pragma Assert (Element.Effect.ID = -1);
+
+            FF.Upload_Force_Feedback_Effect (Object.Device, Element.Effect);
+            Uploaded_OK := Element.Effect.ID /= -1;
+
+            if not Uploaded_OK then
+               Messages.Log (Error,
+                 "Failed to upload " & Element.Effect.Kind'Image & " force-feedback effect");
+            end if;
+         end Upload_Effect;
+
+         use type AWT.Gamepads.Effect_Vectors.Cursor;
+      begin
+         --  If the maximum number of effects have been uploaded to the
+         --  device, remove the effect with the earliest stop time. It may
+         --  or may not be the case that the stop time is already in the past.
+         if Object.Max_Effects = Natural (Object.Effects.Length) then
+            Effect_Sorting.Sort (Object.Effects);
+            FF.Remove_Force_Feedback_Effect
+              (Object.Device, Object.Effects.First_Element.Effect.ID);
+            Object.Effects.Delete_First;
+         end if;
+
+         if not (for some Effect of Object.Effects => Effect.Cursor = Subject.Cursor) then
+            Object.Effects.Append
+              ((Stop_At => 0.0,
+                Cursor  => Subject.Cursor,
+                Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
+
+            Object.Effects.Update_Element (Object.Effects.Last, Upload_Effect'Access);
+
+            if not Uploaded_OK then
+               Object.Effects.Delete_Last;
+               return;
+            end if;
+         end if;
+
+         Object.Play_Uploaded_Effect (Subject, 1);
+      end Play_Effect;
+
+      procedure Cancel_Effect (Subject : Effect) is
+      begin
+         Object.Play_Uploaded_Effect (Subject, 0);
+      end Cancel_Effect;
+
+      function Effects return Natural is (Object.Max_Effects);
+   end Gamepad_Hardware;
+
+   function Initialize (Object : in out Gamepad; Path : String) return Boolean is
+      Result : Boolean;
+   begin
+      Object.Hardware.Initialize (Path, Result);
+      return Result;
+   end Initialize;
+
+   function Initialized (Object : Gamepad) return Boolean is (Object.Hardware.Initialized);
+
+   function Name (Object : Gamepad) return String is (Object.Hardware.Name);
+
+   function Serial_Number (Object : Gamepad) return String is (Object.Hardware.Serial_Number);
+
+   function GUID (Object : Gamepad) return GUID_String is (Object.Hardware.GUID);
+
+   function Connection (Object : Gamepad) return Connection_Kind is (Object.Hardware.Connection);
+
+   function State (Object : in out Gamepad) return Gamepad_State is
+   begin
+      return Result : Gamepad_State do
+         Object.Hardware.State (Result);
       end return;
    end State;
 
+   function State (Object : Gamepad) return Motion_State is (Object.Hardware.State);
+   function State (Object : Gamepad) return Battery_State is (Object.Hardware.State);
+   function State (Object : Gamepad) return LED_State is (Object.Hardware.State);
+
    procedure Set_LED
-     (Object     : in out Gamepad;
+     (Object : in out Gamepad;
       Brightness : Normalized;
-      Color      : RGB_Color)
-   is
-      Maximum_Color : constant Normalized :=
-        Normalized'Max (Normalized'Max (Color (Red), Color (Green)), Color (Blue));
-
-      Max_Brightness : constant Normalized :=
-        (if Maximum_Color > 0.0 then 1.0 / Maximum_Color else 0.0) * Brightness;
-
-      function Image (Value : Normalized) return String is
-         Text : constant String := Natural'Image (Natural (Float (Value) * Last_Brightness));
-      begin
-         return Text (Text'First + 1 .. Text'Last);
-      end Image;
-
-      R_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Red) / "brightness", AWT.OS.Write);
-      G_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Green) / "brightness", AWT.OS.Write);
-      B_File : AWT.OS.File := AWT.OS.Open ((+Object.LED_Blue) / "brightness", AWT.OS.Write);
+      Color      : RGB_Color) is
    begin
-      if R_File.Is_Open then
-         R_File.Write (Image (Color (Red) * Max_Brightness));
-         R_File.Close;
-      end if;
-
-      if G_File.Is_Open then
-         G_File.Write (Image (Color (Green) * Max_Brightness));
-         G_File.Close;
-      end if;
-
-      if B_File.Is_Open then
-         B_File.Write (Image (Color (Blue) * Max_Brightness));
-         B_File.Close;
-      end if;
+      Object.Hardware.Set_LED (Brightness, Color);
    end Set_LED;
 
    procedure Play_Effect (Object : in out Gamepad; Subject : Effect) is
-      Uploaded_OK : Boolean := True;
-
-      procedure Upload_Effect (Element : in out AWT.Gamepads.Uploaded_Effect) is
-      begin
-         pragma Assert (Element.Effect.ID = -1);
-
-         FF.Upload_Force_Feedback_Effect (Object.Device, Element.Effect);
-         Uploaded_OK := Element.Effect.ID /= -1;
-
-         if not Uploaded_OK then
-            Messages.Log (Error,
-              "Failed to upload " & Element.Effect.Kind'Image & " force-feedback effect");
-         end if;
-      end Upload_Effect;
-
-      use type AWT.Gamepads.Effect_Vectors.Cursor;
    begin
-      --  If the maximum number of effects have been uploaded to the
-      --  device, remove the effect with the earliest stop time. It may
-      --  or may not be the case that the stop time is already in the past.
-      if Object.Max_Effects = Natural (Object.Effects.Length) then
-         Effect_Sorting.Sort (Object.Effects);
-         FF.Remove_Force_Feedback_Effect (Object.Device, Object.Effects.First_Element.Effect.ID);
-         Object.Effects.Delete_First;
-      end if;
-
-      if not (for some Effect of Object.Effects => Effect.Cursor = Subject.Cursor) then
-         Object.Effects.Append
-           ((Stop_At => 0.0,
-             Cursor  => Subject.Cursor,
-             Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
-
-         Object.Effects.Update_Element (Object.Effects.Last, Upload_Effect'Access);
-
-         if not Uploaded_OK then
-            Object.Effects.Delete_Last;
-            return;
-         end if;
-      end if;
-
-      Object.Play_Uploaded_Effect (Subject, 1);
+      Object.Hardware.Play_Effect (Subject);
    end Play_Effect;
 
    procedure Cancel_Effect (Object : in out Gamepad; Subject : Effect) is
    begin
-      Object.Play_Uploaded_Effect (Subject, 0);
+      Object.Hardware.Cancel_Effect (Subject);
    end Cancel_Effect;
 
-   function Effects (Object : Gamepad) return Natural is (Object.Max_Effects);
+   function Effects (Object : Gamepad) return Natural is (Object.Hardware.Effects);
 
-   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad'Class) is separate;
+   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad) is separate;
 
    ----------------------------------------------------------------------------
 
@@ -921,7 +1013,7 @@ package body AWT.Inputs.Gamepads is
                --  Metadata event may be fired multiple times during the lifetime
                --  of the file, and may also be fired just before the Deleted event
                if (for some Gamepad of All_Gamepads =>
-                     Gamepad.Initialized and Gamepad.Path = Path)
+                     Gamepad.Initialized and Gamepad.Hardware.Path = Path)
                then
                   return;
                end if;
@@ -935,8 +1027,8 @@ package body AWT.Inputs.Gamepads is
 
                   --  Find original gamepad object
                   for Gamepad of All_Gamepads loop
-                     if not Gamepad.Initialized and Gamepad.ID = ID then
-                        if Gamepad.Initialize (Path) then
+                     if not Gamepad.Initialized and Gamepad.Serial_Number = ID then
+                        if Initialize (Gamepad, Path) then
                            if Gamepad_Listener /= null then
                               Gamepad_Listener.On_Connect (Gamepad'Access);
                            end if;
@@ -948,7 +1040,7 @@ package body AWT.Inputs.Gamepads is
                   --  Find an unused slot
                   for Gamepad of All_Gamepads loop
                      if not Gamepad.Initialized then
-                        if Gamepad.Initialize (Path) then
+                        if Initialize (Gamepad, Path) then
                            if Gamepad_Listener /= null then
                               Gamepad_Listener.On_Connect (Gamepad'Access);
                            end if;
@@ -959,15 +1051,11 @@ package body AWT.Inputs.Gamepads is
                end;
             when Deleted =>
                for Gamepad of All_Gamepads loop
-                  if Gamepad.Initialized and Gamepad.Path = Path then
-                     Gamepad.Initialized := False;
+                  if Gamepad.Initialized and Gamepad.Hardware.Path = Path then
+                     Gamepad.Hardware.Finalize;
                      if Gamepad_Listener /= null then
                         Gamepad_Listener.On_Disconnect (Gamepad'Access);
                      end if;
-                     if Gamepad.Sensor_Device.Is_Open then
-                        Gamepad.Sensor_Device.Close;
-                     end if;
-                     Gamepad.Device.Close;
                      return;
                   end if;
                end loop;
@@ -992,7 +1080,6 @@ package body AWT.Inputs.Gamepads is
       Index : Positive := All_Gamepads'First;
    begin
       pragma Assert (for all Gamepad of All_Gamepads => not Gamepad.Initialized);
-      pragma Assert (for all Gamepad of All_Gamepads => not Gamepad.Device.Is_Open);
 
       AWT.Registry.Gamepad_Notify_FD := Wayland.File_Descriptor (Input_Notifier.File_Descriptor);
       AWT.Registry.Gamepad_Notify_Callback := Process_Events'Access;
@@ -1006,7 +1093,7 @@ package body AWT.Inputs.Gamepads is
             Name : constant String := SU.To_String (File.Name);
          begin
             if SF.Index (Name, "event") = Name'First then
-               if All_Gamepads (Index).Initialize (Input_Folder / Name) then
+               if Initialize (All_Gamepads (Index), Input_Folder / Name) then
                   Index := Index + 1;
                end if;
             end if;
@@ -1018,7 +1105,7 @@ package body AWT.Inputs.Gamepads is
    begin
       for Gamepad of All_Gamepads loop
          if Gamepad.Initialized then
-            Gamepad.Poll_State;
+            Gamepad.Hardware.Poll_State;
          end if;
       end loop;
    end Poll;

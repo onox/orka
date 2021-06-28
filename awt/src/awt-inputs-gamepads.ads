@@ -19,7 +19,7 @@ private with Ada.Strings.Unbounded;
 
 private with AWT.Gamepads;
 
-package AWT.Inputs.Gamepads with SPARK_Mode => On is
+package AWT.Inputs.Gamepads is
    pragma Preelaborate;
 
    type Connection_Kind is (Disconnected, Wired, Wireless);
@@ -180,7 +180,7 @@ package AWT.Inputs.Gamepads with SPARK_Mode => On is
 
    function Effects (Object : Gamepad) return Natural;
 
-   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad'Class);
+   procedure Log_Information (Gamepad : AWT.Inputs.Gamepads.Gamepad);
 
    ----------------------------------------------------------------------------
 
@@ -257,9 +257,9 @@ private
 
    type Sensor_Modifiers is array (AWT.Gamepads.Sensor_Axis) of Axis_Modifier;
 
-   type Gamepad is limited new AWT.Gamepads.Abstract_Gamepad with record
-      Name, ID    : SU.Unbounded_String;
-      GUID        : GUID_String;
+   type Gamepad_Object is limited new AWT.Gamepads.Abstract_Gamepad with record
+      Name, ID : SU.Unbounded_String;
+      GUID     : GUID_String;
 
       Gamepad : Gamepad_State;
       Sensor  : Motion_State;
@@ -270,9 +270,55 @@ private
 
       Sensors : Sensor_Modifiers;
 
-      Has_Rumble  : Boolean := False;
-      Initialized : Boolean := False;
       Max_Effects : Natural := 0;
+   end record;
+
+   protected type Gamepad_Hardware is
+      function Name return String;
+
+      function Serial_Number return String;
+
+      function GUID return GUID_String;
+
+      function Connection return Connection_Kind;
+
+      procedure State (Result : in out Gamepad_State);
+
+      function State return Motion_State;
+
+      function State return Battery_State;
+
+      function State return LED_State;
+
+      procedure Set_LED
+        (Brightness : Normalized;
+         Color      : RGB_Color);
+
+      procedure Play_Effect (Subject : Effect);
+
+      procedure Cancel_Effect (Subject : Effect);
+
+      function Effects return Natural;
+
+      -------------------------------------------------------------------------
+      --                              Internal                               --
+      -------------------------------------------------------------------------
+
+      procedure Initialize (Path : String; Result : out Boolean);
+
+      procedure Finalize;
+
+      function Initialized return Boolean;
+
+      procedure Poll_State;
+
+      function Path return String;
+   private
+      Object : Gamepad_Object;
+   end Gamepad_Hardware;
+
+   type Gamepad is tagged limited record
+      Hardware : Gamepad_Hardware;
    end record;
 
    ----------------------------------------------------------------------------
