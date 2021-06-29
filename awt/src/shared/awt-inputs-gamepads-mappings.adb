@@ -168,13 +168,13 @@ package body AWT.Inputs.Gamepads.Mappings is
    begin
       for Mapping of Orka.Strings.Split (Value, ",") loop
          declare
-            Button_Input : constant Orka.Strings.String_List := Orka.Strings.Split (+Mapping, ":");
-            pragma Assert (Button_Input'Length = 2);
+            Output_Input : constant Orka.Strings.String_List := Orka.Strings.Split (+Mapping, ":");
+            pragma Assert (Output_Input'Length = 2);
 
-            Button : constant String := (+Button_Input (1));
-            Input  : constant String := (+Button_Input (2));
+            Output : constant String := (+Output_Input (1));
+            Input  : constant String := (+Output_Input (2));
 
-            Index : Natural := Button'First;
+            Index : Natural := Output'First;
             Last  : Natural := Input'Last;
 
             Output_Positive : Boolean := False;
@@ -214,15 +214,15 @@ package body AWT.Inputs.Gamepads.Mappings is
             --         input: '-': if axis is in negative half, use and normalize input to 0 .. 1
             --                '+': if axis is in positive half, use and normalize input to 0 .. 1
 
-            if Button (Index) = '+' then
+            if Output (Index) = '+' then
                Output_Positive := True;
                Index := Index + 1;
-            elsif Button (Index) = '-' then
+            elsif Output (Index) = '-' then
                Output_Negative := True;
                Index := Index + 1;
             end if;
 
-            Output_Map := Name_To_Output (Button (Index .. Button'Last));
+            Output_Map := Name_To_Output (Output (Index .. Output'Last));
 
             if Output_Map.Kind = Axis then
                if Output_Positive then
