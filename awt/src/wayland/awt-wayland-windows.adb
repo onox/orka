@@ -896,10 +896,7 @@ package body AWT.Wayland.Windows is
    function State (Object : in out Wayland_Window) return AWT.Inputs.Pointer_State is
    begin
       return Result : constant AWT.Inputs.Pointer_State := Object.Pointer_State do
-         --  Reset scroll and relative motion after the state has been read by
-         --  the application
-         Object.Pointer_State.Relative := (others => 0.0);
-         Object.Pointer_State.Scroll   := (others => 0.0);
+         Object.Reset_Input := True;
       end return;
    end State;
 
@@ -907,12 +904,28 @@ package body AWT.Wayland.Windows is
    function State (Object : in out Wayland_Window) return AWT.Inputs.Keyboard_State is
    begin
       return Result : constant AWT.Inputs.Keyboard_State := Object.Keyboard_State do
-         --  Reset Pressed and Released after the state has been read by
-         --  the application. New state will be accumulated in procedure Set_State
-         Object.Keyboard_State.Pressed  := (others => False);
-         Object.Keyboard_State.Released := (others => False);
+         Object.Reset_Input := True;
       end return;
    end State;
+
+   procedure Reset_Input_State (Object : in out Wayland_Window) is
+   begin
+      if Object.Reset_Input then
+         --  Reset some state after the state has been read by
+         --  the application. New state will be accumulated in procedure Set_State
+
+         Object.Pointer_State.Relative := (others => 0.0);
+         Object.Pointer_State.Scroll   := (others => 0.0);
+
+         Object.Pointer_State.Pressed  := (others => False);
+         Object.Pointer_State.Released := (others => False);
+
+         Object.Keyboard_State.Pressed  := (others => False);
+         Object.Keyboard_State.Released := (others => False);
+
+         Object.Reset_Input := False;
+      end if;
+   end Reset_Input_State;
 
    procedure Set_State
      (Object : in out Wayland_Window;
@@ -921,8 +934,23 @@ package body AWT.Wayland.Windows is
       Mode : constant AWT.Inputs.Pointer_Mode := Object.Pointer_State.Mode;
 
       use all type AWT.Inputs.Pointer_Mode;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => AWT.Inputs.Pointer_Buttons,
+         Target => AWT.Inputs.Changed_Buttons);
+
+      use type AWT.Inputs.Changed_Buttons;
+
+      Old_State : constant AWT.Inputs.Pointer_State := Object.Pointer_State;
+
+      Old_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (Old_State.Buttons);
+      New_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (State.Buttons);
+
+      Changed : constant AWT.Inputs.Changed_Buttons := Old_State_Buttons xor New_State_Buttons;
    begin
       Object.Pointer_State := State;
+      Object.Pointer_State.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
+      Object.Pointer_State.Released := Old_State.Released or (Changed and not New_State_Buttons);
       Object.Pointer_State.Mode := Mode;
       if Mode /= Locked then
          Object.Pointer_State.Relative := (others => 0.0);
@@ -934,20 +962,20 @@ package body AWT.Wayland.Windows is
       State  : AWT.Inputs.Keyboard_State)
    is
       function Convert is new Ada.Unchecked_Conversion
-        (Source => AWT.Inputs.Keyboard_Buttons,
-         Target => AWT.Inputs.Changed_Buttons);
+        (Source => AWT.Inputs.Keyboard_Keys,
+         Target => AWT.Inputs.Changed_Keys);
 
-      use type AWT.Inputs.Changed_Buttons;
+      use type AWT.Inputs.Changed_Keys;
 
       Old_State : constant AWT.Inputs.Keyboard_State := Object.Keyboard_State;
 
-      Old_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (Old_State.Buttons);
-      New_State_Buttons : constant AWT.Inputs.Changed_Buttons := Convert (State.Buttons);
+      Old_State_Buttons : constant AWT.Inputs.Changed_Keys := Convert (Old_State.Buttons);
+      New_State_Buttons : constant AWT.Inputs.Changed_Keys := Convert (State.Buttons);
 
-      Changed : constant AWT.Inputs.Changed_Buttons := Old_State_Buttons xor New_State_Buttons;
+      Changed : constant AWT.Inputs.Changed_Keys := Old_State_Buttons xor New_State_Buttons;
    begin
       Object.Keyboard_State := State;
-      Object.Keyboard_State.Pressed  := Old_State.Pressed or (Changed and New_State_Buttons);
+      Object.Keyboard_State.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
       Object.Keyboard_State.Released := Old_State.Released or (Changed and not New_State_Buttons);
    end Set_State;
 

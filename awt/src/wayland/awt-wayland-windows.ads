@@ -92,6 +92,8 @@ package AWT.Wayland.Windows is
 
    procedure Restore_Cursor (Object : in out Wayland_Window);
 
+   procedure Reset_Input_State (Object : in out Wayland_Window);
+
    type Surface_With_Window (Window : not null access Wayland_Window)
      is new WP.Client.Surface with null record;
 
@@ -218,6 +220,7 @@ private
 
       Pointer_State  : AWT.Inputs.Pointer_State;
       Keyboard_State : AWT.Inputs.Keyboard_State;
+      Reset_Input    : Boolean := False;
 
       Locked_Pointer        : Locked_Pointer_With_Window (Wayland_Window'Access);
       Locked_Position       : AWT.Inputs.Coordinate;

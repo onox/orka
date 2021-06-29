@@ -1103,6 +1103,10 @@ package body AWT.Registry is
    begin
       if Global.Seat.Window /= null then
          AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
+
+         --  If the application has called function State of a window, then
+         --  reset some of its pointer and keyboard state just before updating it
+         Global.Seat.Window.Reset_Input_State;
       end if;
 
       if Count = 1 then

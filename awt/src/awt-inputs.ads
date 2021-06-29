@@ -40,7 +40,11 @@ package AWT.Inputs with SPARK_Mode => On is
 
    type Pointer_Button is (Left, Right, Middle, Unknown);
 
-   type Pointer_Buttons is array (Pointer_Button) of Button_State;
+   type Pointer_Buttons is array (Pointer_Button) of Button_State
+     with Component_Size => 1;
+
+   type Changed_Buttons is array (Pointer_Button) of Boolean
+     with Component_Size => 1;
 
    type Pointer_Mode is (Visible, Hidden, Locked);
 
@@ -99,6 +103,8 @@ package AWT.Inputs with SPARK_Mode => On is
 
    type Pointer_State is record
       Buttons   : Pointer_Buttons := (others => Released);
+      Pressed   : Changed_Buttons := (others => False);
+      Released  : Changed_Buttons := (others => False);
 
       Focused   : Boolean         := False;
       Scrolling : Boolean         := False;
@@ -242,16 +248,16 @@ package AWT.Inputs with SPARK_Mode => On is
       Key_Numpad_9,
       Key_Numpad_0);
 
-   type Keyboard_Buttons is array (Keyboard_Button) of Button_State
+   type Keyboard_Keys is array (Keyboard_Button) of Button_State
      with Component_Size => 1;
 
-   type Changed_Buttons is array (Keyboard_Button) of Boolean
+   type Changed_Keys is array (Keyboard_Button) of Boolean
      with Component_Size => 1;
 
    type Keyboard_State is record
-      Buttons   : Keyboard_Buttons := (others => Released);
-      Pressed   : Changed_Buttons  := (others => False);
-      Released  : Changed_Buttons  := (others => False);
+      Buttons   : Keyboard_Keys := (others => Released);
+      Pressed   : Changed_Keys  := (others => False);
+      Released  : Changed_Keys  := (others => False);
 
       Modifiers : Keyboard_Modifiers;
       Focused   : Boolean := False;
