@@ -128,8 +128,6 @@ begin
       Next_Cursor : AWT.Inputs.Cursors.Pointer_Cursor :=
         AWT.Inputs.Cursors.Pointer_Cursor'First;
 
-      Last_Pointer  : AWT.Inputs.Pointer_State;
-
       use Ada.Real_Time;
 
       Interval : constant Duration := To_Duration (Microseconds (16_667));
@@ -200,8 +198,6 @@ begin
             raise;
       end Poll_Joysticks;
    begin
-      Last_Pointer  := AWT_Window.State;
-
       Context.Make_Not_Current;
       Put_Line ("Context made not current in main task");
       Render_Task.Start_Rendering;
@@ -211,7 +207,6 @@ begin
       Put_Line ("Starting event loop...");
       while not Window.Should_Close loop
          AWT.Process_Events (Interval);
---         AWT_Window.Set_Title (Index'Image & " " & Next_Cursor'Image);
          Index := Index + 1;
 
          select
@@ -236,10 +231,6 @@ begin
                Put_Line ("window visible");
             end if;
          end if;
-
---         if Index = 100 then
---            AWT_Window.Set_Visible (True);
---         end if;
 
          if Monitor_Events /= Last_Monitor_Events then
             Put_Line ("Monitor count: " & Natural'Image (AWT.Monitors.Monitors'Length));
@@ -268,13 +259,7 @@ begin
 --               Put_Line ("scroll: " & Pointer.Scroll (X)'Image & Pointer.Scroll (Y)'Image);
 --            end if;
 
---            if Last_Pointer.Focused and not Pointer.Focused then
---               Window.Set_Pointer_Cursor (AWT.Inputs.Cursors.Pointer_Cursor'Last);
---            end if;
-
-            if Pointer.Buttons (Left) = Pressed
-              and Last_Pointer.Buttons (Left) = Released
-            then
+            if Pointer.Pressed (Left) then
                Next_Cursor :=
                  (if Next_Cursor = AWT.Inputs.Cursors.Pointer_Cursor'Last then
                     AWT.Inputs.Cursors.Pointer_Cursor'First
@@ -283,21 +268,11 @@ begin
                AWT_Window.Set_Pointer_Cursor (Next_Cursor);
             end if;
 
-            if Pointer.Buttons (Right) = Pressed
-              and Last_Pointer.Buttons (Right) = Released
-              and Pointer.Mode /= Locked
-            then
-               Put_Line ("locking!");
+            if Pointer.Pressed (Right) and Pointer.Mode /= Locked then
                AWT_Window.Set_Pointer_Mode (Locked);
-            elsif Pointer.Buttons (Right) = Released
-              and Last_Pointer.Buttons (Right) = Pressed
-              and Pointer.Mode = Locked
-            then
-               Put_Line ("unlocking!");
+            elsif Pointer.Released (Right) and Pointer.Mode = Locked then
                AWT_Window.Set_Pointer_Mode (Visible);
             end if;
-
-            Last_Pointer := Pointer;
          end;
 
          declare
