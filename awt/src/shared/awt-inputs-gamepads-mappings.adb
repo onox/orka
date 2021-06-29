@@ -187,6 +187,33 @@ package body AWT.Inputs.Gamepads.Mappings is
             Input_Map  : Input_Mapping;
             Output_Map : Output_Mapping;
          begin
+            --  Each mapping has the following format:
+            --
+            --  [+|-]<output>:[+|-]<input>[~]
+            --
+            --  The output is the name of a button, axis, or trigger.
+            --  (See function Name_To_Output above)
+            --
+            --  The input starts with an 'a' (axis), 'b' (button), or 'h' (hat)
+            --  followed by a natural number.
+            --
+            --  The '+' or '-' character just after the ':' is only used
+            --  if the input is an axis.
+            --
+            --  (output +/- only for non-triggers)
+            --  output: '-': map final input to -1 .. 0
+            --  |       '+': map final input to  0 .. 1
+            --  |   (empty): map final input to -1 .. 1
+            --  v
+            --  +leftx:h0.2,-leftx:h0.8
+            --  lefttrigger:a3~
+            --  dpleft:-a0    ^
+            --         ^      |
+            --         |      invert input: map normalized input from 0 .. 1 to 1 .. 0
+            --         |
+            --         input: '-': if axis is in negative half, use and normalize input to 0 .. 1
+            --                '+': if axis is in positive half, use and normalize input to 0 .. 1
+
             if Button (Index) = '+' then
                Output_Positive := True;
                Index := Index + 1;
