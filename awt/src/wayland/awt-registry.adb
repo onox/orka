@@ -1041,7 +1041,7 @@ package body AWT.Registry is
       use all type WP.Client.Events_Status;
    begin
       if Global.Seat.Window /= null then
-         AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
+         Global.Seat.Window.Update_Animated_Cursor;
       end if;
 
       while Global.Display.Prepare_Read = Error loop
@@ -1102,7 +1102,7 @@ package body AWT.Registry is
       Clock_Timeout : constant Duration := Orka.OS.Monotonic_Clock + Timeout;
    begin
       if Global.Seat.Window /= null then
-         AWT.Wayland.Windows.Update_Animated_Cursor (Global.Seat.Window);
+         Global.Seat.Window.Update_Animated_Cursor;
 
          --  If the application has called function State of a window, then
          --  reset some of its pointer and keyboard state just before updating it

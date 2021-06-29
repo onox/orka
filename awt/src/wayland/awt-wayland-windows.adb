@@ -26,8 +26,6 @@ with Wayland.EGL.AWT;
 
 with AWT.Registry;
 
-with Orka.OS;
-
 package body AWT.Wayland.Windows is
 
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;
@@ -727,9 +725,28 @@ package body AWT.Wayland.Windows is
    function On_Change_Cursor
      (Object : in out Wayland_Window;
       Name   : AWT.Inputs.Cursors.Pointer_Cursor;
-      Cursor : WC.Cursor'Class) return WC.Cursor_Image'Class is
+      Cursor : WC.Cursor'Class) return WC.Cursor_Image'Class
+   is
+      use all type AWT.Inputs.Cursors.Pointer_Cursor;
+
+      Current_Time : constant Duration := Orka.OS.Monotonic_Clock;
    begin
-      return Cursor.Image (WC.Image_Index'First);
+      if Name /= Object.Cursor then
+         Object.Start_Time := Current_Time;
+      end if;
+
+      declare
+         Elapsed_Time : constant Duration := Current_Time - Object.Start_Time;
+         Remaining    : Duration;
+
+         Index : constant WC.Image_Index :=
+           Cursor.Index_At_Elapsed_Time (Elapsed_Time, Remaining);
+      begin
+         Object.Next_Time := Current_Time + Remaining;
+         --  TODO Use timerfd to make sure Global.Display.Check_For_Events
+         --  in AWT.Registry.Process_Events returns at Object.Next_Time?
+         return Result : WC.Cursor_Image'Class := Cursor.Image (Index);
+      end;
    end On_Change_Cursor;
 
    procedure Set_Cursor (Object : in out Wayland_Window) is
@@ -991,11 +1008,13 @@ package body AWT.Wayland.Windows is
       Object.Raw_Pointer_Motion := Enable;
    end Set_Raw_Pointer_Motion;
 
-   procedure Update_Animated_Cursor (Window : not null access Wayland_Window) is
+   procedure Update_Animated_Cursor (Object : in out Wayland_Window) is
       use all type AWT.Inputs.Pointer_Mode;
    begin
-      if Window.Cursor_Images > 1 and Window.Pointer_State.Mode = Visible then
-         Wayland_Window'Class (Window.all).Update_Cursor;
+      if Object.Cursor_Images > 1 and Object.Pointer_State.Mode = Visible then
+         if Orka.OS.Monotonic_Clock > Object.Next_Time then
+            Object.Set_Pointer_Cursor (Object.Cursor);
+         end if;
       end if;
    end Update_Animated_Cursor;
 

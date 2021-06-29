@@ -16,7 +16,7 @@
 
 private with AWT.Inputs;
 private with AWT.Monitors;
-private with AWT.Wayland.Windows.Cursors;
+private with AWT.Wayland.Windows;
 
 with AWT.Windows;
 
@@ -51,7 +51,7 @@ private
      (Object : AWT_Context;
       Window : in out Orka.Windows.Window'Class);
 
-   type AWT_Window is limited new Standard.AWT.Wayland.Windows.Cursors.Animated_Cursor_Window
+   type AWT_Window is limited new Standard.AWT.Wayland.Windows.Wayland_Window
      and Orka.Windows.Window with null record;
 
    overriding

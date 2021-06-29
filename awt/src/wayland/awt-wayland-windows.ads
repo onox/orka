@@ -24,6 +24,8 @@ private with Wayland.Protocols.Idle_Inhibit_Unstable_V1;
 private with Wayland.Protocols.Xdg_Decoration_Unstable_V1;
 private with Wayland.Protocols.Pointer_Constraints_Unstable_V1;
 
+private with Orka.OS;
+
 private with EGL.Objects.Displays;
 private with EGL.Objects.Surfaces;
 
@@ -74,7 +76,7 @@ with AWT.Windows;
 package AWT.Wayland.Windows is
    pragma Preelaborate;
 
-   type Wayland_Window is abstract limited new AWT.Windows.Window with private;
+   type Wayland_Window is limited new AWT.Windows.Window with private;
 
    ----------------------------------------------------------------------------
    --                          Internal Subprograms                          --
@@ -88,16 +90,11 @@ package AWT.Wayland.Windows is
      (Object : in out Wayland_Window;
       State  : AWT.Inputs.Keyboard_State);
 
-   procedure Update_Cursor (Object : in out Wayland_Window) is null;
-
    procedure Restore_Cursor (Object : in out Wayland_Window);
 
    procedure Reset_Input_State (Object : in out Wayland_Window);
 
-   type Surface_With_Window (Window : not null access Wayland_Window)
-     is new WP.Client.Surface with null record;
-
-   procedure Update_Animated_Cursor (Window : not null access Wayland_Window);
+   procedure Update_Animated_Cursor (Object : in out Wayland_Window);
 
    procedure Set_EGL_Data
      (Object  : in out Wayland_Window;
@@ -108,6 +105,9 @@ package AWT.Wayland.Windows is
    procedure Make_Current
      (Object  : in out Wayland_Window;
       Context : Standard.EGL.Objects.Contexts.Context);
+
+   type Surface_With_Window (Window : not null access Wayland_Window)
+     is new WP.Client.Surface with null record;
 
 private
 
@@ -183,7 +183,7 @@ private
    type Cursor_Hotspot_Coordinate is array (AWT.Inputs.Dimension) of Natural;
 
    type Wayland_Window is
-     abstract limited new Ada.Finalization.Limited_Controlled and AWT.Windows.Window with
+     limited new Ada.Finalization.Limited_Controlled and AWT.Windows.Window with
    record
       Pending_State, Current_State : AWT.Windows.Window_State;
       Pending_Scale, Current_Scale : Positive := 1;
@@ -231,6 +231,8 @@ private
       Cursor_Hotspot : Cursor_Hotspot_Coordinate := (others => 0);
       Cursor         : AWT.Inputs.Cursors.Pointer_Cursor := AWT.Inputs.Cursors.Default;
       Cursor_Images  : Positive := 1;
+
+      Start_Time, Next_Time : Duration := Orka.OS.Monotonic_Clock;
    end record;
 
    overriding
