@@ -124,6 +124,25 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       use type EGL_Configs.Config;
 
       package SF renames Ada.Strings.Fixed;
+      package SU renames Standard.AWT.SU;
+
+      function Flags return String is
+         Result : SU.Unbounded_String;
+      begin
+         if Visible then
+            SU.Append (Result, " visible");
+         end if;
+
+         if Resizable then
+            SU.Append (Result, " resizable");
+         end if;
+
+         if Transparent then
+            SU.Append (Result, " transparent");
+         end if;
+
+         return Trim (SU.To_String (Result));
+      end Flags;
 
       Object : AWT_Context renames AWT_Context (Context);
    begin
@@ -169,11 +188,9 @@ package body Orka.Contexts.EGL.Wayland.AWT is
             pragma Assert (Object.Context.Buffer = Back);
 
             Messages.Log (Debug, "Created AWT window");
-            Messages.Log (Debug, "  size:        " &
+            Messages.Log (Debug, "  size:  " &
               Trim (Width'Image) & " × " & Trim (Height'Image));
-            Messages.Log (Debug, "  visible:     " & (if Visible then "yes" else "no"));
-            Messages.Log (Debug, "  resizable:   " & (if Resizable then "yes" else "no"));
-            Messages.Log (Debug, "  transparent: " & (if Transparent then "yes" else "no"));
+            Messages.Log (Debug, "  flags: " & Flags);
          end;
       end return;
    end Create_Window;
