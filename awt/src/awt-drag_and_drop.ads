@@ -25,10 +25,19 @@ package AWT.Drag_And_Drop is
    function Supported_Actions return AWT.Inputs.Actions;
 
    function Valid_Action return AWT.Inputs.Action_Kind;
+   --  Return the used action for the drag'n'drop operation
+   --
+   --  May be called in overriding procedure On_Drag of Window.
+   --
+   --  If the returned value is not None, then procedure Get can be called
+   --  or a signal can be set via a protected object, followed by a call
+   --  to function Get in the environment task.
 
    procedure Set_Action (Action : AWT.Inputs.Action_Kind);
    --  Set the requested action that must happen when the user
    --  drops something on the current focused window
+   --
+   --  Should be called in the overriding procedure On_Drag of Window.
 
    procedure Finish (Action : AWT.Inputs.Action_Kind)
      with Pre => Action /= Ask and Valid_Action /= None;
