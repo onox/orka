@@ -156,24 +156,8 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
             Used_Config : EGL_Configs.Config renames Configs (Configs'First);
          begin
-            Messages.Log (Debug, "EGL configs: (" & Trim (Natural'Image (Configs'Length)) & ")");
-            Messages.Log (Debug, "    Re Gr Bl Al De St Ms");
-            Messages.Log (Debug, "    --------------------");
-            for Config of Configs loop
-               declare
-                  State : constant EGL_Configs.Config_State := Config.State;
-               begin
-                  Messages.Log (Debug, "  - " &
-                    SF.Tail (Trim (State.Red'Image), 2) & " " &
-                    SF.Tail (Trim (State.Green'Image), 2) & " " &
-                    SF.Tail (Trim (State.Blue'Image), 2) & " " &
-                    SF.Tail (Trim (State.Alpha'Image), 2) & " " &
-                    SF.Tail (Trim (State.Depth'Image), 2) & " " &
-                    SF.Tail (Trim (State.Stencil'Image), 2) & " " &
-                    SF.Tail (Trim (State.Samples'Image), 2) &
-                    (if Config = Used_Config then " (used)" else ""));
-               end;
-            end loop;
+            Messages.Log (Debug, "Available EGL configs: " &
+              Trim (Natural'Image (Configs'Length)));
 
             Result.Set_EGL_Data (Object.Context, Used_Config, sRGB => True);
 
@@ -188,9 +172,23 @@ package body Orka.Contexts.EGL.Wayland.AWT is
             pragma Assert (Object.Context.Buffer = Back);
 
             Messages.Log (Debug, "Created AWT window");
-            Messages.Log (Debug, "  size:  " &
+            Messages.Log (Debug, "  size:        " &
               Trim (Width'Image) & " × " & Trim (Height'Image));
-            Messages.Log (Debug, "  flags: " & Flags);
+            Messages.Log (Debug, "  flags:       " & Flags);
+
+            Messages.Log (Debug, "  framebuffer:");
+            declare
+               State : constant EGL_Configs.Config_State := Used_Config.State;
+            begin
+               Messages.Log (Debug, "    colors:  " &
+                Trim (State.Red'Image) & " " &
+                Trim (State.Green'Image) & " " &
+                Trim (State.Blue'Image) & " " &
+                Trim (State.Alpha'Image));
+               Messages.Log (Debug, "    depth:   " & Trim (State.Depth'Image));
+               Messages.Log (Debug, "    stencil: " & Trim (State.Stencil'Image));
+               Messages.Log (Debug, "    samples: " & Trim (State.Samples'Image));
+            end;
          end;
       end return;
    end Create_Window;
