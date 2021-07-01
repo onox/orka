@@ -166,7 +166,6 @@ private
 
       procedure Finalize;
    private
-      Max_In_Flight   : Duration := 0.0;
       Latest_Stop     : Duration := 0.0;
       Default_Refresh : Duration := 0.0;
 

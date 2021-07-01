@@ -32,6 +32,16 @@ package body AWT.Wayland.Windows is
 
    package Output_Data renames AWT.Registry.Output_Data;
 
+   No_Buffer_Frame_Time : constant := 0.1;
+   --  Frame time used if window is hidden. This is an arbitrary high
+   --  frame time to keep a render task running at a low frequency.
+
+   Maximum_Blocking_Time_Swap_Buffers : constant := 0.033_334;
+
+   Default_Frame_Time : constant := 0.016_667;
+   --  Frame time used if window is visible but has never been presented
+   --  recently
+
    ----------------------------------------------------------------------------
 
    procedure Locked_Pointer_Locked
@@ -499,8 +509,7 @@ package body AWT.Wayland.Windows is
       ID, Title                     : String;
       Width, Height                 : Positive;
       Visible, Resizable, Decorated : Boolean := True;
-      Transparent                   : Boolean := False)
-   is
+      Transparent                   : Boolean := False) is
    begin
       if not Global.XDG_Shell.Has_Proxy then
          raise Internal_Error with "Wayland: No XDG shell available";
@@ -702,12 +711,19 @@ package body AWT.Wayland.Windows is
       Time_To_Swap : Duration;
       Do_Swap      : Boolean;
    begin
-      Object.Frame_Handler.Before_Swap_Buffers (Time_To_Swap, Do_Swap);
-      delay Time_To_Swap - Orka.OS.Monotonic_Clock;
-      if Do_Swap then
-         Object.EGL_Surface.Swap_Buffers;
-      end if;
-      Object.Frame_Handler.After_Swap_Buffers;
+      select
+         Object.Frame_Handler.Before_Swap_Buffers (Time_To_Swap, Do_Swap);
+
+         delay Time_To_Swap - Orka.OS.Monotonic_Clock;
+
+         if Do_Swap then
+            Object.EGL_Surface.Swap_Buffers;
+         end if;
+
+         Object.Frame_Handler.After_Swap_Buffers;
+      or
+         delay Maximum_Blocking_Time_Swap_Buffers;
+      end select;
    end Swap_Buffers;
 
    overriding
@@ -844,7 +860,7 @@ package body AWT.Wayland.Windows is
         Global.Cursor_Theme.Get_Cursor (Name);
 
       Image : WC.Cursor_Image'Class :=
-        Wayland_Window'Class (Object).On_Change_Cursor (Cursor, Cursor_Object);
+        Object.On_Change_Cursor (Cursor, Cursor_Object);
 
       State : constant WC.Image_State := Image.State;
    begin
@@ -1046,6 +1062,9 @@ package body AWT.Wayland.Windows is
       Feedback_Events.Subscribe (Feedback);
    end Ask_Feedback;
 
+   function Ceiling (Left, Right : Duration) return Duration is
+     (Integer (Duration'(Left / Right) + 0.5) * Right);
+
    protected body Frame_Handler_With_Window is
       entry Before_Swap_Buffers (Time_To_Swap : out Duration; Do_Swap : out Boolean)
         when Pending < Frames'Length
@@ -1056,21 +1075,15 @@ package body AWT.Wayland.Windows is
 
          Do_Swap := Has_Buffer;
 
-         if Latest_Stop /= 0.0 then
-            for I in 1 .. 6 loop
-               declare
-                  Next_Swap_Time : constant Duration :=
-                    Latest_Stop - Max_In_Flight + I * Default_Refresh;
-               begin
-                  if Next_Swap_Time > Clock then
-                     Time_To_Swap := Next_Swap_Time;
-                     return;
-                  end if;
-               end;
-            end loop;
+         if Do_Swap then
+            if Latest_Stop > 0.0 and Default_Refresh > 0.0 then
+               Time_To_Swap := Latest_Stop + Ceiling (Clock - Latest_Stop, Default_Refresh);
+            else
+               Time_To_Swap := Clock + Default_Frame_Time;
+            end if;
+         else
+            Time_To_Swap := Clock + No_Buffer_Frame_Time;
          end if;
-
-         Time_To_Swap := Clock;
       end Before_Swap_Buffers;
 
       procedure After_Swap_Buffers is
@@ -1131,12 +1144,10 @@ package body AWT.Wayland.Windows is
       procedure On_Frame_Presented (Index : Frame_Index; Timestamp, Refresh : Duration) is
          Current_Frame : Frame renames Frames (Index);
       begin
-         Pending := Pending - 1;
-
          Current_Frame.Stop := Timestamp;
 
-         Max_In_Flight := Duration'Max (Max_In_Flight, Current_Frame.Stop - Current_Frame.Start);
-         Latest_Stop   := Duration'Max (Latest_Stop, Timestamp);
+         Latest_Stop := Duration'Max (Latest_Stop, Timestamp);
+         Pending := Pending - 1;
       end On_Frame_Presented;
 
       procedure On_Frame_Discarded (Index : Frame_Index) is
