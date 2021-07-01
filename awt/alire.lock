@@ -10,10 +10,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.1"
 [solution.state.link]
-kind = "softlink"
-path = "file:../evdev-ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../evdev-ada"
 [[solution.state]]
 crate = "inotify"
 fulfilment = "solved"
@@ -83,10 +81,8 @@ pinned = false
 transitivity = "direct"
 versions = "~0.2.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka/orka"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka/orka"
 [[solution.state]]
 crate = "orka_egl"
 fulfilment = "linked"
@@ -94,10 +90,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka/orka_egl"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka/orka_egl"
 [[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
@@ -105,10 +99,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka/orka_simd"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka/orka_simd"
 [[solution.state]]
 crate = "orka_transforms"
 fulfilment = "linked"
@@ -116,10 +108,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka/orka_transforms"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka/orka_transforms"
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -127,10 +117,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka/orka_types"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka/orka_types"
 [[solution.state]]
 crate = "wayland_ada_scanner"
 fulfilment = "linked"
@@ -138,10 +126,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../wayland-ada/wayland_ada_scanner"
-relative = true
-remote = false
+lockfiled = true
+path = "../wayland-ada/wayland_ada_scanner"
 [[solution.state]]
 crate = "wayland_client_ada"
 fulfilment = "linked"
@@ -149,10 +135,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../wayland-ada/wayland_client_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../wayland-ada/wayland_client_ada"
 [[solution.state]]
 crate = "wayland_cursor_ada"
 fulfilment = "linked"
@@ -160,10 +144,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../wayland-ada/wayland_cursor_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../wayland-ada/wayland_cursor_ada"
 [[solution.state]]
 crate = "wayland_egl_ada"
 fulfilment = "linked"
@@ -171,10 +153,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../wayland-ada/wayland_egl_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../wayland-ada/wayland_egl_ada"
 [[solution.state]]
 crate = "wayland_protocols_ada"
 fulfilment = "linked"
@@ -182,8 +162,6 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../wayland-ada/wayland_protocols_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../wayland-ada/wayland_protocols_ada"
 
