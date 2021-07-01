@@ -59,12 +59,8 @@ package Orka.Rendering.Framebuffers is
 
    -----------------------------------------------------------------------------
 
-   function Get_Default_Framebuffer
-     (Window : Orka.Windows.Window'Class) return Framebuffer
-   with Post => Get_Default_Framebuffer'Result.Default;
-
    function Create_Default_Framebuffer
-     (Width, Height : Size) return Framebuffer
+     (Width, Height : Natural) return Framebuffer
    with Post => Create_Default_Framebuffer'Result.Default;
 
    -----------------------------------------------------------------------------

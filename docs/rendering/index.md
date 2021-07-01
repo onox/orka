@@ -290,7 +290,7 @@ Program_1.Use_Program;
 The last object that we need to create is the framebuffer:
 
 ```ada
-FB_D : Framebuffer := Get_Default_Framebuffer (Window);
+FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 ```
 
 Specify the color of the background and tell OpenGL we want to use
@@ -354,7 +354,7 @@ and then draw the triangle. Press ++esc++ to close the application.
        Program_1 : Program := Create_Program (Modules.Create_Module
          (Location_Shaders, VS => "triangle.vert", FS => "triangle.frag"));
 
-       FB_D : Framebuffer := Get_Default_Framebuffer (Window);
+       FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
        Vertices : constant Single_Array
          := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
