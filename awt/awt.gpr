@@ -72,6 +72,7 @@ project Awt is
                             "-gnatn"); -- Enable inlining
       when "debug" =>
          Build_Switches := ("-g",   -- Debug info
+                            "-march=native",
                             "-Og"); -- No optimization
    end case;
 
