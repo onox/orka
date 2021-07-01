@@ -89,7 +89,7 @@ procedure Orka_4_MDI is
 
    Uniform_Mode : constant Uniforms.Uniform := Program_1.Uniform ("mode");
 
-   FB_D : Framebuffer := Get_Default_Framebuffer (Window);
+   FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
    type Color_Mode is (Draw_ID, Instance_ID, Object_ID);
 

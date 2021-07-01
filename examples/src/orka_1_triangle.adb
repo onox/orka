@@ -47,7 +47,7 @@ procedure Orka_1_Triangle is
    Program_1 : Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "opengl3.vert", FS => "opengl3.frag"));
 
-   FB_D : Framebuffer := Get_Default_Framebuffer (Window);
+   FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
    Vertices : constant Single_Array
         := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
