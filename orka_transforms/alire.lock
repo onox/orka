@@ -10,10 +10,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_simd"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_simd"
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -21,8 +19,6 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_types"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_types"
 

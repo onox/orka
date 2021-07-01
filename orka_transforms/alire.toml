@@ -11,6 +11,8 @@ maintainers-logins = ["onox"]
 
 [[depends-on]]
 orka_simd = "^1.0.0"
+orka_types = "^1.0.0"
 
 [[pins]]
 orka_simd = { path = "../orka_simd" }
+orka_types = { path = "../orka_types" }

@@ -10,10 +10,51 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../awt"
-relative = true
-remote = false
+lockfiled = true
+path = "../../awt"
+[[solution.state]]
+crate = "evdev"
+fulfilment = "linked"
+pinned = false
+transitivity = "direct"
+versions = "^1.0.1"
+[solution.state.link]
+lockfiled = true
+path = "../../evdev-ada"
+[[solution.state]]
+crate = "inotify"
+fulfilment = "solved"
+pinned = false
+transitivity = "indirect"
+versions = "^2.0.0"
+[solution.state.release]
+authors = [
+"onox",
+]
+description = "Ada 2012 library to monitor filesystem events using Linux' inotify API"
+executables = [
+"inotify-ada",
+]
+licenses = "Apache-2.0"
+maintainers = [
+"onox <denkpadje@gmail.com>",
+]
+maintainers-logins = [
+"onox",
+]
+name = "inotify"
+project-files = [
+"inotify.gpr",
+"monitor.gpr",
+]
+tags = [
+"inotify",
+]
+version = "2.0.0"
+website = "https://github.com/onox/inotify-ada"
+[solution.state.release.origin]
+commit = "482c5dadef833b56ae07fdbd6562b62037d4accc"
+url = "git+https://github.com/onox/inotify-ada.git"
 [[solution.state]]
 crate = "json"
 fulfilment = "solved"
@@ -85,10 +126,8 @@ pinned = false
 transitivity = "direct"
 versions = "~0.2.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka"
 [[solution.state]]
 crate = "orka_egl"
 fulfilment = "linked"
@@ -96,10 +135,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_egl"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_egl"
 [[solution.state]]
 crate = "orka_plugin_gltf"
 fulfilment = "linked"
@@ -107,10 +144,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_plugin_gltf"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_plugin_gltf"
 [[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
@@ -118,10 +153,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_simd"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_simd"
 [[solution.state]]
 crate = "orka_transforms"
 fulfilment = "linked"
@@ -129,10 +162,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_transforms"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_transforms"
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -140,10 +171,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_types"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_types"
 [[solution.state]]
 crate = "wayland_ada_scanner"
 fulfilment = "linked"
@@ -151,10 +180,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../wayland-ada/wayland_ada_scanner"
-relative = true
-remote = false
+lockfiled = true
+path = "../../wayland-ada/wayland_ada_scanner"
 [[solution.state]]
 crate = "wayland_client_ada"
 fulfilment = "linked"
@@ -162,10 +189,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../wayland-ada/wayland_client_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../../wayland-ada/wayland_client_ada"
 [[solution.state]]
 crate = "wayland_cursor_ada"
 fulfilment = "linked"
@@ -173,10 +198,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../wayland-ada/wayland_cursor_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../../wayland-ada/wayland_cursor_ada"
 [[solution.state]]
 crate = "wayland_egl_ada"
 fulfilment = "linked"
@@ -184,10 +207,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../wayland-ada/wayland_egl_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../../wayland-ada/wayland_egl_ada"
 [[solution.state]]
 crate = "wayland_protocols_ada"
 fulfilment = "linked"
@@ -195,8 +216,6 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../../wayland-ada/wayland_protocols_ada"
-relative = true
-remote = false
+lockfiled = true
+path = "../../wayland-ada/wayland_protocols_ada"
 

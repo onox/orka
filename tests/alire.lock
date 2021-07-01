@@ -56,10 +56,8 @@ pinned = false
 transitivity = "direct"
 versions = "~0.2.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka"
 [[solution.state]]
 crate = "orka_egl"
 fulfilment = "linked"
@@ -67,10 +65,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_egl"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_egl"
 [[solution.state]]
 crate = "orka_simd"
 fulfilment = "linked"
@@ -78,10 +74,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_simd"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_simd"
 [[solution.state]]
 crate = "orka_transforms"
 fulfilment = "linked"
@@ -89,10 +83,8 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_transforms"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_transforms"
 [[solution.state]]
 crate = "orka_types"
 fulfilment = "linked"
@@ -100,8 +92,6 @@ pinned = false
 transitivity = "direct"
 versions = "^1.0.0"
 [solution.state.link]
-kind = "softlink"
-path = "file:../orka_types"
-relative = true
-remote = false
+lockfiled = true
+path = "../orka_types"
 
