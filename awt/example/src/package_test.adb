@@ -75,16 +75,21 @@ package body Package_Test is
       Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
    end On_Configure;
 
-   procedure Post_Initialize (Object : in out Test_Window) is
-      Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
-        Orka.Resources.Locations.Directories.Create_Location ("data");
-
+   procedure Initialize_Framebuffer (Object : in out Test_Window) is
       Alpha : constant GL.Types.Single := (if Object.State.Transparent then 0.5 else 1.0);
    begin
-      Object.FB := Orka.Rendering.Framebuffers.Get_Default_Framebuffer (Object);
+      Object.FB :=
+        Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Object.Width, Object.Height);
       Object.FB.Set_Default_Values ((Color => (0.0, 0.0, 0.0, Alpha), others => <>));
       Object.FB.Use_Framebuffer;
       Messages.Log (Debug, "FB default window: " & Object.Width'Image & Object.Height'Image);
+   end Initialize_Framebuffer;
+
+   procedure Post_Initialize (Object : in out Test_Window) is
+      Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
+        Orka.Resources.Locations.Directories.Create_Location ("data");
+   begin
+      Object.Initialize_Framebuffer;
 
       Object.Program  := Orka.Rendering.Programs.Create_Program
         (Orka.Rendering.Programs.Modules.Create_Module
@@ -113,18 +118,11 @@ package body Package_Test is
 
       Horizontal : constant GL.Types.Single := PX / Width * 2.0 - 1.0;
       Vertical   : constant GL.Types.Single := PY / Height * 2.0 - 1.0;
-
-      Alpha : constant GL.Types.Single := (if Window_State.Transparent then 0.5 else 1.0);
    begin
---      Messages.Log (Debug, PX'Image & Width'Image & Horizontal'Image);
       if Object.Resize then
          Object.Resize := False;
 
-         Object.FB := Orka.Rendering.Framebuffers.Get_Default_Framebuffer (Object);
-         Object.FB.Set_Default_Values ((Color => (0.0, 0.0, 0.0, Alpha), others => <>));
-         Object.FB.Use_Framebuffer;
-         Messages.Log (Debug, "FB default window, new size: " &
-           Object.Width'Image & Object.Height'Image);
+         Object.Initialize_Framebuffer;
       end if;
 
       Object.FB.Clear ((Color => True, others => False));
