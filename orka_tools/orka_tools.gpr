@@ -72,11 +72,12 @@ project Orka_Tools is
                             "-gnatn"); -- Enable inlining
       when "debug" =>
          Build_Switches := ("-g",   -- Debug info
+                            "-march=native",
                             "-Og"); -- No optimization
       when "coverage" =>
-         Build_Switches := ("-fprofile-arcs", "-ftest-coverage");
+         Build_Switches := ("-O0", "-march=native", "-fprofile-arcs", "-ftest-coverage");
       when "profiling" =>
-         Build_Switches := ("-g", "-pg");
+         Build_Switches := ("-g", "-pg", "-march=native");
    end case;
 
    package Compiler is
