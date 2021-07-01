@@ -130,6 +130,9 @@ private
    type Locked_Pointer_With_Window (Window : not null access Wayland_Window)
      is new PC.Locked_Pointer_V1 with null record;
 
+   type Callback_With_Window (Window : not null access Wayland_Window)
+     is new WP.Client.Callback with null record;
+
    type Frame;
 
    type Feedback_With_Frame (Data : not null access Frame)
@@ -156,6 +159,8 @@ private
       procedure On_Frame_Output (Index : Frame_Index; Refresh : Duration);
       procedure On_Frame_Presented (Index : Frame_Index; Timestamp, Refresh : Duration);
       procedure On_Frame_Discarded (Index : Frame_Index);
+
+      procedure On_Frame_Done (Timestamp : Duration);
 
       procedure Set_Size
         (Width, Height : Positive;
@@ -196,6 +201,7 @@ private
       Initial_Configure : Boolean := True;
 
       Surface : Surface_With_Window (Wayland_Window'Access);
+      Frame   : Callback_With_Window (Wayland_Window'Access);
 
       XDG_Surface  : Xdg_Surface_With_Window (Wayland_Window'Access);
       XDG_Toplevel : Xdg_Toplevel_With_Window (Wayland_Window'Access);

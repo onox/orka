@@ -96,6 +96,17 @@ package body AWT.Wayland.Windows is
       Wayland_Window'Class (Window.all).On_Move (Monitor.all, AWT.Windows.Left);
    end Surface_Leave;
 
+   procedure Frame_Done
+     (Callback      : in out WP.Client.Callback'Class;
+      Callback_Data : Unsigned_32)
+   is
+      Window : constant not null access Wayland_Window :=
+        Callback_With_Window (Callback).Window;
+   begin
+      Callback.Destroy;
+      Window.Frame_Handler.On_Frame_Done (Orka.OS.Monotonic_Clock);
+   end Frame_Done;
+
    ----------------------------------------------------------------------------
 
    package Locked_Pointer_Events is new PC.Locked_Pointer_V1_Events
@@ -105,6 +116,9 @@ package body AWT.Wayland.Windows is
    package Surface_Events is new WP.Client.Surface_Events
      (Enter => Surface_Enter,
       Leave => Surface_Leave);
+
+   package Frame_Callback_Events is new WP.Client.Callback_Events
+     (Done => Frame_Done);
 
    ----------------------------------------------------------------------------
 
@@ -1045,13 +1059,17 @@ package body AWT.Wayland.Windows is
       Object.EGL_sRGB    := sRGB;
    end Set_EGL_Data;
 
-   procedure Ask_Feedback
+   function Ask_Feedback
      (Object   : in out Wayland_Window;
-      Feedback : in out Feedback_With_Frame) is
+      Feedback : in out Feedback_With_Frame) return Boolean is
    begin
       if Feedback.Has_Proxy then
          raise Internal_Error with
            "Wayland: Feedback object " & Feedback.Data.Index'Image & " still in use";
+      end if;
+
+      if not Global.Presentation.Has_Proxy then
+         return False;
       end if;
 
       Global.Presentation.Feedback (Object.Surface, Feedback);
@@ -1060,6 +1078,8 @@ package body AWT.Wayland.Windows is
       end if;
 
       Feedback_Events.Subscribe (Feedback);
+
+      return True;
    end Ask_Feedback;
 
    function Ceiling (Left, Right : Duration) return Duration is
@@ -1076,6 +1096,16 @@ package body AWT.Wayland.Windows is
          Do_Swap := Has_Buffer;
 
          if Do_Swap then
+            if not Global.Presentation.Has_Proxy and not Window.Frame.Has_Proxy then
+               Window.Surface.Frame (Window.Frame);
+
+               if not Window.Frame.Has_Proxy then
+                  raise Internal_Error with "Wayland: Failed to get frame callback";
+               end if;
+
+               Frame_Callback_Events.Subscribe (Window.Frame);
+            end if;
+
             if Latest_Stop > 0.0 and Default_Refresh > 0.0 then
                Time_To_Swap := Latest_Stop + Ceiling (Clock - Latest_Stop, Default_Refresh);
             else
@@ -1096,9 +1126,10 @@ package body AWT.Wayland.Windows is
          if Pending < Frames'Length and Has_Buffer then
             for Data of Frames loop
                if not Data.Feedback.Has_Proxy then
-                  Window.Ask_Feedback (Data.Feedback);
-                  Data.Start := Clock;
-                  Pending := Pending + 1;
+                  if Window.Ask_Feedback (Data.Feedback) then
+                     Data.Start := Clock;
+                     Pending := Pending + 1;
+                  end if;
                   exit;
                end if;
             end loop;
@@ -1159,6 +1190,12 @@ package body AWT.Wayland.Windows is
       begin
          Default_Refresh := Refresh;
       end On_Frame_Output;
+
+      procedure On_Frame_Done (Timestamp : Duration) is
+      begin
+         Latest_Stop     := Duration'Max (Latest_Stop, Timestamp);
+         Default_Refresh := Default_Frame_Time;
+      end On_Frame_Done;
 
       procedure Finalize is
       begin
