@@ -18,6 +18,8 @@ package Orka.Atomics is
    pragma Pure;
 
    protected type Counter (Initial_Value : Natural) is
+      pragma Lock_Free;
+
       procedure Add (Addition : Natural);
 
       procedure Increment;
