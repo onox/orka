@@ -267,13 +267,13 @@ package body Orka.Resources.Models.glTF is
       generic
          type Source_Type is private;
          type Source_Array is array (GL.Types.Size range <>) of aliased Source_Type;
-         with function Cast (Value : Source_Type) return Target_Type;
-      function Convert_Array (Elements : Source_Array) return Target_Array;
+         with procedure Cast (Value : Source_Type; Result : out Target_Type);
+      procedure Convert_Array (Elements : Source_Array; Result : out Target_Array);
 
       generic
          type Source_Type is private;
          type Source_Array is array (GL.Types.Size range <>) of aliased Source_Type;
-         with function Convert_Array (Elements : Source_Array) return Target_Array;
+         with procedure Convert_Array (Elements : Source_Array; Result : out Target_Array);
       procedure Get_Array
         (Accessor : Orka.glTF.Accessors.Accessor;
          Buffers  : Orka.glTF.Buffers.Buffer_Vectors.Vector;
@@ -284,13 +284,11 @@ package body Orka.Resources.Models.glTF is
 
    package body Buffer_View_Conversions is
 
-      function Convert_Array (Elements : Source_Array) return Target_Array is
+      procedure Convert_Array (Elements : Source_Array; Result : out Target_Array) is
       begin
-         return Result : Target_Array (Elements'Range) do
-            for Index in Elements'Range loop
-               Result (Index) := Cast (Elements (Index));
-            end loop;
-         end return;
+         for Index in Elements'Range loop
+            Cast (Elements (Index), Result (Index));
+         end loop;
       end Convert_Array;
 
       procedure Get_Array
@@ -317,7 +315,7 @@ package body Orka.Resources.Models.glTF is
          Source : Source_Array_Access := new Source_Array (Target.all'Range);
       begin
          Extract (Buffers, View, Source.all);
-         Target.all := Convert_Array (Source.all);
+         Convert_Array (Source.all, Target.all);
          Free_Array (Source);
       end Get_Array;
 
@@ -404,11 +402,18 @@ package body Orka.Resources.Models.glTF is
       procedure Get_Singles is new Vertex_Conversions.Get_Array
         (Single, Single_Array, Orka.Types.Convert);
 
-      function Cast (Value : UShort) return UInt is (UInt (Value));
-      function Cast (Value : UInt)   return UInt is (Value);
+      procedure Cast (Value : UShort; Result : out UInt) is
+      begin
+         Result := UInt (Value);
+      end Cast;
 
-      function Convert is new Index_Conversions.Convert_Array (UShort, UShort_Array, Cast);
-      function Convert is new Index_Conversions.Convert_Array (UInt, UInt_Array, Cast);
+      procedure Cast (Value : UInt; Result : out UInt) is
+      begin
+         Result := Value;
+      end Cast;
+
+      procedure Convert is new Index_Conversions.Convert_Array (UShort, UShort_Array, Cast);
+      procedure Convert is new Index_Conversions.Convert_Array (UInt, UInt_Array, Cast);
 
       procedure Get_UShorts is new Index_Conversions.Get_Array (UShort, UShort_Array, Convert);
       procedure Get_UInts   is new Index_Conversions.Get_Array (UInt, UInt_Array, Convert);

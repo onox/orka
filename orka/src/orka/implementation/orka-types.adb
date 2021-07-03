@@ -50,35 +50,35 @@ package body Orka.Types is
       type Target_Type is private;
       type Source_Array_Type is array (GL.Types.Size range <>) of Source_Type;
       type Target_Array_Type is array (GL.Types.Size range <>) of Target_Type;
-      with function Convert_Slice (Values : Source_Array_Type) return Target_Array_Type;
-   function Generic_Convert (Elements : Source_Array_Type) return Target_Array_Type;
+      with procedure Convert_Slice (Values : Source_Array_Type; Result : out Target_Array_Type);
+   procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type);
 
-   function Generic_Convert (Elements : Source_Array_Type) return Target_Array_Type is
+   procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type) is
       use type GL.Types.Int;
 
       Iterations : constant GL.Types.Size := Elements'Length / Size;
       Remainder  : constant GL.Types.Size := Elements'Length rem Size;
 
-      Result : Target_Array_Type (Elements'Range);
       Offset : GL.Types.Size := Elements'First;
    begin
       --  Convert Size elements in each iteration
       for Index in 0 .. Iterations - 1 loop
          Offset := Elements'First + Index * Size;
-         Result (Offset .. Offset + Size - 1) :=
-           Convert_Slice (Elements (Offset .. Offset + Size - 1));
+         Convert_Slice
+           (Elements (Offset .. Offset + Size - 1),
+            Result (Offset .. Offset + Size - 1));
       end loop;
       pragma Assert (Elements'Last - Remainder = Offset + Size - 1);
 
       --  Convert remaining elements
-      Result (Elements'Last - Remainder + 1 .. Elements'Last) :=
-        Convert_Slice (Elements (Elements'Last - Remainder + 1 .. Elements'Last));
-      return Result;
+      Convert_Slice
+        (Elements (Elements'Last - Remainder + 1 .. Elements'Last),
+         Result (Elements'Last - Remainder + 1 .. Elements'Last));
    end Generic_Convert;
 
    -----------------------------------------------------------------------------
 
-   function Convert_Slice (Values : GL.Types.Single_Array) return GL.Types.Half_Array is
+   procedure Convert_Slice (Values : GL.Types.Single_Array; Result : out GL.Types.Half_Array) is
       use SIMD.F16C;
 
       S : GL.Types.Single_Array (1 .. m256'Length);
@@ -86,10 +86,10 @@ package body Orka.Types is
    begin
       S (1 .. Values'Length) := Values;
       H := Convert_Nearest_Integer (m256 (S));
-      return GL.Types.Half_Array (H) (1 .. Values'Length);
+      Result := GL.Types.Half_Array (H) (1 .. Values'Length);
    end Convert_Slice;
 
-   function Convert_Slice (Values : GL.Types.Half_Array) return GL.Types.Single_Array is
+   procedure Convert_Slice (Values : GL.Types.Half_Array; Result : out GL.Types.Single_Array) is
       use SIMD.F16C;
 
       S : GL.Types.Half_Array (1 .. m256'Length);
@@ -97,21 +97,21 @@ package body Orka.Types is
    begin
       S (1 .. Values'Length) := Values;
       H := Convert (m128i (S));
-      return GL.Types.Single_Array (H) (1 .. Values'Length);
+      Result := GL.Types.Single_Array (H) (1 .. Values'Length);
    end Convert_Slice;
 
-   function Convert_Single is new Generic_Convert
+   procedure Convert_Single is new Generic_Convert
      (m256'Length, GL.Types.Single, GL.Types.Half,
       GL.Types.Single_Array, GL.Types.Half_Array, Convert_Slice);
 
-   function Convert_Half is new Generic_Convert
+   procedure Convert_Half is new Generic_Convert
      (m256'Length, GL.Types.Half, GL.Types.Single,
       GL.Types.Half_Array, GL.Types.Single_Array, Convert_Slice);
 
-   function Convert
-     (Elements : GL.Types.Single_Array) return GL.Types.Half_Array renames Convert_Single;
-   function Convert
-     (Elements : GL.Types.Half_Array) return GL.Types.Single_Array renames Convert_Half;
+   procedure Convert (Elements : GL.Types.Single_Array; Result : out GL.Types.Half_Array)
+     renames Convert_Single;
+   procedure Convert (Elements : GL.Types.Half_Array; Result : out GL.Types.Single_Array)
+     renames Convert_Half;
 
    -----------------------------------------------------------------------------
 
