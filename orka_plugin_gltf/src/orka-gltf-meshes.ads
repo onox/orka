@@ -35,12 +35,10 @@ package Orka.glTF.Meshes is
       Mode       : Primitive_Mode;
    end record;
 
-   package Primitive_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Primitive);
-
    type Mesh is record
       --  Orka.Resources.Models.glTF can handle only one primitive per mesh
-      Primitives : Primitive_Vectors.Vector (Capacity => 1);
-      Name       : SU.Unbounded_String;
+      Primitives : Primitive;
+      Name       : Name_Strings.Bounded_String;
    end record;
 
    package Mesh_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Mesh);

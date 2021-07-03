@@ -29,7 +29,7 @@ package Orka.glTF.Scenes is
    type Transform_Kind is (Matrix, TRS);
 
    type Node (Transform : Transform_Kind := TRS) is record
-      Name     : SU.Unbounded_String;
+      Name     : Name_Strings.Bounded_String;
       Mesh     : Natural_Optional;
       Children : Natural_Vectors.Vector;
       case Transform is
@@ -48,7 +48,7 @@ package Orka.glTF.Scenes is
      (Nodes : Types.JSON_Value) return Node_Vectors.Vector;
 
    type Scene is record
-      Name  : SU.Unbounded_String;
+      Name  : Name_Strings.Bounded_String;
       Nodes : Natural_Vectors.Vector;
    end record;
 

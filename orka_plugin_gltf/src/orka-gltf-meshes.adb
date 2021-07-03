@@ -75,14 +75,12 @@ package body Orka.glTF.Meshes is
    end Create_Primitive;
 
    function Create_Primitives
-     (Primitives : Types.JSON_Value) return Primitive_Vectors.Vector
-   is
-      Result : Primitive_Vectors.Vector (Capacity => Primitives.Length);
+     (Primitives : Types.JSON_Value) return Primitive is
    begin
-      for Primitive of Primitives loop
-         Result.Append (Create_Primitive (Primitive));
-      end loop;
-      return Result;
+      if Primitives.Length /= 1 then
+         raise Constraint_Error with "Mesh without exactly one primitive is not supported";
+      end if;
+      return Create_Primitive (Primitives (1));
    end Create_Primitives;
 
    function Create_Mesh
@@ -90,7 +88,7 @@ package body Orka.glTF.Meshes is
    begin
       return Result : Mesh do
          Result.Primitives := Create_Primitives (Object.Get ("primitives"));
-         Result.Name       := SU.To_Unbounded_String (Object.Get ("name").Value);
+         Result.Name       := Name_Strings.To_Bounded_String (Object.Get ("name").Value);
       end return;
    end Create_Mesh;
 
