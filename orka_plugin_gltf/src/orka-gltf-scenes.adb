@@ -71,20 +71,15 @@ package body Orka.glTF.Scenes is
             when TRS =>
                if Object.Contains ("translation") then
                   Result.Translation := Get_Vector3 (Object.Get ("translation"));
-               else
-                  Result.Translation := (0.0, 0.0, 0.0, 0.0);
                end if;
 
-               if Object.Contains ("Rotation") then
-                  Result.Rotation := Get_Vector4 (Object.Get_Array_Or_Empty ("rotation"));
-               else
-                  Result.Rotation := (0.0, 0.0, 0.0, 1.0);
+               if Object.Contains ("rotation") then
+                  Result.Rotation := Get_Vector4 (Object.Get ("rotation"));
+                  pragma Assert (for all E of Result.Rotation => E in -1.0 .. 1.0);
                end if;
 
-               if Object.Contains ("Scale") then
-                  Result.Scale := Get_Vector3 (Object.Get_Array_Or_Empty ("scale"));
-               else
-                  Result.Scale := (1.0, 1.0, 1.0, 0.0);
+               if Object.Contains ("scale") then
+                  Result.Scale := Get_Vector3 (Object.Get ("scale"));
                end if;
          end case;
       end return;

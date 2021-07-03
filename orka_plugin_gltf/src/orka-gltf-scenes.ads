@@ -36,9 +36,9 @@ package Orka.glTF.Scenes is
          when Matrix =>
             Matrix : Transforms.Matrix4;
          when TRS =>
-            Translation : Transforms.Vector4;
-            Rotation    : Transforms.Vector4;
-            Scale       : Transforms.Vector4;
+            Translation : Transforms.Vector4 := (0.0, 0.0, 0.0, 0.0);
+            Rotation    : Transforms.Vector4 := (0.0, 0.0, 0.0, 1.0);
+            Scale       : Transforms.Vector4 := (1.0, 1.0, 1.0, 0.0);
       end case;
    end record;
 
