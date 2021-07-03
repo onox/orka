@@ -277,6 +277,7 @@ package body Orka.Resources.Models.glTF is
          with function Convert_Array (Elements : Source_Array) return Target_Array;
       procedure Get_Array
         (Accessor : Orka.glTF.Accessors.Accessor;
+         Buffers  : Orka.glTF.Buffers.Buffer_Vectors.Vector;
          View     : Orka.glTF.Buffers.Buffer_View;
          Target   : not null Target_Array_Access);
 
@@ -295,6 +296,7 @@ package body Orka.Resources.Models.glTF is
 
       procedure Get_Array
         (Accessor : Orka.glTF.Accessors.Accessor;
+         Buffers  : Orka.glTF.Buffers.Buffer_Vectors.Vector;
          View     : Orka.glTF.Buffers.Buffer_View;
          Target   : not null Target_Array_Access)
       is
@@ -315,7 +317,7 @@ package body Orka.Resources.Models.glTF is
 
          Source : Source_Array_Access := new Source_Array (Target.all'Range);
       begin
-         Extract (View, Source.all);
+         Extract (Buffers, View, Source.all);
          Target.all := Convert_Array (Source.all);
          Free_Array (Source);
       end Get_Array;
@@ -389,6 +391,7 @@ package body Orka.Resources.Models.glTF is
 
    procedure Add_Parts
      (Batch  : in out Rendering.Buffers.MDI.Batch;
+      Buffers   : Orka.glTF.Buffers.Buffer_Vectors.Vector;
       Views     : Orka.glTF.Buffers.Buffer_View_Vectors.Vector;
       Accessors : Orka.glTF.Accessors.Accessor_Vectors.Vector;
       Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector)
@@ -449,16 +452,16 @@ package body Orka.Resources.Models.glTF is
             --  TODO Use Conversions.Target_Array?
          begin
             --  Convert attributes
-            Get_Singles (Accessor_Position, View_Position, Positions);
-            Get_Singles (Accessor_Normal, View_Normal, Normals);
-            Get_Singles (Accessor_UV, View_UV, UVs);
+            Get_Singles (Accessor_Position, Buffers, View_Position, Positions);
+            Get_Singles (Accessor_Normal, Buffers, View_Normal, Normals);
+            Get_Singles (Accessor_UV, Buffers, View_UV, UVs);
 
             --  Convert indices
             case Unsigned_Type (Accessor_Index.Component) is
                when GL.Types.UShort_Type =>
-                  Get_UShorts (Accessor_Index, View_Index, Indices);
+                  Get_UShorts (Accessor_Index, Buffers, View_Index, Indices);
                when GL.Types.UInt_Type =>
-                  Get_UInts (Accessor_Index, View_Index, Indices);
+                  Get_UInts (Accessor_Index, Buffers, View_Index, Indices);
             end case;
 
             Batch.Append (Positions, Normals, UVs, Indices);
@@ -694,7 +697,7 @@ package body Orka.Resources.Models.glTF is
    is
       Data : GLTF_Data renames Object.Data.Get;
    begin
-      Add_Parts (Object.Model.Batch, Data.Views, Data.Accessors, Data.Meshes);
+      Add_Parts (Object.Model.Batch, Data.Buffers, Data.Views, Data.Accessors, Data.Meshes);
    end Execute;
 
    overriding

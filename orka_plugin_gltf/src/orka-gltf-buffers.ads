@@ -33,10 +33,7 @@ package Orka.glTF.Buffers is
    Target_Kinds : constant array (Integer range <>) of Buffer_Kind :=
      (34962 => Array_Buffer, 34963 => Element_Array_Buffer);
 
-   type Buffer is record
-      Data   : Byte_Array_Pointers.Pointer;
-      Length : Positive;  --  Length in bytes
-   end record;
+   subtype Buffer is Byte_Array_Pointers.Pointer;
 
    package Buffer_Vectors is new Orka.Containers.Bounded_Vectors (Natural, Buffer);
 
@@ -48,7 +45,7 @@ package Orka.glTF.Buffers is
    subtype Stride_Natural is Natural range 4 .. 252;
 
    type Buffer_View (Packed : Boolean := True) is record
-      Buffer : Byte_Array_Pointers.Pointer;
+      Buffer : Natural;
       Offset : Natural;   --  Offset in bytes
       Length : Positive;  --  Length in bytes
       Target : Buffer_Kind;
@@ -66,8 +63,9 @@ package Orka.glTF.Buffers is
       type Element_Type is private;
       type Element_Array is array (GL.Types.Size range <>) of aliased Element_Type;
    procedure Extract_From_Buffer
-     (View  : Buffer_View;
-      Data  : out Element_Array);
+     (Buffers : Buffer_Vectors.Vector;
+      View    : Buffer_View;
+      Data    : out Element_Array);
 
    function Get_Buffer_Views
      (Buffers : Buffer_Vectors.Vector;

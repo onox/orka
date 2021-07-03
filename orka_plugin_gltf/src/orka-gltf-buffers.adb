@@ -32,12 +32,6 @@ package body Orka.glTF.Buffers is
      (Object    : Types.JSON_Value;
       Load_Path : not null access function (Path : String)
                     return Byte_Array_Pointers.Pointer) return Buffer
-   with Post => Create_Buffer'Result.Data.Get.Value'Length = Create_Buffer'Result.Length;
-
-   function Create_Buffer
-     (Object    : Types.JSON_Value;
-      Load_Path : not null access function (Path : String)
-                    return Byte_Array_Pointers.Pointer) return Buffer
    is
       URI    : constant String := Object.Get ("uri").Value;
       Length : constant Long_Integer := Object.Get ("byteLength").Value;
@@ -57,9 +51,8 @@ package body Orka.glTF.Buffers is
          end if;
       end Load_Data;
    begin
-      return Result : Buffer do
-         Result.Data   := Load_Data (URI);
-         Result.Length := Natural (Length);
+      return Result : constant Buffer := Load_Data (URI) do
+         pragma Assert (Result.Get.Value'Length = Length);
       end return;
    end Create_Buffer;
 
@@ -77,8 +70,8 @@ package body Orka.glTF.Buffers is
       Packed : constant Boolean := not Object.Contains ("byteStride");
    begin
       return Result : Buffer_View (Packed => Packed) do
-         Result.Buffer := Buffers (Natural (Buffer)).Data;
-         pragma Assert (Offset + Length <= Result.Buffer.Get.Value'Length);
+         Result.Buffer := Natural (Buffer);
+         pragma Assert (Offset + Length <= Buffers (Result.Buffer).Get.Value'Length);
 
          Result.Offset := Natural (Offset);
          Result.Length := Natural (Length);
@@ -96,8 +89,9 @@ package body Orka.glTF.Buffers is
    end Create_Buffer_View;
 
    procedure Extract_From_Buffer
-     (View  : Buffer_View;
-      Data  : out Element_Array)
+     (Buffers : Buffer_Vectors.Vector;
+      View    : Buffer_View;
+      Data    : out Element_Array)
    is
       use Ada.Streams;
 
@@ -109,7 +103,7 @@ package body Orka.glTF.Buffers is
       function Convert is new Ada.Unchecked_Conversion
         (Source => Byte_Array, Target => Counted_Element_Array);
    begin
-      Data := Convert (Byte_Array'(View.Buffer.Get (Offset + 1 .. Offset + Length)));
+      Data := Convert (Byte_Array'(Buffers (View.Buffer).Get (Offset + 1 .. Offset + Length)));
    end Extract_From_Buffer;
 
    function Get_Buffers
