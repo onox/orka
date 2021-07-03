@@ -236,6 +236,7 @@ package body Orka.Resources.Models.glTF is
    is
       use type GL.Types.Size;
       use Orka.glTF.Accessors;
+      use all type Orka.glTF.Meshes.Attribute_Kind;
 
       Mesh_Index : GL.Types.Size := 1;
    begin
@@ -245,7 +246,7 @@ package body Orka.Resources.Models.glTF is
                Primitives : Orka.glTF.Meshes.Primitive_Vectors.Vector renames Mesh.Primitives;
                First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
 
-               Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
+               Attribute_Position : constant Natural := First_Primitive.Attributes (Position);
                Accessor_Position  : Accessor renames Accessors (Attribute_Position);
 
                pragma Assert (Accessor_Position.Bounds);
@@ -331,6 +332,7 @@ package body Orka.Resources.Models.glTF is
       use type Orka.glTF.Accessors.Component_Kind;
       use type GL.Types.Index_Type;
       use Orka.glTF.Accessors;
+      use all type Orka.glTF.Meshes.Attribute_Kind;
 
       Count_Vertices : Natural := 0;
       Count_Indices  : Natural := 0;
@@ -344,12 +346,10 @@ package body Orka.Resources.Models.glTF is
               "Mesh '" & Mesh_Name & "' has more than one primitive");
 
             First_Primitive : Orka.glTF.Meshes.Primitive renames Primitives (0);
-            pragma Assert (First_Primitive.Attributes.Length = 3,
-              "Primitive of mesh " & Mesh_Name & " does not have 3 attributes");
 
-            Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
-            Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
-            Attribute_UV       : constant Natural := First_Primitive.Attributes ("TEXCOORD_0");
+            Attribute_Position : constant Natural := First_Primitive.Attributes (Position);
+            Attribute_Normal   : constant Natural := First_Primitive.Attributes (Normal);
+            Attribute_UV       : constant Natural := First_Primitive.Attributes (Texcoord_0);
 
             pragma Assert (First_Primitive.Indices /= Orka.glTF.Undefined);
             Attribute_Index : constant Natural := First_Primitive.Indices;
@@ -396,6 +396,7 @@ package body Orka.Resources.Models.glTF is
       use GL.Types;
       use Orka.glTF.Accessors;
       use Orka.glTF.Buffers;
+      use all type Orka.glTF.Meshes.Attribute_Kind;
 
       package Index_Conversions is new Buffer_View_Conversions
         (UInt, UInt_Array, Indirect.UInt_Array_Access);
@@ -418,9 +419,9 @@ package body Orka.Resources.Models.glTF is
          declare
             First_Primitive : Orka.glTF.Meshes.Primitive renames Mesh.Primitives (0);
 
-            Attribute_Position : constant Natural := First_Primitive.Attributes ("POSITION");
-            Attribute_Normal   : constant Natural := First_Primitive.Attributes ("NORMAL");
-            Attribute_UV       : constant Natural := First_Primitive.Attributes ("TEXCOORD_0");
+            Attribute_Position : constant Natural := First_Primitive.Attributes (Position);
+            Attribute_Normal   : constant Natural := First_Primitive.Attributes (Normal);
+            Attribute_UV       : constant Natural := First_Primitive.Attributes (Texcoord_0);
 
             Attribute_Index    : constant Natural := First_Primitive.Indices;
 

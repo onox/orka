@@ -16,6 +16,19 @@
 
 package body Orka.glTF.Meshes is
 
+   function Attribute_Name_To_Kind (Name : String) return Attribute_Kind is
+   begin
+      if Name = "POSITION" then
+         return Position;
+      elsif Name = "NORMAL" then
+         return Normal;
+      elsif Name = "TEXCOORD_0" then
+         return Texcoord_0;
+      else
+         raise Constraint_Error with "Invalid attribute";
+      end if;
+   end Attribute_Name_To_Kind;
+
    function Create_Primitive
      (Object : Types.JSON_Value) return Primitive
    is
@@ -24,43 +37,40 @@ package body Orka.glTF.Meshes is
       Indices  : constant Long_Integer := Object.Get ("indices", Undefined).Value;
       Material : constant Long_Integer := Object.Get ("material", Undefined).Value;
       Mode     : constant Long_Integer := Object.Get ("mode", 4).Value;
-
-      Mode_Kind : Primitive_Mode;
-      Attribute_Accessors : Attribute_Maps.Map;
    begin
-      case Mode is
-         when 0 =>
-            Mode_Kind := GL.Types.Points;
-         when 1 =>
-            Mode_Kind := GL.Types.Lines;
-         when 2 =>
-            raise Constraint_Error with "Line_Loop is not supported";
-         when 3 =>
-            Mode_Kind := GL.Types.Line_Strip;
-         when 4 =>
-            Mode_Kind := GL.Types.Triangles;
-         when 5 =>
-            Mode_Kind := GL.Types.Triangle_Strip;
-         when 6 =>
-            raise Constraint_Error with "Triangle_Fan is not supported";
-         when others =>
-            raise Constraint_Error with "Invalid primitive.mode";
-      end case;
-
-      for Attribute of Attributes loop
-         Attribute_Accessors.Insert (Attribute.Value,
-           Natural (Long_Integer'(Attributes.Get (Attribute.Value).Value)));
-      end loop;
-
       --  TODO primitive.indices: When defined, the accessor must contain
       --  indices: the bufferView referenced by the accessor should have a
       --  target equal to 34963 (ELEMENT_ARRAY_BUFFER); componentType must
       --  be 5121 (UNSIGNED_BYTE), 5123 (UNSIGNED_SHORT) or 5125 (UNSIGNED_INT)
       return Result : Primitive do
-         Result.Attributes := Attribute_Accessors;
+         pragma Assert (Attributes.Length = 3);
+
+         for Attribute of Attributes loop
+            Result.Attributes (Attribute_Name_To_Kind (Attribute.Value)) :=
+              Natural (Long_Integer'(Attributes.Get (Attribute.Value).Value));
+         end loop;
+
+         case Mode is
+            when 0 =>
+               Result.Mode := GL.Types.Points;
+            when 1 =>
+               Result.Mode := GL.Types.Lines;
+            when 2 =>
+               raise Constraint_Error with "Line_Loop is not supported";
+            when 3 =>
+               Result.Mode := GL.Types.Line_Strip;
+            when 4 =>
+               Result.Mode := GL.Types.Triangles;
+            when 5 =>
+               Result.Mode := GL.Types.Triangle_Strip;
+            when 6 =>
+               raise Constraint_Error with "Triangle_Fan is not supported";
+            when others =>
+               raise Constraint_Error with "Invalid primitive.mode";
+         end case;
+
          Result.Indices  := Natural_Optional (Indices);
          Result.Material := Natural_Optional (Material);
-         Result.Mode := Mode_Kind;
       end return;
    end Create_Primitive;
 

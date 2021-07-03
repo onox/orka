@@ -14,9 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Strings.Hash;
-
 with GL.Types;
 
 with Orka.Containers.Bounded_Vectors;
@@ -27,14 +24,12 @@ package Orka.glTF.Meshes is
    subtype Primitive_Mode is GL.Types.Connection_Mode
      range GL.Types.Points .. GL.Types.Triangle_Strip;
 
-   package Attribute_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type        => String,
-      Element_Type    => Natural,
-      Hash            => Ada.Strings.Hash,
-      Equivalent_Keys => "=");
+   type Attribute_Kind is (Position, Normal, Texcoord_0);
+
+   type Attribute_Array is array (Attribute_Kind) of Natural;
 
    type Primitive is record
-      Attributes : Attribute_Maps.Map;
+      Attributes : Attribute_Array;
       Indices    : Natural_Optional;
       Material   : Natural_Optional;
       Mode       : Primitive_Mode;
