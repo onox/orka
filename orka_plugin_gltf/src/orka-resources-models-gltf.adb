@@ -353,16 +353,19 @@ package body Orka.Resources.Models.glTF is
             Accessor_Normal   : Accessor renames Accessors (Attribute_Normal);
             Accessor_UV       : Accessor renames Accessors (Attribute_UV);
 
-            pragma Assert (Accessor_Position.Component = Orka.glTF.Accessors.Float);
-            pragma Assert (Accessor_Normal.Component = Orka.glTF.Accessors.Float);
-            pragma Assert (Accessor_UV.Component = Orka.glTF.Accessors.Float);
+            pragma Assert
+              (Accessor_Position.Component = Orka.glTF.Accessors.Float and then
+               Accessor_Normal.Component = Orka.glTF.Accessors.Float and then
+               Accessor_UV.Component = Orka.glTF.Accessors.Float);
 
-            pragma Assert (Accessor_Position.Kind = Orka.glTF.Accessors.Vector3);
-            pragma Assert (Accessor_Normal.Kind = Orka.glTF.Accessors.Vector3);
-            pragma Assert (Accessor_UV.Kind = Orka.glTF.Accessors.Vector2);
+            pragma Assert
+              (Accessor_Position.Kind = Orka.glTF.Accessors.Vector3 and then
+               Accessor_Normal.Kind = Orka.glTF.Accessors.Vector3 and then
+               Accessor_UV.Kind = Orka.glTF.Accessors.Vector2);
 
-            pragma Assert (Accessor_Position.Count = Accessor_Normal.Count);
-            pragma Assert (Accessor_Position.Count = Accessor_UV.Count);
+            pragma Assert
+              (Accessor_Position.Count = Accessor_Normal.Count and then
+               Accessor_Position.Count = Accessor_UV.Count);
 
             Accessor_Index : Accessor renames Accessors (Attribute_Index);
 
