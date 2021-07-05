@@ -189,26 +189,19 @@ private
    type Wayland_Window is
      limited new Ada.Finalization.Limited_Controlled and AWT.Windows.Window with
    record
-      Pending_State, Current_State : AWT.Windows.Window_State;
-      Pending_Scale, Current_Scale : Positive := 1;
+      -------------------------------------------------------------------------
+      --                               Objects                               --
+      -------------------------------------------------------------------------
 
-      Restore_Width  : Natural := 0;
-      Restore_Height : Natural := 0;
-      Restore_Margin : Natural := 0;
-      Restore_ID     : SU.Unbounded_String;
-      Restore_Title  : SU.Unbounded_String;
-
-      Initial_Configure : Boolean := True;
-
-      Surface : Surface_With_Window (Wayland_Window'Access);
-      Frame   : Callback_With_Window (Wayland_Window'Access);
-
+      Surface      : Surface_With_Window (Wayland_Window'Access);
       XDG_Surface  : Xdg_Surface_With_Window (Wayland_Window'Access);
       XDG_Toplevel : Xdg_Toplevel_With_Window (Wayland_Window'Access);
 
-      Decoration   : Toplevel_Decoration_With_Window (Wayland_Window'Access);
+      Decoration     : Toplevel_Decoration_With_Window (Wayland_Window'Access);
+      Idle_Inhibitor : II.Idle_Inhibitor_V1;
 
       Frame_Handler : Frame_Handler_With_Window (Wayland_Window'Access);
+      Frame         : Callback_With_Window (Wayland_Window'Access);
 
       --  Wayland.EGL
       EGL_Window  : Standard.Wayland.EGL.Window;
@@ -219,20 +212,33 @@ private
       EGL_Config  : EGL.Objects.Configs.Config;
       EGL_sRGB    : Boolean;
 
-      Should_Close : Boolean := False with Atomic;
+      Locked_Pointer : Locked_Pointer_With_Window (Wayland_Window'Access);
+      Cursor_Surface : WP.Client.Surface;
 
-      Idle_Inhibitor : II.Idle_Inhibitor_V1;
+      -------------------------------------------------------------------------
+      --                                States                               --
+      -------------------------------------------------------------------------
+
+      Pending_State, Current_State : AWT.Windows.Window_State;
+      Pending_Scale, Current_Scale : Positive := 1;
+
+      Restore_Width  : Natural := 0;
+      Restore_Height : Natural := 0;
+      Restore_Margin : Natural := 0;
+      Restore_ID     : SU.Unbounded_String;
+      Restore_Title  : SU.Unbounded_String;
+
+      Initial_Configure : Boolean := True;
+      Should_Close      : Boolean := False;
 
       Pointer_State  : AWT.Inputs.Pointer_State;
       Keyboard_State : AWT.Inputs.Keyboard_State;
       Reset_Input    : Boolean := False;
 
-      Locked_Pointer        : Locked_Pointer_With_Window (Wayland_Window'Access);
       Locked_Position       : AWT.Inputs.Coordinate;
       Unlocked_Pointer_Mode : AWT.Inputs.Pointer_Mode;
       Raw_Pointer_Motion    : Boolean := False;
 
-      Cursor_Surface : WP.Client.Surface;
       Cursor_Hotspot : Cursor_Hotspot_Coordinate := (others => 0);
       Cursor         : AWT.Inputs.Cursors.Pointer_Cursor := AWT.Inputs.Cursors.Default;
       Cursor_Images  : Positive := 1;

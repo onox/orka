@@ -120,6 +120,10 @@ package AWT.Windows with SPARK_Mode => On is
    --  Must be called by the task on which the GL context to which the default
    --  framebuffer belongs is current
 
+   ----------------------------------------------------------------------------
+   --                                 Events                                 --
+   ----------------------------------------------------------------------------
+
    procedure On_Configure (Object : in out Window; State : Window_State) is null;
    --  Invoked when the state of the window has changed
 
