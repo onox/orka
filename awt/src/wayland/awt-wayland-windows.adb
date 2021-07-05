@@ -773,9 +773,7 @@ package body AWT.Wayland.Windows is
            Cursor.Index_At_Elapsed_Time (Elapsed_Time, Remaining);
       begin
          Object.Next_Time := Current_Time + Remaining;
-         --  TODO Use timerfd to make sure Global.Display.Check_For_Events
-         --  in AWT.Registry.Process_Events returns at Object.Next_Time?
-         return Result : WC.Cursor_Image'Class := Cursor.Image (Index);
+         return Cursor.Image (Index);
       end;
    end On_Change_Cursor;
 

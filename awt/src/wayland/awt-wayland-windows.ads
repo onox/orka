@@ -327,9 +327,4 @@ private
    overriding
    function On_Close (Object : Wayland_Window) return Boolean;
 
-   function On_Change_Cursor
-     (Object : in out Wayland_Window;
-      Name   : AWT.Inputs.Cursors.Pointer_Cursor;
-      Cursor : WC.Cursor'Class) return WC.Cursor_Image'Class;
-
 end AWT.Wayland.Windows;
