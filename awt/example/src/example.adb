@@ -10,6 +10,7 @@ with AWT.Windows;
 
 with Orka.Contexts.AWT;
 with Orka.Debug;
+with Orka.Strings;
 with Orka.Resources.Locations.Directories;
 
 with Package_Test;
@@ -215,7 +216,7 @@ begin
             declare
                Result : constant String := AWT.Drag_And_Drop.Get;
             begin
-               Put_Line ("value: '" & Result & "'");
+               Put_Line ("value: '" & Orka.Strings.Strip_Line_Term (Result) & "'");
                AWT.Drag_And_Drop.Finish (AWT.Inputs.Copy);
             end;
          else

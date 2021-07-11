@@ -1,5 +1,3 @@
-with Ada.Text_IO;
-
 with GL.Types;
 
 with Orka.Logging;
@@ -33,7 +31,7 @@ package body Package_Test is
    overriding
    function On_Close (Object : Test_Window) return Boolean is
    begin
-      Ada.Text_IO.Put_Line ("Test_Window.On_Close");
+      Messages.Log (Debug, "User is trying to close window");
       return True;
    end On_Close;
 
@@ -45,7 +43,8 @@ package body Package_Test is
       use all type AWT.Inputs.Action_Kind;
       use type AWT.Inputs.Fixed;
    begin
-      Messages.Log (Debug, "user dragged at " & X'Image & Y'Image);
+      Messages.Log (Debug, "User dragged something to " &
+        "(" & Trim (X'Image) & ", " & Trim (Y'Image) & ")");
       AWT.Drag_And_Drop.Set_Action (if X < 300.0 and Y < 300.0 then Copy else None);
    end On_Drag;
 
@@ -57,7 +56,7 @@ package body Package_Test is
 
       Action : constant AWT.Inputs.Action_Kind := AWT.Drag_And_Drop.Valid_Action;
    begin
-      Messages.Log (Info, "user dropped! action: " & Action'Image);
+      Messages.Log (Info, "User dropped something. Action is " & Action'Image);
 
       if Action /= None then
          Dnd_Signal.Set;
@@ -69,8 +68,10 @@ package body Package_Test is
      (Object       : in out Test_Window;
       State        : Standard.AWT.Windows.Window_State) is
    begin
-      Ada.Text_IO.Put_Line ("Configure xdg_surface:" &
-        State.Width'Image & State.Height'Image & State.Margin'Image);
+      Messages.Log (Debug, "Configured window surface");
+      Messages.Log (Debug, "  size:   " &
+        Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
+      Messages.Log (Debug, "  margin: " & Trim (State.Margin'Image));
 
       Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
    end On_Configure;
@@ -82,7 +83,8 @@ package body Package_Test is
         Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Object.Width, Object.Height);
       Object.FB.Set_Default_Values ((Color => (0.0, 0.0, 0.0, Alpha), others => <>));
       Object.FB.Use_Framebuffer;
-      Messages.Log (Debug, "FB default window: " & Object.Width'Image & Object.Height'Image);
+      Messages.Log (Debug, "Changed size of framebuffer to " &
+        Trim (Object.Width'Image) & " × " & Trim (Object.Height'Image));
    end Initialize_Framebuffer;
 
    procedure Post_Initialize (Object : in out Test_Window) is
