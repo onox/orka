@@ -18,6 +18,7 @@ private with Ada.Finalization;
 
 private with Wayland.Cursor;
 private with Wayland.EGL;
+private with Wayland.Enums.Xdg_Decoration_Unstable_V1;
 private with Wayland.Protocols.Xdg_Shell;
 private with Wayland.Protocols.Presentation_Time;
 private with Wayland.Protocols.Idle_Inhibit_Unstable_V1;
@@ -141,10 +142,8 @@ private
    type Frame_Index is mod 4;
 
    type Frame is limited record
-      Window      : access Wayland_Window;
-      Feedback    : Feedback_With_Frame (Frame'Access);
-      Index       : Frame_Index;
-      Start, Stop : Duration := 0.0;
+      Window   : access Wayland_Window;
+      Feedback : Feedback_With_Frame (Frame'Access);
    end record;
 
    type Frame_Array is array (Frame_Index) of Frame;
@@ -153,12 +152,12 @@ private
      with Post => (for all FB of Make_Frames'Result => FB.Window /= null);
 
    protected type Frame_Handler_With_Window (Window : not null access Wayland_Window) is
-      entry Before_Swap_Buffers (Time_To_Swap : out Duration; Do_Swap : out Boolean);
-      procedure After_Swap_Buffers;
+      procedure Before_Swap_Buffers (Time_To_Swap : out Duration; Do_Swap : out Boolean);
+      procedure After_Swap_Buffers (Did_Swap : Boolean);
 
-      procedure On_Frame_Output (Index : Frame_Index; Refresh : Duration);
-      procedure On_Frame_Presented (Index : Frame_Index; Timestamp, Refresh : Duration);
-      procedure On_Frame_Discarded (Index : Frame_Index);
+      procedure On_Frame_Output (Refresh : Duration);
+      procedure On_Frame_Presented (Timestamp, Refresh : Duration);
+      procedure On_Frame_Discarded;
 
       procedure On_Frame_Done (Timestamp : Duration);
 
@@ -167,7 +166,7 @@ private
          Margin        : Natural;
          Serial        : Unsigned_32);
 
-      entry Set_Has_Buffer (Value : Boolean);
+      procedure Set_Has_Buffer (Value : Boolean);
 
       procedure Finalize;
    private
@@ -178,7 +177,6 @@ private
       Resize_Serial : Unsigned_32;
 
       Has_Buffer : Boolean := False;
-      Swapping   : Boolean := False;
 
       Pending : Natural := 0;
       Frames  : Frame_Array := Make_Frames (Window);
@@ -186,22 +184,127 @@ private
 
    type Cursor_Hotspot_Coordinate is array (AWT.Inputs.Dimension) of Natural;
 
-   type Wayland_Window is
-     limited new Ada.Finalization.Limited_Controlled and AWT.Windows.Window with
-   record
+   protected type Window_Object (Window : not null access Wayland_Window) is
+      procedure Finalize;
+
+      procedure Create_Window
+        (ID, Title                     : String;
+         Width, Height                 : Positive;
+         Visible, Resizable, Decorated : Boolean := True;
+         Transparent                   : Boolean := False);
+
+      procedure Set_Application_ID (ID : String);
+
+      procedure Set_Title (Title : String);
+
+      procedure Set_Size (Width, Height : Positive);
+
+      procedure Set_Size_Limits
+        (Min_Width, Min_Height, Max_Width, Max_Height : Natural);
+
+      procedure Set_Size_Mode (Mode : AWT.Windows.Size_Mode);
+
+      procedure Set_Size_Mode
+        (Mode    : AWT.Windows.Size_Mode;
+         Monitor : AWT.Monitors.Monitor'Class);
+
+      procedure Set_Framebuffer_Scale (Scale : Positive);
+
+      procedure Set_Raw_Pointer_Motion (Enable : Boolean);
+
+      procedure Set_Margin (Margin : Natural);
+
+      procedure Set_Visible (Visible : Boolean);
+
+      procedure Set_Pointer_Cursor (Cursor : AWT.Inputs.Cursors.Pointer_Cursor);
+
+      procedure Set_Pointer_Mode (Mode : AWT.Inputs.Pointer_Mode);
+
+      function Raw_Pointer_Motion return Boolean;
+
+      function State return AWT.Windows.Window_State;
+
+      function State return AWT.Windows.Framebuffer_State;
+
+      procedure State (Result : out AWT.Inputs.Pointer_State);
+
+      procedure State (Result : out AWT.Inputs.Keyboard_State);
+
+      procedure Swap_Buffers;
+
+      -------------------------------------------------------------------------
+      --                              Registry                               --
+      -------------------------------------------------------------------------
+
+      procedure Set_State (State : AWT.Inputs.Pointer_State);
+
+      procedure Set_State (State : AWT.Inputs.Keyboard_State);
+
+      procedure Restore_Cursor;
+
+      procedure Reset_Input_State;
+
+      procedure Update_Animated_Cursor;
+
+      -------------------------------------------------------------------------
+      --                              Context                                --
+      -------------------------------------------------------------------------
+
+      procedure Set_EGL_Data
+        (Context : EGL.Objects.Contexts.Context;
+         Config  : EGL.Objects.Configs.Config;
+         sRGB    : Boolean);
+
+      procedure Make_Current
+        (Context : Standard.EGL.Objects.Contexts.Context);
+
+      -------------------------------------------------------------------------
+      --                            Frame handler                            --
+      -------------------------------------------------------------------------
+
+      procedure Ask_Feedback (Feedback : in out Feedback_With_Frame);
+      procedure Ask_Frame;
+
+      procedure Detach_Buffer;
+
+      -------------------------------------------------------------------------
+      --                           Event callbacks                           --
+      -------------------------------------------------------------------------
+
+      procedure Lock_Pointer;
+
+      procedure Unlock_Pointer;
+
+      procedure Do_Resize
+        (Width, Height : Positive;
+         Margin        : Natural;
+         Serial        : Unsigned_32);
+
+      function Is_Configuring return Boolean;
+
+      procedure Configure_Surface (Serial : Unsigned_32);
+
+      procedure Configure_Toplevel
+        (Width  : Natural;
+         Height : Natural;
+         States : WP.Xdg_Shell.State_Array);
+
+      procedure Configure_Decoration
+        (Mode : WE.Xdg_Decoration_Unstable_V1.Toplevel_Decoration_V1_Mode);
+
+   private
       -------------------------------------------------------------------------
       --                               Objects                               --
       -------------------------------------------------------------------------
 
-      Surface      : Surface_With_Window (Wayland_Window'Access);
-      XDG_Surface  : Xdg_Surface_With_Window (Wayland_Window'Access);
-      XDG_Toplevel : Xdg_Toplevel_With_Window (Wayland_Window'Access);
+      Surface      : Surface_With_Window (Window);
+      XDG_Surface  : Xdg_Surface_With_Window (Window);
+      XDG_Toplevel : Xdg_Toplevel_With_Window (Window);
 
-      Decoration     : Toplevel_Decoration_With_Window (Wayland_Window'Access);
+      Decoration     : Toplevel_Decoration_With_Window (Window);
       Idle_Inhibitor : II.Idle_Inhibitor_V1;
 
-      Frame_Handler : Frame_Handler_With_Window (Wayland_Window'Access);
-      Frame         : Callback_With_Window (Wayland_Window'Access);
+      Frame : Callback_With_Window (Window);
 
       --  Wayland.EGL
       EGL_Window  : Standard.Wayland.EGL.Window;
@@ -212,7 +315,7 @@ private
       EGL_Config  : EGL.Objects.Configs.Config;
       EGL_sRGB    : Boolean;
 
-      Locked_Pointer : Locked_Pointer_With_Window (Wayland_Window'Access);
+      Locked_Pointer : Locked_Pointer_With_Window (Window);
       Cursor_Surface : WP.Client.Surface;
 
       -------------------------------------------------------------------------
@@ -229,21 +332,28 @@ private
       Restore_Title  : SU.Unbounded_String;
 
       Initial_Configure : Boolean := True;
-      Should_Close      : Boolean := False;
 
       Pointer_State  : AWT.Inputs.Pointer_State;
       Keyboard_State : AWT.Inputs.Keyboard_State;
       Reset_Input    : Boolean := False;
 
-      Locked_Position       : AWT.Inputs.Coordinate;
-      Unlocked_Pointer_Mode : AWT.Inputs.Pointer_Mode;
-      Raw_Pointer_Motion    : Boolean := False;
+      Locked_Position         : AWT.Inputs.Coordinate;
+      Unlocked_Pointer_Mode   : AWT.Inputs.Pointer_Mode;
+      Raw_Pointer_Motion_Flag : Boolean := False;
 
       Cursor_Hotspot : Cursor_Hotspot_Coordinate := (others => 0);
-      Cursor         : AWT.Inputs.Cursors.Pointer_Cursor := AWT.Inputs.Cursors.Default;
+      Cursor_Name    : AWT.Inputs.Cursors.Pointer_Cursor := AWT.Inputs.Cursors.Default;
       Cursor_Images  : Positive := 1;
 
       Start_Time, Next_Time : Duration := Orka.OS.Monotonic_Clock;
+   end Window_Object;
+
+   type Wayland_Window is
+     limited new Ada.Finalization.Limited_Controlled and AWT.Windows.Window with
+   record
+      Window        : Window_Object (Wayland_Window'Access);
+      Frame_Handler : Frame_Handler_With_Window (Wayland_Window'Access);
+      Should_Close  : Boolean := False with Atomic;
    end record;
 
    overriding
@@ -254,7 +364,8 @@ private
       Visible, Resizable, Decorated : Boolean := True;
       Transparent                   : Boolean := False);
 
-   overriding procedure Finalize (Object : in out Wayland_Window);
+   overriding
+   procedure Finalize (Object : in out Wayland_Window);
 
    overriding
    procedure Set_Application_ID (Object : in out Wayland_Window; ID : String);
