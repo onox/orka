@@ -23,7 +23,6 @@ with Ada.Strings.Hash;
 with Ada.Unchecked_Deallocation;
 
 with JSON.Parsers;
-with JSON.Streams;
 
 with GL.Types.Indirect;
 
@@ -511,6 +510,8 @@ package body Orka.Resources.Models.glTF is
 
    -----------------------------------------------------------------------------
 
+   package Parsers is new JSON.Parsers (Orka.glTF.Types);
+
    overriding
    procedure Execute
      (Object  : GLTF_Parse_Job;
@@ -518,13 +519,9 @@ package body Orka.Resources.Models.glTF is
    is
       use Orka.glTF.Types;
 
-      package Parsers is new JSON.Parsers (Orka.glTF.Types);
-
       Path  : String renames SU.To_String (Object.Data.Path);
 
-      Stream : constant JSON.Streams.Stream'class
-        := JSON.Streams.Create_Stream (Object.Data.Bytes.Get.Value);
-      Parser : Parsers.Parser := Parsers.Create (Stream);
+      Parser : constant Parsers.Parser := Parsers.Create (Object.Data.Bytes.Get.Value);
    begin
       declare
          T1 : constant Time := Clock;

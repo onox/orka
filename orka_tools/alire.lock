@@ -60,7 +60,7 @@ crate = "json"
 fulfilment = "solved"
 pinned = false
 transitivity = "indirect"
-versions = "^4.0.1"
+versions = "^5.0.0"
 [solution.state.release]
 authors = [
 "onox",
@@ -84,13 +84,13 @@ project-files = [
 tags = [
 "json",
 ]
-version = "4.0.1"
+version = "5.0.0"
 website = "https://github.com/onox/json-ada"
 [solution.state.release.origin]
 hashes = [
-"sha512:60937e87a233ba1986849e838dc84010453dae5930c7dc2fa5fbd7f9c15e5b2c20e8014b9ddf5c08dbce4dfc06747d2744af2b81849636416464fc63cd56f597",
+"sha512:436f59e833f62cc2e9e906ad9db0b424d1b3b11f45c486d86d1dc32edfddd445a8a68d72e03306f3851276df3014bef064c0a5811c2cb65fdb6b770e96e490ae",
 ]
-url = "https://github.com/onox/json-ada/releases/download/v4.0.1/json-4.0.1.tgz"
+url = "https://github.com/onox/json-ada/releases/download/v5.0.0/json-5.0.0.tgz"
 [[solution.state]]
 crate = "libwayland"
 fulfilment = "solved"
