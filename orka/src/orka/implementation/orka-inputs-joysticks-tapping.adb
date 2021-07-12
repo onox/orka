@@ -14,20 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Inputs.Joysticks.Tapping is
+with Orka.OS;
 
-   use Ada.Real_Time;
+package body Orka.Inputs.Joysticks.Tapping is
 
    function Create_Tap_Detector
      (Button    : Button_Index;
-      Max_Delta : Duration) return Button_Tap_Detector
-   is
-      DT : constant Time_Span := To_Time_Span (Max_Delta);
+      Max_Delta : Duration) return Button_Tap_Detector is
    begin
       return
         (Button     => Button,
-         Max_Delta  => DT,
-         Last_Press => Clock - DT,
+         Max_Delta  => Max_Delta,
+         Last_Press => Orka.OS.Monotonic_Clock - Max_Delta,
          Active     => False);
    end Create_Tap_Detector;
 
@@ -35,7 +33,7 @@ package body Orka.Inputs.Joysticks.Tapping is
      (Object   : in out Button_Tap_Detector;
       Joystick : Joystick_Input'Class) return Boolean
    is
-      Current_Time : constant Time := Clock;
+      Current_Time : constant Time := Orka.OS.Monotonic_Clock;
 
       On_Time : constant Boolean := Current_Time - Object.Last_Press < Object.Max_Delta;
    begin

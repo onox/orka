@@ -14,29 +14,27 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Inputs.Joysticks.Sequences is
+with Orka.OS;
 
-   use Ada.Real_Time;
+package body Orka.Inputs.Joysticks.Sequences is
 
    function Create_Sequence
      (Buttons  : Button_Index_Array;
-      Max_Time : Duration) return Sequence
-   is
-      DT : constant Time_Span := To_Time_Span (Max_Time);
+      Max_Time : Duration) return Sequence is
    begin
       return
         (Button_Count => Buttons'Length,
          Buttons      => Buttons,
          Index        => Buttons'First,
-         Max_Time     => DT,
-         Start_Press  => Clock - DT);
+         Max_Time     => Max_Time,
+         Start_Press  => Orka.OS.Monotonic_Clock - Max_Time);
    end Create_Sequence;
 
    function Detect_Activation
      (Object   : in out Sequence;
       Joystick : Joystick_Input'Class) return Boolean
    is
-      Current_Time : constant Time := Clock;
+      Current_Time : constant Time := Orka.OS.Monotonic_Clock;
 
       On_Time : constant Boolean := Current_Time - Object.Start_Press < Object.Max_Time;
 

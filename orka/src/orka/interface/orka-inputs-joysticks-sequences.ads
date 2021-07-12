@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Real_Time;
-
 package Orka.Inputs.Joysticks.Sequences is
 
    subtype Sequence_Button_Index is Positive range 1 .. 16;
@@ -42,8 +40,8 @@ private
    type Sequence (Button_Count : Positive) is tagged record
       Buttons     : Button_Index_Array (1 .. Button_Count);
       Index       : Sequence_Button_Index;
-      Max_Time    : Ada.Real_Time.Time_Span;
-      Start_Press : Ada.Real_Time.Time;
+      Max_Time    : Duration;
+      Start_Press : Time;
    end record;
 
 end Orka.Inputs.Joysticks.Sequences;

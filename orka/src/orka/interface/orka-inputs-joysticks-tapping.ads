@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Real_Time;
-
 package Orka.Inputs.Joysticks.Tapping is
 
    type Button_Tap_Detector is tagged private;
@@ -34,8 +32,8 @@ private
 
    type Button_Tap_Detector is tagged record
       Button     : Button_Index;
-      Max_Delta  : Ada.Real_Time.Time_Span;
-      Last_Press : Ada.Real_Time.Time;
+      Max_Delta  : Duration;
+      Last_Press : Time;
       Active     : Boolean;
    end record;
 

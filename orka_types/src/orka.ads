@@ -35,11 +35,14 @@ package Orka is
    type Time is private;
 
    function "-" (Left, Right : Time) return Duration;
+   function "-" (Left : Time; Right : Duration) return Time;
 
 private
 
    type Time is new Duration;
 
-   function "-" (Left, Right : Time) return Duration is (Duration (Time'(Left - Right)));
+   function "-" (Left, Right : Time) return Duration is (Duration (Left) - Duration (Right));
+
+   function "-" (Left : Time; Right : Duration) return Time is (Time (Duration (Left) - Right));
 
 end Orka;
