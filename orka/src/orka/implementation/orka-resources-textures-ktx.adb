@@ -17,7 +17,6 @@
 with System;
 
 with Ada.Exceptions;
-with Ada.Real_Time;
 with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
@@ -25,8 +24,9 @@ with GL.Pixels.Extensions;
 with GL.Types.Pointers;
 
 with Orka.Jobs;
-with Orka.Logging;
 with Orka.KTX;
+with Orka.Logging;
+with Orka.OS;
 with Orka.Strings;
 
 package body Orka.Resources.Textures.KTX is
@@ -38,9 +38,6 @@ package body Orka.Resources.Textures.KTX is
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
-
-   function "+" (Value : Ada.Real_Time.Time_Span) return Duration
-     renames Ada.Real_Time.To_Duration;
 
    type KTX_Load_Job is new Jobs.Abstract_Job and Jobs.GPU_Job with record
       Data    : Loaders.Resource_Data;
@@ -54,21 +51,20 @@ package body Orka.Resources.Textures.KTX is
 
    -----------------------------------------------------------------------------
 
-   use all type Ada.Real_Time.Time;
-
    function Read_Texture
      (Bytes : Byte_Array_Pointers.Constant_Reference;
       Path  : String;
-      Start : Ada.Real_Time.Time) return GL.Objects.Textures.Texture
+      Start : Time) return GL.Objects.Textures.Texture
    is
-      T1 : Ada.Real_Time.Time renames Start;
-      T2 : constant Ada.Real_Time.Time := Clock;
+      T1 : Time renames Start;
+      T2 : constant Time := Orka.OS.Monotonic_Clock;
 
       use Ada.Streams;
       use GL.Low_Level.Enums;
       use type GL.Types.Size;
+      use type Time;
 
-      T3, T4, T5, T6 : Ada.Real_Time.Time;
+      T3, T4, T5, T6 : Time;
    begin
       if not Orka.KTX.Valid_Identifier (Bytes) then
          raise Texture_Load_Error with Path & " is not a KTX file";
@@ -84,7 +80,7 @@ package body Orka.Resources.Textures.KTX is
          Height :          GL.Types.Size := Header.Height;
          Depth  :          GL.Types.Size := Header.Depth;
       begin
-         T3 := Clock;
+         T3 := Orka.OS.Monotonic_Clock;
 
          if not Header.Compressed
            and then Header.Data_Type in GL.Pixels.Extensions.Packed_Data_Type
@@ -143,7 +139,7 @@ package body Orka.Resources.Textures.KTX is
             when others =>
                raise Program_Error;
          end case;
-         T4 := Clock;
+         T4 := Orka.OS.Monotonic_Clock;
 
          --  TODO Handle KTXorientation key value pair
          declare
@@ -208,16 +204,16 @@ package body Orka.Resources.Textures.KTX is
                end;
             end loop;
          end;
-         T5 := Clock;
+         T5 := Orka.OS.Monotonic_Clock;
 
          --  Generate a full mipmap pyramid if Mipmap_Levels = 0
          if Header.Mipmap_Levels = 0 then
             Texture.Generate_Mipmap;
          end if;
-         T6 := Clock;
+         T6 := Orka.OS.Monotonic_Clock;
 
          Messages.Log (Info, "Loaded texture " & Path & " in " &
-           Logging.Trim (Logging.Image (+(T6 - T1))));
+           Logging.Trim (Logging.Image (T6 - T1)));
          Messages.Log (Info, "  dims:   " &
             Logging.Trim (Width'Image) & " × " &
             Logging.Trim (Height'Image) & " × " &
@@ -234,12 +230,12 @@ package body Orka.Resources.Textures.KTX is
          end if;
 
          Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    reading file:   " & Logging.Image (+(T2 - T1)));
-         Messages.Log (Info, "    parsing header: " & Logging.Image (+(T3 - T2)));
-         Messages.Log (Info, "    storage:        " & Logging.Image (+(T4 - T3)));
-         Messages.Log (Info, "    buffers:        " & Logging.Image (+(T5 - T4)));
+         Messages.Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
+         Messages.Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
+         Messages.Log (Info, "    storage:        " & Logging.Image (T4 - T3));
+         Messages.Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
          if Header.Mipmap_Levels = 0 then
-            Messages.Log (Info, "    generating mipmap:" & Logging.Image (+(T6 - T5)));
+            Messages.Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
          end if;
 
          return Texture;
@@ -257,7 +253,7 @@ package body Orka.Resources.Textures.KTX is
      (Location : Locations.Location_Ptr;
       Path     : String) return GL.Objects.Textures.Texture
    is
-      Start_Time : constant Ada.Real_Time.Time := Ada.Real_Time.Clock;
+      Start_Time : constant Time := Orka.OS.Monotonic_Clock;
    begin
       return Read_Texture (Location.Read_Data (Path).Get, Path, Start_Time);
    end Read_Texture;
@@ -391,9 +387,9 @@ package body Orka.Resources.Textures.KTX is
          return Convert (Data);
       end Get_Compressed_Data;
 
-      T1, T2, T3, T4 : Ada.Real_Time.Time;
+      T1, T2, T3, T4 : Duration;
    begin
-      T1 := Clock;
+      T1 := Orka.OS.Monotonic_Clock;
 
       Header.Kind := Texture.Kind;
 
@@ -444,7 +440,7 @@ package body Orka.Resources.Textures.KTX is
          end;
       end if;
 
-      T2 := Clock;
+      T2 := Orka.OS.Monotonic_Clock;
 
       declare
          function Get_Level_Data
@@ -454,11 +450,11 @@ package body Orka.Resources.Textures.KTX is
          Bytes : constant Byte_Array_Pointers.Pointer
            := Orka.KTX.Create_KTX_Bytes (Header, Get_Level_Data'Access);
       begin
-         T3 := Clock;
+         T3 := Orka.OS.Monotonic_Clock;
 
          Location.Write_Data (Path, Bytes.Get);
 
-         T4 := Clock;
+         T4 := Orka.OS.Monotonic_Clock;
 
          Messages.Log (Info, "Saved texture " & Path & " in " &
            Logging.Trim (Logging.Image (+(T4 - T1))));

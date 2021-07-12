@@ -21,6 +21,7 @@ with Orka.Resources.Locations;
 with Orka.Resources.Managers;
 
 package Orka.Resources.Textures.KTX is
+   pragma Preelaborate;
 
    function Create_Loader
      (Manager : Managers.Manager_Ptr) return Loaders.Loader_Ptr;

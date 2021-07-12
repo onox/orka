@@ -76,6 +76,8 @@ package body Orka.OS is
       return Duration (Value.Seconds) + Duration (Value.Nanoseconds) / 1e9;
    end Monotonic_Clock;
 
+   function Monotonic_Clock return Time is (Time (Duration'(Monotonic_Clock)));
+
    ----------------------------------------------------------------------------
 
    subtype Size_Type is Interfaces.C.unsigned_long;

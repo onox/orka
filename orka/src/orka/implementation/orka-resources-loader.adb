@@ -16,7 +16,6 @@
 
 with Ada.Containers.Vectors;
 with Ada.Exceptions;
-with Ada.Real_Time;
 
 with Orka.Containers.Ring_Buffers;
 with Orka.OS;
@@ -140,7 +139,7 @@ package body Orka.Resources.Loader is
    type Read_Request is record
       Path   : SU.Unbounded_String;
       Future : Futures.Pointers.Mutable_Pointer;
-      Time   : Ada.Real_Time.Time;
+      Time   : Orka.Time;
    end record;
 
    Null_Request : constant Read_Request := (others => <>);
@@ -204,7 +203,7 @@ package body Orka.Resources.Loader is
          Queue.Enqueue
            ((Path   => SU.To_Unbounded_String (Path),
              Future => Pointer,
-             Time   => Ada.Real_Time.Clock));
+             Time   => Orka.OS.Monotonic_Clock));
          return Pointer;
          --  Return Pointer instead of Pointer.Get to prevent
          --  adjust/finalize raising a Storage_Error
@@ -238,17 +237,15 @@ package body Orka.Resources.Loader is
                Path : constant String := SU.To_String (Request.Path);
                Loader : Loaders.Loader_Ptr renames Resource_Loaders.Loader (Path);
 
-               use Ada.Real_Time;
-
-               Time_Start : constant Time := Clock;
+               Time_Start : constant Time := Orka.OS.Monotonic_Clock;
 
                Location : constant Locations.Location_Ptr
                  := Resource_Locations.Location (Loader, Path);
                Bytes : constant Byte_Array_Pointers.Pointer := Location.Read_Data (Path);
 
-               Time_End : constant Time := Clock;
+               Time_End : constant Time := Orka.OS.Monotonic_Clock;
 
-               Reading_Time : constant Time_Span := Time_End - Time_Start;
+               Reading_Time : constant Duration := Time_End - Time_Start;
 
                procedure Enqueue (Element : Jobs.Job_Ptr) is
                begin

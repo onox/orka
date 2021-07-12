@@ -14,17 +14,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Real_Time;
-
 with Orka.Jobs;
 with Orka.Resources.Locations;
 
 package Orka.Resources.Loaders is
+   pragma Preelaborate;
 
    type Resource_Data is record
       Bytes        : Byte_Array_Pointers.Pointer;
-      Reading_Time : Ada.Real_Time.Time_Span;
-      Start_Time   : Ada.Real_Time.Time;
+      Reading_Time : Duration;
+      Start_Time   : Time;
       Path         : SU.Unbounded_String;
    end record;
 

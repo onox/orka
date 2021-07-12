@@ -32,4 +32,14 @@ package Orka is
    type Float_32 is new Interfaces.C.C_float;
    type Float_64 is new Interfaces.C.double;
 
+   type Time is private;
+
+   function "-" (Left, Right : Time) return Duration;
+
+private
+
+   type Time is new Duration;
+
+   function "-" (Left, Right : Time) return Duration is (Duration (Time'(Left - Right)));
+
 end Orka;

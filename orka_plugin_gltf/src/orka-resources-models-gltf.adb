@@ -18,7 +18,6 @@ with System;
 
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Directories;
-with Ada.Real_Time;
 with Ada.Strings.Hash;
 with Ada.Unchecked_Deallocation;
 
@@ -31,9 +30,11 @@ with Orka.glTF.Accessors;
 with Orka.glTF.Meshes;
 with Orka.glTF.Scenes;
 
+with Orka.OS;
 with Orka.Jobs;
 with Orka.Logging;
 with Orka.Resources.Locations;
+with Orka.Strings;
 with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
@@ -42,9 +43,6 @@ package body Orka.Resources.Models.glTF is
    use all type Orka.Logging.Severity;
 
    package Messages is new Orka.Logging.Messages (Resource_Loader);
-
-   function "+" (Value : Ada.Real_Time.Time_Span) return Duration
-     renames Ada.Real_Time.To_Duration;
 
    Default_Root_Name : constant String := "root";
 
@@ -56,15 +54,20 @@ package body Orka.Resources.Models.glTF is
 
    -----------------------------------------------------------------------------
 
-   use Ada.Real_Time;
+   type Time_Kind is
+     (Time_Reading,
+      Time_Parsing,
+      Time_Processing,
+      Time_Buffers,
+      Time_Views,
+      Time_Accessors,
+      Time_Meshes,
+      Time_Nodes,
+      Time_Scenes,
+      Time_Scene_Tree,
+      Time_Write_Buffers);
 
-   type Times_Data is record
-      Reading    : Time_Span;
-      Parsing    : Time_Span;
-      Processing : Time_Span;
-      Scene      : Time_Span;
-      Buffers    : Time_Span;
-   end record;
+   type Times_Data is array (Time_Kind) of Duration;
 
    type GLTF_Data (Maximum_Nodes, Maximum_Accessors : Natural) is limited record
       Directory : SU.Unbounded_String;
@@ -76,7 +79,7 @@ package body Orka.Resources.Models.glTF is
       Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector (Capacity => Maximum_Nodes);
       Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector (Capacity => 8);
       Default_Scene : Long_Integer;
-      Times     : Times_Data := (others => Time_Span_Zero);
+      Times     : Times_Data := (others => 0.0);
       Start_Time : Time;
       Manager   : Managers.Manager_Ptr;
    end record;
@@ -119,7 +122,7 @@ package body Orka.Resources.Models.glTF is
       Path  : SU.Unbounded_String;
       Model : Model_Ptr;
       Parts, Vertices, Indices : Natural;
-      Start_Time : Ada.Real_Time.Time;
+      Start_Time : Time;
    end record;
 
    -----------------------------------------------------------------------------
@@ -518,17 +521,18 @@ package body Orka.Resources.Models.glTF is
       Context : Jobs.Execution_Context'Class)
    is
       use Orka.glTF.Types;
+      use Orka.Strings;
 
-      Path  : String renames SU.To_String (Object.Data.Path);
+      Path  : constant String := +Object.Data.Path;
 
       Parser : constant Parsers.Parser := Parsers.Create (Object.Data.Bytes.Get.Value);
    begin
       declare
-         T1 : constant Time := Clock;
+         T1 : constant Duration := Orka.OS.Monotonic_Clock;
 
          JSON : constant Orka.glTF.Types.JSON_Value := Parser.Parse;
 
-         T2 : constant Time := Clock;
+         T2 : constant Duration := Orka.OS.Monotonic_Clock;
 
          Buffers   : constant JSON_Value := JSON ("buffers");
          Views     : constant JSON_Value := JSON ("bufferViews");
@@ -543,7 +547,7 @@ package body Orka.Resources.Models.glTF is
          Data : constant GLTF_Data_Access := new GLTF_Data'
            (Maximum_Nodes     => Maximum_Nodes,
             Maximum_Accessors => Maximum_Nodes * 4,
-            Directory  => SU.To_Unbounded_String (Ada.Directories.Containing_Directory (Path)),
+            Directory  => +Ada.Directories.Containing_Directory (Path),
             Location   => Object.Location,
             Manager    => Object.Manager,
             Start_Time => Object.Data.Start_Time,
@@ -553,13 +557,13 @@ package body Orka.Resources.Models.glTF is
          Scene : constant JSON_Value := JSON ("scene");
 
          function Load_Data (Path : String) return Byte_Array_Pointers.Pointer is
-            Directory     : String renames SU.To_String (Data.Directory);
-            Relative_Path : constant String := Directory & Locations.Path_Separator & Path;
          begin
-            return Data.Location.Read_Data (Relative_Path);
+            return Data.Location.Read_Data (+Data.Directory & Locations.Path_Separator & Path);
          end Load_Data;
 
          Pointer : GLTF_Data_Pointers.Mutable_Pointer;
+
+         T3, T4, T5, T6, T7, T8, T9 : Duration;
       begin
          --  Require glTF 2.x
          if Asset.Get ("version").Value /= "2.0" then
@@ -568,20 +572,38 @@ package body Orka.Resources.Models.glTF is
          --  TODO Check minVersion
 
          --  Process buffers, nodes, meshes, and scenes
+         T3 := Orka.OS.Monotonic_Clock;
+
          Data.Buffers.Append (Orka.glTF.Buffers.Get_Buffers (Buffers, Load_Data'Access));
+         T4 := Orka.OS.Monotonic_Clock;
+
          Data.Views.Append (Orka.glTF.Buffers.Get_Buffer_Views (Data.Buffers, Views));
+         T5 := Orka.OS.Monotonic_Clock;
 
          Data.Accessors.Append (Orka.glTF.Accessors.Get_Accessors (Accessors));
+         T6 := Orka.OS.Monotonic_Clock;
+
          Data.Meshes.Append (Orka.glTF.Meshes.Get_Meshes (Meshes));
+         T7 := Orka.OS.Monotonic_Clock;
 
          Data.Nodes.Append (Orka.glTF.Scenes.Get_Nodes (Nodes));
+         T8 := Orka.OS.Monotonic_Clock;
+
          Data.Scenes.Append (Orka.glTF.Scenes.Get_Scenes (Scenes));
+         T9 := Orka.OS.Monotonic_Clock;
+
+         Data.Times (Time_Buffers)   := T4 - T3;
+         Data.Times (Time_Views)     := T5 - T4;
+         Data.Times (Time_Accessors) := T6 - T5;
+         Data.Times (Time_Meshes)    := T7 - T6;
+         Data.Times (Time_Nodes)     := T8 - T7;
+         Data.Times (Time_Scenes)    := T9 - T8;
 
          Data.Default_Scene := Scene.Value;
 
-         Data.Times.Reading    := Object.Data.Reading_Time;
-         Data.Times.Parsing    := T2 - T1;
-         Data.Times.Processing := Clock - T2;
+         Data.Times (Time_Reading)    := Object.Data.Reading_Time;
+         Data.Times (Time_Parsing)    := T2 - T1;
+         Data.Times (Time_Processing) := Orka.OS.Monotonic_Clock - T2;
 
          Pointer.Set (Data);
 
@@ -621,7 +643,7 @@ package body Orka.Resources.Models.glTF is
 
          Parts : String_Maps.Map;
 
-         Start_Time : constant Time := Clock;
+         Start_Time : constant Duration := Orka.OS.Monotonic_Clock;
 
          Vertices, Indices : Natural;
       begin
@@ -643,7 +665,7 @@ package body Orka.Resources.Models.glTF is
             raise Model_Load_Error with "glTF file '" & Path & "' has no mesh parts";
          end if;
 
-         Data.Times.Scene := Clock - Start_Time;
+         Data.Times (Time_Scene_Tree) := Orka.OS.Monotonic_Clock - Start_Time;
 
          --  Count total number of vertices and indices
          Count_Parts (GL.Types.UInt_Type, Data.Accessors,
@@ -667,7 +689,7 @@ package body Orka.Resources.Models.glTF is
       Data  : GLTF_Data renames Object.Data.Get;
       Parts : constant Positive := Object.Scene.Shapes.Element'Length;
 
-      Start_Time : constant Time := Clock;
+      Start_Time : constant Time := Orka.OS.Monotonic_Clock;
 
       Model_Data : constant Model_Ptr := new Model'
         (Scene  => Object.Scene,
@@ -682,9 +704,14 @@ package body Orka.Resources.Models.glTF is
         (Jobs.Abstract_Job with Data => Object.Data, Model => Model_Data);
 
       Finish_Job : constant Jobs.Job_Ptr := new GLTF_Finish_Loading_Job'
-        (Jobs.Abstract_Job with Data => Object.Data, Path => Object.Path,
-         Model => Model_Data, Start_Time => Start_Time,
-         Parts => Parts, Vertices => Object.Vertices, Indices => Object.Indices);
+        (Jobs.Abstract_Job with
+           Data       => Object.Data,
+           Path       => Object.Path,
+           Model      => Model_Data,
+           Start_Time => Start_Time,
+           Parts      => Parts,
+           Vertices   => Object.Vertices,
+           Indices    => Object.Indices);
    begin
       Orka.Jobs.Chain ((Buffers_Job, Finish_Job));
       Context.Enqueue (Buffers_Job);
@@ -710,7 +737,7 @@ package body Orka.Resources.Models.glTF is
    begin
       Object.Model.Batch.Finish_Batch;
 
-      Data.Times.Buffers := Clock - Object.Start_Time;
+      Data.Times (Time_Write_Buffers) := Orka.OS.Monotonic_Clock - Object.Start_Time;
 
       --  Register the model at the resource manager
       Data.Manager.Add_Resource (Path, Resource_Ptr (Object.Model));
@@ -719,17 +746,25 @@ package body Orka.Resources.Models.glTF is
          Times : Times_Data renames Data.Times;
       begin
          Messages.Log (Info, "Loaded model " & Path & " in " &
-           Logging.Trim (Logging.Image (To_Duration (Clock - Data.Start_Time))));
+           Logging.Trim (Logging.Image (Orka.OS.Monotonic_Clock - Data.Start_Time)));
          Messages.Log (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    reading file:    " & Logging.Image (+Times.Reading));
-         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (+Times.Parsing));
-         Messages.Log (Info, "    processing glTF: " & Logging.Image (+Times.Processing));
-         Messages.Log (Info, "    scene tree:      " & Logging.Image (+Times.Scene));
-         Messages.Log (Info, "    buffers:         " & Logging.Image (+Times.Buffers));
+         Messages.Log (Info, "  timing:");
+         Messages.Log (Info, "    reading file:    " & Logging.Image (Times (Time_Reading)));
+         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (Times (Time_Parsing)));
+         Messages.Log (Info, "    processing glTF: " & Logging.Image (Times (Time_Processing)));
+
+         Messages.Log (Info, "      buffers:       " & Logging.Image (Times (Time_Buffers)));
+         Messages.Log (Info, "      views:         " & Logging.Image (Times (Time_Views)));
+         Messages.Log (Info, "      accessors:     " & Logging.Image (Times (Time_Accessors)));
+         Messages.Log (Info, "      meshes:        " & Logging.Image (Times (Time_Meshes)));
+         Messages.Log (Info, "      nodes:         " & Logging.Image (Times (Time_Nodes)));
+         Messages.Log (Info, "      scenes:        " & Logging.Image (Times (Time_Scenes)));
+
+         Messages.Log (Info, "    scene tree:      " & Logging.Image (Times (Time_Scene_Tree)));
+         Messages.Log (Info, "    buffers:         " & Logging.Image (Times (Time_Write_Buffers)));
       end;
    end Execute;
 
