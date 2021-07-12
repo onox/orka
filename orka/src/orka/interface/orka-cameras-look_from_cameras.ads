@@ -25,7 +25,7 @@ package Orka.Cameras.Look_From_Cameras is
 
    procedure Change_Orientation
      (Object : in out Look_From_Camera;
-      Change : Vector4);
+      Value  : Vector4);
 
    overriding
    function View_Matrix (Object : Look_From_Camera) return Transforms.Matrix4;
@@ -43,6 +43,7 @@ private
 
    type Look_From_Camera is new First_Person_Camera with record
       Roll, Pitch, Yaw : Angle := 0.0;
+      Updater : Change_Updater_Ptr := new Change_Updater;
    end record;
 
 end Orka.Cameras.Look_From_Cameras;

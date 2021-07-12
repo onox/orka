@@ -154,4 +154,15 @@ private
 
    function Rotate_To_Up (Object : Camera'Class) return Matrix4;
 
+   protected type Change_Updater is
+      procedure Set (Value : Vector4);
+
+      procedure Get (Value : in out Vector4);
+   private
+      Change : Vector4 := (0.0, 0.0, 0.0, 0.0);
+      Is_Set : Boolean := False;
+   end Change_Updater;
+
+   type Change_Updater_Ptr is not null access Change_Updater;
+
 end Orka.Cameras;

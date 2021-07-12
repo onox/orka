@@ -119,4 +119,27 @@ package body Orka.Cameras is
       return R (Vector4 (Quaternions.R (Y_Axis, Object.Up)));
    end Rotate_To_Up;
 
+   protected body Change_Updater is
+      procedure Set (Value : Vector4) is
+         use Orka.Transforms.Doubles.Vectors;
+      begin
+         Change := Change + Value;
+         Is_Set := True;
+      end Set;
+
+      procedure Get (Value : in out Vector4) is
+         use Orka.Transforms.Doubles.Vectors;
+         use type Vector4;
+      begin
+         Value (X) := Change (X);
+         Value (Y) := Change (Y);
+         Value (Z) := Change (Z);
+         Value (W) := Change (W);
+
+         if Is_Set then
+            Change := (0.0, 0.0, 0.0, 0.0);
+         end if;
+      end Get;
+   end Change_Updater;
+
 end Orka.Cameras;

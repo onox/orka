@@ -37,19 +37,23 @@ package body Orka.Cameras.Rotate_Around_Cameras is
 
    procedure Change_Orientation
      (Object : in out Rotate_Around_Camera;
-      Change : Vector4) is
+      Value  : Vector4) is
    begin
-      Object.Alpha := Normalize_Angle (Object.Alpha + Change (X) * Object.Scale (X));
-      Object.Beta  := Normalize_Angle (Object.Beta  + Change (Y) * Object.Scale (Y));
-
-      Object.Radius := Clamp_Distance (Object.Radius - Change (Z) * Object.Scale (Z));
+      Object.Updater.Set (Value);
    end Change_Orientation;
 
    overriding
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
+      Change : Vector4;
+
+      use Orka.Transforms.Doubles.Vectors;
    begin
-      --  FIXME Still needed?
-      null;
+      Object.Updater.Get (Change);
+
+      Object.Alpha := Normalize_Angle (Object.Alpha + Change (X) * Object.Scale (X));
+      Object.Beta  := Normalize_Angle (Object.Beta  + Change (Y) * Object.Scale (Y));
+
+      Object.Radius := Clamp_Distance (Object.Radius - Change (Z) * Object.Scale (Z));
    end Update;
 
    use Orka.Transforms.Doubles.Matrices;

@@ -30,17 +30,21 @@ package body Orka.Cameras.Look_From_Cameras is
 
    procedure Change_Orientation
      (Object : in out Look_From_Camera;
-      Change : Vector4) is
+      Value  : Vector4) is
    begin
-      Object.Yaw   := Normalize_Angle (Object.Yaw   + Change (X) * Object.Scale (X));
-      Object.Pitch := Normalize_Angle (Object.Pitch + Change (Y) * Object.Scale (Y));
+      Object.Updater.Set (Value);
    end Change_Orientation;
 
    overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
+      Change : Vector4;
+
+      use Orka.Transforms.Doubles.Vectors;
    begin
-      --  FIXME Still needed?
-      null;
+      Object.Updater.Get (Change);
+
+      Object.Yaw   := Normalize_Angle (Object.Yaw   + Change (X) * Object.Scale (X));
+      Object.Pitch := Normalize_Angle (Object.Pitch + Change (Y) * Object.Scale (Y));
    end Update;
 
    use Orka.Transforms.Doubles.Matrices;

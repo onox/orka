@@ -30,7 +30,7 @@ package Orka.Cameras.Rotate_Around_Cameras is
 
    procedure Change_Orientation
      (Object : in out Rotate_Around_Camera;
-      Change : Vector4);
+      Value  : Vector4);
 
    overriding
    function View_Matrix (Object : Rotate_Around_Camera) return Transforms.Matrix4;
@@ -53,6 +53,7 @@ private
       Alpha  : Angle := 0.0;
       Beta   : Angle := 0.0;
       Radius : Distance := 1.0;
+      Updater : Change_Updater_Ptr := new Change_Updater;
    end record;
 
 end Orka.Cameras.Rotate_Around_Cameras;
