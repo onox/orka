@@ -525,7 +525,7 @@ package body Orka.Resources.Models.glTF is
 
       Path  : constant String := +Object.Data.Path;
 
-      Parser : constant Parsers.Parser := Parsers.Create (Object.Data.Bytes.Get.Value);
+      Parser : Parsers.Parser := Parsers.Create (Object.Data.Bytes.Get.Value);
    begin
       declare
          T1 : constant Duration := Orka.OS.Monotonic_Clock;
