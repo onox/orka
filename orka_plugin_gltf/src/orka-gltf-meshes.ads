@@ -25,8 +25,10 @@ package Orka.glTF.Meshes is
      range GL.Types.Points .. GL.Types.Triangle_Strip;
 
    type Attribute_Kind is (Position, Normal, Texcoord_0);
+   --  TODO Other kinds: Tangent, Texcoord_1, Color_0, Joints_0, Weights_0
 
    type Attribute_Array is array (Attribute_Kind) of Natural;
+   --  FIXME Support more attribute kinds and use Boolean to indicate whether it is used
 
    type Primitive is record
       Attributes : Attribute_Array;
