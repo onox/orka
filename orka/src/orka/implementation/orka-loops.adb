@@ -125,6 +125,8 @@ package body Orka.Loops is
      (Fence  : not null access SJ.Fences.Buffer_Fence;
       Render : Simulation.Render_Ptr)
    is
+      subtype Time is Ada.Real_Time.Time;
+
       Previous_Time : Time := Clock;
       Next_Time     : Time := Previous_Time;
 
