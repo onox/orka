@@ -27,9 +27,12 @@ procedure Orka_7_Half is
      := (0.0, 0.5, -0.5, 1.0, -1.0, 0.1, -0.1, 0.0, 0.1234, -0.123456,
          10.1234, 20.1234, 50.1234, 100.1234, 1000.1234);
 
-   Half_Numbers   : constant GL.Types.Half_Array   := Orka.Types.Convert (Numbers);
-   Single_Numbers : constant GL.Types.Single_Array := Orka.Types.Convert (Half_Numbers);
+   Half_Numbers   : GL.Types.Half_Array (Numbers'Range);
+   Single_Numbers : GL.Types.Single_Array (Half_Numbers'Range);
 begin
+   Orka.Types.Convert (Numbers, Half_Numbers);
+   Orka.Types.Convert (Half_Numbers, Single_Numbers);
+
    for Number of Numbers loop
       Ada.Text_IO.Put_Line (GL.Types.Single'Image (Number));
    end loop;
