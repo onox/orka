@@ -116,10 +116,11 @@ package body Orka.Transforms.SIMD_Quaternions is
       SA : constant Vectors.Element_Type := EF.Sin (Angle / 2.0);
 
       use Vectors;
+
+      Result : Quaternion := Quaternion (Axis * SA);
    begin
-      return Result : Quaternion := Quaternion (Axis * SA) do
-         Result (W) := CA;
-      end return;
+      Result (W) := CA;
+      return Normalize (Result);
    end R;
 
    function R (Left, Right : Vector4) return Quaternion is
