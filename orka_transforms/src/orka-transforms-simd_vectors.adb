@@ -76,7 +76,7 @@ package body Orka.Transforms.SIMD_Vectors is
          --  Epsilon < 1, we can simply take +/- 3 * Epsilon
          Epsilon : constant Element_Type := 3.0 * Element_Type'Model_Epsilon;
       begin
-         return Result in Expected - Epsilon .. Expected + Epsilon;
+         return abs (Result - Expected) <= Epsilon;
       end Is_Equivalent;
    begin
       return Is_Equivalent (1.0, Magnitude2 (Elements));
