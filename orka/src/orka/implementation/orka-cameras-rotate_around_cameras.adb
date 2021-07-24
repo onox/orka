@@ -74,7 +74,8 @@ package body Orka.Cameras.Rotate_Around_Cameras is
    overriding
    function View_Position (Object : Rotate_Around_Camera) return Vector4 is
       View_Matrix : constant Matrix4 :=
-         Object.Target_Position + Object.View_Matrix_Inverse * T ((0.0, 0.0, Object.Radius, 0.0));
+        Object.Target_Position
+          + Object.View_Matrix_Inverse * T (Vector4'(0.0, 0.0, Object.Radius, 0.0));
    begin
       return View_Matrix (W);
    end View_Position;
