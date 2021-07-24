@@ -194,7 +194,11 @@ package body Orka.Transforms.SIMD_Quaternions is
 
       use Vectors;
    begin
-      return Normalize ((SL / SA) * Left + (SR / SA) * Right);
+      if SA = 0.0 then
+         return Lerp (Left, Right, Time);
+      else
+         return Normalize ((SL / SA) * Left + (SR / SA) * Right);
+      end if;
    end Slerp;
 
 end Orka.Transforms.SIMD_Quaternions;
