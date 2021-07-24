@@ -44,6 +44,10 @@ package body Orka.Transforms.SIMD_Vectors is
    function Magnitude2 (Elements : Vector_Type) return Element_Type is
      (Sum (Elements * Elements));
 
+   function "=" (Left, Right : Vector_Type) return Boolean is
+     (for all Index in Vector_Type'Range =>
+        abs (Left (Index) - Right (Index)) <= Element_Type'Model_Epsilon);
+
    function "*" (Factor : Element_Type; Elements : Vector_Type) return Vector_Type is
    begin
       return (Factor, Factor, Factor, Factor) * Elements;

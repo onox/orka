@@ -56,6 +56,8 @@ package Orka.Transforms.SIMD_Vectors is
    function To_Degrees (Angle : Element_Type) return Element_Type is
      (Angle / Ada.Numerics.Pi * 180.0);
 
+   function "=" (Left, Right : Vector_Type) return Boolean;
+
    function "+" (Left, Right : Vector_Type) return Vector_Type renames Add_Vectors;
 
    function "-" (Left, Right : Vector_Type) return Vector_Type renames Subtract_Vectors;
