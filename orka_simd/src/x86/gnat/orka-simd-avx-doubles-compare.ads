@@ -20,6 +20,13 @@ package Orka.SIMD.AVX.Doubles.Compare is
    function Compare (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmppd256";
 
+   --  Ordered means a comparison returns False if one of the values is a NaN,
+   --  while unordered would return True.
+   --
+   --  Signaling means an exception is raised for invalid floating-point values.
+   --
+   --  https://stackoverflow.com/questions/16988199/how-to-choose-avx-compare-predicate-variants
+
    --  Predicates used are ordered and signaling
 
    function "=" (Left, Right : m256d) return m256d is
