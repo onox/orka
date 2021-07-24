@@ -253,14 +253,14 @@ package body Test_Transforms_Singles_Matrices is
 
    procedure Test_Rotate (Object : in out Test) is
       Angle  : constant Float_32 := 90.0;
-      Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
+      Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
       Expected : Matrix4 :=
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
       Result   : constant Matrix4 :=
         R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle), Offset) * T (Offset);
    begin
-      Expected (W) := Offset;
+      Expected (W) := Vector4 (Offset);
 
       for I in Index_Homogeneous loop
          Assert_Equivalent (Expected (I), Result (I), I);
@@ -329,7 +329,7 @@ package body Test_Transforms_Singles_Matrices is
 
    procedure Test_Rotate_X (Object : in out Test) is
       Angle  : constant Float_32  := 90.0;
-      Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
+      Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
       CA : constant Float_32 := EF.Cos (Angle, 360.0);
       SA : constant Float_32 := EF.Sin (Angle, 360.0);
@@ -338,7 +338,7 @@ package body Test_Transforms_Singles_Matrices is
         := ((1.0,  0.0, 0.0, 0.0),
             (0.0,   CA,  SA, 0.0),
             (0.0,  -SA,  CA, 0.0),
-            Offset);
+            Vector4 (Offset));
 
       Result : constant Matrix4 := Rx (To_Radians (Angle), Offset) * T (Offset);
    begin
@@ -349,7 +349,7 @@ package body Test_Transforms_Singles_Matrices is
 
    procedure Test_Rotate_Y (Object : in out Test) is
       Angle  : constant Float_32  := 90.0;
-      Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
+      Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
       CA : constant Float_32 := EF.Cos (Angle, 360.0);
       SA : constant Float_32 := EF.Sin (Angle, 360.0);
@@ -358,7 +358,7 @@ package body Test_Transforms_Singles_Matrices is
         := ((CA,  0.0,  -SA, 0.0),
             (0.0, 1.0,  0.0, 0.0),
             (SA,  0.0,   CA, 0.0),
-            Offset);
+            Vector4 (Offset));
 
       Result : constant Matrix4 := Ry (To_Radians (Angle), Offset) * T (Offset);
    begin
@@ -369,7 +369,7 @@ package body Test_Transforms_Singles_Matrices is
 
    procedure Test_Rotate_Z (Object : in out Test) is
       Angle  : constant Float_32  := 90.0;
-      Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
+      Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
       CA : constant Float_32 := EF.Cos (Angle, 360.0);
       SA : constant Float_32 := EF.Sin (Angle, 360.0);
@@ -378,7 +378,7 @@ package body Test_Transforms_Singles_Matrices is
         := ((CA,    SA, 0.0, 0.0),
             (-SA,   CA, 0.0, 0.0),
             (0.0,  0.0, 1.0, 0.0),
-            Offset);
+            Vector4 (Offset));
 
       Result : constant Matrix4 := Rz (To_Radians (Angle), Offset) * T (Offset);
    begin

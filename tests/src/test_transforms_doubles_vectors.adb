@@ -135,8 +135,8 @@ package body Test_Transforms_Doubles_Vectors is
    end Test_Normalize;
 
    procedure Test_Distance (Object : in out Test) is
-      Left  : constant Vector4 := (2.0, 5.0, 0.0, 0.0);
-      Right : constant Vector4 := (2.0, 2.0, 0.0, 0.0);
+      Left  : constant Point := (2.0, 5.0, 0.0, 1.0);
+      Right : constant Point := (2.0, 2.0, 0.0, 1.0);
 
       Expected : constant Float_64 := 3.0;
       Result   : constant Float_64 := Distance (Left, Right);
