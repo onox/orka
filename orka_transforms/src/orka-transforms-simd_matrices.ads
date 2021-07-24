@@ -31,7 +31,7 @@ package Orka.Transforms.SIMD_Matrices is
 
    package Vectors renames Vector_Transforms;
 
-   function "-" (Elements : Vectors.Vector_Type) return Vectors.Vector_Type renames Vectors."-";
+   function "-" (Elements : Vectors.Point) return Vectors.Point renames Vectors."-";
 
    subtype Element_Type is Vectors.Element_Type;
    subtype Vector_Type is Vectors.Vector_Type;
@@ -48,7 +48,7 @@ package Orka.Transforms.SIMD_Matrices is
    with Inline;
    --  Return the identity matrix
 
-   function Zero_Point return Vector_Type renames Vectors.Zero_Point;
+   function Zero_Point return Vectors.Point renames Vectors.Zero_Point;
    --  Return a zero vector that indicates a point. The fourth (W) component
    --  is 1.
 
@@ -63,6 +63,8 @@ package Orka.Transforms.SIMD_Matrices is
    --  A concatenation of orthogonal matrices is orthogonal.
 
    function T (Offset : Vector_Type) return Matrix_Type;
+
+   function T (Offset : Vectors.Point) return Matrix_Type;
    --  Translate points by the given amount
    --
    --  Matrix is affine.
@@ -129,29 +131,29 @@ package Orka.Transforms.SIMD_Matrices is
    function R
      (Axis  : Vector_Type;
       Angle : Element_Type;
-      Point : Vector_Type) return Matrix_Type
+      Point : Vectors.Point) return Matrix_Type
    is (T (Point) * R (Axis, Angle) * T (-Point));
    --  Return a rotation matrix with the center of rotation at the given point
 
    function R
      (Quaternion : Vector_Type;
-      Point      : Vector_Type) return Matrix_Type
+      Point      : Vectors.Point) return Matrix_Type
    is (T (Point) * R (Quaternion) * T (-Point));
    --  Return rotation matrix using a quaternion with the center of rotation at the given point
    --
    --  The quaternion must be a unit quaternion (normalized).
 
-   function Rx (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+   function Rx (Angle : Element_Type; Point : Vectors.Point) return Matrix_Type is
      (T (Point) * Rx (Angle) * T (-Point));
    --  Add a rotation transformation around the X axis with the center
    --  of rotation at the given point to the matrix
 
-   function Ry (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+   function Ry (Angle : Element_Type; Point : Vectors.Point) return Matrix_Type is
      (T (Point) * Ry (Angle) * T (-Point));
    --  Add a rotation transformation around the Y axis with the center
    --  of rotation at the given point to the matrix
 
-   function Rz (Angle : Element_Type; Point : Vector_Type) return Matrix_Type is
+   function Rz (Angle : Element_Type; Point : Vectors.Point) return Matrix_Type is
      (T (Point) * Rz (Angle) * T (-Point));
    --  Add a rotation transformation around the Z axis with the center
    --  of rotation at the given point to the matrix

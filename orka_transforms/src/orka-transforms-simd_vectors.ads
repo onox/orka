@@ -32,11 +32,21 @@ package Orka.Transforms.SIMD_Vectors is
 
    subtype Vector4 is Vector_Type;
 
-   function Zero_Direction return Vector_Type is
+   type Direction is new Vector4
+     with Dynamic_Predicate => Direction (W) = 0.0;
+
+   type Point is new Vector4
+     with Dynamic_Predicate => Point (W) = 1.0;
+
+   function Zero return Vector4 is
      ((0.0, 0.0, 0.0, 0.0))
    with Inline;
 
-   function Zero_Point return Vector_Type is
+   function Zero_Direction return Direction is
+     ((0.0, 0.0, 0.0, 0.0))
+   with Inline;
+
+   function Zero_Point return Point is
      ((0.0, 0.0, 0.0, 1.0))
    with Inline;
 
@@ -60,6 +70,24 @@ package Orka.Transforms.SIMD_Vectors is
 
    function "*" (Elements : Vector_Type; Factor : Element_Type) return Vector_Type;
 
+   ----------------------------------------------------------------------------
+
+   function "*" (Factor : Element_Type; Elements : Direction) return Direction;
+
+   function "*" (Elements : Direction; Factor : Element_Type) return Direction;
+
+   function "-" (Elements : Point) return Point;
+
+   function "+" (Left, Right : Direction) return Direction;
+
+   function "+" (Left : Point; Right : Direction) return Point;
+
+   function "+" (Left : Direction; Right : Point) return Point;
+
+   function "-" (Left, Right : Point) return Direction;
+
+   ----------------------------------------------------------------------------
+
    function Magnitude2 (Elements : Vector_Type) return Element_Type
      with Inline;
 
@@ -75,7 +103,7 @@ package Orka.Transforms.SIMD_Vectors is
    function Normalized (Elements : Vector_Type) return Boolean;
    --  Return True if the vector is normalized, False otherwise
 
-   function Distance (Left, Right : Vector_Type) return Element_Type;
+   function Distance (Left, Right : Point) return Element_Type;
    --  Return the distance between two points
 
    function Projection (Elements, Direction : Vector_Type) return Vector_Type;

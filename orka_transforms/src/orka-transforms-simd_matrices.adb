@@ -20,12 +20,18 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
+   function T (Offset : Vectors.Point) return Matrix_Type is
+      Result : Matrix_Type := Identity_Value;
+   begin
+      Result (W) := Vector_Type (Offset);
+      return Result;
+   end T;
+
    function T (Offset : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Value;
-      Old_W  : constant Element_Type := Result (W) (W);
    begin
       Result (W) := Offset;
-      Result (W) (W) := Old_W;
+      Result (W) (W) := 1.0;
       return Result;
    end T;
 

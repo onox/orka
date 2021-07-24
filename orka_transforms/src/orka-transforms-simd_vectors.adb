@@ -18,6 +18,27 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 package body Orka.Transforms.SIMD_Vectors is
 
+   function "-" (Elements : Point) return Point is
+   begin
+      return Result : Point := Point (-Vector4 (Elements)) do
+         Result (W) := Elements (W);
+      end return;
+   end "-";
+
+   function "+" (Left, Right : Direction) return Direction is
+     (Direction (Vector4 (Left) + Vector4 (Right)));
+
+   function "+" (Left : Point; Right : Direction) return Point is
+     (Point (Vector4 (Left) + Vector4 (Right)));
+
+   function "+" (Left : Direction; Right : Point) return Point is
+     (Point (Vector4 (Left) + Vector4 (Right)));
+
+   function "-" (Left, Right : Point) return Direction is
+     (Direction (Vector4 (Left) - Vector4 (Right)));
+
+   ----------------------------------------------------------------------------
+
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
    function Magnitude2 (Elements : Vector_Type) return Element_Type is
@@ -29,6 +50,12 @@ package body Orka.Transforms.SIMD_Vectors is
    end "*";
 
    function "*" (Elements : Vector_Type; Factor : Element_Type) return Vector_Type is
+     (Factor * Elements);
+
+   function "*" (Factor : Element_Type; Elements : Direction) return Direction is
+     (Direction (Factor * Vector4 (Elements)));
+
+   function "*" (Elements : Direction; Factor : Element_Type) return Direction is
      (Factor * Elements);
 
    function Magnitude (Elements : Vector_Type) return Element_Type is
@@ -55,8 +82,8 @@ package body Orka.Transforms.SIMD_Vectors is
       return Is_Equivalent (1.0, Magnitude2 (Elements));
    end Normalized;
 
-   function Distance (Left, Right : Vector_Type) return Element_Type is
-     (Magnitude (Left - Right));
+   function Distance (Left, Right : Point) return Element_Type is
+     (Magnitude (Vector_Type (Left - Right)));
 
    function Projection (Elements, Direction : Vector_Type) return Vector_Type is
       Unit_Direction : constant Vector_Type := Normalize (Direction);
