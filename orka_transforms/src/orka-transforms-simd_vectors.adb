@@ -19,10 +19,10 @@ with Ada.Numerics.Generic_Elementary_Functions;
 package body Orka.Transforms.SIMD_Vectors is
 
    function "-" (Elements : Point) return Point is
+      Result : Vector4 := -Vector4 (Elements);
    begin
-      return Result : Point := Point (-Vector4 (Elements)) do
-         Result (W) := Elements (W);
-      end return;
+      Result (W) := Elements (W);
+      return Point (Result);
    end "-";
 
    function "+" (Left, Right : Direction) return Direction is
