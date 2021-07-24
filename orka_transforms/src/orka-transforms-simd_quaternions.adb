@@ -27,6 +27,12 @@ package body Orka.Transforms.SIMD_Quaternions is
       end return;
    end Vector_Part;
 
+   function "+" (Left, Right : Quaternion) return Quaternion is
+      use Vectors;
+   begin
+      return Quaternion (Vector4 (Left) + Vector4 (Right));
+   end "+";
+
    function "*" (Left, Right : Quaternion) return Quaternion is
       use Vectors;
 
@@ -43,6 +49,16 @@ package body Orka.Transforms.SIMD_Quaternions is
          Result (W) := S;
       end return;
    end "*";
+
+   function "*" (Left : Vectors.Element_Type; Right : Quaternion) return Quaternion is
+      use Vectors;
+   begin
+      return Quaternion (Left * Vector4 (Right));
+   end "*";
+
+   function "*" (Left : Quaternion; Right : Vectors.Element_Type) return Quaternion is
+     (Right * Left);
+   --  Scalar multiplication is commutative
 
    function Conjugate (Elements : Quaternion) return Quaternion is
       Element_W : constant Vectors.Element_Type := Elements (W);
@@ -157,9 +173,8 @@ package body Orka.Transforms.SIMD_Quaternions is
       Time        : Vectors.Element_Type) return Quaternion
    is
       use type Vectors.Element_Type;
-      use Vectors;
    begin
-      return Normalize (Quaternion ((1.0 - Time) * Vector4 (Left) + Time * Vector4 (Right)));
+      return Normalize ((1.0 - Time) * Left + Time * Right);
    end Lerp;
 
    function Slerp
@@ -178,7 +193,7 @@ package body Orka.Transforms.SIMD_Quaternions is
 
       use Vectors;
    begin
-      return Quaternion ((SL / SA) * Vector4 (Left) + (SR / SA) * Vector4 (Right));
+      return Normalize ((SL / SA) * Left + (SR / SA) * Right);
    end Slerp;
 
 end Orka.Transforms.SIMD_Quaternions;

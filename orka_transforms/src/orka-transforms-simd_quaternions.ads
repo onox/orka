@@ -34,7 +34,13 @@ package Orka.Transforms.SIMD_Quaternions is
      ((0.0, 0.0, 0.0, 1.0))
    with Inline;
 
+   function "+" (Left, Right : Quaternion) return Quaternion;
+
    function "*" (Left, Right : Quaternion) return Quaternion;
+
+   function "*" (Left : Vectors.Element_Type; Right : Quaternion) return Quaternion;
+
+   function "*" (Left : Quaternion; Right : Vectors.Element_Type) return Quaternion;
 
    function Conjugate (Elements : Quaternion) return Quaternion;
 
