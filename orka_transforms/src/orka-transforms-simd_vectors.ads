@@ -33,10 +33,10 @@ package Orka.Transforms.SIMD_Vectors is
    subtype Vector4 is Vector_Type;
 
    type Direction is new Vector4
-     with Dynamic_Predicate => Direction (W) = 0.0;
+     with Dynamic_Predicate => Vector4 (Direction) (W) = 0.0;
 
    type Point is new Vector4
-     with Dynamic_Predicate => Point (W) = 1.0;
+     with Dynamic_Predicate => Vector4 (Point) (W) = 1.0;
 
    function Zero return Vector4 is
      ((0.0, 0.0, 0.0, 0.0))
