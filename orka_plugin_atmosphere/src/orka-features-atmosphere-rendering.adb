@@ -158,10 +158,10 @@ package body Orka.Features.Atmosphere.Rendering is
          Apply_Hacks;
       else
          Object.Uniform_Ground_Hack.Set_Boolean (False);
-         Object.Uniform_Camera_Offset.Set_Vector (Orka.Transforms.Singles.Vectors.Zero_Point);
+         Object.Uniform_Camera_Offset.Set_Vector (Orka.Transforms.Singles.Vectors.Zero);
       end if;
 
-      Object.Uniform_Camera_Pos.Set_Vector (Orka.Transforms.Singles.Vectors.Zero_Point);
+      Object.Uniform_Camera_Pos.Set_Vector (Orka.Transforms.Singles.Vectors.Zero);
       Object.Uniform_Planet_Pos.Set_Vector (Convert (-Planet_To_Camera * Object.Distance_Scale));
 
       Object.Uniform_Sun_Dir.Set_Vector (Convert (Normalize (Planet_To_Star)));
