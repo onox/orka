@@ -1,9 +1,13 @@
+SIMD := $(shell ((gcc -march=native -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
+
+SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
+
 .PHONY: build debug run clean trace dump
 
 all: run
 
 build:
-	alr build
+	alr build $(SCENARIO_VARS)
 run: build
 	cd example && GALLIUM_HUD=".c35frametime" MESA_LOADER_DRIVER_OVERRIDE=iris ./build/bin/example
 verbose: build
