@@ -65,12 +65,10 @@ package AWT.Inputs.Gamepads is
      with Component_Size => 1;
 
    type Axis_Position is delta 2.0 ** (-15) range -1.0 .. 1.0 - 2.0 ** (-15)
-     with Small => 2.0 ** (-15),
-          Size  => 16;
+     with Size => 16;
 
    type Trigger_Position is delta 2.0 ** (-8) range 0.0 .. 1.0 - 2.0 ** (-8)
-     with Small => 2.0 ** (-8),
-          Size  => 8;
+     with Size => 8;
 
    type Gamepad_Axes is array (Gamepad_Axis) of Axis_Position;
 
@@ -120,8 +118,7 @@ package AWT.Inputs.Gamepads is
    ----------------------------------------------------------------------------
 
    type Sensor_Axis_Value is delta 2.0 ** (-16) range -(2.0 ** 15) .. +(2.0 ** 15 - 2.0 ** (-16))
-     with Small => 2.0 ** (-16),
-          Size  => 32;
+     with Size => 32;
 
    type Sensor_Axis is (X, Y, Z, Rx, Ry, Rz);
 
