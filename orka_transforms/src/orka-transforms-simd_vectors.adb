@@ -25,6 +25,9 @@ package body Orka.Transforms.SIMD_Vectors is
       return Point (Result);
    end "-";
 
+   function "-" (Left, Right : Direction) return Direction is
+     (Direction (Vector4 (Left) - Vector4 (Right)));
+
    function "+" (Left, Right : Direction) return Direction is
      (Direction (Vector4 (Left) + Vector4 (Right)));
 

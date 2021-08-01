@@ -80,6 +80,8 @@ package Orka.Transforms.SIMD_Vectors is
 
    function "-" (Elements : Point) return Point;
 
+   function "-" (Left, Right : Direction) return Direction;
+
    function "+" (Left, Right : Direction) return Direction;
 
    function "+" (Left : Point; Right : Direction) return Point;
