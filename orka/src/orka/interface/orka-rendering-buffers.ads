@@ -112,9 +112,6 @@ package Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
-   function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
-     with Inline;
-
    overriding
    function Length (Object : Buffer) return Natural
      with Inline;

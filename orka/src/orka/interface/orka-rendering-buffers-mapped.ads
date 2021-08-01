@@ -25,9 +25,6 @@ package Orka.Rendering.Buffers.Mapped is
      (Kind : Orka.Types.Element_Type;
       Mode : IO_Mode) is abstract new Bindable_Buffer with private;
 
-   function GL_Buffer (Object : Mapped_Buffer) return GL.Objects.Buffers.Buffer
-     with Inline;
-
    overriding
    function Length (Object : Mapped_Buffer) return Natural;
    --  Number of elements in the buffer

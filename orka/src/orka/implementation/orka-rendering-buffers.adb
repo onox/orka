@@ -192,9 +192,6 @@ package body Orka.Rendering.Buffers is
 
    -----------------------------------------------------------------------------
 
-   function GL_Buffer (Object : Buffer) return GL.Objects.Buffers.Buffer
-     is (Object.Buffer);
-
    overriding
    function Length (Object : Buffer) return Natural is (Object.Length);
 
