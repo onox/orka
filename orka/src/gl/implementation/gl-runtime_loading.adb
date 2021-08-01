@@ -141,8 +141,6 @@ package body GL.Runtime_Loading is
          Param2   : Param2_Type;
          Max_Size : Types.Size) return Array_Type
       is
-         use type Types.Size;
-
          Actual_Size : Types.Size := 0;
 
          Result : Array_Type (1 .. Max_Size);
@@ -205,8 +203,6 @@ package body GL.Runtime_Loading is
          Param5   : Param5_Type;
          Max_Size : Types.Size) return Array_Type
       is
-         use type Types.Size;
-
          Actual_Size : Types.Size := 0;
 
          Result : Array_Type (1 .. Max_Size);
