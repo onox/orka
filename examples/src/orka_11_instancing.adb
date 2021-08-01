@@ -50,6 +50,7 @@ procedure Orka_11_Instancing is
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Framebuffers;
    use Orka.Rendering.Programs;
+   use type Orka.Integer_32;
    use type Orka.Float_32;
    use type Orka.Float_64;
    use GL.Types;

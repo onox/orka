@@ -61,6 +61,8 @@ procedure Orka_KTX is
    package Job_System renames Orka_Package_KTX.Job_System;
    package Loader     renames Orka_Package_KTX.Loader;
 
+   use type Orka.Integer_32;
+
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
 

@@ -24,13 +24,28 @@ package Orka is
    subtype Index_2D is Index_Homogeneous range X .. Y;
    subtype Index_3D is Index_Homogeneous range X .. Z;
 
+   ----------------------------------------------------------------------------
+
    type Integer_16 is new Interfaces.C.short;
+   type Integer_32 is new Interfaces.C.int;
+
+   type Integer_64 is range -(2 ** 63) .. +(2 ** 63 - 1);
+   --  Based on C99 long long int
 
    type Unsigned_32 is mod 2 ** 32
      with Size => 32;
 
+   type Unsigned_64 is mod 2 ** 64
+     with Size => 64;
+   --  Based on C99 unsigned long long int
+
+   subtype Float_16 is Integer_16;
+   --  F16C extension can be used to convert from/to Single
+
    type Float_32 is new Interfaces.C.C_float;
    type Float_64 is new Interfaces.C.double;
+
+   ----------------------------------------------------------------------------
 
    type Time is private;
 

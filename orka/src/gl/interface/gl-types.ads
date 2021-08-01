@@ -26,19 +26,13 @@ package GL.Types is
    --  Types that are only used internally, but may be needed when interfacing
    --  with OpenGL-related library APIs can be found in GL.Low_Level.
 
-   type long_long_int is range -(2 ** 63) .. +(2 ** 63 - 1);
-   --  Based on C99 long long int
-
-   type unsigned_long_long is mod 2 ** 64;
-   --  Based on C99 unsigned long long int
-
-   subtype UInt64 is unsigned_long_long;
+   subtype UInt64 is Orka.Unsigned_64;
 
    --  Signed integer types
    type Byte  is new C.signed_char;
    subtype Short is Orka.Integer_16;
-   type Int   is new C.int;
-   type Long  is new long_long_int;
+   subtype Int   is Orka.Integer_32;
+   subtype Long  is Orka.Integer_64;
 
    subtype Size is Int range 0 .. Int'Last;
    subtype Long_Size is Long range 0 .. Long'Last;
@@ -51,7 +45,7 @@ package GL.Types is
    type UInt   is new C.unsigned;
 
    --  Floating point types ("Single" is used to avoid conflicts with Float)
-   subtype Half is Short;  --  F16C extension can be used to convert from/to Single
+   subtype Half   is Orka.Float_16;
    subtype Single is Orka.Float_32;
    subtype Double is Orka.Float_64;
 

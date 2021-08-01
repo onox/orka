@@ -42,6 +42,7 @@ procedure Orka_6_FFT is
 
    ----------------------------------------------------------------------
 
+   use type Orka.Integer_32;
    use type Orka.Float_32;
    use GL.Types;
 
