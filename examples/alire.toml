@@ -23,6 +23,8 @@ executables = [
     "orka_13_geometry"
 ]
 
+configuration.disabled = true
+
 [[depends-on]]
 awt = "^1.0.0"
 

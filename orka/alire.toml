@@ -9,6 +9,8 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+configuration.disabled = true
+
 [gpr-set-externals.'case(os)']
 linux = { ALR_OS = "linux" }
 windows = { ALR_OS = "windows" }

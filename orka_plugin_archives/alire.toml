@@ -9,6 +9,8 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+configuration.disabled = true
+
 [[depends-on]]
 dcf = "^2.0.2"
 orka = "~0.2.0"

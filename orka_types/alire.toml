@@ -8,3 +8,5 @@ tags = ["orka"]
 authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
+
+configuration.disabled = true

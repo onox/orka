@@ -8,6 +8,8 @@ maintainers-logins = ["onox"]
 
 executables = ["orka_tests"]
 
+configuration.disabled = true
+
 [[depends-on]]
 aunit = "^21.0.0"
 orka_simd = "^1.0.0"

@@ -9,6 +9,8 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+configuration.disabled = true
+
 [[depends-on]]
 json = "^5.0.0"
 orka_transforms = "^1.0.0"

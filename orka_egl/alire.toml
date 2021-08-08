@@ -13,6 +13,8 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+configuration.disabled = true
+
 [available.'case(os)']
 linux = true
 '...' = false

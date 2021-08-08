@@ -9,6 +9,8 @@ authors = ["onox", "Eric Bruneton"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
+configuration.disabled = true
+
 [[depends-on]]
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
