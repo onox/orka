@@ -78,4 +78,6 @@ package Orka.SIMD.AVX.Doubles.Compare is
    --  in a Constraint_Error. Use this function to check if an element is
    --  not zero after comparison using one of the operators above.
 
+   function Is_Equal (Left, Right : m256d) return Boolean;
+
 end Orka.SIMD.AVX.Doubles.Compare;

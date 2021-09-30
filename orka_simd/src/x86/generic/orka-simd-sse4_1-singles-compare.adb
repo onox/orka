@@ -16,32 +16,27 @@
 
 with Ada.Unchecked_Conversion;
 
-with Orka.SIMD.AVX.Doubles.Arithmetic;
-with Orka.SIMD.AVX.Longs.Logical;
+with Orka.SIMD.SSE.Singles.Arithmetic;
+with Orka.SIMD.SSE.Singles.Compare;
+with Orka.SIMD.SSE2.Integers;
+with Orka.SIMD.SSE4_1.Integers.Logical;
 
-package body Orka.SIMD.AVX.Doubles.Compare is
+package body Orka.SIMD.SSE4_1.Singles.Compare is
 
-   use SIMD.AVX.Doubles.Arithmetic;
-   use SIMD.AVX.Longs.Logical;
-   use SIMD.AVX.Longs;
+   use SIMD.SSE.Singles.Arithmetic;
+   use SIMD.SSE.Singles.Compare;
+   use SIMD.SSE2.Integers;
+   use SIMD.SSE4_1.Integers.Logical;
 
-   function Is_True (Elements : m256d; Position : Index_Homogeneous) return Boolean is
-   begin
-      return Elements (Position) /= 0.0;
-   exception
-      when Constraint_Error =>
-         return True;
-   end Is_True;
+   function Is_Equal (Left, Right : m128) return Boolean is
+      Epsilon  : constant := Float_32'Model_Epsilon;
 
-   function Is_Equal (Left, Right : m256d) return Boolean is
-      Epsilon  : constant := Float_64'Model_Epsilon;
+      function Convert is new Ada.Unchecked_Conversion (m128, m128i);
 
-      function Convert is new Ada.Unchecked_Conversion (m256d, m256l);
-
-      Result : constant m256d :=
+      Result : constant m128 :=
         abs (Left - Right) <= (Epsilon, Epsilon, Epsilon, Epsilon);
    begin
       return Test_All_Ones (Convert (Result), Convert (Result = Result)) = 1;
    end Is_Equal;
 
-end Orka.SIMD.AVX.Doubles.Compare;
+end Orka.SIMD.SSE4_1.Singles.Compare;
