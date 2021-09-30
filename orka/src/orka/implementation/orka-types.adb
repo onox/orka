@@ -82,7 +82,7 @@ package body Orka.Types is
       use SIMD.F16C;
 
       S : GL.Types.Single_Array (1 .. m256'Length);
-      H : m128i;
+      H : m128s;
    begin
       S (1 .. Values'Length) := Values;
       H := Convert_Nearest_Integer (m256 (S));
@@ -96,7 +96,7 @@ package body Orka.Types is
       H : m256;
    begin
       S (1 .. Values'Length) := Values;
-      H := Convert (m128i (S));
+      H := Convert (m128s (S));
       Result := GL.Types.Single_Array (H) (1 .. Values'Length);
    end Convert_Slice;
 

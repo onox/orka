@@ -23,59 +23,59 @@ package Orka.SIMD.F16C is
    use SIMD.AVX.Singles;
    use SIMD.SSE.Singles;
 
-   type m128i is array (Index_Double_Homogeneous) of Integer_16
+   type m128s is array (Index_Double_Homogeneous) of Integer_16
      with Alignment => 16;
-   pragma Machine_Attribute (m128i, "vector_type");
+   pragma Machine_Attribute (m128s, "vector_type");
 
-   function Convert (Elements : m128i) return m128
+   function Convert (Elements : m128s) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtph2ps";
    --  Convert 4x 16-bit floats (in lower half) to 4x 32-bit floats
 
-   function Convert (Elements : m128i) return m256
+   function Convert (Elements : m128s) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtph2ps256";
    --  Convert 8x 16-bit floats to 8x 32-bit
 
    -----------------------------------------------------------------------------
 
-   function Convert (Elements : m128; Rounding : Unsigned_32) return m128i
+   function Convert (Elements : m128; Rounding : Unsigned_32) return m128s
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtps2ph";
    --  Convert 4x 32-bit floats to 4x 16-bit floats (in lower half)
 
-   function Convert_Nearest_Integer (Elements : m128) return m128i is
+   function Convert_Nearest_Integer (Elements : m128) return m128s is
      (Convert (Elements, 0))
    with Inline;
 
-   function Convert_Down (Elements : m128) return m128i is
+   function Convert_Down (Elements : m128) return m128s is
      (Convert (Elements, 1))
    with Inline;
 
-   function Convert_Up (Elements : m128) return m128i is
+   function Convert_Up (Elements : m128) return m128s is
      (Convert (Elements, 2))
    with Inline;
 
-   function Convert_Truncate (Elements : m128) return m128i is
+   function Convert_Truncate (Elements : m128) return m128s is
      (Convert (Elements, 3))
    with Inline;
 
    -----------------------------------------------------------------------------
 
-   function Convert (Elements : m256; Rounding : Unsigned_32) return m128i
+   function Convert (Elements : m256; Rounding : Unsigned_32) return m128s
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtps2ph256";
    --  Convert 8x 32-bit floats to 8x 16-bit
 
-   function Convert_Nearest_Integer (Elements : m256) return m128i is
+   function Convert_Nearest_Integer (Elements : m256) return m128s is
      (Convert (Elements, 0))
    with Inline;
 
-   function Convert_Down (Elements : m256) return m128i is
+   function Convert_Down (Elements : m256) return m128s is
      (Convert (Elements, 1))
    with Inline;
 
-   function Convert_Up (Elements : m256) return m128i is
+   function Convert_Up (Elements : m256) return m128s is
      (Convert (Elements, 2))
    with Inline;
 
-   function Convert_Truncate (Elements : m256) return m128i is
+   function Convert_Truncate (Elements : m256) return m128s is
      (Convert (Elements, 3))
    with Inline;
 
