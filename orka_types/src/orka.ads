@@ -45,6 +45,12 @@ package Orka is
    type Float_32 is new Interfaces.C.C_float;
    type Float_64 is new Interfaces.C.double;
 
+   overriding
+   function "=" (Left, Right : Float_32) return Boolean;
+
+   overriding
+   function "=" (Left, Right : Float_64) return Boolean;
+
    ----------------------------------------------------------------------------
 
    type Time is private;
@@ -53,6 +59,14 @@ package Orka is
    function "-" (Left : Time; Right : Duration) return Time;
 
 private
+
+   overriding
+   function "=" (Left, Right : Float_32) return Boolean is
+     (abs (Left - Right) <= Float_32'Model_Epsilon);
+
+   overriding
+   function "=" (Left, Right : Float_64) return Boolean is
+     (abs (Left - Right) <= Float_64'Model_Epsilon);
 
    type Time is new Duration;
 
