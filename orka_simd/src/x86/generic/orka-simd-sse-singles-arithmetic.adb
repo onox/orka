@@ -89,12 +89,14 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
       --  Sum:      X+Y X+Y Z+W Z+W
       Shuffled : constant m128 := Shuffle (Elements, Elements, Mask_1_0_3_2);
       Sum      : constant m128 := Elements + Shuffled;
-   begin
+
       --  Sum:      X+Y X+Y Z+W Z+W
       --  Move:     Z+W Z+W  W   Z
       --            --------------- +
       --  New sum:  X+Y+Z+W . . .
-      return Extract_X (Move_HL (Shuffled, Sum) + Sum, 0);
+      Result : constant m128 := Move_HL (Shuffled, Sum) + Sum;
+   begin
+      return Result (X);
    end Sum;
 
 end Orka.SIMD.SSE.Singles.Arithmetic;
