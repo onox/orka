@@ -27,16 +27,19 @@ generic
    with function Sum (Elements : Vector_Type) return Element_Type;
    with function Divide_Or_Zero (Left, Right : Vector_Type) return Vector_Type;
    with function Cross_Product (Left, Right : Vector_Type) return Vector_Type;
+   with function Is_Equal_Vectors (Left, Right : Vector_Type) return Boolean;
 package Orka.Transforms.SIMD_Vectors is
    pragma Pure;
 
    subtype Vector4 is Vector_Type;
 
    type Direction is new Vector4
-     with Dynamic_Predicate => Vector4 (Direction) (W) = 0.0;
+     with Dynamic_Predicate => Vector4 (Direction) (W) = 0.0
+         or else raise Constraint_Error with "Vector is not a direction (w /= 0.0)";
 
    type Point is new Vector4
-     with Dynamic_Predicate => Vector4 (Point) (W) = 1.0;
+     with Dynamic_Predicate => Vector4 (Point) (W) = 1.0
+       or else raise Constraint_Error with "Vector is not a point (w /= 1.0)";
 
    function Zero return Vector4 is
      ((0.0, 0.0, 0.0, 0.0))
@@ -56,7 +59,7 @@ package Orka.Transforms.SIMD_Vectors is
    function To_Degrees (Angle : Element_Type) return Element_Type is
      (Angle / Ada.Numerics.Pi * 180.0);
 
-   function "=" (Left, Right : Vector_Type) return Boolean;
+   function "=" (Left, Right : Vector_Type) return Boolean renames Is_Equal_Vectors;
 
    function "+" (Left, Right : Vector_Type) return Vector_Type renames Add_Vectors;
 

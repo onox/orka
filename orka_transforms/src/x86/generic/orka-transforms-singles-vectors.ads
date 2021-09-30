@@ -19,6 +19,7 @@ with Orka.Transforms.SIMD_Vectors;
 with Orka.SIMD.SSE.Singles.Arithmetic;
 with Orka.SIMD.SSE.Singles.Math;
 with Orka.SIMD.SSE3.Singles.Arithmetic;
+with Orka.SIMD.SSE4_1.Singles.Compare;
 
 package Orka.Transforms.Singles.Vectors is new Orka.Transforms.SIMD_Vectors
   (Float_32, SIMD.SSE.Singles.m128,
@@ -26,5 +27,6 @@ package Orka.Transforms.Singles.Vectors is new Orka.Transforms.SIMD_Vectors
    SIMD.SSE.Singles.Arithmetic."-", SIMD.SSE.Singles.Arithmetic."-",
    SIMD.SSE.Singles.Arithmetic."abs", SIMD.SSE3.Singles.Arithmetic.Sum,
    SIMD.SSE.Singles.Arithmetic.Divide_Or_Zero,
-   SIMD.SSE.Singles.Math.Cross_Product);
+   SIMD.SSE.Singles.Math.Cross_Product,
+   SIMD.SSE4_1.Singles.Compare.Is_Equal);
 pragma Pure (Orka.Transforms.Singles.Vectors);

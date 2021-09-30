@@ -27,14 +27,16 @@ package Orka.SIMD.SSE3.Singles.Arithmetic is
 
    function Horizontal_Add (Left, Right : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_haddps";
-   --  Compute the sums of adjacent 32-bit floats in Left and Right.
+   --  Compute the sums of adjacent 32-bit floats in Left and Right
+   --
    --  The two sums (four elements gives two pairs) of elements from Left
    --  are stored in the two floats in the lower half, sums from Right in
    --  the upper half.
 
    function Horizontal_Subtract (Left, Right : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_hsubps";
-   --  Compute the differences of adjacent 32-bit floats in Left and Right.
+   --  Compute the differences of adjacent 32-bit floats in Left and Right
+   --
    --  The two differences (four elements gives two pairs) of elements
    --  from Left are stored in the two floats in the lower half, differences
    --  from Right in the upper half.
