@@ -34,7 +34,9 @@ jobs:
         target: native
 
     - name: Install Alire
-      uses: alire-project/setup-alire@latest-devel
+      uses: alire-project/setup-alire@v1
+      with:
+        toolchain: "gnat_external"
 
     - name: Install EGL
       run: sudo apt install libegl1-mesa-dev
