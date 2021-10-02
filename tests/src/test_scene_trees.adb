@@ -243,7 +243,8 @@ package body Test_Scene_Trees is
          package Transforms renames Orka.Transforms.Singles.Matrices;
          Offset : constant Transforms.Vector4 := (1.0, 2.0, 3.0, 1.0);
       begin
-         Assert (T.World_Transform (C2) = Transforms.Identity_Value, "Unexpected World_Transform");
+         Assert
+           (T.World_Transform (C2) = Transforms.Identity_Matrix, "Unexpected World_Transform");
 
          --  Update local transform of root node
          T.Set_Local_Transform (C1, Transforms.T (Offset));
