@@ -20,15 +20,30 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
+   function Diagonal (Elements : Vector_Type) return Matrix_Type is
+      Result : Matrix_Type := Identity_Matrix;
+   begin
+      for Index in Elements'Range loop
+         Result (Index) (Index) := Elements (Index);
+      end loop;
+      return Result;
+   end Diagonal;
+
+   function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type is
+     (Matrix (X) (X), Matrix (Y) (Y), Matrix (Z) (Z), Matrix (W) (W));
+
+   function Trace (Matrix : Matrix_Type) return Element_Type is
+     (Vectors.Sum (Main_Diagonal (Matrix)));
+
    function T (Offset : Vectors.Point) return Matrix_Type is
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (W) := Vector_Type (Offset);
       return Result;
    end T;
 
    function T (Offset : Vector_Type) return Matrix_Type is
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (W) := Offset;
       Result (W) (W) := 1.0;
@@ -38,7 +53,7 @@ package body Orka.Transforms.SIMD_Matrices is
    function Rx (Angle : Element_Type) return Matrix_Type is
       CA : constant Element_Type := EF.Cos (Angle);
       SA : constant Element_Type := EF.Sin (Angle);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (Y) := (0.0,  CA, SA, 0.0);
       Result (Z) := (0.0, -SA, CA, 0.0);
@@ -48,7 +63,7 @@ package body Orka.Transforms.SIMD_Matrices is
    function Ry (Angle : Element_Type) return Matrix_Type is
       CA : constant Element_Type := EF.Cos (Angle);
       SA : constant Element_Type := EF.Sin (Angle);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) := (CA, 0.0, -SA, 0.0);
       Result (Z) := (SA, 0.0,  CA, 0.0);
@@ -58,7 +73,7 @@ package body Orka.Transforms.SIMD_Matrices is
    function Rz (Angle : Element_Type) return Matrix_Type is
       CA : constant Element_Type := EF.Cos (Angle);
       SA : constant Element_Type := EF.Sin (Angle);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) := (CA,  SA, 0.0, 0.0);
       Result (Y) := (-SA, CA, 0.0, 0.0);
@@ -101,7 +116,7 @@ package body Orka.Transforms.SIMD_Matrices is
    end R;
 
    function R (Quaternion : Vector_Type) return Matrix_Type is
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) :=
         1.0 - 2.0 * (Quaternion (Y) * Quaternion (Y) + Quaternion (Z) * Quaternion (Z));
@@ -128,7 +143,7 @@ package body Orka.Transforms.SIMD_Matrices is
    end R;
 
    function S (Factors : Vector_Type) return Matrix_Type is
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) := Factors (X);
       Result (Y) (Y) := Factors (Y);
@@ -136,17 +151,12 @@ package body Orka.Transforms.SIMD_Matrices is
       return Result;
    end S;
 
-   procedure Transpose (Matrix : in out Matrix_Type) is
-   begin
-      Matrix := Transpose_Matrix (Matrix);
-   end Transpose;
-
    function FOV (Width, Distance : Element_Type) return Element_Type is
      (2.0 * EF.Arctan (Width  / (2.0 * Distance)));
 
    function Finite_Perspective (FOV, Aspect, Z_Near, Z_Far : Element_Type) return Matrix_Type is
       F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
@@ -162,7 +172,7 @@ package body Orka.Transforms.SIMD_Matrices is
 
    function Infinite_Perspective (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type is
       F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
@@ -181,7 +191,7 @@ package body Orka.Transforms.SIMD_Matrices is
      (FOV, Aspect, Z_Near : Element_Type) return Matrix_Type
    is
       F : constant Element_Type := 1.0 / EF.Tan (0.5 * FOV);
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) := F / Aspect;
       Result (Y) (Y) := F;
@@ -197,7 +207,7 @@ package body Orka.Transforms.SIMD_Matrices is
    end Infinite_Perspective_Reversed_Z;
 
    function Orthographic (X_Mag, Y_Mag, Z_Near, Z_Far : Element_Type) return Matrix_Type is
-      Result : Matrix_Type := Identity_Value;
+      Result : Matrix_Type := Identity_Matrix;
    begin
       Result (X) (X) := 2.0 / X_Mag;
       Result (Y) (Y) := 2.0 / Y_Mag;

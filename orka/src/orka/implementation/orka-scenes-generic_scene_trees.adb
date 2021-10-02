@@ -39,7 +39,7 @@ package body Orka.Scenes.Generic_Scene_Trees is
 
    procedure Update_Tree (Object : in out Tree) is
    begin
-      Object.Update_Tree (Transforms.Identity_Value);
+      Object.Update_Tree (Transforms.Identity_Matrix);
    end Update_Tree;
 
    procedure Update_Tree (Object : in out Tree; Root_Transform : Transforms.Matrix4) is
@@ -135,8 +135,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Root_Level.Nodes.Append (Node'(Name   => SU.To_Unbounded_String (Name),
                                            Offset => 1,
                                            Count  => 0));
-            Root_Level.Local_Transforms.Append (Transforms.Identity_Value);
-            Root_Level.World_Transforms.Append (Transforms.Identity_Value);
+            Root_Level.Local_Transforms.Append (Transforms.Identity_Matrix);
+            Root_Level.World_Transforms.Append (Transforms.Identity_Matrix);
             Root_Level.Local_Visibilities.Append (True);
             Root_Level.World_Visibilities.Append (True);
          end;
@@ -176,8 +176,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Child_Level.Nodes.Append (Node'(Name   => Name,
                                             Offset => 1,
                                             Count  => 0));
-            Child_Level.Local_Transforms.Append (Transforms.Identity_Value);
-            Child_Level.World_Transforms.Append (Transforms.Identity_Value);
+            Child_Level.Local_Transforms.Append (Transforms.Identity_Matrix);
+            Child_Level.World_Transforms.Append (Transforms.Identity_Matrix);
             Child_Level.Local_Visibilities.Append (True);
             Child_Level.World_Visibilities.Append (True);
          else
@@ -185,8 +185,8 @@ package body Orka.Scenes.Generic_Scene_Trees is
             Child_Level.Nodes.Insert (New_Node_Index, Node'(Name   => Name,
                                                             Offset => 1,
                                                             Count  => 0));
-            Child_Level.Local_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
-            Child_Level.World_Transforms.Insert (New_Node_Index, Transforms.Identity_Value);
+            Child_Level.Local_Transforms.Insert (New_Node_Index, Transforms.Identity_Matrix);
+            Child_Level.World_Transforms.Insert (New_Node_Index, Transforms.Identity_Matrix);
             Child_Level.Local_Visibilities.Insert (New_Node_Index, True);
             Child_Level.World_Visibilities.Insert (New_Node_Index, True);
 

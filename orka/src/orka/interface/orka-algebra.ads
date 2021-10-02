@@ -26,9 +26,9 @@ package Orka.Algebra is
    subtype Matrix4 is Transforms.Matrix4;
    subtype Vector4 is Transforms.Vector4;
 
-   function Identity4 return Matrix4 renames Transforms.Identity_Value;
+   function Identity4 return Matrix4 is (Transforms.Identity_Matrix);
 
-   function Zero4 return Vector4 renames Transforms.Vectors.Zero;
+   function Zero4 return Vector4 is (Transforms.Vectors.Zero_Vector);
 
    type Vector4_Array is array (GL.Types.Size range <>) of aliased Vector4
      with Convention => C;

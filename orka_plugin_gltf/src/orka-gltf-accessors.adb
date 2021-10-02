@@ -33,7 +33,7 @@ package body Orka.glTF.Accessors is
       Key : constant array (Positive range 1 .. 4) of Index_Homogeneous :=
         (1 => X, 2 => Y, 3 => Z, 4 => W);
    begin
-      return Result : Transforms.Vector4 := Transforms.Zero do
+      return Result : Transforms.Vector4 := Transforms.Zero_Vector do
          for Index in 1 .. Bounds.Length loop
             Result (Key (Index)) := Bounds.Get (Index).Value;
          end loop;

@@ -40,17 +40,34 @@ package Orka.Transforms.SIMD_Matrices is
 
    subtype Vector4 is Vector_Type;
 
-   function Identity_Value return Matrix_Type is
-     (((1.0, 0.0, 0.0, 0.0),
-       (0.0, 1.0, 0.0, 0.0),
-       (0.0, 0.0, 1.0, 0.0),
-       (0.0, 0.0, 0.0, 1.0)))
-   with Inline;
-   --  Return the identity matrix
+   Identity_Matrix : constant Matrix_Type :=
+     ((1.0, 0.0, 0.0, 0.0),
+      (0.0, 1.0, 0.0, 0.0),
+      (0.0, 0.0, 1.0, 0.0),
+      (0.0, 0.0, 0.0, 1.0));
 
-   function Zero_Point return Vectors.Point renames Vectors.Zero_Point;
+   function Zero_Point return Vectors.Point is (Vectors.Zero_Point);
    --  Return a zero vector that indicates a point. The fourth (W) component
    --  is 1.
+
+   function Diagonal (Elements : Vector_Type) return Matrix_Type;
+   --  Return a matrix with the main diagonal equal to the given
+   --  vector and zeros in all other elements
+
+   function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type;
+   --  Return a vector with the elements of the main diagonal
+
+   function Trace (Matrix : Matrix_Type) return Element_Type;
+   --  Return the trace of the (square) matrix
+   --
+   --  The trace is a linear mapping:
+   --
+   --    tr(A + B) = tr(A) + tr(B)
+   --    tr(c * A) = c * tr(A) where c is a scalar (tr(A*B) /= tr(A) * tr(B))
+   --
+   --  And invariant under cyclic permutation:
+   --
+   --    tr(A * B * C) = tr(C * A * B)
 
    --  Linear transform: a transform in which vector addition and scalar
    --  multiplication is preserved.
@@ -127,6 +144,7 @@ package Orka.Transforms.SIMD_Matrices is
    --  Add a scale transformation to the matrix
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
+   --  Return the transpose of the matrix
 
    function R
      (Axis  : Vector_Type;
@@ -158,11 +176,7 @@ package Orka.Transforms.SIMD_Matrices is
    --  Add a rotation transformation around the Z axis with the center
    --  of rotation at the given point to the matrix
 
-   --  procedure Rotate_Quaternion (Matrix : in out Matrix_Type; Quaternion : ?);
-   --  procedure Rotate_Euler (Matrix : in out Matrix_Type; Euler : ?);
-
-   procedure Transpose (Matrix : in out Matrix_Type);
-   --  Transpose the matrix
+   ----------------------------------------------------------------------------
 
    use type Element_Type;
 
