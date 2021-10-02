@@ -98,13 +98,16 @@ package body Orka.Transforms.SIMD_Quaternions is
             Axis : Vector4 := Vector4 (Elements) * (1.0 / SA);
          begin
             Axis (W) := 0.0;
-            return (Axis => Axis, Angle => Angle);
+            return (Axis => Vectors.Direction (Axis), Angle => Angle);
          end;
       else
          --  Singularity occurs when angle is 0. Return an arbitrary axis
          return (Axis => (1.0, 0.0, 0.0, 0.0), Angle => 0.0);
       end if;
    end To_Axis_Angle;
+
+   function From_Axis_Angle (Value : Axis_Angle) return Quaternion is
+     (R (Axis => Vector4 (Value.Axis), Angle => Value.Angle));
 
    function R
      (Axis  : Vector4;
