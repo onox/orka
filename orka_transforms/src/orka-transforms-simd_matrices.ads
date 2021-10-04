@@ -135,6 +135,9 @@ package Orka.Transforms.SIMD_Matrices is
      (Left  : Matrix_Type;
       Right : Vector_Type) return Vector_Type renames Multiply_Vector;
 
+   function "*" (Left : Vector_Type; Right : Matrix_Type) return Vector_Type;
+   --  Return sum of inner products
+
    function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type is
      (T (Offset) * Matrix);
    --  Add a translation transformation to the matrix

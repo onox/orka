@@ -35,6 +35,18 @@ package body Orka.Transforms.SIMD_Matrices is
    function Trace (Matrix : Matrix_Type) return Element_Type is
      (Vectors.Sum (Main_Diagonal (Matrix)));
 
+   function "*" (Left : Vector_Type; Right : Matrix_Type) return Vector_Type is
+      Result : Vector_Type;
+   begin
+      for Column in Right'Range loop
+         Result (Column) := Vectors.Dot (Left, Right (Column));
+      end loop;
+
+      return Result;
+   end "*";
+
+   ----------------------------------------------------------------------------
+
    function T (Offset : Vectors.Point) return Matrix_Type is
       Result : Matrix_Type := Identity_Matrix;
    begin
@@ -150,6 +162,8 @@ package body Orka.Transforms.SIMD_Matrices is
       Result (Z) (Z) := Factors (Z);
       return Result;
    end S;
+
+   ----------------------------------------------------------------------------
 
    function FOV (Width, Distance : Element_Type) return Element_Type is
      (2.0 * EF.Arctan (Width  / (2.0 * Distance)));
