@@ -149,6 +149,8 @@ package Orka.Transforms.SIMD_Matrices is
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
    --  Return the transpose of the matrix
 
+   function Outer (Left, Right : Vector_Type) return Matrix_Type;
+
    function R
      (Axis  : Vector_Type;
       Angle : Element_Type;

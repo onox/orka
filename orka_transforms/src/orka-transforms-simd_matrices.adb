@@ -45,6 +45,18 @@ package body Orka.Transforms.SIMD_Matrices is
       return Result;
    end "*";
 
+   function Outer (Left, Right : Vector_Type) return Matrix_Type is
+      use Vectors;
+
+      Result : Matrix_Type;
+   begin
+      for Index in Right'Range loop
+         Result (Index) := Right (Index) * Left;
+      end loop;
+
+      return Result;
+   end Outer;
+
    ----------------------------------------------------------------------------
 
    function T (Offset : Vectors.Point) return Matrix_Type is
