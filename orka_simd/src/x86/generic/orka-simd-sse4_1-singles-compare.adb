@@ -36,7 +36,7 @@ package body Orka.SIMD.SSE4_1.Singles.Compare is
       Result : constant m128 :=
         abs (Left - Right) <= (Epsilon, Epsilon, Epsilon, Epsilon);
    begin
-      return Test_All_Ones (Convert (Result), Convert (Result = Result)) = 1;
+      return Test_All_Ones (Convert (Result), Convert (Result = Result));
    end Is_Equal;
 
 end Orka.SIMD.SSE4_1.Singles.Compare;

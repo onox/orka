@@ -21,10 +21,10 @@ package Orka.SIMD.SSE4_1.Integers.Logical is
 
    use SIMD.SSE2.Integers;
 
-   function Test_All_Zero (Elements, Mask : m128i) return Integer;
+   function Test_All_Zero (Elements, Mask : m128i) return Boolean;
 
-   function Test_All_Ones (Elements, Mask : m128i) return Integer;
+   function Test_All_Ones (Elements, Mask : m128i) return Boolean;
 
-   function Test_Mix_Ones_Zeros (Elements, Mask : m128i) return Integer;
+   function Test_Mix_Ones_Zeros (Elements, Mask : m128i) return Boolean;
 
 end Orka.SIMD.SSE4_1.Integers.Logical;

@@ -35,13 +35,13 @@ package body Orka.SIMD.SSE4_1.Integers.Logical is
 
    function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
 
-   function Test_All_Zero (Elements, Mask : m128i) return Integer is
-     (Test_All_Zero (Convert (Elements), Convert (Mask)));
+   function Test_All_Zero (Elements, Mask : m128i) return Boolean is
+     (Test_All_Zero (Convert (Elements), Convert (Mask)) = 1);
 
-   function Test_All_Ones (Elements, Mask : m128i) return Integer is
-     (Test_All_Ones (Convert (Elements), Convert (Mask)));
+   function Test_All_Ones (Elements, Mask : m128i) return Boolean is
+     (Test_All_Ones (Convert (Elements), Convert (Mask)) = 1);
 
-   function Test_Mix_Ones_Zeros (Elements, Mask : m128i) return Integer is
-     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)));
+   function Test_Mix_Ones_Zeros (Elements, Mask : m128i) return Boolean is
+     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)) = 1);
 
 end Orka.SIMD.SSE4_1.Integers.Logical;
