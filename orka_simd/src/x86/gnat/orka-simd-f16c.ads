@@ -20,6 +20,7 @@ with Orka.SIMD.SSE.Singles;
 package Orka.SIMD.F16C is
    pragma Pure;
 
+   use SIMD.AVX;
    use SIMD.AVX.Singles;
    use SIMD.SSE.Singles;
 

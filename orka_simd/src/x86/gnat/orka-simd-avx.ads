@@ -17,6 +17,8 @@
 package Orka.SIMD.AVX is
    pragma Pure;
 
+   type Index_Double_Homogeneous is range 1 .. 8;
+
    procedure Zero_All
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vzeroall";
 

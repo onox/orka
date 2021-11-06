@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2016 onox <denkpadje@gmail.com>
+--  Copyright (c) 2021 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.AVX.Singles is
+package Orka.SIMD.AVX.Integers.Logical is
    pragma Pure;
 
-   type m256 is array (Index_Double_Homogeneous) of Float_32
-     with Alignment => 32;
-   pragma Machine_Attribute (m256, "vector_type");
+   function Test_All_Zero (Elements, Mask : m256i) return Boolean;
 
-end Orka.SIMD.AVX.Singles;
+   function Test_All_Ones (Elements, Mask : m256i) return Boolean;
+
+   function Test_Mix_Ones_Zeros (Elements, Mask : m256i) return Boolean;
+
+end Orka.SIMD.AVX.Integers.Logical;
