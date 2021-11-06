@@ -59,15 +59,10 @@ package Orka.Transforms.SIMD_Matrices is
 
    function Trace (Matrix : Matrix_Type) return Element_Type;
    --  Return the trace of the (square) matrix
-   --
-   --  The trace is a linear mapping:
-   --
-   --    tr(A + B) = tr(A) + tr(B)
-   --    tr(c * A) = c * tr(A) where c is a scalar (tr(A*B) /= tr(A) * tr(B))
-   --
-   --  And invariant under cyclic permutation:
-   --
-   --    tr(A * B * C) = tr(C * A * B)
+
+   ----------------------------------------------------------------------------
+   --                             Transformations                            --
+   ----------------------------------------------------------------------------
 
    --  Linear transform: a transform in which vector addition and scalar
    --  multiplication is preserved.
@@ -181,6 +176,8 @@ package Orka.Transforms.SIMD_Matrices is
    --  Add a rotation transformation around the Z axis with the center
    --  of rotation at the given point to the matrix
 
+   ----------------------------------------------------------------------------
+   --                              Projections                               --
    ----------------------------------------------------------------------------
 
    use type Element_Type;

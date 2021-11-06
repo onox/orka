@@ -35,7 +35,7 @@ package Orka.Transforms.SIMD_Vectors is
 
    type Direction is new Vector4
      with Dynamic_Predicate => Vector4 (Direction) (W) = 0.0
-         or else raise Constraint_Error with "Vector is not a direction (w /= 0.0)";
+       or else raise Constraint_Error with "Vector is not a direction (w /= 0.0)";
 
    type Point is new Vector4
      with Dynamic_Predicate => Vector4 (Point) (W) = 1.0

@@ -1,0 +1,21 @@
+name = "orka_numerics"
+description = "Tensors (multidimensional arrays)"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["orka", "math", "vector", "matrix", "ndarray", "tensor", "numpy"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[configuration]
+disabled = true
+
+[[depends-on]]
+orka_simd = "^1.0.0"
+orka_types = "^1.0.0"
+
+[[pins]]
+orka_simd = { path = "../orka_simd" }
+orka_types = { path = "../orka_types" }
