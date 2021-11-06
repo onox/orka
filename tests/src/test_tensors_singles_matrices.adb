@@ -310,19 +310,57 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Constant_Indexing_Tensor;
 
    procedure Test_Operator_Multiply_Inner (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := Array_Range (9.0).Reshape ((3, 3));
+      Tensor_2 : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+
+      Tensor_3 : constant CPU_Tensor := Array_Range (4.0);
+
+      Expected_1 : constant Element_Array :=
+        (15.0, 18.0, 21.0,
+         42.0, 54.0, 66.0,
+         69.0, 90.0, 111.0);
+
+      Expected_2 : constant Element_Array :=
+        (56.0,   62.0,  68.0,  74.0,
+         152.0, 174.0, 196.0, 218.0,
+         248.0, 286.0, 324.0, 362.0,
+         344.0, 398.0, 452.0, 506.0);
+
+      Expected_3 : constant Element_Array := (14.0, 38.0, 62.0, 86.0);
+
+      Actual_1 : constant CPU_Tensor := Tensor_1 * Tensor_1;
+      Actual_2 : constant CPU_Tensor := Tensor_2 * Tensor_2;
+
+      --  1D vector and 2D vector
+      Actual_3 : constant CPU_Tensor := Tensor_2 * Tensor_3;
+      Actual_4 : constant CPU_Tensor := Tensor_2 * Tensor_3.Reshape ((4, 1));
    begin
-      Assert (False, "FIXME");
+      Assert_Equal (Expected_1, Actual_1.Flatten);
+      Assert_Equal (Expected_2, Actual_2.Flatten);
+      Assert_Equal (Expected_3, Actual_3.Flatten);
+      Assert_Equal (Expected_3, Actual_4.Flatten);
    end Test_Operator_Multiply_Inner;
 
    procedure Test_Operator_Power (Object : in out Test) is
+      Tensor : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+
+      Expected_1 : constant CPU_Tensor := Identity (4);
+      Expected_2 : constant CPU_Tensor := Tensor;
+      Expected_3 : constant CPU_Tensor := Expected_2 * Tensor;
+      Expected_4 : constant CPU_Tensor := Expected_3 * Tensor;
+
+      Actual_1 : constant CPU_Tensor := Tensor ** 0;
+      Actual_2 : constant CPU_Tensor := Tensor ** 1;
+      Actual_3 : constant CPU_Tensor := Tensor ** 2;
+      Actual_4 : constant CPU_Tensor := Tensor ** 3;
    begin
-      --  A**0 = I
-      --  A**1 = A
-      --  A**2 = A * A
-      --  A**3 = A * A * A
-      --  A**-1 = A.Inverse
-      --  A**-2 = A.Inverse ** 2
-      Assert (False, "FIXME");
+      Assert (Expected_1 = Actual_1, "Tensor ** 0 /= I");
+      Assert (Expected_2 = Actual_2, "Tensor ** 1 /= Tensor");
+      Assert (Expected_3 = Actual_3, "Tensor ** 2 /= Tensor * Tensor");
+      Assert (Expected_4 = Actual_4, "Tensor ** 3 /= Tensor * Tensor * Tensor");
+
+      --  FIXME A**-1 = A.Inverse
+      --  FIXME A**-2 = A.Inverse ** 2
    end Test_Operator_Power;
 
    procedure Test_Outer (Object : in out Test) is
