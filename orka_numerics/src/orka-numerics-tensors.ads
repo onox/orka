@@ -246,6 +246,7 @@ package Orka.Numerics.Tensors is
                           Left.Shape (2) = Right.Shape (1)
                         else
                           (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)));
+                                                    --  Left is a row vector
 
    function "*" (Left, Right : Tensor) return Element is abstract
      with Pre'Class => (Left.Dimensions = 1 and Right.Dimensions = 1 and

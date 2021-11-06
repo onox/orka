@@ -439,7 +439,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                     Trim (Columns) & ")";
                end if;
 
-               --  Returning the row of a 2D tensor as a vector instead of a (1, n) 2D tensor
                return Result : CPU_Tensor := Without_Data (Shape, Object.Kind) do
                   declare
                      Result_Data : Element_Array (1 .. Result.Elements)
@@ -942,10 +941,45 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function "*" (Left, Right : CPU_Tensor) return CPU_Tensor is
+      --  m x n * n x p
+      --      ^   ^
+      --      |___|
+      --     (Count)
+      Left_Rows     : constant Natural := (if Left.Dimensions = 2 then Left.Shape (1) else 1);
+      Count         : constant Natural := Right.Shape (1);
+      Right_Columns : constant Natural := (if Right.Dimensions = 2 then Right.Shape (2) else 1);
+
+      Shape : constant Tensor_Shape := (1 => Left_Rows, 2 => Right_Columns);
    begin
       --  Matrix-matrix or matrix-vector or vector-matrix multiplication
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Result : CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Result.Elements)
+              with Import, Convention => Ada, Address => Result.Data'Address;
+         begin
+            for Column_Index in 1 .. Right_Columns loop
+               declare
+                  Right_Column : constant CPU_Tensor :=
+                    (case Right.Dimensions is
+                       when 1 => Right,
+                       when 2 =>
+                         Right (Tensor_Range'((1, Count), (Column_Index, Column_Index))).Flatten);
+                  --  TODO Currently Flatten is expensive because Dimensions is a discriminant,
+                  --  forcing Flatten to create a new object and copy Data
+               begin
+                  case Left.Dimensions is
+                     when 1 =>
+                        Result_Data (Column_Index) := Left * Right_Column;
+                     when 2 =>
+                        for Row_Index in 1 .. Left_Rows loop
+                           Result_Data ((Row_Index - 1) * Right_Columns + Column_Index) :=
+                             Left (Row_Index) * Right_Column;
+                        end loop;
+                  end case;
+               end;
+            end loop;
+         end;
+      end return;
    end "*";
 
    overriding
