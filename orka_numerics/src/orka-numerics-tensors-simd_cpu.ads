@@ -17,8 +17,10 @@
 private with Ada.Containers.Indefinite_Holders;
 
 generic
+   type Vector_Index_Type is (<>);
+
    type Integer_Type is range <>;
-   type Integer_Vector_Type is array (Index_Homogeneous) of Integer_Type;
+   type Integer_Vector_Type is array (Vector_Index_Type) of Integer_Type;
 
    --  Arithmetic
    with function "+" (Left, Right : Integer_Vector_Type) return Integer_Vector_Type;
@@ -34,7 +36,7 @@ generic
    with function All_Ones  (Elements, Mask : Integer_Vector_Type) return Boolean;
    with function All_Zeros (Elements, Mask : Integer_Vector_Type) return Boolean;
 
-   type Vector_Type is array (Index_Homogeneous) of Element_Type;
+   type Vector_Type is array (Vector_Index_Type) of Element_Type;
 
    --  Arithmetic
    with function "*" (Left, Right : Vector_Type) return Vector_Type;

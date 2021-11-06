@@ -26,10 +26,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Convert is new Ada.Unchecked_Conversion (Vector_Type, Integer_Vector_Type);
    function Convert is new Ada.Unchecked_Conversion (Integer_Vector_Type, Vector_Type);
 
-   subtype Index_4D is Index_Homogeneous;
-
-   function From_Last (Offset : Natural) return Index_4D is
-     (Index_4D'Val (Index_4D'Pos (Index_4D'Last) - Offset));
+   function From_Last (Offset : Natural) return Vector_Index_Type is
+     (Vector_Index_Type'Val (Vector_Index_Type'Pos (Vector_Index_Type'Last) - Offset));
 
    function Data_Vectors (Index : Natural) return Natural is
      ((Index + (Vector_Type'Length - 1)) / Vector_Type'Length);
@@ -37,8 +35,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Data_Vectors (Shape : Tensor_Shape) return Natural is
      (Data_Vectors (Elements (Shape)));
 
-   function Data_Offset (Index : Positive) return Index_4D is
-     (Index_4D'Val ((Index - 1) mod Vector_Type'Length));
+   function Data_Offset (Index : Positive) return Vector_Index_Type is
+     (Vector_Index_Type'Val ((Index - 1) mod Vector_Type'Length
+        + Vector_Index_Type'Pos (Vector_Index_Type'First)));
 
    function Data_Padding (Size, Count : Natural) return Natural is
      (Size * Vector_Type'Length - Count);
@@ -408,7 +407,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                end if;
 
                return Result : CPU_Tensor := Without_Data (Shape, Object.Kind) do
-                  if Data_Offset (Row_Start) = Index_4D'First then
+                  if Data_Offset (Row_Start) = Vector_Index_Type'First then
                      Result.Data (1 .. Size) :=
                        Object.Data (Data_Vectors (Row_Start) .. Data_Vectors (Row_Stop));
                   else
@@ -483,15 +482,16 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          declare
             --  1. Create Integer_Vector of 1s and 0s
             Mask : constant Integer_Vector_Type := Convert (Index.Data (Index_Vector));
-            Ones_Zeros : constant Integer_Vector_Type := Mask and One_Vector;
 
-            --  2. Compute prefix sum
-            R1 : constant Integer_Vector_Type := Shift_Elements_Left (Ones_Zeros);
-            R2 : constant Integer_Vector_Type := Shift_Elements_Left (R1);
-            R3 : constant Integer_Vector_Type := Shift_Elements_Left (R2);
-
-            Sum : constant Integer_Vector_Type := Offset + Ones_Zeros + R1 + R2 + R3;
+            PS  : Integer_Vector_Type := Mask and One_Vector;
+            Sum : Integer_Vector_Type := Offset + PS;
          begin
+            --  2. Compute prefix sum
+            for I in 2 .. Vector_Type'Length loop
+               PS  := Shift_Elements_Left (PS);
+               Sum := Sum + PS;
+            end loop;
+
             --  Index is > 0 if valid according to mask
             Indices (Index_Vector) := Mask and Sum;
 
@@ -505,25 +505,27 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Result : CPU_Tensor :=
         Without_Data (Tensor_Shape'(1 => Natural (Offset (Offset'Last))))
       do
-         declare
-            Result_Data : Element_Array (1 .. Result.Elements)
-              with Import, Convention => Ada, Address => Result.Data'Address;
-         begin
-            --  4. Iterate over the prefix sum and assign the value from Object.Data
-            --  to Result.Data at the index found in the prefix sum
-            for Index_Vector in Index.Data'Range loop
-               declare
-                  Indices_Vector : Integer_Vector_Type renames Indices (Index_Vector);
-               begin
-                  for I in Indices_Vector'Range loop
-                     if Indices_Vector (I) > 0 then
-                        Result_Data (Natural (Indices_Vector (I))) :=
-                          Object.Data (Index_Vector) (I);
-                     end if;
-                  end loop;
-               end;
-            end loop;
-         end;
+         if Result.Elements > 0 then
+            declare
+               Result_Data : Element_Array (1 .. Result.Elements)
+                 with Import, Convention => Ada, Address => Result.Data'Address;
+            begin
+               --  4. Iterate over the prefix sum and assign the value from Object.Data
+               --  to Result.Data at the index found in the prefix sum
+               for Index_Vector in Index.Data'Range loop
+                  declare
+                     Indices_Vector : Integer_Vector_Type renames Indices (Index_Vector);
+                  begin
+                     for I in Indices_Vector'Range loop
+                        if Indices_Vector (I) > 0 then
+                           Result_Data (Natural (Indices_Vector (I))) :=
+                             Object.Data (Index_Vector) (I);
+                        end if;
+                     end loop;
+                  end;
+               end loop;
+            end;
+         end if;
       end return;
    end Get;
 
@@ -1490,7 +1492,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          null;
       end if;
 
-      for Index in Index_4D'First .. From_Last (Padding) loop
+      for Index in Vector_Index_Type'First .. From_Last (Padding) loop
          Result := CPU_Subject.Apply (Result, Object.Data (Object.Data'Last) (Index));
       end loop;
 
