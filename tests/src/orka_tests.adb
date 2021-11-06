@@ -22,6 +22,9 @@ with Test_Transforms_Singles_Vectors;
 with Test_Transforms_Doubles_Matrices;
 with Test_Transforms_Doubles_Vectors;
 
+with Test_Tensors_Singles_Vectors;
+with Test_Tensors_Singles_Matrices;
+
 with Test_Scene_Trees;
 
 procedure Orka_Tests is
@@ -68,6 +71,10 @@ procedure Orka_Tests is
 
       --  Trees
       Result.Add_Test (Test_Scene_Trees.Suite);
+
+      --  Tensors (Singles)
+      Result.Add_Test (Test_Tensors_Singles_Vectors.Suite);
+      Result.Add_Test (Test_Tensors_Singles_Matrices.Suite);
 
       return Result;
    end Suite;
