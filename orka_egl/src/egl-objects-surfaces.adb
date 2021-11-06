@@ -41,6 +41,8 @@ package body EGL.Objects.Surfaces is
       ID : constant ID_Type :=
          API.Create_Platform_Window_Surface.Ref
            (Display.ID, Config.ID, Window, Attributes);
+      --  TODO Support EGL_EXT_present_opaque
+      --  (so that background will be opaque; alpha of FB gets ignored)
    begin
       if ID = No_Surface then
          Errors.Raise_Exception_On_EGL_Error;
