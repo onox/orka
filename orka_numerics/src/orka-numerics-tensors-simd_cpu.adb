@@ -1115,8 +1115,17 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'First .. Result.Data'Last - 1 loop
             for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) :=
-                 Left.Data (Index) (Offset) ** Right.Data (Index) (Offset);
+               declare
+                  Left_Element  : Element renames Left.Data (Index) (Offset);
+                  Right_Element : Element renames Right.Data (Index) (Offset);
+               begin
+                  if Left_Element = 0.0 and Right_Element = 0.0 then
+                     --  EF."**" raises Argument_Error instead of returning 1.0
+                     Result.Data (Index) (Offset) := 1.0;
+                  else
+                     Result.Data (Index) (Offset) := Left_Element ** Right_Element;
+                  end if;
+               end;
             end loop;
          end loop;
 
@@ -1130,27 +1139,53 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function "**" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
 --     (Exp (Right * Log (Left)));
       use EF;
+
+      One_Vector : constant Vector_Type := (others => 1.0);
    begin
-      return Result : CPU_Tensor := Without_Data (Left) do
-         for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := Left.Data (Index) (Offset) ** Right;
+      if Right = 0.0 then
+         return Result : CPU_Tensor := Without_Data (Left) do
+            Result.Data := (others => One_Vector);
+         end return;
+      elsif Right = 1.0 then
+         return Left;
+      else
+         return Result : CPU_Tensor := Without_Data (Left) do
+            for Index in Result.Data'Range loop
+               for Offset in Vector_Type'Range loop
+                  Result.Data (Index) (Offset) := Left.Data (Index) (Offset) ** Right;
+               end loop;
             end loop;
-         end loop;
-      end return;
+         end return;
+      end if;
    end "**";
 
    overriding function "**" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
 --     (Exp (Right * EF.Log (Left)));
       use EF;
+
+      One_Vector : constant Vector_Type := (others => 1.0);
    begin
-      return Result : CPU_Tensor := Without_Data (Right) do
-         for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := Left ** Right.Data (Index) (Offset);
+      if Left = 1.0 then
+         return Result : CPU_Tensor := Without_Data (Right) do
+            Result.Data := (others => One_Vector);
+         end return;
+      else
+         return Result : CPU_Tensor := Without_Data (Right) do
+            for Index in Result.Data'Range loop
+               for Offset in Vector_Type'Range loop
+                  declare
+                     Right_Element : Element renames Right.Data (Index) (Offset);
+                  begin
+                     if Left = 0.0 and Right_Element = 0.0 then
+                        Result.Data (Index) (Offset) := 1.0;
+                     else
+                        Result.Data (Index) (Offset) := Left ** Right.Data (Index) (Offset);
+                     end if;
+                  end;
+               end loop;
             end loop;
-         end loop;
-      end return;
+         end return;
+      end if;
    end "**";
 
    overriding function "*" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
