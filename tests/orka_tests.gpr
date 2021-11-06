@@ -1,3 +1,4 @@
+with "../orka_config";
 with "orka_simd";
 with "orka_transforms";
 with "orka_numerics";
@@ -22,14 +23,14 @@ project Orka_Tests is
 
    for Main use ("orka_tests.adb");
 
-   package Compiler extends Orka_SIMD.Compiler is
+   package Compiler extends Orka_Config.Compiler is
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_SIMD.Binder;
+   package Binder renames Orka_Config.Binder;
 
    package Linker is
-      case Orka.Build_Mode is
+      case Orka_Config.Build_Mode is
          when "coverage" =>
             for Switches ("Ada") use ("-lgcov");
          when others =>

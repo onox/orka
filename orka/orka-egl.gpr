@@ -7,8 +7,6 @@ project Orka.EGL is
    for Library_Version use Orka'Library_Version;
    for Library_Kind use Orka'Library_Kind;
 
-   for Create_Missing_Dirs use "True";
-
    for Source_Dirs use ("src/orka/interface/egl",
                         "src/orka/implementation/egl");
 

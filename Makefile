@@ -2,7 +2,9 @@ SIMD := $(shell ((gcc -march=native -dN -E - < /dev/null | grep -q "AVX2") && ec
 
 SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
 
-COVERAGE_VARS = -XORKA_TYPES_BUILD_MODE=coverage -XORKA_SIMD_BUILD_MODE=coverage  -XORKA_TRANSFORMS_BUILD_MODE=coverage -XORKA_BUILD_MODE=coverage
+COVERAGE_VARS = -XORKA_BUILD_MODE=coverage
+
+DEBUG_VARS = -XORKA_BUILD_MODE=debug -XORKA_DEBUG_SYMBOLS=enabled
 
 .PHONY: build examples tools tests coverage docs clean
 
@@ -11,6 +13,7 @@ build:
 	cd orka_types && alr build $(SCENARIO_VARS)
 	cd orka_simd && alr build $(SCENARIO_VARS)
 	cd orka_transforms && alr build $(SCENARIO_VARS)
+	cd orka_numerics && alr build $(SCENARIO_VARS)
 	cd orka && alr build $(SCENARIO_VARS)
 #	cd orka_plugin_sdl && alr build $(SCENARIO_VARS)
 	cd orka_plugin_archives && alr build $(SCENARIO_VARS)
@@ -43,6 +46,7 @@ clean:
 	cd orka_types && alr clean
 	cd orka_simd && alr clean
 	cd orka_transforms && alr clean
+	cd orka_numerics && alr clean
 	cd orka && alr clean
 	cd orka_tools && alr clean
 #	cd orka_plugin_sdl && alr clean
