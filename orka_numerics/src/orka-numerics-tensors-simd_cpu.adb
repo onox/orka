@@ -42,6 +42,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Data_Padding (Size, Count : Natural) return Natural is
      (Size * Vector_Type'Length - Count);
 
+   function To_Index (Index : Tensor_Index; Columns : Positive) return Index_Type is
+     ((Index (1) - 1) * Columns + Index (2));
+
    function Reset_Padding
      (Object  : CPU_Tensor;
       Padding : Natural;
@@ -298,7 +301,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
            "Stop index (" & Trim (Index) & ") out of bounds (1 .. " & Trim (Last_Index) & ")";
       end if;
 
-      return Element (Object.Data (Data_Vectors (Index)) (Data_Offset (Index)));
+      return Object.Data (Data_Vectors (Index)) (Data_Offset (Index));
    end Get;
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Boolean is
@@ -351,7 +354,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
            "Stop index (" & Trim (Index (2)) & ") out of bounds (1 .. " & Trim (Columns) & ")";
       end if;
 
-      return (Index (1) - 1) * Columns + Index (2);
+      return To_Index (Index, Columns);
    end Flattened_Index;
 
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Index) return Element is
@@ -939,6 +942,57 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
+   procedure Multiply_Add
+     (Result : in out Element_Array;
+      Left   : Element;
+      Right  : Element_Array)
+   is
+      Left_Vector : constant Vector_Type := (others => Left);
+
+      subtype Element_4 is Element_Array (1 .. 4);
+
+      function Convert is new Ada.Unchecked_Conversion (Element_4, Vector_Type);
+      function Convert is new Ada.Unchecked_Conversion (Vector_Type, Element_4);
+
+      Last_Vector_Index : constant Positive := Data_Vectors (Right'Length);
+
+      Padding : constant Natural :=
+        Data_Padding (Last_Vector_Index, Right'Length);
+   begin
+      for Index in 1 .. Last_Vector_Index - (if Padding > 0 then 1 else 0) loop
+         declare
+            Vector_Index : constant Integer := (Index - 1) * Vector_Type'Length - 1;
+
+            Result_Index : constant Natural := Vector_Index + Result'First;
+            Right_Index  : constant Natural := Vector_Index + Right'First;
+
+            Result_Vector : constant Vector_Type :=
+              Convert (Result (Result_Index + 1 .. Result_Index + Vector_Type'Length));
+            Right_Vector : constant Vector_Type :=
+              Convert (Right (Right_Index + 1 .. Right_Index + Vector_Type'Length));
+         begin
+            Result (Result_Index + 1 .. Result_Index + Vector_Type'Length) :=
+              Convert (Result_Vector + Left_Vector * Right_Vector);
+         end;
+      end loop;
+
+      if Padding > 0 then
+         declare
+            Vector_Index : constant Integer := (Last_Vector_Index - 1) * Vector_Type'Length - 1;
+
+            Result_Index : constant Natural := Vector_Index + Result'First;
+            Right_Index  : constant Natural := Vector_Index + Right'First;
+
+            Last_Count : constant Positive := Vector_Type'Length - Padding;
+         begin
+            for I in 1 .. Last_Count loop
+               Result (Result_Index + I) :=
+                 Result (Result_Index + I) + Left * Right (Right_Index + I);
+            end loop;
+         end;
+      end if;
+   end Multiply_Add;
+
    overriding
    function "*" (Left, Right : CPU_Tensor) return CPU_Tensor is
       --  m x n * n x p
@@ -952,30 +1006,33 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Shape : constant Tensor_Shape := (1 => Left_Rows, 2 => Right_Columns);
    begin
       --  Matrix-matrix or matrix-vector or vector-matrix multiplication
-      return Result : CPU_Tensor := Without_Data (Shape) do
+      return Result : CPU_Tensor := Zeros (Shape) do
          declare
             Result_Data : Element_Array (1 .. Result.Elements)
               with Import, Convention => Ada, Address => Result.Data'Address;
+            Left_Data : Element_Array (1 .. Left.Elements)
+              with Import, Convention => Ada, Address => Left.Data'Address;
+            Right_Data : Element_Array (1 .. Right.Elements)
+              with Import, Convention => Ada, Address => Right.Data'Address;
          begin
-            for Column_Index in 1 .. Right_Columns loop
+            for Row_Index in 1 .. Left_Rows loop
+               --  Result (Row_Index) := Left (Row_Index) * Right;
                declare
-                  Right_Column : constant CPU_Tensor :=
-                    (case Right.Dimensions is
-                       when 1 => Right,
-                       when 2 =>
-                         Right (Tensor_Range'((1, Count), (Column_Index, Column_Index))).Flatten);
-                  --  TODO Currently Flatten is expensive because Dimensions is a discriminant,
-                  --  forcing Flatten to create a new object and copy Data
+                  Result_Index : constant Natural := To_Index ((Row_Index, 1), Right_Columns) - 1;
                begin
-                  case Left.Dimensions is
-                     when 1 =>
-                        Result_Data (Column_Index) := Left * Right_Column;
-                     when 2 =>
-                        for Row_Index in 1 .. Left_Rows loop
-                           Result_Data ((Row_Index - 1) * Right_Columns + Column_Index) :=
-                             Left (Row_Index) * Right_Column;
-                        end loop;
-                  end case;
+                  for Column_Index in 1 .. Count loop
+                     declare
+                        Right_Index : constant Natural :=
+                          To_Index ((Column_Index, 1), Right_Columns) - 1;
+                     begin
+                        --  Left_Value := Left (Row_Index, Column_Index)
+                        --  Result (Row_Index) := @ + Left_Value * Right (Row_Index)
+                        Multiply_Add
+                          (Result_Data (Result_Index + 1 .. Result_Index + Right_Columns),
+                           Left_Data (To_Index ((Row_Index, Column_Index), Count)),
+                           Right_Data (Right_Index + 1 .. Right_Index + Right_Columns));
+                     end;
+                  end loop;
                end;
             end loop;
          end;
