@@ -146,5 +146,6 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-learn-act]: https://learn.adacore.com/courses/intro-to-ada/index.html
   [url-sdl]: https://github.com/lucretia/sdlada
+  [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
   [url-swe-practices]: https://en.wikibooks.org/wiki/Ada_Programming#Programming_in_the_large
   [url-wikibooks]: https://en.wikibooks.org/wiki/Ada_Programming
