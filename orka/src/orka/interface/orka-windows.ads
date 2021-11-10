@@ -22,7 +22,7 @@ package Orka.Windows is
    type Window is limited interface;
 
    function Create_Window
-     (Context            : Contexts.Surface_Context'Class;
+     (Context            : aliased Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;

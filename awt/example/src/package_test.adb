@@ -137,7 +137,7 @@ package body Package_Test is
 
    overriding
    function Create_Window
-     (Context            : Orka.Contexts.Surface_Context'Class;
+     (Context            : aliased Orka.Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;
