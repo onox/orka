@@ -70,10 +70,10 @@ package body Orka.Rendering.Programs.Modules is
 
          -------------------------------------------------------------------------
 
-         Lines : constant Orka.Strings.String_List := Orka.Strings.Split (Text, "" & L1.LF);
+         Lines : constant Orka.Strings.String_List := Split (Text, "" & L1.LF);
 
          Error_Row : constant Positive :=
-           Positive'Value (+Orka.Strings.Split (+Log_Parts (2), "(", 2) (1));
+           Positive'Value (+Split (+Log_Parts (2), "(", 2) (1));
          First_Row : constant Positive := Positive'Max (Lines'First, Error_Row - Extra_Rows);
          Last_Row  : constant Positive := Positive'Min (Lines'Last, Error_Row + Extra_Rows);
 

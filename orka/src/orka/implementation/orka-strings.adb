@@ -19,7 +19,7 @@ with Ada.Strings.Fixed;
 
 package body Orka.Strings is
 
-   package L renames Ada.Characters.Latin_1;
+   package L1 renames Ada.Characters.Latin_1;
    package SF renames Ada.Strings.Fixed;
 
    function Trim (Value : String) return String is (SF.Trim (Value, Ada.Strings.Both));
@@ -28,14 +28,14 @@ package body Orka.Strings is
       Last_Index : Natural := Value'Last;
    begin
       for Index in reverse Value'Range loop
-         exit when Value (Index) not in L.LF | L.CR;
+         exit when Value (Index) not in L1.LF | L1.CR;
          Last_Index := Last_Index - 1;
       end loop;
       return Value (Value'First .. Last_Index);
    end Strip_Line_Term;
 
    function Lines (Value : String) return Positive is
-     (SF.Count (Strip_Line_Term (Value), "" & L.LF) + 1);
+     (SF.Count (Strip_Line_Term (Value), "" & L1.LF) + 1);
 
    function Split
      (Value     : String;
