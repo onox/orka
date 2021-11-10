@@ -46,8 +46,11 @@ processing system. Resources can be loaded from directories and archive files.
 
 - **Quaternions and matrices**. Packages for applying common transformations
 to vectors, quaternions, and matrices using x86 SIMD instructions are provided.
-The various x86 SIMD extensions like SSE, AVX2, FMA, F16C, etc., can also be
+The various x86 SIMD extensions like SSE, AVX(2), FMA, F16C, etc., can also be
 used directly in your own code.
+
+- **Tensors**. Tensors (1D and 2D) using SIMD instructions and
+Runge-Kutta 4th order numerical integrators.
 
 Additionally, Orka provides several bindings:
 
@@ -58,10 +61,30 @@ that is deprecated or functions that have been superseded by newer extensions.
 - **EGL**. Thick bindings for EGL are provided to create a surfaceless
 context for rendering without the presence of a windowing system.
 
-To display 3D graphics on the screen you need a library like [AWT][url-awt]
-to create windows with an OpenGL context and to manage input devices like
-the pointer, keyboard, and gamepads. Alternatively, a library like
+## Ada Window Toolkit
+
+[AWT][url-awt] is used to create windows that can display 3D graphics with
+an OpenGL context and to manage input devices like the pointer, keyboard, and
+gamepads. It has a similar purpose as GLFW and SDL. Alternatively, a library like
 [SDL][url-sdl] can be used instead to create windows and process input.
+
+Currently there is only a Wayland backend for Linux. Hopefully in the future a
+backend for Windows will be added.
+
+AWT also supports gamepads:
+
+- **Mappings**. Use mappings from the [SDL gamecontroller database][url-sdl-gamecontroller-db].
+
+- **Events**. Listen for (dis)connection events.
+
+- **Force-feedback**. Play and cancel rumble and periodic force-feedback effects.
+
+- **Motion sensor**. Get the linear acceleration and angular velocity using the motion
+  sensor of a gamepad.
+
+- **Battery**. Retrieve the capacity and charging state of the battery of a gamepad.
+
+- **LED**. Get and set the color of the LED of a gamepad.
 
 ## Documentation
 
@@ -109,7 +132,7 @@ the [Apache License 2.0][url-apache] AND [BSD 3-Clause license][url-bsd-3].
 the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
-  [url-awt]: https://github.com/onox/awt
+  [url-awt]: https://github.com/onox/orka/tree/master/awt
   [url-bsd-3]: https://opensource.org/licenses/BSD-3-Clause
   [url-crate-atmosphere]: https://github.com/onox/orka/tree/master/orka_plugin_atmosphere
   [url-crate-terrain]: https://github.com/onox/orka/tree/master/orka_plugin_terrain
