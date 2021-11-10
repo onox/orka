@@ -31,12 +31,14 @@ inotify = "^2.0.0"
 
 [[depends-on]]
 orka = "~0.2.0"
+orka_numerics = "^1.0.0"
 
 [[pins]]
-evdev = { path = "../evdev-ada" }
-orka = { path = "../orka/orka" }
-orka_egl = { path = "../orka/orka_egl" }
-wayland_client_ada = { path = "../wayland-ada/wayland_client_ada" }
-wayland_cursor_ada = { path = "../wayland-ada/wayland_cursor_ada" }
-wayland_egl_ada = { path = "../wayland-ada/wayland_egl_ada" }
-wayland_protocols_ada = { path = "../wayland-ada/wayland_protocols_ada" }
+evdev = { path = "../../evdev-ada" }
+orka = { path = "../orka" }
+orka_egl = { path = "../orka_egl" }
+orka_numerics = { path = "../orka_numerics" }
+wayland_client_ada = { path = "../../wayland-ada/wayland_client_ada" }
+wayland_cursor_ada = { path = "../../wayland-ada/wayland_cursor_ada" }
+wayland_egl_ada = { path = "../../wayland-ada/wayland_egl_ada" }
+wayland_protocols_ada = { path = "../../wayland-ada/wayland_protocols_ada" }
