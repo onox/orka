@@ -1117,13 +1117,18 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          return Result;
       end Matrix_Power;
    begin
-      if Right > 0 then
-         return Matrix_Power (Left, Right);
-      elsif Right < 0 then
-         return Matrix_Power (Left.Inverse, abs Right);
-      else
-         return Identity (Size => Left.Shape (1));
-      end if;
+      case Right is
+         when 2 .. Integer'Last =>
+            return Matrix_Power (Left, Right);
+         when 1 =>
+            return Left;
+         when 0 =>
+            return Identity (Size => Left.Shape (1));
+         when -1 =>
+            return Left.Inverse;
+         when Integer'First .. -2 =>
+            return Matrix_Power (Left.Inverse, abs Right);
+      end case;
    end "**";
 
    overriding
