@@ -203,6 +203,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Transpose (Object : CPU_Tensor) return CPU_Tensor;
 
+   overriding
+   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor;
+
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
    ----------------------------------------------------------------------------

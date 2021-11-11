@@ -340,6 +340,23 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Get;
 
+   procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor)
+     with Pre'Class => Object.Shape (2) = Row.Elements;
+
+   procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor) is
+      Count : constant Natural := Row.Elements;
+
+      Row_Data : Element_Array (1 .. Count)
+        with Import, Convention => Ada, Address => Row.Data'Address;
+
+      Object_Data : Element_Array (1 .. Object.Elements)
+        with Import, Convention => Ada, Address => Object.Data'Address;
+
+      Base_Index : constant Natural := (Index - 1) * Count;
+   begin
+      Object_Data (Base_Index + 1 .. Base_Index + Row_Data'Length) := Row_Data;
+   end Set;
+
    function Flattened_Index (Object : CPU_Tensor; Index : Tensor_Index) return Index_Type is
       Rows    : constant Natural := Object.Shape (1);
       Columns : constant Natural := Object.Shape (2);
@@ -1141,9 +1158,15 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Inverse (Object : CPU_Tensor) return CPU_Tensor is
+      Size : constant Natural := Object.Shape (1);
+
+      Solution : Solution_Kind := None;
    begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Result : constant CPU_Tensor := Solve (Object, Identity (Size), Solution) do
+         if Solution /= Unique then
+            raise Singular_Matrix;
+         end if;
+      end return;
    end Inverse;
 
    overriding
@@ -1152,6 +1175,145 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
    end Transpose;
+
+   function Matrix_Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is
+      Ab : CPU_Tensor := Concatenate (A, B, Dimension => 2);
+
+      Rows    : constant Natural := A.Shape (1);
+      Columns : constant Natural := A.Shape (2);
+
+      Columns_Ab : constant Natural := Ab.Shape (2);
+
+      function Find_Largest_Pivot (Row_Index, Column_Index : Index_Type) return Index_Type is
+         Pivot_Value : Element    := abs Ab ((Row_Index, Column_Index));
+         Pivot_Index : Index_Type := Row_Index;
+      begin
+         for Index in Row_Index .. Rows loop
+            declare
+               Value : constant Element := abs Ab ((Index, Column_Index));
+            begin
+               if Value > Pivot_Value then
+                  Pivot_Value := Value;
+                  Pivot_Index := Index;
+               end if;
+            end;
+         end loop;
+
+         return Pivot_Index;
+      end Find_Largest_Pivot;
+
+      procedure Swap_Rows (I, J : Index_Type) is
+      begin
+         if I /= J then
+            declare
+               Row_I : CPU_Tensor renames Ab (I);
+               Old_J : constant CPU_Tensor := Ab (J);
+            begin
+               Set (Ab, J, Row_I);
+               Set (Ab, I, Old_J);
+            end;
+         end if;
+      end Swap_Rows;
+
+      procedure Scale_Row (I : Index_Type; Scale : Element) is
+         Row_I : CPU_Tensor renames Ab (I);
+      begin
+         if Scale /= 1.0 then
+            Set (Ab, I, Scale * Row_I);
+         end if;
+      end Scale_Row;
+
+      procedure Replace_Row (Scale : Element; I, J : Index_Type) is
+         Row_I : CPU_Tensor renames Ab (I);
+         Row_J : CPU_Tensor renames Ab (J);
+      begin
+         if Scale /= 0.0 then
+            Set (Ab, J, Row_J - Scale * Row_I);
+         end if;
+      end Replace_Row;
+
+      Pivots : array (0 .. Rows) of Natural := (others => 0);
+   begin
+      --  Forward phase: row reduce augmented matrix to echelon form
+
+      --  Iterate over the columns and rows and find the row with the
+      --  largest absolute pivot
+      for Index in 1 .. Rows loop
+         --  The pivot of the previous row is in the column to the left
+         Pivots (Index) := Pivots (Index - 1) + 1;
+         pragma Assert (Pivots (Index) <= Columns);
+
+         declare
+            Pivot_Index : Index_Type renames Pivots (Index);
+            Row_Index   : Positive := Find_Largest_Pivot (Index, Pivot_Index);
+         begin
+            while Pivot_Index < Columns and then Ab ((Row_Index, Pivot_Index)) = 0.0 loop
+               Pivot_Index := Pivot_Index + 1;
+               Row_Index   := Find_Largest_Pivot (Index, Pivot_Index);
+            end loop;
+
+            if Ab ((Row_Index, Pivot_Index)) = 0.0 then
+               Pivot_Index := 0;
+               exit;
+            end if;
+
+            Swap_Rows (Index, Row_Index);
+
+            --  Create zeros below the pivot position
+            declare
+               Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
+            begin
+               for Row_Index in Index + 1 .. Rows loop
+                  Replace_Row (Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
+               end loop;
+            end;
+
+            --  Current pivot position is in the last column, all rows below it must be zero
+            exit when Pivot_Index = Columns;
+         end;
+      end loop;
+
+      --  Backward phase: row reduce augmented matrix to reduced echelon form
+
+      for Index in reverse 1 .. Rows loop
+         declare
+            Pivot_Index : Index_Type renames Pivots (Index);
+         begin
+            if Pivot_Index > 0 then
+               Scale_Row (Index, 1.0 / Ab ((Index, Pivot_Index)));
+
+               --  Create zeros above the pivot position
+               for Row_Index in 1 .. Index - 1 loop
+                  Replace_Row (Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
+               end loop;
+            else
+               --  Row contains only zeros; no pivot
+               null;
+            end if;
+         end;
+      end loop;
+
+      if (for some I in 1 .. Rows => Pivots (I) = 0 and Any_True (CPU_Tensor'(B (I) /= 0.0))) then
+         Solution := None;
+      elsif Columns > Rows or else (for some I in 1 .. Columns => Pivots (I) /= I) then
+         Solution := Infinite;
+      else
+         Solution := Unique;
+      end if;
+
+      return Ab (Tensor_Range'((1, Rows), (Columns + 1, Columns_Ab)));
+   end Matrix_Solve;
+
+   overriding
+   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is
+   begin
+      case B.Dimensions is
+         when 1 =>
+            return Matrix_Solve (A, B.Reshape ((B.Elements, 1)), Solution).Flatten;
+         when 2 =>
+            return Matrix_Solve (A, B, Solution);
+      end case;
+   end Solve;
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --

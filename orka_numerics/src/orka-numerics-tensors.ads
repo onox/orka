@@ -246,7 +246,7 @@ package Orka.Numerics.Tensors is
                           Left.Shape (2) = Right.Shape (1)
                         else
                           (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)));
-                                                    --  Left is a row vector
+   --  Left is a row vector if it is 1D
 
    function "*" (Left, Right : Tensor) return Element is abstract
      with Pre'Class => (Left.Dimensions = 1 and Right.Dimensions = 1 and
@@ -264,15 +264,26 @@ package Orka.Numerics.Tensors is
           Post'Class => Outer'Result.Dimensions = 2
                           and Outer'Result.Shape = (Left.Elements, Right.Elements);
 
+   Singular_Matrix : exception;
+
    function Inverse (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2,
+     with Pre'Class  => Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2),
           Post'Class => Inverse'Result.Dimensions = 2;
+   --  Return the inverse of a nonsingular matrix
+   --
+   --  Raises a Singular_Matrix exception if the matrix is singular / noninvertible.
 
    function Transpose (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2,
           Post'Class => Transpose'Result.Dimensions = 2;
 
-   --  TODO Add LU, QR, SVD, Cholesky, Solve
+   type Solution_Kind is (None, Unique, Infinite);
+
+   function Solve (A, B : Tensor; Solution : out Solution_Kind) return Tensor is abstract
+     with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
+          Post'Class => Solve'Result.Shape = B.Shape;
+
+   --  TODO Add LU, QR, SVD, Cholesky
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
