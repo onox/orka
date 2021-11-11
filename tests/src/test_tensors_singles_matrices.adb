@@ -350,25 +350,35 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Operator_Multiply_Inner;
 
    procedure Test_Operator_Power (Object : in out Test) is
-      Tensor : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+      Tensor_1 : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((1.0,  2.0, -3.0,
+                    4.0, -5.0,  6.0,
+                   -7.0,  8.0,  9.0)).Reshape ((3, 3));
 
       Expected_1 : constant CPU_Tensor := Identity (4);
-      Expected_2 : constant CPU_Tensor := Tensor;
-      Expected_3 : constant CPU_Tensor := Expected_2 * Tensor;
-      Expected_4 : constant CPU_Tensor := Expected_3 * Tensor;
+      Expected_2 : constant CPU_Tensor := Tensor_1;
+      Expected_3 : constant CPU_Tensor := Expected_2 * Tensor_1;
+      Expected_4 : constant CPU_Tensor := Expected_3 * Tensor_1;
 
-      Actual_1 : constant CPU_Tensor := Tensor ** 0;
-      Actual_2 : constant CPU_Tensor := Tensor ** 1;
-      Actual_3 : constant CPU_Tensor := Tensor ** 2;
-      Actual_4 : constant CPU_Tensor := Tensor ** 3;
+      Expected_5 : constant CPU_Tensor := Tensor_2.Inverse;
+      Expected_6 : constant CPU_Tensor := Expected_5 ** 2;
+
+      Actual_1 : constant CPU_Tensor := Tensor_1 ** 0;
+      Actual_2 : constant CPU_Tensor := Tensor_1 ** 1;
+      Actual_3 : constant CPU_Tensor := Tensor_1 ** 2;
+      Actual_4 : constant CPU_Tensor := Tensor_1 ** 3;
+
+      Actual_5 : constant CPU_Tensor := Tensor_2 ** (-1);
+      Actual_6 : constant CPU_Tensor := Tensor_2 ** (-2);
    begin
       Assert (Expected_1 = Actual_1, "Tensor ** 0 /= I");
       Assert (Expected_2 = Actual_2, "Tensor ** 1 /= Tensor");
       Assert (Expected_3 = Actual_3, "Tensor ** 2 /= Tensor * Tensor");
       Assert (Expected_4 = Actual_4, "Tensor ** 3 /= Tensor * Tensor * Tensor");
 
-      --  FIXME A**-1 = A.Inverse
-      --  FIXME A**-2 = A.Inverse ** 2
+      Assert (Expected_5 = Actual_5, "Tensor ** -1 /= Tensor.Inverse");
+      Assert (Expected_6 = Actual_6, "Tensor ** -2 /= Tensor.Inverse ** 2");
    end Test_Operator_Power;
 
    procedure Test_Outer (Object : in out Test) is
@@ -393,14 +403,61 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Outer;
 
    procedure Test_Inverse (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0,  2.0, 3.0, 4.0)).Reshape ((2, 2));
+      pragma Assert (1.0 * 4.0 - 2.0 * 3.0 /= 0.0);
+
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((1.0,  2.0, -3.0,
+                    4.0, -5.0,  6.0,
+                   -7.0,  8.0,  9.0)).Reshape ((3, 3));
+
+      Tensor_3 : constant CPU_Tensor :=
+        To_Tensor ((1.0, -2.0, -1.0,
+                   -1.0,  5.0,  6.0,
+                    5.0, -4.0,  5.0)).Reshape ((3, 3));
+
+      Expected_1 : constant CPU_Tensor := Identity (2);
+      Expected_2 : constant CPU_Tensor := Tensor_2;
+
+      Actual_1 : constant CPU_Tensor := Tensor_1.Inverse * Tensor_1;
+      Actual_2 : constant CPU_Tensor := Tensor_2.Inverse.Inverse;
    begin
-      Assert (False, "FIXME");
+      Assert (All_Close (Expected_1, Actual_1), "A^-1 * A /= I");
+      Assert (All_Close (Expected_2, Actual_2), "(A^-1)^-1 /= A");
+
+      begin
+         declare
+            Actual_3 : constant CPU_Tensor := Tensor_3.Inverse;
+         begin
+            Assert (False, "Tensor not singular");
+         end;
+      exception
+         when Singular_Matrix =>
+            null;
+      end;
    end Test_Inverse;
 
    procedure Test_Transpose (Object : in out Test) is
    begin
       Assert (False, "FIXME");
    end Test_Transpose;
+
+   procedure Test_Solve (Object : in out Test) is
+      Tensor_A : constant CPU_Tensor :=
+        To_Tensor ((1.0, -2.0,  1.0,
+                    0.0,  2.0, -8.0,
+                   -4.0,  5.0,  9.0)).Reshape ((3, 3));
+
+      Tensor_B : constant CPU_Tensor := To_Tensor ((0.0, 8.0, -9.0));
+
+      Solution : Solution_Kind;
+
+      Expected : constant Element_Array := (29.0, 16.0, 3.0);
+      Actual   : constant CPU_Tensor    := Solve (Tensor_A, Tensor_B, Solution);
+   begin
+      Assert_Equal (Expected, Actual);
+      Assert (Solution = Unique, "Unexpected number of solutions: " & Solution'Image);
+   end Test_Solve;
 
    procedure Test_Any_True (Object : in out Test) is
    begin
@@ -471,6 +528,8 @@ package body Test_Tensors_Singles_Matrices is
         (Name & "Test function Inverse", Test_Inverse'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Transpose", Test_Transpose'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Solve", Test_Solve'Access));
 
       --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Dimension parameter)
 
