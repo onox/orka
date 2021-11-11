@@ -316,7 +316,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
       Last_Index : constant Natural := Object.Shape (1);
 
-      Count : constant Positive := Last_Index;
+      Count : constant Positive := Object.Shape (2);
       Shape : constant Tensor_Shape := (1 => Count);
    begin
       if Index > Last_Index then

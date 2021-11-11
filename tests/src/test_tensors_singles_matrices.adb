@@ -226,14 +226,22 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Trace;
 
    procedure Test_Constant_Indexing_Index_Row (Object : in out Test) is
-      Tensor : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
+      Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
       --  1 0 0
       --  0 2 0
       --  0 0 3
+
+      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
+      Tensor_3 : constant CPU_Tensor := Tensor_2.Reshape ((3, 2));
+      --  1 2
+      --  3 4
+      --  5 6
    begin
-      Assert_Equal ((1.0, 0.0, 0.0), Tensor (1));
-      Assert_Equal ((0.0, 2.0, 0.0), Tensor (2));
-      Assert_Equal ((0.0, 0.0, 3.0), Tensor (3));
+      Assert_Equal ((1.0, 0.0, 0.0), Tensor_1 (1));
+      Assert_Equal ((0.0, 2.0, 0.0), Tensor_1 (2));
+      Assert_Equal ((0.0, 0.0, 3.0), Tensor_1 (3));
+
+      Assert_Equal ((5.0, 6.0), Tensor_3 (3));
    end Test_Constant_Indexing_Index_Row;
 
    procedure Test_Constant_Indexing_Index_Value (Object : in out Test) is
