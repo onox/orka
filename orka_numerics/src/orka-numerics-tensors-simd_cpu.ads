@@ -406,6 +406,12 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    ----------------------------------------------------------------------------
 
    overriding
+   function All_Close
+     (Left, Right        : CPU_Tensor;
+      Relative_Tolerance : Element := 1.0e-05;
+      Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean;
+
+   overriding
    function Any_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
 
    overriding

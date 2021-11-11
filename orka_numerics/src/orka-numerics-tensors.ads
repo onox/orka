@@ -597,6 +597,12 @@ package Orka.Numerics.Tensors is
 
    ----------------------------------------------------------------------------
 
+   function All_Close
+     (Left, Right        : Tensor;
+      Relative_Tolerance : Element := 1.0e-05;
+      Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean is abstract
+   with Pre'Class => Left.Shape = Right.Shape and Left.Kind = Right.Kind;
+
    function Any_True (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
      with Pre'Class => Object.Kind = Bool_Type
                          and Dimension <= Object.Dimensions
