@@ -38,10 +38,11 @@ package body Orka.Cameras.Look_From_Cameras is
    overriding
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
       Change : Vector4;
+      Mode   : Update_Mode;
 
       use Orka.Transforms.Doubles.Vectors;
    begin
-      Object.Updater.Get (Change);
+      Object.Updater.Get (Change, Mode);
 
       Object.Yaw   := Normalize_Angle (Object.Yaw   + Change (X) * Object.Scale (X));
       Object.Pitch := Normalize_Angle (Object.Pitch + Change (Y) * Object.Scale (Y));

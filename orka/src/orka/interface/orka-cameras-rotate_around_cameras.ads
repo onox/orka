@@ -28,6 +28,10 @@ package Orka.Cameras.Rotate_Around_Cameras is
      (Object : in out Rotate_Around_Camera;
       Radius : Distance);
 
+   procedure Set_Orientation
+     (Object : in out Rotate_Around_Camera;
+      Value  : Vector4);
+
    procedure Change_Orientation
      (Object : in out Rotate_Around_Camera;
       Value  : Vector4);

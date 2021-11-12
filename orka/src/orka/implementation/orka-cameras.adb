@@ -120,14 +120,29 @@ package body Orka.Cameras is
    end Rotate_To_Up;
 
    protected body Change_Updater is
-      procedure Set (Value : Vector4) is
+      procedure Add (Value : Vector4) is
          use Orka.Transforms.Doubles.Vectors;
       begin
          Change := Change + Value;
          Is_Set := True;
+         Update := Relative;
+      end Add;
+
+      procedure Set (Value : Vector4) is
+         use Orka.Transforms.Doubles.Vectors;
+      begin
+--         Change := Value;
+
+         Change (X) := Value (X);
+         Change (Y) := Value (Y);
+         Change (Z) := Value (Z);
+         Change (W) := Value (W);
+
+         Is_Set := False;
+         Update := Absolute;
       end Set;
 
-      procedure Get (Value : in out Vector4) is
+      procedure Get (Value : in out Vector4; Mode : out Update_Mode) is
          use Orka.Transforms.Doubles.Vectors;
          use type Vector4;
       begin
@@ -135,6 +150,8 @@ package body Orka.Cameras is
          Value (Y) := Change (Y);
          Value (Z) := Change (Z);
          Value (W) := Change (W);
+
+         Mode := Update;
 
          if Is_Set then
             Change := (0.0, 0.0, 0.0, 0.0);

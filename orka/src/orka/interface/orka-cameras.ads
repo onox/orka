@@ -154,13 +154,17 @@ private
 
    function Rotate_To_Up (Object : Camera'Class) return Matrix4;
 
+   type Update_Mode is (Relative, Absolute);
+
    protected type Change_Updater is
+      procedure Add (Value : Vector4);
       procedure Set (Value : Vector4);
 
-      procedure Get (Value : in out Vector4);
+      procedure Get (Value : in out Vector4; Mode : out Update_Mode);
    private
       Change : Vector4 := (0.0, 0.0, 0.0, 0.0);
       Is_Set : Boolean := False;
+      Update : Update_Mode := Absolute;
    end Change_Updater;
 
    type Change_Updater_Ptr is not null access Change_Updater;
