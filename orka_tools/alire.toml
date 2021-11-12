@@ -19,6 +19,6 @@ orka_plugin_gltf = "^1.0.0"
 orka = "~0.2.0"
 
 [[pins]]
-awt = { path = "../../awt" }
+awt = { path = "../awt" }
 orka = { path = "../orka" }
 orka_plugin_gltf = { path = "../orka_plugin_gltf" }
