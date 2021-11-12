@@ -77,7 +77,7 @@ procedure Orka_11_Instancing is
             for Index_Z in 1 .. Instances_Dimension loop
                Z := Single (Index_Z - Offset) * Distance_Multiplier;
 
-               Matrices (Index) := Transforms.T ((X, Y, Z, 0.0));
+               Matrices (Index) := Transforms.T (Transforms.Vectors.Point'(X, Y, Z, 1.0));
                Index := Index + 1;
             end loop;
          end loop;
@@ -144,7 +144,7 @@ begin
    begin
       Distance_Center := Distance_Center + (Distance_Center - 1.0) * Space_Between_Cubes;
 
-      Current_Camera.Set_Radius (1.5 * Distance_Center);
+      Current_Camera.Set_Orientation ((0.0, 0.0, 1.5 * Distance_Center, 0.0));
    end;
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
@@ -171,7 +171,7 @@ begin
          use Transforms.Vectors;
          use Transforms;
 
-         TM : constant Transforms.Matrix4 := Transforms.T (Transforms.Zero_Point - VP);
+         TM : constant Transforms.Matrix4 := T (Vector_Type (Transforms.Zero_Point - Point (VP)));
       begin
          Uni_View.Set_Matrix (Current_Camera.View_Matrix * TM);
       end;

@@ -233,7 +233,7 @@ procedure Orka_12_Stencil is
 
    Effect : Effect_Type := Effect_Type'First;
 begin
-   Current_Camera.Set_Radius (Default_Distance);
+   Current_Camera.Set_Orientation ((0.0, 0.0, Default_Distance, 0.0));
 
    FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 1.0, others => <>));
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
@@ -297,7 +297,7 @@ begin
             use Transforms.Vectors;
             use Transforms;
 
-            TM : constant Transforms.Matrix4 := Transforms.T (Transforms.Zero_Point - VP);
+            TM : constant Matrix4 := T (Vector_Type (Transforms.Zero_Point - Point (VP)));
          begin
             Uni_View.Set_Matrix (Current_Camera.View_Matrix * TM);
          end;
