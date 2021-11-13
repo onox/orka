@@ -1546,7 +1546,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function Power (Left : CPU_Tensor; Right : Integer) return CPU_Tensor is
       function Vector_Power (Left : CPU_Tensor; Right : Natural) return CPU_Tensor is
-         Result : CPU_Tensor := Ones (Elements => Left.Shape (1));
+         Result : CPU_Tensor := Ones (Left.Shape);
 
          Log_2 : constant Element := EF.Log (2.0);
 
