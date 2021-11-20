@@ -14,17 +14,27 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.SSE.Singles;
+with Orka.SIMD.SSE.Singles.Arithmetic;
+with Orka.SIMD.SSE2.Integers.Shift;
 
 package Orka.SIMD.SSE2.Integers.Convert is
    pragma Pure;
 
    use SIMD.SSE.Singles;
+   use SIMD.SSE.Singles.Arithmetic;
+   use SIMD.SSE2.Integers.Shift;
 
    function Convert (Elements : m128) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtps2dq";
 
    function Convert (Elements : m128i) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtdq2ps";
+
+   Smallest_Elements : constant m128 := (others => 2.0**(-24));
+
+   function To_Unit_Floats (Elements : m128i) return m128 is
+     (Convert (Shift_Bits_Right_Zeros (Elements, 8)) * Smallest_Elements)
+   with Inline;
+   --  Return floating-point numbers in the 0 .. 1 interval
 
 end Orka.SIMD.SSE2.Integers.Convert;
