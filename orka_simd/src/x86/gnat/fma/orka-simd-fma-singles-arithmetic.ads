@@ -36,12 +36,12 @@ package Orka.SIMD.FMA.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vfmaddsubps256";
 
    function "*" (Left, Right : m128_Array) return m128_Array
-     with Inline;
+     with Inline_Always;
    --  Multiplies the left matrix with the right matrix. Matrix multiplication
    --  is associative, but not commutative.
 
    function "*" (Left : m128_Array; Right : m128) return m128
-     with Inline;
+     with Inline_Always;
    --  Multiplies the left matrix with the right vector. Matrix multiplication
    --  is associative, but not commutative.
 

@@ -42,6 +42,6 @@ package Orka.SIMD.SSE.Singles.Math is
    --  Return the square root (Sqrt(X)) of each element
 
    function Cross_Product (Left, Right : m128) return m128
-     with Inline;
+     with Inline_Always;
 
 end Orka.SIMD.SSE.Singles.Math;

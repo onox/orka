@@ -29,11 +29,13 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendd256";
    --  Select elements from two sources (Left and Right) using a constant mask
 
-   function Extract (Elements : m256i; Mask : Lane) return m128i;
+   function Extract (Elements : m256i; Mask : Lane) return m128i
+     with Inline_Always;
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256i; Right : m128i; Mask : Lane) return m256i;
+   function Insert (Left : m256i; Right : m128i; Mask : Lane) return m256i
+     with Inline_Always;
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
    function Permute (Elements, Index : m256i) return m256i
@@ -54,7 +56,8 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
    --
    --  The same 8 bits of Mask are used to repeat the process for the second lane.
 
-   function Permute_Lanes (Left, Right : m256i; Mask : Unsigned_8) return m256i;
+   function Permute_Lanes (Left, Right : m256i; Mask : Unsigned_8) return m256i
+     with Inline_Always;
    --  Shuffle 128-bit lanes
    --
    --  Bits 1-2 of Mask are used to control which of the four 128-bit lanes

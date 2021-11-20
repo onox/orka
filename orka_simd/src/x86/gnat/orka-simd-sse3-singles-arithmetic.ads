@@ -42,6 +42,6 @@ package Orka.SIMD.SSE3.Singles.Arithmetic is
    --  from Right in the upper half.
 
    function Sum (Elements : m128) return Float_32
-     with Inline;
+     with Inline_Always;
 
 end Orka.SIMD.SSE3.Singles.Arithmetic;

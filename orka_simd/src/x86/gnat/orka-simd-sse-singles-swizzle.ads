@@ -59,9 +59,9 @@ package Orka.SIMD.SSE.Singles.Swizzle is
    with Inline;
 
    procedure Transpose (Matrix : in out m128_Array)
-     with Inline;
+     with Inline_Always;
 
    function Transpose (Matrix : m128_Array) return m128_Array
-     with Inline;
+     with Inline_Always;
 
 end Orka.SIMD.SSE.Singles.Swizzle;

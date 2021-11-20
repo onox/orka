@@ -21,12 +21,12 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_mulps";
 
    function "*" (Left, Right : m128_Array) return m128_Array
-     with Inline;
+     with Inline_Always;
    --  Multiplies the left matrix with the right matrix. Matrix multiplication
    --  is associative, but not commutative.
 
    function "*" (Left : m128_Array; Right : m128) return m128
-     with Inline;
+     with Inline_Always;
    --  Multiplies the left matrix with the right vector. Matrix multiplication
    --  is associative, but not commutative.
 
@@ -34,7 +34,7 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divps";
 
    function Divide_Or_Zero (Left, Right : m128) return m128
-     with Inline;
+     with Inline_Always;
 
    function "+" (Left, Right : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addps";
@@ -47,9 +47,9 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
    with Inline;
 
    function "abs" (Elements : m128) return m128
-     with Inline;
+     with Inline_Always;
 
    function Sum (Elements : m128) return Float_32
-     with Inline;
+     with Inline_Always;
 
 end Orka.SIMD.SSE.Singles.Arithmetic;

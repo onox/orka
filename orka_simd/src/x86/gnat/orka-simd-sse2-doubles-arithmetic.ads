@@ -23,7 +23,8 @@ package Orka.SIMD.SSE2.Doubles.Arithmetic is
    function "/" (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divpd";
 
-   function Divide_Or_Zero (Left, Right : m128d) return m128d;
+   function Divide_Or_Zero (Left, Right : m128d) return m128d
+     with Inline_Always;
 
    function "+" (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addpd";
@@ -36,9 +37,9 @@ package Orka.SIMD.SSE2.Doubles.Arithmetic is
    with Inline;
 
    function "abs" (Elements : m128d) return m128d
-     with Inline;
+     with Inline_Always;
 
    function Sum (Elements : m128d) return Float_64
-     with Inline;
+     with Inline_Always;
 
 end Orka.SIMD.SSE2.Doubles.Arithmetic;

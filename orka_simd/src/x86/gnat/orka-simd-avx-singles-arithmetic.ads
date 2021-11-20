@@ -23,7 +23,8 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    function "/" (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_divps256";
 
-   function Divide_Or_Zero (Left, Right : m256) return m256;
+   function Divide_Or_Zero (Left, Right : m256) return m256
+     with Inline_Always;
 
    function "+" (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addps256";
@@ -35,10 +36,10 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
      ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) - Elements);
 
    function "abs" (Elements : m256) return m256
-     with Inline;
+     with Inline_Always;
 
    function Sum (Elements : m256) return Float_32
-     with Inline;
+     with Inline_Always;
 
    function Add_Subtract (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_addsubps256";

@@ -21,6 +21,7 @@ package Orka.SIMD.SSE4_1.Singles.Compare is
 
    use SIMD.SSE.Singles;
 
-   function Is_Equal (Left, Right : m128) return Boolean;
+   function Is_Equal (Left, Right : m128) return Boolean
+     with Inline_Always;
 
 end Orka.SIMD.SSE4_1.Singles.Compare;

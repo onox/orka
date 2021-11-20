@@ -17,12 +17,16 @@
 package Orka.SIMD.SSE2.Integers.Logical is
    pragma Pure;
 
-   function And_Not (Left, Right : m128i) return m128i;
+   function And_Not (Left, Right : m128i) return m128i
+     with Inline_Always;
 
-   function "and" (Left, Right : m128i) return m128i;
+   function "and" (Left, Right : m128i) return m128i
+     with Inline_Always;
 
-   function "or" (Left, Right : m128i) return m128i;
+   function "or" (Left, Right : m128i) return m128i
+     with Inline_Always;
 
-   function "xor" (Left, Right : m128i) return m128i;
+   function "xor" (Left, Right : m128i) return m128i
+     with Inline_Always;
 
 end Orka.SIMD.SSE2.Integers.Logical;

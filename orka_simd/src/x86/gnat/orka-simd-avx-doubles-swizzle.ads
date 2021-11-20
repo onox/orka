@@ -63,16 +63,16 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  Elements (1), Elements (1), Elements (3), Elements (3)
 
    function Duplicate_LH (Elements : m256d) return m256d
-     with Inline;
+     with Inline_Always;
 
    function Duplicate_HL (Elements : m256d) return m256d
-     with Inline;
+     with Inline_Always;
 
    procedure Transpose (Matrix : in out m256d_Array)
-     with Inline;
+     with Inline_Always;
 
    function Transpose (Matrix : m256d_Array) return m256d_Array
-     with Inline;
+     with Inline_Always;
 
    function Blend (Left, Right : m256d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendpd256";

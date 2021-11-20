@@ -17,12 +17,16 @@
 package Orka.SIMD.AVX2.Integers.Logical is
    pragma Pure;
 
-   function And_Not (Left, Right : m256i) return m256i;
+   function And_Not (Left, Right : m256i) return m256i
+     with Inline_Always;
 
-   function "and" (Left, Right : m256i) return m256i;
+   function "and" (Left, Right : m256i) return m256i
+     with Inline_Always;
 
-   function "or" (Left, Right : m256i) return m256i;
+   function "or" (Left, Right : m256i) return m256i
+     with Inline_Always;
 
-   function "xor" (Left, Right : m256i) return m256i;
+   function "xor" (Left, Right : m256i) return m256i
+     with Inline_Always;
 
 end Orka.SIMD.AVX2.Integers.Logical;

@@ -56,11 +56,11 @@ package Orka.SIMD.SSE2.Integers.Shift is
    ----------------------------------------------------------------------------
 
    function Shift_Elements_Left_Zeros (Elements : m128i) return m128i
-     with Inline;
+     with Inline_Always;
    --  Shift each element to the left by one element, shifting in zeros
 
    function Shift_Elements_Right_Zeros (Elements : m128i) return m128i
-     with Inline;
+     with Inline_Always;
    --  Shift each element to the right by one element, shifting in zeros
 
 end Orka.SIMD.SSE2.Integers.Shift;

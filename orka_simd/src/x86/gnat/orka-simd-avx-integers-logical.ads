@@ -17,10 +17,13 @@
 package Orka.SIMD.AVX.Integers.Logical is
    pragma Pure;
 
-   function Test_All_Zero (Elements, Mask : m256i) return Boolean;
+   function Test_All_Zero (Elements, Mask : m256i) return Boolean
+     with Inline_Always;
 
-   function Test_All_Ones (Elements, Mask : m256i) return Boolean;
+   function Test_All_Ones (Elements, Mask : m256i) return Boolean
+     with Inline_Always;
 
-   function Test_Mix_Ones_Zeros (Elements, Mask : m256i) return Boolean;
+   function Test_Mix_Ones_Zeros (Elements, Mask : m256i) return Boolean
+     with Inline_Always;
 
 end Orka.SIMD.AVX.Integers.Logical;
