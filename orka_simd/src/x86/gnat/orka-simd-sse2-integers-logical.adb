@@ -29,10 +29,10 @@ package body Orka.SIMD.SSE2.Integers.Logical is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pand128";
 
    function "or" (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pand128";
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_por128";
 
    function "xor" (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pand128";
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pxor128";
 
    ----------------------------------------------------------------------------
 
