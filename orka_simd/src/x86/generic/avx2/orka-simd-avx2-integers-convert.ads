@@ -25,10 +25,13 @@ package Orka.SIMD.AVX2.Integers.Convert is
    use SIMD.AVX.Singles.Arithmetic;
    use SIMD.AVX2.Integers.Shift;
 
-   Smallest_Elements : constant m256 := (others => 2.0**(-24));
+   function Convert (Elements : m256i) return m256 renames SIMD.AVX.Integers.Convert.Convert;
+
+   Smallest_Elements : constant m256 := (others => 2.0**(-Float_32'Machine_Mantissa));
 
    function To_Unit_Floats (Elements : m256i) return m256 is
-     (SIMD.AVX.Integers.Convert.Convert (Shift_Bits_Right_Zeros (Elements, 8)) * Smallest_Elements)
+     (Convert (Shift_Bits_Right_Zeros (Elements, Float_32'Size - Float_32'Machine_Mantissa))
+        * Smallest_Elements)
    with Inline;
    --  Return floating-point numbers in the 0 .. 1 interval
 

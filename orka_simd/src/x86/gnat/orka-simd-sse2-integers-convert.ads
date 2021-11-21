@@ -30,10 +30,11 @@ package Orka.SIMD.SSE2.Integers.Convert is
    function Convert (Elements : m128i) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtdq2ps";
 
-   Smallest_Elements : constant m128 := (others => 2.0**(-24));
+   Smallest_Elements : constant m128 := (others => 2.0**(-Float_32'Machine_Mantissa));
 
    function To_Unit_Floats (Elements : m128i) return m128 is
-     (Convert (Shift_Bits_Right_Zeros (Elements, 8)) * Smallest_Elements)
+     (Convert (Shift_Bits_Right_Zeros (Elements, Float_32'Size - Float_32'Machine_Mantissa))
+        * Smallest_Elements)
    with Inline;
    --  Return floating-point numbers in the 0 .. 1 interval
 
