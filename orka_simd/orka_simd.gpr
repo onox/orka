@@ -32,7 +32,9 @@ project Orka_Simd is
 
    case SIMD_Extensions is
       when "AVX2" =>
-         Sources := Sources & ("src/x86/generic/fma");
+         Sources := Sources &
+           ("src/x86/generic/avx2",
+            "src/x86/generic/fma");
       when others =>
          null;
    end case;
