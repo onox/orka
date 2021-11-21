@@ -55,7 +55,7 @@ package body Orka.SIMD.AVX2.Integers.Random is
       use Orka.SIMD.AVX2.Integers.Shift;
 
       function Rotate_Left (X : m256i; K : Bits_Count) return m256i is
-        (Shift_Bits_Right_Zeros (X, K) or Shift_Bits_Right_Zeros (X, 32 - K));
+        (Shift_Bits_Left_Zeros (X, K) or Shift_Bits_Right_Zeros (X, 32 - K));
 
       --  xoshiro128++ (xoshiro128+ is just S (0) + S (3))
       Result : constant m256i := Rotate_Left (S (0) + S (3), 7) + S (0);
