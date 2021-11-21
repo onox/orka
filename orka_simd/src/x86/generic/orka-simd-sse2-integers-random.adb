@@ -84,7 +84,11 @@ package body Orka.SIMD.SSE2.Integers.Random is
    procedure Reset (S : out State; Seed : Integer_32) is
    begin
       for I in S'Range loop
-         S (I) := (others => Seed + I);
+         S (I) :=
+           (Seed + 0,
+            Seed + 1,
+            Seed + 2,
+            Seed + 3);
       end loop;
    end Reset;
 
