@@ -14,6 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Unchecked_Conversion;
+
 with Orka.SIMD.SSE2.Integers.Arithmetic;
 with Orka.SIMD.SSE2.Integers.Convert;
 with Orka.SIMD.SSE2.Integers.Logical;
@@ -55,7 +57,7 @@ package body Orka.SIMD.SSE2.Integers.Random is
       use Orka.SIMD.SSE2.Integers.Shift;
 
       function Rotate_Left (X : m128i; K : Bits_Count) return m128i is
-        (Shift_Bits_Left_Zeros (X, K) or Shift_Bits_Right_Zeros (X, 32 - K));
+        (Shift_Bits_Left_Zeros (X, K) or Shift_Bits_Right_Zeros (X, Unsigned_32'Size - K));
 
       --  xoshiro128++ (xoshiro128+ is just S (0) + S (3))
       Result : constant m128i := Rotate_Left (S (0) + S (3), 7) + S (0);
@@ -81,14 +83,20 @@ package body Orka.SIMD.SSE2.Integers.Random is
       Value := SIMD.SSE2.Integers.Convert.To_Unit_Floats (Result);
    end Next;
 
-   procedure Reset (S : out State; Seed : Integer_32) is
+   procedure Reset (S : out State; Seed : Duration) is
+      Value : constant Unsigned_32 := Unsigned_32 (Unsigned_64 (Seed) mod Unsigned_32'Modulus);
+
+      function Convert is new Ada.Unchecked_Conversion (Unsigned_32, Integer_32);
+
+      function Rotate_Left (X : Unsigned_32; K : Natural) return Unsigned_32 is
+        ((X * 2**K) or (X / 2**(Unsigned_32'Size - K)));
    begin
       for I in S'Range loop
          S (I) :=
-           (Seed + 0,
-            Seed + 1,
-            Seed + 2,
-            Seed + 3);
+           (Convert (Rotate_Left (Value, 1)),
+            Convert (Rotate_Left (Value, 2)),
+            Convert (Rotate_Left (Value, 3)),
+            Convert (Rotate_Left (Value, 4)));
       end loop;
    end Reset;
 

@@ -39,10 +39,10 @@ is
    --  Use and modify the given state to generate multiple random
    --  floating-point numbers in the interval [0, 1).
 
-   procedure Reset (S : out State; Seed : Integer_32)
+   procedure Reset (S : out State; Seed : Duration)
      with Global  => null,
           Depends => (S => Seed),
-          Pre     => Seed /= 0;
+          Pre     => Seed /= 0.0;
 
 private
 
