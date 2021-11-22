@@ -348,12 +348,16 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
 
    overriding
-   function Variance (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Variance
+     (Object    : CPU_Tensor;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return CPU_Tensor;
 
    overriding
    function Standard_Deviation
      (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension) return CPU_Tensor;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --

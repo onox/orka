@@ -498,12 +498,16 @@ package Orka.Numerics.Tensors is
    function Mean (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
      with Pre'Class => Dimension <= Object.Dimensions;
 
-   function Variance (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
-     with Pre'Class => Dimension <= Object.Dimensions;
+   function Variance
+     (Object    : Tensor;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return Tensor is abstract
+   with Pre'Class => Dimension <= Object.Dimensions;
 
    function Standard_Deviation
      (Object    : Tensor;
-      Dimension : Tensor_Dimension) return Tensor is abstract
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return Tensor is abstract
    with Pre'Class => Dimension <= Object.Dimensions;
 
    ----------------------------------------------------------------------------

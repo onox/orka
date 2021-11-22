@@ -1914,7 +1914,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Mean;
 
    overriding
-   function Variance (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
+   function Variance
+     (Object    : CPU_Tensor;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
@@ -1923,11 +1926,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Standard_Deviation
      (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Standard_Deviation;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return CPU_Tensor
+   is (Sqrt (Object.Variance (Dimension, Offset)));
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
