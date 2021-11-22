@@ -24,6 +24,7 @@ is
    use Orka.SIMD.AVX.Singles;
 
    type State is limited private;
+   pragma Preelaborable_Initialization (State);
 
    procedure Next (S : in out State; Value : out m256i)
      with Inline_Always,
