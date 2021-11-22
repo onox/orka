@@ -1945,9 +1945,20 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function "and" (Left, Right : CPU_Tensor) return CPU_Tensor is
    begin
-      return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
+      return Result : CPU_Tensor := Without_Data (Left, Kind => Left.Kind) do
          for Index in Result.Data'Range loop
             Result.Data (Index) := Left.Data (Index) and Right.Data (Index);
+         end loop;
+         Result.Data (Result.Data'Last) := Disable_Padding (Result);
+      end return;
+   end "and";
+
+   overriding function "and" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
+      Left_Vector : constant Vector_Type := (others => Left);
+   begin
+      return Result : CPU_Tensor := Without_Data (Right, Kind => Float_Type) do
+         for Index in Result.Data'Range loop
+            Result.Data (Index) := Left_Vector and Right.Data (Index);
          end loop;
          Result.Data (Result.Data'Last) := Disable_Padding (Result);
       end return;

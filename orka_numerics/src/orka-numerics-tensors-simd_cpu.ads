@@ -363,6 +363,8 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function "and" (Left, Right : CPU_Tensor) return CPU_Tensor;
 
+   overriding function "and" (Left : Element; Right : CPU_Tensor) return CPU_Tensor;
+
    overriding function "or"  (Left, Right : CPU_Tensor) return CPU_Tensor;
 
    overriding function "xor" (Left, Right : CPU_Tensor) return CPU_Tensor;

@@ -517,9 +517,13 @@ package Orka.Numerics.Tensors is
    --  Return a tensor equal to (not Left) and Right
 
    function "and" (Left, Right : Tensor) return Tensor is abstract
-     with Pre'Class  => Left.Kind = Bool_Type and Right.Kind = Bool_Type
+     with Pre'Class  => Right.Kind = Bool_Type
                           and Left.Shape = Right.Shape,
-          Post'Class => "and"'Result.Kind = Bool_Type;
+          Post'Class => "and"'Result.Kind = Left.Kind;
+
+   function "and" (Left : Element; Right : Tensor) return Tensor is abstract
+     with Pre'Class  => Right.Kind = Bool_Type,
+          Post'Class => "and"'Result.Kind = Float_Type;
 
    function "or" (Left, Right : Tensor) return Tensor is abstract
      with Pre'Class  => Left.Kind = Bool_Type and Right.Kind = Bool_Type
