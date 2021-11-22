@@ -1839,10 +1839,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Quantile;
 
    overriding function Median (Object : CPU_Tensor) return Element is
-   begin
-      raise Program_Error;
-      return 0.0;  --  FIXME
-   end Median;
+     (Object.Quantile (0.5));
 
    overriding function Mean (Object : CPU_Tensor) return Element is
      (Object.Sum / Element (Object.Elements));
@@ -1901,10 +1898,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Median;
+     (Object.Quantile (0.5, Dimension));
 
    overriding
    function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
