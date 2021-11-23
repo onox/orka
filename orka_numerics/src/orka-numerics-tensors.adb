@@ -49,4 +49,37 @@ package body Orka.Numerics.Tensors is
         when others =>
            raise Program_Error);
 
+   ----------------------------------------------------------------------------
+
+   package body Generic_Random is
+
+      --  Box-Muller method for the standard normal distribution
+      --
+      --  Alternatively, (U_1 + ... + U_12) - 6.0 uses the central limit
+      --  theorem to approximate the standard normal distribution with
+      --  samples limited to (-6, 6). 0.00034 % of the actual standard normal
+      --  distribution falls outside this range.
+      function Normal (Shape : Tensor_Shape) return Random_Tensor is
+        (Multiply (Sqrt (-2.0 * Log (Uniform (Shape) + Element'Model_Small)),
+           Cos ((2.0 * Ada.Numerics.Pi) * Uniform (Shape))));
+
+      function Binomial
+        (Shape : Tensor_Shape;
+         N     : Positive;
+         P     : Probability) return Random_Tensor
+      is
+         Result : Random_Tensor := Zeros (Shape);
+      begin
+         for Index in 1 .. N loop
+            Result := Result + (1.0 and (Uniform (Shape) <= Element (P)));
+         end loop;
+
+         return Result;
+      end Binomial;
+
+      function Geometric (Shape : Tensor_Shape; P : Probability) return Random_Tensor is
+        (Floor (Exponential (Shape, -EF.Log (Element (1.0 - P) + Element'Model_Small))));
+
+   end Generic_Random;
+
 end Orka.Numerics.Tensors;

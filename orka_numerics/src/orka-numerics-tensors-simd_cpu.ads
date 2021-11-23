@@ -68,6 +68,11 @@ generic
    with function "<" (Left, Right : Vector_Type) return Vector_Type;
    with function ">=" (Left, Right : Vector_Type) return Vector_Type;
    with function "<=" (Left, Right : Vector_Type) return Vector_Type;
+
+   type Random_Number_State is limited private;
+
+   with procedure Next (State : in out Random_Number_State; Value : out Vector_Type);
+   with procedure Reset (State : out Random_Number_State; Seed : Duration);
 package Orka.Numerics.Tensors.SIMD_CPU is
    pragma Preelaborate;
 
@@ -471,6 +476,13 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding function X return CPU_Expression;
    overriding function Y return CPU_Expression;
 
+   ----------------------------------------------------------------------------
+
+   procedure Reset_Random (Seed : Duration);
+
+   overriding function Random_Uniform (Shape : Tensor_Shape) return CPU_Tensor;
+   --  Return a tensor with elements from a uniform distribution in [0.0, 1.0)
+
 private
 
    type Vector_Array is array (Index_Type range <>) of Vector_Type;
@@ -481,6 +493,8 @@ private
       Shape : Tensor_Shape (1 .. Dimensions);
       Data  : Vector_Array (1 .. Size);
    end record;
+
+   Random_State : Random_Number_State;
 
    ----------------------------------------------------------------------------
 

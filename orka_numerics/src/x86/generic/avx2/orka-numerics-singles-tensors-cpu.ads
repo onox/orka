@@ -22,6 +22,7 @@ with Orka.SIMD.AVX.Singles.Logical;
 with Orka.SIMD.AVX.Singles.Math;
 with Orka.SIMD.AVX2.Integers.Arithmetic;
 with Orka.SIMD.AVX2.Integers.Logical;
+with Orka.SIMD.AVX2.Integers.Random;
 with Orka.SIMD.AVX2.Integers.Shift;
 with Orka.SIMD.AVX.Integers.Logical;
 
@@ -60,5 +61,8 @@ package Orka.Numerics.Singles.Tensors.CPU is new Orka.Numerics.Singles.Tensors.S
    SIMD.AVX.Singles.Compare.">",
    SIMD.AVX.Singles.Compare."<",
    SIMD.AVX.Singles.Compare.">=",
-   SIMD.AVX.Singles.Compare."<=");
+   SIMD.AVX.Singles.Compare."<=",
+   SIMD.AVX2.Integers.Random.State,
+   SIMD.AVX2.Integers.Random.Next,
+   SIMD.AVX2.Integers.Random.Reset);
 pragma Preelaborate (Orka.Numerics.Singles.Tensors.CPU);

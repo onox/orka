@@ -15,13 +15,10 @@
 --  limitations under the License.
 
 with Ada.Characters.Latin_1;
-with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Conversion;
 
 package body Orka.Numerics.Tensors.SIMD_CPU is
-
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
    function Convert is new Ada.Unchecked_Conversion (Vector_Type, Integer_Vector_Type);
    function Convert is new Ada.Unchecked_Conversion (Integer_Vector_Type, Vector_Type);
@@ -2239,5 +2236,21 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                 All_Ones (Object.Data (Index)))
              and All_Ones (Object.Data (Object.Data'Last) or Convert (Mask));
    end All_True;
+
+   procedure Reset_Random (Seed : Duration) is
+   begin
+      Reset (Random_State, Seed);
+   end Reset_Random;
+
+   overriding function Random_Uniform (Shape : Tensor_Shape) return CPU_Tensor is
+      Value : Vector_Type;
+   begin
+      return Result : CPU_Tensor := Without_Data (Shape) do
+         for I in Result.Data'Range loop
+            Next (Random_State, Value);
+            Result.Data (I) := Value;
+         end loop;
+      end return;
+   end Random_Uniform;
 
 end Orka.Numerics.Tensors.SIMD_CPU;

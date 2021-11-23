@@ -14,6 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Numerics.Generic_Elementary_Functions;
+
+with Ada.Numerics;
+
 generic
    type Element_Type is digits <>;
 package Orka.Numerics.Tensors is
@@ -638,8 +642,87 @@ package Orka.Numerics.Tensors is
    function All_True (Object : Tensor) return Boolean is abstract
      with Pre'Class => Object.Kind = Bool_Type;
 
+   ----------------------------------------------------------------------------
+
+   function Random_Uniform (Shape : Tensor_Shape) return Tensor is abstract;
+
+   generic
+      type Random_Tensor (<>) is new Tensor with private;
+   package Generic_Random is
+
+      function Uniform (Shape : Tensor_Shape) return Random_Tensor renames Random_Uniform;
+      --  Return a tensor with elements from a uniform distribution in [0.0, 1.0)
+      --
+      --  Mean is 0.5 * (A + B) and variance is 1.0 / 12.0 * (B - A)^2.
+      --
+      --  Use A + Uniform (Shape) * (B - A) for the uniform distribution A .. B.
+
+      function Normal (Shape : Tensor_Shape) return Random_Tensor;
+      --  Return a tensor with elements from the standard normal distribution
+      --
+      --  Mean is 0.0 and variance is 1.0.
+      --
+      --  Use Mu + Normal (Shape) * Sigma for the distribution N (Mu, Sigma^2)
+      --  where Mu is the mean and Sigma is the standard deviation (Sigma^2 is
+      --  the variance).
+
+      function Binomial (Shape : Tensor_Shape; N : Positive; P : Probability) return Random_Tensor;
+      --  Return a tensor where each element is the number of successful
+      --  trials (0 .. N) with each trial having a probability of success of P
+      --
+      --  Mean is N * P and variance is N * P * (1.0 - P)
+
+      function Geometric (Shape : Tensor_Shape; P : Probability) return Random_Tensor
+        with Pre => P > 0.0;
+      --  Return a tensor with a geometric distribution, modeling the
+      --  number of failures
+      --
+      --  Mean is (1.0 - P) / P and variance is (1.0 - P) / P**2.
+
+      function Exponential (Shape : Tensor_Shape; Lambda : Element) return Random_Tensor is
+        (-Log (Uniform (Shape) + Element'Model_Small) / Lambda)
+      with Pre => Lambda > 0.0;
+      --  Return a tensor with an exponential distribution
+      --
+      --  Mean is 1.0 / Lambda and variance is 1.0 / Lambda**2.
+
+      function Pareto (Shape : Tensor_Shape; Xm, Alpha : Element) return Random_Tensor is
+        (Xm / ((1.0 - Uniform (Shape)) ** (1.0 / Alpha)))
+      with Pre => Xm > 0.0 and Alpha > 0.0;
+      --  Return a tensor with a Pareto distribution
+      --
+      --  Mean is (Alpha * Xm) / (Alpha - 1.0) for Alpha > 1.0 and infinite for Alpha <= 1.0
+      --  and variance is (Xm**2 * Alpha) / ((Alpha - 1.0)**2 * (Alpha - 2.0)) for Alpha > 2.0
+      --  and infinite for Alpha < 2.0.
+      --
+      --  If X ~ Exp (Alpha) then Y = Xm * e^X ~ Pareto(Xm, Alpha):
+      --
+      --    Pareto'Result = (Xm * Ada.Numerics.e ** Exponential (Shape, Alpha))
+
+      function Laplace (Shape : Tensor_Shape; Mean, B : Element) return Random_Tensor is
+        (Mean + (Exponential (Shape, 1.0 / B) - Exponential (Shape, 1.0 / B)))
+      with Pre => B > 0.0;
+      --  Return a tensor that has a Laplace distribution
+      --
+      --  Mean is the given mean and variance is 2.0 * B^2.
+
+      function Rayleigh (Shape : Tensor_Shape; Sigma : Element) return Random_Tensor is
+        (Sigma * Sqrt (-2.0 * Log (Uniform (Shape) + Element'Model_Small)))
+      with Pre => Sigma > 0.0;
+      --  Return a tensor that has a Rayleigh distribution
+      --
+      --  Mean is Sigma * Sqrt (Pi / 2.0) and variance is (4.0 - Pi) / 2.0 * Sigma**2.
+      --
+      --  If X ~ Exp (Lambda) then Y = Sqrt (Exp (Lambda)) ~ Rayleigh(1 / Sqrt(2 * Lambda)):
+      --
+      --    Rayleigh'Result = (Sqrt (Exponential (Shape, 0.5 * (1.0 / Sigma)**2)))
+
+   end Generic_Random;
+
 private
 
    function Add (Left, Right : Tensor_Shape; Dimension : Tensor_Dimension) return Tensor_Shape;
+
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
 end Orka.Numerics.Tensors;
