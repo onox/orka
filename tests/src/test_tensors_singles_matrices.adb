@@ -486,7 +486,7 @@ package body Test_Tensors_Singles_Matrices is
    Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Tensors/Singles/Matrices) ";
+      Name : constant String := "(Tensors - Singles - Matrices) ";
    begin
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Flatten", Test_Flatten'Access));

@@ -21,6 +21,7 @@ with AUnit.Test_Caller;
 with AUnit.Test_Fixtures;
 
 with Orka.Numerics.Singles.Tensors.CPU;
+with Orka.OS;
 
 package body Test_Tensors_Singles_Vectors is
 
@@ -33,6 +34,15 @@ package body Test_Tensors_Singles_Vectors is
    Sizes : constant array (Positive range <>) of Natural := (1, 2, 4, 5, 8, 10);
 
    Pi : constant := Ada.Numerics.Pi;
+
+   package Random is new Generic_Random (CPU_Tensor);
+
+   procedure Assert (Expected, Result : Element; Message : String) is
+      function Is_Similar (Expected, Result : Element) return Boolean is
+        (abs (Result - Expected) <= Element'Model_Epsilon + 1.0e-05 * abs Expected);
+   begin
+      Assert (Is_Similar (Expected, Result), Message);
+   end Assert;
 
    procedure Assert_Shape_And_Elements
      (Tensor   : CPU_Tensor;
@@ -704,13 +714,13 @@ package body Test_Tensors_Singles_Vectors is
       Tensor_6 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, False, False, False));
       Tensor_7 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, False, False, False));
    begin
---      Assert (not Tensor_1.Any_True, "Some element of tensor is true");
-      Assert (Tensor_2.Any_True, "No element of tensor (" & Tensor_2.Image & ") is true");
---      Assert (Tensor_3.Any_True, "No element of tensor is true");
---      Assert (Tensor_4.Any_True, "No element of tensor is true");
---      Assert (Tensor_5.Any_True, "No element of tensor is true");
---      Assert (Tensor_6.Any_True, "No element of tensor is true");
---      Assert (not Tensor_7.Any_True, "Some element of tensor is true");
+      Assert (not Tensor_1.Any_True, "Some element of tensor is true");
+      Assert (Tensor_2.Any_True, "No element of tensor is true");
+      Assert (Tensor_3.Any_True, "No element of tensor is true");
+      Assert (Tensor_4.Any_True, "No element of tensor is true");
+      Assert (Tensor_5.Any_True, "No element of tensor is true");
+      Assert (Tensor_6.Any_True, "No element of tensor is true");
+      Assert (not Tensor_7.Any_True, "Some element of tensor is true");
    end Test_Any_True;
 
    procedure Test_All_True (Object : in out Test) is
@@ -836,8 +846,8 @@ package body Test_Tensors_Singles_Vectors is
       Actual_1   : constant Element := Tensor_1.Max;
       Actual_2   : constant Element := Tensor_2.Max;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
    end Test_Function_Max;
 
    procedure Test_Function_Quantile (Object : in out Test) is
@@ -882,12 +892,150 @@ package body Test_Tensors_Singles_Vectors is
 
    ----------------------------------------------------------------------------
 
+   procedure Test_Random_Uniform (Object : in out Test) is
+      Expected_Mean     : constant := 0.5;
+      Expected_Variance : constant := 1.0 / 12.0;
+
+      Tensor : constant CPU_Tensor := Random.Uniform ((1 => 100_000));
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Uniform: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Uniform: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Uniform;
+
+   procedure Test_Random_Normal (Object : in out Test) is
+      Expected_Mean     : constant := 0.0;
+      Expected_Variance : constant := 1.0;
+
+      Tensor : constant CPU_Tensor := Random.Normal ((1 => 100_000));
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Normal: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Normal: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Normal;
+
+   procedure Test_Random_Binomial (Object : in out Test) is
+      Trials : constant := 20_000;
+
+      --  This example is from numpy.random.binomial's documentation:
+      --  Repeat some experiment 9 times with a success probability of 0.1 each.
+      --  What is the probability that all 9 experiments fail? Result is ~ 0.38 or 38 %
+      Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 9, P => 0.1);
+      Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
+   begin
+      Assert (Result in 0.37 .. 0.40, "Unexpected result binomial trials: " & Result'Image);
+   end Test_Random_Binomial;
+
+   procedure Test_Random_Geometric (Object : in out Test) is
+      P : constant := 0.5;
+
+      Expected_Mean     : constant := (1.0 - P) / P;
+      Expected_Variance : constant := (1.0 - P) / P**2;
+
+      Tensor : constant CPU_Tensor := Random.Geometric ((1 => 100_000), P => P);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Geometric: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Geometric: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Geometric;
+
+   procedure Test_Random_Exponential (Object : in out Test) is
+      Lambda : constant := 1.5;
+
+      Expected_Mean     : constant := 1.0 / Lambda;
+      Expected_Variance : constant := 1.0 / Lambda**2;
+
+      Tensor : constant CPU_Tensor := Random.Exponential ((1 => 100_000), Lambda => Lambda);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Exponential: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Exponential: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Exponential;
+
+   procedure Test_Random_Pareto (Object : in out Test) is
+      Xm : constant := 1.0;
+      A  : constant := 4.0;
+      --  The variance test below fails with a chance of 10.0 % for A = 3.0 and 0.5 % for A = 3.5
+
+      Expected_Mean     : constant := (A * Xm) / (A - 1.0);
+      Expected_Variance : constant := (Xm**2 * A) / ((A - 1.0)**2 * (A - 2.0));
+
+      Tensor : constant CPU_Tensor := Random.Pareto ((1 => 100_000), Xm => Xm, Alpha => A);
+   begin
+      --  A > 1.0 otherwise mean is infinite
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Pareto: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      --  A > 2.0 otherwise variance is infinite
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Pareto: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Pareto;
+
+   procedure Test_Random_Laplace (Object : in out Test) is
+      Mean : constant := 2.5;
+      B    : constant := 0.5;
+
+      Expected_Mean     : constant := Mean;
+      Expected_Variance : constant := 2.0 * B**2;
+
+      Tensor : constant CPU_Tensor := Random.Laplace ((1 => 100_000), Mean => Mean, B => B);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Laplace: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Laplace: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Laplace;
+
+   procedure Test_Random_Rayleigh (Object : in out Test) is
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
+
+      use EF;
+
+      Sigma : constant := 1.5;
+
+      Expected_Mean     : constant Element := Sigma * Sqrt (Pi / 2.0);
+      Expected_Variance : constant := (4.0 - Pi) / 2.0 * Sigma**2;
+
+      Tensor : constant CPU_Tensor := Random.Rayleigh ((1 => 100_000), Sigma => Sigma);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Rayleigh: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for Rayleigh: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Rayleigh;
+
+   ----------------------------------------------------------------------------
+
    package Caller is new AUnit.Test_Caller (Test);
 
    Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Tensors/Singles/Vectors) ";
+      Name : constant String := "(Tensors - Singles - Vectors) ";
    begin
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Zeros", Test_Zeros'Access));
@@ -1058,7 +1206,27 @@ package body Test_Tensors_Singles_Vectors is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test reduction in function Product", Test_Reduction_Product'Access));
 
+      --  Random
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random uniform distribution", Test_Random_Uniform'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random normal distribution", Test_Random_Normal'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random binomial distribution", Test_Random_Binomial'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random geometric distribution", Test_Random_Geometric'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random exponential distribution", Test_Random_Exponential'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Pareto distribution", Test_Random_Pareto'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Laplace distribution", Test_Random_Laplace'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Rayleigh distribution", Test_Random_Rayleigh'Access));
+
       return Test_Suite'Access;
    end Suite;
 
+begin
+   Reset_Random (Orka.OS.Monotonic_Clock);
 end Test_Tensors_Singles_Vectors;
