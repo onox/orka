@@ -24,6 +24,8 @@ jobs:
         exclude:
           - os: windows-latest
             compiler: fsf
+          - os: ubuntu-latest
+            compiler: fsf
     steps:
     - uses: actions/checkout@v2
 
