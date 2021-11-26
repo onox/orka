@@ -65,6 +65,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    function Without_Data
      (Object : CPU_Tensor;
+      Kind   : Data_Type := Float_Type) return CPU_Tensor;
+   --  This silly definition is needed to avoid "length check failed" in GNAT FSF 11.1
+
+   function Without_Data
+     (Object : CPU_Tensor;
       Kind   : Data_Type := Float_Type) return CPU_Tensor
    is
      ((Dimensions => Object.Dimensions,

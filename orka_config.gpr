@@ -96,6 +96,7 @@ abstract project Orka_Config is
         Style_Checks_Switches &
         Contracts_Switches &
         ("-march=native",
+         "-fno-tree-vrp", -- Workaround bug box in GNAT 11.1 for orka_egl
          "-ffunction-sections",
          "-fdata-sections",  -- In Linker: -Wl,-gc-sections
          "-gnatw.X", -- Disable warnings for No_Exception_Propagation

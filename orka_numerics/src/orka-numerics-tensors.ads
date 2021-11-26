@@ -44,6 +44,11 @@ package Orka.Numerics.Tensors is
 
    function Trim (Value : Natural) return String;
 
+   function Is_Equal
+     (Left, Right : Tensor_Shape;
+      Except      : Tensor_Dimension) return Boolean
+   is (for all D in Left'Range => D = Except or Left (D) = Right (D));
+
    subtype Index_Type is Positive;
 
    type Tensor_Index is array (Tensor_Dimension) of Index_Type
@@ -231,12 +236,7 @@ package Orka.Numerics.Tensors is
    with Pre'Class  => Left.Dimensions = Right.Dimensions and
                       Left.Kind = Right.Kind and
                       Dimension <= Left.Dimensions and
-                      (for all D in Left.Shape'Range =>
-                         (if D /= Dimension
-                            and D in Left.Shape'Range
-                            and D in Right.Shape'Range
-                          then
-                            Left.Shape (D) = Right.Shape (D))),
+                      Is_Equal (Left.Shape, Right.Shape, Dimension),
         Post'Class => Left.Dimensions = Concatenate'Result.Dimensions;
    --  Return the concatenation of the two tensors in the given dimension
 
