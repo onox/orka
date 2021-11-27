@@ -141,7 +141,7 @@ package body AWT.Registry is
       Window : constant not null access AWT.Wayland.Windows.Wayland_Window :=
         Surface_Data.Get_Data (Surface).Window;
    begin
-      Seat.Window := Window;
+      Seat.Window := Window.all'Access;
 
       Seat.Pointer_State   := (Focused => True, others => <>);
       Seat.Scroll_Discrete := False;
@@ -352,7 +352,7 @@ package body AWT.Registry is
 
       use all type AWT.Inputs.Button_State;
    begin
-      Seat.Keyboard_Window := Window;
+      Seat.Keyboard_Window := Window.all'Access;
       Seat.Keyboard_Enter_Serial := Serial;
 
       Seat.Keyboard_State.Focused := True;
@@ -649,7 +649,7 @@ package body AWT.Registry is
 
       use WP.Client;
    begin
-      Global.Seat.Drag_Drop_Window := Window;
+      Global.Seat.Drag_Drop_Window := Window.all'Access;
 
       pragma Assert (Global.Seat.Data_Offer = Data_Offer);
 
@@ -889,7 +889,7 @@ package body AWT.Registry is
       for Monitor of Global.Monitors loop
          if Monitor.Output.Has_Proxy and then Monitor.Output.Get_ID = ID then
             if Monitor_Listener /= null then
-               Monitor_Listener.On_Disconnect (Monitor => Monitor'Access);
+               Monitor_Listener.On_Disconnect (Monitor => Monitor'Unchecked_Access);
             end if;
             Monitor.Output.Release;
             Monitor.Initialized := False;
@@ -1146,7 +1146,7 @@ package body AWT.Registry is
          begin
             for Monitor of Global.Monitors loop
                if Monitor.Output.Has_Proxy then
-                  Result (Index) := Monitor'Access;
+                  Result (Index) := Monitor'Unchecked_Access;
                   Index := Index + 1;
                end if;
             end loop;

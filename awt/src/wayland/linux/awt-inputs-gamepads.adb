@@ -1030,7 +1030,7 @@ package body AWT.Inputs.Gamepads is
                      if not Gamepad.Initialized and Gamepad.Serial_Number = ID then
                         if Initialize (Gamepad, Path) then
                            if Gamepad_Listener /= null then
-                              Gamepad_Listener.On_Connect (Gamepad'Access);
+                              Gamepad_Listener.On_Connect (Gamepad'Unchecked_Access);
                            end if;
                         end if;
                         return;
@@ -1042,7 +1042,7 @@ package body AWT.Inputs.Gamepads is
                      if not Gamepad.Initialized then
                         if Initialize (Gamepad, Path) then
                            if Gamepad_Listener /= null then
-                              Gamepad_Listener.On_Connect (Gamepad'Access);
+                              Gamepad_Listener.On_Connect (Gamepad'Unchecked_Access);
                            end if;
                         end if;
                         return;
@@ -1054,7 +1054,7 @@ package body AWT.Inputs.Gamepads is
                   if Gamepad.Initialized and Gamepad.Hardware.Path = Path then
                      Gamepad.Hardware.Finalize;
                      if Gamepad_Listener /= null then
-                        Gamepad_Listener.On_Disconnect (Gamepad'Access);
+                        Gamepad_Listener.On_Disconnect (Gamepad'Unchecked_Access);
                      end if;
                      return;
                   end if;
@@ -1129,7 +1129,7 @@ package body AWT.Inputs.Gamepads is
          begin
             for Gamepad of All_Gamepads loop
                if Gamepad.Initialized then
-                  Result (Index) := Gamepad'Access;
+                  Result (Index) := Gamepad'Unchecked_Access;
                   Index := Index + 1;
                end if;
             end loop;
