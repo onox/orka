@@ -1028,6 +1028,94 @@ package body Test_Tensors_Singles_Vectors is
            & " instead of " & Element'Image (Expected_Variance));
    end Test_Random_Rayleigh;
 
+   procedure Test_Random_Weibull (Object : in out Test) is
+      K      : constant := 1.5;
+      Lambda : constant := 1.0;
+
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
+
+      use EF;
+
+      G1 : constant := 1.0 / 12.0;
+      G2 : constant := 1.0 / 1440.0;
+      G3 : constant := 239.0 / 362880.0;
+
+      function Gamma (X : Element) return Element is
+        (Sqrt (2.0 * Pi / X) * (1.0 / Ada.Numerics.e * (X + G1 / X + G2 / X**3 + G3 / X**5))**X);
+      --  Nemes's approximation [1] of the gamma function
+      --  See https://en.wikipedia.org/wiki/Stirling%27s_approximation
+      --
+      --  [1] "New asymptotic expansion for the Gamma(x) function", Nemes, G., 2007
+
+      Expected_Mean     : constant Element := Lambda * Gamma (1.0 + 1.0 / K);
+      Expected_Variance : constant Element :=
+        Lambda**2 * (Gamma (1.0 + 2.0 / K) - Gamma (1.0 + 1.0 / K)**2);
+
+      Tensor : constant CPU_Tensor := Random.Weibull ((1 => 100_000), K => K, Lambda => Lambda);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
+        "Unexpected mean for Weibull: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.2,
+        "Unexpected variance for Weibull: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Weibull;
+
+   procedure Test_Random_Poisson (Object : in out Test) is
+      Lambda : constant := 10.0;
+
+      Expected_Mean     : constant Element := Lambda;
+      Expected_Variance : constant Element := Lambda;
+
+      Tensor : constant CPU_Tensor := Random.Poisson ((1 => 100_000), Lambda => Lambda);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
+        "Unexpected mean for Poisson: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.2,
+        "Unexpected variance for Poisson: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Poisson;
+
+   procedure Test_Random_Gamma (Object : in out Test) is
+      K     : constant := 5.0;
+      Theta : constant := 2.0;
+
+      Expected_Mean     : constant Element := K * Theta;
+      Expected_Variance : constant Element := K * Theta ** 2;
+
+      Tensor : constant CPU_Tensor := Random.Gamma ((1 => 100_000), K => K, Theta => Theta);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
+        "Unexpected mean for gamma: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.5,
+        "Unexpected variance for gamma: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Gamma;
+
+   procedure Test_Random_Beta (Object : in out Test) is
+      Alpha : constant := 2.0;
+      Beta  : constant := 5.0;
+
+      Expected_Mean     : constant Element := Alpha / (Alpha + Beta);
+      Expected_Variance : constant Element :=
+        (Alpha * Beta) / ((Alpha + Beta)**2 * (Alpha + Beta + 1.0));
+
+      Tensor : constant CPU_Tensor := Random.Beta ((1 => 100_000), Alpha => Alpha, Beta => Beta);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
+        "Unexpected mean for Beta: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.1,
+        "Unexpected variance for beta: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Beta;
+
    ----------------------------------------------------------------------------
 
    package Caller is new AUnit.Test_Caller (Test);
@@ -1223,6 +1311,14 @@ package body Test_Tensors_Singles_Vectors is
         (Name & "Test random Laplace distribution", Test_Random_Laplace'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test random Rayleigh distribution", Test_Random_Rayleigh'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Weibull distribution", Test_Random_Weibull'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Poisson distribution", Test_Random_Poisson'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random gamma distribution", Test_Random_Gamma'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random beta distribution", Test_Random_Beta'Access));
 
       return Test_Suite'Access;
    end Suite;
