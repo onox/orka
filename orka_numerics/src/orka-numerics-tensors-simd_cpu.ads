@@ -264,6 +264,12 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
+   overriding function Min (Left : Element; Right : CPU_Tensor) return CPU_Tensor;
+   overriding function Min (Left : CPU_Tensor; Right : Element) return CPU_Tensor;
+
+   overriding function Max (Left : Element; Right : CPU_Tensor) return CPU_Tensor;
+   overriding function Max (Left : CPU_Tensor; Right : Element) return CPU_Tensor;
+
    overriding function Sqrt (Object : CPU_Tensor) return CPU_Tensor;
 
    overriding function Ceil  (Object : CPU_Tensor) return CPU_Tensor;

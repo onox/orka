@@ -1580,6 +1580,32 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end if;
    end Power;
 
+   overriding function Min (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
+     (Min (Right, Left));
+
+   overriding function Min (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
+      Right_Vector : constant Vector_Type := (others => Right);
+   begin
+      return Result : CPU_Tensor := Without_Data (Left) do
+         for Index in Result.Data'Range loop
+            Result.Data (Index) := Min (Left.Data (Index), Right_Vector);
+         end loop;
+      end return;
+   end Min;
+
+   overriding function Max (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
+     (Max (Right, Left));
+
+   overriding function Max (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
+      Right_Vector : constant Vector_Type := (others => Right);
+   begin
+      return Result : CPU_Tensor := Without_Data (Left) do
+         for Index in Result.Data'Range loop
+            Result.Data (Index) := Max (Left.Data (Index), Right_Vector);
+         end loop;
+      end return;
+   end Max;
+
    overriding function Sqrt (Object : CPU_Tensor) return CPU_Tensor is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do

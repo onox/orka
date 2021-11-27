@@ -358,6 +358,12 @@ package Orka.Numerics.Tensors is
 
    ----------------------------------------------------------------------------
 
+   function Min (Left : Element; Right : Tensor) return Tensor is abstract;
+   function Min (Left : Tensor; Right : Element) return Tensor is abstract;
+
+   function Max (Left : Element; Right : Tensor) return Tensor is abstract;
+   function Max (Left : Tensor; Right : Element) return Tensor is abstract;
+
    function Sqrt (Object : Tensor) return Tensor is abstract;
 
    function Ceil (Object : Tensor) return Tensor is abstract;
@@ -680,7 +686,7 @@ package Orka.Numerics.Tensors is
       --  Mean is (1.0 - P) / P and variance is (1.0 - P) / P**2.
 
       function Exponential (Shape : Tensor_Shape; Lambda : Element) return Random_Tensor is
-        (-Log (Uniform (Shape) + Element'Model_Small) / Lambda)
+        ((-1.0 / Lambda) * Log (Uniform (Shape) + Element'Model_Small))
       with Pre => Lambda > 0.0;
       --  Return a tensor with an exponential distribution
       --
@@ -716,6 +722,35 @@ package Orka.Numerics.Tensors is
       --  If X ~ Exp (Lambda) then Y = Sqrt (Exp (Lambda)) ~ Rayleigh(1 / Sqrt(2 * Lambda)):
       --
       --    Rayleigh'Result = (Sqrt (Exponential (Shape, 0.5 * (1.0 / Sigma)**2)))
+
+      function Weibull (Shape : Tensor_Shape; K, Lambda : Element) return Random_Tensor is
+        (Lambda * (-Log (Uniform (Shape) + Element'Model_Small))**(1.0 / K))
+      with Pre => K > 0.0 and Lambda > 0.0;
+      --  Return a tensor that has a Weibull distribution
+      --
+      --  Mean is Lambda * Gamma(1.0 + 1.0 / K) and variance is
+      --  Lambda^2 * [Gamma(1.0 + 2.0 / K) - Gamma(1.0 + 1.0 / K)^2].
+
+      function Poisson (Shape : Tensor_Shape; Lambda : Element) return Random_Tensor
+        with Pre => Lambda > 0.0;
+      --  Return a tensor that has the Poisson distribution
+      --
+      --  Mean and variance are both Lambda.
+
+      function Gamma (Shape : Tensor_Shape; K, Theta : Element) return Random_Tensor
+        with Pre => K >= 1.0 and Theta > 0.0;
+      --  Return a tensor that has the gamma distribution
+      --
+      --  Mean is K * Theta and variance is K * Theta^2.
+      --
+      --  Note: 0.0 < K < 1.0 is currently not supported.
+
+      function Beta (Shape : Tensor_Shape; Alpha, Beta : Element) return Random_Tensor
+        with Pre => Alpha > 0.0 and Beta > 0.0;
+      --  Return a tensor with a beta distribution
+      --
+      --  Mean is Alpha / (Alpha + Beta) and variance is
+      --  (Alpha * Beta) / ((Alpha + Beta)^2 * (Alpha + Beta + 1.0)).
 
    end Generic_Random;
 

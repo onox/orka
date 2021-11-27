@@ -80,6 +80,86 @@ package body Orka.Numerics.Tensors is
       function Geometric (Shape : Tensor_Shape; P : Probability) return Random_Tensor is
         (Floor (Exponential (Shape, -EF.Log (Element (1.0 - P) + Element'Model_Small))));
 
+      function Poisson (Shape : Tensor_Shape; Lambda : Element) return Random_Tensor is
+         U : constant Random_Tensor := Uniform (Shape);
+
+         use EF;
+
+         I    : Random_Tensor := Zeros (Shape);
+         Expr : Random_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
+         Sum  : Random_Tensor := Expr;
+      begin
+         loop
+            declare
+               Loop_Condition : constant Random_Tensor := U > Sum;
+            begin
+               exit when not Any_True (Loop_Condition);
+
+               --  Using inverse transform sampling (with y is lambda):
+               --  P = min{p = 0, 1, 2, ... | U <= exp(-y) * Sum (y^i / i! for i in 0 .. p)}
+               I    := I + (1.0 and Loop_Condition);
+               Expr := Expr * Lambda / I;
+               Sum  := Sum + (Expr and Loop_Condition);
+            end;
+         end loop;
+
+         return I;
+      end Poisson;
+
+      function Gamma (Shape : Tensor_Shape; K, Theta : Element) return Random_Tensor is
+         D : constant Element := K - 1.0 / 3.0;
+         C : constant Element := 1.0 / EF.Sqrt (9.0 * D);
+
+         Result   : Random_Tensor := Zeros (Shape);
+         Fraction : Random_Tensor := Zeros (Shape);
+      begin
+         for I in 1 .. Integer (Element'Floor (K)) loop
+            Result := Result + Log (Uniform (Shape) + Element'Model_Small);
+         end loop;
+
+         --  Marsaglia's transformation-rejection method [1]
+         --
+         --  [1] "A Simple Method for Generating Gamma Variables", Marsaglia G., Tsang W.,
+         --      ACM Trans. Math. Softw., 26.3:363−372, 2000
+         --
+         --  See https://en.wikipedia.org/wiki/Gamma_distribution
+         declare
+            Loop_Condition : Random_Tensor := Fraction /= Fraction;
+         begin
+            loop
+               declare
+                  X : constant Random_Tensor := Normal (Shape);
+                  U : constant Random_Tensor := Log (Uniform (Shape) + Element'Model_Small);
+
+                  V  : constant Random_Tensor := Power (1.0 + C * X, 3);
+                  DV : constant Random_Tensor := D * V;
+
+                  --  (Check that -1.0 / C < X, otherwise Log (V) will fail because V <= 0.0)
+                  If_Condition : constant Random_Tensor :=
+                    V > 0.0 and -1.0 / C < X and
+                      U < 0.5 * Power (X, 2) + D - DV
+                            + D * Log (Max (0.0, V) + Element'Model_Small);
+               begin
+                  --  Update Fraction with value DV but not if the element was already true before
+                  Fraction := Fraction + DV and And_Not (Loop_Condition, If_Condition);
+
+                  Loop_Condition := Loop_Condition or If_Condition;
+                  exit when All_True (Loop_Condition);
+               end;
+            end loop;
+         end;
+
+         return Theta * (Fraction - Result);
+      end Gamma;
+
+      --  Beta (Alpha, Beta) = X / (X + Y) where X ~ Gamma(Alpha, Theta) and Y ~ Gamma(Beta, Theta)
+      function Beta (Shape : Tensor_Shape; Alpha, Beta : Element) return Random_Tensor is
+         X : constant Random_Tensor := Gamma (Shape, Alpha, 1.0);
+         Y : constant Random_Tensor := Gamma (Shape, Beta, 1.0);
+      begin
+         return X / (X + Y);
+      end Beta;
+
    end Generic_Random;
 
 end Orka.Numerics.Tensors;
