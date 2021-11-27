@@ -24,7 +24,7 @@ package body Orka.SIMD.AVX.Doubles.Math is
       use SIMD.AVX.Doubles.Swizzle;
 
       function Shuffle (Elements : m256d) return m256d
-        with Inline;
+        with Inline_Always;
 
       function Shuffle (Elements : m256d) return m256d is
          Mask_1_0_1_0 : constant Unsigned_32 := 1 or 0 * 2 or 1 * 4 or 0 * 8;
