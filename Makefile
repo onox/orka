@@ -5,11 +5,12 @@ SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
 COVERAGE_VARS = -XORKA_BUILD_MODE=coverage
 
 DEBUG_VARS = -XORKA_BUILD_MODE=debug -XORKA_DEBUG_SYMBOLS=enabled
+RELEASE_VARS = -XORKA_COMPILE_CHECKS=none -XORKA_RUNTIME_CHECKS=none -XORKA_CONTRACTS=disabled
 
 .PHONY: build examples tools tests coverage docs clean
 
 build:
-	cd orka_egl && alr build
+#	cd orka_egl && alr build
 	cd orka_types && alr build $(SCENARIO_VARS)
 	cd orka_simd && alr build $(SCENARIO_VARS)
 	cd orka_transforms && alr build $(SCENARIO_VARS)
