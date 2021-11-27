@@ -968,10 +968,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    is
       Left_Vector : constant Vector_Type := (others => Left);
 
-      subtype Element_4 is Element_Array (1 .. 4);
+      subtype Vector_Elements is Element_Array (1 .. Vector_Type'Length);
 
-      function Convert is new Ada.Unchecked_Conversion (Element_4, Vector_Type);
-      function Convert is new Ada.Unchecked_Conversion (Vector_Type, Element_4);
+      function Convert is new Ada.Unchecked_Conversion (Vector_Elements, Vector_Type);
+      function Convert is new Ada.Unchecked_Conversion (Vector_Type, Vector_Elements);
 
       Last_Vector_Index : constant Positive := Data_Vectors (Right'Length);
 
