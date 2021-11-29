@@ -26,8 +26,8 @@ Tensors provide the following features:
 - Constant indexing using a number, range, or another (boolean) tensor
 - Matrix multiplication and power
 - Inverse, transpose, outer product
-- Solve A**x** = **b**
-- Constructors to create tensors from arrays, filled w/ zeros or ones
+- Solve A **x** = **b**
+- Constructors to create tensors from arrays, filled with zeros or ones
 - Constructors to create a range of numbers, or linear/log/geom space
 - Constructors to create an identity matrix, or with a diagonal
 - Reshape, flatten, or concatenate tensors
@@ -265,7 +265,7 @@ An expression can be constructed and then used repeatedly by the function
 Expression_Sum : constant CPU_Expression := X + Y;
 ```
 
-Note that `X` and `Y` are not parameters, but functions each returning
+Note that `X` and `Y` are not parameters but functions, each returning
 an `Expression`. The expression in `Expression_Sum` can then be used in
 a reduction:
 
@@ -310,7 +310,7 @@ If the tensor is 2-D, then a 1-D tensor is returned containing the elements
 of the requested row:
 
 ```ada
-Some_Row : constant CPU_Tensor := Tensor (I);
+Row_I : constant CPU_Tensor := Tensor (I);
 ```
 
 If the tensor is 2-D and the index is a `Tensor_Index` then it returns the
@@ -326,7 +326,7 @@ If the given index is a `Range_Type` then the elements or rows at the given
 range is returned depending on whether the tensor is 1-D or 2-D:
 
 ```ada
-Multiple_Rows : constant CPU_Tensor := Tensor (Range_Type'(Start => 5, Stop => 10));
+Some_Rows : constant CPU_Tensor := Tensor (Range_Type'(Start => 5, Stop => 10));
 ```
 
 If one wants to extract multiple rows and/or multiple columns, an index of
@@ -373,8 +373,8 @@ applied to them.
 The `*` operator is used to perform matrix multiplication on matrices
 and vectors. Matrix multiplication is useful to apply transformations
 to points (vectors). For example, `:::ada A * B * X` transforms `X`
-by `B` to B**x** and then multiplies with `A` to transform to the
-result AB**x**.
+by `B` to B **x** and then multiplies with `A` to transform it to the
+result A B **x**.
 
 !!! tip
     It is more efficient to compute `:::ada A * (B * X)` than
@@ -388,7 +388,7 @@ result AB**x**.
 !!! warning "Matrix multiplication is not commutative"
     Matrix multiplication is not commutative: `:::ada A * B /= B * A`.
 
-!!! note
+!!! summary
     Matrix multiplication is associative and distributive:
 
     - `:::ada A * (B * C) = (A * B) * C`
@@ -414,10 +414,10 @@ Alternatively, the function `Inverse` will perform `:::ada A ** (-1)`.
     `Inverse` or the `**` operator will raise the exception `Singular_Matrix`.
 
 !!! note
-    A**x** = **b** can be solved for **x** with A^-1**b**, but it is
+    A **x** = **b** can be solved for **x** with A^-1 **b**, but it is
     more efficient and accurate to use function `Solve`.
 
-!!! note
+!!! summary
     The inverse of `:::ada A * B` is equal to the product of the
     inverses in the reverse order:
     `:::ada (A * B).Inverse = B.Inverse * A.Inverse`.
@@ -446,7 +446,7 @@ array([[ 1.0, 4.0],
        [ 3.0, 6.0]])
 ```
 
-!!! note
+!!! summary
     The transpose of `:::ada A * B` is equal to the product of the
     transposes in the reverse order:
     `:::ada (A * B).Transpose = B.Transpose * A.Transpose`.
@@ -464,16 +464,16 @@ The outer product of two vectors, 1-D tensors, returned by the function
 size of the first vector and the number of columns is equal to the size
 of the second vector.
 
-!!! note "The difference between the outer and inner products"
+!!! info "The difference between the outer and inner products"
     The outer product for two vectors **u** and **v** is defined as
-    **u****v**^T and is a *n* x *m* matrix, while the inner product
-    (or dot product) is defined as **u**^T**v** is a 1 x 1 matrix.
+    **u** **v**^T and is a *n* x *m* matrix, while the inner product
+    (or dot product) is defined as **u**^T **v** is a 1 x 1 matrix.
 
-### Solving A**x** = **b**
+### Solving A **x** = **b**
 
 A system of linear equations can be solved by row reducing the augmented
 matrix [A **b**] to [I **x**], where I is the identity matrix.
-The function `Solve` is given two tensors `A` and `B` and solves A**x** = **b**
+The function `Solve` is given two tensors `A` and `B` and solves A **x** = **b**
 for each vector **b** in tensor `B`.
 
 The function has a third parameter `Solution` of mode `out`. It will have
@@ -486,7 +486,7 @@ one of the following values after the function `Solve` returns:
   thus the system of linear equations will have an infinite number of solutions.
   If `A` has free variables, their vectors are not returned in any `out` parameter.
 
-- `Unique`. A**x** = **b** has exactly one solution for all vectors in `B`.
+- `Unique`. A **x** = **b** has exactly one solution for all vectors in `B`.
 
 ### Trace
 
@@ -502,7 +502,7 @@ the optional parameter `Offset`.
 
 ### Decompositions
 
-!!! note "TODO"
+!!! bug "TODO"
 
 ## Creating tensors
 
@@ -543,7 +543,7 @@ If a 2-D tensor is desired, provide the desired shape as the second parameter:
 Matrix : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0), (2, 2));
 ```
 
-!!! tip
+!!! info
     The function `Reshape` can be used to create a 2-D tensor from a
     1-D tensor. This may require copying the data, which the use of a
     shape as the second parameter will avoid.
@@ -633,7 +633,7 @@ are equal to `Start` and `Stop`.
 #### Logarithmic space
 
 The function `Log_Space` can be used to create a tensor with numbers in
-a logarithmic scale in the interval [base**start, base**stop] when interval
+a logarithmic scale in the interval [base^start, base^stop] when interval
 is closed and [base^start, base^stop) when half open.
 The base can be specified with the optional fourth parameter `Base`.
 Its default value is 10.0.
@@ -652,10 +652,6 @@ specifying a base 2.0:
 Tensor : constant CPU_Tensor := Log_Space (1.0, 3.0, Count => 3, Base => 2.0);
 ```
 
-!!! tip
-    Specify the base to prevent precision-loss if the floating-point numbers
-    do not have enough digits.
-
 #### Geometric space
 
 The function `Geometric_Space` is similar to `Log_Space` with the difference
@@ -666,7 +662,8 @@ For example, a tensor with three numbers in the half open interval [0.0, 1000.0)
 can be created with:
 
 ```ada
-Tensor : constant CPU_Tensor := Geometric_Space (1.0, 1_000.0, 3, Interval => Half_Open);
+Tensor : constant CPU_Tensor :=
+  Geometric_Space (1.0, 1_000.0, Count => 3, Interval => Half_Open);
 ```
 
 The tensor will contain the numbers 1.0, 10.0, and 100.0.
@@ -801,9 +798,9 @@ tensor with one of the following statistical distributions:
   mean 0.0 and variance 1.0. To create a tensor with the distribution
   N(3.0, 2.0) (mean is 3.0 and standard deviation is 2.0), use:
 
-  ```ada
-  3.0 + Normal (Shape) * 2.0
-  ```
+   ```ada
+   3.0 + Normal (Shape) * 2.0
+   ```
 
 - `Binomial` with parameters `N` and `P`. Returns a tensor where each
   element is the number of successful runs (each value is in 0 .. `N`)
@@ -824,9 +821,9 @@ tensor with one of the following statistical distributions:
 
   This gives a `Result` of roughly 0.35 or 35 %.
 
-  !!! warning "Keep parameter `N` small for large tensors"
-      The runtime cost of the implementation of `Binomial` might depend on
-      `N`, thus this number should not be too large for very large tensors.
+   !!! warning "Keep parameter `N` small for large tensors"
+       The runtime cost of the implementation of `Binomial` might depend on
+       `N`, thus this number should not be too large for very large tensors.
 
 - `Geometric` with parameter `P`. Create a tensor with a geometric
   distribution, modeling the number of failures. Parameter `P` must be in
