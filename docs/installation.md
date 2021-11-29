@@ -65,16 +65,12 @@ In order to build and use Orka you need to have:
 
  * An x86-64 CPU with the AVX and F16C extensions
 
-Recommended dependencies:
-
- * [AWT][url-awt]
-
 Optional dependencies:
 
  * `lcov` to generate a coverage report for the unit tests
 
 !!! info "SDL 2"
-    Although the use of AWT is recommended, alternatively
+    Although the use of [AWT][url-awt] is recommended, alternatively
     [SDLAda][url-sdlada] can be used to manage windows and input via SDL 2.
 
 !!! warning "CPU and OpenGL requirements"
@@ -171,7 +167,7 @@ and jump to [Rendering](/rendering) to get an introduction to rendering
 and learn how you can render your first triangle on the screen.
 
   [url-alire]: https://alire.ada.dev/
-  [url-awt]: https://github.com/onox/awt
+  [url-awt]: https://github.com/onox/orka/tree/master/awt
   [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-sdlada]: https://github.com/Lucretia/sdlada
