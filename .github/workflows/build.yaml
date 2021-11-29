@@ -16,16 +16,21 @@ jobs:
   build:
     name: Building on ${{matrix.os}} using ${{matrix.compiler}}
     runs-on: ${{matrix.os}}
+    continue-on-error: ${{matrix.experimental}}
     timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest, windows-latest]
+        os: [ubuntu-18.04, ubuntu-latest]
         compiler: [fsf, community]
+        experimental: [false]
         exclude:
-          - os: windows-latest
-            compiler: fsf
           - os: ubuntu-latest
             compiler: fsf
+        include:
+          - os: windows-latest
+            compiler: community
+            experimental: true
     steps:
     - uses: actions/checkout@v2
 
