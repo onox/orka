@@ -189,3 +189,28 @@ Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Conte
 
 If the parameter `Device` is not given, then the first device in the list
 that would be returned by function `Devices` is used.
+
+## Moving a context
+
+A context is automatically made current on the calling task after
+it is created, but it can be moved to another task if necessary.
+To do so, the context must first be made non-current in the first task
+and the first task must then subsequently signal to the second task that
+it can make the context current by performing a rendezvous:
+
+```ada
+Context.Make_Not_Current;
+Second_Task.Start_Rendering;
+```
+
+The second task can then make the context current after accepting the `Start_Rendering`
+call:
+
+```ada
+accept Start_Rendering;
+Context.Make_Current (Window);
+```
+
+It is recommended that the task on which the context is current calls
+`:::ada Context.Make_Not_Current` after completing its execution or when
+some exception is raised.
