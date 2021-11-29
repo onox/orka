@@ -7,7 +7,7 @@ This crate provides:
 
 - Runge-Kutta 4th order numerical integrators.
 
-- Tensors (1D and 2D) using SIMD instructions provided by the orka_simd crate.
+- Tensors (1-D and 2-D) using SIMD instructions provided by the orka_simd crate.
   Tensors provide the following features:
 
   * Constant indexing using a number, range, or another (boolean) tensor
@@ -19,7 +19,7 @@ This crate provides:
   * Reshape, flatten, or concatenate tensors
   * Element-wise operations (arithmetic, rounding, trigonometry, compare)
   * Reductions using arbitrary expressions
-  * Statistics
+  * Statistics (operations and generating statistical distributions)
   * Logical operations on boolean tensors
 
 ## License

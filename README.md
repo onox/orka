@@ -40,19 +40,25 @@ flexible multitasking by allowing work to be split into multiple small jobs
 which are then processed by any available task from a task pool. Jobs can be
 processed in parallel as well as sequentially.
 
-- **Asynchronous resource loading**. Resources like [KTX][url-ktx] textures
-and [glTF][url-gltf] models are loaded asynchronously using the job graph
+- **Asynchronous resource loading**. Load resources like [KTX][url-ktx] textures
+and [glTF][url-gltf] models asynchronously using the job graph
 processing system. Resources can be loaded from directories and archive files.
 
-- **Quaternions and matrices**. Packages for applying common transformations
-to vectors, quaternions, and matrices using x86 SIMD instructions are provided.
-The various x86 SIMD extensions like SSE, AVX(2), FMA, F16C, etc., can also be
-used directly in your own code.
+- **Transforms**. Apply common transformations to vectors, quaternions, and
+matrices using x86 SIMD instructions.
 
-- **Tensors**. Tensors (1D and 2D) using SIMD instructions and
+- **Numerics**. Perform element-wise operations, reductions
+using arbitrary expressions, or matrix operations on tensors using SIMD
+instructions. Generate tensors with statistical distributions or use
 Runge-Kutta 4th order numerical integrators.
 
 Additionally, Orka provides several bindings:
+
+- **x86 SIMD extensions**
+Bindings for various x86 SIMD extensions, including SSE, SSE2, SSE3, SSSE3,
+SSE4.1, AVX, AVX2, FMA, and F16C, and an implementation of the
+[xoshiro128++][url-xoshiro] pseudo-random number generator using SSE2 or
+AVX2 intrinsics.
 
 - **OpenGL 4.6**. Thick bindings are provided for the modern parts
 of OpenGL 4.6. There are no bindings for fixed function functionality
@@ -149,3 +155,4 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
   [url-swe-practices]: https://en.wikibooks.org/wiki/Ada_Programming#Programming_in_the_large
   [url-wikibooks]: https://en.wikibooks.org/wiki/Ada_Programming
+  [url-xoshiro]: https://prng.di.unimi.it/
