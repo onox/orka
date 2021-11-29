@@ -1,2 +1,2 @@
 # Only needed for continuous deployment by Netlify
-mkdocs-material==4.6
+mkdocs-material

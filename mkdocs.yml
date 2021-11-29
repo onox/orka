@@ -16,20 +16,23 @@ theme:
   palette:
     primary: "indigo"
     accent: "blue"
-  logo:
-    icon: "🌌"
+  icon:
+    logo: material/shark-fin
+  features:
+    - navigation.instant
+    - navigation.tracking
 
 plugins:
-  - search
-  - minify:
-      minify_html: true
+  - search:
+      lang:
+        - en
 
 extra:
-  search:
-    language: "en"
   social:
-    - type: "github"
-      link: "https://github.com/onox"
+    - icon: fontawesome/brands/github
+      link: https://github.com/onox
+    - icon: fontawesome/brands/gitter
+      link: https://gitter.im/ada-lang/Lobby
 
 markdown_extensions:
   - admonition
