@@ -122,7 +122,15 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Ones (Shape : Tensor_Shape) return CPU_Tensor;
 
    overriding
+   function To_Tensor (Elements : Element_Array; Shape : Tensor_Shape) return CPU_Tensor;
+
+   overriding
    function To_Tensor (Elements : Element_Array) return CPU_Tensor;
+
+   overriding
+   function To_Boolean_Tensor
+     (Booleans : Boolean_Array;
+      Shape    : Tensor_Shape) return CPU_Tensor;
 
    overriding
    function To_Boolean_Tensor (Booleans : Boolean_Array) return CPU_Tensor;

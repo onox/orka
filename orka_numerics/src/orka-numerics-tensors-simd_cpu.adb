@@ -665,8 +665,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Ones (Elements : Positive) return CPU_Tensor is (Ones ((1 => Elements)));
 
    overriding
-   function To_Tensor (Elements : Element_Array) return CPU_Tensor is
-      Shape : constant Tensor_Shape := (1 => Elements'Length);
+   function To_Tensor (Elements : Element_Array; Shape : Tensor_Shape) return CPU_Tensor is
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
@@ -679,15 +678,26 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end To_Tensor;
 
    overriding
-   function To_Boolean_Tensor (Booleans : Boolean_Array) return CPU_Tensor is
+   function To_Tensor (Elements : Element_Array) return CPU_Tensor is
+     (To_Tensor (Elements, (1 => Elements'Length)));
+
+   overriding
+   function To_Boolean_Tensor
+     (Booleans : Boolean_Array;
+      Shape    : Tensor_Shape) return CPU_Tensor
+   is
       Elements : Element_Array (Booleans'Range);
    begin
       for Index in Elements'Range loop
          Elements (Index) := (if Booleans (Index) then 1.0 else 0.0);
       end loop;
 
-      return To_Tensor (Elements) > 0.0;
+      return To_Tensor (Elements, Shape) > 0.0;
    end To_Boolean_Tensor;
+
+   overriding
+   function To_Boolean_Tensor (Booleans : Boolean_Array) return CPU_Tensor is
+     (To_Boolean_Tensor (Booleans, (1 => Booleans'Length)));
 
    overriding
    function Linear_Space
@@ -899,12 +909,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Reshape;
 
    overriding
-   function Flatten (Object : CPU_Tensor) return CPU_Tensor is
-     ((Dimensions => 1,
-       Size       => Object.Size,
-       Kind       => Object.Kind,
-       Shape      => (1 => Object.Elements),
-       Data       => Object.Data));
+   function Flatten (Object : CPU_Tensor) return CPU_Tensor is (Object.Reshape (Object.Elements));
 
    overriding
    function Concatenate
