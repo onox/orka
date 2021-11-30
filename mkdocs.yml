@@ -112,7 +112,15 @@ nav:
           - Scene trees: transforms/scene-trees.md
       - Numerics:
           - Integrators: numerics/integrators.md
-          - Tensors: numerics/tensors.md
+          - Tensors:
+              - Introduction: numerics/tensors/index.md
+              - Shape and dimensions: numerics/tensors/shape-and-dimensions.md
+              - Creating tensors: numerics/tensors/creating-tensors.md
+              - Element-wise operations: numerics/tensors/element-wise-operations.md
+              - Matrix operations: numerics/tensors/matrix-operations.md
+              - Expressions: numerics/tensors/expressions.md
+              - Indexing: numerics/tensors/indexing.md
+              - Statistics: numerics/tensors/statistics.md
       - Plug-ins:
           - Archives: plugins/archives.md
           - Atmosphere: plugins/atmosphere.md
