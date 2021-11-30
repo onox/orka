@@ -45,7 +45,7 @@ The following flags can be used:
 
 When using AWT, an OpenGL context must be created first:
 
-```ada linenums="1"
+```ada
 Context : constant Orka.Contexts.Surface_Context'Class := Orka.Contexts.AWT.Create_Context
   (Version => (4, 2),
    Flags   => (Debug | Robust => True, others => False));
@@ -54,7 +54,7 @@ Context : constant Orka.Contexts.Surface_Context'Class := Orka.Contexts.AWT.Crea
 The context is created and made current on the calling task by the `Create_Context`
 function.
 
-```ada linenums="1"
+```ada
 Window : aliased Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
   (Context, Width => 1280, Height => 720);
 ```
@@ -63,7 +63,7 @@ Although this is sufficient if the size of the window never changes, you most
 likely want to extend `:::ada Orka.Contexts.AWT.AWT_Window` and override
 `On_Configure`:
 
-```ada linenums="1"
+```ada
 type My_Window is limited new Orka.Contexts.AWT.AWT_Window with record
   Resize : Boolean := True with Atomic;
 end record;
@@ -76,7 +76,7 @@ procedure On_Configure
 
 You can then set `Resize` when the window is visible and has a valid size:
 
-```ada linenums="1"
+```ada
 overriding
 procedure On_Configure
  (Object : in out My_Window;
@@ -92,7 +92,7 @@ and projection matrix if `Resize` is true.
 !!! note
     You may need to override function `Create_Window` as well:
 
-    ```ada linenums="1"
+    ```ada
     overriding
     function Create_Window
      (Context            : Orka.Contexts.Surface_Context'Class;
@@ -115,7 +115,7 @@ and projection matrix if `Resize` is true.
 
 When using SDL, an OpenGL context can be created by creating a window:
 
-```ada linenums="1"
+```ada
 Context : constant Orka.Contexts.Surface_Context'Class := Orka.Windows.SDL.Create_Context
   (Version => (4, 2),
    Flags   => (Debug => True, others => False));
@@ -132,7 +132,7 @@ task by the `Create_Window` function and depends on the active windowing system.
 If a windowing system is not available or depending on it is not desired,
 EGL can be used directly instead:
 
-```ada linenums="1"
+```ada
 Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Context
   (Version => (4, 2),
    Flags   => (Debug => True, others => False));
@@ -151,7 +151,7 @@ function.
 The function `Devices` in the package `:::ada EGL.Objects.Devices` can return
 a list of devices:
 
-```ada linenums="1"
+```ada
 Devices : constant EGL.Objects.Devices.Device_List := EGL.Objects.Devices.Devices;
 
 Device_1 : EGL.Objects.Devices.Device renames Devices (Devices'First);
@@ -165,7 +165,7 @@ The name of a device can be retrieved via the function `Name` of the device.
 If the name cannot be retrieved, an empty string is returned. A list of device
 extensions that a device supports can be obtained via the function `Extensions`:
 
-```ada linenums="1"
+```ada
 for Extension of Device_1.Extensions loop
    Ada.Text_IO.Put_Line (EGL.SU.To_String (Extension));
 end loop;
@@ -180,7 +180,7 @@ Package `:::ada Orka.Contexts.EGL` has a second function `Create_Context` that
 uses a device as the first parameter to create a context using that particular
 device:
 
-```ada linenums="1"
+```ada
 Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Context
   (Device  => Device_1,
    Version => (4, 2),

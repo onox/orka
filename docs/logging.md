@@ -75,7 +75,7 @@ parameter can be given to specify the minimum severity of messages
     To log to files in the directory `/var/log/orka`, the package can be
     instantiated at the library level:
 
-    ```ada linenums="1"
+    ```ada
     Location_Logs : constant Locations.Writable_Location_Ptr
       := Locations.Directories.Create_Location ("/var/log/orka");
 
@@ -116,7 +116,7 @@ number.
 
 Alternatively, the generic package `Messages` can be instantiated:
 
-```ada linenums="1"
+```ada
 use all type Orka.Logging.Source;
 use all type Orka.Logging.Severity;
 use Orka.Logging;
@@ -150,7 +150,7 @@ implementation-defined ID, and a human-readable description:
 To make sure the driver generates messages, use the `Debug` flag when
 initializing the windowing library:
 
-```ada linenums="1"
+```ada
 Context : Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
   (Version => (4, 3),
    Flags   => (Debug => True, others => False));

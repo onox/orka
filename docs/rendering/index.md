@@ -191,7 +191,7 @@ objects and then draw the triangle in a loop.
 
 First we need to initialize the OpenGL context and create a window:
 
-```ada linenums="1"
+```ada
 Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
   (Version => (4, 2),
    Flags   => (Debug => True, others => False));
@@ -205,7 +205,7 @@ Window : constant Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
 Next we will create a buffer and upload the data of the three
 vertices to it:
 
-```ada linenums="1"
+```ada
 Vertices : constant Single_Array
   := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
        0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
@@ -228,7 +228,7 @@ Buffer_1.Bind (Shader_Storage, 0);
 The third step is to create a program with a vertex shader and a fragment
 shader. Save the following vertex shader in `triangle.vert`:
 
-```glsl linenums="1"
+```glsl linenums="1" title="triangle.vert"
 #version 420 core
 
 #extension GL_ARB_shader_storage_buffer_object : require
@@ -252,7 +252,7 @@ void main(void) {
 
 And the following fragment shader in `triangle.frag`:
 
-```glsl linenums="1"
+```glsl linenums="1" title="triangle.frag"
 #version 420 core
 
 in  vec3 ex_Color;
@@ -269,7 +269,7 @@ void main(void) {
 
 The program is then created as follows:
 
-```ada linenums="1"
+```ada
 Location_Shaders : constant Locations.Location_Ptr
   := Locations.Directories.Create_Location (".");
 
@@ -296,7 +296,7 @@ FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 Specify the color of the background and tell OpenGL we want to use
 this framebuffer:
 
-```ada linenums="1"
+```ada
 FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
 FB_D.Use_Framebuffer;
 ```
@@ -305,7 +305,7 @@ FB_D.Use_Framebuffer;
 
 After we have created all the objects, we can render the triangle:
 
-```ada linenums="1"
+```ada
 while not Window.Should_Close loop
    Window.Process_Input;
 
@@ -322,7 +322,7 @@ and then draw the triangle. Press ++esc++ to close the application.
 ![Output](../images/triangle.png){ loading=lazy }
 
 ??? example "Complete code of `triangle.adb`"
-    ```ada linenums="1"
+    ```ada linenums="1" title="triangle.adb"
     with GL.Types;
 
     with Orka.Contexts.AWT;

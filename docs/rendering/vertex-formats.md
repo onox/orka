@@ -21,14 +21,14 @@ about VAOs.
 With fixed-function input assembly, you might define attributes in your
 shader like this:
 
-```glsl linenums="1"
+```glsl
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
 ```
 
 With vertex pulling, the attributes are instead fetched from an SSBO:
 
-```glsl linenums="1"
+```glsl
 struct Vertex {
     vec4 position;
     vec4 color;
@@ -46,7 +46,7 @@ data can be packed in such a way that no padding is needed.
 
 The data can then be read as follows:
 
-```glsl linenums="1"
+```glsl
 out vec3 vs_Color;
 
 void main(void) {
@@ -68,7 +68,7 @@ for only specific vertices.
 In order to pull data from the buffer, we need to create a buffer
 containing the attributes of the vertices:
 
-```ada linenums="1"
+```ada
 Vertices : constant Single_Array
   := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
        0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
@@ -95,7 +95,7 @@ Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
 To avoid padding, you may need to put some of the components of attributes
 in other vectors:
 
-```glsl linenums="1"
+```glsl
 struct Vertex {
     vec4 position;
     vec4 color_texcoord;
@@ -127,7 +127,7 @@ For example, a vertex that consists of the following attributes:
 
 requires a total of 16 bytes and can be stored in one `uvec4` vector:
 
-```glsl linenums="1"
+```glsl
 layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
     uvec4 in_vertices[];
 };
@@ -136,7 +136,7 @@ layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
 The data can then be pulled and unpacked with the GLSL function
 `unpackHalf2x16()`:
 
-```glsl linenums="1"
+```glsl
 const uvec4 data = in_vertices[gl_VertexID];
 
 const vec2 tmp = unpackHalf2x16(data.y);

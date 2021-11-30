@@ -45,7 +45,7 @@ Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
 The manager can be queried for the existence of a resource given its
 path:
 
-```ada linenums="1"
+```ada
 if Manager.Contains (Texture_Path) then
    --  Retrieve the texture here
 end if;

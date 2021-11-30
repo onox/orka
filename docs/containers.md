@@ -50,7 +50,7 @@ Elements.Append (Another_Elements_Vector);
 
 Only the last element can be removed from the vector:
 
-```ada linenums="1"
+```ada
 declare
    Removed_Element : Element;
 begin
@@ -81,7 +81,7 @@ Some_Element : constant Element := Elements.Element (I);
 
 If you need the whole vector as an array, use procedure `Query`:
 
-```ada linenums="1"
+```ada
 declare
    procedure Use_Elements (Elements : Vectors.Element_Array) is
    begin
@@ -106,7 +106,7 @@ Elements (I) := Some_Element;
 
 or call procedure `Update`:
 
-```ada linenums="1"
+```ada
 declare
    procedure Update_Element (Element : in out Vector.Element_Type) is
    begin
@@ -122,7 +122,7 @@ end;
 You can iterate over the elements in a vector by using Ada 2012's iterator
 syntax:
 
-```ada linenums="1"
+```ada
 for Element of Elements loop
    --  Do something here with Element
 end loop;

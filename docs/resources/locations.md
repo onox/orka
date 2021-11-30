@@ -17,7 +17,7 @@ An instance of a `Location` provides read-only access to files, while a
 
 To check if a file exists in a certain location, call the function `Exists`:
 
-```ada linenums="1"
+```ada
 if Location_Models.Exists (Path => "animals/orka.gltf") then
    --  The model can be loaded
 end if;
@@ -28,7 +28,7 @@ end if;
 To read a file identified by a path and get a pointer to a `Byte_Array`,
 call the function `Read_Data`:
 
-```ada linenums="1"
+```ada
 declare
    Data : constant Orka.Resources.Byte_Array_Pointers.Pointer
      := Location_Resources.Read_Data (Path => "shaders/model.frag");
@@ -47,7 +47,7 @@ to implement the `Writable_Location` interface. Given an instance of
 a writable location, data can be written to a file identified by a path
 using the `Write_Data` procedure:
 
-```ada linenums="1"
+```ada
 declare
    Bytes : constant Orka.Resources.Byte_Array_Pointers.Pointer := ...
 begin
@@ -75,7 +75,7 @@ The function `Create_Location` can either return a `Location_Ptr` for
 read-only access or a `Writable_Location_Ptr` for read and write access.
 The function must be given the path to a folder:
 
-```ada linenums="1"
+```ada
 use Orka.Resources;
 
 Location_Resources : constant Locations.Location_Ptr
@@ -94,7 +94,7 @@ file, a Zip-based archive format.
 To create a location backed by a Zip file, execute the function
 `Create_Location` giving it a path to a Zip file:
 
-```ada linenums="1"
+```ada
 use Orka.Resources;
 
 Location_Resources : constant Locations.Location_Ptr
