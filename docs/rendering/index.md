@@ -1,4 +1,4 @@
-# Introduction
+# Rendering
 
 Orka is based on a modern version of OpenGL, an API for rendering
 graphics in real-time. OpenGL started way back in 1992. At the time,

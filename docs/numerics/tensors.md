@@ -236,7 +236,7 @@ This is useful in algorithms where you want to update elements of a tensor
 iteratively and exit the loop once all elements meet or no longer meet some
 condition.
 
-## Reductions using arbitrary expressions
+## Expressions
 
 While there exists many functions that operate on the individual elements
 of a tensor, sometimes the elements of a tensor need to be combined in
@@ -385,15 +385,15 @@ result A B **x**.
 
 !!! warning "Use function `Multiply` for element-wise multiplication"
 
-!!! warning "Matrix multiplication is not commutative"
-    Matrix multiplication is not commutative: `:::ada A * B /= B * A`.
-
 !!! summary
     Matrix multiplication is associative and distributive:
 
     - `:::ada A * (B * C) = (A * B) * C`
 
     - `:::ada A * (B + C) = A * B + A * C` (similar for `:::ada (B + C) * A`)
+
+!!! warning "Matrix multiplication is not commutative"
+    Matrix multiplication is not commutative: `:::ada A * B /= B * A`.
 
 ### Matrix power and inverse
 
@@ -798,32 +798,32 @@ tensor with one of the following statistical distributions:
   mean 0.0 and variance 1.0. To create a tensor with the distribution
   N(3.0, 2.0) (mean is 3.0 and standard deviation is 2.0), use:
 
-> ```ada
-  3.0 + Normal (Shape) * 2.0
-  ```
+      ```ada
+      3.0 + Normal (Shape) * 2.0
+      ```
 
 - `Binomial` with parameters `N` and `P`. Returns a tensor where each
   element is the number of successful runs (each value is in 0 .. `N`)
   with each run having a probability of success `P`. Parameter `P`
   must be in 0.0 .. 1.0.
 
-  For example, if we want to perform some experiment 10 times with a
-  success probability of 0.1 (10 %) each, and want to know the probability
-  that all 10 experiments fail, create a large tensor with a binomial
-  distribution:
+      For example, if we want to perform some experiment 10 times with a
+      success probability of 0.1 (10 %) each, and want to know the probability
+      that all 10 experiments fail, create a large tensor with a binomial
+      distribution:
 
-> ```ada
-  Trials : constant := 20_000;
+      ```ada
+      Trials : constant := 20_000;
 
-> Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 10, P => 0.1);
-  Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
-  ```
+      Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 10, P => 0.1);
+      Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
+      ```
 
-  This gives a `Result` of roughly 0.35 or 35 %.
+      This gives a `Result` of roughly 0.35 or 35 %.
 
-> !!! warning "Keep parameter `N` small for large tensors"
-      The runtime cost of the implementation of `Binomial` might depend on
-      `N`, thus this number should not be too large for very large tensors.
+!!! warning "Keep parameter `N` small for large tensors"
+    The runtime cost of the implementation of `Binomial` might depend on
+    `N`, thus this number should not be too large for very large tensors.
 
 - `Geometric` with parameter `P`. Create a tensor with a geometric
   distribution, modeling the number of failures. Parameter `P` must be in
@@ -855,7 +855,7 @@ use Orka.Numerics.Singles.Tensors.CPU;
 package Random is new Generic_Random (CPU_Tensor);
 ```
 
-The type `CPU\_Tensor` in package `SIMD\_CPU` uses the [xoshiro128++][url-xoshiro]
+The type `CPU_Tensor` in package `SIMD_CPU` uses the [xoshiro128++][url-xoshiro]
 pseudo-random number generator and needs to be seeded once with a
 Duration value before using any of the functions in the generic package:
 

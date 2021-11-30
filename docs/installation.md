@@ -95,6 +95,9 @@ Optional dependencies:
     $ apt install gnat gprbuild make libegl1-mesa-dev
     ```
 
+    After having installed the compiler, install the [Alire][url-alire]
+    package manager.
+
 === ":material-arch: Arch Linux"
 
     ```sh
@@ -103,12 +106,12 @@ Optional dependencies:
 
     Compile and install `gprbuild-bootstrap`, `xmlada`, `libgpr`, and then `gprbuild`
     from the AUR.
+    After having installed the compiler, install the [Alire][url-alire]
+    package manager.
 
 === ":material-microsoft-windows: Windows 10"
 
-    Install [GNAT CE][url-ce].
-
-Install [Alire][url-alire].
+    Install [GNAT CE][url-ce] and [Alire][url-alire] package manager.
 
 ## Using Orka in your application
 

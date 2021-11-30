@@ -27,13 +27,3 @@ platform by calling the function `Create_Context` in package
 The function has a parameter `Device` that can be used to specify the device
 that should be used in case your system has multiple GPUs.
 See [EGL](/contexts/#egl) for more information.
-
-## Algorithms
-
-### Prefix sum
-
-!!! note "TODO"
-
-### Fast Fourier Transform (FFT)
-
-!!! note "TODO"

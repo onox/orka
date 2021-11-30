@@ -13,6 +13,7 @@ copyright: "Copyright &copy; 2016 - 2021 onox"
 
 theme:
   name: "material"
+  custom_dir: docs/overrides
   palette:
     primary: "indigo"
     accent: "blue"
@@ -76,7 +77,9 @@ nav:
       - Parallel programming: parallel-programming.md
       - Containers: containers.md
       - Logging: logging.md
-      - Computing: gpgpu.md
+      - Computing:
+          - Introduction: computing/index.md
+          - Algorithms: computing/algorithms.md
       - Rendering:
           - Introduction: rendering/index.md
           - Contexts: contexts.md
