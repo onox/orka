@@ -94,7 +94,7 @@ nav:
           - Algorithms: computing/algorithms.md
       - Rendering:
           - Introduction: rendering/index.md
-          - Contexts: contexts.md
+          - Contexts: rendering/contexts.md
           - Buffers: rendering/buffers.md
           - Vertex formats: rendering/vertex-formats.md
           - Programs: rendering/programs.md
