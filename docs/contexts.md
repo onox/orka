@@ -158,8 +158,8 @@ Device_1 : EGL.Objects.Devices.Device renames Devices (Devices'First);
 ```
 
 On Linux, this function will usually return two devices: a device that
-represents the video card in the machine and a 'device' to do software rendering
-on the CPU.
+represents the video card in the machine and a 'device' that does software
+rendering on the CPU.
 
 The name of a device can be retrieved via the function `Name` of the device.
 If the name cannot be retrieved, an empty string is returned. A list of device
