@@ -127,7 +127,7 @@ numbers, use the function `Truncate`.
 ### Math
 
 The square-root can be used obtained with the function `Sqrt`.
-The operation *e*^x, where x are the elements of a tensor, can
+The operation *e*^x^, where x are the elements of a tensor, can
 be performed using the function `Exp`. The natural logarithm with
 the function `Log`, and the base 10 and base 2 logarithms with `Log10`
 and `Log2`.
@@ -414,7 +414,7 @@ Alternatively, the function `Inverse` will perform `:::ada A ** (-1)`.
     `Inverse` or the `**` operator will raise the exception `Singular_Matrix`.
 
 !!! note
-    A **x** = **b** can be solved for **x** with A^-1 **b**, but it is
+    A **x** = **b** can be solved for **x** with A^-1^ **b**, but it is
     more efficient and accurate to use function `Solve`.
 
 !!! summary
@@ -466,8 +466,8 @@ of the second vector.
 
 !!! info "The difference between the outer and inner products"
     The outer product for two vectors **u** and **v** is defined as
-    **u** **v**^T and is a *n* x *m* matrix, while the inner product
-    (or dot product) is defined as **u**^T **v** is a 1 x 1 matrix.
+    **u** **v**^T^ and is a *n* x *m* matrix, while the inner product
+    (or dot product) is defined as **u**^T^ **v** is a 1 x 1 matrix.
 
 ### Solving A **x** = **b**
 
@@ -570,7 +570,7 @@ Tensor : constant CPU_Tensor := Zeros ((4, 8));
 
 To create a tensor of a particular shape filled with a specific value, use
 the function `Fill`. For example, a tensor with the shape `Shape` where
-each element has the value *e*^`-Lambda` is created with:
+each element has the value *e*^`-Lambda`^ is created with:
 
 ```ada
 E_Lambda : CPU_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
@@ -633,8 +633,8 @@ are equal to `Start` and `Stop`.
 #### Logarithmic space
 
 The function `Log_Space` can be used to create a tensor with numbers in
-a logarithmic scale in the interval [base^start, base^stop] when interval
-is closed and [base^start, base^stop) when half open.
+a logarithmic scale in the interval [base^start^, base^stop^] when interval
+is closed and [base^start^, base^stop^) when half open.
 The base can be specified with the optional fourth parameter `Base`.
 Its default value is 10.0.
 
@@ -798,9 +798,9 @@ tensor with one of the following statistical distributions:
   mean 0.0 and variance 1.0. To create a tensor with the distribution
   N(3.0, 2.0) (mean is 3.0 and standard deviation is 2.0), use:
 
-   ```ada
-   3.0 + Normal (Shape) * 2.0
-   ```
+> ```ada
+  3.0 + Normal (Shape) * 2.0
+  ```
 
 - `Binomial` with parameters `N` and `P`. Returns a tensor where each
   element is the number of successful runs (each value is in 0 .. `N`)
@@ -812,18 +812,18 @@ tensor with one of the following statistical distributions:
   that all 10 experiments fail, create a large tensor with a binomial
   distribution:
 
-  ```ada
+> ```ada
   Trials : constant := 20_000;
 
-  Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 10, P => 0.1);
+> Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 10, P => 0.1);
   Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
   ```
 
   This gives a `Result` of roughly 0.35 or 35 %.
 
-   !!! warning "Keep parameter `N` small for large tensors"
-       The runtime cost of the implementation of `Binomial` might depend on
-       `N`, thus this number should not be too large for very large tensors.
+> !!! warning "Keep parameter `N` small for large tensors"
+      The runtime cost of the implementation of `Binomial` might depend on
+      `N`, thus this number should not be too large for very large tensors.
 
 - `Geometric` with parameter `P`. Create a tensor with a geometric
   distribution, modeling the number of failures. Parameter `P` must be in
@@ -855,7 +855,7 @@ use Orka.Numerics.Singles.Tensors.CPU;
 package Random is new Generic_Random (CPU_Tensor);
 ```
 
-The type `CPU_Tensor` in package `SIMD_CPU` uses the [xoshiro128++][url-xoshiro]
+The type `CPU\_Tensor` in package `SIMD\_CPU` uses the [xoshiro128++][url-xoshiro]
 pseudo-random number generator and needs to be seeded once with a
 Duration value before using any of the functions in the generic package:
 

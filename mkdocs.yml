@@ -21,6 +21,10 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
 
 plugins:
   - search:
@@ -44,6 +48,9 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.tilde
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.keys
@@ -54,40 +61,46 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.smartsymbols:
       copyright: false
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:
       permalink: true
 
 nav:
-  - Orka: index.md
-  - Installation: installation.md
-  - Contexts: contexts.md
-  - Parallel programming: parallel-programming.md
-  - Containers: containers.md
-  - Logging: logging.md
-  - GPGPU: gpgpu.md
-  - Rendering:
-      - Introduction: rendering/index.md
-      - Buffers: rendering/buffers.md
-      - Vertex formats: rendering/vertex-formats.md
-      - Programs: rendering/programs.md
-      - Textures: rendering/textures.md
-      - Framebuffers: rendering/framebuffers.md
-      - Cameras: rendering/cameras.md
-      - Effects: rendering/effects.md
-  - Resources:
-      - Locations: resources/locations.md
-      - Loaders: resources/loaders.md
-  - Transforms:
-      - Vectors: transforms/vectors.md
-      - Matrices: transforms/matrices.md
-      - Quaternions: transforms/quaternions.md
-      - Scene trees: transforms/scene-trees.md
-  - Tensors: numerics/tensors.md
-  - Plug-ins:
-      - Archives: plugins/archives.md
-      - Atmosphere: plugins/atmosphere.md
-      - glTF: plugins/gltf.md
-      - Terrain: plugins/terrain.md
+  - Home: index.md
+  - Getting started:
+      - Installation: installation.md
+  - Docs:
+      - Parallel programming: parallel-programming.md
+      - Containers: containers.md
+      - Logging: logging.md
+      - Computing: gpgpu.md
+      - Rendering:
+          - Introduction: rendering/index.md
+          - Contexts: contexts.md
+          - Buffers: rendering/buffers.md
+          - Vertex formats: rendering/vertex-formats.md
+          - Programs: rendering/programs.md
+          - Textures: rendering/textures.md
+          - Framebuffers: rendering/framebuffers.md
+          - Cameras: rendering/cameras.md
+          - Effects: rendering/effects.md
+      - Resources:
+          - Locations: resources/locations.md
+          - Loaders: resources/loaders.md
+      - Transforms:
+          - Vectors: transforms/vectors.md
+          - Matrices: transforms/matrices.md
+          - Quaternions: transforms/quaternions.md
+          - Scene trees: transforms/scene-trees.md
+      - Numerics:
+          - Integrators: numerics/integrators.md
+          - Tensors: numerics/tensors.md
+      - Plug-ins:
+          - Archives: plugins/archives.md
+          - Atmosphere: plugins/atmosphere.md
+          - glTF: plugins/gltf.md
+          - Terrain: plugins/terrain.md
   - Contributing: contributing.md

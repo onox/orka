@@ -89,30 +89,26 @@ Optional dependencies:
 
 ### Installing dependencies
 
-#### Ubuntu
+=== ":material-ubuntu: Ubuntu"
 
-Install the dependencies using apt:
+    ```sh
+    $ apt install gnat gprbuild make libegl1-mesa-dev
+    ```
 
-```sh
-$ sudo apt install gnat gprbuild make libegl1-mesa-dev
-```
+=== ":material-arch: Arch Linux"
 
-and then install Alire.
+    ```sh
+    $ pacman -S gcc-ada make mesa
+    ```
 
-#### Arch Linux
+    Compile and install `gprbuild-bootstrap`, `xmlada`, `libgpr`, and then `gprbuild`
+    from the AUR.
 
-Install the dependencies using pacman:
+=== ":material-microsoft-windows: Windows 10"
 
-```sh
-$ sudo pacman -S gcc-ada make mesa
-```
+    Install [GNAT CE][url-ce].
 
-Compile and install `gprbuild-bootstrap`, then `xmlada`, `libgpr`, and `gprbuild`
-from the AUR.
-
-#### Windows 10
-
-Install [GNAT CE][url-ce] and Alire.
+Install [Alire][url-alire].
 
 ## Using Orka in your application
 
