@@ -15,8 +15,20 @@ theme:
   name: "material"
   custom_dir: docs/overrides
   palette:
-    primary: "indigo"
-    accent: "blue"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: white
+      accent: "blue"
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
   icon:
     logo: material/shark-fin
   features:
