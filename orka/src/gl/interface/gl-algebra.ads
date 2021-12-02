@@ -26,7 +26,7 @@ package GL.Algebra is
 
    type Vector2 is array (Index_2D) of aliased Element_Type;
    type Vector3 is array (Index_3D) of aliased Element_Type;
-   type Vector4 is array (Index_Homogeneous) of aliased Element_Type;
+   type Vector4 is array (Index_4D) of aliased Element_Type;
 
    pragma Convention (C, Vector2);
    pragma Convention (C, Vector3);
@@ -36,7 +36,7 @@ package GL.Algebra is
    --                              Matrix types                               --
    -----------------------------------------------------------------------------
 
-   type Matrix4 is array (Index_Homogeneous, Index_Homogeneous) of aliased Element_Type;
+   type Matrix4 is array (Index_4D, Index_4D) of aliased Element_Type;
 
    pragma Convention (C, Matrix4);
 

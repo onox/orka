@@ -24,7 +24,7 @@ package GL is
    package C renames Interfaces.C;
 
    --  Index types for vectors and matrices
-   subtype Index_Homogeneous is Orka.Index_Homogeneous;
+   subtype Index_4D is Orka.Index_4D;
 
    subtype Index_2D is Orka.Index_2D;
    subtype Index_3D is Orka.Index_3D;
@@ -33,7 +33,7 @@ package GL is
    use all type Orka.Integer_64;
    use all type Orka.Float_32;
    use all type Orka.Float_64;
-   use all type Index_Homogeneous;
+   use all type Index_4D;
 
    Feature_Not_Supported_Exception : exception;
    --  Raised when a function that is not available for the current
