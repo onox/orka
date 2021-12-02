@@ -70,7 +70,7 @@ begin
       declare
          R : GL.Types.Compute.Dimension_Size_Array;
 
-         use all type Orka.Index_Homogeneous;
+         use all type Orka.Index_4D;
       begin
          R := GL.Compute.Max_Compute_Work_Group_Count;
          Put_Line ("Maximum count:" & R (X)'Image & R (Y)'Image & R (Z)'Image);
