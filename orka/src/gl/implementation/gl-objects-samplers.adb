@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Helpers;
 with GL.Low_Level;
 with GL.Enums.Textures;
 
@@ -197,20 +196,39 @@ package body GL.Objects.Samplers is
       return Ret;
    end Z_Wrapping;
 
+   use all type Colors.Border_Color;
+
+   subtype GL_Color is Low_Level.Single_Array (1 .. 4);
+
+   Vulkan_To_OpenGL : constant array (Colors.Border_Color) of GL_Color
+     := (Transparent_Black => (0.0, 0.0, 0.0, 0.0),
+         Opaque_Black      => (0.0, 0.0, 0.0, 1.0),
+         Opaque_White      => (1.0, 1.0, 1.0, 1.0));
+
    procedure Set_Border_Color (Object : Sampler; Color : Colors.Border_Color) is
-      Raw : constant Low_Level.Single_Array
-        := Helpers.Float_Array (Colors.Vulkan_To_OpenGL (Color));
+      Raw : constant Low_Level.Single_Array := Vulkan_To_OpenGL (Color);
    begin
       API.Sampler_Parameter_Floats.Ref
         (Object.Reference.GL_Id, Enums.Textures.Border_Color, Raw);
    end Set_Border_Color;
 
    function Border_Color (Object : Sampler) return Colors.Border_Color is
-      Raw : Low_Level.Single_Array (1 .. 4);
+      use type GL_Color;
+
+      Raw : GL_Color;
    begin
       API.Get_Sampler_Parameter_Floats.Ref
         (Object.Reference.GL_Id, Enums.Textures.Border_Color, Raw);
-      return Colors.OpenGL_To_Vulkan (Helpers.Color (Raw));
+
+      if Raw = Vulkan_To_OpenGL (Transparent_Black) then
+         return Transparent_Black;
+      elsif Raw = Vulkan_To_OpenGL (Opaque_Black) then
+         return Opaque_Black;
+      elsif Raw = Vulkan_To_OpenGL (Opaque_White) then
+         return Opaque_White;
+      else
+         raise Constraint_Error;
+      end if;
    end Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean) is
