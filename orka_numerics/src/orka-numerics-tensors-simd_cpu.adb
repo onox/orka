@@ -562,7 +562,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Result : SU.Unbounded_String;
    begin
-      SU.Append (Result, "array([");
+      SU.Append (Result, "tensor([");
       case Object.Dimensions is
          when 1 =>
             for I in 1 .. Count loop
@@ -573,7 +573,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   Value : Element_Type renames Object.Data (Data_Vectors (I)) (Data_Offset (I));
                begin
                   if First_Element_Of_Row then
-                     SU.Append (Result, (if I = 1 then "" else "       "));
+                     SU.Append (Result, (if I = 1 then "" else "        "));
                   end if;
                   case Object.Kind is
                      when Float_Type | Int_Type =>
@@ -599,7 +599,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                  with Import, Convention => Ada, Address => Object.Data'Address;
             begin
                for I in 1 .. Rows loop
-                  SU.Append (Result, (if I = 1 then "" else "       "));
+                  SU.Append (Result, (if I = 1 then "" else "        "));
                   SU.Append (Result, "[");
                   for J in 1 .. Columns loop
                      declare
