@@ -81,15 +81,17 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
 
    function Unpack_High (Left, Right : m256i) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_punpckhdq256";
-   --  Unpack and interleave the 32-bit floats from the upper halves of
+   --  Unpack and interleave the 32-bit integers from the upper halves of
    --  the 128-bit lanes of Left and Right as follows:
+   --
    --  Left (3), Right (3), Left (4), Right (4)
    --  Left (7), Right (7), Left (8), Right (8)
 
    function Unpack_Low (Left, Right : m256i) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_punpckldq256";
-   --  Unpack and interleave the 32-bit floats from the lower halves of
+   --  Unpack and interleave the 32-bit integers from the lower halves of
    --  the 128-bit lanes of Left and Right as follows:
+   --
    --  Left (1), Right (1), Left (2), Right (2)
    --  Left (5), Right (5), Left (6), Right (6)
 

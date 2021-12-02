@@ -17,22 +17,12 @@
 with Ada.Unchecked_Conversion;
 
 with Orka.SIMD.AVX.Longs;
+with Orka.SIMD.AVX2.Longs.Logical;
 
 package body Orka.SIMD.AVX2.Integers.Logical is
 
    use SIMD.AVX.Longs;
-
-   function And_Not (Left, Right : m256l) return m256l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_andnotsi256";
-
-   function "and" (Left, Right : m256l) return m256l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_andsi256";
-
-   function "or" (Left, Right : m256l) return m256l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_por256";
-
-   function "xor" (Left, Right : m256l) return m256l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pxor256";
+   use SIMD.AVX2.Longs.Logical;
 
    ----------------------------------------------------------------------------
 
