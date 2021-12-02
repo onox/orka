@@ -31,11 +31,11 @@ package body Orka.glTF.Scenes is
    function Get_Matrix (Matrix : Types.JSON_Value) return Transforms.Matrix4 is
       Result : Transforms.Matrix4;
    begin
-      for I in Index_Homogeneous loop
-         for J in Index_Homogeneous loop
+      for I in Index_4D loop
+         for J in Index_4D loop
             declare
-               Column : constant Natural := Index_Homogeneous'Pos (I) * 4;
-               Row    : constant Natural := Index_Homogeneous'Pos (J);
+               Column : constant Natural := Index_4D'Pos (I) * 4;
+               Row    : constant Natural := Index_4D'Pos (J);
             begin
                Result (I) (J) := Matrix.Get (Column + Row + 1).Value;
             end;
