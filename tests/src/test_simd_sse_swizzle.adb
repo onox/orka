@@ -67,9 +67,9 @@ package body Test_SIMD_SSE_Swizzle is
       Results (4) := Shuffle (Elements, Elements, Mask_2_3_0_1);
 
       for I in Expected'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             declare
-               Message : constant String := "Unexpected Single at " & Index_Homogeneous'Image (J);
+               Message : constant String := "Unexpected Single at " & Index_4D'Image (J);
             begin
                Assert (Expected (I) (J) = Results (I) (J), Message);
             end;
@@ -78,7 +78,7 @@ package body Test_SIMD_SSE_Swizzle is
    end Test_Shuffle;
 
    procedure Test_Transpose_Function (Object : in out Test) is
-      subtype IH is Index_Homogeneous;
+      subtype IH is Index_4D;
 
       Elements : constant m128_Array
         := ((1.0,   2.0,  3.0,  4.0),
@@ -95,7 +95,7 @@ package body Test_SIMD_SSE_Swizzle is
       Result : constant m128_Array := Transpose (Elements);
    begin
       for I in Result'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Result (I) (J),
               "Unexpected Single at " & I'Image & ", " & J'Image);
          end loop;
@@ -103,7 +103,7 @@ package body Test_SIMD_SSE_Swizzle is
    end Test_Transpose_Function;
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
-      subtype IH is Index_Homogeneous;
+      subtype IH is Index_4D;
 
       Elements : m128_Array
         := ((1.0,   2.0,  3.0,  4.0),
@@ -120,7 +120,7 @@ package body Test_SIMD_SSE_Swizzle is
       Transpose (Elements);
 
       for I in Elements'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Elements (I) (J),
               "Unexpected Single at " & I'Image & ", " & J'Image);
          end loop;

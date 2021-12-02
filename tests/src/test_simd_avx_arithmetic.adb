@@ -67,8 +67,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, 2.0, 6.0, 12.0);
       Result   : constant m256d := Left * Right;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Multiply;
 
@@ -79,8 +79,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, 2.0, 2.0, 3.0);
       Result   : constant m256d := Left / Right;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Divide;
 
@@ -114,8 +114,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, 0.0, 0.0, 0.0);
       Result   : constant m256d := Divide_Or_Zero (Left, Right);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Divide_Or_Zero;
 
@@ -126,8 +126,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, 1.0, 3.0, 4.0);
       Result   : constant m256d := Left + Right;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Add;
 
@@ -138,8 +138,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, 1.0, 0.0, -2.0);
       Result   : constant m256d := Left - Right;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Subtract;
 
@@ -149,8 +149,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (0.0, -1.0, -1.5, 2.0);
       Result   : constant m256d := -Elements;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Minus;
 
@@ -167,8 +167,8 @@ package body Test_SIMD_AVX_Arithmetic is
 
       Result : constant m256d := Left * Right;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Multiply_Vector;
 
@@ -191,8 +191,8 @@ package body Test_SIMD_AVX_Arithmetic is
 
       Result : constant m256d_Array := Left * Right;
    begin
-      for I in Index_Homogeneous loop
-         for J in Index_Homogeneous loop
+      for I in Index_4D loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Result (I) (J), "Unexpected Double at " & I'Image);
          end loop;
       end loop;
@@ -204,8 +204,8 @@ package body Test_SIMD_AVX_Arithmetic is
       Expected : constant m256d := (1.0, 2.0, 3.0, 0.0);
       Result   : constant m256d := abs Elements;
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Abs;
 

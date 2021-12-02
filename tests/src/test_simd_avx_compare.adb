@@ -26,7 +26,7 @@ package body Test_SIMD_AVX_Compare is
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX.Doubles.Compare;
 
-   type Is_True_Array is array (Index_Homogeneous) of Boolean;
+   type Is_True_Array is array (Index_4D) of Boolean;
 
    use AUnit.Assertions;
 
@@ -60,7 +60,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (False, False, True, False);
       Result   : constant m256d := Left = Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Equal;
@@ -72,7 +72,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (True, True, False, True);
       Result   : constant m256d := Left /= Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Not_Equal;
@@ -84,7 +84,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (False, True, False, False);
       Result   : constant m256d := Left > Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Greater_Than;
@@ -96,7 +96,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (True, False, False, True);
       Result   : constant m256d := Left < Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Less_Than;
@@ -118,7 +118,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (True, False, True, True);
       Result   : constant m256d := Nan (Left, Right);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Nan;
@@ -140,7 +140,7 @@ package body Test_SIMD_AVX_Compare is
       Expected : constant Is_True_Array := (False, True, False, False);
       Result   : constant m256d := Not_Nan (Left, Right);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Is_True (Result, I), "Unexpected result at " & I'Image);
       end loop;
    end Test_Not_Nan;

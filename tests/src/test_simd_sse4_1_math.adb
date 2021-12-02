@@ -53,8 +53,8 @@ package body Test_SIMD_SSE4_1_Math is
 
       Result : constant m128 := Round_Nearest_Integer (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_4D'Image (I));
       end loop;
    end Test_Nearest_Integer;
 
@@ -64,8 +64,8 @@ package body Test_SIMD_SSE4_1_Math is
 
       Result : constant m128 := Floor (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_4D'Image (I));
       end loop;
    end Test_Floor;
 
@@ -75,8 +75,8 @@ package body Test_SIMD_SSE4_1_Math is
 
       Result : constant m128 := Ceil (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_4D'Image (I));
       end loop;
    end Test_Ceil;
 
@@ -86,8 +86,8 @@ package body Test_SIMD_SSE4_1_Math is
 
       Result : constant m128 := Round_Truncate (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Single at " & Index_4D'Image (I));
       end loop;
    end Test_Truncate;
 

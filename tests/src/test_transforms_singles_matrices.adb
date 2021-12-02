@@ -40,16 +40,16 @@ package body Test_Transforms_Singles_Matrices is
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Is_Equivalent (Expected (I), Result (I)),
            "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
            " at " & I'Image);
       end loop;
    end Assert_Equivalent;
 
-   procedure Assert_Equivalent (Expected, Result : Vector4; Column : Index_Homogeneous) is
+   procedure Assert_Equivalent (Expected, Result : Vector4; Column : Index_4D) is
    begin
-      for Row in Index_Homogeneous loop
+      for Row in Index_4D loop
          Assert (Is_Equivalent (Expected (Row), Result (Row)),
            "Unexpected element " & Expected (Row)'Image & " instead of " & Result (Row)'Image &
            " at (" & Column'Image & ", " & Row'Image & ")");
@@ -124,7 +124,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_T;
@@ -143,7 +143,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rx (To_Radians (Angle));
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rx;
@@ -162,7 +162,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Ry (To_Radians (Angle));
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Ry;
@@ -181,7 +181,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rz (To_Radians (Angle));
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rz;
@@ -193,7 +193,7 @@ package body Test_Transforms_Singles_Matrices is
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
       Result   : constant Matrix4 := R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle));
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_R;
@@ -209,7 +209,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := S (Factors);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_S;
@@ -229,7 +229,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Offset_A + (Offset_B + Identity_Matrix);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Add_Offset;
@@ -248,7 +248,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Factor_A * (Factor_B * Identity_Matrix);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Multiply_Factor;
@@ -261,7 +261,7 @@ package body Test_Transforms_Singles_Matrices is
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle)) * T (Offset);
       Result   : constant Matrix4 := R ((0.0, 1.0, 0.0, 1.0), To_Radians (Angle)) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_At_Origin;
@@ -277,7 +277,7 @@ package body Test_Transforms_Singles_Matrices is
    begin
       Expected (W) := Vector4 (Offset);
 
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate;
@@ -297,7 +297,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rx (To_Radians (Angle)) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X_At_Origin;
@@ -317,7 +317,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Ry (To_Radians (Angle)) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y_At_Origin;
@@ -337,7 +337,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rz (To_Radians (Angle)) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Z_At_Origin;
@@ -357,7 +357,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rx (To_Radians (Angle), Offset) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_X;
@@ -377,7 +377,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Ry (To_Radians (Angle), Offset) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Y;
@@ -397,7 +397,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Rz (To_Radians (Angle), Offset) * T (Offset);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Rotate_Z;
@@ -413,7 +413,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Offset + Identity_Matrix;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Translate;
@@ -429,7 +429,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := S (Factors) * Identity_Matrix;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Scale_Factors;
@@ -445,7 +445,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Factor * Identity_Matrix;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Scale_Factor;
@@ -465,7 +465,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Transpose (Value);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Transpose;
@@ -486,7 +486,7 @@ package body Test_Transforms_Singles_Matrices is
 
       Result : constant Matrix4 := Diagonal (Values);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert_Equivalent (Expected (I), Result (I), I);
       end loop;
    end Test_Diagonal;

@@ -64,9 +64,9 @@ package body Test_SIMD_AVX2_Swizzle is
       Results (4) := Permute (Elements, Mask_2_3_0_1);
 
       for I in Expected'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             declare
-               Message : constant String := "Unexpected Single at " & Index_Homogeneous'Image (J);
+               Message : constant String := "Unexpected Single at " & Index_4D'Image (J);
             begin
                Assert (Expected (I) (J) = Results (I) (J), Message);
             end;

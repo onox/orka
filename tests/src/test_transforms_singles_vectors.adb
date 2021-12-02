@@ -77,7 +77,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (0.0, 6.0, 4.0, -1.0);
       Result   : constant Vector4 := Left + Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Add;
@@ -89,7 +89,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (4.0, 0.0, 4.0, 1.0);
       Result   : constant Vector4 := Left - Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Subtract;
@@ -100,7 +100,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (4.0, 6.0, 2.0, 0.0);
       Result   : constant Vector4 := 2.0 * Elements;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Scale;
@@ -111,7 +111,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (2.0, 0.0, 1.0, 1.0);
       Result   : constant Vector4 := abs Elements;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Absolute;
@@ -151,7 +151,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
       Result   : constant Vector4 := Projection (Elements, Direction);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Projection;
@@ -163,7 +163,7 @@ package body Test_Transforms_Singles_Vectors is
       Expected : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
       Result   : constant Vector4 := Perpendicular (Elements, Direction);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Perpendicular;

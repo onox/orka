@@ -57,8 +57,8 @@ package body Test_SIMD_AVX_Math is
       Expected : constant m256d := (0.0, 1.0, 1.0, 2.0);
       Result   : constant m256d := Max (Left, Right);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Max;
 
@@ -69,8 +69,8 @@ package body Test_SIMD_AVX_Math is
       Expected : constant m256d := (0.0, 0.0, -2.0, 1.0);
       Result   : constant m256d := Min (Left, Right);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Min;
 
@@ -80,8 +80,8 @@ package body Test_SIMD_AVX_Math is
 
       Result : constant m256d := Round_Nearest_Integer (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Nearest_Integer;
 
@@ -91,8 +91,8 @@ package body Test_SIMD_AVX_Math is
 
       Result : constant m256d := Floor (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Floor;
 
@@ -102,8 +102,8 @@ package body Test_SIMD_AVX_Math is
 
       Result : constant m256d := Ceil (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Ceil;
 
@@ -113,8 +113,8 @@ package body Test_SIMD_AVX_Math is
 
       Result : constant m256d := Round_Truncate (Elements);
    begin
-      for I in Index_Homogeneous loop
-         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_Homogeneous'Image (I));
+      for I in Index_4D loop
+         Assert (Expected (I) = Result (I), "Unexpected Double at " & Index_4D'Image (I));
       end loop;
    end Test_Truncate;
 

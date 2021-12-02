@@ -42,7 +42,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Is_Equivalent (Expected (I), Result (I)),
            "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
            " at " & I'Image);
@@ -51,7 +51,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Assert_Equivalent (Expected, Result : Quaternion) is
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Is_Equivalent (Expected (I), Result (I)),
            "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
            " at " & I'Image);

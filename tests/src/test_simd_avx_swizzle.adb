@@ -73,7 +73,7 @@ package body Test_SIMD_AVX_Swizzle is
       Results (4) := Shuffle_Within_Lanes (Elements, Elements, Mask_1_1_0_1);
 
       for I in Expected'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Results (I) (J), "Unexpected Double at " & J'Image);
          end loop;
       end loop;
@@ -105,7 +105,7 @@ package body Test_SIMD_AVX_Swizzle is
       Results (4) := Duplicate_HL (Results (4));
 
       for I in Expected'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Results (I) (J), "Unexpected Double at " & J'Image);
          end loop;
       end loop;
@@ -133,7 +133,7 @@ package body Test_SIMD_AVX_Swizzle is
       Results (4) := Permute_Lanes (Elements, Elements, Mask_2_3_1_0);
 
       for I in Expected'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             declare
                Message : constant String := "Unexpected Double at " & J'Image;
             begin
@@ -150,13 +150,13 @@ package body Test_SIMD_AVX_Swizzle is
       Expected : constant m256d := (1.0, 6.0, 7.0, 4.0);
       Result   : constant m256d := Blend (Left, Right, Mask => 2#0110#);
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Double at " & I'Image);
       end loop;
    end Test_Blend;
 
    procedure Test_Transpose_Function (Object : in out Test) is
-      subtype IH is Index_Homogeneous;
+      subtype IH is Index_4D;
 
       Elements : constant m256d_Array
         := ((1.0,   2.0,  3.0,  4.0),
@@ -173,7 +173,7 @@ package body Test_SIMD_AVX_Swizzle is
       Result : constant m256d_Array := Transpose (Elements);
    begin
       for I in Result'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Result (I) (J),
               "Unexpected Double at " & I'Image & ", " & J'Image);
          end loop;
@@ -181,7 +181,7 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Transpose_Function;
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
-      subtype IH is Index_Homogeneous;
+      subtype IH is Index_4D;
 
       Elements : m256d_Array
         := ((1.0,   2.0,  3.0,  4.0),
@@ -198,7 +198,7 @@ package body Test_SIMD_AVX_Swizzle is
       Transpose (Elements);
 
       for I in Elements'Range loop
-         for J in Index_Homogeneous loop
+         for J in Index_4D loop
             Assert (Expected (I) (J) = Elements (I) (J),
               "Unexpected Double at " & I'Image & ", " & J'Image);
          end loop;

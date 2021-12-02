@@ -54,7 +54,7 @@ package body Test_SIMD_SSE_Logical is
       Expected : constant m128 := (C, 0.0, 0.0, 2.0);
       Result   : constant m128 := Left and Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_And;
@@ -71,7 +71,7 @@ package body Test_SIMD_SSE_Logical is
       Expected : constant m128 := (C, 1.0, 1.0, 2.0);
       Result   : constant m128 := Left or Right;
    begin
-      for I in Index_Homogeneous loop
+      for I in Index_4D loop
          Assert (Expected (I) = Result (I), "Unexpected Single at " & I'Image);
       end loop;
    end Test_Or;
