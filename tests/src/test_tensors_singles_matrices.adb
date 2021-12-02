@@ -438,8 +438,26 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Inverse;
 
    procedure Test_Transpose (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := Linear_Space (1.0, 15.0, Count => 15).Reshape ((5, 3));
+      Tensor_2 : constant CPU_Tensor := Linear_Space (1.0, 6.0, Count => 6).Reshape ((2, 3));
+
+      Expected_1 : constant CPU_Tensor := To_Tensor
+        ((1.0, 4.0, 7.0, 10.0, 13.0,
+          2.0, 5.0, 8.0, 11.0, 14.0,
+          3.0, 6.0, 9.0, 12.0, 15.0), Shape => (3, 5));
+
+      Expected_2 : constant CPU_Tensor := To_Tensor
+        ((1.0, 4.0,
+          2.0, 5.0,
+          3.0, 6.0), Shape => (3, 2));
+
+      Actual_1 : constant CPU_Tensor := Tensor_1.Transpose;
+      Actual_2 : constant CPU_Tensor := Tensor_2.Transpose;
    begin
-      Assert (False, "FIXME");
+      Assert (Expected_1 = Actual_1,
+        "Unexpected transpose of " & Image (Actual_1.Shape) & " tensor");
+      Assert (Expected_2 = Actual_2,
+        "Unexpected transpose of " & Image (Actual_2.Shape) & " tensor");
    end Test_Transpose;
 
    procedure Test_Solve (Object : in out Test) is
