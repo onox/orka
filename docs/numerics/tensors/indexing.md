@@ -46,7 +46,7 @@ Some_Rows : constant CPU_Tensor := Tensor (Range_Type'(Start => 5, Stop => 10));
 ```
 
 If one wants to extract multiple rows and/or multiple columns, an index of
-the type `Tensor_Range` can be used. For example, given a 4 x 4 matrix,
+the type `Tensor_Range` can be used. For example, given a 4 × 4 matrix,
 the last two rows and the last three columns can be retrieved as follows:
 
 ```ada
@@ -60,7 +60,7 @@ tensor as the index. Each element in the tensor for which the boolean tensor
 is `True` is stored in the returned tensor. The returned tensor is always 1-D,
 no matter the number of dimensions of the original tensor.
 
-For example, given a 2 x 3 matrix `Tensor` containing the following elements:
+For example, given a 2 × 3 matrix `Tensor` containing the following elements:
 
 ```
 tensor([[ 1.0, 2.0, 3.0],

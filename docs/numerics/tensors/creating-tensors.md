@@ -56,15 +56,15 @@ by writing:
 Tensor : constant CPU_Tensor := Ones (1_000);
 ```
 
-While a zero matrix with the shape 4 x 8 is created with:
+While a zero matrix with the shape 4 × 8 is created with:
 
 ```ada
 Tensor : constant CPU_Tensor := Zeros ((4, 8));
 ```
 
 To create a tensor of a particular shape filled with a specific value, use
-the function `Fill`. For example, a tensor with the shape `Shape` where
-each element has the value *e*^`-Lambda`^ is created with:
+the function `Fill`. For example, a tensor of some shape where
+each element has the value *e*^-λ^ is created with:
 
 ```ada
 E_Lambda : CPU_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
@@ -169,7 +169,7 @@ the size of the matrix (rows and column) as the first parameter.
 A second optional parameter controls on which diagonal the ones
 are placed. The default value of this parameter is 0, which places
 the ones on the main diagonal.
-For example, a 3 x 3 matrix with the ones on the diagonal one position
+For example, a 3 × 3 matrix with the ones on the diagonal one position
 above the main diagonal can be created as follows:
 
 ```ada

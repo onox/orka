@@ -66,7 +66,7 @@ Alternatively, the function `Inverse` will perform `:::ada A ** (-1)`.
 The function `Transpose` returns the transpose of a 2-D tensor; the columns
 become the rows and the rows become the columns.
 
-For example, given a 2 x 3 matrix `Tensor` containing the following elements:
+For example, given a 2 × 3 matrix `Tensor` containing the following elements:
 
 ```
 tensor([[ 1.0, 2.0, 3.0],
@@ -101,8 +101,8 @@ of the second vector.
 
 !!! info "The difference between the outer and inner products"
     The outer product for two vectors **u** and **v** is defined as
-    **u** **v**^T^ and is a *n* x *m* matrix, while the inner product
-    (or dot product) is defined as **u**^T^ **v** is a 1 x 1 matrix.
+    **u** **v**^T^ and is a *n* × *m* matrix, while the inner product
+    (or dot product) is defined as **u**^T^ **v** is a 1 × 1 matrix.
 
 ## Solving A **x** = **b**
 

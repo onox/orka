@@ -2,7 +2,7 @@
 
 Each tensor has a shape, the number of elements in each dimension,
 of the type `Tensor_Shape`; an indefinite array of natural numbers.
-For example, the shape of a 2 x 3 matrix is `:::ada (2, 3)` and the shape
+For example, the shape of a 2 × 3 matrix is `:::ada (2, 3)` and the shape
 of a vector of 100 elements is `:::ada (1 => 100)`.
 
 The shape of a tensor can be retrieved using the function `Shape` and
