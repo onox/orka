@@ -32,12 +32,18 @@ package Orka is
    type Integer_64 is range -(2 ** 63) .. +(2 ** 63 - 1);
    --  Based on C99 long long int
 
+   subtype Size is Integer_32 range 0 .. Integer_32'Last;
+
+   ----------------------------------------------------------------------------
+
    type Unsigned_32 is mod 2 ** 32
      with Size => 32;
 
    type Unsigned_64 is mod 2 ** 64
      with Size => 64;
    --  Based on C99 unsigned long long int
+
+   ----------------------------------------------------------------------------
 
    subtype Float_16 is Integer_16;
    --  F16C extension can be used to convert from/to Single

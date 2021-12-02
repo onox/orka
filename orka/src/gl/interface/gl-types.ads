@@ -34,7 +34,7 @@ package GL.Types is
    subtype Int   is Orka.Integer_32;
    subtype Long  is Orka.Integer_64;
 
-   subtype Size is Int range 0 .. Int'Last;
+   subtype Size is Orka.Size;
    subtype Long_Size is Long range 0 .. Long'Last;
 
    subtype Positive_Size is Size range 1 .. Size'Last;
