@@ -16,8 +16,6 @@
 
 with Ada.Numerics;
 
-with GL.Types;
-
 with Orka.Behaviors;
 with Orka.Contexts;
 with Orka.Transforms.Singles.Matrices;
@@ -33,11 +31,9 @@ package Orka.Cameras is
 
    subtype Vector4 is Orka.Transforms.Doubles.Vectors.Vector4;
 
-   use type GL.Types.Double;
+   subtype Angle is Float_64 range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
 
-   subtype Angle is GL.Types.Double range -Ada.Numerics.Pi .. Ada.Numerics.Pi;
-
-   subtype Distance is GL.Types.Double range 0.0 .. GL.Types.Double'Last;
+   subtype Distance is Float_64 range 0.0 .. Float_64'Last;
 
    Default_Scale : Vector4 := (0.002, 0.002, 1.0, 0.0);
 
@@ -45,7 +41,7 @@ package Orka.Cameras is
 
    type Camera_Lens is record
       Width, Height : Positive;
-      FOV           : GL.Types.Single;
+      FOV           : Float_32;
       Reversed_Z    : Boolean;
    end record;
 
@@ -53,7 +49,7 @@ package Orka.Cameras is
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV           : GL.Types.Single;
+      FOV           : Float_32;
       Context       : Contexts.Context'Class) return Camera_Lens;
 
    -----------------------------------------------------------------------------
@@ -66,7 +62,7 @@ package Orka.Cameras is
 
    procedure Set_Input_Scale
      (Object  : in out Camera;
-      X, Y, Z : GL.Types.Double);
+      X, Y, Z : Float_64);
 
    procedure Set_Up_Direction
      (Object    : in out Camera;
@@ -143,8 +139,8 @@ private
       Target : Behaviors.Behavior_Ptr := Behaviors.Null_Behavior;
    end record;
 
-   function Clamp_Distance  is new Orka.Types.Clamp (GL.Types.Double, Distance);
-   function Normalize_Angle is new Orka.Types.Normalize_Periodic (GL.Types.Double, Angle);
+   function Clamp_Distance  is new Orka.Types.Clamp (Float_64, Distance);
+   function Normalize_Angle is new Orka.Types.Normalize_Periodic (Float_64, Angle);
 
    subtype Matrix4 is Orka.Transforms.Doubles.Matrices.Matrix4;
 

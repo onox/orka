@@ -25,9 +25,6 @@ package body Orka.KTX is
 
    use Ada.Streams;
 
-   type Unsigned_32 is mod 2 ** 32
-     with Size => 32;
-
    type Four_Bytes_Array is array (Positive range 1 .. 4) of Stream_Element
      with Size => 32, Pack;
 
@@ -100,9 +97,9 @@ package body Orka.KTX is
          end if;
 
          --  Set dimensions of a single texture
-         Result.Width  := GL.Types.Size (File_Header.Width);
-         Result.Height := GL.Types.Size (File_Header.Height);
-         Result.Depth  := GL.Types.Size (File_Header.Depth);
+         Result.Width  := Size (File_Header.Width);
+         Result.Height := Size (File_Header.Height);
+         Result.Depth  := Size (File_Header.Depth);
 
          --  Set texture kind based on faces, array elements, and dimensions
          if File_Header.Faces = 6 then
@@ -134,12 +131,12 @@ package body Orka.KTX is
             end if;
          end if;
 
-         Result.Array_Elements := GL.Types.Size (File_Header.Array_Elements);
-         Result.Mipmap_Levels  := GL.Types.Size (File_Header.Mipmap_Levels);
+         Result.Array_Elements := Size (File_Header.Array_Elements);
+         Result.Mipmap_Levels  := Size (File_Header.Mipmap_Levels);
          --  If mipmap levels is 0, then client should generate full
          --  mipmap pyramid
 
-         Result.Bytes_Key_Value := GL.Types.Size (File_Header.Bytes_Key_Value_Data);
+         Result.Bytes_Key_Value := Size (File_Header.Bytes_Key_Value_Data);
 
          if Compressed then
             pragma Assert (File_Header.Format = 0);
@@ -189,7 +186,7 @@ package body Orka.KTX is
 
    function Get_Key_Value_Map
      (Bytes  : Bytes_Reference;
-      Length : GL.Types.Size) return KTX.String_Maps.Map
+      Length : Size) return KTX.String_Maps.Map
    is
       Result : KTX.String_Maps.Map;
 
@@ -253,7 +250,7 @@ package body Orka.KTX is
 
    function Get_Data_Offset
      (Bytes  : Bytes_Reference;
-      Bytes_Key_Value : GL.Types.Size) return Stream_Element_Offset
+      Bytes_Key_Value : Size) return Stream_Element_Offset
    is (Bytes.Value'First + Identifier'Length + Header_Array'Length
         + Stream_Element_Offset (Bytes_Key_Value));
 
@@ -281,7 +278,7 @@ package body Orka.KTX is
 
       Compressed : Boolean renames KTX_Header.Compressed;
 
-      Type_Size : constant GL.Types.Size
+      Type_Size : constant Size
         := (if Compressed then 1 else PE.Bytes (KTX_Header.Data_Type));
 
       Faces : constant Unsigned_32

@@ -14,14 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 package Orka.Inputs.Joysticks is
    pragma Preelaborate;
 
-   use type GL.Types.Single;
-
-   type Axis_Position is new GL.Types.Single range -1.0 .. 1.0;
+   type Axis_Position is new Float_32 range -1.0 .. 1.0;
 
    type Button_State is (Released, Pressed);
 

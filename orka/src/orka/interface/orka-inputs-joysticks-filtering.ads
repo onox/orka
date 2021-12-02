@@ -19,7 +19,7 @@ with Ada.Numerics;
 package Orka.Inputs.Joysticks.Filtering is
    pragma Preelaborate;
 
-   function RC (Cutoff_Frequency : GL.Types.Single) return GL.Types.Single is
+   function RC (Cutoff_Frequency : Float_32) return Float_32 is
      (1.0 / (2.0 * Ada.Numerics.Pi * Cutoff_Frequency));
    --  Return the RC for a given cutoff frequency in Hertz
    --
@@ -29,7 +29,7 @@ package Orka.Inputs.Joysticks.Filtering is
 
    function Low_Pass_Filter
      (Current, Last : Axis_Position;
-      RC, DT        : GL.Types.Single) return Axis_Position;
+      RC, DT        : Float_32) return Axis_Position;
 
    function Dead_Zone (Value, Threshold : Axis_Position) return Axis_Position
      with Pre => Threshold >= 0.0;

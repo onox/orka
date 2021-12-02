@@ -19,10 +19,8 @@ with Orka.Transforms.Doubles.Quaternions;
 package body Orka.Cameras is
 
    function Projection_Matrix (Object : Camera_Lens) return Transforms.Matrix4 is
-      Width  : constant GL.Types.Single := GL.Types.Single (Object.Width);
-      Height : constant GL.Types.Single := GL.Types.Single (Object.Height);
-
-      use type GL.Types.Single;
+      Width  : constant Float_32 := Float_32 (Object.Width);
+      Height : constant Float_32 := Float_32 (Object.Height);
    begin
       if Object.Reversed_Z then
          return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
@@ -35,7 +33,7 @@ package body Orka.Cameras is
 
    procedure Set_Input_Scale
      (Object  : in out Camera;
-      X, Y, Z : GL.Types.Double) is
+      X, Y, Z : Float_64) is
    begin
       Object.Scale := (X, Y, Z, 0.0);
    end Set_Input_Scale;
@@ -83,7 +81,7 @@ package body Orka.Cameras is
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV           : GL.Types.Single;
+      FOV           : Float_32;
       Context       : Contexts.Context'Class) return Camera_Lens is
    begin
       return

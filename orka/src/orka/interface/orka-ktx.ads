@@ -21,7 +21,6 @@ with Ada.Strings.Hash;
 with GL.Low_Level.Enums;
 with GL.Objects.Textures;
 with GL.Pixels;
-with GL.Types;
 
 with Orka.Resources;
 
@@ -35,16 +34,15 @@ private package Orka.KTX is
       Equivalent_Keys => "=");
 
    use GL.Low_Level.Enums;
-   use type GL.Types.Size;
 
    type Header (Compressed : Boolean) is record
       Kind   : GL.Low_Level.Enums.Texture_Kind;
-      Width  : GL.Types.Size;
-      Height : GL.Types.Size;
-      Depth  : GL.Types.Size;
-      Array_Elements : GL.Types.Size;
+      Width  : Size;
+      Height : Size;
+      Depth  : Size;
+      Array_Elements : Size;
       Mipmap_Levels  : GL.Objects.Textures.Mipmap_Level;
-      Bytes_Key_Value : GL.Types.Size;
+      Bytes_Key_Value : Size;
       case Compressed is
          when True =>
             Compressed_Format : GL.Pixels.Compressed_Format;
@@ -77,7 +75,7 @@ private package Orka.KTX is
 
    function Get_Key_Value_Map
      (Bytes  : Bytes_Reference;
-      Length : GL.Types.Size) return String_Maps.Map;
+      Length : Size) return String_Maps.Map;
 
    function Get_Length
      (Bytes  : Bytes_Reference;
@@ -85,7 +83,7 @@ private package Orka.KTX is
 
    function Get_Data_Offset
      (Bytes  : Bytes_Reference;
-      Bytes_Key_Value : GL.Types.Size) return Ada.Streams.Stream_Element_Offset;
+      Bytes_Key_Value : Size) return Ada.Streams.Stream_Element_Offset;
 
    Invalid_Enum_Error : exception;
 

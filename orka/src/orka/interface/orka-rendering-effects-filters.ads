@@ -29,9 +29,7 @@ with Orka.Resources.Locations;
 package Orka.Rendering.Effects.Filters is
    pragma Preelaborate;
 
-   use type GL.Types.Size;
-
-   function Gaussian_Kernel (Radius : GL.Types.Size) return GL.Types.Single_Array
+   function Gaussian_Kernel (Radius : Size) return GL.Types.Single_Array
      with Pre => Radius mod 2 = 0;
 
    type Separable_Filter is tagged limited private;
@@ -62,7 +60,7 @@ package Orka.Rendering.Effects.Filters is
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
       Subject  : GL.Objects.Textures.Texture;
-      Radius   : GL.Types.Size) return Moving_Average_Filter;
+      Radius   : Size) return Moving_Average_Filter;
    --  Create a filter that computes the moving average per row in a
    --  compute shader for a O(1) time complexity, giving a consistent
    --  performance independent of the radius

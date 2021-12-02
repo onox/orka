@@ -18,7 +18,7 @@ package body Orka.Inputs.Joysticks.Filtering is
 
    function Low_Pass_Filter
      (Current, Last : Axis_Position;
-      RC, DT        : GL.Types.Single) return Axis_Position
+      RC, DT        : Float_32) return Axis_Position
    is
       A : constant Axis_Position := Axis_Position (DT / (RC + DT));
    begin

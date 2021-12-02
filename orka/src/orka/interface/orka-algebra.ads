@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Types;
-
 with Orka.Transforms.SIMD_Matrices;
 
 generic
@@ -30,10 +28,10 @@ package Orka.Algebra is
 
    function Zero4 return Vector4 is (Transforms.Vectors.Zero_Vector);
 
-   type Vector4_Array is array (GL.Types.Size range <>) of aliased Vector4
+   type Vector4_Array is array (Size range <>) of aliased Vector4
      with Convention => C;
 
-   type Matrix4_Array is array (GL.Types.Size range <>) of aliased Matrix4
+   type Matrix4_Array is array (Size range <>) of aliased Matrix4
      with Convention => C;
 
 end Orka.Algebra;
