@@ -1183,9 +1183,31 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Transpose (Object : CPU_Tensor) return CPU_Tensor is
+      Shape : constant Tensor_Shape :=
+        (1 => Object.Shape (2),
+         2 => Object.Shape (1));
    begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Result : CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Result.Elements)
+              with Import, Convention => Ada, Address => Result.Data'Address;
+
+            Object_Data : Element_Array (1 .. Object.Elements)
+              with Import, Convention => Ada, Address => Object.Data'Address;
+
+            Rows    : constant Natural := Object.Shape (1);
+            Columns : constant Natural := Object.Shape (2);
+
+            Result_Columns : Natural renames Rows;
+         begin
+            for Row_Index in 1 .. Rows loop
+               for Column_Index in 1 .. Columns loop
+                  Result_Data (To_Index ((Column_Index, Row_Index), Result_Columns)) :=
+                    Object_Data (To_Index ((Row_Index, Column_Index), Columns));
+               end loop;
+            end loop;
+         end;
+      end return;
    end Transpose;
 
    function Matrix_Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is

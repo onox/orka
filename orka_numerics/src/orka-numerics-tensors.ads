@@ -301,7 +301,9 @@ package Orka.Numerics.Tensors is
 
    function Transpose (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2,
-          Post'Class => Transpose'Result.Dimensions = 2;
+          Post'Class => Transpose'Result.Dimensions = 2
+                          and Transpose'Result.Shape (1) = Object.Shape (2)
+                          and Transpose'Result.Shape (2) = Object.Shape (1);
 
    type Solution_Kind is (None, Unique, Infinite);
 
