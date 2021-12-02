@@ -22,7 +22,7 @@ package body Orka.SIMD.FMA.Singles.Arithmetic is
    function "*" (Left, Right : m128_Array) return m128_Array is
       Result : m128_Array;
    begin
-      for I in Index_Homogeneous'Range loop
+      for I in Index_4D'Range loop
          Result (I) := Left * Right (I);
       end loop;
       return Result;

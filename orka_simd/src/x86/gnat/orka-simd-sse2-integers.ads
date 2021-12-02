@@ -17,7 +17,7 @@
 package Orka.SIMD.SSE2.Integers is
    pragma Pure;
 
-   type m128i is array (Index_Homogeneous) of Integer_32
+   type m128i is array (Index_4D) of Integer_32
      with Alignment => 16;
    pragma Machine_Attribute (m128i, "vector_type");
 

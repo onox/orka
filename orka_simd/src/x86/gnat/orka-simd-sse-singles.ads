@@ -17,11 +17,11 @@
 package Orka.SIMD.SSE.Singles is
    pragma Pure;
 
-   type m128 is array (Index_Homogeneous) of Float_32
+   type m128 is array (Index_4D) of Float_32
      with Alignment => 16;
    pragma Machine_Attribute (m128, "vector_type");
 
-   type m128_Array is array (Index_Homogeneous) of m128
+   type m128_Array is array (Index_4D) of m128
      with Alignment => 16;
 
 end Orka.SIMD.SSE.Singles;

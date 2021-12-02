@@ -25,7 +25,7 @@ package body Orka.SIMD.AVX.Doubles.Compare is
    use SIMD.AVX.Longs.Logical;
    use SIMD.AVX.Longs;
 
-   function Is_True (Elements : m256d; Position : Index_Homogeneous) return Boolean is
+   function Is_True (Elements : m256d; Position : Index_4D) return Boolean is
    begin
       return Elements (Position) /= 0.0;
    exception

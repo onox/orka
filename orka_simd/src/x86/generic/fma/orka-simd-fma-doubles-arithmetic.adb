@@ -22,7 +22,7 @@ package body Orka.SIMD.FMA.Doubles.Arithmetic is
    function "*" (Left, Right : m256d_Array) return m256d_Array is
       Result : m256d_Array;
    begin
-      for I in Index_Homogeneous'Range loop
+      for I in Index_4D'Range loop
          Result (I) := Left * Right (I);
       end loop;
       return Result;

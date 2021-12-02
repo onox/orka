@@ -17,7 +17,7 @@
 package Orka.SIMD.AVX.Longs is
    pragma Pure;
 
-   type m256l is array (Index_Homogeneous) of Integer_64
+   type m256l is array (Index_4D) of Integer_64
      with Alignment => 32;
    pragma Machine_Attribute (m256l, "vector_type");
 

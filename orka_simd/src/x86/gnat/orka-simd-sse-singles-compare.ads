@@ -55,7 +55,7 @@ package Orka.SIMD.SSE.Singles.Compare is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmpunordps";
    --  True if either or both elements in Left and Right are Nan, false otherwise
 
-   function Is_True (Elements : m128; Position : Index_Homogeneous) return Boolean;
+   function Is_True (Elements : m128; Position : Index_4D) return Boolean;
    --  Return true if an element at the given position is not zero, false otherwise.
    --
    --  A comparison using one of the operators above may result in elements

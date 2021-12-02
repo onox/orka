@@ -16,7 +16,7 @@
 
 package body Orka.SIMD.SSE.Singles.Compare is
 
-   function Is_True (Elements : m128; Position : Index_Homogeneous) return Boolean is
+   function Is_True (Elements : m128; Position : Index_4D) return Boolean is
    begin
       return Elements (Position) /= 0.0;
    exception

@@ -17,11 +17,11 @@
 package Orka.SIMD.AVX.Doubles is
    pragma Pure;
 
-   type m256d is array (Index_Homogeneous) of Float_64
+   type m256d is array (Index_4D) of Float_64
      with Alignment => 32;
    pragma Machine_Attribute (m256d, "vector_type");
 
-   type m256d_Array is array (Index_Homogeneous) of m256d
+   type m256d_Array is array (Index_4D) of m256d
      with Alignment => 32;
 
 end Orka.SIMD.AVX.Doubles;
