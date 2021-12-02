@@ -69,16 +69,16 @@ become the rows and the rows become the columns.
 For example, given a 2 x 3 matrix `Tensor` containing the following elements:
 
 ```
-array([[ 1.0, 2.0, 3.0],
-       [ 4.0, 5.0, 6.0]])
+tensor([[ 1.0, 2.0, 3.0],
+        [ 4.0, 5.0, 6.0]])
 ```
 
 The image of the transpose `:::ada Tensor.Transpose` will print:
 
 ```
-array([[ 1.0, 4.0],
-       [ 2.0, 5.0],
-       [ 3.0, 6.0]])
+tensor([[ 1.0, 4.0],
+        [ 2.0, 5.0],
+        [ 3.0, 6.0]])
 ```
 
 !!! summary

@@ -179,9 +179,9 @@ Tensor : constant CPU_Tensor := Identity (3, Offset => 1);
 Printing the image of this tensor will display:
 
 ```
-array([[ 0.0, 1.0, 0.0],
-       [ 0.0, 0.0, 1.0],
-       [ 0.0, 0.0, 0.0]])
+tensor([[ 0.0, 1.0, 0.0],
+        [ 0.0, 0.0, 1.0],
+        [ 0.0, 0.0, 0.0]])
 ```
 
 To create a non-square matrix, provide two separate parameters representing

@@ -60,7 +60,7 @@ Tensor_3 : constant CPU_Tensor := Tensor_1.Concatenate (Tensor_2, Dimension => 2
 The image of `Tensor_3` will be:
 
 ```
-array([[ 1.0, 0.0, 0.0, 4.0, 5.0],
-       [ 0.0, 2.0, 0.0, 6.0, 7.0]
-       [ 0.0, 0.0, 3.0, 8.0, 9.0]])
+tensor([[ 1.0, 0.0, 0.0, 4.0, 5.0],
+        [ 0.0, 2.0, 0.0, 6.0, 7.0]
+        [ 0.0, 0.0, 3.0, 8.0, 9.0]])
 ```

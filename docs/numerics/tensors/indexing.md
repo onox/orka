@@ -63,20 +63,20 @@ no matter the number of dimensions of the original tensor.
 For example, given a 2 x 3 matrix `Tensor` containing the following elements:
 
 ```
-array([[ 1.0, 2.0, 3.0],
-       [ 4.0, 5.0, 6.0]])
+tensor([[ 1.0, 2.0, 3.0],
+        [ 4.0, 5.0, 6.0]])
 ```
 
 Then `:::ada Tensor (Tensor > 4.0).Image` prints the following:
 
 ```
-array([ 5.0, 6.0])
+tensor([ 5.0, 6.0])
 ```
 
 And `:::ada Tensor (Tensor mod 2.0 = 0.0).Image` will print:
 
 ```
-array([ 2.0, 4.0, 6.0])
+tensor([ 2.0, 4.0, 6.0])
 ```
 
 See [Comparing](/numerics/tensors/element-wise-operations/#comparing) for
