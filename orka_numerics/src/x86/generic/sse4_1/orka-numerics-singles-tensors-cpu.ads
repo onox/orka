@@ -29,7 +29,7 @@ with Orka.SIMD.SSE4_1.Integers.Logical;
 with Orka.SIMD.SSE4_1.Singles.Math;
 
 package Orka.Numerics.Singles.Tensors.CPU is new Orka.Numerics.Singles.Tensors.SIMD_CPU
-  (Index_Homogeneous,
+  (Index_4D,
    Integer_32,
    SIMD.SSE2.Integers.m128i,
    SIMD.SSE2.Integers.Arithmetic."+",
