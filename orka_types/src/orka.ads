@@ -19,10 +19,10 @@ with Interfaces.C;
 package Orka is
    pragma Pure;
 
-   type Index_Homogeneous is (X, Y, Z, W);
+   type Index_4D is (X, Y, Z, W);
 
-   subtype Index_2D is Index_Homogeneous range X .. Y;
-   subtype Index_3D is Index_Homogeneous range X .. Z;
+   subtype Index_2D is Index_4D range X .. Y;
+   subtype Index_3D is Index_4D range X .. Z;
 
    ----------------------------------------------------------------------------
 
