@@ -18,7 +18,7 @@ with Ada.Numerics;
 
 generic
    type Element_Type is digits <>;
-   type Vector_Type is array (Index_Homogeneous) of Element_Type;
+   type Vector_Type is array (Index_4D) of Element_Type;
    with function Multiply_Vectors (Left, Right : Vector_Type) return Vector_Type;
    with function Add_Vectors (Left, Right : Vector_Type) return Vector_Type;
    with function Subtract_Vectors (Left, Right : Vector_Type) return Vector_Type;

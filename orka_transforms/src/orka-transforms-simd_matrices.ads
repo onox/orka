@@ -19,7 +19,7 @@ with Orka.Transforms.SIMD_Vectors;
 generic
    with package Vector_Transforms is new Orka.Transforms.SIMD_Vectors (<>);
 
-   type Matrix_Type is array (Index_Homogeneous) of Vector_Transforms.Vector_Type;
+   type Matrix_Type is array (Index_4D) of Vector_Transforms.Vector_Type;
 
    with function Multiply_Matrices (Left, Right : Matrix_Type) return Matrix_Type;
    with function Multiply_Vector
