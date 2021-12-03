@@ -21,12 +21,12 @@ package Orka.SIMD.AVX2.Longs.Shift is
 
    use SIMD.SSE2.Integers;
 
-   function Shift_Bits_Left_Zeros (Elements : m256l; Bits : m128i) return m256l
+   function Shift_Bits_Left_Zeros (Elements : m256l; Bits : m128l) return m256l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psllq256";
    --  Shift each element to the left by the given amount of bits from the
    --  first Double of the Bits register
 
-   function Shift_Bits_Right_Zeros (Elements : m256l; Bits : m128i) return m256l
+   function Shift_Bits_Right_Zeros (Elements : m256l; Bits : m128l) return m256l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psrlq256";
    --  Shift each element to the right by the given amount of bits from the
    --  first Double of the Bits register, shifting in zeros

@@ -19,6 +19,10 @@ with Orka.SIMD.AVX.Longs;
 package Orka.SIMD.AVX2.Longs is
    pragma Pure;
 
+   type m128l is array (Index_2D) of Integer_64
+     with Alignment => 16;
+   pragma Machine_Attribute (m128l, "vector_type");
+
    use Orka.SIMD.AVX.Longs;
 
 end Orka.SIMD.AVX2.Longs;

@@ -21,10 +21,10 @@ package Orka.SIMD.AVX.Longs.Convert is
 
    use SIMD.AVX.Doubles;
 
-   function Convert (Elements : m256d) return m256l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtpd2dq256";
-
-   function Convert (Elements : m256l) return m256d
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtdq2pd256";
+   function Convert (Elements : m256l) return m256d is
+     ((Float_64 (Elements (X)),
+       Float_64 (Elements (Y)),
+       Float_64 (Elements (Z)),
+       Float_64 (Elements (W))));
 
 end Orka.SIMD.AVX.Longs.Convert;

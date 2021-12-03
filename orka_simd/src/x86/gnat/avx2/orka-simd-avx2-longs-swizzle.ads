@@ -17,10 +17,6 @@
 package Orka.SIMD.AVX2.Longs.Swizzle is
    pragma Pure;
 
-   type m128l is array (Index_2D) of Integer_64
-     with Alignment => 16;
-   pragma Machine_Attribute (m128l, "vector_type");
-
    type Unsigned_8 is range 0 .. 7;
 
    type Lane is (Lower, Upper);
