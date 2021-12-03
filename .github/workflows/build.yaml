@@ -46,7 +46,9 @@ jobs:
         toolchain: "gnat_external"
 
     - name: Install EGL
-      run: sudo apt install libegl1-mesa-dev
+      run: |
+        sudo apt update
+        sudo apt install libegl1-mesa-dev
       if: ${{ matrix.os != 'windows-latest'}}
 
     - name: Build crates
