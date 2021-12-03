@@ -41,7 +41,7 @@ package body Orka.SIMD.AVX.Doubles.Compare is
       Result : constant m256d :=
         abs (Left - Right) <= (Epsilon, Epsilon, Epsilon, Epsilon);
    begin
-      return Test_All_Ones (Convert (Result), Convert (Result = Result)) = 1;
+      return Test_All_Ones (Convert (Result), Convert (Result = Result));
    end Is_Equal;
 
 end Orka.SIMD.AVX.Doubles.Compare;

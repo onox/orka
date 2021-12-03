@@ -17,13 +17,13 @@
 package Orka.SIMD.AVX.Longs.Logical is
    pragma Pure;
 
-   function Test_All_Zero (Elements, Mask : m256l) return Integer
+   function Test_All_Zero (Elements, Mask : m256l) return Boolean
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestz256";
 
-   function Test_All_Ones (Elements, Mask : m256l) return Integer
+   function Test_All_Ones (Elements, Mask : m256l) return Boolean
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestc256";
 
-   function Test_Mix_Ones_Zeros (Elements, Mask : m256l) return Integer
+   function Test_Mix_Ones_Zeros (Elements, Mask : m256l) return Boolean
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestnzc256";
 
 end Orka.SIMD.AVX.Longs.Logical;

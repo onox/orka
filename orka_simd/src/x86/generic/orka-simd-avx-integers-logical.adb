@@ -26,12 +26,12 @@ package body Orka.SIMD.AVX.Integers.Logical is
    function Convert is new Ada.Unchecked_Conversion (m256i, m256l);
 
    function Test_All_Zero (Elements, Mask : m256i) return Boolean is
-     (Test_All_Zero (Convert (Elements), Convert (Mask)) = 1);
+     (Test_All_Zero (Convert (Elements), Convert (Mask)));
 
    function Test_All_Ones (Elements, Mask : m256i) return Boolean is
-     (Test_All_Ones (Convert (Elements), Convert (Mask)) = 1);
+     (Test_All_Ones (Convert (Elements), Convert (Mask)));
 
    function Test_Mix_Ones_Zeros (Elements, Mask : m256i) return Boolean is
-     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)) = 1);
+     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)));
 
 end Orka.SIMD.AVX.Integers.Logical;
