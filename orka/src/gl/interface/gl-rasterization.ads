@@ -23,6 +23,10 @@ package GL.Rasterization is
 
    use GL.Types;
 
+   type Vertex_Convention is (First_Vertex, Last_Vertex);
+
+   procedure Set_Provoking_Vertex (Value : Vertex_Convention);
+
    type Polygon_Mode_Type is (Point, Line, Fill);
 
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type);

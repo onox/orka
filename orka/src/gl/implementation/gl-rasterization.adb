@@ -19,6 +19,14 @@ with GL.Enums.Getter;
 
 package body GL.Rasterization is
 
+   procedure Set_Provoking_Vertex (Value : Vertex_Convention) is
+   begin
+      API.Provoking_Vertex.Ref
+        (case Value is
+           when First_Vertex => Enums.First_Vertex_Convention,
+           when Last_Vertex  => Enums.Last_Vertex_Convention);
+   end Set_Provoking_Vertex;
+
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type) is
    begin
       API.Polygon_Mode.Ref (Front_And_Back, Value);

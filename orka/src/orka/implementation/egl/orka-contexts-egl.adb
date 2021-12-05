@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with GL.Context;
+with GL.Rasterization;
 with GL.Viewports;
 
 with Orka.Loggers;
@@ -79,6 +80,7 @@ package body Orka.Contexts.EGL is
       --  Other information about context can be read back as well with
       --  GL.Context.Reset_Notification and GL.Context.Release_Behavior
 
+      GL.Rasterization.Set_Provoking_Vertex (GL.Rasterization.First_Vertex);
       GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
       Object.Vertex_Array.Create;
    end Post_Initialize;

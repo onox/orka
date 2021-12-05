@@ -69,6 +69,8 @@ private package GL.Enums is
 
    type Program_Resource_Array is array (Positive range <>) of Program_Resource_Param;
 
+   type Provoking_Vertex_Param is (First_Vertex_Convention, Last_Vertex_Convention);
+
    type Pixel_Store_Param is (Unpack_Alignment, Pack_Alignment,
                               Unpack_Compressed_Block_Width, Unpack_Compressed_Block_Height,
                               Unpack_Compressed_Block_Depth, Unpack_Compressed_Block_Size,
@@ -172,6 +174,11 @@ private
                                    Location                             => 16#930E#,
                                    Location_Index                       => 16#930F#);
    for Program_Resource_Param'Size use Low_Level.Enum'Size;
+
+   for Provoking_Vertex_Param use
+     (First_Vertex_Convention => 16#8E4D#,
+      Last_Vertex_Convention  => 16#8E4E#);
+   for Provoking_Vertex_Param'Size use Low_Level.Enum'Size;
 
    for Pixel_Store_Param use (Unpack_Alignment    => 16#0CF5#,
                               Pack_Alignment      => 16#0D05#,
