@@ -53,9 +53,8 @@ procedure Orka_3_Module_Array is
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
    use type Orka.Float_32;
-   use GL.Types;
 
-   Vertices : constant Single_Array
+   Vertices : constant Orka.Float_32_Array
      := (-0.5, -0.5,
           0.5, -0.5,
           0.0,  0.5);
@@ -72,7 +71,7 @@ begin
       AWT.Process_Events (0.001);
 
       FB_D.Clear ((Color => True, others => False));
-      Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
 
       Window.Swap_Buffers;
    end loop;

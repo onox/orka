@@ -17,7 +17,6 @@
 with Ada.Text_IO;
 
 with GL.Barriers;
-with GL.Types;
 
 with Orka.Algorithms.FFT;
 with Orka.Contexts.AWT;
@@ -44,14 +43,14 @@ procedure Orka_6_FFT is
 
    use type Orka.Integer_32;
    use type Orka.Float_32;
-   use GL.Types;
 
    use Orka.Rendering.Buffers;
    use Orka.Resources;
+   use Orka;
 
    use all type Orka.Types.Element_Type;
 
-   Numbers_Small : constant Single_Array (1 .. 16) :=
+   Numbers_Small : constant Float_32_Array (1 .. 16) :=
      (-1.1594, -2.2122,
        0.6257, -0.4115,
        0.8245,  0.0956,
@@ -61,7 +60,7 @@ procedure Orka_6_FFT is
        1.1099, -1.3213,
       -1.2707,  0.7561);
 
-   Output_Numbers_Small : constant Single_Array (1 .. 16) :=
+   Output_Numbers_Small : constant Float_32_Array (1 .. 16) :=
      (-2.882600, -3.097300,
        0.185311, -4.923875,
       -3.362100, -0.159000,
@@ -71,9 +70,9 @@ procedure Orka_6_FFT is
       -4.200700, -1.700600,
        1.246979,  0.959258);
 
-   procedure Print_Array (Data : Single_Array) is
-      function Image (Value : GL.Types.Single) return String is
-         package Single_IO is new Ada.Text_IO.Float_IO (GL.Types.Single);
+   procedure Print_Array (Data : Float_32_Array) is
+      function Image (Value : Float_32) return String is
+         package Single_IO is new Ada.Text_IO.Float_IO (Float_32);
 
          Value_String : String := "123456789012.123456";
       begin
@@ -81,7 +80,7 @@ procedure Orka_6_FFT is
          return Value_String;
       end Image;
    begin
-      for Index in 1 .. Int (Data'Length / 2) loop
+      for Index in 1 .. Integer_32 (Data'Length / 2) loop
          Ada.Text_IO.Put_Line (Image (Data (Index * 2 - 1)) & " " & Image (Data (Index * 2)));
       end loop;
    end Print_Array;
@@ -92,7 +91,7 @@ procedure Orka_6_FFT is
    Timer_1 : Orka.Timers.Timer := Orka.Timers.Create_Timer;
 
    procedure Print_Numbers (Title : String) is
-      Data  : Single_Array (1 .. Size (BO_1.Length)) := (others => 0.0);
+      Data : Float_32_Array (1 .. Size (BO_1.Length)) := (others => 0.0);
    begin
       BO_1.Get_Data (Data);
 

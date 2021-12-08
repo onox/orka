@@ -14,30 +14,27 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
-
-with GL.Types;
-
+with Orka.OS;
 with Orka.Types;
 
 procedure Orka_7_Half is
-   use type GL.Types.Single;
+   use Orka;
 
-   Numbers : constant GL.Types.Single_Array
+   Numbers : constant Float_32_Array
      := (0.0, 0.5, -0.5, 1.0, -1.0, 0.1, -0.1, 0.0, 0.1234, -0.123456,
          10.1234, 20.1234, 50.1234, 100.1234, 1000.1234);
 
-   Half_Numbers   : GL.Types.Half_Array (Numbers'Range);
-   Single_Numbers : GL.Types.Single_Array (Half_Numbers'Range);
+   Half_Numbers   : Float_16_Array (Numbers'Range);
+   Single_Numbers : Float_32_Array (Half_Numbers'Range);
 begin
    Orka.Types.Convert (Numbers, Half_Numbers);
    Orka.Types.Convert (Half_Numbers, Single_Numbers);
 
    for Number of Numbers loop
-      Ada.Text_IO.Put_Line (GL.Types.Single'Image (Number));
+      Orka.OS.Put_Line (Float_32'Image (Number));
    end loop;
-   Ada.Text_IO.Put_Line ("------------");
+   Orka.OS.Put_Line ("------------");
    for Number of Single_Numbers loop
-      Ada.Text_IO.Put_Line (GL.Types.Single'Image (Number));
+      Orka.OS.Put_Line (Float_32'Image (Number));
    end loop;
 end Orka_7_Half;

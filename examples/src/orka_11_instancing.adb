@@ -99,7 +99,7 @@ procedure Orka_11_Instancing is
          3, 2, 7,  --  Bottom
          7, 2, 6);
 
-   Vertices : constant Single_Array
+   Vertices : constant Orka.Float_32_Array
      := (-0.5,  0.5, -0.5, 1.0,    1.0, 1.0, 1.0, 1.0,
           0.5,  0.5, -0.5, 1.0,    0.0, 1.0, 0.0, 1.0,
           0.5, -0.5, -0.5, 1.0,    0.0, 0.0, 1.0, 1.0,

@@ -69,18 +69,19 @@ procedure Orka_12_Stencil is
    pragma Assert (MS_Enabled);
    --  Simple hack to enable MS before Create_Framebuffer is called
 
-   use type Orka.Float_32;
    use GL.Buffers;
-   use GL.Types;
+   use all type GL.Types.Connection_Mode;
+   use all type GL.Types.Compare_Function;
 
    use Orka.Rendering.Buffers;
    use Orka.Rendering.Programs;
    use Orka.Rendering.Framebuffers;
+   use Orka;
 
-   Indices_Screen : constant UInt_Array
+   Indices_Screen : constant GL.Types.UInt_Array
      := (1, 0, 2, 2, 0, 3);
 
-   Vertices_Screen : constant Single_Array
+   Vertices_Screen : constant Float_32_Array
         := (-1.0,  1.0, 0.0, 1.0,
              1.0,  1.0, 1.0, 1.0,
              1.0, -1.0, 1.0, 0.0,
@@ -92,28 +93,28 @@ procedure Orka_12_Stencil is
    --  vec2 position
    --  vec2 texcoord
 
-   function Get_Scene_Data return Single_Array is
-      V1 : constant Single_Array := (-0.5,  0.5,  0.5);
-      V2 : constant Single_Array := (+0.5,  0.5,  0.5);
-      V3 : constant Single_Array := (-0.5, -0.5,  0.5);
-      V4 : constant Single_Array := (+0.5, -0.5,  0.5);
+   function Get_Scene_Data return Float_32_Array is
+      V1 : constant Float_32_Array := (-0.5,  0.5,  0.5);
+      V2 : constant Float_32_Array := (+0.5,  0.5,  0.5);
+      V3 : constant Float_32_Array := (-0.5, -0.5,  0.5);
+      V4 : constant Float_32_Array := (+0.5, -0.5,  0.5);
 
-      V5 : constant Single_Array := (-0.5,  0.5, -0.5);
-      V6 : constant Single_Array := (+0.5,  0.5, -0.5);
-      V7 : constant Single_Array := (-0.5, -0.5, -0.5);
-      V8 : constant Single_Array := (+0.5, -0.5, -0.5);
+      V5 : constant Float_32_Array := (-0.5,  0.5, -0.5);
+      V6 : constant Float_32_Array := (+0.5,  0.5, -0.5);
+      V7 : constant Float_32_Array := (-0.5, -0.5, -0.5);
+      V8 : constant Float_32_Array := (+0.5, -0.5, -0.5);
 
-      C1 : constant Single_Array := (0.0, 0.0, 1.0);
-      C2 : constant Single_Array := (1.0, 0.0, 1.0);
-      C3 : constant Single_Array := (1.0, 0.0, 0.0);
-      C4 : constant Single_Array := (0.0, 1.0, 0.0);
+      C1 : constant Float_32_Array := (0.0, 0.0, 1.0);
+      C2 : constant Float_32_Array := (1.0, 0.0, 1.0);
+      C3 : constant Float_32_Array := (1.0, 0.0, 0.0);
+      C4 : constant Float_32_Array := (0.0, 1.0, 0.0);
 
-      C5 : constant Single_Array := (0.0, 1.0, 0.0);
-      C6 : constant Single_Array := (1.0, 1.0, 0.0);
-      C7 : constant Single_Array := (1.0, 1.0, 0.0);
-      C8 : constant Single_Array := (0.0, 1.0, 1.0);
+      C5 : constant Float_32_Array := (0.0, 1.0, 0.0);
+      C6 : constant Float_32_Array := (1.0, 1.0, 0.0);
+      C7 : constant Float_32_Array := (1.0, 1.0, 0.0);
+      C8 : constant Float_32_Array := (0.0, 1.0, 1.0);
 
-      Vertices : constant Single_Array
+      Vertices : constant Float_32_Array
             --  Back
         := (V2 (0), V2 (1), V2 (2),   C2 (0), C2 (1), C2 (2),   1.0, 0.0,
             V6 (0), V6 (1), V6 (2),   C6 (0), C6 (1), C6 (2),   1.0, 1.0,
@@ -174,7 +175,7 @@ procedure Orka_12_Stencil is
    package Textures renames GL.Objects.Textures;
 
    procedure Load_Texture (Texture : in out Textures.Texture) is
-      Pixels : aliased constant Single_Array
+      Pixels : aliased constant Float_32_Array
         := (0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,
             0.1, 0.1, 0.1,   1.0, 1.0, 1.0,   0.1, 0.1, 0.1,   1.0, 1.0, 1.0,
@@ -264,7 +265,7 @@ begin
    --  Projection matrix
    Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
-   Uni_Effect.Set_Int (Int (Effect));
+   Uni_Effect.Set_Int (Integer_32 (Effect));
 
    Ada.Text_IO.Put_Line ("Usage: Right click and drag mouse to move camera around cube.");
    Ada.Text_IO.Put_Line ("Usage: Use scroll wheel to zoom in and out.");
@@ -285,7 +286,7 @@ begin
 
             if Keyboard.Pressed (Key_Space) then
                Effect := Effect + 1;
-               Uni_Effect.Set_Int (Int (Effect));
+               Uni_Effect.Set_Int (Integer_32 (Effect));
             end if;
          end;
 

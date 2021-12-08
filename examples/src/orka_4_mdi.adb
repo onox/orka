@@ -42,20 +42,19 @@ procedure Orka_4_MDI is
    use Orka.Rendering.Programs;
 
    use type Orka.Float_32;
-   use GL.Types;
 
-   Vertices_1 : constant Single_Array
+   Vertices_1 : constant Orka.Float_32_Array
      := (-0.25,  0.5,
          -0.75, -0.5,
           0.25, -0.5);
 
-   Vertices_2 : constant Single_Array
+   Vertices_2 : constant Orka.Float_32_Array
      := (-0.25,  0.5,
           0.25, -0.5,
           0.75,  0.5);
 
-   Indices_1 : constant UInt_Array := (0, 1, 2);
-   Indices_2 : constant UInt_Array := (0, 1, 2);
+   Indices_1 : constant GL.Types.UInt_Array := (0, 1, 2);
+   Indices_2 : constant GL.Types.UInt_Array := (0, 1, 2);
 
    Batch_1 : MDI.Batch := MDI.Create_Batch
      (Orka.Types.Single_Type, Orka.Types.UInt_Type, 2,
@@ -63,7 +62,7 @@ procedure Orka_4_MDI is
       Indices_1'Length + Indices_2'Length);
 
    procedure Append_Draw_Call
-     (Instances : Natural; Vertices : Single_Array; Indices : UInt_Array)
+     (Instances : Natural; Vertices : Orka.Float_32_Array; Indices : GL.Types.UInt_Array)
    is
       Vertex_Elements : constant := 2;
 
@@ -135,7 +134,7 @@ begin
       FB_D.Clear ((Color => True, others => False));
 
       Orka.Rendering.Drawing.Draw_Indexed_Indirect
-        (Mode         => Triangles,
+        (Mode         => GL.Types.Triangles,
          Index_Buffer => Batch_1.Indices.Buffer,
          Buffer       => Batch_1.Commands.Buffer);
 

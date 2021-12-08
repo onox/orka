@@ -49,10 +49,9 @@ procedure Orka_13_Geometry is
 
    FB_D : Framebuffer := Create_Default_Framebuffer (500, 500);
 
-   use type Orka.Float_32;
-   use GL.Types;
+   use Orka;
 
-   Vertices : constant Single_Array
+   Vertices : constant Float_32_Array
      --  Position                  Color           Sides
      := (-0.45,  0.45, 0.0, 1.0,   1.0, 0.0, 0.0,  4.0,
           0.45,  0.45, 0.0, 1.0,   0.0, 1.0, 0.0,  8.0,
@@ -70,7 +69,7 @@ begin
       AWT.Process_Events (0.001);
 
       FB_D.Clear ((Color => True, others => False));
-      Orka.Rendering.Drawing.Draw (Points, 0, 4);
+      Orka.Rendering.Drawing.Draw (GL.Types.Points, 0, 4);
 
       --  Swap front and back buffers and process events
       Window.Swap_Buffers;
