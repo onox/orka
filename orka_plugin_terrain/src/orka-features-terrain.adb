@@ -89,7 +89,7 @@ package body Orka.Features.Terrain is
       Dispatch_Commands : constant Dispatch_Indirect_Command_Array :=
         (1 .. Number_Of_Buffers => (2, 1, 1));
 
-      Nodes_Counter : constant GL.Types.UInt_Array := (1 .. Number_Of_Buffers => 0);
+      Nodes_Counter : constant Unsigned_32_Array := (1 .. Number_Of_Buffers => 0);
 
       Heap_Elements : constant Natural := 2 + 2 ** (Natural (Max_Depth) + 2 - 5);
       --  Minimum and maximum depth, and the the heap elements
