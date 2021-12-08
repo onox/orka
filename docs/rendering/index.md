@@ -206,7 +206,7 @@ Next we will create a buffer and upload the data of the three
 vertices to it:
 
 ```ada
-Vertices : constant Single_Array
+Vertices : constant Float_32_Array
   := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
        0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
        0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
@@ -323,8 +323,6 @@ and then draw the triangle. Press ++esc++ to close the application.
 
 ??? example "Complete code of `triangle.adb`"
     ```ada linenums="1" title="triangle.adb"
-    with GL.Types;
-
     with Orka.Contexts.AWT;
     with Orka.Rendering.Buffers;
     with Orka.Rendering.Drawing;
@@ -345,8 +343,7 @@ and then draw the triangle. Press ++esc++ to close the application.
        use Orka.Rendering.Buffers;
        use Orka.Rendering.Framebuffers;
        use Orka.Rendering.Programs;
-
-       use GL.Types;
+       use Orka;
 
        Location_Shaders : constant Locations.Location_Ptr
          := Locations.Directories.Create_Location (".");
@@ -356,7 +353,7 @@ and then draw the triangle. Press ++esc++ to close the application.
 
        FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
-       Vertices : constant Single_Array
+       Vertices : constant Float_32_Array
          := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
               0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
               0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
