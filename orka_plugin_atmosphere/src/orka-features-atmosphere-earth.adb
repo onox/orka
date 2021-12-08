@@ -39,7 +39,7 @@ package body Orka.Features.Atmosphere.Earth is
    --  summed and averaged in each bin (e.g. the value for 360nm is the average
    --  of the ASTM G-173 values for all wavelengths between 360 and 370 nm).
    --  Values in W.m^-2
-   Solar_Irradiances : constant GL.Types.Double_Array
+   Solar_Irradiances : constant Float_64_Array
      := (1.11776, 1.14259, 1.01249, 1.14716, 1.72765, 1.73054, 1.6887, 1.61253,
          1.91198, 2.03474, 2.02042, 2.02212, 1.93377, 1.95809, 1.91686, 1.8298,
          1.8685, 1.8931, 1.85149, 1.8504, 1.8341, 1.8345, 1.8147, 1.78158, 1.7533,
@@ -51,7 +51,7 @@ package body Orka.Features.Atmosphere.Earth is
    --  referencespectra/o3spectra2011/index.html for 233K, summed and averaged in
    --  each bin (e.g. the value for 360nm is the average of the original values
    --  for all wavelengths between 360 and 370nm). Values in m^2
-   Ozone_Cross_Section : constant GL.Types.Double_Array
+   Ozone_Cross_Section : constant Float_64_Array
      := (1.18e-27, 2.182e-28, 2.818e-28, 6.636e-28, 1.527e-27, 2.763e-27, 5.52e-27,
          8.451e-27, 1.582e-26, 2.316e-26, 3.669e-26, 4.924e-26, 7.752e-26, 9.016e-26,
          1.48e-25, 1.602e-25, 2.139e-25, 2.755e-25, 3.091e-25, 3.5e-25, 4.266e-25,
@@ -60,22 +60,22 @@ package body Orka.Features.Atmosphere.Earth is
          6.566e-26, 5.105e-26, 4.15e-26, 4.228e-26, 3.237e-26, 2.451e-26, 2.801e-26,
          2.534e-26, 1.624e-26, 1.465e-26, 2.078e-26, 1.383e-26, 7.105e-27);
 
-   K_Dobson_Unit : constant GL.Types.Double := 2.687e20;
+   K_Dobson_Unit : constant Float_64 := 2.687e20;
    --  From https://en.wikipedia.org/wiki/Dobson_unit, in molecules.m^-2
 
-   K_Max_Ozone_Number_Density : constant GL.Types.Double := 300.0 * K_Dobson_Unit / 15000.0;
+   K_Max_Ozone_Number_Density : constant Float_64 := 300.0 * K_Dobson_Unit / 15000.0;
    --  Maximum number density of ozone molecules, in m^-3 (computed so at to get
    --  300 Dobson units of ozone - for this we divide 300 DU by the integral of
    --  the ozone density profile defined below, which is equal to 15 km)
 
-   K_Rayleigh                     : constant GL.Types.Double := 1.24062e-6;
-   K_Rayleigh_Scale_Height        : constant GL.Types.Double := 8000.0;
-   K_Mie_Scale_Height             : constant GL.Types.Double := 1200.0;
-   K_Mie_Angstrom_Alpha           : constant GL.Types.Double := 0.0;
-   K_Mie_Angstrom_Beta            : constant GL.Types.Double := 5.328e-3;
-   K_Mie_Single_Scattering_Albedo : constant GL.Types.Double := 0.9;
-   K_Mie_Phase_Function_G         : constant GL.Types.Double := 0.8;
-   K_Ground_Albedo                : constant GL.Types.Double := 0.1;
+   K_Rayleigh                     : constant Float_64 := 1.24062e-6;
+   K_Rayleigh_Scale_Height        : constant Float_64 := 8000.0;
+   K_Mie_Scale_Height             : constant Float_64 := 1200.0;
+   K_Mie_Angstrom_Alpha           : constant Float_64 := 0.0;
+   K_Mie_Angstrom_Beta            : constant Float_64 := 5.328e-3;
+   K_Mie_Single_Scattering_Albedo : constant Float_64 := 0.9;
+   K_Mie_Phase_Function_G         : constant Float_64 := 0.8;
+   K_Ground_Albedo                : constant Float_64 := 0.1;
 
    Rayleigh_Layer : constant Density_Profile_Layer
      := (0.0, 1.0, -1.0 / K_Rayleigh_Scale_Height, 0.0, 0.0);
@@ -92,9 +92,9 @@ package body Orka.Features.Atmosphere.Earth is
      := (0.0, 0.0, 0.0, -1.0 / 15000.0, 8.0 / 3.0);
 
    function Data (Luminance : Luminance_Type) return Model_Data is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Double);
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
-      function To_Radians (Value : GL.Types.Double) return GL.Types.Double is
+      function To_Radians (Value : Float_64) return Float_64 is
         (Value / 180.0 * Ada.Numerics.Pi);
 
       Wavelengths, Solar_Irradiance, Ground_Albedo : Double_Vectors.Vector;
@@ -103,17 +103,17 @@ package body Orka.Features.Atmosphere.Earth is
 
       Absorption_Density, Rayleigh_Density, Mie_Density : Density_Vectors.Vector;
 
-      D_Lambda : constant GL.Types.Double := 10.0;
-      L : GL.Types.Double := K_Lambda_Min;
+      D_Lambda : constant Float_64 := 10.0;
+      L : Float_64 := K_Lambda_Min;
    begin
       while L <= K_Lambda_Max loop
          declare
             use EF;
 
-            Lambda : constant GL.Types.Double := L * 1.0e-3;
-            Mie    : constant GL.Types.Double
+            Lambda : constant Float_64 := L * 1.0e-3;
+            Mie    : constant Float_64
               := K_Mie_Angstrom_Beta / K_Mie_Scale_Height * Lambda ** (-K_Mie_Angstrom_Alpha);
-            Sample_Index : constant GL.Types.Size := GL.Types.Size (L - K_Lambda_Min) / 10;
+            Sample_Index : constant Size := Size (L - K_Lambda_Min) / 10;
          begin
             Wavelengths.Append (L);
             Solar_Irradiance.Append (Solar_Irradiances (Sample_Index));

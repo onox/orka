@@ -22,14 +22,13 @@ private with Orka.Rendering.Framebuffers;
 private with Orka.Types;
 
 with GL.Objects.Textures;
-with GL.Types;
 
 with Orka.Resources.Locations;
 
 package Orka.Rendering.Effects.Filters is
    pragma Preelaborate;
 
-   function Gaussian_Kernel (Radius : Size) return GL.Types.Single_Array
+   function Gaussian_Kernel (Radius : Size) return Float_32_Array
      with Pre => Radius mod 2 = 0;
 
    type Separable_Filter is tagged limited private;
@@ -37,7 +36,7 @@ package Orka.Rendering.Effects.Filters is
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
       Subject  : GL.Objects.Textures.Texture;
-      Kernel   : GL.Types.Single_Array) return Separable_Filter
+      Kernel   : Float_32_Array) return Separable_Filter
    with Pre => Kernel'Length mod 2 = 0;
    --  Create a separable filter
    --
@@ -100,7 +99,7 @@ private
       Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
       Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
 
-      Columns, Rows : GL.Types.UInt;
+      Columns, Rows : Unsigned_32;
    end record;
 
 end Orka.Rendering.Effects.Filters;

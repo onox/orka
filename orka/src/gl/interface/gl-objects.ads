@@ -69,4 +69,6 @@ private
       Reference : GL_Object_Reference_Access;
    end record;
 
+   use type UInt;
+
 end GL.Objects;

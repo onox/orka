@@ -45,21 +45,21 @@ package body Orka.Types is
    -----------------------------------------------------------------------------
 
    generic
-      Size : GL.Types.Int;
+      Size : Integer_32;
       type Source_Type is private;
       type Target_Type is private;
-      type Source_Array_Type is array (GL.Types.Size range <>) of Source_Type;
-      type Target_Array_Type is array (GL.Types.Size range <>) of Target_Type;
+      type Source_Array_Type is array (Orka.Size range <>) of Source_Type;
+      type Target_Array_Type is array (Orka.Size range <>) of Target_Type;
       with procedure Convert_Slice (Values : Source_Array_Type; Result : out Target_Array_Type);
    procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type);
 
    procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type) is
       use type GL.Types.Int;
 
-      Iterations : constant GL.Types.Size := Elements'Length / Size;
-      Remainder  : constant GL.Types.Size := Elements'Length rem Size;
+      Iterations : constant Orka.Size := Elements'Length / Size;
+      Remainder  : constant Orka.Size := Elements'Length rem Size;
 
-      Offset : GL.Types.Size := Elements'First;
+      Offset : Orka.Size := Elements'First;
    begin
       --  Convert Size elements in each iteration
       for Index in 0 .. Iterations - 1 loop
@@ -78,47 +78,46 @@ package body Orka.Types is
 
    -----------------------------------------------------------------------------
 
-   procedure Convert_Slice (Values : GL.Types.Single_Array; Result : out GL.Types.Half_Array) is
+   procedure Convert_Slice (Values : Float_32_Array; Result : out Float_16_Array) is
       use SIMD.F16C;
 
-      S : GL.Types.Single_Array (1 .. m256'Length);
+      S : Float_32_Array (1 .. m256'Length);
       H : m128s;
    begin
       S (1 .. Values'Length) := Values;
       H := Convert_Nearest_Integer (m256 (S));
-      Result := GL.Types.Half_Array (H) (1 .. Values'Length);
+      Result := Float_16_Array (H) (1 .. Values'Length);
    end Convert_Slice;
 
-   procedure Convert_Slice (Values : GL.Types.Half_Array; Result : out GL.Types.Single_Array) is
+   procedure Convert_Slice (Values : Float_16_Array; Result : out Float_32_Array) is
       use SIMD.F16C;
 
-      S : GL.Types.Half_Array (1 .. m256'Length);
+      S : Float_16_Array (1 .. m256'Length);
       H : m256;
    begin
       S (1 .. Values'Length) := Values;
       H := Convert (m128s (S));
-      Result := GL.Types.Single_Array (H) (1 .. Values'Length);
+      Result := Float_32_Array (H) (1 .. Values'Length);
    end Convert_Slice;
 
    procedure Convert_Single is new Generic_Convert
-     (m256'Length, GL.Types.Single, GL.Types.Half,
-      GL.Types.Single_Array, GL.Types.Half_Array, Convert_Slice);
+     (m256'Length, Float_32, Float_16,
+      Float_32_Array, Float_16_Array, Convert_Slice);
 
    procedure Convert_Half is new Generic_Convert
-     (m256'Length, GL.Types.Half, GL.Types.Single,
-      GL.Types.Half_Array, GL.Types.Single_Array, Convert_Slice);
+     (m256'Length, Float_16, Float_32,
+      Float_16_Array, Float_32_Array, Convert_Slice);
 
-   procedure Convert (Elements : GL.Types.Single_Array; Result : out GL.Types.Half_Array)
+   procedure Convert (Elements : Float_32_Array; Result : out Float_16_Array)
      renames Convert_Single;
-   procedure Convert (Elements : GL.Types.Half_Array; Result : out GL.Types.Single_Array)
+   procedure Convert (Elements : Float_16_Array; Result : out Float_32_Array)
      renames Convert_Half;
 
    -----------------------------------------------------------------------------
 
    function Is_Power_Of_Two (Value : Positive) return Boolean is
-      use type GL.Types.UInt;
    begin
-      return (GL.Types.UInt (Value) and GL.Types.UInt (Value - 1)) = 0;
+      return (Unsigned_32 (Value) and Unsigned_32 (Value - 1)) = 0;
    end Is_Power_Of_Two;
 
    function Clamp (Value : in Source) return Target is

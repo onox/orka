@@ -19,8 +19,6 @@ with Ada.Strings.Unbounded;
 
 with JSON.Types;
 
-with GL.Types;
-
 private package Orka.glTF is
    pragma Preelaborate;
 
@@ -34,7 +32,7 @@ private package Orka.glTF is
    function To_String (Value : Name_Strings.Bounded_String) return String
      renames Name_Strings.To_String;
 
-   package Types is new JSON.Types (Long_Integer, GL.Types.Single);
+   package Types is new JSON.Types (Long_Integer, Float_32);
 
    subtype Natural_Optional is Integer range -1 .. Integer'Last;
 

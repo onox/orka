@@ -34,7 +34,7 @@ package body GL.Debug.Logs is
       Types   : Type_Array_Access     := new Type_Array (1 .. Number_Messages);
       Levels  : Severity_Array_Access := new Severity_Array (1 .. Number_Messages);
 
-      IDs     : UInt_Array_Access := new UInt_Array (1 .. Number_Messages);
+      IDs     : UInt_Array_Access := new Orka.Unsigned_32_Array (1 .. Number_Messages);
       Lengths : Size_Array_Access := new Size_Array (1 .. Number_Messages);
 
       Log : Debug_Types.String_Access := new String'(1 .. Natural (Log_Length) => ' ');
@@ -49,7 +49,7 @@ package body GL.Debug.Logs is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Severity_Array, Name => Severity_Array_Access);
       procedure Free is new Ada.Unchecked_Deallocation
-        (Object => UInt_Array, Name => UInt_Array_Access);
+        (Object => Orka.Unsigned_32_Array, Name => UInt_Array_Access);
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Size_Array, Name => Size_Array_Access);
    begin

@@ -33,7 +33,6 @@
 --  [1] https://github.com/jdupuy/LongestEdgeBisectionDemos
 
 with GL.Objects.Textures;
-with GL.Types;
 
 with Orka.Cameras;
 with Orka.Rendering.Buffers;
@@ -66,7 +65,7 @@ package Orka.Features.Terrain is
       Min_LoD_Standard_Dev : LoD_Deviation;
    end record;
 
-   subtype Spheroid_Parameters is GL.Types.Single_Array (1 .. 4);
+   subtype Spheroid_Parameters is Float_32_Array (1 .. 4);
 
    type Visible_Tile_Array is array (Positive range <>) of Boolean;
 
@@ -131,9 +130,9 @@ package Orka.Features.Terrain is
    --  then Wires has no effect.
 
    function Get_Spheroid_Parameters
-     (Semi_Major_Axis : GL.Types.Single;
-      Flattening      : GL.Types.Single := 0.0;
-      Side            : Boolean         := True) return Spheroid_Parameters;
+     (Semi_Major_Axis : Float_32;
+      Flattening      : Float_32 := 0.0;
+      Side            : Boolean  := True) return Spheroid_Parameters;
    --  Return the spheroid parameters needed to project a flat
    --  terrain tile on a (non-)flattened sphere.
    --

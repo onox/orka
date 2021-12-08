@@ -22,7 +22,6 @@ with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
 with GL.Pixels.Extensions;
-with GL.Types;
 
 package body Orka.Frame_Graphs is
 
@@ -141,12 +140,12 @@ package body Orka.Frame_Graphs is
             Result : GL.Objects.Textures.Texture (Subject.Kind);
          begin
             Result.Allocate_Storage
-              (Levels  => GL.Types.Size (Subject.Levels),
-               Samples => GL.Types.Size (Subject.Samples),
+              (Levels  => Size (Subject.Levels),
+               Samples => Size (Subject.Samples),
                Format  => Subject.Format,
-               Width   => GL.Types.Size (Subject.Extent.Width),
-               Height  => GL.Types.Size (Subject.Extent.Height),
-               Depth   => GL.Types.Size (Subject.Extent.Depth));
+               Width   => Size (Subject.Extent.Width),
+               Height  => Size (Subject.Extent.Height),
+               Depth   => Size (Subject.Extent.Depth));
             Textures.Insert (+Subject.Name, Result);
             return Result;
          end;
@@ -713,8 +712,8 @@ package body Orka.Frame_Graphs is
                         Default
                       else
                         Rendering.Framebuffers.Create_Framebuffer
-                          (Width  => GL.Types.Size (Width),
-                           Height => GL.Types.Size (Height))),
+                          (Width  => Size (Width),
+                           Height => Size (Height))),
 
                    Clear_Mask        => Clear_Mask,
                    Invalidate_Mask   => Invalidate_Mask,
@@ -733,7 +732,6 @@ package body Orka.Frame_Graphs is
                     (Framebuffer : in out Rendering.Framebuffers.Framebuffer)
                   is
                      use type GL.Buffers.Color_Buffer_Selector;
-                     use type GL.Types.UInt;
                   begin
                      --  Clear color to black and depth to 0.0 (because of reversed Z)
                      Framebuffer.Set_Default_Values

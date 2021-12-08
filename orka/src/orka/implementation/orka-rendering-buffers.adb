@@ -72,7 +72,7 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Half_Array) return Buffer is
+      Data   : Float_16_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Half_Type) do
          Pointers.Half.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
@@ -82,7 +82,7 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Single_Array) return Buffer is
+      Data   : Float_32_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Single_Type) do
          Pointers.Single.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
@@ -92,7 +92,7 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Double_Array) return Buffer is
+      Data   : Float_64_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Double_Type) do
          Pointers.Double.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
@@ -102,7 +102,7 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Int_Array) return Buffer is
+      Data   : Integer_32_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Int_Type) do
          Pointers.Int.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
@@ -112,7 +112,7 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : UInt_Array) return Buffer is
+      Data   : Unsigned_32_Array) return Buffer is
    begin
       return Result : Buffer (Kind => UInt_Type) do
          Pointers.UInt.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
@@ -233,7 +233,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Half_Array;
+      Data   : Float_16_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Half.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -241,7 +241,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Single_Array;
+      Data   : Float_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -249,7 +249,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Double_Array;
+      Data   : Float_64_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Double.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -257,7 +257,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Int_Array;
+      Data   : Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -265,7 +265,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : UInt_Array;
+      Data   : Unsigned_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.UInt.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -331,7 +331,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Half_Array;
+      Data   : in out Float_16_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Half.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -339,7 +339,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Single_Array;
+      Data   : in out Float_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -347,7 +347,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Double_Array;
+      Data   : in out Float_64_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Double.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -355,7 +355,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Int_Array;
+      Data   : in out Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -363,7 +363,7 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out UInt_Array;
+      Data   : in out Unsigned_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.UInt.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
@@ -407,11 +407,11 @@ package body Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : Int_Array)
+      Data   : Integer_32_Array)
    is
       Length : constant Size := Size (Object.Length);
 
-      Data_Array : Int_Array :=
+      Data_Array : Integer_32_Array :=
         (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
    begin
       Pointers.Int.Clear_Sub_Data (Object.Buffer, Int_Type, 0, Length, Data_Array);
@@ -419,11 +419,11 @@ package body Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : UInt_Array)
+      Data   : Unsigned_32_Array)
    is
       Length : constant Size := Size (Object.Length);
 
-      Data_Array : UInt_Array :=
+      Data_Array : Unsigned_32_Array :=
         (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
    begin
       Pointers.UInt.Clear_Sub_Data (Object.Buffer, UInt_Type, 0, Length, Data_Array);
@@ -431,11 +431,11 @@ package body Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : Single_Array)
+      Data   : Float_32_Array)
    is
       Length : constant Size := Size (Object.Length);
 
-      Data_Array : Single_Array :=
+      Data_Array : Float_32_Array :=
         (if Data'Length = 1 and Data (Data'First) = 0.0 then Data (1 .. 0) else Data);
    begin
       Pointers.Single.Clear_Sub_Data (Object.Buffer, Single_Type, 0, Length, Data_Array);
@@ -448,7 +448,7 @@ package body Orka.Rendering.Buffers is
       Length : constant Size :=
         Size (if Object.Kind = Single_Vector_Type then Object.Length * 4 else Object.Length);
 
-      Data_Array : Single_Array := (Data (X), Data (Y), Data (Z), Data (W));
+      Data_Array : Float_32_Array := (Data (X), Data (Y), Data (Z), Data (W));
    begin
       Pointers.Single.Clear_Sub_Data (Object.Buffer, Single_Type, 0, Length, Data_Array);
    end Clear_Data;

@@ -21,6 +21,7 @@ package GL.Compute is
 
    use GL.Types;
    use GL.Types.Compute;
+   use type GL.Types.UInt;
 
    procedure Dispatch_Compute (X, Y, Z : UInt := 1)
      with Pre => X >= 1 and Y >= 1 and Z >= 1;

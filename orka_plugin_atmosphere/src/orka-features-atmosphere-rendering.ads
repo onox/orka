@@ -68,8 +68,8 @@ private
 
       Parameters : Model_Parameters;
 
-      Bottom_Radius  : GL.Types.Double;
-      Distance_Scale : GL.Types.Double;
+      Bottom_Radius  : Float_64;
+      Distance_Scale : Float_64;
 
       Uniform_Ground_Hack   : Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_Camera_Offset : Programs.Uniforms.Uniform (LE.Single_Vec4);

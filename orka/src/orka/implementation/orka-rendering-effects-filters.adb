@@ -19,6 +19,7 @@ with Ada.Numerics.Generic_Elementary_Functions;
 with GL.Barriers;
 with GL.Compute;
 with GL.Toggles;
+with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
@@ -26,22 +27,20 @@ with Orka.Rendering.Textures;
 
 package body Orka.Rendering.Effects.Filters is
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Double);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
-   use type GL.Types.Double;
+   function Gaussian_Kernel (Radius : Size) return Float_32_Array is
+      Sigma : constant Float_64 :=
+        ((Float_64 (Radius) - 1.0) * 0.5 - 1.0) * 0.3 + 0.8;
 
-   function Gaussian_Kernel (Radius : GL.Types.Size) return GL.Types.Single_Array is
-      Sigma : constant GL.Types.Double :=
-        ((GL.Types.Double (Radius) - 1.0) * 0.5 - 1.0) * 0.3 + 0.8;
-
-      Denominator : constant GL.Types.Double :=
+      Denominator : constant Float_64 :=
         EF.Sqrt (2.0 * Ada.Numerics.Pi * Sigma ** 2);
 
-      Kernel : GL.Types.Double_Array (0 .. Radius);
-      Sum    : GL.Types.Double := 0.0;
+      Kernel : Float_64_Array (0 .. Radius);
+      Sum    : Float_64 := 0.0;
    begin
       for Index in Kernel'Range loop
-         Kernel (Index) := EF.Exp (-GL.Types.Double (Index**2) / (2.0 * Sigma ** 2))
+         Kernel (Index) := EF.Exp (-Float_64 (Index**2) / (2.0 * Sigma ** 2))
            / Denominator;
          Sum := Sum + Kernel (Index) * (if Index > 0 then 2.0 else 1.0);
          --  Kernel array only stores the positive side of the curve, but
@@ -63,13 +62,12 @@ package body Orka.Rendering.Effects.Filters is
          --                                        weight (t1, t2)
          --
          --  [1] http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
-         Weights : GL.Types.Single_Array (0 .. Radius / 2);
-         Offsets : GL.Types.Single_Array (0 .. Radius / 2);
+         Weights : Float_32_Array (0 .. Radius / 2);
+         Offsets : Float_32_Array (0 .. Radius / 2);
 
-         use type GL.Types.Single_Array;
-         use GL.Types;
+         use type Float_32_Array;
       begin
-         Weights (Weights'First) := Single (Kernel (Weights'First));
+         Weights (Weights'First) := Float_32 (Kernel (Weights'First));
          Offsets (Offsets'First) := 0.0;
 
          --  Weights
@@ -78,7 +76,7 @@ package body Orka.Rendering.Effects.Filters is
                T1 : constant Size := Index * 2 - 1;
                T2 : constant Size := Index * 2;
             begin
-               Weights (Index) := Single (Kernel (T1) + Kernel (T2));
+               Weights (Index) := Float_32 (Kernel (T1) + Kernel (T2));
             end;
          end loop;
 
@@ -88,11 +86,11 @@ package body Orka.Rendering.Effects.Filters is
                T1 : constant Size := Index * 2 - 1;
                T2 : constant Size := Index * 2;
 
-               W12 : constant Single := Weights (Index);
+               W12 : constant Float_32 := Weights (Index);
             begin
                if W12 > 0.0 then
-                  Offsets (Index) := Single
-                    ((Double (T1) * Kernel (T1) + Double (T2) * Kernel (T2)) / Double (W12));
+                  Offsets (Index) := Float_32
+                    ((Float_64 (T1) * Kernel (T1) + Float_64 (T2) * Kernel (T2)) / Float_64 (W12));
                else
                   Offsets (Index) := 0.0;
                end if;
@@ -106,7 +104,7 @@ package body Orka.Rendering.Effects.Filters is
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
       Subject  : GL.Objects.Textures.Texture;
-      Kernel   : GL.Types.Single_Array) return Separable_Filter
+      Kernel   : Float_32_Array) return Separable_Filter
    is
       use all type LE.Texture_Kind;
       pragma Assert (Subject.Kind = LE.Texture_Rectangle);
@@ -115,8 +113,8 @@ package body Orka.Rendering.Effects.Filters is
       use Rendering.Framebuffers;
       use Rendering.Programs;
 
-      Width  : constant GL.Types.Size := Subject.Width  (0);
-      Height : constant GL.Types.Size := Subject.Height (0);
+      Width  : constant Size := Subject.Width  (0);
+      Height : constant Size := Subject.Height (0);
    begin
       return Result : Separable_Filter :=
         (Buffer_Weights => Create_Buffer ((others => False), Kernel),
@@ -169,16 +167,16 @@ package body Orka.Rendering.Effects.Filters is
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
       Subject  : GL.Objects.Textures.Texture;
-      Radius   : GL.Types.Size) return Moving_Average_Filter
+      Radius   : Size) return Moving_Average_Filter
    is
       use all type LE.Texture_Kind;
       pragma Assert (Subject.Kind = LE.Texture_Rectangle);
 
       use Rendering.Programs;
-      use type GL.Types.Single;
+      use type Float_32;
 
-      Width  : constant GL.Types.Size := Subject.Width  (0);
-      Height : constant GL.Types.Size := Subject.Height (0);
+      Width  : constant Size := Subject.Width  (0);
+      Height : constant Size := Subject.Height (0);
    begin
       return Result : Moving_Average_Filter :=
         (Program_Blur => Create_Program
@@ -192,13 +190,13 @@ package body Orka.Rendering.Effects.Filters is
          Result.Texture_V.Allocate_Storage (Subject);
 
          declare
-            Work_Group_Size : constant GL.Types.Single :=
-             GL.Types.Single (Result.Program_Blur.Compute_Work_Group_Size (X));
+            Work_Group_Size : constant Float_32 :=
+             Float_32 (Result.Program_Blur.Compute_Work_Group_Size (X));
          begin
-            Result.Columns := GL.Types.UInt
-              (GL.Types.Single'Ceiling (GL.Types.Single (Width) / Work_Group_Size));
-            Result.Rows := GL.Types.UInt
-              (GL.Types.Single'Ceiling (GL.Types.Single (Height) / Work_Group_Size));
+            Result.Columns := Unsigned_32
+              (Float_32'Ceiling (Float_32 (Width) / Work_Group_Size));
+            Result.Rows := Unsigned_32
+              (Float_32'Ceiling (Float_32 (Height) / Work_Group_Size));
          end;
       end return;
    end Create_Filter;

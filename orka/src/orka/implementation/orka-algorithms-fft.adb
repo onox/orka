@@ -51,7 +51,6 @@ package body Orka.Algorithms.FFT is
       Width, Height : Positive;
       Transpose, Inverse : Boolean)
    is
-      use GL.Types;
       use all type Rendering.Buffers.Indexed_Buffer_Target;
 
       Columns : constant Positive := (if Transpose then Height else Width);
@@ -61,7 +60,8 @@ package body Orka.Algorithms.FFT is
 
       Rows_In_Shared : constant Size := Size (Object.Local_Size / Columns);
    begin
-      Object.Uniform_Size.Set_Vector (GL.Types.UInt_Array'(UInt (Width), UInt (Height)));
+      Object.Uniform_Size.Set_Vector
+        (Unsigned_32_Array'(Unsigned_32 (Width), Unsigned_32 (Height)));
 
       Object.Uniform_Transpose.Set_Boolean (Transpose);
       Object.Uniform_Inverse.Set_Boolean (Inverse);
@@ -72,7 +72,7 @@ package body Orka.Algorithms.FFT is
 
       GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
       GL.Compute.Dispatch_Compute
-        (X => UInt (Single'Ceiling (Single (Rows) / Single (Rows_In_Shared))));
+        (X => Unsigned_32 (Float_32'Ceiling (Float_32 (Rows) / Float_32 (Rows_In_Shared))));
    end Compute_FFT;
 
 end Orka.Algorithms.FFT;

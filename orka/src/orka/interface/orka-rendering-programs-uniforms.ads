@@ -59,7 +59,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Int_Array)
+      Data   : Integer_32_Array)
    with Pre => (case Object.Kind is
                   when LE.Int_Vec2 => Data'Length = 2,
                   when LE.Int_Vec3 => Data'Length = 3,
@@ -68,7 +68,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.UInt_Array)
+      Data   : Unsigned_32_Array)
    with Pre => (case Object.Kind is
                   when LE.UInt_Vec2 => Data'Length = 2,
                   when LE.UInt_Vec3 => Data'Length = 3,
@@ -77,7 +77,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Single_Array)
+      Data   : Float_32_Array)
    with Pre => (case Object.Kind is
                   when LE.Single_Vec2 => Data'Length = 2,
                   when LE.Single_Vec3 => Data'Length = 3,
@@ -86,7 +86,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Double_Array)
+      Data   : Float_64_Array)
    with Pre => (case Object.Kind is
                   when LE.Double_Vec2 => Data'Length = 2,
                   when LE.Double_Vec3 => Data'Length = 3,
@@ -95,16 +95,16 @@ package Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   procedure Set_Single (Object : Uniform; Value : GL.Types.Single)
+   procedure Set_Single (Object : Uniform; Value : Float_32)
      with Pre => Object.Kind = LE.Single_Type;
 
-   procedure Set_Double (Object : Uniform; Value : GL.Types.Double)
+   procedure Set_Double (Object : Uniform; Value : Float_64)
      with Pre => Object.Kind = LE.Double_Type;
 
-   procedure Set_Int (Object : Uniform; Value : GL.Types.Int)
+   procedure Set_Int (Object : Uniform; Value : Integer_32)
      with Pre => Object.Kind = LE.Int_Type;
 
-   procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt)
+   procedure Set_UInt (Object : Uniform; Value : Unsigned_32)
      with Pre => Object.Kind = LE.UInt_Type;
 
    procedure Set_Integer (Object : Uniform; Value : Integer)

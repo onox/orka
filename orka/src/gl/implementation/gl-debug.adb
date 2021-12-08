@@ -69,20 +69,20 @@ package body GL.Debug is
 
    procedure Set (From : Source; Kind : Message_Type; Level : Severity;
                   Enabled : Boolean) is
-      Identifiers : Types.UInt_Array (1 .. 0);
+      Identifiers : Orka.Unsigned_32_Array (1 .. 0);
    begin
       API.Debug_Message_Control.Ref
         (From, Kind, Level, 0, Identifiers, Low_Level.Bool (Enabled));
    end Set;
 
    procedure Set (Level : Severity; Enabled : Boolean) is
-      Identifiers : Types.UInt_Array (1 .. 0);
+      Identifiers : Orka.Unsigned_32_Array (1 .. 0);
    begin
       API.Debug_Message_Control_Level.Ref
         (Any, Any, Level, 0, Identifiers, Low_Level.Bool (Enabled));
    end Set;
 
-   procedure Set (From : Source; Kind : Message_Type; Identifiers : Types.UInt_Array;
+   procedure Set (From : Source; Kind : Message_Type; Identifiers : Orka.Unsigned_32_Array;
                   Enabled : Boolean) is
    begin
       API.Debug_Message_Control_Any_Level.Ref

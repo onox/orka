@@ -46,7 +46,6 @@ package GL.Low_Level is
    subtype Bitfield is C.unsigned;
 
    type Single_Array is array (Positive range <>) of aliased Single;
-   type Double_Array is array (Positive range <>) of aliased Double;
 
    type Int_Array  is array (Positive range <>) of aliased Int;
    type UInt_Array is array (Positive range <>) of aliased UInt;
@@ -71,7 +70,6 @@ private
    for Bool'Size use C.unsigned_char'Size;
 
    pragma Convention (C, Single_Array);
-   pragma Convention (C, Double_Array);
 
    pragma Convention (C, Int_Array);
    pragma Convention (C, UInt_Array);

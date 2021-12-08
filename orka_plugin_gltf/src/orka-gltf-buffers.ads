@@ -61,7 +61,7 @@ package Orka.glTF.Buffers is
 
    generic
       type Element_Type is private;
-      type Element_Array is array (GL.Types.Size range <>) of aliased Element_Type;
+      type Element_Array is array (Size range <>) of aliased Element_Type;
    procedure Extract_From_Buffer
      (Buffers : Buffer_Vectors.Vector;
       View    : Buffer_View;

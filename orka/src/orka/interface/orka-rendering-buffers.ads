@@ -64,23 +64,23 @@ package Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Half_Array) return Buffer;
+      Data   : Float_16_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Single_Array) return Buffer;
+      Data   : Float_32_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Double_Array) return Buffer;
+      Data   : Float_64_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Int_Array) return Buffer;
+      Data   : Integer_32_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : UInt_Array) return Buffer;
+      Data   : Unsigned_32_Array) return Buffer;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
@@ -129,31 +129,31 @@ package Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Half_Array;
+      Data   : Float_16_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Half_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Single_Array;
+      Data   : Float_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Single_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Double_Array;
+      Data   : Float_64_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Double_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : Int_Array;
+      Data   : Integer_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Int_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
-      Data   : UInt_Array;
+      Data   : Unsigned_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = UInt_Type and Offset + Data'Length <= Object.Length;
 
@@ -203,31 +203,31 @@ package Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Half_Array;
+      Data   : in out Float_16_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Half_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Single_Array;
+      Data   : in out Float_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Single_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Double_Array;
+      Data   : in out Float_64_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Double_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out Int_Array;
+      Data   : in out Integer_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Int_Type and Offset + Data'Length <= Object.Length;
 
    procedure Get_Data
      (Object : Buffer;
-      Data   : in out UInt_Array;
+      Data   : in out Unsigned_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = UInt_Type and Offset + Data'Length <= Object.Length;
 
@@ -261,21 +261,21 @@ package Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : Int_Array)
+      Data   : Integer_32_Array)
    with Pre => Object.Kind = Int_Type
      and Data'Length in 1 .. 4
      and Object.Length mod Data'Length = 0;
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : UInt_Array)
+      Data   : Unsigned_32_Array)
    with Pre => Object.Kind = UInt_Type
      and Data'Length in 1 .. 4
      and Object.Length mod Data'Length = 0;
 
    procedure Clear_Data
      (Object : Buffer;
-      Data   : Single_Array)
+      Data   : Float_32_Array)
    with Pre => Object.Kind = Single_Type
      and Data'Length in 1 .. 4
      and Object.Length mod Data'Length = 0;

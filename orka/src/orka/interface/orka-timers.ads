@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 private with GL.Objects.Queries;
-private with GL.Types;
 
 package Orka.Timers is
    pragma Preelaborate;
@@ -75,10 +74,10 @@ private
 
    type Timer is tagged record
       Query_Start, Query_Stop : GL.Objects.Queries.Query (GL.Objects.Queries.Timestamp);
-      State        : State_Type    := Idle;
-      CPU_Start    : GL.Types.Long := 0;
-      CPU_Duration : Duration      := 0.0;
-      GPU_Duration : Duration      := 0.0;
+      State        : State_Type := Idle;
+      CPU_Start    : Integer_64 := 0;
+      CPU_Duration : Duration   := 0.0;
+      GPU_Duration : Duration   := 0.0;
    end record;
 
    function State (Object : Timer) return State_Type is (Object.State);

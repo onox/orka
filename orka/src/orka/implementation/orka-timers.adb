@@ -21,11 +21,9 @@ package body Orka.Timers is
       return Timer'(others => <>);
    end Create_Timer;
 
-   use GL.Types;
-
-   function Get_Duration (Value : UInt64) return Duration is
-      Seconds     : constant UInt64 := Value / 1e9;
-      Nanoseconds : constant UInt64 := Value - Seconds * 1e9;
+   function Get_Duration (Value : Unsigned_64) return Duration is
+      Seconds     : constant Unsigned_64 := Value / 1e9;
+      Nanoseconds : constant Unsigned_64 := Value - Seconds * 1e9;
    begin
       return Duration (Seconds) + Duration (Nanoseconds) / 1e9;
    end Get_Duration;
@@ -33,8 +31,8 @@ package body Orka.Timers is
    procedure Record_GPU_Duration (Object : in out Timer) is
    begin
       declare
-         Stop_Time  : constant UInt64 := Object.Query_Stop.Result;
-         Start_Time : constant UInt64 := Object.Query_Start.Result;
+         Stop_Time  : constant Unsigned_64 := Object.Query_Stop.Result;
+         Start_Time : constant Unsigned_64 := Object.Query_Start.Result;
       begin
          if Stop_Time > Start_Time then
             Object.GPU_Duration := Get_Duration (Stop_Time - Start_Time);
@@ -62,10 +60,10 @@ package body Orka.Timers is
    begin
       if Object.State = Busy then
          declare
-            Current_Time : constant Long := Get_Current_Time;
+            Current_Time : constant Integer_64 := Get_Current_Time;
          begin
             if Current_Time > Object.CPU_Start then
-               Object.CPU_Duration := Get_Duration (UInt64 (Current_Time - Object.CPU_Start));
+               Object.CPU_Duration := Get_Duration (Unsigned_64 (Current_Time - Object.CPU_Start));
             end if;
          end;
          Object.Query_Stop.Record_Current_Time;

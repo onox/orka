@@ -104,7 +104,6 @@ package body Orka.Culling is
       GL.Barriers.Memory_Barrier ((Shader_Storage | Buffer_Update => True, others => False));
    end Memory_Barrier;
 
-   use GL.Types;
    use all type Rendering.Buffers.Indexed_Buffer_Target;
 
    procedure Cull_Frustum
@@ -120,7 +119,7 @@ package body Orka.Culling is
       Object.Culler.Program_Frustum.Use_Program;
 
       Memory_Barrier;
-      GL.Compute.Dispatch_Compute (X => UInt (Object.Work_Groups));
+      GL.Compute.Dispatch_Compute (X => Unsigned_32 (Object.Work_Groups));
    end Cull_Frustum;
 
    procedure Compact
@@ -143,7 +142,7 @@ package body Orka.Culling is
       Object.Culler.Program_Compact.Use_Program;
 
       Memory_Barrier;
-      GL.Compute.Dispatch_Compute (X => UInt (Object.Work_Groups));
+      GL.Compute.Dispatch_Compute (X => Unsigned_32 (Object.Work_Groups));
    end Compact;
 
    procedure Cull
@@ -153,8 +152,8 @@ package body Orka.Culling is
       Compacted_Transforms, Compacted_Commands : out Rendering.Buffers.Buffer;
       Instances : Natural) is
    begin
-      Object.Culler.Uniform_CF_Instances.Set_UInt (UInt (Instances));
-      Object.Culler.Uniform_CC_Instances.Set_UInt (UInt (Instances));
+      Object.Culler.Uniform_CF_Instances.Set_UInt (Unsigned_32 (Instances));
+      Object.Culler.Uniform_CC_Instances.Set_UInt (Unsigned_32 (Instances));
 
       --  Perform frustum culling and fill Buffer_Visibles with a 1 or 0
       --  for each part depending on whether the part intersects the frustum

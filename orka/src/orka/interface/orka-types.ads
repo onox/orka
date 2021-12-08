@@ -57,9 +57,9 @@ package Orka.Types is
    package Singles is new Orka.Algebra (Orka.Transforms.Singles.Matrices);
    package Doubles is new Orka.Algebra (Orka.Transforms.Doubles.Matrices);
 
-   procedure Convert (Elements : GL.Types.Single_Array; Result : out GL.Types.Half_Array)
+   procedure Convert (Elements : Float_32_Array; Result : out Float_16_Array)
      with Post => Elements'Length = Result'Length;
-   procedure Convert (Elements : GL.Types.Half_Array; Result : out GL.Types.Single_Array)
+   procedure Convert (Elements : Float_16_Array; Result : out Float_32_Array)
      with Post => Elements'Length = Result'Length;
 
    -----------------------------------------------------------------------------

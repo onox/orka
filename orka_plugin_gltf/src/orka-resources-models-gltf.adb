@@ -400,28 +400,30 @@ package body Orka.Resources.Models.glTF is
       use all type Orka.glTF.Meshes.Attribute_Kind;
 
       package Index_Conversions is new Buffer_View_Conversions
-        (UInt, UInt_Array, Indirect.UInt_Array_Access);
+        (Unsigned_32, Unsigned_32_Array, Indirect.UInt_Array_Access);
 
       package Vertex_Conversions is new Buffer_View_Conversions
-        (Half, Half_Array, Indirect.Half_Array_Access);
+        (Float_16, Float_16_Array, Indirect.Half_Array_Access);
       procedure Get_Singles is new Vertex_Conversions.Get_Array
-        (Single, Single_Array, Orka.Types.Convert);
+        (Float_32, Orka.Float_32_Array, Orka.Types.Convert);
 
-      procedure Cast (Value : UShort; Result : out UInt) is
+      procedure Cast (Value : UShort; Result : out Unsigned_32) is
       begin
-         Result := UInt (Value);
+         Result := Unsigned_32 (Value);
       end Cast;
 
-      procedure Cast (Value : UInt; Result : out UInt) is
+      procedure Cast (Value : Unsigned_32; Result : out Unsigned_32) is
       begin
          Result := Value;
       end Cast;
 
       procedure Convert is new Index_Conversions.Convert_Array (UShort, UShort_Array, Cast);
-      procedure Convert is new Index_Conversions.Convert_Array (UInt, UInt_Array, Cast);
+      procedure Convert is new Index_Conversions.Convert_Array
+        (Unsigned_32, Unsigned_32_Array, Cast);
 
       procedure Get_UShorts is new Index_Conversions.Get_Array (UShort, UShort_Array, Convert);
-      procedure Get_UInts   is new Index_Conversions.Get_Array (UInt, UInt_Array, Convert);
+      procedure Get_UInts   is new Index_Conversions.Get_Array
+        (Unsigned_32, Unsigned_32_Array, Convert);
    begin
       for Mesh of Meshes loop
          declare
@@ -445,14 +447,14 @@ package body Orka.Resources.Models.glTF is
 
             View_Index : Buffer_View renames Views (Accessor_Index.View);
 
-            Positions : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+            Positions : Indirect.Half_Array_Access := new Float_16_Array (1 .. Int
               (Accessor_Position.Count * Attribute_Length (Accessor_Position.Kind)));
-            Normals   : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+            Normals   : Indirect.Half_Array_Access := new Float_16_Array (1 .. Int
               (Accessor_Normal.Count * Attribute_Length (Accessor_Normal.Kind)));
-            UVs       : Indirect.Half_Array_Access := new Half_Array (1 .. Int
+            UVs       : Indirect.Half_Array_Access := new Float_16_Array (1 .. Int
               (Accessor_UV.Count * Attribute_Length (Accessor_UV.Kind)));
 
-            Indices   : Indirect.UInt_Array_Access := new UInt_Array (1 .. Int
+            Indices   : Indirect.UInt_Array_Access := new Unsigned_32_Array (1 .. Int
               (Accessor_Index.Count));
             --  TODO Use Conversions.Target_Array?
          begin

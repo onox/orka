@@ -17,7 +17,6 @@
 with GL.Errors;
 with GL.Debug.Logs;
 with GL.Toggles;
-with GL.Types;
 
 with Orka.Loggers;
 with Orka.Logging;
@@ -36,7 +35,7 @@ package body Orka.Debug is
      (From      : Source;
       Kind      : Message_Type;
       Level     : Severity;
-      ID        : GL.Types.UInt;
+      ID        : Unsigned_32;
       Message   : String)
    is
       use all type Orka.Loggers.Source;

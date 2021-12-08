@@ -56,10 +56,10 @@ private package Orka.Features.Atmosphere.Constants is
    Irradiance_Texture_Width  : constant := 64;
    Irradiance_Texture_Height : constant := 16;
 
-   Max_Luminous_Efficacy : constant Double := 683.0;
+   Max_Luminous_Efficacy : constant Float_64 := 683.0;
    --  Conversion factor between watts and lumens
 
-   CIE_2_Deg_Color_Matching_Functions : constant GL.Types.Double_Array
+   CIE_2_Deg_Color_Matching_Functions : constant Float_64_Array
      := (360.0, 0.000129900000, 0.000003917000, 0.000606100000,
          365.0, 0.000232100000, 0.000006965000, 0.001086000000,
          370.0, 0.000414900000, 0.000012390000, 0.001946000000,
@@ -159,7 +159,7 @@ private package Orka.Features.Atmosphere.Constants is
    --  http://web.archive.org/web/20081228084047/
    --    http://www.cvrl.org/database/data/cmfs/ciexyz31.txt
 
-   XYZ_To_SRGB : constant GL.Types.Double_Array
+   XYZ_To_SRGB : constant Float_64_Array
      := (+3.2406, -1.5372, -0.4986,
          -0.9689, +1.8758, +0.0415,
          +0.0557, -0.2040, +1.0570);

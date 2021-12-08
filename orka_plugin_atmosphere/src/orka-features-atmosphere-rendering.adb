@@ -18,6 +18,7 @@ with Ada.Characters.Latin_1;
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with GL.Buffers;
+with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Transforms.Doubles.Matrices;
@@ -27,7 +28,7 @@ with Orka.Transforms.Singles.Vectors;
 
 package body Orka.Features.Atmosphere.Rendering is
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Double);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
    Altitude_Hack_Threshold : constant := 8000.0;
 
@@ -88,11 +89,11 @@ package body Orka.Features.Atmosphere.Rendering is
       Direction  : Orka.Transforms.Doubles.Vectors.Vector4)
    return Orka.Transforms.Doubles.Vectors.Vector4 is
       Altitude   : constant := 0.0;
-      Flattening : GL.Types.Double renames Parameters.Flattening;
+      Flattening : Float_64 renames Parameters.Flattening;
 
-      E2 : constant GL.Types.Double := 2.0 * Flattening - Flattening**2;
+      E2 : constant Float_64 := 2.0 * Flattening - Flattening**2;
 
-      N : constant GL.Types.Double := Parameters.Semi_Major_Axis /
+      N : constant Float_64 := Parameters.Semi_Major_Axis /
         EF.Sqrt (1.0 - E2 * Direction (Orka.Z)**2);
    begin
       return
@@ -110,6 +111,8 @@ package body Orka.Features.Atmosphere.Rendering is
       Planet : Behaviors.Behavior_Ptr;
       Star   : Behaviors.Behavior_Ptr)
    is
+      use all type GL.Types.Compare_Function;
+
       function "*" (Left : Matrices.Matrix4; Right : Matrices.Vector4) return Matrices.Vector4
         renames Matrices."*";
 
@@ -147,8 +150,8 @@ package body Orka.Features.Atmosphere.Rendering is
            (Object.Parameters, Camera_Normal_Inert);
          Expected_Surface : constant Vector4 := Camera_Normal_Inert * Object.Bottom_Radius;
 
-         Offset   : constant Vector4 := Expected_Surface - Actual_Surface;
-         Altitude : constant Double  := Length (Planet_To_Camera) - Length (Actual_Surface);
+         Offset   : constant Vector4  := Expected_Surface - Actual_Surface;
+         Altitude : constant Float_64 := Length (Planet_To_Camera) - Length (Actual_Surface);
       begin
          Object.Uniform_Ground_Hack.Set_Boolean (Altitude < Altitude_Hack_Threshold);
          Object.Uniform_Camera_Offset.Set_Vector (Convert (Offset * Object.Distance_Scale));
@@ -170,10 +173,10 @@ package body Orka.Features.Atmosphere.Rendering is
       --  Use distance to star and its radius instead of the
       --  Sun_Angular_Radius of Model_Data
       declare
-         Angular_Radius : constant GL.Types.Double :=
+         Angular_Radius : constant Float_64 :=
            EF.Arctan (Object.Parameters.Star_Radius, Length (Camera_To_Star));
       begin
-         Object.Uniform_Star_Size.Set_Single (GL.Types.Single (EF.Cos (Angular_Radius)));
+         Object.Uniform_Star_Size.Set_Single (Float_32 (EF.Cos (Angular_Radius)));
       end;
 
       Object.Uniform_View.Set_Matrix (Camera.View_Matrix);

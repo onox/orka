@@ -20,6 +20,8 @@ with Ada.Unchecked_Deallocation;
 with GL.API;
 with GL.Types;
 
+with Orka;
+
 package body GL.Fences is
 
    overriding procedure Initialize (Object : in out Fence) is
@@ -99,7 +101,7 @@ package body GL.Fences is
       end if;
 
       declare
-         Value : constant Int_Array := API.Get_Sync.Ref
+         Value : constant Orka.Integer_32_Array := API.Get_Sync.Ref
            (Object.Reference.Sync_ID, Sync_Status, 1);
       begin
          return Convert (Value (1)) = Signaled;

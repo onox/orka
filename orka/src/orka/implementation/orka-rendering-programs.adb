@@ -23,7 +23,6 @@ package body Orka.Rendering.Programs is
 
    function Create_Program (Modules   : Programs.Modules.Module_Array;
                             Separable : Boolean := False) return Program is
-      use type GL.Types.Int;
    begin
       return Result : Program do
          Result.GL_Program.Set_Separable (Separable);

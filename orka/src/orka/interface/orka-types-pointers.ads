@@ -20,19 +20,19 @@ package Orka.Types.Pointers is
    pragma Preelaborate;
 
    package Single_Vector4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Singles.Vector4, Singles.Vector4_Array,
+     (Size, Singles.Vector4, Singles.Vector4_Array,
       Singles.Vector4'(others => 0.0));
 
    package Single_Matrix4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Singles.Matrix4, Singles.Matrix4_Array,
+     (Size, Singles.Matrix4, Singles.Matrix4_Array,
       Singles.Matrix4'(others => (others => 0.0)));
 
    package Double_Vector4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Doubles.Vector4, Doubles.Vector4_Array,
+     (Size, Doubles.Vector4, Doubles.Vector4_Array,
       Doubles.Vector4'(others => 0.0));
 
    package Double_Matrix4_Pointers is new Interfaces.C.Pointers
-     (GL.Types.Size, Doubles.Matrix4, Doubles.Matrix4_Array,
+     (Size, Doubles.Matrix4, Doubles.Matrix4_Array,
       Doubles.Matrix4'(others => (others => 0.0)));
 
 end Orka.Types.Pointers;

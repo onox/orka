@@ -127,8 +127,6 @@ private with GL.Objects.Samplers;
 
 with Ada.Containers.Vectors;
 
-with GL.Types;
-
 with Orka.Resources.Locations;
 with Orka.Rendering.Programs.Modules;
 
@@ -137,10 +135,8 @@ package Orka.Features.Atmosphere is
 
    type Luminance_Type is (None, Approximate, Precomputed);
 
-   use GL.Types;
-
    type Density_Profile_Layer is record
-      Width, Exp_Term, Exp_Scale, Linear_Term, Constant_Term : Double := 0.0;
+      Width, Exp_Term, Exp_Scale, Linear_Term, Constant_Term : Float_64 := 0.0;
    end record;
    --  An atmosphere layer of Width (in m), and whose density is defined as
    --  Exp_Term * exp(Exp_Scale * h) + Linear_Term * h + Constant_Term,
@@ -149,7 +145,7 @@ package Orka.Features.Atmosphere is
 
    use type Ada.Containers.Count_Type;
 
-   package Double_Vectors  is new Ada.Containers.Vectors (Natural, Double);
+   package Double_Vectors  is new Ada.Containers.Vectors (Natural, Float_64);
    package Density_Vectors is new Ada.Containers.Vectors (Natural, Density_Profile_Layer);
 
    type Model_Data (Samples : Ada.Containers.Count_Type) is record
@@ -168,14 +164,14 @@ package Orka.Features.Atmosphere is
       --  Solar irradiance at the top of the atmosphere, in W/m^2/nm. This
       --  vector must have the same size as the wavelengths parameter.
 
-      Sun_Angular_Radius : Double;
+      Sun_Angular_Radius : Float_64;
       --  Sun's angular radius in radians. Warning: the implementation uses
       --  approximations that are valid only if this value is smaller than 0.1.
 
-      Bottom_Radius : Double;
+      Bottom_Radius : Float_64;
       --  Distance between the planet center and the bottom of the atmosphere, in m
 
-      Top_Radius : Double;
+      Top_Radius : Float_64;
       --  Distance between the planet center and the top of the atmosphere, in m
 
       Rayleigh_Density : Density_Vectors.Vector;
@@ -213,7 +209,7 @@ package Orka.Features.Atmosphere is
       --  to 'mie_extinction' times 'mie_density' at this altitude. This vector
       --  must have the same size as the wavelengths parameter.
 
-      Mie_Phase_Function_G : Double;
+      Mie_Phase_Function_G : Float_64;
       --  The asymetry parameter for the Cornette-Shanks phase function for the
       --  aerosols.
 
@@ -235,18 +231,18 @@ package Orka.Features.Atmosphere is
       --  The average albedo of the ground, as a function of wavelength. This
       --  vector must have the same size as the wavelengths parameter.
 
-      Max_Sun_Zenith_Angle : Double;
+      Max_Sun_Zenith_Angle : Float_64;
       --  The maximum Sun zenith angle for which atmospheric scattering must be
       --  precomputed, in radians (for maximum precision, use the smallest Sun
       --  zenith angle yielding negligible sky light radiance values. For instance,
       --  for the Earth case, 102 degrees is a good choice for most cases (120
       --  degrees is necessary for very high exposure values).
 
-      Length_Unit_In_Meters : Double;
+      Length_Unit_In_Meters : Float_64;
       --  The length unit used in your shaders and meshes. This is the length unit
       --  which must be used when calling the atmosphere model shader functions.
 
-      Num_Precomputed_Wavelengths : GL.Types.UInt;
+      Num_Precomputed_Wavelengths : Unsigned_32;
       --  The number of wavelengths for which atmospheric scattering must be
       --  precomputed (the temporary GPU memory used during precomputations, and
       --  the GPU memory used by the precomputed results, is independent of this
@@ -298,7 +294,7 @@ package Orka.Features.Atmosphere is
 
    function Get_Shader (Object : Model) return Rendering.Programs.Modules.Module;
 
-   procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Double);
+   procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Float_64);
    --  Utility method to convert a function of the wavelength to linear sRGB
    --
    --  Wavelengths and solar irradiance must have the same size. The integral of
@@ -331,13 +327,13 @@ private
 
       Location : Resources.Locations.Location_Access;
 
-      Sky_K_R, Sky_K_G, Sky_K_B : GL.Types.Double;
-      Sun_K_R, Sun_K_G, Sun_K_B : GL.Types.Double;
+      Sky_K_R, Sky_K_G, Sky_K_B : Float_64;
+      Sun_K_R, Sun_K_G, Sun_K_B : Float_64;
    end record;
 
    function Create_Sampler return GL.Objects.Samplers.Sampler;
 
-   K_Lambda_Min : constant Double := 360.0;
-   K_Lambda_Max : constant Double := 830.0;
+   K_Lambda_Min : constant Float_64 := 360.0;
+   K_Lambda_Max : constant Float_64 := 830.0;
 
 end Orka.Features.Atmosphere;

@@ -143,8 +143,6 @@ begin
          use Orka.Rendering.Framebuffers;
          use Orka.Resources;
 
-         use GL.Types;
-
          ----------------------------------------------------------------------
 
          FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
@@ -325,7 +323,7 @@ begin
                         Uni_Best_Fit : constant Uniforms.Uniform := P_1.Uniform ("useBestFit");
                      begin
                         Uni_Screen.Set_Vector (Orka.Types.Singles.Vector4'
-                          (Single (Window.Width), Single (Window.Height), 0.0, 0.0)
+                          (Orka.Float_32 (Window.Width), Orka.Float_32 (Window.Height), 0.0, 0.0)
                         );
                         Uni_Best_Fit.Set_Boolean (Render_Zoom = Best_Fit);
                      end;
@@ -353,8 +351,8 @@ begin
                GL.Viewports.Set_Viewports
                  ((0 => (X      => 0.0,
                          Y      => 0.0,
-                         Width  => Single (Window.Width),
-                         Height => Single (Window.Height))
+                         Width  => Orka.Float_32 (Window.Width),
+                         Height => Orka.Float_32 (Window.Height))
                  ));
 
                Draw (T_1.Constant_Reference.Kind);

@@ -198,7 +198,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : UInt_Array;
+      Data   : Unsigned_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.UInt.Set_Mapped_Data
@@ -225,7 +225,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Int_Array;
+      Data   : Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Set_Mapped_Data
@@ -234,7 +234,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Half_Array;
+      Data   : Float_16_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Half.Set_Mapped_Data
@@ -243,7 +243,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Single_Array;
+      Data   : Float_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Single.Set_Mapped_Data
@@ -252,7 +252,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Double_Array;
+      Data   : Float_64_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Double.Set_Mapped_Data
@@ -411,7 +411,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out UInt_Array;
+      Data   : out Unsigned_32_Array;
       Offset : Natural := 0) is
    begin
       Data := Pointers.UInt.Get_Mapped_Data
@@ -438,7 +438,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Int_Array;
+      Data   : out Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Data := Pointers.Int.Get_Mapped_Data
@@ -447,7 +447,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Half_Array;
+      Data   : out Float_16_Array;
       Offset : Natural := 0) is
    begin
       Data := Pointers.Half.Get_Mapped_Data
@@ -456,7 +456,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Single_Array;
+      Data   : out Float_32_Array;
       Offset : Natural := 0) is
    begin
       Data := Pointers.Single.Get_Mapped_Data
@@ -465,7 +465,7 @@ package body Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Double_Array;
+      Data   : out Float_64_Array;
       Offset : Natural := 0) is
    begin
       Data := Pointers.Double.Get_Mapped_Data

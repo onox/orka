@@ -41,6 +41,8 @@ with GL.Types.Debug;
 with GL.Types.Pointers;
 with GL.Viewports;
 
+with Orka;
+
 with Interfaces.C.Strings;
 
 with System;
@@ -722,7 +724,7 @@ private package GL.API is
 
    package Get_Program_Resource is new Loader.Array_Getter_With_8_Params
      ("glGetProgramResourceiv", UInt, Enums.Program_Interface,
-      UInt, Size, Enums.Program_Resource_Array, Int, Int_Array);
+      UInt, Size, Enums.Program_Resource_Array, Int, Orka.Integer_32_Array);
 
    -----------------------------------------------------------------------------
    --                                Pipelines                                --
@@ -860,15 +862,15 @@ private package GL.API is
 
    package Debug_Message_Control is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
-      Debug.Severity, Size, UInt_Array, Low_Level.Bool);
+      Debug.Severity, Size, Orka.Unsigned_32_Array, Low_Level.Bool);
 
    package Debug_Message_Control_Any_Level is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Debug.Source, Debug.Message_Type,
-      Low_Level.Enum, Size, UInt_Array, Low_Level.Bool);
+      Low_Level.Enum, Size, Orka.Unsigned_32_Array, Low_Level.Bool);
 
    package Debug_Message_Control_Level is new Loader.Procedure_With_6_Params
      ("glDebugMessageControl", Low_Level.Enum, Low_Level.Enum,
-      Debug.Severity, Size, UInt_Array, Low_Level.Bool);
+      Debug.Severity, Size, Orka.Unsigned_32_Array, Low_Level.Bool);
 
    package Debug_Message_Insert is new Loader.Procedure_With_6_Params
      ("glDebugMessageInsert", Debug.Source, Debug.Message_Type,
@@ -918,7 +920,7 @@ private package GL.API is
      ("glDeleteSync", Low_Level.Sync);
 
    package Get_Sync is new Loader.Array_Getter_With_5_Params
-     ("glGetSynciv", Low_Level.Sync, Low_Level.Enum, Int, Int_Array);
+     ("glGetSynciv", Low_Level.Sync, Low_Level.Enum, Int, Orka.Integer_32_Array);
 
    package Client_Wait_Sync is new Loader.Function_With_3_Params
      ("glClientWaitSync", Low_Level.Sync, Low_Level.Bitfield, UInt64,

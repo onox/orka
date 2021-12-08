@@ -19,6 +19,8 @@ with Ada.Finalization;
 with GL.Objects;
 with GL.Types;
 
+with Orka;
+
 private with GL.Low_Level;
 
 package GL.Debug is
@@ -65,7 +67,7 @@ package GL.Debug is
    procedure Set (Level : Severity; Enabled : Boolean);
    --  Enable messages that have the given severity
 
-   procedure Set (From : Source; Kind : Message_Type; Identifiers : UInt_Array;
+   procedure Set (From : Source; Kind : Message_Type; Identifiers : Orka.Unsigned_32_Array;
                   Enabled : Boolean)
      with Pre => Identifiers'Length > 0;
    --  Enable or disable messages that have one of the given message IDs

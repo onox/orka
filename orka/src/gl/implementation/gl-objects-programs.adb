@@ -23,6 +23,8 @@ with GL.Enums;
 with GL.Low_Level;
 with GL.Objects.Programs.Uniforms;
 
+with Orka;
+
 package body GL.Objects.Programs is
 
    procedure Attach (Subject : Program; Shader : Shaders.Shader) is
@@ -160,7 +162,7 @@ package body GL.Objects.Programs is
             end if;
 
             declare
-               Values : constant Int_Array := API.Get_Program_Resource.Ref
+               Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
                  (Object.Reference.GL_Id, Enums.Uniform, Index,
                    1, (1 => Enums.Atomic_Counter_Buffer_Index), 1);
             begin
@@ -173,7 +175,7 @@ package body GL.Objects.Programs is
       end if;
 
       declare
-         Values : constant Int_Array := API.Get_Program_Resource.Ref
+         Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id, Iface, Index,
             1, (1 => Enums.Buffer_Binding), 1);
       begin
@@ -190,7 +192,7 @@ package body GL.Objects.Programs is
          raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
       end if;
       declare
-         Values : constant Int_Array := API.Get_Program_Resource.Ref
+         Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
            (Object.Reference.GL_Id, Enums.Uniform, Index,
             1, (1 => Enums.Resource_Type), 1);
 

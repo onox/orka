@@ -16,8 +16,6 @@
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
-with GL.Types;
-
 with Orka.Transforms.Singles.Matrices;
 
 package body Orka.Features.Terrain.Spheres is
@@ -27,14 +25,14 @@ package body Orka.Features.Terrain.Spheres is
       Parameters : Orka.Features.Terrain.Spheroid_Parameters)
      return Orka.Transforms.Singles.Vectors.Vector4
    is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Single);
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
 
       use Orka.Transforms.Singles.Vectors;
 
-      Axis   : GL.Types.Single renames Parameters (1);
-      E2     : GL.Types.Single renames Parameters (2);
-      Y_Mask : GL.Types.Single renames Parameters (3);
-      Z_Mask : GL.Types.Single renames Parameters (4);
+      Axis   : Float_32 renames Parameters (1);
+      E2     : Float_32 renames Parameters (2);
+      Y_Mask : Float_32 renames Parameters (3);
+      Z_Mask : Float_32 renames Parameters (4);
 
       Unit : Vector4 := Vertex * (2.0, 2.0, 1.0, 1.0) - (1.0, 1.0, 0.0, 0.0);
       --  Centers the plane
@@ -53,10 +51,10 @@ package body Orka.Features.Terrain.Spheres is
       Unit (W) := 1.0;
 
       declare
-         Height : constant GL.Types.Single :=
+         Height : constant Float_32 :=
            Length ((Unit (Y), Unit (Z), 0.0, 0.0) * (Y_Mask, Z_Mask, 0.0, 0.0));
 
-         N : constant GL.Types.Single :=
+         N : constant Float_32 :=
            Axis / EF.Sqrt (1.0 - E2 * Height * Height);
 
          Scale : Vector4 := ((1.0, 1.0, 1.0, 1.0) - E2 * (0.0, Y_Mask, Z_Mask, 0.0)) * N;
@@ -69,24 +67,23 @@ package body Orka.Features.Terrain.Spheres is
    function Get_Sphere_Visibilities
      (Parameters : Spheroid_Parameters;
       Front, Back, World, View : Orka.Types.Singles.Matrix4)
-   return GL.Types.Single_Array is
+   return Float_32_Array is
       use Orka.Transforms.Singles.Matrices;
 
       World_View : constant Orka.Types.Singles.Matrix4 := View * World;
 
-      Vertices : constant array (GL.Types.Size range 0 .. 3) of Orka.Types.Singles.Vector4 :=
+      Vertices : constant array (Size range 0 .. 3) of Orka.Types.Singles.Vector4 :=
         (Plane_To_Sphere ((0.0, 0.0, 1.0, 1.0), Parameters),
          Plane_To_Sphere ((1.0, 0.0, 1.0, 1.0), Parameters),
          Plane_To_Sphere ((0.0, 1.0, 1.0, 1.0), Parameters),
          Plane_To_Sphere ((1.0, 1.0, 1.0, 1.0), Parameters));
 
-      Faces : constant array (GL.Types.Size range 0 .. 1) of Orka.Types.Singles.Matrix4 :=
+      Faces : constant array (Size range 0 .. 1) of Orka.Types.Singles.Matrix4 :=
         (Front, Back);
 
-      Result : GL.Types.Single_Array (0 .. 7);
+      Result : Float_32_Array (0 .. 7);
 
       use Orka.Transforms.Singles.Vectors;
-      use all type GL.Types.Int;
    begin
       for Index in Result'Range loop
          declare
@@ -106,7 +103,7 @@ package body Orka.Features.Terrain.Spheres is
    -----------------------------------------------------------------------------
 
    subtype Tile_Index is Positive range 1 .. 6;
-   subtype Vertex_Index is GL.Types.Size range 0 .. 7;
+   subtype Vertex_Index is Size range 0 .. 7;
    type Edge_Index is range 1 .. 12;
 
    type Edge_Index_Array   is array (Positive range 1 .. 4) of Edge_Index;
@@ -178,7 +175,7 @@ package body Orka.Features.Terrain.Spheres is
    Threshold_B : constant := 0.25;
 
    function Get_Visible_Tiles
-     (Visibilities : GL.Types.Single_Array) return Visible_Tile_Array
+     (Visibilities : Float_32_Array) return Visible_Tile_Array
    is
       Visible_Tile_Count : array (Tile_Index) of Natural := (others => 0);
 
@@ -215,14 +212,14 @@ package body Orka.Features.Terrain.Spheres is
          declare
             Max_Count : Natural := 0;
 
-            function Average_Visibility (Vertices : Vertex_Index_Array) return GL.Types.Single is
-               Sum : GL.Types.Single := 0.0;
+            function Average_Visibility (Vertices : Vertex_Index_Array) return Float_32 is
+               Sum : Float_32 := 0.0;
             begin
                for Vertex of Vertices loop
                   Sum := Sum + Visibilities (Vertex);
                end loop;
 
-               return Sum / GL.Types.Single (Vertices'Length);
+               return Sum / Float_32 (Vertices'Length);
             end Average_Visibility;
          begin
             for Tile in Visible_Tile_Count'Range loop

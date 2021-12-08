@@ -59,7 +59,7 @@ package Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : UInt_Array;
+      Data   : Unsigned_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
@@ -77,25 +77,25 @@ package Orka.Rendering.Buffers.Mapped is
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Int_Array;
+      Data   : Integer_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Half_Array;
+      Data   : Float_16_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Single_Array;
+      Data   : Float_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
    procedure Write_Data
      (Object : Mapped_Buffer;
-      Data   : Double_Array;
+      Data   : Float_64_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Write and Offset + Data'Length <= Object.Length;
 
@@ -203,7 +203,7 @@ package Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out UInt_Array;
+      Data   : out Unsigned_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
 
@@ -221,25 +221,25 @@ package Orka.Rendering.Buffers.Mapped is
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Int_Array;
+      Data   : out Integer_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Half_Array;
+      Data   : out Float_16_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Single_Array;
+      Data   : out Float_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
 
    procedure Read_Data
      (Object : Mapped_Buffer;
-      Data   : out Double_Array;
+      Data   : out Float_64_Array;
       Offset : Natural := 0)
    with Pre => Object.Mode = Read and Offset + Data'Length <= Object.Length;
 

@@ -174,11 +174,9 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Int_Array)
+      Data   : Integer_32_Array)
    is
-      use type GL.Types.Int;
-
-      Offset : constant GL.Types.Size := Data'First;
+      Offset : constant Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
@@ -196,11 +194,9 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.UInt_Array)
+      Data   : Unsigned_32_Array)
    is
-      use type GL.Types.Int;
-
-      Offset : constant GL.Types.Size := Data'First;
+      Offset : constant Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
@@ -218,11 +214,9 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Single_Array)
+      Data   : Float_32_Array)
    is
-      use type GL.Types.Int;
-
-      Offset : constant GL.Types.Size := Data'First;
+      Offset : constant Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
@@ -240,11 +234,9 @@ package body Orka.Rendering.Programs.Uniforms is
 
    procedure Set_Vector
      (Object : Uniform;
-      Data   : GL.Types.Double_Array)
+      Data   : Float_64_Array)
    is
-      use type GL.Types.Int;
-
-      Offset : constant GL.Types.Size := Data'First;
+      Offset : constant Size := Data'First;
    begin
       case Data'Length is
          when 2 =>
@@ -262,29 +254,29 @@ package body Orka.Rendering.Programs.Uniforms is
 
    -----------------------------------------------------------------------------
 
-   procedure Set_Single (Object : Uniform; Value : GL.Types.Single) is
+   procedure Set_Single (Object : Uniform; Value : Float_32) is
    begin
       Object.GL_Uniform.Set_Single (Value);
    end Set_Single;
 
-   procedure Set_Double (Object : Uniform; Value : GL.Types.Double) is
+   procedure Set_Double (Object : Uniform; Value : Float_64) is
    begin
       Object.GL_Uniform.Set_Double (Value);
    end Set_Double;
 
-   procedure Set_Int (Object : Uniform; Value : GL.Types.Int) is
+   procedure Set_Int (Object : Uniform; Value : Integer_32) is
    begin
       Object.GL_Uniform.Set_Int (Value);
    end Set_Int;
 
-   procedure Set_UInt (Object : Uniform; Value : GL.Types.UInt) is
+   procedure Set_UInt (Object : Uniform; Value : Unsigned_32) is
    begin
       Object.GL_Uniform.Set_UInt (Value);
    end Set_UInt;
 
    procedure Set_Integer (Object : Uniform; Value : Integer) is
    begin
-      Object.GL_Uniform.Set_Int (GL.Types.Int (Value));
+      Object.GL_Uniform.Set_Int (Integer_32 (Value));
    end Set_Integer;
 
    procedure Set_Boolean (Object : Uniform; Value : Boolean) is

@@ -25,7 +25,6 @@ with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with GL.Toggles;
-with GL.Types;
 
 with Orka.Behaviors;
 with Orka.Contexts.AWT;
@@ -58,13 +57,13 @@ procedure Orka_GLTF is
    Height  : constant := 720;
    Samples : constant := 2;
 
-   use type GL.Types.Single;
+   use type Orka.Float_32;
    Light_Position : constant Orka.Types.Singles.Vector4 := (0.0, 0.0, 0.0, 1.0);
 
    ----------------------------------------------------------------------
 
    procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
-      Pixels : aliased constant GL.Types.Single_Array
+      Pixels : aliased constant Orka.Float_32_Array
             --  White
         := (0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,
             1.0, 1.0, 1.0,   0.5, 0.5, 0.5,   1.0, 1.0, 1.0,   0.5, 0.5, 0.5,

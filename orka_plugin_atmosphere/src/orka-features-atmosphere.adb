@@ -46,6 +46,7 @@ with GL.Blending;
 with GL.Buffers;
 with GL.Pixels;
 with GL.Toggles;
+with GL.Types;
 
 with Orka.Features.Atmosphere.Constants;
 with Orka.Rendering.Drawing;
@@ -59,9 +60,9 @@ package body Orka.Features.Atmosphere is
    package Framebuffers renames Orka.Rendering.Framebuffers;
    package SU renames Ada.Strings.Unbounded;
 
-   K_Lambda_R : constant Double := 680.0;
-   K_Lambda_G : constant Double := 550.0;
-   K_Lambda_B : constant Double := 440.0;
+   K_Lambda_R : constant Float_64 := 680.0;
+   K_Lambda_G : constant Float_64 := 550.0;
+   K_Lambda_B : constant Float_64 := 440.0;
 
    function Convert (Bytes : Resources.Byte_Array) return String renames Resources.Convert;
 
@@ -115,7 +116,7 @@ package body Orka.Features.Atmosphere is
          end if;
       end loop;
 
-      Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
 
       for Index in Blend'Range loop
          GL.Toggles.Disable (GL.Toggles.Blend, Index);
@@ -140,22 +141,22 @@ package body Orka.Features.Atmosphere is
    --  [1] https://arxiv.org/pdf/1612.04336.pdf
 
    function CIE_Color_Matching_Function_Table_Value
-     (Wavelength : Double;
-      Column     : Size) return Double is
+     (Wavelength : Float_64;
+      Column     : Size) return Float_64 is
    begin
       if Wavelength <= K_Lambda_Min or Wavelength >= K_Lambda_Max then
          return 0.0;
       end if;
 
       declare
-         U   : Double := (Wavelength - K_Lambda_Min) / 5.0;
-         Row : constant Size := Int (Double'Floor (U));
+         U   : Float_64 := (Wavelength - K_Lambda_Min) / 5.0;
+         Row : constant Size := Integer_32 (Float_64'Floor (U));
          pragma Assert (Row + 1 < 95);
 
          pragma Assert (CIE_2_Deg_Color_Matching_Functions (4 * Row) <= Wavelength);
          pragma Assert (CIE_2_Deg_Color_Matching_Functions (4 * (Row + 1)) >= Wavelength);
       begin
-         U := U - Double (Row);
+         U := U - Float_64 (Row);
          return CIE_2_Deg_Color_Matching_Functions (4 * Row + Column) * (1.0 - U) +
            CIE_2_Deg_Color_Matching_Functions (4 * (Row + 1) + Column) * U;
       end;
@@ -163,7 +164,7 @@ package body Orka.Features.Atmosphere is
 
    function Interpolate
      (Wavelengths, Functions : Double_Vectors.Vector;
-      Wavelength : Double) return Double
+      Wavelength : Float_64) return Float_64
    is
       pragma Assert (Wavelengths.Length = Functions.Length);
    begin
@@ -174,7 +175,7 @@ package body Orka.Features.Atmosphere is
       for Index in Wavelengths.First_Index .. Wavelengths.Last_Index - 1 loop
          if Wavelength < Wavelengths (Index + 1) then
             declare
-               U : constant Double := (Wavelength - Wavelengths (Index))
+               U : constant Float_64 := (Wavelength - Wavelengths (Index))
                  / (Wavelengths (Index + 1) - Wavelengths (Index));
             begin
                return Functions (Index) * (1.0 - U) + Functions (Index + 1) * U;
@@ -193,18 +194,18 @@ package body Orka.Features.Atmosphere is
 
    procedure Compute_Spectral_Radiance_To_Luminance_Factors
      (Wavelengths, Solar_Irradiance : Double_Vectors.Vector;
-      Lambda_Power : Double;
-      K_R, K_G, K_B : out Double)  --  The returned constants are in lumen.nm / watt
+      Lambda_Power : Float_64;
+      K_R, K_G, K_B : out Float_64)  --  The returned constants are in lumen.nm / watt
    is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (Double);
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
       use EF;
 
-      Solar_R : constant Double := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_R);
-      Solar_G : constant Double := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_G);
-      Solar_B : constant Double := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_B);
+      Solar_R : constant Float_64 := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_R);
+      Solar_G : constant Float_64 := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_G);
+      Solar_B : constant Float_64 := Interpolate (Wavelengths, Solar_Irradiance, K_Lambda_B);
 
-      D_Lambda : constant Double := 1.0;
-      Lambda   : Double := K_Lambda_Min;
+      D_Lambda : constant Float_64 := 1.0;
+      Lambda   : Float_64 := K_Lambda_Min;
    begin
       K_R := 0.0;
       K_G := 0.0;
@@ -212,18 +213,18 @@ package body Orka.Features.Atmosphere is
 
       while Lambda < K_Lambda_Max loop
          declare
-            X_Bar : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 1);
-            Y_Bar : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 2);
-            Z_Bar : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 3);
+            X_Bar : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 1);
+            Y_Bar : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 2);
+            Z_Bar : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 3);
 
-            R_Bar : constant Double
+            R_Bar : constant Float_64
               := XYZ_To_SRGB (0) * X_Bar + XYZ_To_SRGB (1) * Y_Bar + XYZ_To_SRGB (2) * Z_Bar;
-            G_Bar : constant Double
+            G_Bar : constant Float_64
               := XYZ_To_SRGB (3) * X_Bar + XYZ_To_SRGB (4) * Y_Bar + XYZ_To_SRGB (5) * Z_Bar;
-            B_Bar : constant Double
+            B_Bar : constant Float_64
               := XYZ_To_SRGB (6) * X_Bar + XYZ_To_SRGB (7) * Y_Bar + XYZ_To_SRGB (8) * Z_Bar;
 
-            Irradiance : constant Double := Interpolate (Wavelengths, Solar_Irradiance, Lambda);
+            Irradiance : constant Float_64 := Interpolate (Wavelengths, Solar_Irradiance, Lambda);
          begin
             K_R := K_R + R_Bar * Irradiance / Solar_R * (Lambda / K_Lambda_R) ** Lambda_Power;
             K_G := K_G + G_Bar * Irradiance / Solar_G * (Lambda / K_Lambda_G) ** Lambda_Power;
@@ -242,27 +243,27 @@ package body Orka.Features.Atmosphere is
    --  functions, specialized for the given atmosphere parameters and for the 3
    --  wavelengths in Lambdas
 
-   function Shader_Header (Result : Model; Lambdas : Double_Array) return String is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (Double);
+   function Shader_Header (Result : Model; Lambdas : Float_64_Array) return String is
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
       use Ada.Characters.Latin_1;
 
       Data : not null access constant Model_Data renames Result.Data;
 
       function To_String
         (V       : Double_Vectors.Vector;
-         Scale   : Double) return String
+         Scale   : Float_64) return String
       is
-         R : constant Double := Interpolate (Data.Wavelengths, V, Lambdas (0)) * Scale;
-         G : constant Double := Interpolate (Data.Wavelengths, V, Lambdas (1)) * Scale;
-         B : constant Double := Interpolate (Data.Wavelengths, V, Lambdas (2)) * Scale;
+         R : constant Float_64 := Interpolate (Data.Wavelengths, V, Lambdas (0)) * Scale;
+         G : constant Float_64 := Interpolate (Data.Wavelengths, V, Lambdas (1)) * Scale;
+         B : constant Float_64 := Interpolate (Data.Wavelengths, V, Lambdas (2)) * Scale;
       begin
          return "vec3(" & R'Image & "," & G'Image & "," & B'Image & ")";
       end To_String;
 
       function Density_Layer (Layer : Density_Profile_Layer) return String is
-         Width : constant Double := Layer.Width / Data.Length_Unit_In_Meters;
-         Scale : constant Double := Layer.Exp_Scale * Data.Length_Unit_In_Meters;
-         Linear_Term : constant Double := Layer.Linear_Term * Data.Length_Unit_In_Meters;
+         Width : constant Float_64 := Layer.Width / Data.Length_Unit_In_Meters;
+         Scale : constant Float_64 := Layer.Exp_Scale * Data.Length_Unit_In_Meters;
+         Linear_Term : constant Float_64 := Layer.Linear_Term * Data.Length_Unit_In_Meters;
       begin
          return "DensityProfileLayer(" &
            Width'Image & "," & Layer.Exp_Term'Image & "," &
@@ -295,8 +296,8 @@ package body Orka.Features.Atmosphere is
       Functions_GLSL   : constant String
         := Convert (Resources.Byte_Array'(Result.Data_Functions.Get));
 
-      Bottom_Radius : constant Double := Data.Bottom_Radius / Data.Length_Unit_In_Meters;
-      Top_Radius    : constant Double := Data.Top_Radius / Data.Length_Unit_In_Meters;
+      Bottom_Radius : constant Float_64 := Data.Bottom_Radius / Data.Length_Unit_In_Meters;
+      Top_Radius    : constant Float_64 := Data.Top_Radius / Data.Length_Unit_In_Meters;
    begin
       return
         "#version 420" & LF &
@@ -371,8 +372,8 @@ package body Orka.Features.Atmosphere is
       --  mode, we set SKY_RADIANCE_TO_LUMINANCE to MAX_LUMINOUS_EFFICACY.
       Precompute_Illuminance : constant Boolean := Data.Num_Precomputed_Wavelengths > 3;
 
-      Power_Sky : constant Double := -3.0;
-      Power_Sun : constant Double :=  0.0;
+      Power_Sky : constant Float_64 := -3.0;
+      Power_Sun : constant Float_64 :=  0.0;
    begin
       return Result : Model (Data) do
          if Precompute_Illuminance then
@@ -400,15 +401,15 @@ package body Orka.Features.Atmosphere is
    --  The utility method is implemented with a simple numerical integration
    --  of the given function, times the CIE color matching functions (with an
    --  integration step of 1 nm), followed by a matrix multiplication
-   procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Double) is
-      D_Lambda : constant Double := 1.0;
+   procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Float_64) is
+      D_Lambda : constant Float_64 := 1.0;
 
-      Lambda  : Double := K_Lambda_Min;
-      X, Y, Z : Double := 0.0;
+      Lambda  : Float_64 := K_Lambda_Min;
+      X, Y, Z : Float_64 := 0.0;
    begin
       while Lambda < K_Lambda_Max loop
          declare
-            Value : constant Double :=
+            Value : constant Float_64 :=
               Interpolate (Data.Wavelengths, Data.Solar_Irradiance, Lambda);
          begin
             X := X + CIE_Color_Matching_Function_Table_Value (Lambda, 1) * Value;
@@ -437,12 +438,12 @@ package body Orka.Features.Atmosphere is
       Delta_Irradiance_Texture, Delta_Rayleigh_Scattering_Texture,
       Delta_Mie_Scattering_Texture, Delta_Scattering_Density_Texture,
       Delta_Multiple_Scattering_Texture : Textures.Texture;
-      Lambdas : Double_Array;
-      Luminance_From_Radiance : Single_Array;
+      Lambdas : Float_64_Array;
+      Luminance_From_Radiance : Float_32_Array;
       Blend : Boolean;
       Num_Scattering_Orders : Natural)
    is
-      LR : Single_Array renames Luminance_From_Radiance;
+      LR : Float_32_Array renames Luminance_From_Radiance;
 
       Luminance_From_Radiance_Mat3 : constant Orka.Types.Singles.Matrix4 :=
         ((LR (0), LR (1), LR (2), 0.0),
@@ -601,7 +602,7 @@ package body Orka.Features.Atmosphere is
       Program_Single_Scattering.Use_Program;
       Program_Single_Scattering.Uniform ("luminance_from_radiance").Set_Matrix
         (Luminance_From_Radiance_Mat3);
-      for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
+      for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
          Program_Single_Scattering.Uniform ("layer").Set_Int (Layer);
          Draw_Quad ((False, False, Blend, Blend));
       end loop;
@@ -609,7 +610,7 @@ package body Orka.Features.Atmosphere is
       -------------------------------------------------------------------------
 
       --  Compute the 2nd, 3rd and 4th order of scattering, in sequence
-      for Scattering_Order in 2 .. Int (Num_Scattering_Orders) loop
+      for Scattering_Order in 2 .. Integer_32 (Num_Scattering_Orders) loop
          --  Compute the scattering density, and store it in
          --  Delta_Scattering_Density_Texture
          FBO_Scattering.Use_Framebuffer;
@@ -622,7 +623,7 @@ package body Orka.Features.Atmosphere is
 
          Program_Scattering_Density.Use_Program;
          Program_Scattering_Density.Uniform ("scattering_order").Set_Int (Scattering_Order);
-         for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
+         for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
             Program_Scattering_Density.Uniform ("layer").Set_Int (Layer);
             Draw_Quad ((1 .. 0 => <>));
          end loop;
@@ -655,7 +656,7 @@ package body Orka.Features.Atmosphere is
          Program_Multiple_Scattering.Use_Program;
          Program_Multiple_Scattering.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
-         for Layer in 0 .. Int (Constants.Scattering_Texture_Depth - 1) loop
+         for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
             Program_Multiple_Scattering.Uniform ("layer").Set_Int (Layer);
             Draw_Quad ((False, True));
          end loop;
@@ -771,8 +772,8 @@ package body Orka.Features.Atmosphere is
 
       if Object.Data.Num_Precomputed_Wavelengths <= 3 then
          declare
-            Lambdas : constant Double_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
-            Luminance_From_Radiance : constant Single_Array
+            Lambdas : constant Float_64_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
+            Luminance_From_Radiance : constant Float_32_Array
               := (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
          begin
             Object.Precompute
@@ -785,34 +786,34 @@ package body Orka.Features.Atmosphere is
          end;
       else
          declare
-            Num_Iterations : constant UInt := (Object.Data.Num_Precomputed_Wavelengths + 2) / 3;
-            D_Lambda : constant Double
-              := (K_Lambda_Max - K_Lambda_Min) / Double (3 * Num_Iterations);
+            Iterations : constant Unsigned_32 := (Object.Data.Num_Precomputed_Wavelengths + 2) / 3;
+            D_Lambda : constant Float_64
+              := (K_Lambda_Max - K_Lambda_Min) / Float_64 (3 * Iterations);
          begin
-            for I in 0 .. Num_Iterations - 1 loop
+            for I in 0 .. Iterations - 1 loop
                declare
-                  Lambdas : constant Double_Array :=
-                    (K_Lambda_Min + (3.0 * Double (I) + 0.5) * D_Lambda,
-                     K_Lambda_Min + (3.0 * Double (I) + 1.5) * D_Lambda,
-                     K_Lambda_Min + (3.0 * Double (I) + 2.5) * D_Lambda);
+                  Lambdas : constant Float_64_Array :=
+                    (K_Lambda_Min + (3.0 * Float_64 (I) + 0.5) * D_Lambda,
+                     K_Lambda_Min + (3.0 * Float_64 (I) + 1.5) * D_Lambda,
+                     K_Lambda_Min + (3.0 * Float_64 (I) + 2.5) * D_Lambda);
 
-                  function Coeff (Lambda : Double; Component : Size) return Single is
+                  function Coeff (Lambda : Float_64; Component : Size) return Float_32 is
                      --  Note that we don't include MAX_LUMINOUS_EFFICACY here, to avoid
                      --  artefacts due to too large values when using half precision on GPU.
                      --  We add this term back in atmosphere.frag, via
                      --  SKY_SPECTRAL_RADIANCE_TO_LUMINANCE (see also the comments in the
                      --  Model constructor).
-                     X : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 1);
-                     Y : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 2);
-                     Z : constant Double := CIE_Color_Matching_Function_Table_Value (Lambda, 3);
+                     X : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 1);
+                     Y : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 2);
+                     Z : constant Float_64 := CIE_Color_Matching_Function_Table_Value (Lambda, 3);
                   begin
-                     return Single
+                     return Float_32
                       ((XYZ_To_SRGB (Component * 3 + 0) * X +
                         XYZ_To_SRGB (Component * 3 + 1) * Y +
                         XYZ_To_SRGB (Component * 3 + 2) * Z) * D_Lambda);
                   end Coeff;
 
-                  Luminance_From_Radiance : constant Single_Array :=
+                  Luminance_From_Radiance : constant Float_32_Array :=
                     (Coeff (Lambdas (0), 0), Coeff (Lambdas (0), 1), Coeff (Lambdas (0), 2),
                      Coeff (Lambdas (1), 0), Coeff (Lambdas (1), 1), Coeff (Lambdas (1), 2),
                      Coeff (Lambdas (2), 0), Coeff (Lambdas (2), 1), Coeff (Lambdas (2), 2));
@@ -833,7 +834,7 @@ package body Orka.Features.Atmosphere is
          --  want the transmittance at kLambdaR, kLambdaG, kLambdaB instead, so we
          --  must recompute it here for these 3 wavelengths:
          declare
-            Lambdas : constant Double_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
+            Lambdas : constant Float_64_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
 
             use Orka.Rendering.Programs;
 

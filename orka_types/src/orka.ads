@@ -26,6 +26,11 @@ package Orka is
 
    ----------------------------------------------------------------------------
 
+   --  GL types must have an exact number of bits and may not be equal
+   --  to a similar type in Interfaces.C.
+   --
+   --  See Table 2.2 of the OpenGL specification.
+
    type Integer_16 is new Interfaces.C.short;
    type Integer_32 is new Interfaces.C.int;
 
@@ -33,6 +38,8 @@ package Orka is
    --  Based on C99 long long int
 
    subtype Size is Integer_32 range 0 .. Integer_32'Last;
+
+   type Integer_32_Array is array (Size range <>) of aliased Integer_32 with Convention => C;
 
    ----------------------------------------------------------------------------
 
@@ -43,10 +50,12 @@ package Orka is
      with Size => 64;
    --  Based on C99 unsigned long long int
 
+   type Unsigned_32_Array is array (Size range <>) of aliased Unsigned_32 with Convention => C;
+
    ----------------------------------------------------------------------------
 
    subtype Float_16 is Integer_16;
-   --  F16C extension can be used to convert from/to Single
+   --  F16C extension can be used to convert from/to Float_32
 
    type Float_32 is new Interfaces.C.C_float;
    type Float_64 is new Interfaces.C.double;
@@ -56,6 +65,10 @@ package Orka is
 
    overriding
    function "=" (Left, Right : Float_64) return Boolean;
+
+   type Float_16_Array is array (Size range <>) of aliased Float_16 with Convention => C;
+   type Float_32_Array is array (Size range <>) of aliased Float_32 with Convention => C;
+   type Float_64_Array is array (Size range <>) of aliased Float_64 with Convention => C;
 
    ----------------------------------------------------------------------------
 

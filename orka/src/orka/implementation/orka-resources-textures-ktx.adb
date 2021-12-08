@@ -61,7 +61,6 @@ package body Orka.Resources.Textures.KTX is
 
       use Ada.Streams;
       use GL.Low_Level.Enums;
-      use type GL.Types.Size;
       use type Time;
 
       T3, T4, T5, T6 : Time;
@@ -72,13 +71,13 @@ package body Orka.Resources.Textures.KTX is
 
       declare
          Header : constant Orka.KTX.Header := Orka.KTX.Get_Header (Bytes);
-         Levels : constant GL.Types.Size   := GL.Types.Size'Max (1, Header.Mipmap_Levels);
+         Levels : constant Size := Size'Max (1, Header.Mipmap_Levels);
 
          Texture  : GL.Objects.Textures.Texture (Header.Kind);
 
-         Width  : constant GL.Types.Size := Header.Width;
-         Height :          GL.Types.Size := Header.Height;
-         Depth  :          GL.Types.Size := Header.Depth;
+         Width  : constant Size := Header.Width;
+         Height :          Size := Header.Height;
+         Depth  :          Size := Header.Depth;
       begin
          T3 := Orka.OS.Monotonic_Clock;
 
@@ -135,7 +134,7 @@ package body Orka.Resources.Textures.KTX is
 
                --  For a cube map, depth is the number of faces, for
                --  a cube map array, depth is the number of layer-faces
-               Depth := GL.Types.Size'Max (1, Header.Array_Elements) * 6;
+               Depth := Size'Max (1, Header.Array_Elements) * 6;
             when others =>
                raise Program_Error;
          end case;
@@ -178,15 +177,15 @@ package body Orka.Resources.Textures.KTX is
                     (Offset + Stream_Element_Offset (Image_Size) - 1 <= Bytes.Value'Last);
                   Image_Data : constant System.Address := Bytes (Offset)'Address;
 
-                  Level_Width  : constant GL.Types.Size := Texture.Width  (Level);
-                  Level_Height : constant GL.Types.Size := Texture.Height (Level);
-                  Level_Depth  : constant GL.Types.Size :=
+                  Level_Width  : constant Size := Texture.Width  (Level);
+                  Level_Height : constant Size := Texture.Height (Level);
+                  Level_Depth  : constant Size :=
                     (if Cube_Map then 6 else Texture.Depth (Level));
                begin
                   if Header.Compressed then
                      Texture.Load_From_Data
                        (Level, 0, 0, 0, Level_Width, Level_Height, Level_Depth,
-                        Header.Compressed_Format, GL.Types.Int (Image_Size), Image_Data);
+                        Header.Compressed_Format, Integer_32 (Image_Size), Image_Data);
                   else
                      declare
                         Original_Alignment : constant GL.Pixels.Alignment :=
@@ -325,7 +324,6 @@ package body Orka.Resources.Textures.KTX is
 
       use Ada.Streams;
       use all type GL.Low_Level.Enums.Texture_Kind;
-      use type GL.Types.Size;
 
       Compressed : constant Boolean := Texture.Compressed;
 

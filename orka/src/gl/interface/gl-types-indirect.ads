@@ -21,18 +21,18 @@ with Ada.Unchecked_Deallocation;
 package GL.Types.Indirect is
    pragma Preelaborate;
 
-   type Half_Array_Access is access Half_Array;
-   type Single_Array_Access is access Single_Array;
-   type UInt_Array_Access   is access UInt_Array;
+   type Half_Array_Access is access Orka.Float_16_Array;
+   type Single_Array_Access is access Orka.Float_32_Array;
+   type UInt_Array_Access   is access Orka.Unsigned_32_Array;
 
    procedure Free_Array is new Ada.Unchecked_Deallocation
-     (Object => Half_Array, Name => Half_Array_Access);
+     (Object => Orka.Float_16_Array, Name => Half_Array_Access);
 
    procedure Free_Array is new Ada.Unchecked_Deallocation
-     (Object => Single_Array, Name => Single_Array_Access);
+     (Object => Orka.Float_32_Array, Name => Single_Array_Access);
 
    procedure Free_Array is new Ada.Unchecked_Deallocation
-     (Object => UInt_Array, Name => UInt_Array_Access);
+     (Object => Orka.Unsigned_32_Array, Name => UInt_Array_Access);
 
    -----------------------------------------------------------------------------
 

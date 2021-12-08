@@ -82,7 +82,7 @@ package body Orka.Features.Terrain is
 
       use GL.Types.Indirect;
 
-      Number_Of_Buffers : constant GL.Types.Size := GL.Types.Size (Count);
+      Number_Of_Buffers : constant Size := Size (Count);
 
       Draw_Commands     : constant Arrays_Indirect_Command_Array   :=
         (1 .. Number_Of_Buffers => (0, 0, 0, 0));
@@ -170,8 +170,8 @@ package body Orka.Features.Terrain is
               (Module_LEB,
                Modules.Create_Module (Location, CS => "terrain/leb-init.comp")));
          begin
-            Program_Init.Uniform ("u_MinDepth").Set_Int (GL.Types.Size (Min_Depth));
-            Program_Init.Uniform ("u_MaxDepth").Set_Int (GL.Types.Size (Max_Depth));
+            Program_Init.Uniform ("u_MinDepth").Set_Int (Size (Min_Depth));
+            Program_Init.Uniform ("u_MaxDepth").Set_Int (Size (Max_Depth));
 
             Program_Init.Use_Program;
 
@@ -204,7 +204,7 @@ package body Orka.Features.Terrain is
       Object.Buffer_Leb_Node_Counter.Bind (Shader_Storage, Binding_Buffer_Leb_Node_Counter);
       for ID in Object.Buffer_Leb'Range loop
          declare
-            Offset : constant GL.Types.Size := GL.Types.Size (ID - 1);
+            Offset : constant Size := Size (ID - 1);
          begin
             if Visible (ID) then
                Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
@@ -229,12 +229,12 @@ package body Orka.Features.Terrain is
    begin
       --  Reduction prepass
       Object.Program_Leb_Prepass.Use_Program;
-      Object.Uniform_Prepass_Pass_ID.Set_Int (GL.Types.Int (Depth));
+      Object.Uniform_Prepass_Pass_ID.Set_Int (Integer_32 (Depth));
 
       for ID in Object.Buffer_Leb'Range loop
          if Visible (ID) then
             Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
-            GL.Compute.Dispatch_Compute (X => GL.Types.UInt (Num_Group));
+            GL.Compute.Dispatch_Compute (X => Unsigned_32 (Num_Group));
          end if;
       end loop;
       GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
@@ -250,11 +250,11 @@ package body Orka.Features.Terrain is
             Count     : constant Integer := 2 ** Depth;
             Num_Group : constant Integer := (if Count >= 256 then Count / 2 ** 8 else 1);
          begin
-            Object.Uniform_Reduction_Pass_ID.Set_Int (GL.Types.Int (Depth));
+            Object.Uniform_Reduction_Pass_ID.Set_Int (Integer_32 (Depth));
             for ID in Object.Buffer_Leb'Range loop
                if Visible (ID) then
                   Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
-                  GL.Compute.Dispatch_Compute (X => GL.Types.UInt (Num_Group));
+                  GL.Compute.Dispatch_Compute (X => Unsigned_32 (Num_Group));
                end if;
             end loop;
             GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
@@ -272,7 +272,7 @@ package body Orka.Features.Terrain is
 
       for ID in Object.Buffer_Leb'Range loop
          Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
-         Object.Uniform_Indirect_Leb_ID.Set_Int (GL.Types.Size (ID - 1));
+         Object.Uniform_Indirect_Leb_ID.Set_Int (Size (ID - 1));
          GL.Compute.Dispatch_Compute (X => 1, Y => 1, Z => 1);
       end loop;
       GL.Barriers.Memory_Barrier ((By_Region => False, others => True));
@@ -291,21 +291,21 @@ package body Orka.Features.Terrain is
       Freeze, Wires : Boolean;
       Timer_Update, Timer_Render : in out Orka.Timers.Timer)
    is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (GL.Types.Single);
-      use all type GL.Types.Single;
+      package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
+      use all type Float_32;
       use all type GL.Types.Connection_Mode;
 
-      Subdivision  : constant GL.Types.Size   := GL.Types.Size (Parameters.Meshlet_Subdivision);
-      Height_Scale : constant GL.Types.Single := GL.Types.Single (Object.Scale);
+      Subdivision  : constant Size     := Size (Parameters.Meshlet_Subdivision);
+      Height_Scale : constant Float_32 := Float_32 (Object.Scale);
 
-      LoD_Variance : constant GL.Types.Single :=
+      LoD_Variance : constant Float_32 :=
         (if Height_Scale > 0.0 then
-           (GL.Types.Single (Parameters.Min_LoD_Standard_Dev) / 64.0 / Height_Scale) ** 2
+           (Float_32 (Parameters.Min_LoD_Standard_Dev) / 64.0 / Height_Scale) ** 2
          else 0.0);
-      LoD_Factor   : constant GL.Types.Single :=
+      LoD_Factor   : constant Float_32 :=
         -2.0 * EF.Log (2.0 * EF.Tan (Camera.Lens.FOV / 2.0)
-          / GL.Types.Single (Camera.Lens.Height) * 2.0 ** Natural (Parameters.Meshlet_Subdivision)
-          * GL.Types.Single (Parameters.Edge_Length_Target), 2.0) + 2.0;
+          / Float_32 (Camera.Lens.Height) * 2.0 ** Natural (Parameters.Meshlet_Subdivision)
+          * Float_32 (Parameters.Edge_Length_Target), 2.0) + 2.0;
       --  For perspective projection
 
       use Cameras.Transforms;
@@ -361,7 +361,7 @@ package body Orka.Features.Terrain is
       for ID in Object.Buffer_Leb_Nodes'Range loop
          if Visible_Tiles (ID) then
             Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
-            Object.Uniform_Render_Leb_ID.Set_Int (GL.Types.Size (ID - 1));
+            Object.Uniform_Render_Leb_ID.Set_Int (Size (ID - 1));
             Orka.Rendering.Drawing.Draw_Indirect (Triangles, Object.Buffer_Draw, ID - 1, 1);
          end if;
       end loop;
@@ -370,21 +370,21 @@ package body Orka.Features.Terrain is
    end Render;
 
    function Get_Spheroid_Parameters
-     (Semi_Major_Axis : GL.Types.Single;
-      Flattening      : GL.Types.Single := 0.0;
-      Side            : Boolean         := True) return Spheroid_Parameters
+     (Semi_Major_Axis : Float_32;
+      Flattening      : Float_32 := 0.0;
+      Side            : Boolean  := True) return Spheroid_Parameters
    is
-      use type GL.Types.Single_Array;
+      use type Float_32_Array;
 
       --  Convert from geodetic coordinates to geocentric coordinates
       --  using the semi-major axis and the flattening of the sphere.
       --  See https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
 
       --  Semi-major axis and flattening (semi-minor axis B = A * (1.0 - F))
-      A : GL.Types.Single := Semi_Major_Axis;
-      F : GL.Types.Single := Flattening;
+      A : Float_32 := Semi_Major_Axis;
+      F : Float_32 := Flattening;
       --  F = (A - B) / A
-      B : constant GL.Types.Single := A - F * A;
+      B : constant Float_32 := A - F * A;
    begin
       if not Side then
          --  Recompute F with swapped A and B
@@ -394,7 +394,7 @@ package body Orka.Features.Terrain is
       end if;
 
       declare
-         E2 : constant GL.Types.Single := 2.0 * F - F * F;
+         E2 : constant Float_32 := 2.0 * F - F * F;
          --  E is eccentricity. See https://en.wikipedia.org/wiki/Flattening
       begin
          return (A, E2) & (if Side then (0.0, 1.0) else (1.0, 1.0));

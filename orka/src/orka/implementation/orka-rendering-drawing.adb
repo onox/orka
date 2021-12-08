@@ -78,8 +78,7 @@ package body Orka.Rendering.Drawing is
    begin
       Buffer.Bind (Draw_Indirect);
       Count.Bind (Parameter);
-      GL.Drawing.Draw_Multiple_Arrays_Indirect_Count
-        (Mode, GL.Types.Size (Buffer.Length));
+      GL.Drawing.Draw_Multiple_Arrays_Indirect_Count (Mode, Size (Buffer.Length));
    end Draw_Indirect;
 
    -----------------------------------------------------------------------------
@@ -118,7 +117,7 @@ package body Orka.Rendering.Drawing is
       Buffer.Bind (Draw_Indirect);
       Count.Bind (Parameter);
       GL.Drawing.Draw_Multiple_Elements_Indirect_Count
-        (Mode, Orka.Types.Convert (Index_Buffer.Kind), GL.Types.Size (Buffer.Length));
+        (Mode, Orka.Types.Convert (Index_Buffer.Kind), Size (Buffer.Length));
    end Draw_Indexed_Indirect;
 
 end Orka.Rendering.Drawing;

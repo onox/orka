@@ -29,7 +29,7 @@ package GL.Types.Pointers is
      (Size, Short, Short_Array, Short'Last);
 
    package Int_Pointers is new Interfaces.C.Pointers
-     (Size, Int, Int_Array, Int'Last);
+     (Size, Orka.Integer_32, Orka.Integer_32_Array, Orka.Integer_32'Last);
 
    package UByte_Pointers is new Interfaces.C.Pointers
      (Size, UByte, UByte_Array, UByte'Last);
@@ -38,16 +38,16 @@ package GL.Types.Pointers is
      (Size, UShort, UShort_Array, UShort'Last);
 
    package UInt_Pointers is new Interfaces.C.Pointers
-     (Size, UInt, UInt_Array, UInt'Last);
+     (Size, Orka.Unsigned_32, Orka.Unsigned_32_Array, Orka.Unsigned_32'Last);
 
    package Half_Pointers is new Interfaces.C.Pointers
-     (Size, Half, Half_Array, 0);
+     (Size, Orka.Float_16, Orka.Float_16_Array, 0);
 
    package Single_Pointers is new Interfaces.C.Pointers
-     (Size, Single, Single_Array, 0.0);
+     (Size, Orka.Float_32, Orka.Float_32_Array, 0.0);
 
    package Double_Pointers is new Interfaces.C.Pointers
-     (Size, Double, Double_Array, 0.0);
+     (Size, Orka.Float_64, Orka.Float_64_Array, 0.0);
 
    type String_Access is not null access constant String;
 

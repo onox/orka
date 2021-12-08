@@ -31,7 +31,7 @@ private package GL.Debug_Types is
    type Type_Array_Access is access all Type_Array;
    type Severity_Array_Access is access all Severity_Array;
 
-   type UInt_Array_Access is access all UInt_Array;
+   type UInt_Array_Access is access all Orka.Unsigned_32_Array;
    type Size_Array_Access is access all Size_Array;
 
    type String_Access is access String;

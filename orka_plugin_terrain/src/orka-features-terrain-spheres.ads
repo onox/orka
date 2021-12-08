@@ -20,8 +20,6 @@ with Orka.Types;
 package Orka.Features.Terrain.Spheres is
    pragma Preelaborate;
 
-   use all type GL.Types.Single;
-
    function Plane_To_Sphere
      (Vertex     : Orka.Transforms.Singles.Vectors.Vector4;
       Parameters : Orka.Features.Terrain.Spheroid_Parameters)
@@ -30,11 +28,11 @@ package Orka.Features.Terrain.Spheres is
    function Get_Sphere_Visibilities
      (Parameters : Spheroid_Parameters;
       Front, Back, World, View : Orka.Types.Singles.Matrix4)
-   return GL.Types.Single_Array
+   return Float_32_Array
      with Post => Get_Sphere_Visibilities'Result'Length = 8;
 
    function Get_Visible_Tiles
-     (Visibilities : GL.Types.Single_Array) return Visible_Tile_Array
+     (Visibilities : Float_32_Array) return Visible_Tile_Array
    with Pre  => Visibilities'Length = 8,
         Post => Get_Visible_Tiles'Result'Length = 6;
 
