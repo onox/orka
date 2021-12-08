@@ -319,7 +319,7 @@ end loop;
 Each frame we process input from the keyboard and mouse, clear the screen
 and then draw the triangle. Press ++esc++ to close the application.
 
-![Output](../images/triangle.png){ loading=lazy }
+![Output](../images/triangle.png)
 
 ??? example "Complete code of `triangle.adb`"
     ```ada linenums="1" title="triangle.adb"
