@@ -42,6 +42,12 @@ quad. It consists of four vertices and two triangles. Without indices, the
 two vertices (and all their data) on the diagonal would have to be duplicated.
 With indices, only six numbers are needed to describe the two triangles.
 
+??? warning "Point sprites have implementation-defined limitations"
+    Point sprites are not recommended because of implementation-defined
+    limitations (use instanced drawing of two triangles instead),
+    the point size can and must be written to `gl_PointSize` in a
+    vertex shader if `:::ada GL.Toggles.Program_Point_Size` is enabled.
+
 ### Coordinate systems and transformations
 
 In OpenGL the camera or your screen is positioned at the origin

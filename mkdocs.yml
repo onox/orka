@@ -85,7 +85,7 @@ nav:
   - Home: index.md
   - Getting started:
       - Installation: installation.md
-  - Docs:
+  - Documentation:
       - Parallel programming: parallel-programming.md
       - Containers: containers.md
       - Logging: logging.md
@@ -102,6 +102,7 @@ nav:
           - Framebuffers: rendering/framebuffers.md
           - Cameras: rendering/cameras.md
           - Effects: rendering/effects.md
+          - Removed features: rendering/removed-features.md
       - Resources:
           - Locations: resources/locations.md
           - Loaders: resources/loaders.md
