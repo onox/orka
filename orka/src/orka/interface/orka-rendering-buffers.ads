@@ -31,7 +31,7 @@ package Orka.Rendering.Buffers is
 
    type Bindable_Buffer is interface;
 
-   type Indexed_Buffer_Target is (Atomic_Counter, Shader_Storage, Uniform);
+   type Indexed_Buffer_Target is (Shader_Storage, Uniform);
    --  Buffer targets that can be read/written in shaders
 
    type Buffer_Target is

@@ -97,8 +97,6 @@ package body Orka.Rendering.Buffers.Mapped is
             Buffer_Target := GL.Objects.Buffers.Uniform_Buffer'Access;
          when Shader_Storage =>
             Buffer_Target := GL.Objects.Buffers.Shader_Storage_Buffer'Access;
-         when Atomic_Counter =>
-            Buffer_Target := GL.Objects.Buffers.Atomic_Counter_Buffer'Access;
       end case;
 
       case Object.Kind is

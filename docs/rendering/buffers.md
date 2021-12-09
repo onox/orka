@@ -129,7 +129,6 @@ A second procedure `Bind` exists to bind the buffer object to the index
 of a target so that the buffer can be accessed in a shader. Valid targets
 are:
 
-* `Atomic_Counter`
 * `Shader_Storage` (SSBO)
 * `Uniform` (UBO)
 

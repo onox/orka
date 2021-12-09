@@ -82,8 +82,7 @@ package body Orka.Rendering.Programs is
       return Natural (Object.GL_Program.Buffer_Binding
         ((case Target is
            when Uniform        => GL.Objects.Buffers.Uniform,
-           when Shader_Storage => GL.Objects.Buffers.Shader_Storage,
-           when Atomic_Counter => GL.Objects.Buffers.Atomic_Counter),
+           when Shader_Storage => GL.Objects.Buffers.Shader_Storage),
          Name));
    end Binding;
 

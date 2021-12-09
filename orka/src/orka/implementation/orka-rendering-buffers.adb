@@ -203,8 +203,6 @@ package body Orka.Rendering.Buffers is
             GL.Objects.Buffers.Uniform_Buffer.Bind_Base (Object.Buffer, Index);
          when Shader_Storage =>
             GL.Objects.Buffers.Shader_Storage_Buffer.Bind_Base (Object.Buffer, Index);
-         when Atomic_Counter =>
-            GL.Objects.Buffers.Atomic_Counter_Buffer.Bind_Base (Object.Buffer, Index);
       end case;
    end Bind;
 
