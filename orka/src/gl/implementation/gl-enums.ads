@@ -31,8 +31,7 @@ private package GL.Enums is
                           Link_Status, Validate_Status, Info_Log_Length,
                           Attached_Shaders,
                           Active_Uniforms, Active_Uniform_Max_Length,
-                          Active_Attributes, Active_Attribute_Max_Length,
-                          Active_Atomic_Counter_Buffers);
+                          Active_Attributes, Active_Attribute_Max_Length);
 
    type Program_Set_Param is (Program_Binary_Retrievable_Hint, Program_Separable);
 
@@ -42,8 +41,7 @@ private package GL.Enums is
                                    Geometry_Shader,
                                    Tess_Evaluation_Shader, Tess_Control_Shader);
 
-   type Program_Interface is (Atomic_Counter_Buffer,
-                              Uniform,
+   type Program_Interface is (Uniform,
                               Uniform_Block,
                               Program_Input,
                               Program_Output,
@@ -54,7 +52,6 @@ private package GL.Enums is
                                    Name_Length, Resource_Type,
                                    Array_Size, Offset, Block_Index,
                                    Array_Stride, Matrix_Stride, Is_Row_Major,
-                                   Atomic_Counter_Buffer_Index,
                                    Buffer_Binding, Buffer_Data_Size,
                                    Num_Active_Variables, Active_Variables,
                                    Referenced_By_Vertex_Shader,
@@ -89,7 +86,7 @@ private package GL.Enums is
                         Pixel_Pack_Buffer, Pixel_Unpack_Buffer, Uniform_Buffer,
                         Draw_Indirect_Buffer,
                         Shader_Storage_Buffer, Dispatch_Indirect_Buffer,
-                        Query_Buffer, Atomic_Counter_Buffer);
+                        Query_Buffer);
 
    type Only_Depth_Buffer is (Depth_Buffer);
    type Only_Stencil_Buffer is (Stencil_Buffer);
@@ -122,8 +119,7 @@ private
                           Active_Uniforms                       => 16#8B86#,
                           Active_Uniform_Max_Length             => 16#8B87#,
                           Active_Attributes                     => 16#8B89#,
-                          Active_Attribute_Max_Length           => 16#8B8A#,
-                          Active_Atomic_Counter_Buffers         => 16#92D9#);
+                          Active_Attribute_Max_Length           => 16#8B8A#);
    for Program_Param'Size use Low_Level.Enum'Size;
 
    for Program_Set_Param use (Program_Binary_Retrievable_Hint => 16#8257#,
@@ -140,8 +136,7 @@ private
                                    Tess_Control_Shader    => 16#8E88#);
    for Program_Pipeline_Param'Size use Low_Level.Enum'Size;
 
-   for Program_Interface use (Atomic_Counter_Buffer              => 16#92C0#,
-                              Uniform                            => 16#92E1#,
+   for Program_Interface use (Uniform                            => 16#92E1#,
                               Uniform_Block                      => 16#92E2#,
                               Program_Input                      => 16#92E3#,
                               Program_Output                     => 16#92E4#,
@@ -158,7 +153,6 @@ private
                                    Array_Stride                         => 16#92FE#,
                                    Matrix_Stride                        => 16#92FF#,
                                    Is_Row_Major                         => 16#9300#,
-                                   Atomic_Counter_Buffer_Index          => 16#9301#,
                                    Buffer_Binding                       => 16#9302#,
                                    Buffer_Data_Size                     => 16#9303#,
                                    Num_Active_Variables                 => 16#9304#,
@@ -213,8 +207,7 @@ private
                         Draw_Indirect_Buffer      => 16#8F3F#,
                         Shader_Storage_Buffer     => 16#90D2#,
                         Dispatch_Indirect_Buffer  => 16#90EE#,
-                        Query_Buffer              => 16#9192#,
-                        Atomic_Counter_Buffer     => 16#92C0#);
+                        Query_Buffer              => 16#9192#);
    for Buffer_Kind'Size use Low_Level.Enum'Size;
 
    for Only_Depth_Buffer use (Depth_Buffer => 16#1801#);

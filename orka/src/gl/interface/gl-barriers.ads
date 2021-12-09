@@ -24,7 +24,6 @@ package GL.Barriers is
       Texture_Fetch        : Boolean := False;
       Shader_Image_Access  : Boolean := False;
       Framebuffer          : Boolean := False;
-      Atomic_Counter       : Boolean := False;
       Shader_Storage       : Boolean := False;
       case By_Region is
          when False =>
@@ -63,7 +62,6 @@ private
       Texture_Update       at 0 range 8 .. 8;
       Buffer_Update        at 0 range 9 .. 9;
       Framebuffer          at 0 range 10 .. 10;
-      Atomic_Counter       at 0 range 12 .. 12;
       Shader_Storage       at 0 range 13 .. 13;
       Client_Mapped_Buffer at 0 range 14 .. 14;
       Query_Buffer         at 0 range 15 .. 15;

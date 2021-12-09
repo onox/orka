@@ -152,22 +152,6 @@ package body GL.Objects.Programs is
             Index := API.Get_Program_Resource_Index.Ref
               (Object.Reference.GL_Id, Enums.Uniform_Block, Interfaces.C.To_C (Name));
             Iface := Enums.Uniform_Block;
-         when Atomic_Counter =>
-            Index := API.Get_Program_Resource_Index.Ref
-              (Object.Reference.GL_Id, Enums.Uniform, Interfaces.C.To_C (Name));
-            Iface := Enums.Atomic_Counter_Buffer;
-
-            if Index = -1 then
-               raise Uniform_Inactive_Error with "Uniform " & Name & " is inactive (unused)";
-            end if;
-
-            declare
-               Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
-                 (Object.Reference.GL_Id, Enums.Uniform, Index,
-                   1, (1 => Enums.Atomic_Counter_Buffer_Index), 1);
-            begin
-               Index := (if Values'Length > 0 then UInt (Values (Values'First)) else -1);
-            end;
       end case;
 
       if Index = -1 then

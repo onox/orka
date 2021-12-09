@@ -55,7 +55,7 @@ package GL.Objects.Buffers is
 
    type Buffer_Target (<>) is tagged limited private;
 
-   type Indexed_Buffer_Target is (Atomic_Counter, Shader_Storage, Uniform);
+   type Indexed_Buffer_Target is (Shader_Storage, Uniform);
 
    function Kind (Target : Buffer_Target) return Indexed_Buffer_Target;
 
@@ -77,7 +77,6 @@ package GL.Objects.Buffers is
    --
    --  Target must be one of the following:
    --
-   --    * Atomic_Counter_Buffer
    --    * Uniform_Buffer
    --    * Shader_Storage_Buffer
 
@@ -121,7 +120,6 @@ package GL.Objects.Buffers is
       --
       --  Target must be one of the following:
       --
-      --    * Atomic_Counter_Buffer
       --    * Uniform_Buffer
       --    * Shader_Storage_Buffer
 
@@ -199,9 +197,9 @@ package GL.Objects.Buffers is
 
    --  Buffer targets that must be binded to a specific index
    --  (specified in shaders)
+   --  Atomic_Counter_Buffer replaced by Shader_Storage_Buffer
    Uniform_Buffer            : aliased constant Buffer_Target;
    Shader_Storage_Buffer     : aliased constant Buffer_Target;
-   Atomic_Counter_Buffer     : aliased constant Buffer_Target;
 
 private
 
@@ -252,7 +250,5 @@ private
      := Buffer_Target'(Kind => Enums.Dispatch_Indirect_Buffer);
    Query_Buffer              : aliased constant Buffer_Target
      := Buffer_Target'(Kind => Enums.Query_Buffer);
-   Atomic_Counter_Buffer     : aliased constant Buffer_Target
-     := Buffer_Target'(Kind => Enums.Atomic_Counter_Buffer);
 
 end GL.Objects.Buffers;

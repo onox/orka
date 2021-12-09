@@ -106,7 +106,6 @@ package body GL.Objects.Buffers is
      (case Target.Kind is
        when Enums.Shader_Storage_Buffer => Shader_Storage,
        when Enums.Uniform_Buffer => Uniform,
-       when Enums.Atomic_Counter_Buffer => Atomic_Counter,
        when others => raise Constraint_Error);
 
    procedure Bind (Target : Buffer_Target; Object : Buffer'Class) is
