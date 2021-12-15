@@ -127,7 +127,7 @@ begin
 
    declare
       Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
-        (Version => (4, 2), Flags  => (Debug => True, others => False));
+        (Version => (4, 2), Flags => (Debug => True, others => False));
 
       Window : constant Orka.Windows.Window'Class
         := Orka.Contexts.AWT.Create_Window (Context, Width, Height);
@@ -163,6 +163,11 @@ begin
             VS => "tools/gltf.vert",
             FS => "tools/gltf.frag"));
 
+         P_2 : Program := Create_Program (Modules.Create_Module
+           (Location_Shaders,
+            VS => "oversized-triangle.vert",
+            FS => "tools/resolve.frag"));
+
          Uni_View  : constant Uniforms.Uniform := P_1.Uniform ("view");
          Uni_Proj  : constant Uniforms.Uniform := P_1.Uniform ("proj");
 
@@ -171,19 +176,16 @@ begin
          ----------------------------------------------------------------------
 
          Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("diffuseTexture");
-         Uni_Dither  : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("ditherTexture");
 
          use GL.Objects.Textures;
          use GL.Objects.Samplers;
 
          Texture_1 : Texture (LE.Texture_2D_Array);
-         Texture_2 : constant Texture := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
 
          Texture_3 : Texture (LE.Texture_2D_Multisample);
          Texture_4 : Texture (LE.Texture_2D_Multisample);
 
          Sampler_1 : Sampler;
-         Sampler_2 : constant Sampler := Orka.Rendering.Textures.Bayer_Dithering_Pattern;
 
          ----------------------------------------------------------------------
 
@@ -266,8 +268,8 @@ begin
              Depth => (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0),
              others => <>));
 
-         Texture_3.Allocate_Storage (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
-         Texture_4.Allocate_Storage (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
+         Texture_3.Allocate_Storage (1, Samples, GL.Pixels.R11F_G11F_B10F, Width, Height, 1);
+         Texture_4.Allocate_Storage (1, Samples, GL.Pixels.Depth_Component32F, Width, Height, 1);
 
          Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
          Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
@@ -276,7 +278,6 @@ begin
          Sampler_1.Set_Magnifying_Filter (Nearest);
 
          Sampler_1.Bind (0);
-         Sampler_2.Bind (1);
 
          FB_1.Attach (Texture_3);
          FB_1.Attach (Texture_4);
@@ -285,10 +286,8 @@ begin
          Load_Texture (Texture_1);
 
          Uni_Texture.Verify_Compatibility (Texture_1);
-         Uni_Dither.Verify_Compatibility (Texture_2);
 
          Orka.Rendering.Textures.Bind (Texture_1, Orka.Rendering.Textures.Texture, 0);
-         Orka.Rendering.Textures.Bind (Texture_2, Orka.Rendering.Textures.Texture, 1);
 
          Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
@@ -352,8 +351,19 @@ begin
                   end loop;
                   Group.Render;
 
-                  --  Resolve the multiple samples in the FBO
-                  FB_1.Resolve_To (FB_D);
+                  --  Resolve the multiple samples
+                  Orka.Rendering.Textures.Bind (Texture_3, Orka.Rendering.Textures.Texture, 0);
+
+                  P_2.Uniform ("screenResolution").Set_Vector (Orka.Types.Singles.Vector4'
+                   (Orka.Float_32 (FB_D.Width), Orka.Float_32 (FB_D.Height), 0.0, 0.0));
+                  P_2.Uniform ("exposure").Set_Single (10.0);
+                  P_2.Use_Program;
+
+                  FB_D.Use_Framebuffer;
+
+                  GL.Buffers.Set_Depth_Function (GL.Types.Always);
+                  Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+                  GL.Buffers.Set_Depth_Function (GL.Types.Greater);
 
                   Group.After_Render;
                   for Behavior of Scene.all loop

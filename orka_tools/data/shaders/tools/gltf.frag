@@ -1,8 +1,8 @@
 #version 420 core
 
-#extension GL_ARB_shading_language_420pack : require
-
 //  SPDX-License-Identifier: Apache-2.0
+
+layout(origin_upper_left) in vec4 gl_FragCoord;
 
 flat in uint var_InstanceID;
 
@@ -15,15 +15,9 @@ in VS_OUT {
 
 layout(binding = 0) uniform sampler2DArray diffuseTexture;
 
-layout(binding = 1) uniform sampler2D ditherTexture;
-// Bayer [5] ordered dithering pattern [6]
-
-out vec4 out_Color;
+out vec4 fs_out;
 
 const float pi = 3.14159265358979323846264338327950288419716939937511;
-
-const float gamma = 2.2;
-const vec3 inverse_gamma = vec3(1.0 / gamma);
 
 struct Light {
     vec3 albedo;
@@ -135,14 +129,11 @@ void main(void) {
     const vec3 fd = diffuse(normal, light_dir, albedo);
     const vec3 fs = specular(normal, light_dir, view_dir, albedo);
 
-    const float fo = light.intensity * falloff(length(fs_in.L), light.radius);
-    out_Color = vec4(vec3(fo) * light.albedo * (fd + fs), 1.0);
+    // Clamp light distance to a maximum distance so that the object is always visible
+    const float light_distance = min(3.0, length(fs_in.L));
 
-    // Ordered dithering using a 8x8 Bayer pattern
-    out_Color.xyz += vec3(texture(ditherTexture, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
-
-    // Apply gamma correction due to monitor's non-linear pixel response
-    out_Color.xyz = pow(out_Color.xyz, inverse_gamma);
+    const float fo = light.intensity * falloff(light_distance, light.radius);
+    fs_out = vec4(vec3(fo) * light.albedo * (fd + fs), 1.0);
 }
 
 // References:
@@ -151,7 +142,3 @@ void main(void) {
 // [2] http://blog.selfshadow.com/publications/s2013-shading-course/hoffman/s2013_pbs_physics_math_notes.pdf
 // [3] http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
 // [4] http://blog.selfshadow.com/publications/s2013-shading-course/
-// [5] Bayer, B. E. (1973). An optimum method for two-level rendition of
-//     continuous-tone pictures. In IEEE Int. Conf. on Communications
-//     (Vol. 26, pp. 11-15).
-// [6] http://www.anisopteragames.com/how-to-fix-color-banding-with-dithering/
