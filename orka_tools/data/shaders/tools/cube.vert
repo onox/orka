@@ -21,7 +21,6 @@ uniform mat4 proj;
 
 uniform bool showExternal;
 uniform bool showColors;
-uniform bool invertView;
 
 out vec3 vs_uvw;
 out vec3 vs_color;
@@ -98,7 +97,7 @@ void main() {
     translate[3].z = showExternal ? -4.0 : 0.0;
 
     const vec3 vertex = vertices[indices[gl_VertexID]];
-    const vec4 invert = invertView ? vec4(1, 1, -1, 1) : vec4(1);
+    const vec4 invert = !showExternal ? vec4(1, 1, -1, 1) : vec4(1);
     gl_Position = proj * (translate * (invert * (view * vec4(vertex, 1.0))));
 
     vs_color = showColors ? colors[gl_VertexID / 6] : vec3(0.0);

@@ -245,6 +245,31 @@ begin
             Window.Set_Title (SU.To_String (Text));
          end Update_Title;
 
+         function Get_Orientation
+           (Pointer     : AWT.Inputs.Pointer_State;
+            Render_View : View_Mode;
+            Rotate      : Boolean) return Orka.Types.Doubles.Vector4
+         is
+            use all type AWT.Inputs.Dimension;
+            use all type Orka.Index_4D;
+            use type Orka.Float_64;
+
+            Result : Orka.Types.Doubles.Vector4 :=
+              (0.0, 0.0, Orka.Float_64 (Pointer.Scroll (Y)), 0.0);
+         begin
+            if Rotate then
+               Result (X) := Orka.Float_64 (Pointer.Relative (X));
+               Result (Y) := Orka.Float_64 (Pointer.Relative (Y));
+
+               case Render_View is
+                  when Internal => Result (X) := -Result (X);
+                  when External => Result (Y) := -Result (Y);
+               end case;
+            end if;
+
+            return Result;
+         end Get_Orientation;
+
          P_1 : Program;
       begin
          --  Clear color to black and depth to 0.0 (if using reversed Z)
@@ -334,9 +359,7 @@ begin
 
                         Uni_External : constant Uniforms.Uniform := P_1.Uniform ("showExternal");
                         Uni_Colors   : constant Uniforms.Uniform := P_1.Uniform ("showColors");
-                        Uni_Invert   : constant Uniforms.Uniform := P_1.Uniform ("invertView");
                      begin
-                        Uni_Invert.Set_Boolean (Render_View = Internal);
                         Uni_View.Set_Matrix (Camera.View_Matrix);
                         Uni_Proj.Set_Matrix (Camera.Projection_Matrix);
 
@@ -455,10 +478,7 @@ begin
                      --  FIXME Update with PO?
                      Rotate_Around_Cameras.Rotate_Around_Camera'Class
                        (Current_Camera).Change_Orientation
-                          (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
-                            (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
-                            Orka.Float_64 (Pointer.Scroll (Y)),
-                            0.0));
+                          (Get_Orientation (Pointer, Render_View, Rotate_Camera));
                   end;
                end loop;
             end;
