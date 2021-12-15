@@ -59,15 +59,16 @@ procedure Orka_12_Stencil is
    Window : constant Orka.Windows.Window'Class
      := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
 
-   function Enable_MS return Boolean is
+   function Enable_Features return Boolean is
    begin
+      Context.Enable (Orka.Contexts.Reversed_Z);
       Context.Enable (Orka.Contexts.Multisample);
       return True;
-   end Enable_MS;
+   end Enable_Features;
 
-   MS_Enabled : constant Boolean := Enable_MS;
-   pragma Assert (MS_Enabled);
-   --  Simple hack to enable MS before Create_Framebuffer is called
+   Features_Enabled : constant Boolean := Enable_Features;
+   pragma Assert (Features_Enabled);
+   --  Simple hack to enable features (including MS) before Create_Framebuffer is called
 
    use GL.Buffers;
    use all type GL.Types.Connection_Mode;
@@ -78,17 +79,10 @@ procedure Orka_12_Stencil is
    use Orka.Rendering.Framebuffers;
    use Orka;
 
-   Indices_Screen : constant GL.Types.UInt_Array
+   Indices_Screen : constant Orka.Unsigned_32_Array
      := (1, 0, 2, 2, 0, 3);
 
-   Vertices_Screen : constant Float_32_Array
-        := (-1.0,  1.0, 0.0, 1.0,
-             1.0,  1.0, 1.0, 1.0,
-             1.0, -1.0, 1.0, 0.0,
-            -1.0, -1.0, 0.0, 0.0);
-
    --  Create buffers containing attributes and indices
-   Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices_Screen);
    Buffer_2 : constant Buffer := Create_Buffer ((others => False), Indices_Screen);
    --  vec2 position
    --  vec2 texcoord
@@ -229,15 +223,18 @@ procedure Orka_12_Stencil is
    World_TM : constant Transforms.Matrix4 := Transforms.Rx (-0.5 * Ada.Numerics.Pi);
 
    Default_Distance : constant := 3.0;
+   Deg_45           : constant := 0.25 * Ada.Numerics.Pi;
 
    type Effect_Type is mod 4;
 
    Effect : Effect_Type := Effect_Type'First;
+   Default_Depth : constant Orka.Float_32 :=
+     (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0);
 begin
-   Current_Camera.Set_Orientation ((0.0, 0.0, Default_Distance, 0.0));
+   Current_Camera.Set_Orientation ((-Deg_45, 0.5 * Deg_45, Default_Distance, 0.0));
 
-   FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 1.0, others => <>));
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
+   FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => Default_Depth, others => <>));
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => Default_Depth, others => <>));
 
    GL.Toggles.Enable (GL.Toggles.Cull_Face);
 
@@ -393,7 +390,6 @@ begin
 
          Program_Screen.Use_Program;
          Orka.Rendering.Textures.Bind (No_MS_Color_Texture, Orka.Rendering.Textures.Texture, 0);
-         Buffer_1.Bind (Shader_Storage, 0);
 
          Orka.Rendering.Drawing.Draw_Indexed (Triangles, Buffer_2, 0, Indices_Screen'Length);
 

@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 #version 420 core
 
-#extension GL_ARB_shader_storage_buffer_object : require
-
 struct Vertex {
     vec2 position;
     vec2 texcoord;
 };
 
-layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
-    Vertex in_vertices[];
+const Vertex in_vertices[] = {
+    Vertex(vec2(-1.0,  1.0), vec2(0.0, 1.0)),
+    Vertex(vec2( 1.0,  1.0), vec2(1.0, 1.0)),
+    Vertex(vec2( 1.0, -1.0), vec2(1.0, 0.0)),
+    Vertex(vec2(-1.0, -1.0), vec2(0.0, 0.0)),
 };
 
 out vec2 Texcoord;

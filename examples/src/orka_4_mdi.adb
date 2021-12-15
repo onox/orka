@@ -53,8 +53,8 @@ procedure Orka_4_MDI is
           0.25, -0.5,
           0.75,  0.5);
 
-   Indices_1 : constant GL.Types.UInt_Array := (0, 1, 2);
-   Indices_2 : constant GL.Types.UInt_Array := (0, 1, 2);
+   Indices_1 : constant Orka.Unsigned_32_Array := (0, 1, 2);
+   Indices_2 : constant Orka.Unsigned_32_Array := (0, 1, 2);
 
    Batch_1 : MDI.Batch := MDI.Create_Batch
      (Orka.Types.Single_Type, Orka.Types.UInt_Type, 2,
@@ -62,7 +62,7 @@ procedure Orka_4_MDI is
       Indices_1'Length + Indices_2'Length);
 
    procedure Append_Draw_Call
-     (Instances : Natural; Vertices : Orka.Float_32_Array; Indices : GL.Types.UInt_Array)
+     (Instances : Natural; Vertices : Orka.Float_32_Array; Indices : Orka.Unsigned_32_Array)
    is
       Vertex_Elements : constant := 2;
 

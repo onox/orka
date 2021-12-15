@@ -35,5 +35,6 @@ void main(void) {
 
     gl_Position = vec4(0.5 * in_vertices[gl_VertexID].position, 0.0, 1.0);
     gl_Position.x += 0.5 * gl_InstanceID - 0.5;
+    gl_Position.y *= -1;
     ex_InstanceID = instanceID;
 }

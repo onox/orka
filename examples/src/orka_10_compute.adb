@@ -39,7 +39,7 @@ procedure Orka_10_Compute is
    use type GL.Types.Int;
    use GL.Types;
 
-   Numbers : constant Int_Array
+   Numbers : constant Orka.Integer_32_Array
      := (10, 1, 8, -1, 0, -2, 3, 5, -2, -3, 2, 7, 0, 11, 0, 2);
 begin
    Orka.Debug.Set_Log_Messages (Enable => True);
@@ -148,7 +148,7 @@ begin
          Memory_Barrier;
 
          declare
-            Output : Int_Array (1 .. 2) := (others => 0);
+            Output : Orka.Integer_32_Array (1 .. 2) := (others => 0);
          begin
             Buffer_1.Get_Data (Output);
             Put_Line ("Expected Sum:" & Size'Image (Factor * 41));

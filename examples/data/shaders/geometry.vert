@@ -19,6 +19,7 @@ void main(void) {
     const Vertex data = in_vertices[gl_VertexID];
 
     gl_Position = data.position;
+    gl_Position.y *= -1;
     vColor = data.color_sides.xyz;
     vSides = data.color_sides.w;
 }

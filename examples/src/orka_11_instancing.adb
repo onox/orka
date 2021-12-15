@@ -85,7 +85,7 @@ procedure Orka_11_Instancing is
       return Matrices;
    end Create_Matrices;
 
-   Indices : constant UInt_Array
+   Indices : constant Orka.Unsigned_32_Array
      := (1, 2, 0,  --  Back
          0, 2, 3,
          1, 0, 5,  --  Top

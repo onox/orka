@@ -16,5 +16,6 @@ out vec3 ex_Color;
 
 void main(void) {
     gl_Position = in_vertices[gl_VertexID].position;
+    gl_Position.y *= -1;
     ex_Color = in_vertices[gl_VertexID].color.xyz;
 }
