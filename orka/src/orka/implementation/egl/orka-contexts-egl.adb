@@ -81,7 +81,7 @@ package body Orka.Contexts.EGL is
       --  GL.Context.Reset_Notification and GL.Context.Release_Behavior
 
       GL.Rasterization.Set_Provoking_Vertex (GL.Rasterization.First_Vertex);
-      GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
+      GL.Viewports.Set_Clipping (GL.Viewports.Upper_Left, GL.Viewports.Zero_To_One);
       Object.Vertex_Array.Create;
    end Post_Initialize;
 

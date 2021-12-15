@@ -2,6 +2,8 @@
 
 #extension GL_ARB_shader_storage_buffer_object : require
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
+
 //  SPDX-License-Identifier: Apache-2.0
 //
 //  Copyright (c) 2020 onox <denkpadje@gmail.com>
