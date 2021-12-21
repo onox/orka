@@ -35,6 +35,8 @@ package body Test_Tensors_Singles_Vectors is
 
    Pi : constant := Ada.Numerics.Pi;
 
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
+
    package Random is new Generic_Random (CPU_Tensor);
 
    procedure Assert (Expected, Result : Element; Message : String) is
@@ -159,8 +161,6 @@ package body Test_Tensors_Singles_Vectors is
    end Test_Linear_Space;
 
    procedure Test_Log_Space (Object : in out Test) is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
-
       use EF;
 
       Expected_1 : constant Element_Array := (1.0e1, 1.0e2, 1.0e3, 1.0e4);
@@ -1008,8 +1008,6 @@ package body Test_Tensors_Singles_Vectors is
    end Test_Random_Laplace;
 
    procedure Test_Random_Rayleigh (Object : in out Test) is
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
-
       use EF;
 
       Sigma : constant := 1.5;
@@ -1031,8 +1029,6 @@ package body Test_Tensors_Singles_Vectors is
    procedure Test_Random_Weibull (Object : in out Test) is
       K      : constant := 1.5;
       Lambda : constant := 1.0;
-
-      package EF is new Ada.Numerics.Generic_Elementary_Functions (Element);
 
       use EF;
 
@@ -1115,6 +1111,41 @@ package body Test_Tensors_Singles_Vectors is
         "Unexpected variance for beta: " & Tensor.Variance'Image
            & " instead of " & Element'Image (Expected_Variance));
    end Test_Random_Beta;
+
+   procedure Test_Random_Chi_Squared (Object : in out Test) is
+      K : constant := 4;
+
+      Expected_Mean     : constant Element := Element (K);
+      Expected_Variance : constant Element := Element (K * 2);
+
+      Tensor : constant CPU_Tensor := Random.Chi_Squared ((1 => 100_000), K => K);
+   begin
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
+        "Unexpected mean for Chi_Squared: " & Tensor.Mean'Image
+           & " instead of " & Element'Image (Expected_Mean));
+
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.5,
+        "Unexpected variance for Chi_Squared: " & Tensor.Variance'Image
+           & " instead of " & Element'Image (Expected_Variance));
+   end Test_Random_Chi_Squared;
+
+   procedure Test_Random_Student_T (Object : in out Test) is
+      Trials    : constant := 100_000;
+      True_Mean : constant := 7725.0;
+
+      --  This example is from numpy.random.standard_t's documentation
+      Data : constant CPU_Tensor := To_Tensor
+        ((5260.0, 5470.0, 5640.0, 6180.0, 6390.0, 6515.0, 6805.0, 7515.0, 7515.0, 8230.0, 8770.0));
+
+      T : constant Element := Random.Test_Statistic_T_Test (Data, True_Mean);
+
+      --  The null hypothesis must be rejected if the distribution > positive T
+      --  or < negative T
+      Tensor : constant CPU_Tensor := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
+      Result : constant Element    := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
+   begin
+      Assert (Result in 0.008 .. 0.010, "Unexpected result Student's t trials: " & Result'Image);
+   end Test_Random_Student_T;
 
    ----------------------------------------------------------------------------
 
@@ -1319,6 +1350,10 @@ package body Test_Tensors_Singles_Vectors is
         (Name & "Test random gamma distribution", Test_Random_Gamma'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test random beta distribution", Test_Random_Beta'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random chi-squared distribution", Test_Random_Chi_Squared'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test random Student's t-distribution", Test_Random_Student_T'Access));
 
       return Test_Suite'Access;
    end Suite;
