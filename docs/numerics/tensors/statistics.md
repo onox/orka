@@ -102,4 +102,63 @@ Reset_Random (Orka.OS.Monotonic_Clock);
 
 - `Student_T` with parameter `V`.
 
+## Hypothesis testing
+
+Given a tensor containing a number of samples, the Student's t-distribution
+and the one-sample t-test can be used to determine if the samples deviate
+from some desired mean.
+
+Assuming `Data` is a 1-D tensor of samples and `True_Mean` the desired
+mean, a test statistic for the one-sample t-test for the null hypothesis
+that the sample mean is equal to the desired mean is computed with:
+
+```ada
+T : constant Element := Random.Test_Statistic_T_Test (Data, True_Mean);
+```
+
+A t-value near zero is evidence for the null hypothesis, while a large
+positive or negative value away from zero is evidence against it.
+
+The test statistic can be used to compute the probability of having a
+type I error (rejecting the null hypothesis when it is actually true)
+using the Student's t-distribution:
+
+```ada
+Trials : constant := 100_000;
+
+Tensor  : constant CPU_Tensor := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
+P_Value : constant Element    := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
+```
+
+If the probability is greater than some significance level α (for
+example, 0.05) divided by 2 (because we only compute the right tail
+probability) then there is a good chance of incorrectly rejecting the
+null hypothesis. Therefore, the null hypothesis should *not* be rejected.
+If the probability is less than α/2, then it is unlikely to have
+a type I error and therefore you can safely reject the null hypothesis.
+
+A significance level of 0.1 corresponds with a confidence of 90 %
+and 0.05 corresponds with 95 %.
+
+### Confidence interval
+
+To obtain an interval for a given significance level, use the function
+`Threshold_T_Test`.
+Add and subtract the result from some true mean to get the interval for
+which the null hypothesis (sample mean = true mean) is accepted:
+
+```ada
+Relative_Threshold : constant Element := Random.Threshold_T_Test (Data, Level => 0.05);
+
+Upper_Bound : constant Element := True_Mean + Relative_Threshold;
+Lower_Bound : constant Element := True_Mean - Relative_Threshold;
+```
+
+For a sample mean further away from the true mean (outside the interval),
+the null hypothesis is correctly rejected or incorrectly (in case of a
+type I error), but the type I error occurs only with a probability equal
+to the given significance level.
+
+A lower significance level (and thus higher confidence) will give a wider interval.
+
   [url-xoshiro]: https://prng.di.unimi.it/
