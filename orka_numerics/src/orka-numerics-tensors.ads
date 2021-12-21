@@ -780,6 +780,67 @@ package Orka.Numerics.Tensors is
       --  Mean is Alpha / (Alpha + Beta) and variance is
       --  (Alpha * Beta) / ((Alpha + Beta)^2 * (Alpha + Beta + 1.0)).
 
+      function Chi_Squared (Shape : Tensor_Shape; K : Positive) return Random_Tensor is
+        (Gamma (Shape, K => Element (K) / 2.0, Theta => 2.0))
+      with Pre => K >= 2;
+      --  Return a tensor that has the chi^2 distribution
+      --
+      --  Mean is K and variance is 2 * K.
+      --
+      --  Note: K = 1 is not supported because of a limitation of function Gamma.
+
+      function Student_T (Shape : Tensor_Shape; V : Positive) return Random_Tensor is
+        (Multiply (Normal (Shape),
+                   Sqrt (Element (V) / (Chi_Squared (Shape, K => V) + Element'Model_Small))))
+      with Pre => V >= 2;
+      --  Return a tensor that has the Student's t-distribution
+      --
+      --  Mean is 0 and variance is V / (V - 2.0) for V > 2.0 or infinite if V = 2.0.
+      --
+      --  Note: V = 1 is not supported because of a limitation of function Chi_Squared.
+
+      function Test_Statistic_T_Test (Data : Random_Tensor; True_Mean : Element) return Element;
+      --  Return the test statistic of the one-sample t-test for the null
+      --  hypothesis sample mean = True_Mean
+      --
+      --  A t-value near zero is evidence for the null hypothesis, while a large
+      --  positive or negative value away from zero is evidence against it.
+      --
+      --  t-value >> 0: mean > True_Mean
+      --  t-value << 0: mean < True_Mean.
+      --
+      --  The test statistic can be used to compute the probability of having a
+      --  type I error (rejecting the null hypothesis when it is actually true):
+      --
+      --    Tensor      : Tensor'Class := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
+      --    Probability : Element      := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
+      --
+      --  If the probability is greater than some significance level (for
+      --  example, 0.05) then there is a good chance of incorrectly rejecting
+      --  the null hypothesis. Therefore, the null hypothesis should *not* be
+      --  rejected. If the probability is less than the level, then it is
+      --  unlikely to have a type I error and therefore you can safely reject
+      --  the null hypothesis.
+
+      function Threshold_T_Test
+        (Data      : Random_Tensor;
+         Level     : Probability) return Element
+      with Pre => 0.0 < Level and Level <= 0.5;
+      --  Return the threshold relative to a true mean for a given significance level
+      --
+      --  Add and subtract the result from some true mean to get the interval for
+      --  which the null hypothesis (sample mean = true mean) is accepted.
+      --
+      --  A significance level of 0.1 corresponds with a confidence of 90 %
+      --  and 0.05 corresponds with 95 %. A lower significance level (and thus
+      --  higher confidence) will give a wider interval.
+      --
+      --  For a sample mean further away from the true mean, the null hypothesis
+      --  is correctly rejected or incorrectly (type I error), but the type I error
+      --  occurs only with a probability equal to the given significance level.
+      --
+      --  See https://en.wikipedia.org/wiki/Student%27s_t-distribution#Table_of_selected_values
+
    end Generic_Random;
 
 private

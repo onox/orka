@@ -160,6 +160,42 @@ package body Orka.Numerics.Tensors is
          return X / (X + Y);
       end Beta;
 
+      function Test_Statistic_T_Test (Data : Random_Tensor; True_Mean : Element) return Element is
+         Sample_Mean : constant Element := Data.Mean;
+         Sample_Std  : constant Element := Data.Standard_Deviation (Offset => 1);
+      begin
+         return (Sample_Mean - True_Mean) / (Sample_Std / EF.Sqrt (Element (Data.Elements)));
+      end Test_Statistic_T_Test;
+
+      function Threshold_T_Test
+        (Data  : Random_Tensor;
+         Level : Probability) return Element
+      is
+         Sample_Std : constant Element := Data.Standard_Deviation (Offset => 1);
+
+         use EF;
+
+         --  Simple approximation by Shore (1982)
+--         T_Value : constant Element := 5.5556 * (1.0 - Element (Level / (1.0 - Level))**0.1186);
+
+         --  "A handy approximation for the error function and its inverse", Winitzki S., 2008,
+         --  equation 7.
+         function Inverse_Erf (X : Probability) return Element is
+            A        : constant := 0.147;
+            Two_Pi_A : constant := 2.0 / (Ada.Numerics.Pi * A);
+
+            Ln_X2          : constant Element := Log (1.0 - Element (X)**2);
+            Two_Pi_A_Ln_X2 : constant Element := Two_Pi_A + Ln_X2 / 2.0;
+         begin
+            return Sqrt (Sqrt (Two_Pi_A_Ln_X2**2 - Ln_X2 / A) - Two_Pi_A_Ln_X2);
+         end Inverse_Erf;
+
+         --  Quantile function of standard normal distribution
+         T_Value : constant Element := Sqrt (2.0) * Inverse_Erf (2.0 * (1.0 - Level) - 1.0);
+      begin
+         return T_Value * (Sample_Std / EF.Sqrt (Element (Data.Elements)));
+      end Threshold_T_Test;
+
    end Generic_Random;
 
 end Orka.Numerics.Tensors;
