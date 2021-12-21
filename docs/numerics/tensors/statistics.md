@@ -21,17 +21,27 @@ when `:::ada Offset = 1`.
 ## Distributions
 
 The generic package `Generic_Random` provides functions that return a
-tensor with one of the following statistical distributions:
+tensor with some specific statistical distributions.
 
-- `Uniform`. Values are uniformly distributed in the range 0 .. 1.
+The package can be instantiated using a type derived from type `Tensor`,
+for example:
 
-- `Normal`. Values are from the standard normal distribution with
-  mean 0.0 and variance 1.0. To create a tensor with the distribution
-  N(3.0, 2.0) (mean is 3.0 and standard deviation is 2.0), use:
+```ada
+use Orka.Numerics.Singles.Tensors;
+use Orka.Numerics.Singles.Tensors.CPU;
 
-      ```ada
-      3.0 + Normal (Shape) * 2.0
-      ```
+package Random is new Generic_Random (CPU_Tensor);
+```
+
+The type `CPU_Tensor` in package `SIMD_CPU` uses the [xoshiro128++][url-xoshiro]
+pseudo-random number generator and needs to be seeded once with a
+Duration value before using any of the functions in the generic package:
+
+```ada
+Reset_Random (Orka.OS.Monotonic_Clock);
+```
+
+### Discrete distributions
 
 - `Binomial` with parameters `N` and `P`. Returns a tensor where each
   element is the number of successful runs (each value is in 0 .. `N`)
@@ -60,6 +70,20 @@ tensor with one of the following statistical distributions:
   distribution, modeling the number of failures. Parameter `P` must be in
   0.0 .. 1.0.
 
+- `Poisson` with parameter `Lambda`.
+
+### Continuous distributions
+
+- `Uniform`. Values are uniformly distributed in the range 0 .. 1.
+
+- `Normal`. Values are from the standard normal distribution with
+  mean 0.0 and variance 1.0. To create a tensor with the distribution
+  N(3.0, 2.0) (mean is 3.0 and standard deviation is 2.0), use:
+
+      ```ada
+      3.0 + Normal (Shape) * 2.0
+      ```
+
 - `Exponential` with parameter `Lambda`.
 
 - `Pareto` with parameters `Xm` and `Alpha`.
@@ -70,28 +94,12 @@ tensor with one of the following statistical distributions:
 
 - `Weibull` with parameters `K` and `Lambda`.
 
-- `Poisson` with parameter `Lambda`.
-
 - `Gamma` with parameters `K` and `Theta`.
 
 - `Beta` with parameters `Alpha` and `Beta`.
 
-The package can be instantiated using a type derived from type `Tensor`,
-for example:
+- `Chi_Squared` with parameter `K`.
 
-```ada
-use Orka.Numerics.Singles.Tensors;
-use Orka.Numerics.Singles.Tensors.CPU;
-
-package Random is new Generic_Random (CPU_Tensor);
-```
-
-The type `CPU_Tensor` in package `SIMD_CPU` uses the [xoshiro128++][url-xoshiro]
-pseudo-random number generator and needs to be seeded once with a
-Duration value before using any of the functions in the generic package:
-
-```ada
-Reset_Random (Orka.OS.Monotonic_Clock);
-```
+- `Student_T` with parameter `V`.
 
   [url-xoshiro]: https://prng.di.unimi.it/
