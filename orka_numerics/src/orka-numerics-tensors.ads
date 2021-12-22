@@ -51,7 +51,7 @@ package Orka.Numerics.Tensors is
 
    subtype Index_Type is Positive;
 
-   type Tensor_Index is array (Tensor_Dimension) of Index_Type
+   type Tensor_Index is array (Tensor_Dimension range <>) of Index_Type
      with Default_Component_Value => Index_Type'First;
    --  TODO Support negative indices in function Get?
 
@@ -62,7 +62,12 @@ package Orka.Numerics.Tensors is
        or else raise Constraint_Error with
          "Range start (" & Trim (Range_Type.Start) & ") > stop (" & Trim (Range_Type.Stop) & ")";
 
-   type Tensor_Range is array (Tensor_Dimension) of Range_Type;
+   type Tensor_Range is array (Tensor_Dimension range <>) of Range_Type;
+
+   function Shape (Index : Tensor_Range) return Tensor_Shape
+     with Post => Index'Length = Shape'Result'Length
+                    and (for all D in Index'Range =>
+                           Index (D).Stop - Index (D).Start + 1 = Shape'Result (D));
 
    ----------------------------------------------------------------------------
 
@@ -96,12 +101,20 @@ package Orka.Numerics.Tensors is
      with Post'Class => Object.Dimensions = Get'Result.Dimensions;
 
    function Get (Object : Tensor; Index : Tensor_Range) return Tensor is abstract
-     with Post'Class => Object.Dimensions = Get'Result.Dimensions;
-   --  TODO Add Pre'Class => Dimensions (Index) <= Object.Dimensions
+     with Pre'Class  => Index'Length <= Object.Dimensions,
+          Post'Class => Index'Length = Get'Result.Dimensions;
 
    function Get (Object : Tensor; Index : Tensor) return Tensor is abstract
      with Pre'Class  => Index.Kind = Bool_Type and Index.Dimensions in 1 .. Object.Dimensions,
           Post'Class => Get'Result.Dimensions = 1 and Get'Result.Kind = Object.Kind;
+
+   ----------------------------------------------------------------------------
+
+   procedure Set (Object : in out Tensor; Index : Tensor_Index; Value : Element) is abstract
+     with Pre'Class => Object.Kind = Float_Type;
+
+   procedure Set (Object : in out Tensor; Index : Tensor_Index; Value : Boolean) is abstract
+     with Pre'Class => Object.Kind = Bool_Type;
 
    ----------------------------------------------------------------------------
 
@@ -846,6 +859,29 @@ package Orka.Numerics.Tensors is
 private
 
    function Add (Left, Right : Tensor_Shape; Dimension : Tensor_Dimension) return Tensor_Shape;
+
+   function To_Index (Index : Tensor_Index; Shape : Tensor_Shape) return Index_Type
+     with Pre => Index'Length = Shape'Length
+                   and then (for all D in Index'Range => Index (D) <= Shape (D));
+
+   function Full_Range (Shape : Tensor_Shape; Index : Tensor_Range) return Tensor_Range;
+   --  Return a copy of the given index with the missing dimensions added
+   --  from the given shape
+   --
+   --  For example, if Shape is 2-D and Index is 1-D, then 1 .. Shape (2)
+   --  is used for the second dimension in the result.
+
+   type Alignment is (Left, Right);
+
+   function Full_Shape
+     (Dimensions : Tensor_Dimension;
+      Shape      : Tensor_Shape;
+      Justify    : Alignment) return Tensor_Shape;
+   --  Return a shape padded at the beginning or end with 1's for missing dimensions
+   --
+   --  For example, if Dimensions = 3 and Alignment = Right and Shape has 2 dimensions,
+   --  then the first dimension of the result is 1 and the last two dimensions
+   --  equal to the given shape.
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 

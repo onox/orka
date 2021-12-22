@@ -40,7 +40,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Size * Vector_Type'Length - Count);
 
    function To_Index (Index : Tensor_Index; Columns : Positive) return Index_Type is
-     ((Index (1) - 1) * Columns + Index (2));
+     (To_Index (Index, (Index (1), Columns)))
+   with Pre => Index'Length = 2;
+   --  Index (1) isn't used for 2-D Index except in Pre condition of To_Index in parent package
 
    function Reset_Padding
      (Object  : CPU_Tensor;
@@ -343,7 +345,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Get;
 
    procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor)
-     with Pre'Class => Object.Shape (2) = Row.Elements;
+     with Pre'Class => Object.Dimensions = 2 and then Object.Shape (2) = Row.Elements;
 
    procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor) is
       Count : constant Natural := Row.Elements;
@@ -360,21 +362,40 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Set;
 
    function Flattened_Index (Object : CPU_Tensor; Index : Tensor_Index) return Index_Type is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
    begin
-      if Index (1) > Rows then
-         raise Constraint_Error with
-           "Stop index (" & Trim (Index (1)) & ") out of bounds (1 .. " & Trim (Rows) & ")";
-      end if;
+      for Dimension in Index'Range loop
+         declare
+            Index_Dim : constant Natural := Index (Dimension);
+            Shape_Dim : constant Natural := Object.Shape (Dimension);
+         begin
+            if Index_Dim > Shape_Dim then
+               raise Constraint_Error with
+                 "Index (" & Trim (Index_Dim) & ") out of bounds (1 .. " & Trim (Shape_Dim) & ")";
+            end if;
+         end;
+      end loop;
 
-      if Index (2) > Columns then
-         raise Constraint_Error with
-           "Stop index (" & Trim (Index (2)) & ") out of bounds (1 .. " & Trim (Columns) & ")";
-      end if;
-
-      return To_Index (Index, Columns);
+      return To_Index (Index, Object.Shape);
    end Flattened_Index;
+
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Element) is
+      Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
+   begin
+      Object.Data (Data_Vectors (Index_Flattened)) (Data_Offset (Index_Flattened)) := Value;
+   end Set;
+
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Boolean) is
+      Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
+
+      Zero_Vector : constant Vector_Type := (others => 0.0);
+
+      Mask : constant Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
+
+      Booleans : Integer_Vector_Type := Convert (Object.Data (Data_Vectors (Index_Flattened)));
+   begin
+      Booleans (Data_Offset (Index_Flattened)) := (if Value then Mask (Mask'First) else 0);
+      Object.Data (Data_Vectors (Index_Flattened)) := Convert (Booleans);
+   end Set;
 
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Index) return Element is
       Object_Data : Element_Array (1 .. Object.Elements)
@@ -399,18 +420,19 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       case Object.Dimensions is
          when 1 =>
-            return Object.Get (Tensor_Range'(Index, (1, 1)));
+            return Object.Get (Tensor_Range'(1 => Index));
          when 2 =>
             return Object.Get (Tensor_Range'(Index, (1, Object.Shape (2))));
       end case;
    end Get;
 
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Range) return CPU_Tensor is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := (if 2 in Object.Shape'Range then Object.Shape (2) else 1);
+      Rows : constant Natural := Object.Shape (1);
 
-      Result_Rows    : constant Positive := Index (1).Stop - Index (1).Start + 1;
-      Result_Columns : constant Positive := Index (2).Stop - Index (2).Start + 1;
+      Row_Start : constant Index_Type := Index (1).Start;
+      Row_Stop  : constant Index_Type := Index (1).Stop;
+
+      Result_Rows : constant Positive := Row_Stop - Row_Start + 1;
    begin
       case Object.Dimensions is
          when 1 =>
@@ -418,13 +440,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                Count : constant Positive := Result_Rows;
                Size  : constant Positive := Data_Vectors (Count);
                Shape : constant Tensor_Shape := (1 => Count);
-
-               Row_Start : Index_Type renames Index (1).Start;
-               Row_Stop  : Index_Type renames Index (1).Stop;
             begin
-               if Index (1).Stop > Rows then
+               if Row_Stop > Rows then
                   raise Constraint_Error with
-                    "Stop index (" & Trim (Index (1).Stop) & ") out of bounds (1 .. " &
+                    "Stop index (" & Trim (Row_Stop) & ") out of bounds (1 .. " &
                     Trim (Rows) & ")";
                end if;
 
@@ -447,17 +466,33 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             end;
          when 2 =>
             declare
-               Shape : constant Tensor_Shape := (1 => Result_Rows, 2 => Result_Columns);
+               Columns : constant Natural :=
+                 (if 2 in Object.Shape'Range then Object.Shape (2) else 1);
+
+               Index_Shape : constant Tensor_Shape := Shape (Index);
+               Result_Columns : constant Positive :=
+                 (if 2 in Index_Shape'Range then Index_Shape (2) else Columns);
+
+               Shape : constant Tensor_Shape :=
+                 (if Result_Rows = 1 then
+                    (1 => Result_Columns)
+                  else
+                    (1 => Result_Rows, 2 => Result_Columns));
+
+               Column_Start : constant Index_Type :=
+                 (if 2 in Index'Range then Index (2).Start else 1);
+               Column_Stop  : constant Index_Type :=
+                 (if 2 in Index'Range then Index (2).Stop else Columns);
             begin
-               if Index (1).Stop > Rows then
+               if Row_Stop > Rows then
                   raise Constraint_Error with
-                    "Stop index (" & Trim (Index (1).Stop) & ") out of bounds (1 .. " &
+                    "Stop index (" & Trim (Row_Stop) & ") out of bounds (1 .. " &
                     Trim (Rows) & ")";
                end if;
 
-               if Index (2).Stop > Columns then
+               if Column_Stop > Columns then
                   raise Constraint_Error with
-                    "Stop index (" & Trim (Index (2).Stop) & ") out of bounds (1 .. " &
+                    "Stop index (" & Trim (Column_Stop) & ") out of bounds (1 .. " &
                     Trim (Columns) & ")";
                end if;
 
@@ -468,17 +503,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
                      Object_Data : Element_Array (1 .. Object.Elements)
                        with Import, Convention => Ada, Address => Object.Data'Address;
-
                   begin
                      for I in 1 .. Result_Rows loop
                         declare
                            Result_Index : constant Natural := (I - 1) * Result_Columns;
 
-                           Current_Row : constant Natural := Index (1).Start - 1 + I;
+                           Current_Row : constant Natural := Row_Start - 1 + I;
                            Base_Index  : constant Natural := (Current_Row - 1) * Columns;
-
-                           Column_Start : Index_Type renames Index (2).Start;
-                           Column_Stop  : Index_Type renames Index (2).Stop;
                         begin
                            Result_Data (Result_Index + 1 .. Result_Index + Result_Columns) :=
                              Object_Data (Base_Index + Column_Start .. Base_Index + Column_Stop);

@@ -34,6 +34,59 @@ package body Orka.Numerics.Tensors is
       return Result;
    end Add;
 
+   function To_Index (Index : Tensor_Index; Shape : Tensor_Shape) return Index_Type is
+      Result : Index_Type := Index (Index'Last);
+      Size   : Natural    := Shape (Index'Last);
+   begin
+      for Dimension in reverse 1 .. Index'Last - 1 loop
+         Result := (Index (Dimension) - 1) * Size + Result;
+         Size   := Size * Shape (Dimension);
+      end loop;
+
+      return Result;
+   end To_Index;
+
+   function Shape (Index : Tensor_Range) return Tensor_Shape is
+   begin
+      return Result : Tensor_Shape (Index'Range) do
+         for Dimension in Result'Range loop
+            Result (Dimension) := Index (Dimension).Stop - Index (Dimension).Start + 1;
+         end loop;
+      end return;
+   end Shape;
+
+   function Full_Range (Shape : Tensor_Shape; Index : Tensor_Range) return Tensor_Range is
+      Result : Tensor_Range (Shape'Range);
+   begin
+      for Dimension in Result'Range loop
+         if Dimension in Index'Range then
+            Result (Dimension) := Index (Dimension);
+         else
+            Result (Dimension) := (Start => 1, Stop => Shape (Dimension));
+         end if;
+      end loop;
+
+      return Result;
+   end Full_Range;
+
+   function Full_Shape
+     (Dimensions : Tensor_Dimension;
+      Shape      : Tensor_Shape;
+      Justify    : Alignment) return Tensor_Shape
+   is
+      Result : Tensor_Shape (1 .. Dimensions) := (others => 1);
+      Offset : constant Tensor_Dimension'Base :=
+        (case Justify is
+           when Left  => 0,
+           when Right => Result'Last - Shape'Last);
+   begin
+      for Dimension in Shape'Range loop
+         Result (Offset + Dimension) := Shape (Dimension);
+      end loop;
+
+      return Result;
+   end Full_Shape;
+
    function Trim (Value : Natural) return String is
       Result : constant String := Value'Image;
    begin

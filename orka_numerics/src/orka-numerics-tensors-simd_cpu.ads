@@ -94,6 +94,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Element);
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Boolean);
+
    overriding
    function Image (Object : CPU_Tensor) return String;
 
