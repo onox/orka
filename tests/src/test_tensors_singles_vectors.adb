@@ -80,6 +80,18 @@ package body Test_Tensors_Singles_Vectors is
       end loop;
    end Assert_Equal;
 
+   procedure Assert_Boolean_Equal (Expected : Boolean_Array; Actual : CPU_Tensor) is
+   begin
+      Assert (Actual.Elements = Expected'Length,
+        "Unexpected size of tensor: " & Actual.Elements'Image);
+
+      for I in Expected'Range loop
+         Assert (Expected (I) = Actual (I),
+           "Unexpected element at index " & I'Image & ": " &
+           Boolean'Image (Actual (I)) & " instead of " & Boolean'Image (Expected (I)));
+      end loop;
+   end Assert_Boolean_Equal;
+
    ----------------------------------------------------------------------------
 
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
@@ -222,6 +234,27 @@ package body Test_Tensors_Singles_Vectors is
       Assert_Equal (Expected_2, Actual_2);
       Assert_Equal (Expected_3, Actual_3);
    end Test_Array_Range;
+
+   procedure Test_Set_Value_Index (Object : in out Test) is
+      Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+
+      Expected : constant Element_Array := (1.0, 4.0, 3.0);
+   begin
+      Tensor.Set ((1 => 2), 4.0);
+
+      Assert_Equal (Expected, Tensor);
+   end Test_Set_Value_Index;
+
+   procedure Test_Set_Value_Index_Boolean (Object : in out Test) is
+      Tensor : CPU_Tensor := To_Boolean_Tensor ((True, False, False, True));
+
+      Expected : constant Boolean_Array := (True, True, False, False);
+   begin
+      Tensor.Set ((1 => 2), True);
+      Tensor.Set ((1 => 4), False);
+
+      Assert_Boolean_Equal (Expected, Tensor);
+   end Test_Set_Value_Index_Boolean;
 
    procedure Test_Constant_Indexing_Index (Object : in out Test) is
       Values : constant Element_Array := (1.0, 2.0, 3.0, 4.0, 5.0);
@@ -1181,6 +1214,11 @@ package body Test_Tensors_Singles_Vectors is
         (Name & "Test indexing using range", Test_Constant_Indexing_Range'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test indexing using tensor", Test_Constant_Indexing_Tensor'Access));
+
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test set value using index", Test_Set_Value_Index'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test set value using index (boolean)", Test_Set_Value_Index_Boolean'Access));
 
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test '&' operator", Test_Operator_Concatenate'Access));
