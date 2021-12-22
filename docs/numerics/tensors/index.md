@@ -48,10 +48,11 @@ Tensors provide the following features:
     - Numbers in tensors are always floating-point numbers because of the
       generic parameter of the package `:::ada Orka.Numerics.Tensors`.
 
-    - New values cannot be assigned to specific parts of a tensor using
-      non-constant indexing.
-
     - Special matrix decompositions are not implemented yet.
+
+??? note "Variable indexing"
+    Some implementations of tensors may (partially) support variable
+    indexing to assign values to specific parts of a tensor.
 
 ##  Image
 

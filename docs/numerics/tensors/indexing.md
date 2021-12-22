@@ -12,6 +12,8 @@ syntax. Several use cases are supported:
 
 - Retrieving a number of elements selected using a boolean tensor.
 
+Some implementations support assigning values using indexing.
+
 ## A row or value
 
 A single element or boolean can be retrieved if the tensor is 1-D:
@@ -81,3 +83,66 @@ tensor([ 2.0, 4.0, 6.0])
 
 See [Comparing](/numerics/tensors/element-wise-operations/#comparing) for
 more information about how to create a boolean tensor.
+
+## Assigning values
+
+A single element or `Boolean` can be assigned using procedure `Set`.
+The index must be of type `Tensor_Index`, which is an array.
+For example, to assign the value `:::ada 4.0` to the second position
+of a vector, the procedure `Set` can be used as follows:
+
+```ada
+Tensor.Set ((1 => 2), 4.0);
+```
+
+Similarly, the values `True` and `False` can be assigned to boolean
+tensors.
+
+### Tensors
+
+Some implementations like the SIMD implementation (partially) support
+assigning values using indexing. When assigning a value, the value must
+be a tensor of the same implementation (type) and the index can be one
+of the following types:
+
+- `Index_Type`
+
+- `Range_Type`
+
+- `Tensor_Range`
+
+When assigning a tensor, the shape of the tensor must match the shape
+of the part selected by the given index, otherwise a `Program_Error`
+exception may be raised.
+
+For example, if a matrix `Tensor` has shape 3 × 2 and `:::ada 2` is used
+as the index, then the source tensor must be a 1-D tensor with 2 elements
+(the number of columns of `Tensor`):
+
+```ada
+declare
+   Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0), Shape => (3, 2));
+begin
+   Tensor (2) := To_Tensor ((7.0, 8.0));
+end;
+```
+
+After assignment the values of `Tensor` are:
+
+```
+tensor([[ 1.0, 2.0],
+        [ 7.0, 8.0],
+        [ 5.0, 6.0]])
+```
+
+Similarly, a `Range_Type` or `Tensor_Range` can be used:
+
+```ada
+Tensor_1 (Range_Type'(2, 3)) := Tensor_2;
+```
+
+The index of type `Range_Type` will select a range of rows (in case of
+a 2-D tensor).
+If `Tensor_1` has shape 4 × 4, then `Tensor_2` must have shape 2 × 4.
+The rows of `Tensor_2` must match the number of selected rows, and
+the columns of the tensor must match the number of columns of `Tensor_1`.
