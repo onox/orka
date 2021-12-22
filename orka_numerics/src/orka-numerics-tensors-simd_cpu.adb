@@ -361,6 +361,56 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Object_Data (Base_Index + 1 .. Base_Index + Row_Data'Length) := Row_Data;
    end Set;
 
+   procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Slice : CPU_Tensor) is
+      Full_Index : constant Tensor_Range := Full_Range (Object.Shape, Index);
+      Full_Slice : constant Tensor_Shape := Full_Shape (Object.Dimensions, Slice.Shape, Right);
+
+      pragma Assert (Full_Slice = Shape (Full_Index));
+   begin
+      --  If the slice (and shape of index) has the full depth/height/width except
+      --  for the first dimension, then the memory to which the data will be written
+      --  is contiguous, which means it has no gaps.
+      --
+      --  For example, if shape of Slice is (2, 3) and you have the following
+      --  object and index (in brackets):
+      --
+      --  1 [ 2  3  4]  5
+      --  6 [ 7  8  9] 10
+      --  11 12 13 14  15
+      --
+      --  then there is a gap (positions 5 and 6). Howerver, if the shape
+      --  of Slice is (2, 5) (with a matching Index) then there are no gaps.
+      if Is_Equal (Object.Shape, Full_Slice, 1) then
+         declare
+            Start_Index : Tensor_Index (Full_Index'Range);
+            Stop_Index  : Tensor_Index (Full_Index'Range);
+         begin
+            for Dimension in Full_Index'Range loop
+               Start_Index (Dimension) := Full_Index (Dimension).Start;
+               Stop_Index (Dimension)  := Full_Index (Dimension).Stop;
+            end loop;
+
+            declare
+               Start_Index_Flattened : constant Index_Type := To_Index (Start_Index, Object.Shape);
+               Stop_Index_Flattened  : constant Index_Type := To_Index (Stop_Index, Object.Shape);
+
+               Count : constant Natural := Slice.Elements;
+               pragma Assert (Stop_Index_Flattened - Start_Index_Flattened + 1 = Count);
+
+               Row_Data : Element_Array (1 .. Count)
+                 with Import, Convention => Ada, Address => Slice.Data'Address;
+
+               Object_Data : Element_Array (1 .. Object.Elements)
+                 with Import, Convention => Ada, Address => Object.Data'Address;
+            begin
+               Object_Data (Start_Index_Flattened .. Stop_Index_Flattened) := Row_Data;
+            end;
+         end;
+      else
+         raise Program_Error with "Not implemented yet";  --  FIXME
+      end if;
+   end Set;
+
    function Flattened_Index (Object : CPU_Tensor; Index : Tensor_Index) return Index_Type is
    begin
       for Dimension in Index'Range loop
@@ -580,6 +630,61 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          end if;
       end return;
    end Get;
+
+   function Reference
+     (Object : aliased in out CPU_Tensor;
+      Index  : Index_Type) return CPU_Reference is
+   begin
+      case Object.Dimensions is
+         when 1 =>
+            return Object.Reference (Tensor_Range'(1 => (Index, Index)));
+         when 2 =>
+            return Object.Reference (Tensor_Range'(1 => (Index, Index)));
+      end case;
+   end Reference;
+
+   function Reference
+     (Object : aliased in out CPU_Tensor;
+      Index  : Range_Type) return CPU_Reference is
+   begin
+      case Object.Dimensions is
+         when 1 =>
+            return Object.Reference (Tensor_Range'(1 => Index));
+         when 2 =>
+            return Object.Reference (Tensor_Range'(Index, (1, Object.Shape (2))));
+      end case;
+   end Reference;
+
+   function Reference
+     (Object : aliased in out CPU_Tensor;
+      Index  : Tensor_Range) return CPU_Reference
+   is
+      Subject : constant CPU_Tensor := Object (Index);
+      pragma Assert (Subject.Dimensions = Index'Length);
+   begin
+      return Result : CPU_Reference
+        (Data       => CPU_Tensor_Access'(new CPU_Tensor'(Subject)),
+         Dimensions => Index'Length)
+      do
+         Result.Object := Object'Access;
+         Result.Index  := Index;
+      end return;
+   end Reference;
+
+   --  If an exception is raised by Finalize, it usually means that
+   --  the tensor does not have the correct shape for the given object and index
+   overriding procedure Finalize (Object : in out CPU_Reference_Tracker) is
+   begin
+      if Object.Parent.Data /= null then
+         Set (Object.Parent.Object.all, Object.Parent.Index, Object.Parent.Data.all);
+
+         declare
+            Subject : CPU_Tensor_Access := Object.Parent.Data.all'Unchecked_Access;
+         begin
+            Free (Subject);
+         end;
+      end if;
+   end Finalize;
 
    ----------------------------------------------------------------------------
 
@@ -1271,7 +1376,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       begin
          if I /= J then
             declare
-               Row_I : CPU_Tensor renames Ab (I);
+               Row_I : constant CPU_Tensor := Ab (I);
                Old_J : constant CPU_Tensor := Ab (J);
             begin
                Set (Ab, J, Row_I);
@@ -1281,7 +1386,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end Swap_Rows;
 
       procedure Scale_Row (I : Index_Type; Scale : Element) is
-         Row_I : CPU_Tensor renames Ab (I);
+         Row_I : constant CPU_Tensor := Ab (I);
       begin
          if Scale /= 1.0 then
             Set (Ab, I, Scale * Row_I);
@@ -1289,8 +1394,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end Scale_Row;
 
       procedure Replace_Row (Scale : Element; I, J : Index_Type) is
-         Row_I : CPU_Tensor renames Ab (I);
-         Row_J : CPU_Tensor renames Ab (J);
+         Row_I : constant CPU_Tensor := Ab (I);
+         Row_J : constant CPU_Tensor := Ab (J);
       begin
          if Scale /= 0.0 then
             Set (Ab, J, Row_J - Scale * Row_I);
