@@ -333,6 +333,68 @@ package body Test_Tensors_Singles_Vectors is
       Assert (Expected = Actual, "Unexpected element: " & Actual'Image);
    end Test_Operator_Multiply_Inner;
 
+   procedure Test_Norm (Object : in out Test) is
+      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+
+      Expected : constant Element := EF.Sqrt (1.0**2 + 2.0**2 + 3.0**2 + 4.0**2 + 5.0**2);
+      Actual   : constant Element := Tensor.Norm;
+   begin
+      Assert (Expected = Actual, "Unexpected norm: " & Actual'Image);
+   end Test_Norm;
+
+   procedure Test_Normalize (Object : in out Test) is
+      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0)).Normalize;
+
+      Expected : constant Element := 1.0;
+      Actual   : constant Element := Tensor.Norm;
+   begin
+      Assert (Expected = Actual, "Unexpected norm after normalization: " & Actual'Image);
+   end Test_Normalize;
+
+   procedure Test_Standardize (Object : in out Test) is
+      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0)).Standardize;
+
+      Expected_Mean : constant Element := 0.0;
+      Expected_Std  : constant Element := 1.0;
+
+      Actual_Mean  : constant Element := Tensor.Mean;
+      Actual_Std   : constant Element := Tensor.Standard_Deviation;
+   begin
+      Assert (Expected_Mean = Actual_Mean, "Unexpected mean: " & Actual_Mean'Image);
+      Assert (Expected_Std = Actual_Std, "Unexpected standard deviation: " & Actual_Std'Image);
+   end Test_Standardize;
+
+   procedure Test_Correlation_Coefficient (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := To_Tensor ((3.0, 0.0));
+      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 3.0));
+      Tensor_3 : constant CPU_Tensor := To_Tensor ((-3.0, 0.0));
+      Tensor_4 : constant CPU_Tensor := To_Tensor ((2.0, 2.0));
+
+      --  Create a line with positions (x_i, y_i) where each x_i is a value
+      --  from Tensor_5 (the horizontal axis), while y_i are values from
+      --  Tensor_6 (vertical axis). The line will zigzag in a horizontal
+      --  direction, indicating the two tensors are uncorrelated.
+      --  An increasing line would indicate positive correlation, while
+      --  a decreasing line indicates negative correlation
+      Tensor_5 : constant CPU_Tensor := To_Tensor ((0.0,  1.0, 2.0,  3.0, 4.0,  5.0, 6.0));
+      Tensor_6 : constant CPU_Tensor := To_Tensor ((1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0));
+
+      Expected_1 : constant Element := 0.0;
+      Expected_2 : constant Element := -1.0;
+      Expected_3 : constant Element := 1.0;
+      Expected_4 : constant Element := 0.0;
+
+      Actual_1 : constant Element := Correlation_Coefficient (Tensor_5, Tensor_6);
+      Actual_2 : constant Element := Correlation_Coefficient (Tensor_1, Tensor_3);
+      Actual_3 : constant Element := Correlation_Coefficient (Tensor_2, Tensor_2);
+      Actual_4 : constant Element := Correlation_Coefficient (Tensor_1, Tensor_4);
+   begin
+      Assert (Expected_1 = Actual_1, "Unexpected correlation coeff.: " & Actual_1'Image);
+      Assert (Expected_2 = Actual_2, "Unexpected correlation coeff.: " & Actual_2'Image);
+      Assert (Expected_3 = Actual_3, "Unexpected correlation coeff.: " & Actual_3'Image);
+      Assert (Expected_4 = Actual_4, "Unexpected correlation coeff.: " & Actual_4'Image);
+   end Test_Correlation_Coefficient;
+
    procedure Test_Operator_Add_Tensors (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
       Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 5.0, 6.0));
@@ -1224,6 +1286,15 @@ package body Test_Tensors_Singles_Vectors is
         (Name & "Test '&' operator", Test_Operator_Concatenate'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test '*' operator (inner product)", Test_Operator_Multiply_Inner'Access));
+
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Norm", Test_Norm'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Normalize", Test_Normalize'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Standardize", Test_Standardize'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Correlation_Coefficient", Test_Correlation_Coefficient'Access));
 
       --  Element-wise operations
       Test_Suite.Add_Test (Caller.Create
