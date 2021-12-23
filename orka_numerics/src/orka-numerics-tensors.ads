@@ -275,6 +275,8 @@ package Orka.Numerics.Tensors is
    --  Return the concatenation of the two tensors in the first dimension
 
    ----------------------------------------------------------------------------
+   --                            Matrix operations                           --
+   ----------------------------------------------------------------------------
 
    function "*" (Left, Right : Tensor) return Tensor is abstract
      with Pre'Class => (if Left.Dimensions > 1 then
@@ -325,6 +327,42 @@ package Orka.Numerics.Tensors is
           Post'Class => Solve'Result.Shape = B.Shape;
 
    --  TODO Add LU, QR, SVD, Cholesky
+
+   ----------------------------------------------------------------------------
+   --                            Vector operations                           --
+   ----------------------------------------------------------------------------
+
+   function Norm (Object : Tensor) return Element is abstract
+     with Pre'Class  => Object.Dimensions = 1,
+          Post'Class => Norm'Result >= 0.0;
+   --  Return the norm or magnitude of the vector
+
+   function Normalize (Object : Tensor) return Tensor is abstract
+     with Pre'Class  => Object.Dimensions = 1,
+          Post'Class => Normalize'Result.Dimensions = 1;
+   --  Return the normalized vector
+   --
+   --  The magnitude or norm of a unit vector is 1.0.
+
+   function Standardize (Object : Tensor) return Tensor is abstract
+     with Pre'Class  => Object.Dimensions = 1,
+          Post'Class => Standardize'Result.Dimensions = 1;
+   --  Return the standardized version of the vector
+   --
+   --  A standardized vector has a mean of 0.0 and a standard deviation
+   --  of 1.0. If all elements of the tensor are equal, then its standard
+   --  deviation is 0.0, which means the returned vector is the zero vector.
+
+   subtype Correlation_Element is Element range -1.0 .. 1.0;
+
+   function Correlation_Coefficient (Left, Right : Tensor) return Correlation_Element is abstract
+     with Pre'Class  => Left.Dimensions = 1 and Right.Dimensions = 1
+                          and Left.Shape = Right.Shape;
+   --  Return the correlation coefficient of two vectors
+   --
+   --  The coefficient is 0.0 if the two vectors are uncorrelated
+   --  or if one or both vectors has all equal elements. 1.0 is returned
+   --  if the two vectors are aligned, and -1.0 if negatively aligned.
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --

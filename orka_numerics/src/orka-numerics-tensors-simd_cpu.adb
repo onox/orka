@@ -1485,6 +1485,23 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end case;
    end Solve;
 
+   overriding
+   function Norm (Object : CPU_Tensor) return Element is (EF.Sqrt (Object * Object));
+
+   overriding
+   function Normalize (Object : CPU_Tensor) return CPU_Tensor is (Object / Object.Norm);
+
+   overriding
+   function Standardize (Object : CPU_Tensor) return CPU_Tensor is
+      Std_Dev : constant Element := Object.Standard_Deviation;
+   begin
+      return (Object - Object.Mean) / (if Std_Dev /= 0.0 then Std_Dev else 1.0);
+   end Standardize;
+
+   overriding
+   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element is
+     (Element'(Left.Standardize * Right.Standardize) / Element (Left.Elements));
+
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
    ----------------------------------------------------------------------------

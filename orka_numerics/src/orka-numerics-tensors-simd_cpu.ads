@@ -232,6 +232,8 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function "&" (Left, Right : CPU_Tensor) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
+   --                            Matrix operations                           --
+   ----------------------------------------------------------------------------
 
    overriding
    function "*" (Left, Right : CPU_Tensor) return CPU_Tensor;
@@ -253,6 +255,19 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor;
+
+   ----------------------------------------------------------------------------
+   --                            Vector operations                           --
+   ----------------------------------------------------------------------------
+
+   overriding function Norm (Object : CPU_Tensor) return Element;
+
+   overriding function Normalize (Object : CPU_Tensor) return CPU_Tensor;
+
+   overriding function Standardize (Object : CPU_Tensor) return CPU_Tensor;
+
+   overriding
+   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element;
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
