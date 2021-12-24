@@ -50,10 +50,6 @@ Tensors provide the following features:
 
     - Special matrix decompositions are not implemented yet.
 
-??? note "Variable indexing"
-    Some implementations of tensors may (partially) support variable
-    indexing to assign values to specific parts of a tensor.
-
 ##  Image
 
 The image of a tensor can be obtained with the function `Image`:

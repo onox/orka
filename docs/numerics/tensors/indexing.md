@@ -12,8 +12,6 @@ syntax. Several use cases are supported:
 
 - Retrieving a number of elements selected using a boolean tensor.
 
-Some implementations support assigning values using indexing.
-
 ## A row or value
 
 A single element or boolean can be retrieved if the tensor is 1-D:
@@ -100,10 +98,9 @@ tensors.
 
 ### Tensors
 
-Some implementations like the SIMD implementation (partially) support
-assigning values using indexing. When assigning a value, the value must
-be a tensor of the same implementation (type) and the index can be one
-of the following types:
+Besides scalar values, it is also possible to assign a whole tensor.
+The tensor must be of the same implementation (type) and the index
+can be one of the following types:
 
 - `Index_Type`
 
@@ -112,18 +109,17 @@ of the following types:
 - `Tensor_Range`
 
 When assigning a tensor, the shape of the tensor must match the shape
-of the part selected by the given index, otherwise a `Program_Error`
-exception may be raised.
+of the part selected by the given index.
 
 For example, if a matrix `Tensor` has shape 3 × 2 and `:::ada 2` is used
-as the index, then the source tensor must be a 1-D tensor with 2 elements
-(the number of columns of `Tensor`):
+as the index, then the tensor given as the value must be a 1-D tensor with
+2 elements (the number of columns of `Tensor`):
 
 ```ada
 declare
    Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0), Shape => (3, 2));
 begin
-   Tensor (2) := To_Tensor ((7.0, 8.0));
+   Tensor.Set (2, To_Tensor ((7.0, 8.0)));
 end;
 ```
 
@@ -138,7 +134,7 @@ tensor([[ 1.0, 2.0],
 Similarly, a `Range_Type` or `Tensor_Range` can be used:
 
 ```ada
-Tensor_1 (Range_Type'(2, 3)) := Tensor_2;
+Tensor_1.Set (Range_Type'(2, 3), Tensor_2);
 ```
 
 The index of type `Range_Type` will select a range of rows (in case of
