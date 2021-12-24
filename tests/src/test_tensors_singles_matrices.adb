@@ -225,7 +225,7 @@ package body Test_Tensors_Singles_Matrices is
       Assert (Expected_4 = Actual_4, "Unexpected trace: " & Actual_4'Image);
    end Test_Trace;
 
-   procedure Test_Variable_Indexing_Index_Row (Object : in out Test) is
+   procedure Test_Set_Value_Index_Row (Object : in out Test) is
       Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0), Shape => (3, 2));
       --  1 2
       --  3 4
@@ -233,11 +233,11 @@ package body Test_Tensors_Singles_Matrices is
 
       Expected : constant Element_Array := (1.0, 2.0, 7.0, 8.0, 5.0, 6.0);
    begin
-      Tensor (2) := To_Tensor ((7.0, 8.0));
+      Tensor.Set (2, To_Tensor ((7.0, 8.0)));
       Assert_Equal (Expected, Tensor.Flatten);
-   end Test_Variable_Indexing_Index_Row;
+   end Test_Set_Value_Index_Row;
 
-   procedure Test_Variable_Indexing_Index_Range (Object : in out Test) is
+   procedure Test_Set_Value_Index_Range (Object : in out Test) is
       Tensor_1 : CPU_Tensor := Linear_Space (1.0, 16.0, Count => 16).Reshape ((4, 4));
       --   1  2  3  4
       --   5  6  7  8
@@ -252,9 +252,9 @@ package body Test_Tensors_Singles_Matrices is
          6.0, 7.0, 8.0, 9.0,
          13.0, 14.0, 15.0, 16.0);
    begin
-      Tensor_1 (Range_Type'(2, 3)) := Tensor_2;
+      Tensor_1.Set (Range_Type'(2, 3), Tensor_2);
       Assert_Equal (Expected, Tensor_1.Flatten);
-   end Test_Variable_Indexing_Index_Range;
+   end Test_Set_Value_Index_Range;
 
    procedure Test_Constant_Indexing_Index_Row (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
@@ -568,11 +568,9 @@ package body Test_Tensors_Singles_Matrices is
         (Name & "Test indexing using tensor", Test_Constant_Indexing_Tensor'Access));
 
       Test_Suite.Add_Test (Caller.Create
-        (Name & "Test variable indexing row using index",
-         Test_Variable_Indexing_Index_Row'Access));
+        (Name & "Test set row using index", Test_Set_Value_Index_Row'Access));
       Test_Suite.Add_Test (Caller.Create
-        (Name & "Test variable indexing row using range",
-         Test_Variable_Indexing_Index_Range'Access));
+        (Name & "Test set row using range", Test_Set_Value_Index_Range'Access));
 
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test '*' operator (inner product)", Test_Operator_Multiply_Inner'Access));
