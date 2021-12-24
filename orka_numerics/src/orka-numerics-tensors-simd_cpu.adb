@@ -344,34 +344,44 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Get;
 
-   procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor)
-     with Pre'Class => Object.Dimensions = 2 and then Object.Shape (2) = Row.Elements;
-
-   procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Row : CPU_Tensor) is
-      Count : constant Natural := Row.Elements;
-
-      Row_Data : Element_Array (1 .. Count)
-        with Import, Convention => Ada, Address => Row.Data'Address;
-
-      Object_Data : Element_Array (1 .. Object.Elements)
-        with Import, Convention => Ada, Address => Object.Data'Address;
-
-      Base_Index : constant Natural := (Index - 1) * Count;
+   overriding procedure Set
+     (Object : in out CPU_Tensor;
+      Index  : Index_Type;
+      Value  : CPU_Tensor) is
    begin
-      Object_Data (Base_Index + 1 .. Base_Index + Row_Data'Length) := Row_Data;
+      case Object.Dimensions is
+         when 1 =>
+            Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
+         when 2 =>
+            Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
+      end case;
    end Set;
 
-   procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Slice : CPU_Tensor) is
-      Full_Index : constant Tensor_Range := Full_Range (Object.Shape, Index);
-      Full_Slice : constant Tensor_Shape := Full_Shape (Object.Dimensions, Slice.Shape, Right);
-
-      pragma Assert (Full_Slice = Shape (Full_Index));
+   overriding procedure Set
+     (Object : in out CPU_Tensor;
+      Index  : Range_Type;
+      Value  : CPU_Tensor) is
    begin
-      --  If the slice (and shape of index) has the full depth/height/width except
+      case Object.Dimensions is
+         when 1 =>
+            Object.Set (Tensor_Range'(1 => Index), Value);
+         when 2 =>
+            Object.Set (Tensor_Range'(Index, (1, Object.Shape (2))), Value);
+      end case;
+   end Set;
+
+   overriding
+   procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Value : CPU_Tensor) is
+      Full_Index : constant Tensor_Range := Full_Range (Object.Shape, Index);
+      Full_Value : constant Tensor_Shape := Full_Shape (Object.Dimensions, Value.Shape, Right);
+
+      pragma Assert (Full_Value = Shape (Full_Index));
+   begin
+      --  If the value (and shape of index) has the full depth/height/width except
       --  for the first dimension, then the memory to which the data will be written
       --  is contiguous, which means it has no gaps.
       --
-      --  For example, if shape of Slice is (2, 3) and you have the following
+      --  For example, if shape of Value is (2, 3) and you have the following
       --  object and index (in brackets):
       --
       --  1 [ 2  3  4]  5
@@ -379,8 +389,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --  11 12 13 14  15
       --
       --  then there is a gap (positions 5 and 6). Howerver, if the shape
-      --  of Slice is (2, 5) (with a matching Index) then there are no gaps.
-      if Is_Equal (Object.Shape, Full_Slice, 1) then
+      --  of Value is (2, 5) (with a matching Index) then there are no gaps.
+      if Is_Equal (Object.Shape, Full_Value, 1) then
          declare
             Start_Index : Tensor_Index (Full_Index'Range);
             Stop_Index  : Tensor_Index (Full_Index'Range);
@@ -394,11 +404,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                Start_Index_Flattened : constant Index_Type := To_Index (Start_Index, Object.Shape);
                Stop_Index_Flattened  : constant Index_Type := To_Index (Stop_Index, Object.Shape);
 
-               Count : constant Natural := Slice.Elements;
+               Count : constant Natural := Value.Elements;
                pragma Assert (Stop_Index_Flattened - Start_Index_Flattened + 1 = Count);
 
                Row_Data : Element_Array (1 .. Count)
-                 with Import, Convention => Ada, Address => Slice.Data'Address;
+                 with Import, Convention => Ada, Address => Value.Data'Address;
 
                Object_Data : Element_Array (1 .. Object.Elements)
                  with Import, Convention => Ada, Address => Object.Data'Address;
@@ -630,61 +640,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          end if;
       end return;
    end Get;
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Index_Type) return CPU_Reference is
-   begin
-      case Object.Dimensions is
-         when 1 =>
-            return Object.Reference (Tensor_Range'(1 => (Index, Index)));
-         when 2 =>
-            return Object.Reference (Tensor_Range'(1 => (Index, Index)));
-      end case;
-   end Reference;
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Range_Type) return CPU_Reference is
-   begin
-      case Object.Dimensions is
-         when 1 =>
-            return Object.Reference (Tensor_Range'(1 => Index));
-         when 2 =>
-            return Object.Reference (Tensor_Range'(Index, (1, Object.Shape (2))));
-      end case;
-   end Reference;
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Tensor_Range) return CPU_Reference
-   is
-      Subject : constant CPU_Tensor := Object (Index);
-      pragma Assert (Subject.Dimensions = Index'Length);
-   begin
-      return Result : CPU_Reference
-        (Data       => CPU_Tensor_Access'(new CPU_Tensor'(Subject)),
-         Dimensions => Index'Length)
-      do
-         Result.Object := Object'Access;
-         Result.Index  := Index;
-      end return;
-   end Reference;
-
-   --  If an exception is raised by Finalize, it usually means that
-   --  the tensor does not have the correct shape for the given object and index
-   overriding procedure Finalize (Object : in out CPU_Reference_Tracker) is
-   begin
-      if Object.Parent.Data /= null then
-         Set (Object.Parent.Object.all, Object.Parent.Index, Object.Parent.Data.all);
-
-         declare
-            Subject : CPU_Tensor_Access := Object.Parent.Data.all'Unchecked_Access;
-         begin
-            Free (Subject);
-         end;
-      end if;
-   end Finalize;
 
    ----------------------------------------------------------------------------
 

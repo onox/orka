@@ -15,8 +15,6 @@
 --  limitations under the License.
 
 private with Ada.Containers.Indefinite_Holders;
-private with Ada.Finalization;
-private with Ada.Unchecked_Deallocation;
 
 generic
    type Vector_Index_Type is (<>);
@@ -78,8 +76,7 @@ generic
 package Orka.Numerics.Tensors.SIMD_CPU is
    pragma Preelaborate;
 
-   type CPU_Tensor (<>) is new Tensor with private
-     with Variable_Indexing => Reference;
+   type CPU_Tensor (<>) is new Tensor with private;
 
    overriding function Kind (Object : CPU_Tensor) return Data_Type;
 
@@ -100,27 +97,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Element);
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Boolean);
 
-   type CPU_Reference (Data : access CPU_Tensor; Dimensions : Tensor_Dimension) is limited private
-     with Implicit_Dereference => Data;
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Index_Type) return CPU_Reference
-   with Pre  => Object.Dimensions = 2,
-        Post => Reference'Result.Dimensions = 1
-                  and then Reference'Result.Data.Dimensions = 1
-                  and then Reference'Result.Data.Shape (1) = Object.Shape (2);
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Range_Type) return CPU_Reference
-   with Post => Object.Dimensions = Reference'Result.Data.Dimensions;
-
-   function Reference
-     (Object : aliased in out CPU_Tensor;
-      Index  : Tensor_Range) return CPU_Reference
-   with Pre  => Index'Length <= Object.Dimensions,
-        Post => Index'Length = Reference'Result.Data.Dimensions;
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Index_Type;   Value : CPU_Tensor);
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Range_Type;   Value : CPU_Tensor);
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Value : CPU_Tensor);
 
    --  TODO Variable indexing using a boolean tensor would require
    --  keeping a copy of the boolean tensor and using it to write the
@@ -594,22 +573,5 @@ private
    function Apply
      (Object      : CPU_Expression;
       Left, Right : Element) return Element;
-
-   ----------------------------------------------------------------------------
-
-   type CPU_Reference_Tracker (Parent : not null access CPU_Reference) is
-      limited new Ada.Finalization.Limited_Controlled with null record;
-
-   overriding procedure Finalize (Object : in out CPU_Reference_Tracker);
-
-   type CPU_Tensor_Access is access all CPU_Tensor;
-
-   procedure Free is new Ada.Unchecked_Deallocation (CPU_Tensor, CPU_Tensor_Access);
-
-   type CPU_Reference (Data : access CPU_Tensor; Dimensions : Tensor_Dimension) is limited record
-      Reference : CPU_Reference_Tracker (CPU_Reference'Access);
-      Object    : CPU_Tensor_Access;
-      Index     : Tensor_Range (1 .. Dimensions);
-   end record;
 
 end Orka.Numerics.Tensors.SIMD_CPU;

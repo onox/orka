@@ -116,6 +116,26 @@ package Orka.Numerics.Tensors is
    procedure Set (Object : in out Tensor; Index : Tensor_Index; Value : Boolean) is abstract
      with Pre'Class => Object.Kind = Bool_Type;
 
+   procedure Set
+     (Object : in out Tensor;
+      Index  : Index_Type;
+      Value  : Tensor) is abstract
+   with Pre'Class => (Object.Dimensions = 2 and Value.Dimensions = 1)
+                       and then Value.Shape (1) = Object.Shape (2);
+
+   procedure Set
+     (Object : in out Tensor;
+      Index  : Range_Type;
+      Value  : Tensor) is abstract
+   with Pre'Class => Object.Dimensions = Value.Dimensions;
+
+   procedure Set
+     (Object : in out Tensor;
+      Index  : Tensor_Range;
+      Value  : Tensor) is abstract
+   with Pre'Class => Index'Length <= Object.Dimensions
+                       and Index'Length = Value.Dimensions;
+
    ----------------------------------------------------------------------------
 
    function Image (Object : Tensor) return String is abstract;
