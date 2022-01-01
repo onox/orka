@@ -159,7 +159,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
             Messages.Log (Debug, "Available EGL configs: " &
               Trim (Natural'Image (Configs'Length)));
 
-            Result.Set_EGL_Data (Object.Context, Used_Config, sRGB => True);
+            Result.Set_EGL_Data (Object.Context, Used_Config, sRGB => False);
 
             Result.Create_Window ("", Title, Width, Height,
               Visible     => Visible,

@@ -20,11 +20,13 @@ with Ada.Real_Time;
 with Ada.Text_IO;
 with Ada.Exceptions;
 
+with GL.Buffers;
 with GL.Low_Level.Enums;
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
 with GL.Toggles;
+with GL.Types;
 
 with Orka.Behaviors;
 with Orka.Contexts.AWT;
@@ -36,6 +38,7 @@ with Orka.Jobs;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 with Orka.Loops;
+with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
