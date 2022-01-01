@@ -7,29 +7,32 @@ COVERAGE_VARS = -XORKA_BUILD_MODE=coverage
 DEBUG_VARS = -XORKA_BUILD_MODE=debug -XORKA_DEBUG_SYMBOLS=enabled
 RELEASE_VARS = -XORKA_COMPILE_CHECKS=none -XORKA_RUNTIME_CHECKS=none -XORKA_CONTRACTS=disabled
 
+ALR_CLEAN = alr clean -- -p
+ALR_BUILD = alr build -- $(SCENARIO_VARS)
+
 .PHONY: build examples tools tests coverage docs clean
 
 build:
-#	cd orka_egl && alr build
-	cd orka_types && alr build -- $(SCENARIO_VARS)
-	cd orka_simd && alr build -- $(SCENARIO_VARS)
-	cd orka_transforms && alr build -- $(SCENARIO_VARS)
-	cd orka_numerics && alr build -- $(SCENARIO_VARS)
-	cd orka && alr build -- $(SCENARIO_VARS)
-#	cd orka_plugin_sdl && alr build -- $(SCENARIO_VARS)
-	cd orka_plugin_archives && alr build -- $(SCENARIO_VARS)
-	cd orka_plugin_gltf && alr build -- $(SCENARIO_VARS)
-	cd orka_plugin_terrain && alr build -- $(SCENARIO_VARS)
-	cd orka_plugin_atmosphere && alr build -- $(SCENARIO_VARS)
+#	cd orka_egl && $(ALR_BUILD)
+	cd orka_types && $(ALR_BUILD)
+	cd orka_simd && $(ALR_BUILD)
+	cd orka_transforms && $(ALR_BUILD)
+	cd orka_numerics && $(ALR_BUILD)
+	cd orka && $(ALR_BUILD)
+#	cd orka_plugin_sdl && $(ALR_BUILD)
+	cd orka_plugin_archives && $(ALR_BUILD)
+	cd orka_plugin_gltf && $(ALR_BUILD)
+	cd orka_plugin_terrain && $(ALR_BUILD)
+	cd orka_plugin_atmosphere && $(ALR_BUILD)
 
 examples:
-	cd examples && alr build -- $(SCENARIO_VARS)
+	cd examples && $(ALR_BUILD)
 
 tools:
-	cd orka_tools && alr build -- $(SCENARIO_VARS)
+	cd orka_tools && $(ALR_BUILD)
 
 tests:
-	cd tests && alr build -- $(SCENARIO_VARS) $(COVERAGE_VARS)
+	cd tests && $(ALR_BUILD) $(COVERAGE_VARS)
 	cd tests && alr run -s
 
 coverage:
@@ -43,18 +46,18 @@ docs:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
-	cd orka_egl && alr clean
-	cd orka_types && alr clean
-	cd orka_simd && alr clean
-	cd orka_transforms && alr clean
-	cd orka_numerics && alr clean
-	cd orka && alr clean
-	cd orka_tools && alr clean
-#	cd orka_plugin_sdl && alr clean
-	cd orka_plugin_archives && alr clean
-	cd orka_plugin_gltf && alr clean
-	cd orka_plugin_terrain && alr clean
-	cd orka_plugin_atmosphere && alr clean
-	cd examples && alr clean
-	cd tests && alr clean
+	cd orka_egl && $(ALR_CLEAN)
+	cd orka_types && $(ALR_CLEAN)
+	cd orka_simd && $(ALR_CLEAN)
+	cd orka_transforms && $(ALR_CLEAN)
+	cd orka_numerics && $(ALR_CLEAN)
+	cd orka && $(ALR_CLEAN)
+	cd orka_tools && $(ALR_CLEAN)
+#	cd orka_plugin_sdl && $(ALR_CLEAN)
+	cd orka_plugin_archives && $(ALR_CLEAN)
+	cd orka_plugin_gltf && $(ALR_CLEAN)
+	cd orka_plugin_terrain && $(ALR_CLEAN)
+	cd orka_plugin_atmosphere && $(ALR_CLEAN)
+	cd examples && $(ALR_CLEAN)
+	cd tests && $(ALR_CLEAN)
 	rm -rf orka*/build examples/build tests/build orka*/config examples/config tests/config tests/cov
