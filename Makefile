@@ -11,25 +11,25 @@ RELEASE_VARS = -XORKA_COMPILE_CHECKS=none -XORKA_RUNTIME_CHECKS=none -XORKA_CONT
 
 build:
 #	cd orka_egl && alr build
-	cd orka_types && alr build $(SCENARIO_VARS)
-	cd orka_simd && alr build $(SCENARIO_VARS)
-	cd orka_transforms && alr build $(SCENARIO_VARS)
-	cd orka_numerics && alr build $(SCENARIO_VARS)
-	cd orka && alr build $(SCENARIO_VARS)
-#	cd orka_plugin_sdl && alr build $(SCENARIO_VARS)
-	cd orka_plugin_archives && alr build $(SCENARIO_VARS)
-	cd orka_plugin_gltf && alr build $(SCENARIO_VARS)
-	cd orka_plugin_terrain && alr build $(SCENARIO_VARS)
-	cd orka_plugin_atmosphere && alr build $(SCENARIO_VARS)
+	cd orka_types && alr build -- $(SCENARIO_VARS)
+	cd orka_simd && alr build -- $(SCENARIO_VARS)
+	cd orka_transforms && alr build -- $(SCENARIO_VARS)
+	cd orka_numerics && alr build -- $(SCENARIO_VARS)
+	cd orka && alr build -- $(SCENARIO_VARS)
+#	cd orka_plugin_sdl && alr build -- $(SCENARIO_VARS)
+	cd orka_plugin_archives && alr build -- $(SCENARIO_VARS)
+	cd orka_plugin_gltf && alr build -- $(SCENARIO_VARS)
+	cd orka_plugin_terrain && alr build -- $(SCENARIO_VARS)
+	cd orka_plugin_atmosphere && alr build -- $(SCENARIO_VARS)
 
 examples:
-	cd examples && alr build $(SCENARIO_VARS)
+	cd examples && alr build -- $(SCENARIO_VARS)
 
 tools:
-	cd orka_tools && alr build $(SCENARIO_VARS)
+	cd orka_tools && alr build -- $(SCENARIO_VARS)
 
 tests:
-	cd tests && alr build $(SCENARIO_VARS) $(COVERAGE_VARS)
+	cd tests && alr build -- $(SCENARIO_VARS) $(COVERAGE_VARS)
 	cd tests && alr run -s
 
 coverage:
