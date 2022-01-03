@@ -508,6 +508,82 @@ package body Test_Tensors_Singles_Matrices is
       Assert (Solution = Unique, "Unexpected number of solutions: " & Solution'Image);
    end Test_Solve;
 
+   procedure Test_QR (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
+                     6.0, 167.0, -68.0, -1.0,  11.0,
+                    -4.0,  24.0, -41.0,  0.0,   5.1,
+                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
+
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0, 52.0,
+                     6.0, 167.0, -68.0, -1.0,
+                    -4.0,  24.0, -41.0,  0.0,
+                     2.0,   3.0,   4.0,  5.0)).Reshape ((4, 4));
+
+      Tensor_3 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0,
+                     6.0, 167.0, -68.0,
+                    -4.0,  24.0, -41.0,
+                     2.0,   3.0,   4.0)).Reshape ((4, 3));
+
+      Actual_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1));
+      Actual_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2));
+      Actual_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3));
+   begin
+      Assert (Actual_1.Q.Shape = (Tensor_1.Shape (1), Tensor_1.Shape (1)),
+        "Unexpected shape " & Image (Actual_1.Q.Shape) & " of Q");
+      Assert (Actual_2.Q.Shape = (Tensor_2.Shape (1), Tensor_2.Shape (1)),
+        "Unexpected shape " & Image (Actual_2.Q.Shape) & " of Q");
+      Assert (Actual_3.Q.Shape = (Tensor_3.Shape (1), Tensor_3.Shape (1)),
+        "Unexpected shape " & Image (Actual_3.Q.Shape) & " of Q");
+
+      Assert (Actual_1.R.Shape = Tensor_1.Shape,
+        "Unexpected shape " & Image (Actual_1.R.Shape) & " of R");
+      Assert (Actual_2.R.Shape = Tensor_2.Shape,
+        "Unexpected shape " & Image (Actual_2.R.Shape) & " of R");
+      Assert (Actual_3.R.Shape = Tensor_3.Shape,
+        "Unexpected shape " & Image (Actual_3.R.Shape) & " of R");
+   end Test_QR;
+
+   procedure Test_Cholesky (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := Identity (Size => 3);
+      Tensor_2 : constant CPU_Tensor := Tensor_1 * 2.0;
+      Tensor_3 : constant CPU_Tensor := Tensor_2 + 1.0;
+      Tensor_4 : constant CPU_Tensor := Tensor_2 - 1.0;
+
+      Expected_1 : constant CPU_Tensor := Tensor_1;
+      Expected_2 : constant CPU_Tensor := Tensor_2.Sqrt;
+
+      Actual_1   : constant CPU_Tensor := Tensor_1.Cholesky;
+      Actual_2   : constant CPU_Tensor := Tensor_2.Cholesky;
+   begin
+      Assert (All_Close (Expected_1, Actual_1), "Cholesky (I) /= I");
+      Assert (All_Close (Expected_2, Actual_2), "Cholesky (I * 2) /= Sqrt (I)");
+
+      begin
+         declare
+            Actual_3 : constant CPU_Tensor := Tensor_3.Cholesky;
+         begin
+            null;
+         end;
+      exception
+         when Not_Positive_Definite_Matrix =>
+            Assert (False, "Unexpectedly raised exception Not_Positive_Definite_Matrix");
+      end;
+
+      begin
+         declare
+            Actual_4 : constant CPU_Tensor := Tensor_4.Cholesky;
+         begin
+            Assert (False, "Exception Not_Positive_Definite_Matrix not raised");
+         end;
+      exception
+         when Not_Positive_Definite_Matrix =>
+            null;
+      end;
+   end Test_Cholesky;
+
    procedure Test_Any_True (Object : in out Test) is
    begin
       Assert (False, "FIXME");
@@ -584,6 +660,11 @@ package body Test_Tensors_Singles_Matrices is
         (Name & "Test function Transpose", Test_Transpose'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Solve", Test_Solve'Access));
+
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function QR", Test_QR'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Cholesky", Test_Cholesky'Access));
 
       --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Dimension parameter)
 
