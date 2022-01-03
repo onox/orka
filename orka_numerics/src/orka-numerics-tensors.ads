@@ -356,6 +356,10 @@ package Orka.Numerics.Tensors is
    function Solve (A, B : Tensor; Solution : out Solution_Kind) return Tensor is abstract
      with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
           Post'Class => Solve'Result.Shape = B.Shape;
+   --  Solve Ax_i = b_i for x_i for each column b_i in B by applying
+   --  Gauss-Jordan elimination to convert A to its reduced row echelon form
+   --
+   --  B can be a vector or a matrix.
 
    type QR_Factorization is interface;
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
