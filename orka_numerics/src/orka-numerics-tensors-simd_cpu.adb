@@ -2016,9 +2016,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Accumulated_Result : Vector_Type := (others => Initial);
 
-      Last_Index : constant Natural :=
-        Natural'Min (Object.Data'First + Sums'Length - 1, Object.Data'Last - 1);
+      Last_Index : constant Integer :=
+        Integer'Min (Object.Data'First + Sums'Length - 1, Object.Data'Last - 1);
+      pragma Assert (Last_Index >= -1);  --  Last_Index = -1 if tensor is empty
    begin
+      if Last_Index < Natural'First then
+         return Result;
+      end if;
+
       for Index in Object.Data'First .. Last_Index loop
          Sums (Result_Index_Type (Index mod Sums'Length)) := Object.Data (Index);
       end loop;
