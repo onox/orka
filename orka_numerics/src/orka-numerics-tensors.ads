@@ -71,6 +71,12 @@ package Orka.Numerics.Tensors is
 
    ----------------------------------------------------------------------------
 
+   Singular_Matrix : exception;
+
+   Not_Positive_Definite_Matrix : exception;
+
+   ----------------------------------------------------------------------------
+
    type Tensor is interface
      with Constant_Indexing => Get;
 
@@ -102,7 +108,7 @@ package Orka.Numerics.Tensors is
 
    function Get (Object : Tensor; Index : Tensor_Range) return Tensor is abstract
      with Pre'Class  => Index'Length <= Object.Dimensions,
-          Post'Class => Index'Length = Get'Result.Dimensions;
+          Post'Class => Get'Result.Dimensions in 1 | Index'Length;
 
    function Get (Object : Tensor; Index : Tensor) return Tensor is abstract
      with Pre'Class  => Index.Kind = Bool_Type and Index.Dimensions in 1 .. Object.Dimensions,
@@ -329,8 +335,6 @@ package Orka.Numerics.Tensors is
           Post'Class => Outer'Result.Dimensions = 2
                           and Outer'Result.Shape = (Left.Elements, Right.Elements);
 
-   Singular_Matrix : exception;
-
    function Inverse (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2),
           Post'Class => Inverse'Result.Dimensions = 2;
@@ -350,7 +354,6 @@ package Orka.Numerics.Tensors is
      with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
           Post'Class => Solve'Result.Shape = B.Shape;
 
-   --  TODO Add LU, QR, SVD, Cholesky
    type QR_Factorization is interface;
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
 
@@ -359,6 +362,18 @@ package Orka.Numerics.Tensors is
    --  Return the Q and R matrices of the QR decomposition (A = Q * R)
    --
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
+
+   function Cholesky (Object : Tensor) return Tensor is abstract
+     with Pre'Class  => Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2),
+          Post'Class => Cholesky'Result.Dimensions = 2;
+   --  Return the L matrix of the Cholesky decomposition (A = L * L^T)
+   --  if A is symmetric positive definite
+   --
+   --  L is lower triangular.
+   --
+   --  Raises a Not_Positive_Definite_Matrix exception if A is not positive definite.
+
+   --  TODO Add LU, SVD
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --

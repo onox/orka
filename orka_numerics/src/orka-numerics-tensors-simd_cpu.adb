@@ -1491,6 +1491,52 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return CPU_QR_Factorization'(Q_Size => Q.Size, R_Size => R.Size, Q => Q, R => R);
    end QR;
 
+   overriding
+   function Cholesky (Object : CPU_Tensor) return CPU_Tensor is
+      Rows  : constant Natural      := Object.Shape (1);
+      Shape : constant Tensor_Shape := (1 .. 2 => Rows);
+
+      Empty : constant CPU_Tensor := Zeros ((1 => 0));
+   begin
+      return Result : CPU_Tensor := Zeros (Shape) do
+         for J in 1 .. Rows loop
+            declare
+               Row_J_Before_J : constant CPU_Tensor :=
+                  (if J = 1 then Empty else Result (Tensor_Range'((J, J), (1, J - 1))));
+
+               Ljj_Squared : constant Element :=
+                 Object ((J, J)) - Power (Row_J_Before_J, 2).Sum;
+            begin
+               --  If = 0.0 then matrix is positive semi-definite and singular
+               --  If < 0.0 then matrix is negative semi-definite or indefinite
+               if Ljj_Squared <= 0.0 then
+                  raise Not_Positive_Definite_Matrix;
+               end if;
+
+               declare
+                  Ljj : constant Element := EF.Sqrt (Ljj_Squared);
+               begin
+                  --  Compute the jth value on the diagonal
+                  Result.Set ((J, J), Ljj);
+
+                  --  Compute the values below the jth value on the diagonal
+                  for I in J + 1 .. Rows loop
+                     declare
+                        Row_I_Before_J : constant CPU_Tensor :=
+                          (if J = 1 then Empty else Result (Tensor_Range'((I, I), (1, J - 1))));
+
+                        Lij : constant Element :=
+                          (Object ((I, J)) - Multiply (Row_I_Before_J, Row_J_Before_J).Sum) / Ljj;
+                     begin
+                        Result.Set (Tensor_Index'(I, J), Lij);
+                     end;
+                  end loop;
+               end;
+            end;
+         end loop;
+      end return;
+   end Cholesky;
+
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
    ----------------------------------------------------------------------------

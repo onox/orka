@@ -243,6 +243,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function QR (Object : CPU_Tensor) return QR_Factorization'Class;
 
+   overriding
+   function Cholesky (Object : CPU_Tensor) return CPU_Tensor;
+
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
    ----------------------------------------------------------------------------
