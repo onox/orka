@@ -152,6 +152,9 @@ package Orka.Numerics.Tensors is
 
    function Dimensions (Object : Tensor) return Tensor_Dimension is abstract;
 
+   function Is_Square (Object : Tensor'Class) return Boolean is
+     (Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2));
+
    ----------------------------------------------------------------------------
    --                              Constructors                              --
    ----------------------------------------------------------------------------
@@ -328,7 +331,7 @@ package Orka.Numerics.Tensors is
    --  Return the inner or dot product of two vectors (1-D tensors)
 
    function "**" (Left : Tensor; Right : Integer) return Tensor is abstract
-     with Pre'Class => Left.Dimensions = 2 and Left.Shape (1) = Left.Shape (2);
+     with Pre'Class => Is_Square (Left);
 
    function Outer (Left, Right : Tensor) return Tensor is abstract
      with Pre'Class  => Left.Dimensions = 1 and Right.Dimensions = 1,
@@ -336,7 +339,7 @@ package Orka.Numerics.Tensors is
                           and Outer'Result.Shape = (Left.Elements, Right.Elements);
 
    function Inverse (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2),
+     with Pre'Class  => Is_Square (Object),
           Post'Class => Inverse'Result.Dimensions = 2;
    --  Return the inverse of a nonsingular matrix
    --
@@ -364,7 +367,7 @@ package Orka.Numerics.Tensors is
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
 
    function Cholesky (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2),
+     with Pre'Class  => Is_Square (Object),
           Post'Class => Cholesky'Result.Dimensions = 2;
    --  Return the L matrix of the Cholesky decomposition (A = L * L^T)
    --  if A is symmetric positive definite
