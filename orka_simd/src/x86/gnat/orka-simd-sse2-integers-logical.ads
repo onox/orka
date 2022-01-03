@@ -19,6 +19,7 @@ package Orka.SIMD.SSE2.Integers.Logical is
 
    function And_Not (Left, Right : m128i) return m128i
      with Inline_Always;
+   --  Return result of not Left and Right
 
    function "and" (Left, Right : m128i) return m128i
      with Inline_Always;

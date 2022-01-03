@@ -7,6 +7,12 @@ with Test_SIMD_SSE_Compare;
 with Test_SIMD_SSE_Logical;
 with Test_SIMD_SSE_Math;
 with Test_SIMD_SSE_Swizzle;
+with Test_SIMD_SSE2_Arithmetic;
+with Test_SIMD_SSE2_Compare;
+with Test_SIMD_SSE2_Convert;
+with Test_SIMD_SSE2_Logical;
+with Test_SIMD_SSE2_Shift;
+with Test_SIMD_SSE4_1_Logical;
 with Test_SIMD_SSE4_1_Math;
 with Test_SIMD_AVX_Arithmetic;
 with Test_SIMD_AVX_Compare;
@@ -42,8 +48,18 @@ procedure Orka_Tests is
       Result.Add_Test (Test_SIMD_SSE_Math.Suite);
       Result.Add_Test (Test_SIMD_SSE_Swizzle.Suite);
 
-      --  SIMD > SSE4.1 (Singles)
+      --  SIMD > SSE2 (Integers)
+      Result.Add_Test (Test_SIMD_SSE2_Arithmetic.Suite);
+      Result.Add_Test (Test_SIMD_SSE2_Compare.Suite);
+      Result.Add_Test (Test_SIMD_SSE2_Convert.Suite);
+      Result.Add_Test (Test_SIMD_SSE2_Logical.Suite);
+      Result.Add_Test (Test_SIMD_SSE2_Shift.Suite);
+
+      --  SIMD > SSE4.1 (Singles and Integers)
       Result.Add_Test (Test_SIMD_SSE4_1_Math.Suite);
+
+      --  SIMD > SSE4.1 (Integers)
+      Result.Add_Test (Test_SIMD_SSE4_1_Logical.Suite);
 
       --  SIMD > AVX (Doubles)
       Result.Add_Test (Test_SIMD_AVX_Arithmetic.Suite);

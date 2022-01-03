@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2016 onox <denkpadje@gmail.com>
+--  Copyright (c) 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 with AUnit.Test_Suites;
 
-package Test_SIMD_SSE4_1_Math is
+package Test_SIMD_SSE2_Compare is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
 
-end Test_SIMD_SSE4_1_Math;
+end Test_SIMD_SSE2_Compare;
