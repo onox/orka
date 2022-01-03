@@ -1807,7 +1807,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          return Result;
       end Vector_Power;
    begin
-      if Right > 0 then
+      if Right = 2 then
+         return Multiply (Left, Left);
+      elsif Right > 0 then
          return Vector_Power (Left, Right);
       elsif Right < 0 then
          return 1.0 / Vector_Power (Left, abs Right);
