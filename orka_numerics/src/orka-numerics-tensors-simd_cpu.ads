@@ -235,6 +235,14 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor;
 
+   type CPU_QR_Factorization (<>) is new QR_Factorization with private;
+
+   function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
+   function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
+
+   overriding
+   function QR (Object : CPU_Tensor) return QR_Factorization'Class;
+
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
    ----------------------------------------------------------------------------
@@ -536,6 +544,14 @@ private
       Shape : Tensor_Shape (1 .. Dimensions);
       Data  : Vector_Array (1 .. Size);
    end record;
+
+   type CPU_QR_Factorization (Q_Size, R_Size : Natural) is new QR_Factorization with record
+      Q : CPU_Tensor (Dimensions => 2, Size => Q_Size, Kind => Float_Type);
+      R : CPU_Tensor (Dimensions => 2, Size => R_Size, Kind => Float_Type);
+   end record;
+
+   function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.Q);
+   function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.R);
 
    Random_State : Random_Number_State;
 

@@ -302,7 +302,11 @@ package Orka.Numerics.Tensors is
      with Pre'Class => (if Left.Dimensions > 1 then
                           Left.Shape (2) = Right.Shape (1)
                         else
-                          (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)));
+                          (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)))
+       or else raise Constraint_Error with
+         "Cannot multiply matrices" &
+         " (left = " & Image (Left.Shape) & " and " &
+         "right = " & Image (Right.Shape) & ")";
    --  Perform matrix multiplication on two matrices (the right matrix
    --  can be a column vector) or a row vector and a matrix
    --
@@ -347,6 +351,14 @@ package Orka.Numerics.Tensors is
           Post'Class => Solve'Result.Shape = B.Shape;
 
    --  TODO Add LU, QR, SVD, Cholesky
+   type QR_Factorization is interface;
+   --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
+
+   function QR (Object : Tensor) return QR_Factorization'Class is abstract
+     with Pre'Class => Object.Dimensions = 2;
+   --  Return the Q and R matrices of the QR decomposition (A = Q * R)
+   --
+   --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --

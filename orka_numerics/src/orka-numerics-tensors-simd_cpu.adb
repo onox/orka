@@ -1056,6 +1056,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function "&" (Left, Right : CPU_Tensor) return CPU_Tensor is (Concatenate (Left, Right, 1));
 
    ----------------------------------------------------------------------------
+   --                            Matrix operations                           --
+   ----------------------------------------------------------------------------
 
    procedure Multiply_Add
      (Result : in out Element_Array;
@@ -1439,6 +1441,59 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             return Matrix_Solve (A, B, Solution);
       end case;
    end Solve;
+
+   function Column (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
+      Size : constant Natural := Object.Shape (1);
+   begin
+      return Object (Tensor_Range'((1, Size), (Index, Index))).Reshape (Size);
+   end Column;
+
+   overriding
+   function QR (Object : CPU_Tensor) return QR_Factorization'Class is
+      Rows    : constant Natural := Object.Shape (1);
+      Columns : constant Natural := Object.Shape (2);
+
+      Size : Natural renames Rows;
+      I : constant CPU_Tensor := Identity (Size => Size);
+
+      Q : CPU_Tensor := I;
+      R : CPU_Tensor := Object;
+   begin
+      --  QR decomposition using householder reflections
+
+      for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
+         --  Compute householder matrix using column R (Index)
+         declare
+            X : constant CPU_Tensor := Column (R, Index);
+
+            Y : CPU_Tensor := X (Range_Type'(Index, Size));
+            Y1 : constant Element := Y (1);
+
+            --  Alpha must have the opposite sign of X (Index) (or Y (1))
+            Alpha : constant Element := -Element'Copy_Sign (1.0, Y1) * X.Norm;
+         begin
+            Y.Set (Tensor_Index'(1 => 1), Y1 - Alpha);
+
+            declare
+               --  V = Normalize (X - Alpha * E) where
+               --            X (1 .. Index - 1) is set to 0.0
+               --        and Alpha is X.Norm with opposite sign of X (Index)
+               --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
+               V           : constant CPU_Tensor := Zeros ((1 => Index - 1)) & Y.Normalize;
+               Householder : constant CPU_Tensor := (I - 2.0 * Outer (V, V));
+            begin
+               Q := Q * Householder;
+               R := Householder * R;
+            end;
+         end;
+      end loop;
+
+      return CPU_QR_Factorization'(Q_Size => Q.Size, R_Size => R.Size, Q => Q, R => R);
+   end QR;
+
+   ----------------------------------------------------------------------------
+   --                            Vector operations                           --
+   ----------------------------------------------------------------------------
 
    overriding
    function Norm (Object : CPU_Tensor) return Element is (EF.Sqrt (Object * Object));
