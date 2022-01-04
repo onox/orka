@@ -1303,6 +1303,60 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Transpose;
 
+   ----------------------------------------------------------------------------
+
+   procedure Swap_Rows (Ab : in out CPU_Tensor; I, J : Index_Type) is
+   begin
+      if I /= J then
+         declare
+            Row_I : constant CPU_Tensor := Ab (I);
+            Old_J : constant CPU_Tensor := Ab (J);
+         begin
+            Set (Ab, J, Row_I);
+            Set (Ab, I, Old_J);
+         end;
+      end if;
+   end Swap_Rows;
+
+   procedure Scale_Row (Ab : in out CPU_Tensor; I : Index_Type; Scale : Element) is
+      Row_I : constant CPU_Tensor := Ab (I);
+   begin
+      if Scale /= 1.0 then
+         Set (Ab, I, Scale * Row_I);
+      end if;
+   end Scale_Row;
+
+   procedure Replace_Row (Ab : in out CPU_Tensor; Scale : Element; I, J : Index_Type) is
+      Row_I : constant CPU_Tensor := Ab (I);
+      Row_J : constant CPU_Tensor := Ab (J);
+   begin
+      if Scale /= 0.0 then
+         Set (Ab, J, Row_J - Scale * Row_I);
+      end if;
+   end Replace_Row;
+
+   procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
+      Rows        : constant Natural := Ab.Shape (1);
+      Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
+   begin
+      --  Create zeros below the pivot position
+      for Row_Index in Index + 1 .. Rows loop
+         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
+      end loop;
+   end Forward_Substitute;
+
+   procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
+   begin
+      Scale_Row (Ab, Index, 1.0 / Ab ((Index, Pivot_Index)));
+
+      --  Create zeros above the pivot position
+      for Row_Index in 1 .. Index - 1 loop
+         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
+      end loop;
+   end Back_Substitute;
+
+   ----------------------------------------------------------------------------
+
    function Matrix_Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is
       Ab : CPU_Tensor := Concatenate (A, B, Dimension => 2);
 
@@ -1328,55 +1382,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
          return Pivot_Index;
       end Find_Largest_Pivot;
-
-      procedure Swap_Rows (Ab : in out CPU_Tensor; I, J : Index_Type) is
-      begin
-         if I /= J then
-            declare
-               Row_I : constant CPU_Tensor := Ab (I);
-               Old_J : constant CPU_Tensor := Ab (J);
-            begin
-               Set (Ab, J, Row_I);
-               Set (Ab, I, Old_J);
-            end;
-         end if;
-      end Swap_Rows;
-
-      procedure Scale_Row (Ab : in out CPU_Tensor; I : Index_Type; Scale : Element) is
-         Row_I : constant CPU_Tensor := Ab (I);
-      begin
-         if Scale /= 1.0 then
-            Set (Ab, I, Scale * Row_I);
-         end if;
-      end Scale_Row;
-
-      procedure Replace_Row (Ab : in out CPU_Tensor; Scale : Element; I, J : Index_Type) is
-         Row_I : constant CPU_Tensor := Ab (I);
-         Row_J : constant CPU_Tensor := Ab (J);
-      begin
-         if Scale /= 0.0 then
-            Set (Ab, J, Row_J - Scale * Row_I);
-         end if;
-      end Replace_Row;
-
-      procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-         Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
-      begin
-         --  Create zeros below the pivot position
-         for Row_Index in Index + 1 .. Rows loop
-            Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
-         end loop;
-      end Forward_Substitute;
-
-      procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-      begin
-         Scale_Row (Ab, Index, 1.0 / Ab ((Index, Pivot_Index)));
-
-         --  Create zeros above the pivot position
-         for Row_Index in 1 .. Index - 1 loop
-            Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
-         end loop;
-      end Back_Substitute;
 
       Pivots : array (0 .. Rows) of Natural := (others => 0);
    begin
