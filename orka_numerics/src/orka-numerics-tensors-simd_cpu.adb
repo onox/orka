@@ -1499,6 +1499,51 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return CPU_QR_Factorization'(Q_Size => Q.Size, R_Size => R.Size, Q => Q, R => R);
    end QR;
 
+   function QR_Solve (R, Y : CPU_Tensor) return CPU_Tensor is
+      Ry : CPU_Tensor := Concatenate (R, Y, Dimension => 2);
+
+      Columns : constant Natural := R.Shape (2);
+      Rows    : constant Natural := Columns;
+      --  Use columns for rows so that it is not needed to extract
+      --  the reduced (square) version R1 of R
+      --
+      --  R = [R1]
+      --      [ 0]
+
+      Columns_Ry : constant Natural := Ry.Shape (2);
+   begin
+      --  Backward phase: row reduce augmented matrix of R * x = (Q^T * b = y) to
+      --  reduced echelon form by performing back-substitution on Ry
+      --  (since R is upper triangular no forward phase is needed)
+      for Index in reverse 1 .. Rows loop
+         Back_Substitute (Ry, Index, Index);
+      end loop;
+
+      return Ry (Tensor_Range'((1, Rows), (Columns + 1, Columns_Ry)));
+   end QR_Solve;
+
+   overriding
+   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor is
+      QR : CPU_QR_Factorization renames CPU_QR_Factorization (Object);
+
+      --  TODO Handle underdetermined matrix A
+      --
+      --  m >= n (overdetermined:
+      --    - solve with back-substitution: R * x = Q^T * b
+      --  m < n (underdetermined):
+      --    - recompute QR for A^T = Q * R
+      --    - solve with forward-substitution: x = Q * y where y is solved with R^T * y = b
+
+      Y : constant CPU_Tensor := QR.Q.Transpose * B;
+   begin
+      case Y.Dimensions is
+         when 1 =>
+            return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1))).Flatten;
+         when 2 =>
+            return QR_Solve (QR.R, Y);
+      end case;
+   end Least_Squares;
+
    overriding
    function Cholesky (Object : CPU_Tensor) return CPU_Tensor is
       Rows  : constant Natural      := Object.Shape (1);

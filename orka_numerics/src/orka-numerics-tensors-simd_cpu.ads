@@ -244,6 +244,11 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function QR (Object : CPU_Tensor) return QR_Factorization'Class;
 
    overriding
+   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor
+     with Pre'Class => Object in CPU_QR_Factorization
+                         and CPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+
+   overriding
    function Cholesky (Object : CPU_Tensor) return CPU_Tensor;
 
    ----------------------------------------------------------------------------

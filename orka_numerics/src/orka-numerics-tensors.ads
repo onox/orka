@@ -371,6 +371,9 @@ package Orka.Numerics.Tensors is
    --
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
 
+   function Least_Squares (Object : QR_Factorization'Class; B : Tensor) return Tensor is abstract
+     with Post'Class => Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
+
    function Cholesky (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
           Post'Class => Cholesky'Result.Dimensions = 2;
