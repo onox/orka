@@ -1120,7 +1120,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Count         : constant Natural := Right.Shape (1);
       Right_Columns : constant Natural := (if Right.Dimensions = 2 then Right.Shape (2) else 1);
 
-      Shape : constant Tensor_Shape := (1 => Left_Rows, 2 => Right_Columns);
+      Shape : constant Tensor_Shape :=
+         (case Right.Dimensions is
+            when 1 => (1 => Left_Rows),
+            when 2 => (1 => Left_Rows, 2 => Right_Columns));
    begin
       --  Matrix-matrix or matrix-vector or vector-matrix multiplication
       return Result : CPU_Tensor := Zeros (Shape) do

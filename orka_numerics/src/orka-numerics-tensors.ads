@@ -312,10 +312,11 @@ package Orka.Numerics.Tensors is
                           Left.Shape (2) = Right.Shape (1)
                         else
                           (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)))
-       or else raise Constraint_Error with
-         "Cannot multiply matrices" &
-         " (left = " & Image (Left.Shape) & " and " &
-         "right = " & Image (Right.Shape) & ")";
+                         or else raise Constraint_Error with
+                           "Cannot multiply matrices" &
+                           " (left = " & Image (Left.Shape) & " and " &
+                           "right = " & Image (Right.Shape) & ")",
+          Post'Class => "*"'Result.Dimensions = Right.Dimensions;
    --  Perform matrix multiplication on two matrices (the right matrix
    --  can be a column vector) or a row vector and a matrix
    --
