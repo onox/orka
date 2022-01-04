@@ -11,8 +11,9 @@ This crate provides:
   Tensors provide the following features:
 
   * Constant indexing using a number, range, or another (boolean) tensor
-  * Matrix multiplication and power
-  * Inverse, transpose, outer product
+  * Matrix multiplication, power, inverse, transpose, outer product
+  * Matrix decompositions like QR, Cholesky
+  * Vector normalization and standardization
   * Constructors to create tensors from arrays, filled w/ zeros or ones
   * Constructors to create a range of numbers, or linear/log/geom space
   * Constructors to create an identity matrix, or with a diagonal

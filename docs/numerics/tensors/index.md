@@ -27,6 +27,7 @@ Tensors provide the following features:
   or another (boolean) tensor
 - [Matrix operations](/numerics/tensors/matrix-operations/)
   (multiplication, power and inverse, transpose, outer, solving A **x** = **b**)
+- Matrix decompositions like QR, Cholesky
 - Constructors to create tensors from arrays, filled with zeros or ones
 - Constructors to create a range of numbers, or linear/log/geom space
 - Constructors to create an identity matrix, or with a diagonal
@@ -48,7 +49,7 @@ Tensors provide the following features:
     - Numbers in tensors are always floating-point numbers because of the
       generic parameter of the package `:::ada Orka.Numerics.Tensors`.
 
-    - Special matrix decompositions are not implemented yet.
+    - SVD matrix decomposition is not implemented yet.
 
 ##  Image
 
