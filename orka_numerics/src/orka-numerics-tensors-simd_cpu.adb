@@ -1470,7 +1470,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             Y1 : constant Element := Y (1);
 
             --  Alpha must have the opposite sign of X (Index) (or Y (1))
-            Alpha : constant Element := -Element'Copy_Sign (1.0, Y1) * X.Norm;
+            Alpha : constant Element := -Element'Copy_Sign (1.0, Y1) * Y.Norm;
          begin
             Y.Set (Tensor_Index'(1 => 1), Y1 - Alpha);
 
