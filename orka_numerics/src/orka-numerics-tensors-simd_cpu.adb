@@ -1442,12 +1442,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end case;
    end Solve;
 
-   function Column (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
-      Size : constant Natural := Object.Shape (1);
-   begin
-      return Object (Tensor_Range'((1, Size), (Index, Index))).Reshape (Size);
-   end Column;
-
    overriding
    function QR (Object : CPU_Tensor) return QR_Factorization'Class is
       Rows    : constant Natural := Object.Shape (1);
@@ -1464,22 +1458,21 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
          --  Compute householder matrix using column R (Index)
          declare
-            X : constant CPU_Tensor := Column (R, Index);
+            U : CPU_Tensor :=
+              R (Tensor_Range'((Index, Size), (Index, Index))).Reshape (Size - Index + 1);
+            U1 : constant Element := U (1);
 
-            Y : CPU_Tensor := X (Range_Type'(Index, Size));
-            Y1 : constant Element := Y (1);
-
-            --  Alpha must have the opposite sign of X (Index) (or Y (1))
-            Alpha : constant Element := -Element'Copy_Sign (1.0, Y1) * Y.Norm;
+            --  Alpha must have the opposite sign of R ((Index, Index)) (or U (1))
+            Alpha : constant Element := -Element'Copy_Sign (1.0, U1) * U.Norm;
          begin
-            Y.Set (Tensor_Index'(1 => 1), Y1 - Alpha);
+            U.Set (Tensor_Index'(1 => 1), U1 - Alpha);
 
             declare
-               --  V = Normalize (X - Alpha * E) where
-               --            X (1 .. Index - 1) is set to 0.0
+               --  V = Normalize (X - Alpha * E) where X is column vector R (Index)
+               --        and X (1 .. Index - 1) is set to 0.0
                --        and Alpha is X.Norm with opposite sign of X (Index)
                --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
-               V           : constant CPU_Tensor := Zeros ((1 => Index - 1)) & Y.Normalize;
+               V           : constant CPU_Tensor := Zeros ((1 => Index - 1)) & U.Normalize;
                Householder : constant CPU_Tensor := (I - 2.0 * Outer (V, V));
             begin
                Q := Q * Householder;
