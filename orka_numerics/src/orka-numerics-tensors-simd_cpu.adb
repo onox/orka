@@ -1659,6 +1659,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 --     (Exp (Right * EF.Log (Left)));
       use EF;
 
+      Padding : constant Natural :=
+        Data_Padding (Size => Right.Size, Count => Elements (Right.Shape));
+
+      --  EF."**" raises Constraint_Error if Left = 0.0 and element
+      --  in the padding happens to be < 0.0
+      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, 1.0);
+
       One_Vector : constant Vector_Type := (others => 1.0);
    begin
       if Left = 1.0 then
@@ -1667,7 +1674,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          end return;
       else
          return Result : CPU_Tensor := Without_Data (Right) do
-            for Index in Result.Data'Range loop
+            for Index in Result.Data'First .. Result.Data'Last - 1 loop
                for Offset in Vector_Type'Range loop
                   declare
                      Right_Element : Element renames Right.Data (Index) (Offset);
@@ -1675,10 +1682,16 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                      if Left = 0.0 and Right_Element = 0.0 then
                         Result.Data (Index) (Offset) := 1.0;
                      else
-                        Result.Data (Index) (Offset) := Left ** Right.Data (Index) (Offset);
+                        --  0.0 ** X = 1.0 if X = 0.0
+                        --  0.0 ** X = 0.0 if X > 0.0
+                        Result.Data (Index) (Offset) := Left ** Right_Element;
                      end if;
                   end;
                end loop;
+            end loop;
+
+            for Offset in Vector_Type'Range loop
+               Result.Data (Result.Data'Last) (Offset) := Left ** Last_Right (Offset);
             end loop;
          end return;
       end if;
