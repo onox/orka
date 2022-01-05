@@ -245,6 +245,19 @@ package Orka.Numerics.Tensors is
    --  Return a tensor with ones on the diagonal (main when Offset = 0)
    --  and zeros everywhere else
 
+   function Upper_Triangular (Object : Tensor; Offset : Integer := 0) return Tensor is abstract
+     with Pre'Class  => Object.Dimensions = 2,
+          Post'Class => Upper_Triangular'Result.Dimensions = 2;
+   --  Return the upper triangular part of the matrix with zeros in the
+   --  lower triangular part
+   --
+   --  Offset specifies the diagonal (main diagonal when Offset = 0) that acts
+   --  as the boundary between the lower and upper triangular parts, and is not
+   --  zeroes.
+   --
+   --  Offset < 0 moves this diagonal downward and Offset > 0 moves it upward.
+   --  Thus the main diagonal will be zeroes when Offset > 0.
+
    function Main_Diagonal (Object : Tensor; Offset : Integer := 0) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2,
           Post'Class => Main_Diagonal'Result.Dimensions = 1;

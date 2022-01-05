@@ -921,6 +921,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Make_Upper_Triangular;
 
    overriding
+   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
+   begin
+      return Result : CPU_Tensor := Object do
+         Make_Upper_Triangular (Result, Offset => Offset);
+      end return;
+   end Upper_Triangular;
+
+   overriding
    function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
       Rows    : constant Positive := Object.Shape (1);
       Columns : constant Positive := Object.Shape (2);

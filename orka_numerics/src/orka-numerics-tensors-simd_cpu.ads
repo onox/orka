@@ -182,6 +182,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Identity (Rows, Columns : Positive; Offset : Integer := 0) return CPU_Tensor;
 
    overriding
+   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor;
+
+   overriding
    function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor;
 
    overriding
