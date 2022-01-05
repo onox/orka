@@ -905,6 +905,21 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Identity;
 
+   procedure Make_Upper_Triangular (Object : in out CPU_Tensor; Offset : Integer := 0) is
+      Rows    : constant Natural := Object.Shape (1);
+      Columns : constant Natural := Object.Shape (2);
+   begin
+      if Offset >= -(Rows - 2) then
+         --  Make matrix upper triangular by zeroing out the elements in the
+         --  lower triangular part
+         for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
+            for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
+               Object.Set ((Row_Index, Column_Index), 0.0);
+            end loop;
+         end loop;
+      end if;
+   end Make_Upper_Triangular;
+
    overriding
    function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
       Rows    : constant Positive := Object.Shape (1);
@@ -1495,6 +1510,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             end;
          end;
       end loop;
+
+      Make_Upper_Triangular (R);
 
       return CPU_QR_Factorization'(Q_Size => Q.Size, R_Size => R.Size, Q => Q, R => R);
    end QR;
