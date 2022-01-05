@@ -527,23 +527,30 @@ package body Test_Tensors_Singles_Matrices is
                     -4.0,  24.0, -41.0,
                      2.0,   3.0,   4.0)).Reshape ((4, 3));
 
-      Actual_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1));
-      Actual_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2));
-      Actual_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3));
-   begin
-      Assert (Actual_1.Q.Shape = (Tensor_1.Shape (1), Tensor_1.Shape (1)),
-        "Unexpected shape " & Image (Actual_1.Q.Shape) & " of Q");
-      Assert (Actual_2.Q.Shape = (Tensor_2.Shape (1), Tensor_2.Shape (1)),
-        "Unexpected shape " & Image (Actual_2.Q.Shape) & " of Q");
-      Assert (Actual_3.Q.Shape = (Tensor_3.Shape (1), Tensor_3.Shape (1)),
-        "Unexpected shape " & Image (Actual_3.Q.Shape) & " of Q");
+      QR_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1));
+      QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2));
+      QR_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3));
 
-      Assert (Actual_1.R.Shape = Tensor_1.Shape,
-        "Unexpected shape " & Image (Actual_1.R.Shape) & " of R");
-      Assert (Actual_2.R.Shape = Tensor_2.Shape,
-        "Unexpected shape " & Image (Actual_2.R.Shape) & " of R");
-      Assert (Actual_3.R.Shape = Tensor_3.Shape,
-        "Unexpected shape " & Image (Actual_3.R.Shape) & " of R");
+      Actual_1 : constant CPU_Tensor := CPU_Tensor (QR_1.Q) * CPU_Tensor (QR_1.R);
+      Actual_2 : constant CPU_Tensor := CPU_Tensor (QR_2.Q) * CPU_Tensor (QR_2.R);
+      Actual_3 : constant CPU_Tensor := CPU_Tensor (QR_3.Q) * CPU_Tensor (QR_3.R);
+
+      Abs_Tolerance : constant := 100.0 * Element'Model_Epsilon;
+   begin
+      Assert (QR_1.Q.Shape = (Tensor_1.Shape (1), Tensor_1.Shape (1)),
+        "Unexpected shape " & Image (QR_1.Q.Shape) & " of Q");
+      Assert (QR_2.Q.Shape = (Tensor_2.Shape (1), Tensor_2.Shape (1)),
+        "Unexpected shape " & Image (QR_2.Q.Shape) & " of Q");
+      Assert (QR_3.Q.Shape = (Tensor_3.Shape (1), Tensor_3.Shape (1)),
+        "Unexpected shape " & Image (QR_3.Q.Shape) & " of Q");
+
+      Assert (QR_1.R.Shape = Tensor_1.Shape, "Unexpected shape " & Image (QR_1.R.Shape) & " of R");
+      Assert (QR_2.R.Shape = Tensor_2.Shape, "Unexpected shape " & Image (QR_2.R.Shape) & " of R");
+      Assert (QR_3.R.Shape = Tensor_3.Shape, "Unexpected shape " & Image (QR_3.R.Shape) & " of R");
+
+      Assert (All_Close (Tensor_1, Actual_1, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
+      Assert (All_Close (Tensor_2, Actual_2, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
+      Assert (All_Close (Tensor_3, Actual_3, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
    end Test_QR;
 
    procedure Test_Cholesky (Object : in out Test) is
@@ -583,6 +590,69 @@ package body Test_Tensors_Singles_Matrices is
             null;
       end;
    end Test_Cholesky;
+
+   procedure Test_Shapes_Least_Squares (Object : in out Test) is
+      --  TODO Underdetermined matrix A is not supported yet by Least_Squares
+--      Tensor_1 : constant CPU_Tensor :=
+--        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
+--                     6.0, 167.0, -68.0, -1.0,  11.0,
+--                    -4.0,  24.0, -41.0,  0.0,   5.1,
+--                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
+
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0, 52.0,
+                     6.0, 167.0, -68.0, -1.0,
+                    -4.0,  24.0, -41.0,  0.0,
+                     2.0,   3.0,   4.0,  5.0)).Reshape ((4, 4));
+
+      Tensor_3 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0,
+                     6.0, 167.0, -68.0,
+                    -4.0,  24.0, -41.0,
+                     2.0,   3.0,   4.0)).Reshape ((4, 3));
+
+      B1 : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34), Shape => (4, 1));
+      B2 : constant CPU_Tensor := To_Tensor ((459.014, 25.146, 195.0, 0.12), Shape => (4, 1));
+
+      B_1D : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34));
+      B_2D : constant CPU_Tensor := Concatenate (B1, B2, Dimension => 2);
+
+      procedure Test_Shape_Least_Squares (A : CPU_Tensor) is
+         QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (A));
+
+         X_1D : constant CPU_Tensor := Least_Squares (QR_A, B_1D);
+         X_2D : constant CPU_Tensor := Least_Squares (QR_A, B_2D);
+      begin
+         Assert (X_1D.Dimensions = B_1D.Dimensions, "Unexpected number of dimensions of X");
+         Assert (X_2D.Dimensions = B_2D.Dimensions, "Unexpected number of dimensions of X");
+
+         Assert (X_2D.Shape (2) = B_2D.Shape (2), "Columns of X /= columns B");
+
+         Assert (X_1D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
+         Assert (X_2D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
+      end Test_Shape_Least_Squares;
+   begin
+      --  Test welldetermined and overdetermined matrices with 1-D and 2-D B's
+      Test_Shape_Least_Squares (Tensor_2);
+      Test_Shape_Least_Squares (Tensor_3);
+   end Test_Shapes_Least_Squares;
+
+   procedure Test_Values_Least_Squares (Object : in out Test) is
+      Tensor : constant CPU_Tensor :=
+        To_Tensor ((1.0,  5.0,
+                    1.0, -2.0,
+                    1.0, -4.0,
+                    1.0,  1.0)).Reshape ((4, 2));
+
+      QR_Tensor : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor));
+
+      B : constant CPU_Tensor := To_Tensor ((2.0, 3.0, -3.0, 7.0));
+
+      Expected : constant CPU_Tensor := To_Tensor ((9.0 / 4.0, 23.0 / 46.0));
+      Actual   : constant CPU_Tensor := Least_Squares (QR_Tensor, B);
+   begin
+      Assert (All_Close (Expected, Actual), "Unexpected least-squares solution");
+   end Test_Values_Least_Squares;
 
    procedure Test_Any_True (Object : in out Test) is
    begin
@@ -665,6 +735,10 @@ package body Test_Tensors_Singles_Matrices is
         (Name & "Test function QR", Test_QR'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Cholesky", Test_Cholesky'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Least_Squares (shapes)", Test_Shapes_Least_Squares'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Least_Squares (values)", Test_Values_Least_Squares'Access));
 
       --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Dimension parameter)
 
