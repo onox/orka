@@ -71,6 +71,9 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    function Cast (Elements : m256) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ps_ps256";
 
+   function Cast (Elements : m128) return m256
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ps256_ps";
+
    function Extract (Elements : m256; Mask : Unsigned_32) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_ps256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
@@ -79,6 +82,9 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    function Insert (Left : m256; Right : m128; Mask : Unsigned_32) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_ps256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
+
+   function Pack (High, Low : m128) return m256 is (Insert (Cast (Low), High, 1))
+     with Inline_Always;
 
    function Permute (Elements : m128; Mask : Unsigned_32) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilps";
