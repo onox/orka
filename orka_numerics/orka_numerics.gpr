@@ -13,12 +13,13 @@ project Orka_Numerics is
 
    SIMD_Extensions : Orka_Simd.SIMD_Type := external ("ORKA_SIMD_EXT", "AVX2");
 
+   --  Note: AVX(2) implementations require GNAT 11 or later to avoid a Storage_Error
    case SIMD_Extensions is
       when "AVX2" =>
-         --  Causes Storage_Error in "-" *after* function Concatenate in Tensors.CPU
 --         Sources := Sources & ("src/x86/generic/avx2");
          Sources := Sources & ("src/x86/generic/sse4_1");
       when others =>
+--         Sources := Sources & ("src/x86/generic/avx");
          Sources := Sources & ("src/x86/generic/sse4_1");
    end case;
 
