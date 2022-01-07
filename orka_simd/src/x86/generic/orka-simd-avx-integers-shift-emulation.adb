@@ -30,7 +30,7 @@ package body Orka.SIMD.AVX.Integers.Shift.Emulation is
       High : constant m128i := Extract (Elements, 1);
    begin
       return Pack
-        (High => Align_Right_Bytes (High, Low, (m256i'Length - 1) * m256i'Component_Size),
+        (High => Align_Right_Bytes (High, Low, (m128i'Length - 1) * m128i'Component_Size),
          Low  => Shift_Elements_Left_Zeros (Low));
    end Shift_Elements_Left_Zeros;
 
@@ -40,7 +40,7 @@ package body Orka.SIMD.AVX.Integers.Shift.Emulation is
    begin
       return Pack
         (High => Shift_Elements_Right_Zeros (High),
-         Low  => Align_Right_Bytes (High, Low, m256i'Component_Size));
+         Low  => Align_Right_Bytes (High, Low, m128i'Component_Size));
    end Shift_Elements_Right_Zeros;
 
 end Orka.SIMD.AVX.Integers.Shift.Emulation;
