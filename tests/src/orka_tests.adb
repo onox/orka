@@ -17,7 +17,9 @@ with Test_SIMD_SSE4_1_Math;
 with Test_SIMD_AVX_Arithmetic;
 with Test_SIMD_AVX_Compare;
 with Test_SIMD_AVX_Math;
+with Test_SIMD_AVX_Shift_Emulation;
 with Test_SIMD_AVX_Swizzle;
+with Test_SIMD_AVX2_Shift;
 with Test_SIMD_AVX2_Swizzle;
 with Test_SIMD_FMA_Singles_Arithmetic;
 with Test_SIMD_FMA_Doubles_Arithmetic;
@@ -67,8 +69,14 @@ procedure Orka_Tests is
       Result.Add_Test (Test_SIMD_AVX_Math.Suite);
       Result.Add_Test (Test_SIMD_AVX_Swizzle.Suite);
 
+      --  SIMD > AVX (Integers) (emulation of AVX2)
+      Result.Add_Test (Test_SIMD_AVX_Shift_Emulation.Suite);
+
       --  SIMD > AVX2 (Doubles)
       Result.Add_Test (Test_SIMD_AVX2_Swizzle.Suite);
+
+      --  SIMD > AVX2 (Integers)
+      Result.Add_Test (Test_SIMD_AVX2_Shift.Suite);
 
       --  SIMD > FMA (Singles)
       Result.Add_Test (Test_SIMD_FMA_Singles_Arithmetic.Suite);
