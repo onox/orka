@@ -527,9 +527,9 @@ package body Test_Tensors_Singles_Matrices is
                     -4.0,  24.0, -41.0,
                      2.0,   3.0,   4.0)).Reshape ((4, 3));
 
-      QR_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1));
-      QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2));
-      QR_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3));
+      QR_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1, Complete));
+      QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2, Complete));
+      QR_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3, Complete));
 
       Actual_1 : constant CPU_Tensor := CPU_Tensor (QR_1.Q) * CPU_Tensor (QR_1.R);
       Actual_2 : constant CPU_Tensor := CPU_Tensor (QR_2.Q) * CPU_Tensor (QR_2.R);
@@ -657,7 +657,7 @@ package body Test_Tensors_Singles_Matrices is
       --  Test orthogonal projection of B is A * x and Q * Q^T * b
       --  where Q is the reduced orthogonal matrix
       declare
-         Q1 : constant CPU_Tensor := CPU_Tensor (QR_Tensor.Q) (Tensor_Range'((1, 4), (1, 2)));
+         Q1 : constant CPU_Tensor := CPU_Tensor (QR_Tensor.Q);
          QQT : constant CPU_Tensor := Q1 * Q1.Transpose;
 
          Ax   : constant CPU_Tensor := Tensor * Actual;
