@@ -1482,7 +1482,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    function QR
      (Object       : CPU_Tensor;
-      Determinancy : Matrix_Determinancy) return QR_Factorization'Class
+      Determinancy : Matrix_Determinancy;
+      Mode         : QR_Mode) return QR_Factorization'Class
    is
       Rows    : constant Natural := Object.Shape (1);
       Columns : constant Natural := Object.Shape (2);
@@ -1523,16 +1524,34 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Make_Upper_Triangular (R);
 
-      return CPU_QR_Factorization'
-        (Q_Size       => Q.Size,
-         R_Size       => R.Size,
-         Q            => Q,
-         R            => R,
-         Determinancy => Determinancy);
+      case Mode is
+         when Complete =>
+            return CPU_QR_Factorization'
+              (Q_Size       => Q.Size,
+               R_Size       => R.Size,
+               Q            => Q,
+               R            => R,
+               Determinancy => Determinancy);
+         when Reduced =>
+            declare
+               K : constant Natural := Natural'Min (Rows, Columns);
+
+               Q1 : constant CPU_Tensor := Q (Tensor_Range'((1, Rows), (1, K)));
+               R1 : constant CPU_Tensor := R (Tensor_Range'((1, K), (1, Columns)));
+            begin
+               return CPU_QR_Factorization'
+                 (Q_Size       => Q1.Size,
+                  R_Size       => R1.Size,
+                  Q            => Q1,
+                  R            => R1,
+                  Determinancy => Determinancy);
+            end;
+      end case;
    end QR;
 
    overriding
-   function QR (Object : CPU_Tensor) return QR_Factorization'Class is (QR (Object, Unknown));
+   function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class is
+     (QR (Object, Unknown, Mode));
 
    overriding
    function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class is
@@ -1540,9 +1559,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Columns : constant Natural := Object.Shape (2);
    begin
       if Rows >= Columns then
-         return QR (Object, Overdetermined);
+         return QR (Object, Overdetermined, Reduced);
       else
-         return QR (Object.Transpose, Underdetermined);
+         return QR (Object.Transpose, Underdetermined, Reduced);
       end if;
    end QR_For_Least_Squares;
 
@@ -1614,17 +1633,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                end case;
             end;
          when Underdetermined =>
-            declare
-               Q1 : constant CPU_Tensor :=
-                 QR.Q (Tensor_Range'((1, QR.Q.Shape (1)), (1, B.Shape (1))));
-            begin
-               case B.Dimensions is
-                  when 1 =>
-                     return Q1 * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
-                  when 2 =>
-                     return Q1 * QR_Solve (QR.R.Transpose, B, D);
-               end case;
-            end;
+            case B.Dimensions is
+               when 1 =>
+                  return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
+               when 2 =>
+                  return QR.Q * QR_Solve (QR.R.Transpose, B, D);
+            end case;
          when Unknown => raise Program_Error;
       end case;
    end Least_Squares;

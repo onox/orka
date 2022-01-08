@@ -378,13 +378,17 @@ package Orka.Numerics.Tensors is
    type QR_Factorization is interface;
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
 
+   type QR_Mode is (Complete, Reduced);
+
    type Matrix_Determinancy is (Overdetermined, Underdetermined, Unknown);
 
    function Determinancy (Object : QR_Factorization) return Matrix_Determinancy is abstract;
 
-   function QR (Object : Tensor) return QR_Factorization'Class is abstract
-     with Pre'Class  => Object.Dimensions = 2,
-          Post'Class => QR'Result.Determinancy = Unknown;
+   function QR
+     (Object : Tensor;
+      Mode   : QR_Mode := Reduced) return QR_Factorization'Class is abstract
+   with Pre'Class  => Object.Dimensions = 2,
+        Post'Class => QR'Result.Determinancy = Unknown;
    --  Return the Q and R matrices of the QR decomposition (A = Q * R)
    --
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
