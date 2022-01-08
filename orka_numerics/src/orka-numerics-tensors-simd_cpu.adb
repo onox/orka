@@ -1480,8 +1480,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end case;
    end Solve;
 
-   overriding
-   function QR (Object : CPU_Tensor) return QR_Factorization'Class is
+   function QR
+     (Object       : CPU_Tensor;
+      Determinancy : Matrix_Determinancy) return QR_Factorization'Class
+   is
       Rows    : constant Natural := Object.Shape (1);
       Columns : constant Natural := Object.Shape (2);
 
@@ -1521,53 +1523,115 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Make_Upper_Triangular (R);
 
-      return CPU_QR_Factorization'(Q_Size => Q.Size, R_Size => R.Size, Q => Q, R => R);
+      return CPU_QR_Factorization'
+        (Q_Size       => Q.Size,
+         R_Size       => R.Size,
+         Q            => Q,
+         R            => R,
+         Determinancy => Determinancy);
    end QR;
 
-   function QR_Solve (R, Y : CPU_Tensor) return CPU_Tensor is
+   overriding
+   function QR (Object : CPU_Tensor) return QR_Factorization'Class is (QR (Object, Unknown));
+
+   overriding
+   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class is
+      Rows    : constant Natural := Object.Shape (1);
+      Columns : constant Natural := Object.Shape (2);
+   begin
+      if Rows >= Columns then
+         return QR (Object, Overdetermined);
+      else
+         return QR (Object.Transpose, Underdetermined);
+      end if;
+   end QR_For_Least_Squares;
+
+   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor
+     with Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
+
+   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor is
       Ry : CPU_Tensor := Concatenate (R, Y, Dimension => 2);
 
       Columns : constant Natural := R.Shape (2);
-      Rows    : constant Natural := Columns;
-      --  Use columns for rows so that it is not needed to extract
-      --  the reduced (square) version R1 of R
+      Size    : constant Natural := Natural'Min (R.Shape (1), R.Shape (2));
+      --  Use the smallest dimension of R for the size of the reduced (square) version R1
+      --  without needing to extract it
       --
-      --  R = [R1]
+      --  R = [R1] (A is overdetermined) or R = [R1 0] (A is underdetermined)
       --      [ 0]
 
       Columns_Ry : constant Natural := Ry.Shape (2);
    begin
-      --  Backward phase: row reduce augmented matrix of R * x = (Q^T * b = y) to
-      --  reduced echelon form by performing back-substitution on Ry
-      --  (since R is upper triangular no forward phase is needed)
-      for Index in reverse 1 .. Rows loop
-         Back_Substitute (Ry, Index, Index);
-      end loop;
+      case Determinancy is
+         when Overdetermined =>
+            --  Backward phase: row reduce augmented matrix of R * x = (Q^T * b = y) to
+            --  reduced echelon form by performing back-substitution on Ry
+            --  (since R is upper triangular no forward phase is needed)
+            for Index in reverse 1 .. Size loop
+               Back_Substitute (Ry, Index, Index);
+            end loop;
+         when Underdetermined =>
+            --  Forward phase: row reduce augmented matrix of R^T * y = b
+            --  to reduced echelon form by performing forward-substitution on Ry
+            --  (R is actually R^T) (reduced because R^T is lower triangular)
+            for Index in 1 .. Size loop
+               Scale_Row (Ry, Index, 1.0 / Ry ((Index, Index)));
+               Forward_Substitute (Ry, Index, Index);
+            end loop;
+         when Unknown => raise Program_Error;
+      end case;
 
-      return Ry (Tensor_Range'((1, Rows), (Columns + 1, Columns_Ry)));
+      return Ry (Tensor_Range'((1, Size), (Columns + 1, Columns_Ry)));
    end QR_Solve;
 
    overriding
    function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor is
       QR : CPU_QR_Factorization renames CPU_QR_Factorization (Object);
 
-      --  TODO Handle underdetermined matrix A
+      --  The least-squares solution is computed differently based on
+      --  whether the QR decomposition was based on A or A^T:
       --
-      --  m >= n (overdetermined:
-      --    - solve with back-substitution: R * x = Q^T * b
-      --  m < n (underdetermined):
-      --    - recompute QR for A^T = Q * R
-      --    - solve with forward-substitution: x = Q * y where y is solved with R^T * y = b
+      --  Let A.Shape = (m, n), then:
+      --
+      --  if m >= n (overdetermined):
+      --    - Solve R * x = Q^T * b for x with back-substitution
+      --  if m < n (underdetermined):
+      --    - Assume QR was solved for A^T = Q * R
+      --    - Compute x = Q * y where R^T * y = b is solved for y with forward-substitution
 
-      Y : constant CPU_Tensor := QR.Q.Transpose * B;
+      D : constant Matrix_Determinancy := Object.Determinancy;
    begin
-      case Y.Dimensions is
-         when 1 =>
-            return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1))).Flatten;
-         when 2 =>
-            return QR_Solve (QR.R, Y);
+      case D is
+         when Overdetermined =>
+            declare
+               Y : constant CPU_Tensor := QR.Q.Transpose * B;
+            begin
+               case Y.Dimensions is
+                  when 1 =>
+                     return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1)), D).Flatten;
+                  when 2 =>
+                     return QR_Solve (QR.R, Y, D);
+               end case;
+            end;
+         when Underdetermined =>
+            declare
+               Q1 : constant CPU_Tensor :=
+                 QR.Q (Tensor_Range'((1, QR.Q.Shape (1)), (1, B.Shape (1))));
+            begin
+               case B.Dimensions is
+                  when 1 =>
+                     return Q1 * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
+                  when 2 =>
+                     return Q1 * QR_Solve (QR.R.Transpose, B, D);
+               end case;
+            end;
+         when Unknown => raise Program_Error;
       end case;
    end Least_Squares;
+
+   overriding
+   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor is
+     (Least_Squares (QR_For_Least_Squares (A), B));
 
    overriding
    function Cholesky (Object : CPU_Tensor) return CPU_Tensor is

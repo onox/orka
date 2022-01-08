@@ -370,7 +370,7 @@ package Orka.Numerics.Tensors is
    function Solve (A, B : Tensor; Solution : out Solution_Kind) return Tensor is abstract
      with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
           Post'Class => Solve'Result.Shape = B.Shape;
-   --  Solve Ax_i = b_i for x_i for each column b_i in B by applying
+   --  Solve Ax = b for x for each column b in B by applying
    --  Gauss-Jordan elimination to convert A to its reduced row echelon form
    --
    --  B can be a vector or a matrix.
@@ -378,14 +378,38 @@ package Orka.Numerics.Tensors is
    type QR_Factorization is interface;
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
 
+   type Matrix_Determinancy is (Overdetermined, Underdetermined, Unknown);
+
+   function Determinancy (Object : QR_Factorization) return Matrix_Determinancy is abstract;
+
    function QR (Object : Tensor) return QR_Factorization'Class is abstract
-     with Pre'Class => Object.Dimensions = 2;
+     with Pre'Class  => Object.Dimensions = 2,
+          Post'Class => QR'Result.Determinancy = Unknown;
    --  Return the Q and R matrices of the QR decomposition (A = Q * R)
    --
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
 
+   function QR_For_Least_Squares (Object : Tensor) return QR_Factorization'Class is abstract
+     with Pre'Class => Object.Dimensions = 2,
+          Post'Class => QR_For_Least_Squares'Result.Determinancy /= Unknown;
+   --  Return the QR decomposition of A if A is overdetermined (rows >= columns)
+   --  or the decomposition of A^T if A is underdetermined (rows < columns)
+
    function Least_Squares (Object : QR_Factorization'Class; B : Tensor) return Tensor is abstract
-     with Post'Class => Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
+     with Pre'Class  => Object.Determinancy /= Unknown,
+          Post'Class => Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
+   --  Solve Ax' = b' for x' for each b' that is the orthogonal projection of
+   --  a corresponding column b in B by computing the least-squares solution x
+   --  using the given QR decomposition of A (if A is overdetermined) or A^T
+   --  (if A is underdetermined)
+
+   function Least_Squares (A, B : Tensor) return Tensor is abstract
+     with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
+          Post'Class => A.Shape (2) = Least_Squares'Result.Shape (1)
+                          and Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
+   --  Solve Ax' = b' for x' for each b' that is the orthogonal projection of
+   --  a corresponding column b in B by computing the QR decomposition of A
+   --  and then the least-squares solution x
 
    function Cholesky (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),

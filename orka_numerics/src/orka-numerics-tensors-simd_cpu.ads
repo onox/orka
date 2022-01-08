@@ -240,6 +240,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    type CPU_QR_Factorization (<>) is new QR_Factorization with private;
 
+   overriding
+   function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy;
+
    function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
    function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
 
@@ -247,9 +250,15 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function QR (Object : CPU_Tensor) return QR_Factorization'Class;
 
    overriding
+   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class;
+
+   overriding
    function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor
      with Pre'Class => Object in CPU_QR_Factorization
                          and CPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+
+   overriding
+   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor;
 
    overriding
    function Cholesky (Object : CPU_Tensor) return CPU_Tensor;
@@ -559,10 +568,15 @@ private
    type CPU_QR_Factorization (Q_Size, R_Size : Natural) is new QR_Factorization with record
       Q : CPU_Tensor (Dimensions => 2, Size => Q_Size, Kind => Float_Type);
       R : CPU_Tensor (Dimensions => 2, Size => R_Size, Kind => Float_Type);
+      Determinancy : Matrix_Determinancy;
    end record;
 
    function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.Q);
    function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.R);
+
+   overriding
+   function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy is
+     (Object.Determinancy);
 
    Random_State : Random_Number_State;
 
