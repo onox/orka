@@ -243,8 +243,8 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy;
 
-   function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
-   function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class;
+   function Q (Object : CPU_QR_Factorization'Class) return CPU_Tensor;
+   function R (Object : CPU_QR_Factorization'Class) return CPU_Tensor;
 
    overriding
    function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class;
@@ -571,8 +571,8 @@ private
       Determinancy : Matrix_Determinancy;
    end record;
 
-   function Q (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.Q);
-   function R (Object : CPU_QR_Factorization) return CPU_Tensor'Class is (Object.R);
+   function Q (Object : CPU_QR_Factorization'Class) return CPU_Tensor is (Object.Q);
+   function R (Object : CPU_QR_Factorization'Class) return CPU_Tensor is (Object.R);
 
    overriding
    function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy is
