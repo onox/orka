@@ -653,6 +653,18 @@ package body Test_Tensors_Singles_Matrices is
       Actual   : constant CPU_Tensor := Least_Squares (QR_Tensor, B);
    begin
       Assert (All_Close (Expected, Actual), "Unexpected least-squares solution");
+
+      --  Test orthogonal projection of B is A * x and Q * Q^T * b
+      --  where Q is the reduced orthogonal matrix
+      declare
+         Q1 : constant CPU_Tensor := CPU_Tensor (QR_Tensor.Q) (Tensor_Range'((1, 4), (1, 2)));
+         QQT : constant CPU_Tensor := Q1 * Q1.Transpose;
+
+         Ax   : constant CPU_Tensor := Tensor * Actual;
+         QQTb : constant CPU_Tensor := QQT * B;
+      begin
+         Assert (All_Close (Ax, QQTb), "Unexpected orthogonal projection");
+      end;
    end Test_Values_Least_Squares;
 
    procedure Test_Any_True (Object : in out Test) is
