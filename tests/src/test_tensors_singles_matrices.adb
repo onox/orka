@@ -531,9 +531,9 @@ package body Test_Tensors_Singles_Matrices is
       QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2, Complete));
       QR_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3, Complete));
 
-      Actual_1 : constant CPU_Tensor := CPU_Tensor (QR_1.Q) * CPU_Tensor (QR_1.R);
-      Actual_2 : constant CPU_Tensor := CPU_Tensor (QR_2.Q) * CPU_Tensor (QR_2.R);
-      Actual_3 : constant CPU_Tensor := CPU_Tensor (QR_3.Q) * CPU_Tensor (QR_3.R);
+      Actual_1 : constant CPU_Tensor := QR_1.Q * QR_1.R;
+      Actual_2 : constant CPU_Tensor := QR_2.Q * QR_2.R;
+      Actual_3 : constant CPU_Tensor := QR_3.Q * QR_3.R;
 
       Abs_Tolerance : constant := 100.0 * Element'Model_Epsilon;
    begin
@@ -657,8 +657,7 @@ package body Test_Tensors_Singles_Matrices is
       --  Test orthogonal projection of B is A * x and Q * Q^T * b
       --  where Q is the reduced orthogonal matrix
       declare
-         Q1 : constant CPU_Tensor := CPU_Tensor (QR_Tensor.Q);
-         QQT : constant CPU_Tensor := Q1 * Q1.Transpose;
+         QQT : constant CPU_Tensor := QR_Tensor.Q * QR_Tensor.Q.Transpose;
 
          Ax   : constant CPU_Tensor := Tensor * Actual;
          QQTb : constant CPU_Tensor := QQT * B;
