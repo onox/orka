@@ -592,12 +592,11 @@ package body Test_Tensors_Singles_Matrices is
    end Test_Cholesky;
 
    procedure Test_Shapes_Least_Squares (Object : in out Test) is
-      --  TODO Underdetermined matrix A is not supported yet by Least_Squares
---      Tensor_1 : constant CPU_Tensor :=
---        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
---                     6.0, 167.0, -68.0, -1.0,  11.0,
---                    -4.0,  24.0, -41.0,  0.0,   5.1,
---                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
+      Tensor_1 : constant CPU_Tensor :=
+        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
+                     6.0, 167.0, -68.0, -1.0,  11.0,
+                    -4.0,  24.0, -41.0,  0.0,   5.1,
+                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
 
       Tensor_2 : constant CPU_Tensor :=
         To_Tensor ((12.0, -51.0,   4.0, 52.0,
@@ -617,8 +616,9 @@ package body Test_Tensors_Singles_Matrices is
       B_1D : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34));
       B_2D : constant CPU_Tensor := Concatenate (B1, B2, Dimension => 2);
 
+      --  Test matrices with 1-D and 2-D B's
       procedure Test_Shape_Least_Squares (A : CPU_Tensor) is
-         QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (A));
+         QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (A));
 
          X_1D : constant CPU_Tensor := Least_Squares (QR_A, B_1D);
          X_2D : constant CPU_Tensor := Least_Squares (QR_A, B_2D);
@@ -632,7 +632,7 @@ package body Test_Tensors_Singles_Matrices is
          Assert (X_2D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
       end Test_Shape_Least_Squares;
    begin
-      --  Test welldetermined and overdetermined matrices with 1-D and 2-D B's
+      Test_Shape_Least_Squares (Tensor_1);
       Test_Shape_Least_Squares (Tensor_2);
       Test_Shape_Least_Squares (Tensor_3);
    end Test_Shapes_Least_Squares;
@@ -644,7 +644,8 @@ package body Test_Tensors_Singles_Matrices is
                     1.0, -4.0,
                     1.0,  1.0)).Reshape ((4, 2));
 
-      QR_Tensor : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor));
+      QR_Tensor : constant CPU_QR_Factorization :=
+        CPU_QR_Factorization (QR_For_Least_Squares (Tensor));
 
       B : constant CPU_Tensor := To_Tensor ((2.0, 3.0, -3.0, 7.0));
 
