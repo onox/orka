@@ -142,7 +142,7 @@ The equation A **x** = **b** describes the transformation of a vector
 **b** is a linear combination of the columns of A.
 
 If a matrix A has the shape *m* × *n* with *m* < *n*, then A has
-a free variable and a **x** = **b** has an infinite number of solutions;
+free variables and A **x** = **b** has an infinite number of solutions;
 there exist multiple vectors **x** that can be transformed to vector **b**.
 To say it differently: vector **b** is in the column space of A, the set
 of all linear combinations of the columns of A.
@@ -160,9 +160,10 @@ and I **x** will be equal to **x** itself.
 
 Another matrix, A, may have the shape 3 × 2, and if the two columns are
 not a multiple of each other, then they span a 2-D plane in a 3-D space ℝ^3^.
-Each point **x** ∈ ℝ^2^ (a vector with two elements) in this plane is a linear
-combination of the columns of A and is also a point A **x**
-(a vector **b** with three elements) in the 3-D space ℝ^3^.
+A vector **b** in ℝ^3^ (with three elements) in the column space of A is a
+linear combination of the columns of A and the vector **x** in ℝ^2^
+(a vector with two elements), which is a point in the plane spanned by
+the columns of A.
 
 Now imagine that the columns of matrix A create a horizontal plane and vector
 **b** is a point floating just above this plane. Then **b** is not in the
@@ -204,8 +205,10 @@ If the columns of `A` are orthogonal (which happens to be the case
 in the example above), then the orthogonal projection of `B` onto
 column **a**~i~ of `A` is a linear combination of the column **a**~i~
 and the coefficient (**b** ∙ **a**~i~) / (**a**~i~ ∙ **a**~i~).
+This is an alternative way to compute the values of **x** and does not
+require computing the QR factorization of A.
 
-For the example above, this is 9.0 / 4.0 and 23.0 / 46.0.
+For the example above, **x** is 9.0 / 4.0 and 23.0 / 46.0.
 
 ### Caching the QR factorization
 

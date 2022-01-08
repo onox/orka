@@ -26,7 +26,7 @@ Tensors provide the following features:
 - Constant [indexing](/numerics/tensors/indexing/) using a number, range,
   or another (boolean) tensor
 - [Matrix operations](/numerics/tensors/matrix-operations/)
-  (multiplication, power and inverse, transpose, outer, solving A **x** = **b**)
+  (multiplication, power and inverse, transpose, outer, solving A **x** = **b**, least-squares)
 - Matrix decompositions like QR, Cholesky
 - Constructors to create tensors from arrays, filled with zeros or ones
 - Constructors to create a range of numbers, or linear/log/geom space
