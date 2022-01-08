@@ -135,6 +135,108 @@ Function `Main_Diagonal` returns a 1-D tensor filled with the elements on
 the main diagonal of a 2-D tensor. The diagonal to use can be specified with
 the optional parameter `Offset`.
 
-## Decompositions
+## Least-squares
 
-!!! bug "TODO"
+The equation A **x** = **b** describes the transformation of a vector
+**x** to vector **b**. If the system of equations is consistent, then
+**b** is a linear combination of the columns of A.
+
+If a matrix A has the shape *m* × *n* with *m* < *n*, then A has
+a free variable and a **x** = **b** has an infinite number of solutions;
+there exist multiple vectors **x** that can be transformed to vector **b**.
+To say it differently: vector **b** is in the column space of A, the set
+of all linear combinations of the columns of A.
+
+If *m* > *n* instead, then row reducing [A **b**] to [U **x**] may result
+in the last few rows of U containing zeros. In that case the system of equations
+is inconsistent and there is no solution. At most there is one solution
+because there are no free variables. Thus there may exist a vector **b**
+that is not in the column space of A.
+
+For example, the identity matrix I with the shape 3 × 3 has pivots in each
+column and thus the columns are linear independent and span the infinite
+column space of I: you can think of any vector **x** (a point in a 3-D space)
+and I **x** will be equal to **x** itself.
+
+Another matrix, A, may have the shape 3 × 2, and if the two columns are
+not a multiple of each other, then they span a 2-D plane in a 3-D space ℝ^3^.
+Each point **x** ∈ ℝ^2^ (a vector with two elements) in this plane is a linear
+combination of the columns of A and is also a point A **x**
+(a vector **b** with three elements) in the 3-D space ℝ^3^.
+
+Now imagine that the columns of matrix A create a horizontal plane and vector
+**b** is a point floating just above this plane. Then **b** is not in the
+column space of A and the equation A **x** = **b** has no solution.
+However, there may be vector A **x'** = **b'** that is in the column space of A
+and that is very close to **b**. Thus the least-squares problem is finding
+a vector **x'** that minimizes the distance between **b** and A **x'**.
+
+Given a matrix `A`:
+
+```ada
+A : constant CPU_Tensor :=
+  To_Tensor ((1.0,  5.0,
+              1.0, -2.0,
+              1.0, -4.0,
+              1.0,  1.0)).Reshape ((4, 2));
+```
+
+and a vector `B`:
+
+```ada
+B : constant CPU_Tensor := To_Tensor ((2.0, 3.0, -3.0, 7.0));
+```
+
+Function `Least_Squares` can be used to compute the least-squares
+solution as follows:
+
+```ada
+X : constant CPU_Tensor := Least_Squares (A, B);
+```
+
+The image of `X` will be:
+
+```
+tensor([ 2.25000E+00, 5.00000E-01])
+```
+
+If the columns of `A` are orthogonal (which happens to be the case
+in the example above), then the orthogonal projection of `B` onto
+column **a**~i~ of `A` is a linear combination of the column **a**~i~
+and the coefficient (**b** ∙ **a**~i~) / (**a**~i~ ∙ **a**~i~).
+
+For the example above, this is 9.0 / 4.0 and 23.0 / 46.0.
+
+### Caching the QR factorization
+
+The function `Least_Squares` above computes the QR factorization
+needed to compute the least-squares solution. If a solution must be
+computed repeatedly for different vectors **b**, then it is helpful
+to cache the QR factorization using the function `QR_For_Least_Squares`:
+
+```
+QR_A : constant CPU_QR_Factorization :=
+  CPU_QR_Factorization (QR_For_Least_Squares (A));
+```
+
+If `A` is undetermined (*m* < *n*) then function `QR_For_Least_Squares`
+computes the QR factorization of A^T^ instead.
+There is another function `QR` that does *not* perform this automatic
+transposition, but the resulting object cannot be used by function
+`Least_Squares`. In fact, doing so will raise a `Program_Error`.
+
+The factorization `QR_A` can then be used by function `Least_Squares`
+to compute the least-squares solution for some tensor `B`:
+
+```ada
+X : constant CPU_Tensor := Least_Squares (QR_A, B);
+```
+
+Tensor `B` can be a vector or a matrix of column vectors.
+
+### Orthogonal projection
+
+The orthogonal projection **b'** of **b** onto the column space of A
+can be obtained by multiplying `A` with the computed least-squares
+solution `X` or by computing Q Q^T^ **b** where Q is the
+orthogonal matrix Q from the QR factorization of `A`.

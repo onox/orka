@@ -207,3 +207,8 @@ In the examples above, `Tensor_1` is equal to `Tensor_2`.
 
 Just like `Identity`, the function `Diagonal` accepts a second parameter
 that specifies on which diagonal the elements must be placed.
+
+## Triangular parts
+
+The upper triangular part of a matrix `A` with zeros in the lower triangular
+part can be created with the function `Upper_Triangular`.
