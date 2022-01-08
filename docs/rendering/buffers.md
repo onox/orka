@@ -370,6 +370,10 @@ GL.Barriers.Memory_Barrier
   ((By_Region => False, Shader_Storage => True, others => False));
 ```
 
+*[SSBO]: Shader Storage Buffer Object
+*[UBO]: Uniform Buffer Object
+*[TBO]: Texture Buffer Object
+
   [url-memory-qlf]: https://www.khronos.org/opengl/wiki/Type_Qualifier_(GLSL)#Memory_qualifiers
   [url-memory-layout]: https://www.khronos.org/opengl/wiki/Block_Layout_Query#Memory_layout
   [url-ssbo-atomics]: https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object#Atomic_operations

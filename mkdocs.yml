@@ -52,6 +52,7 @@ extra:
       link: https://gitter.im/ada-lang/Lobby
 
 markdown_extensions:
+  - abbr
   - admonition
   - def_list
   - footnotes
@@ -71,6 +72,7 @@ markdown_extensions:
       repo_url_shorthand: true
       user: onox
       repo: orka
+  - pymdownx.snippets
   - pymdownx.superfences
   - pymdownx.smartsymbols:
       copyright: false

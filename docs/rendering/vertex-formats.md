@@ -145,3 +145,5 @@ const vec3 position = vec3(unpackHalf2x16(data.x), tmp.x);
 const vec3 normal = vec3(tmp.y, unpackHalf2x16(data.z));
 const vec2 uv = unpackHalf2x16(data.w);
 ```
+
+*[SSBO]: Shader Storage Buffer Object
