@@ -16,7 +16,7 @@
 
 package body Orka.SIMD.AVX.Singles.Compare is
 
-   function Is_True (Elements : m256; Position : Index_Double_Homogeneous) return Boolean is
+   function Is_True (Elements : m256; Position : Index_8D) return Boolean is
    begin
       return Elements (Position) /= 0.0;
    exception

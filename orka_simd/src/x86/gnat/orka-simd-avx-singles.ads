@@ -17,7 +17,7 @@
 package Orka.SIMD.AVX.Singles is
    pragma Pure;
 
-   type m256 is array (Index_Double_Homogeneous) of Float_32
+   type m256 is array (Index_8D) of Float_32
      with Alignment => 32;
    pragma Machine_Attribute (m256, "vector_type");
 

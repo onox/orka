@@ -24,7 +24,7 @@ package Orka.SIMD.F16C is
    use SIMD.AVX.Singles;
    use SIMD.SSE.Singles;
 
-   type m128s is array (Index_Double_Homogeneous) of Integer_16
+   type m128s is array (Index_8D) of Integer_16
      with Alignment => 16;
    pragma Machine_Attribute (m128s, "vector_type");
 

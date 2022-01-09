@@ -62,7 +62,7 @@ package Orka.SIMD.AVX.Singles.Compare is
    function Not_Less_Than (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#05#));
 
-   function Is_True (Elements : m256; Position : Index_Double_Homogeneous) return Boolean;
+   function Is_True (Elements : m256; Position : Index_8D) return Boolean;
    --  Return true if an element at the given position is not zero, false otherwise.
    --
    --  A comparison using one of the operators above may result in elements

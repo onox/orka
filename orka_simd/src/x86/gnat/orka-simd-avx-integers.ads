@@ -17,7 +17,7 @@
 package Orka.SIMD.AVX.Integers is
    pragma Pure;
 
-   type m256i is array (Index_Double_Homogeneous) of Integer_32
+   type m256i is array (Index_8D) of Integer_32
      with Alignment => 32;
    pragma Machine_Attribute (m256i, "vector_type");
 

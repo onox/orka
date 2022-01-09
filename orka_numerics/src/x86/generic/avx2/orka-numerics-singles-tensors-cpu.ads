@@ -27,7 +27,7 @@ with Orka.SIMD.AVX2.Integers.Shift;
 with Orka.SIMD.AVX.Integers.Logical;
 
 package Orka.Numerics.Singles.Tensors.CPU is new Orka.Numerics.Singles.Tensors.SIMD_CPU
-  (SIMD.AVX.Index_Double_Homogeneous,
+  (SIMD.AVX.Index_8D,
    Integer_32,
    SIMD.AVX.Integers.m256i,
    SIMD.AVX2.Integers.Arithmetic."+",
