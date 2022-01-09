@@ -132,6 +132,9 @@ replaced.
     "Masked Software Occlusion Culling", Hasselgren J., Andersson M.,
     Akenine-Möller T., High Performance Graphics, 2016.
 
+*[SSBO]: Shader Storage Buffer Object
+*[SPIR-V]: Standard Portable Intermediate Representation
+
   [url-docs-ubos]: /rendering/buffers/#ubo
   [url-docs-vertex-formats]: /rendering/vertex-formats/
   [url-blog-transform-feedback]: http://jason-blog.jlekstrand.net/2018/10/transform-feedback-is-terrible-so-why.html

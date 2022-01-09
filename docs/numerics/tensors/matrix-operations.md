@@ -243,3 +243,30 @@ The orthogonal projection **b'** of **b** onto the column space of A
 can be obtained by multiplying `A` with the computed least-squares
 solution `X` or by computing Q Q^T^ **b** where Q is the
 orthogonal matrix Q from the QR factorization of `A`.
+
+### Adding constraints
+
+The function `Constrained_Least_Squares` can be used to constrain
+**x'** such that C **x'** = **d** when computing the least-squares
+solution **x'**:
+
+```ada
+X : constant CPU_Tensor := Constrained_Least_Squares (A, B, C, D);
+```
+
+Tensor `C` must be a matrix and have the same number of columns as `A`
+and same number of rows as `D`. Tensor `B` and `D` must have same number
+of columns.
+
+The smallest **x'** can be computed for which C **x'** = **d** by setting
+`A` to the identity matrix and `B` to a vector of zeros.
+Minimizing ‖A **x** - **b**‖^2^ becomes ‖**x**‖^2^:
+
+```ada
+Size : constant Natural := C.Shape (2);
+
+I    : constant CPU_Tensor := Identity (Size => Size);
+Zero : constant CPU_Tensor := Zeros (Elements => Size);
+
+Min_Value : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;
+```
