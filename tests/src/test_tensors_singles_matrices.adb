@@ -28,6 +28,15 @@ package body Test_Tensors_Singles_Matrices is
 
    use AUnit.Assertions;
 
+   Abs_Tolerance : constant := 100.0 * Element'Model_Epsilon;
+
+   procedure Assert (Expected, Result : Element; Message : String) is
+      function Is_Similar (Expected, Result : Element) return Boolean is
+        (abs (Result - Expected) <= Abs_Tolerance + 1.0e-05 * abs Expected);
+   begin
+      Assert (Is_Similar (Expected, Result), Message);
+   end Assert;
+
    procedure Assert_Equal (Expected : Element_Array; Actual : CPU_Tensor) is
    begin
       Assert (Actual.Elements = Expected'Length,
@@ -534,8 +543,6 @@ package body Test_Tensors_Singles_Matrices is
       Actual_1 : constant CPU_Tensor := QR_1.Q * QR_1.R;
       Actual_2 : constant CPU_Tensor := QR_2.Q * QR_2.R;
       Actual_3 : constant CPU_Tensor := QR_3.Q * QR_3.R;
-
-      Abs_Tolerance : constant := 100.0 * Element'Model_Epsilon;
    begin
       Assert (QR_1.Q.Shape = (Tensor_1.Shape (1), Tensor_1.Shape (1)),
         "Unexpected shape " & Image (QR_1.Q.Shape) & " of Q");
@@ -666,6 +673,32 @@ package body Test_Tensors_Singles_Matrices is
       end;
    end Test_Values_Least_Squares;
 
+   procedure Test_Constrained_Least_Squares (Object : in out Test) is
+      --  Let A = I and b = 0 to reduce constrained least-squares problem
+      --  to the least norm problem
+      I    : constant CPU_Tensor := Identity (Size => 10);
+      Zero : constant CPU_Tensor := Zeros (Elements => 10);
+
+      --  This example is from Section 16.1.1 of [1] in which
+      --  a sequence of 10 forces are applied (m = 1.0 kg) to
+      --  achieve a final velocity of 0.0 m/s and a position of 1.0 m.
+      --
+      --  A force i (in 1 .. 10) is applied during t in i - 1 .. i.
+      --  Afterwards velocity of object is constant, thus change in position
+      --  because of force i is (10.0 - i + 0.5) m.
+      --
+      --  [1] "Introduction to Applied Linear Algebra", Boyd S., Vandenberge L., 2018
+      C : constant CPU_Tensor :=
+        To_Tensor ((1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                    9.5, 8.5, 7.5, 6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5)).Reshape ((2, 10));
+      D : constant CPU_Tensor := To_Tensor ((0.0, 1.0), Shape => (2, 1));
+
+      Expected : constant Element := 0.01212;
+      Actual   : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;
+   begin
+      Assert (Expected, Actual, "Unexpected squared norm of constrained least-squares solution");
+   end Test_Constrained_Least_Squares;
+
    procedure Test_Any_True (Object : in out Test) is
    begin
       Assert (False, "FIXME");
@@ -751,6 +784,8 @@ package body Test_Tensors_Singles_Matrices is
         (Name & "Test function Least_Squares (shapes)", Test_Shapes_Least_Squares'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Least_Squares (values)", Test_Values_Least_Squares'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Constrained_Least_Squares", Test_Constrained_Least_Squares'Access));
 
       --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Dimension parameter)
 
