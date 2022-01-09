@@ -1648,6 +1648,44 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Least_Squares (QR_For_Least_Squares (A), B));
 
    overriding
+   function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor is
+      AC : constant CPU_Tensor := Concatenate (A, C, Dimension => 1);
+
+      QR_AC : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (AC));
+
+      QR_AC_Q1_T : constant CPU_Tensor := QR_AC.Q (Range_Type'(1, A.Shape (1))).Transpose;
+      QR_AC_Q2   : constant CPU_Tensor := QR_AC.Q (Range_Type'(A.Shape (1) + 1, AC.Shape (1)));
+
+      QR_Q2 : constant CPU_QR_Factorization :=
+        CPU_QR_Factorization (QR_For_Least_Squares (QR_AC_Q2));
+      pragma Assert (QR_Q2.Determinancy = Underdetermined);
+
+      RQ2_IT_D : constant CPU_Tensor :=
+        (case D.Dimensions is
+            when 1 =>
+               QR_Solve (QR_Q2.R.Transpose, D.Reshape ((D.Elements, 1)), Underdetermined),
+            when 2 =>
+               QR_Solve (QR_Q2.R.Transpose, D, Underdetermined));
+
+      B_Matrix : constant CPU_Tensor :=
+        (case B.Dimensions is
+            when 1 => B.Reshape ((B.Elements, 1)),
+            when 2 => B);
+
+      Rw : constant CPU_Tensor :=
+        CPU_Tensor'(CPU_Tensor'(2.0 * QR_Q2.Q.Transpose * QR_AC_Q1_T) * B_Matrix) - 2.0 * RQ2_IT_D;
+
+      W : constant CPU_Tensor := QR_Solve (QR_Q2.R, Rw, Overdetermined);
+
+      Rx : constant CPU_Tensor :=
+        CPU_Tensor'(QR_AC_Q1_T * B_Matrix) - CPU_Tensor'(0.5 * QR_AC_Q2.Transpose * W);
+
+      Result : constant CPU_Tensor := QR_Solve (QR_AC.R, Rx, Overdetermined);
+   begin
+      return (if B.Dimensions = 1 then Result.Flatten else Result);
+   end Constrained_Least_Squares;
+
+   overriding
    function Cholesky (Object : CPU_Tensor) return CPU_Tensor is
       Rows  : constant Natural      := Object.Shape (1);
       Shape : constant Tensor_Shape := (1 .. 2 => Rows);

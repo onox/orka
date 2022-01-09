@@ -415,6 +415,20 @@ package Orka.Numerics.Tensors is
    --  a corresponding column b in B by computing the QR decomposition of A
    --  and then the least-squares solution x
 
+   function Constrained_Least_Squares (A, B, C, D : Tensor) return Tensor is abstract
+     with Pre'Class => (A.Dimensions = 2 and C.Dimensions = 2) and then
+                         (A.Shape (2) = C.Shape (2) and
+                          A.Shape (1) = B.Shape (1) and
+                          C.Shape (1) = D.Shape (1) and
+                          Is_Equal (B.Shape, D.Shape, 1)),
+          Post'Class => A.Shape (2) = Constrained_Least_Squares'Result.Shape (1)
+                          and Is_Equal (Constrained_Least_Squares'Result.Shape, B.Shape, 1);
+   --  Solve Ax' = b' subject to Cx' = d for the least-squares solution x'
+   --  for each b' that is the orthogonal projection of a corresponding
+   --  column b in B
+   --
+   --  If A = I and b = 0 then the function returns the smallest x' for which Cx' = d.
+
    function Cholesky (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
           Post'Class => Cholesky'Result.Dimensions = 2;
