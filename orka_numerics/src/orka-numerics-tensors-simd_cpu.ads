@@ -101,11 +101,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding procedure Set (Object : in out CPU_Tensor; Index : Range_Type;   Value : CPU_Tensor);
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Value : CPU_Tensor);
 
-   --  TODO Variable indexing using a boolean tensor would require
-   --  keeping a copy of the boolean tensor and using it to write the
-   --  1-D tensor of CPU_Reference.Data.all to Object in procedure Finalize
-   --  of type CPU_Reference
-
    ----------------------------------------------------------------------------
 
    overriding
@@ -119,6 +114,11 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Dimensions (Object : CPU_Tensor) return Tensor_Dimension;
+
+   ----------------------------------------------------------------------------
+
+   overriding
+   function Empty (Shape : Tensor_Shape) return CPU_Tensor;
 
    overriding
    function Fill (Shape : Tensor_Shape; Value : Element) return CPU_Tensor;

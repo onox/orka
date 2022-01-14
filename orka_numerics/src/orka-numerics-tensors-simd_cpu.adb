@@ -735,6 +735,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Dimensions (Object : CPU_Tensor) return Tensor_Dimension is (Object.Dimensions);
 
    overriding
+   function Empty (Shape : Tensor_Shape) return CPU_Tensor is (Without_Data (Shape));
+
+   overriding
    function Fill (Shape : Tensor_Shape; Value : Element) return CPU_Tensor is
       Vector : constant Vector_Type := (others => Value);
    begin

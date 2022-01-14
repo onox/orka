@@ -159,6 +159,9 @@ package Orka.Numerics.Tensors is
    --                              Constructors                              --
    ----------------------------------------------------------------------------
 
+   function Empty (Shape : Tensor_Shape) return Tensor is abstract;
+   --  Return a tensor of the given shape without initialized elements
+
    function Fill (Shape : Tensor_Shape; Value : Element) return Tensor is abstract;
 
    function Zeros (Elements : Positive) return Tensor is abstract
