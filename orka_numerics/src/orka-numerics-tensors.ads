@@ -92,7 +92,7 @@ package Orka.Numerics.Tensors is
 
    function Get (Object : Tensor; Index : Index_Type) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2,
-          Post'Class => Get'Result.Dimensions = 1 and Get'Result.Shape (1) = Object.Shape (2);
+          Post'Class => Get'Result.Dimensions = 1 and Get'Result.Rows = Object.Columns;
    --  Return the row of a matrix as a vector
 
    function Get (Object : Tensor; Index : Tensor_Index) return Element is abstract
@@ -127,7 +127,7 @@ package Orka.Numerics.Tensors is
       Index  : Index_Type;
       Value  : Tensor) is abstract
    with Pre'Class => (Object.Dimensions = 2 and Value.Dimensions = 1)
-                       and then Value.Shape (1) = Object.Shape (2);
+                       and then Value.Rows = Object.Columns;
 
    procedure Set
      (Object : in out Tensor;
@@ -148,12 +148,15 @@ package Orka.Numerics.Tensors is
 
    function Shape (Object : Tensor) return Tensor_Shape is abstract;
 
+   function Rows    (Object : Tensor'Class) return Natural is (Object.Shape (1));
+   function Columns (Object : Tensor'Class) return Natural is (Object.Shape (2));
+
    function Elements (Object : Tensor) return Natural is abstract;
 
    function Dimensions (Object : Tensor) return Tensor_Dimension is abstract;
 
    function Is_Square (Object : Tensor'Class) return Boolean is
-     (Object.Dimensions = 2 and Object.Shape (1) = Object.Shape (2));
+     (Object.Dimensions = 2 and then Object.Rows = Object.Columns);
 
    ----------------------------------------------------------------------------
    --                              Constructors                              --
@@ -236,15 +239,15 @@ package Orka.Numerics.Tensors is
 
    function Identity (Size : Positive; Offset : Integer := 0) return Tensor is abstract
      with Post'Class => Identity'Result.Dimensions = 2
-                          and Identity'Result.Shape (1) = Size
-                          and Identity'Result.Shape (2) = Size;
+                          and Identity'Result.Rows = Size
+                          and Identity'Result.Columns = Size;
    --  Return a tensor with ones on the diagonal (main when Offset = 0)
    --  and zeros everywhere else
 
    function Identity (Rows, Columns : Positive; Offset : Integer := 0) return Tensor is abstract
      with Post'Class => Identity'Result.Dimensions = 2
-                          and Identity'Result.Shape (1) = Rows
-                          and Identity'Result.Shape (2) = Columns;
+                          and Identity'Result.Rows = Rows
+                          and Identity'Result.Columns = Columns;
    --  Return a tensor with ones on the diagonal (main when Offset = 0)
    --  and zeros everywhere else
 
@@ -268,17 +271,15 @@ package Orka.Numerics.Tensors is
    --  when Offset = 0) of the given tensor
 
    function Diagonal (Elements : Element_Array; Offset : Integer := 0) return Tensor is abstract
-     with Post'Class => Diagonal'Result.Dimensions = 2
-                          and Diagonal'Result.Elements = Elements'Length ** 2
-                          and Diagonal'Result.Shape (1) = Diagonal'Result.Shape (2);
+     with Post'Class => Is_Square (Diagonal'Result)
+                          and Diagonal'Result.Elements = Elements'Length ** 2;
    --  Return a 2D tensor filled with the given elements on the diagonal
    --  (main when Offset = 0) and zeros everywhere else
 
    function Diagonal (Elements : Tensor; Offset : Integer := 0) return Tensor is abstract
      with Pre'Class  => Elements.Dimensions = 1,
-          Post'Class => Diagonal'Result.Dimensions = 2
-                          and Diagonal'Result.Elements = Elements.Elements ** 2
-                          and Diagonal'Result.Shape (1) = Diagonal'Result.Shape (2);
+          Post'Class => Is_Square (Diagonal'Result)
+                          and Diagonal'Result.Elements = Elements.Elements ** 2;
    --  Return a 2D tensor filled with the given elements on the diagonal
    --  (main when Offset = 0) and zeros everywhere else
 
@@ -325,9 +326,9 @@ package Orka.Numerics.Tensors is
 
    function "*" (Left, Right : Tensor) return Tensor is abstract
      with Pre'Class => (if Left.Dimensions > 1 then
-                          Left.Shape (2) = Right.Shape (1)
+                          Left.Columns = Right.Rows
                         else
-                          (Right.Dimensions > 1 and Left.Shape (1) = Right.Shape (1)))
+                          (Right.Dimensions > 1 and Left.Rows = Right.Rows))
                          or else raise Constraint_Error with
                            "Cannot multiply matrices" &
                            " (left = " & Image (Left.Shape) & " and " &
@@ -365,13 +366,13 @@ package Orka.Numerics.Tensors is
    function Transpose (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Object.Dimensions = 2,
           Post'Class => Transpose'Result.Dimensions = 2
-                          and Transpose'Result.Shape (1) = Object.Shape (2)
-                          and Transpose'Result.Shape (2) = Object.Shape (1);
+                          and Transpose'Result.Rows = Object.Columns
+                          and Transpose'Result.Columns = Object.Rows;
 
    type Solution_Kind is (None, Unique, Infinite);
 
    function Solve (A, B : Tensor; Solution : out Solution_Kind) return Tensor is abstract
-     with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
+     with Pre'Class  => A.Dimensions = 2 and A.Rows = B.Rows,
           Post'Class => Solve'Result.Shape = B.Shape;
    --  Solve Ax = b for x for each column b in B by applying
    --  Gauss-Jordan elimination to convert A to its reduced row echelon form
@@ -411,8 +412,8 @@ package Orka.Numerics.Tensors is
    --  (if A is underdetermined)
 
    function Least_Squares (A, B : Tensor) return Tensor is abstract
-     with Pre'Class  => A.Dimensions = 2 and A.Shape (1) = B.Shape (1),
-          Post'Class => A.Shape (2) = Least_Squares'Result.Shape (1)
+     with Pre'Class  => A.Dimensions = 2 and A.Rows = B.Rows,
+          Post'Class => A.Columns = Least_Squares'Result.Rows
                           and Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
    --  Solve Ax' = b' for x' for each b' that is the orthogonal projection of
    --  a corresponding column b in B by computing the QR decomposition of A
@@ -420,11 +421,11 @@ package Orka.Numerics.Tensors is
 
    function Constrained_Least_Squares (A, B, C, D : Tensor) return Tensor is abstract
      with Pre'Class => (A.Dimensions = 2 and C.Dimensions = 2) and then
-                         (A.Shape (2) = C.Shape (2) and
-                          A.Shape (1) = B.Shape (1) and
-                          C.Shape (1) = D.Shape (1) and
+                         (A.Columns = C.Columns and
+                          A.Rows = B.Rows and
+                          C.Rows = D.Rows and
                           Is_Equal (B.Shape, D.Shape, 1)),
-          Post'Class => A.Shape (2) = Constrained_Least_Squares'Result.Shape (1)
+          Post'Class => A.Columns = Constrained_Least_Squares'Result.Rows
                           and Is_Equal (Constrained_Least_Squares'Result.Shape, B.Shape, 1);
    --  Solve Ax' = b' subject to Cx' = d for the least-squares solution x'
    --  for each b' that is the orthogonal projection of a corresponding
