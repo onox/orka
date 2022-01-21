@@ -74,7 +74,7 @@ package body Test_Tensors_Singles_Vectors is
         "Unexpected size of tensor: " & Actual.Elements'Image);
 
       for I in Expected'Range loop
-         Assert (Expected (I) = Actual (I),
+         Assert (Expected (I), Actual (I),
            "Unexpected element at index " & I'Image & ": " &
            Element'Image (Actual (I)) & " instead of " & Element'Image (Expected (I)));
       end loop;
