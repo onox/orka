@@ -14,14 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.AVX.Longs;
-
-package Orka.SIMD.AVX2.Longs is
+package Orka.SIMD.SSE2.Longs.Logical is
    pragma Pure;
 
-   subtype m128l is Orka.SIMD.SSE2.Longs.m128l;
+   function And_Not (Left, Right : m128l) return m128l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pandn128";
 
-   use Orka.SIMD.AVX.Longs;
+   function "and" (Left, Right : m128l) return m128l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pand128";
 
-end Orka.SIMD.AVX2.Longs;
+   function "or" (Left, Right : m128l) return m128l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_por128";
+
+   function "xor" (Left, Right : m128l) return m128l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pxor128";
+
+end Orka.SIMD.SSE2.Longs.Logical;

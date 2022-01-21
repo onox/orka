@@ -15,13 +15,19 @@
 --  limitations under the License.
 
 with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.AVX.Longs;
 
-package Orka.SIMD.AVX2.Longs is
+package Orka.SIMD.SSE4_1.Longs.Logical is
    pragma Pure;
 
-   subtype m128l is Orka.SIMD.SSE2.Longs.m128l;
+   use Orka.SIMD.SSE2.Longs;
 
-   use Orka.SIMD.AVX.Longs;
+   function Test_All_Zero (Elements, Mask : m128l) return Boolean
+     with Inline_Always;
 
-end Orka.SIMD.AVX2.Longs;
+   function Test_All_Ones (Elements, Mask : m128l) return Boolean
+     with Inline_Always;
+
+   function Test_Mix_Ones_Zeros (Elements, Mask : m128l) return Boolean
+     with Inline_Always;
+
+end Orka.SIMD.SSE4_1.Longs.Logical;

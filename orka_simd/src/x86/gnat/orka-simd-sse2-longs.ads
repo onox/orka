@@ -14,14 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.AVX.Longs;
-
-package Orka.SIMD.AVX2.Longs is
+package Orka.SIMD.SSE2.Longs is
    pragma Pure;
 
-   subtype m128l is Orka.SIMD.SSE2.Longs.m128l;
+   type m128l is array (Index_2D) of Integer_64
+     with Alignment => 16;
+   pragma Machine_Attribute (m128l, "vector_type");
 
-   use Orka.SIMD.AVX.Longs;
-
-end Orka.SIMD.AVX2.Longs;
+end Orka.SIMD.SSE2.Longs;

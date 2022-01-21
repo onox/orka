@@ -16,28 +16,15 @@
 
 with Ada.Unchecked_Conversion;
 
+with Orka.SIMD.SSE2.Longs.Logical;
+
 package body Orka.SIMD.SSE2.Integers.Logical is
 
-   type Unsigned_128 is array (Index_2D) of Unsigned_64
-     with Alignment => 16;
-   pragma Machine_Attribute (Unsigned_128, "vector_type");
+   use SIMD.SSE2.Longs;
+   use SIMD.SSE2.Longs.Logical;
 
-   function And_Not (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pandn128";
-
-   function "and" (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pand128";
-
-   function "or" (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_por128";
-
-   function "xor" (Left, Right : Unsigned_128) return Unsigned_128
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pxor128";
-
-   ----------------------------------------------------------------------------
-
-   function Convert is new Ada.Unchecked_Conversion (m128i, Unsigned_128);
-   function Convert is new Ada.Unchecked_Conversion (Unsigned_128, m128i);
+   function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
+   function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
 
    function And_Not (Left, Right : m128i) return m128i is
      (Convert (And_Not (Convert (Left), Convert (Right))));

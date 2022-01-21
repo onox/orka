@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2021 onox <denkpadje@gmail.com>
+--  Copyright (c) 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,14 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.AVX.Longs;
-
-package Orka.SIMD.AVX2.Longs is
+package Orka.SIMD.SSE4_1.Longs is
    pragma Pure;
-
-   subtype m128l is Orka.SIMD.SSE2.Longs.m128l;
-
-   use Orka.SIMD.AVX.Longs;
-
-end Orka.SIMD.AVX2.Longs;
+end Orka.SIMD.SSE4_1.Longs;

@@ -16,32 +16,23 @@
 
 with Ada.Unchecked_Conversion;
 
+with Orka.SIMD.SSE2.Longs;
+with Orka.SIMD.SSE4_1.Longs.Logical;
+
 package body Orka.SIMD.SSE4_1.Integers.Logical is
 
-   type m128l is array (Index_2D) of Integer_64
-     with Alignment => 16;
-   pragma Machine_Attribute (m128l, "vector_type");
-
-   function Test_All_Zero (Elements, Mask : m128l) return Integer
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestz128";
-
-   function Test_All_Ones (Elements, Mask : m128l) return Integer
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestc128";
-
-   function Test_Mix_Ones_Zeros (Elements, Mask : m128l) return Integer
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ptestnzc128";
-
-   ----------------------------------------------------------------------------
+   use SIMD.SSE2.Longs;
+   use SIMD.SSE4_1.Longs.Logical;
 
    function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
 
    function Test_All_Zero (Elements, Mask : m128i) return Boolean is
-     (Test_All_Zero (Convert (Elements), Convert (Mask)) = 1);
+     (Test_All_Zero (Convert (Elements), Convert (Mask)));
 
    function Test_All_Ones (Elements, Mask : m128i) return Boolean is
-     (Test_All_Ones (Convert (Elements), Convert (Mask)) = 1);
+     (Test_All_Ones (Convert (Elements), Convert (Mask)));
 
    function Test_Mix_Ones_Zeros (Elements, Mask : m128i) return Boolean is
-     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)) = 1);
+     (Test_Mix_Ones_Zeros (Convert (Elements), Convert (Mask)));
 
 end Orka.SIMD.SSE4_1.Integers.Logical;

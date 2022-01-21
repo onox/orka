@@ -16,11 +16,11 @@
 
 with Ada.Unchecked_Conversion;
 
+with Orka.SIMD.SSE2.Longs;
+
 package body Orka.SIMD.SSSE3.Integers.Shift is
 
-   type m128l is array (Index_2D) of Integer_64
-     with Alignment => 16;
-   pragma Machine_Attribute (m128l, "vector_type");
+   use SIMD.SSE2.Longs;
 
    function Align_Right_Bytes (Left, Right : m128l; Mask : Unsigned_32) return m128l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_palignr128";
