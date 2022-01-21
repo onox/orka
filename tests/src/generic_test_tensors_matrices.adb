@@ -18,17 +18,15 @@ with AUnit.Assertions;
 with AUnit.Test_Caller;
 with AUnit.Test_Fixtures;
 
-with Orka.Numerics.Singles.Tensors.CPU;
+package body Generic_Test_Tensors_Matrices is
 
-package body Test_Tensors_Singles_Matrices is
-
-   use Orka.Numerics.Singles.Tensors;
-   use Orka.Numerics.Singles.Tensors.CPU;
-   use type Orka.Numerics.Singles.Tensors.Element;
+   use Tensors;
+   use SIMD_CPU;
+   use type Tensors.Element;
 
    use AUnit.Assertions;
 
-   Abs_Tolerance : constant := 100.0 * Element'Model_Epsilon;
+   Abs_Tolerance : constant Element := 100.0 * Element'Model_Epsilon;
 
    procedure Assert (Expected, Result : Element; Message : String) is
       function Is_Similar (Expected, Result : Element) return Boolean is
@@ -472,7 +470,10 @@ package body Test_Tensors_Singles_Matrices is
             Assert (False, "Tensor not singular");
          end;
       exception
-         when Singular_Matrix =>
+         when Constraint_Error | Program_Error | Storage_Error =>
+            raise;
+         when others =>
+            --  Expect Singular_Matrix (RM 11.2(8))
             null;
       end;
    end Test_Inverse;
@@ -582,7 +583,10 @@ package body Test_Tensors_Singles_Matrices is
             null;
          end;
       exception
-         when Not_Positive_Definite_Matrix =>
+         when Constraint_Error | Program_Error | Storage_Error =>
+            raise;
+         when others =>
+            --  Expect Not_Positive_Definite_Matrix (RM 11.2(8))
             Assert (False, "Unexpectedly raised exception Not_Positive_Definite_Matrix");
       end;
 
@@ -593,7 +597,10 @@ package body Test_Tensors_Singles_Matrices is
             Assert (False, "Exception Not_Positive_Definite_Matrix not raised");
          end;
       exception
-         when Not_Positive_Definite_Matrix =>
+         when Constraint_Error | Program_Error | Storage_Error =>
+            raise;
+         when others =>
+            --  Expect Not_Positive_Definite_Matrix (RM 11.2(8))
             null;
       end;
    end Test_Cholesky;
@@ -726,7 +733,7 @@ package body Test_Tensors_Singles_Matrices is
    Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Tensors - Singles - Matrices) ";
+      Name : constant String := "(Tensors - " & Suite_Name & " - Matrices) ";
    begin
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Flatten", Test_Flatten'Access));
@@ -805,4 +812,4 @@ package body Test_Tensors_Singles_Matrices is
       return Test_Suite'Access;
    end Suite;
 
-end Test_Tensors_Singles_Matrices;
+end Generic_Test_Tensors_Matrices;

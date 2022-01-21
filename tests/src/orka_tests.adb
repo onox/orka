@@ -32,6 +32,8 @@ with Test_Transforms_Doubles_Vectors;
 
 with Test_Tensors_Singles_Vectors;
 with Test_Tensors_Singles_Matrices;
+with Test_Tensors_Doubles_Vectors;
+with Test_Tensors_Doubles_Matrices;
 
 with Test_Scene_Trees;
 
@@ -99,6 +101,8 @@ procedure Orka_Tests is
       --  Tensors (Singles)
       Result.Add_Test (Test_Tensors_Singles_Vectors.Suite);
       Result.Add_Test (Test_Tensors_Singles_Matrices.Suite);
+      Result.Add_Test (Test_Tensors_Doubles_Vectors.Suite);
+      Result.Add_Test (Test_Tensors_Doubles_Matrices.Suite);
 
       return Result;
    end Suite;

@@ -20,14 +20,13 @@ with AUnit.Assertions;
 with AUnit.Test_Caller;
 with AUnit.Test_Fixtures;
 
-with Orka.Numerics.Singles.Tensors.CPU;
 with Orka.OS;
 
-package body Test_Tensors_Singles_Vectors is
+package body Generic_Test_Tensors_Vectors is
 
-   use Orka.Numerics.Singles.Tensors;
-   use Orka.Numerics.Singles.Tensors.CPU;
-   use type Orka.Numerics.Singles.Tensors.Element;
+   use Tensors;
+   use SIMD_CPU;
+   use type Tensors.Element;
 
    use AUnit.Assertions;
 
@@ -360,8 +359,8 @@ package body Test_Tensors_Singles_Vectors is
       Actual_Mean  : constant Element := Tensor.Mean;
       Actual_Std   : constant Element := Tensor.Standard_Deviation;
    begin
-      Assert (Expected_Mean = Actual_Mean, "Unexpected mean: " & Actual_Mean'Image);
-      Assert (Expected_Std = Actual_Std, "Unexpected standard deviation: " & Actual_Std'Image);
+      Assert (Expected_Mean, Actual_Mean, "Unexpected mean: " & Actual_Mean'Image);
+      Assert (Expected_Std, Actual_Std, "Unexpected standard deviation: " & Actual_Std'Image);
    end Test_Standardize;
 
    procedure Test_Correlation_Coefficient (Object : in out Test) is
@@ -1253,7 +1252,7 @@ package body Test_Tensors_Singles_Vectors is
    Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Tensors - Singles - Vectors) ";
+      Name : constant String := "(Tensors - " & Suite_Name & " - Vectors) ";
    begin
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Zeros", Test_Zeros'Access));
@@ -1473,4 +1472,4 @@ package body Test_Tensors_Singles_Vectors is
 
 begin
    Reset_Random (Orka.OS.Monotonic_Clock);
-end Test_Tensors_Singles_Vectors;
+end Generic_Test_Tensors_Vectors;

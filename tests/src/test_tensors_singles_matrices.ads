@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2021 onox <denkpadje@gmail.com>
+--  Copyright (c) 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with AUnit.Test_Suites;
+with Orka.Numerics.Singles.Tensors.CPU;
 
-package Test_Tensors_Singles_Matrices is
+with Generic_Test_Tensors_Matrices;
 
-   function Suite return AUnit.Test_Suites.Access_Test_Suite;
-
-end Test_Tensors_Singles_Matrices;
+package Test_Tensors_Singles_Matrices is new Generic_Test_Tensors_Matrices
+  ("Singles",
+   Orka.Numerics.Singles.Tensors,
+   Orka.Numerics.Singles.Tensors.CPU);

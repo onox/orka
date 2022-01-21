@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2021 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,11 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Numerics.Singles.Tensors.CPU;
+with AUnit.Test_Suites;
 
-with Generic_Test_Tensors_Vectors;
+with Orka.Numerics.Tensors.SIMD_CPU;
 
-package Test_Tensors_Singles_Vectors is new Generic_Test_Tensors_Vectors
-  ("Singles",
-   Orka.Numerics.Singles.Tensors,
-   Orka.Numerics.Singles.Tensors.CPU);
+generic
+   Suite_Name : String;
+
+   with package Tensors is new Orka.Numerics.Tensors (<>);
+   with package SIMD_CPU is new Tensors.SIMD_CPU (<>);
+package Generic_Test_Tensors_Vectors is
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+end Generic_Test_Tensors_Vectors;

@@ -14,11 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Numerics.Singles.Tensors.CPU;
+with Orka.Numerics.Doubles.Tensors.CPU;
 
 with Generic_Test_Tensors_Vectors;
 
-package Test_Tensors_Singles_Vectors is new Generic_Test_Tensors_Vectors
-  ("Singles",
-   Orka.Numerics.Singles.Tensors,
-   Orka.Numerics.Singles.Tensors.CPU);
+package Test_Tensors_Doubles_Vectors is new Generic_Test_Tensors_Vectors
+  ("Doubles",
+   Orka.Numerics.Doubles.Tensors,
+   Orka.Numerics.Doubles.Tensors.CPU);
