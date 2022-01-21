@@ -837,16 +837,20 @@ package body Test_Tensors_Singles_Vectors is
       Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
 
       Expression_Sum     : constant CPU_Expression := X + Y;
+      Expression_Diff    : constant CPU_Expression := X - Y;
       Expression_Product : constant CPU_Expression := X * Y;
 
       Expected_1 : constant Element := 15.0;
-      Expected_2 : constant Element := 120.0;
+      Expected_2 : constant Element := -15.0;
+      Expected_3 : constant Element := 120.0;
 
       Actual_1 : constant Element := Tensor.Reduce (Expression_Sum, 0.0);
-      Actual_2 : constant Element := Tensor.Reduce (Expression_Product, 1.0);
+      Actual_2 : constant Element := Tensor.Reduce (Expression_Diff, 0.0);
+      Actual_3 : constant Element := Tensor.Reduce (Expression_Product, 1.0);
    begin
       Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
       Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
    end Test_Reduction_Binary_Operator;
 
    procedure Test_Reduction_Unary_Operator (Object : in out Test) is
