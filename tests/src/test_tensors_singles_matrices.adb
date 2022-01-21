@@ -693,7 +693,7 @@ package body Test_Tensors_Singles_Matrices is
                     9.5, 8.5, 7.5, 6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5)).Reshape ((2, 10));
       D : constant CPU_Tensor := To_Tensor ((0.0, 1.0), Shape => (2, 1));
 
-      Expected : constant Element := 0.01212;
+      Expected : constant Element := 0.0121212121212121;
       Actual   : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;
    begin
       Assert (Expected, Actual, "Unexpected squared norm of constrained least-squares solution");
