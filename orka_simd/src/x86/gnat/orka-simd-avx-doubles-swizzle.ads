@@ -92,6 +92,9 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Cast (Elements : m256d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pd_pd256";
 
+   function Cast (Elements : m128d) return m256d
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pd256_pd";
+
    function Convert (Elements : m256d) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtpd2ps256";
 
@@ -106,6 +109,9 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Insert (Left : m256d; Right : m128d; Mask : Unsigned_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_pd256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
+
+   function Pack (High, Low : m128d) return m256d is (Insert (Cast (Low), High, 1))
+     with Inline_Always;
 
    function Permute (Elements : m128d; Mask : Unsigned_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd";

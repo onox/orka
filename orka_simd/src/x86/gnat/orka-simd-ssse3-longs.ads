@@ -14,20 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Conversion;
-
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.SSSE3.Longs.Shift;
-
-package body Orka.SIMD.SSSE3.Integers.Shift is
-
-   use SIMD.SSE2.Longs;
-   use SIMD.SSSE3.Longs.Shift;
-
-   function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
-   function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
-
-   function Align_Right_Bytes (Left, Right : m128i; Mask : Unsigned_32) return m128i is
-     (Convert (Align_Right_Bytes (Convert (Left), Convert (Right), Mask)));
-
-end Orka.SIMD.SSSE3.Integers.Shift;
+package Orka.SIMD.SSSE3.Longs is
+   pragma Pure;
+end Orka.SIMD.SSSE3.Longs;

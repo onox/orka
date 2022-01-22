@@ -17,17 +17,13 @@
 package Orka.SIMD.AVX2.Longs.Swizzle is
    pragma Pure;
 
-   type Unsigned_8 is range 0 .. 7;
-
-   type Lane is (Lower, Upper);
-
-   function Extract (Elements : m256l; Mask : Lane) return m128l
-     with Inline_Always;
+   function Extract (Elements : m256l; Mask : Unsigned_32) return m128l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_extract128i256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256l; Right : m128l; Mask : Lane) return m256l
-     with Inline_Always;
+   function Insert (Left : m256l; Right : m128l; Mask : Unsigned_32) return m256l
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_insert128i256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
    function Permute_Lanes (Elements : m256l; Mask : Unsigned_32) return m256l

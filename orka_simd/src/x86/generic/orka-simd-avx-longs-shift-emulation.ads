@@ -14,20 +14,15 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Conversion;
+package Orka.SIMD.AVX.Longs.Shift.Emulation is
+   pragma Pure;
 
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.SSSE3.Longs.Shift;
+   function Shift_Elements_Left_Zeros (Elements : m256l) return m256l
+     with Inline_Always;
+   --  Shift each element to the left by one element, shifting in zeros
 
-package body Orka.SIMD.SSSE3.Integers.Shift is
+   function Shift_Elements_Right_Zeros (Elements : m256l) return m256l
+     with Inline_Always;
+   --  Shift each element to the right by one element, shifting in zeros
 
-   use SIMD.SSE2.Longs;
-   use SIMD.SSSE3.Longs.Shift;
-
-   function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
-   function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
-
-   function Align_Right_Bytes (Left, Right : m128i; Mask : Unsigned_32) return m128i is
-     (Convert (Align_Right_Bytes (Convert (Left), Convert (Right), Mask)));
-
-end Orka.SIMD.SSSE3.Integers.Shift;
+end Orka.SIMD.AVX.Longs.Shift.Emulation;

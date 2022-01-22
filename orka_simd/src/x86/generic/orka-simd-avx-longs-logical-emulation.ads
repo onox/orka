@@ -14,20 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Conversion;
+package Orka.SIMD.AVX.Longs.Logical.Emulation is
+   pragma Pure;
 
-with Orka.SIMD.SSE2.Longs;
-with Orka.SIMD.SSSE3.Longs.Shift;
+   function And_Not (Left, Right : m256l) return m256l
+     with Inline_Always;
 
-package body Orka.SIMD.SSSE3.Integers.Shift is
+   function "and" (Left, Right : m256l) return m256l
+     with Inline_Always;
 
-   use SIMD.SSE2.Longs;
-   use SIMD.SSSE3.Longs.Shift;
+   function "or" (Left, Right : m256l) return m256l
+     with Inline_Always;
 
-   function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
-   function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
+   function "xor" (Left, Right : m256l) return m256l
+     with Inline_Always;
 
-   function Align_Right_Bytes (Left, Right : m128i; Mask : Unsigned_32) return m128i is
-     (Convert (Align_Right_Bytes (Convert (Left), Convert (Right), Mask)));
-
-end Orka.SIMD.SSSE3.Integers.Shift;
+end Orka.SIMD.AVX.Longs.Logical.Emulation;
