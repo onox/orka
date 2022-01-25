@@ -298,34 +298,18 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Kind (Object : CPU_Tensor) return Data_Type is (Object.Kind);
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Element is
-      Last_Index : constant Natural := Object.Shape (1);
-   begin
-      if Index > Last_Index then
-         raise Constraint_Error with
-           "Stop index (" & Trim (Index) & ") out of bounds (1 .. " & Trim (Last_Index) & ")";
-      end if;
-
-      return Object.Data (Data_Vectors (Index)) (Data_Offset (Index));
-   end Get;
+     (Object.Get ((1 => Index)));
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Boolean is
-      One_Vector : constant Integer_Vector_Type := (others => 1);
-
-      Mask       : constant Integer_Vector_Type := Convert (Object.Data (Data_Vectors (Index)));
-      Ones_Zeros : constant Integer_Vector_Type := Mask and One_Vector;
-   begin
-      return Ones_Zeros (Data_Offset (Index)) = 1;
-   end Get;
+     (Object.Get ((1 => Index)));
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
-      Last_Index : constant Natural := Object.Shape (1);
-
-      Count : constant Positive := Object.Shape (2);
+      Count : constant Positive := Object.Columns;
       Shape : constant Tensor_Shape := (1 => Count);
    begin
-      if Index > Last_Index then
+      if Index > Object.Rows then
          raise Constraint_Error with
-           "Stop index (" & Trim (Index) & ") out of bounds (1 .. " & Trim (Last_Index) & ")";
+           "Stop index (" & Trim (Index) & ") out of bounds (1 .. " & Trim (Object.Rows) & ")";
       end if;
 
       --  Returning the row of a 2D tensor as a vector instead of a (1, n) 2D tensor
@@ -477,17 +461,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Get;
 
    overriding function Get (Object : CPU_Tensor; Index : Range_Type) return CPU_Tensor is
-   begin
-      case Object.Dimensions is
-         when 1 =>
-            return Object.Get (Tensor_Range'(1 => Index));
-         when 2 =>
-            return Object.Get (Tensor_Range'(Index, (1, Object.Shape (2))));
-      end case;
-   end Get;
+     (case Object.Dimensions is
+        when 1 => Object.Get (Tensor_Range'(1 => Index)),
+        when 2 => Object.Get (Tensor_Range'(Index, (1, Object.Columns))));
 
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Range) return CPU_Tensor is
-      Rows : constant Natural := Object.Shape (1);
+      Rows : constant Natural := Object.Rows;
 
       Row_Start : constant Index_Type := Index (1).Start;
       Row_Stop  : constant Index_Type := Index (1).Stop;

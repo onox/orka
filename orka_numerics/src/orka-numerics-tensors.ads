@@ -96,11 +96,11 @@ package Orka.Numerics.Tensors is
    --  Return the row of a matrix as a vector
 
    function Get (Object : Tensor; Index : Tensor_Index) return Element is abstract
-     with Pre'Class => Object.Kind = Float_Type and Object.Dimensions = 2;
+     with Pre'Class => Object.Kind = Float_Type and Object.Dimensions = Index'Length;
    --  Return the value of a matrix
 
    function Get (Object : Tensor; Index : Tensor_Index) return Boolean is abstract
-     with Pre'Class => Object.Kind = Bool_Type and Object.Dimensions = 2;
+     with Pre'Class => Object.Kind = Bool_Type and Object.Dimensions = Index'Length;
    --  Return the value of a boolean matrix
 
    function Get (Object : Tensor; Index : Range_Type) return Tensor is abstract
