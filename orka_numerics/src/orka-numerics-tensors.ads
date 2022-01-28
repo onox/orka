@@ -465,13 +465,12 @@ package Orka.Numerics.Tensors is
    --
    --  If A = I and b = 0 then the function returns the smallest x' for which Cx' = d.
 
-   function Cholesky (Object : Tensor) return Tensor is abstract
+   function Cholesky (Object : Tensor; Form : Triangular_Form := Lower) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
           Post'Class => Cholesky'Result.Dimensions = 2;
-   --  Return the L matrix of the Cholesky decomposition (A = L * L^T)
+   --  Return the lower triangular matrix L of the Cholesky decomposition
+   --  of A (= L * L^T) or the upper triangular matrix U of A (= U^T * U)
    --  if A is symmetric positive definite
-   --
-   --  L is lower triangular.
    --
    --  Raises a Not_Positive_Definite_Matrix exception if A is not positive definite.
 

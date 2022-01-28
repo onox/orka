@@ -1726,8 +1726,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return (if B.Dimensions = 1 then Result.Flatten else Result);
    end Constrained_Least_Squares;
 
-   overriding
-   function Cholesky (Object : CPU_Tensor) return CPU_Tensor is
+   function Cholesky_Lower (Object : CPU_Tensor) return CPU_Tensor is
       Rows  : constant Natural      := Object.Shape (1);
       Shape : constant Tensor_Shape := (1 .. 2 => Rows);
 
@@ -1770,7 +1769,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             end;
          end loop;
       end return;
-   end Cholesky;
+   end Cholesky_Lower;
+
+   overriding
+   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor is
+     (case Form is
+        when Lower => Cholesky_Lower (Object),
+        when Upper => Cholesky_Lower (Object.Transpose).Transpose);
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --

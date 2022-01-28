@@ -276,7 +276,7 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor;
 
    overriding
-   function Cholesky (Object : CPU_Tensor) return CPU_Tensor;
+   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
