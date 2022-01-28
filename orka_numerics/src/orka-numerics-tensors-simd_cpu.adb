@@ -1462,13 +1462,62 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end case;
    end Solve;
 
+   function Householder_Matrix
+     (R, I  : CPU_Tensor;
+      Index : Index_Type;
+      Size  : Natural) return CPU_Tensor
+   is
+      U : CPU_Tensor :=
+        R (Tensor_Range'((Index, Size), (Index, Index))).Reshape (Size - Index + 1);
+      U1 : constant Element := U (1);
+
+      --  Alpha must have the opposite sign of R ((Index, Index)) (or U (1))
+      Alpha : constant Element := -Element'Copy_Sign (1.0, U1) * U.Norm;
+   begin
+      U.Set (Tensor_Index'(1 => 1), U1 - Alpha);
+
+      declare
+         --  V = Normalize (X - Alpha * E) where X is column vector R (Index)
+         --        and X (1 .. Index - 1) is set to 0.0
+         --        and Alpha is X.Norm with opposite sign of X (Index)
+         --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
+         V : constant CPU_Tensor := Zeros ((1 => Index - 1)) & U.Normalize;
+      begin
+         return I - 2.0 * Outer (V, V);
+      end;
+   end Householder_Matrix;
+
+   overriding
+   function QR (Object : CPU_Tensor) return CPU_Tensor is
+      Rows    : constant Natural := Object.Rows;
+      Columns : constant Natural := Object.Columns;
+
+      K : constant Natural := Natural'Min (Rows, Columns);
+
+      Size : Natural renames Rows;
+      I : constant CPU_Tensor := Identity (Size => Size);
+
+      R : CPU_Tensor := Object;
+   begin
+      --  QR decomposition using householder reflections
+
+      for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
+         --  Compute householder matrix using column R (Index)
+         R := Householder_Matrix (R, I, Index, Size) * R;
+      end loop;
+
+      Make_Upper_Triangular (R);
+
+      return R (Tensor_Range'((1, K), (1, Columns)));
+   end QR;
+
    function QR
      (Object       : CPU_Tensor;
       Determinancy : Matrix_Determinancy;
       Mode         : QR_Mode) return QR_Factorization'Class
    is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
+      Rows    : constant Natural := Object.Rows;
+      Columns : constant Natural := Object.Columns;
 
       Size : Natural renames Rows;
       I : constant CPU_Tensor := Identity (Size => Size);
@@ -1481,26 +1530,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
          --  Compute householder matrix using column R (Index)
          declare
-            U : CPU_Tensor :=
-              R (Tensor_Range'((Index, Size), (Index, Index))).Reshape (Size - Index + 1);
-            U1 : constant Element := U (1);
-
-            --  Alpha must have the opposite sign of R ((Index, Index)) (or U (1))
-            Alpha : constant Element := -Element'Copy_Sign (1.0, U1) * U.Norm;
+            Householder : constant CPU_Tensor := Householder_Matrix (R, I, Index, Size);
          begin
-            U.Set (Tensor_Index'(1 => 1), U1 - Alpha);
-
-            declare
-               --  V = Normalize (X - Alpha * E) where X is column vector R (Index)
-               --        and X (1 .. Index - 1) is set to 0.0
-               --        and Alpha is X.Norm with opposite sign of X (Index)
-               --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
-               V           : constant CPU_Tensor := Zeros ((1 => Index - 1)) & U.Normalize;
-               Householder : constant CPU_Tensor := (I - 2.0 * Outer (V, V));
-            begin
-               Q := Q * Householder;
-               R := Householder * R;
-            end;
+            Q := Q * Householder;
+            R := Householder * R;
          end;
       end loop;
 

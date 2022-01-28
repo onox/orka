@@ -390,6 +390,10 @@ package Orka.Numerics.Tensors is
 
    function Determinancy (Object : QR_Factorization) return Matrix_Determinancy is abstract;
 
+   function QR (Object : Tensor) return Tensor is abstract
+     with Pre'Class  => Object.Dimensions = 2;
+   --  Return the reduced upper triangular matrix R of the QR decomposition (A = Q * R)
+
    function QR
      (Object : Tensor;
       Mode   : QR_Mode := Reduced) return QR_Factorization'Class is abstract
