@@ -25,6 +25,8 @@ package Orka.Numerics.Tensors is
 
    subtype Element is Element_Type;
 
+   function Square_Root (Value : Element) return Element;
+
    type Element_Array is array (Positive range <>) of Element_Type;
 
    type Boolean_Array is array (Positive range <>) of Boolean;
@@ -1039,5 +1041,7 @@ private
    --  equal to the given shape.
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
+
+   function Square_Root (Value : Element) return Element renames EF.Sqrt;
 
 end Orka.Numerics.Tensors;
