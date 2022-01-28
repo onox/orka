@@ -381,6 +381,32 @@ package Orka.Numerics.Tensors is
    --
    --  B can be a vector or a matrix.
 
+   type Triangular_Form is (Upper, Lower);
+
+   function Solve (A, B : Tensor; Form : Triangular_Form) return Tensor is abstract
+     with Pre'Class  => Is_Square (A) and A.Rows = B.Rows,
+          Post'Class => Solve'Result.Shape = B.Shape;
+   --  Solve Ax = b for x for each column b in B by applying
+   --  Gauss-Jordan elimination to convert A to its reduced row echelon form
+   --  using either only back-substitution or forward-substitution
+   --
+   --  A must be either lower or upper triangular. If A does not
+   --  have this form, then either the function Solve with the parameter
+   --  Solution or the function Least_Squares must be called.
+
+   function Divide_By (B, A : Tensor) return Tensor is abstract
+     with Pre'Class  => A.Dimensions = 2 and A.Rows >= A.Columns and
+                        B.Dimensions = 2 and A.Columns = B.Columns,
+          Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
+   --  Solve xA = B for x and return x = B / A
+
+   function Divide_By (B, A : Tensor; Form : Triangular_Form) return Tensor is abstract
+     with Pre'Class  => Is_Square (A) and
+                        B.Dimensions = 2 and A.Columns = B.Columns,
+          Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
+
+   --  TODO Verify behavior of Divide_By when A is underdetermined
+
    type QR_Factorization is interface;
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular
 

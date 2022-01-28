@@ -238,6 +238,15 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor;
 
+   overriding
+   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor;
+
+   overriding
+   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor;
+
+   overriding
+   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor;
+
    type CPU_QR_Factorization (<>) is new QR_Factorization with private;
 
    overriding

@@ -1462,6 +1462,35 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end case;
    end Solve;
 
+   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor
+     with Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
+
+   overriding
+   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor is
+      Determinancy : constant Matrix_Determinancy :=
+        (case Form is
+           when Upper => Overdetermined,
+           when Lower => Underdetermined);
+   begin
+      case B.Dimensions is
+         when 1 =>
+            return QR_Solve (A, B.Reshape ((B.Elements, 1)), Determinancy).Flatten;
+         when 2 =>
+            return QR_Solve (A, B, Determinancy);
+      end case;
+   end Solve;
+
+   overriding
+   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor is
+      QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (A));
+   begin
+      return B * Solve (QR_A.R, QR_A.Q.Transpose, Upper);
+   end Divide_By;
+
+   overriding
+   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor is
+     (B * Solve (A, Identity (Size => A.Rows), Form));
+
    function Householder_Matrix
      (R, I  : CPU_Tensor;
       Index : Index_Type;
@@ -1579,9 +1608,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          return QR (Object.Transpose, Underdetermined, Reduced);
       end if;
    end QR_For_Least_Squares;
-
-   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor
-     with Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
 
    function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor is
       Ry : CPU_Tensor := Concatenate (R, Y, Dimension => 2);
