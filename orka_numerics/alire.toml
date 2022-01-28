@@ -3,7 +3,7 @@ description = "Tensors (multidimensional arrays) and integrators"
 version = "1.0.0"
 website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
-tags = ["orka", "math", "vector", "matrix", "ndarray", "tensor", "numpy", "rk4"]
+tags = ["orka", "math", "vector", "matrix", "ndarray", "tensor", "numpy", "integration", "rk4", "kalman", "optimization", "leastsquares", "linearalgebra"]
 
 authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
