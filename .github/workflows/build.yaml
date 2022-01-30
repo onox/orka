@@ -21,12 +21,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest]
-        compiler: [fsf, community]
+        os: [ubuntu-latest]
+        compiler: [fsf]
         experimental: [false]
-        exclude:
-          - os: ubuntu-latest
-            compiler: fsf
         include:
           - os: windows-latest
             compiler: community
@@ -43,13 +40,10 @@ jobs:
     - name: Install Alire
       uses: alire-project/setup-alire@v1
       with:
-        toolchain: "gnat_external"
-
-    - name: Install EGL
-      run: |
-        sudo apt update
-        sudo apt install libegl1-mesa-dev
-      if: ${{ matrix.os != 'windows-latest'}}
+        branch: "master"
+        toolchain: "gprbuild gnat_native --disable-assistant"
+        # Select gnat_native instead of gnat_external because
+        # ada-actions/toolchain installs gnat 9 instead of 10 on ubuntu-latest
 
     - name: Build crates
       run: make
