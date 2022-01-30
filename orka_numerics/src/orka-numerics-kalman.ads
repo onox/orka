@@ -31,47 +31,15 @@ package Orka.Numerics.Kalman is
    subtype Vector is Tensor;
    subtype Matrix is Tensor;
 
-   type Weights_Type (N : Positive) is private;
+   type Update_Phase is (Time_Update, Measurement_Update);
 
-   function Weights (N : Positive; A, B, K : Tensors.Element_Type) return Weights_Type
-     with Pre => A in 0.0 .. 1.0 and B >= 0.0 and K >= 0.0;
-   --  Return a set of weights for the sigma points for the UKF
-   --
-   --  A should be small to avoid non-local effects. B is used to reduce
-   --  higher-order errors. For a Gaussian, use B = 2 and K = 3 - N.
+   type Filter_Kind is (Filter_UKF, Filter_CDKF);
 
-   type Filter (Dimension_X, Dimension_Z : Positive) is tagged private;
+   type State_Covariance is private;
 
-   function Create_Filter
-     (X       : Vector;
-      P, Q, R : Matrix;
-      Weights : Weights_Type) return Filter
-   with Pre => X.Dimensions = 1
-                 and X.Rows = P.Rows
-                 and X.Rows = Weights.N
-                 and Q.Is_Square and P.Shape = Q.Shape
-                 and R.Is_Square,
-        Post => Create_Filter'Result.Dimension_X = Q.Rows and
-                Create_Filter'Result.Dimension_Z = R.Rows and
-                Create_Filter'Result.State = X;
+   type Weights_Type (N : Positive; Kind : Filter_Kind) is private;
 
-   function Create_Filter
-     (Q, R    : Matrix;
-      Weights : Weights_Type) return Filter
-   is (Create_Filter
-         (X => Zeros (Weights.N),
-          P => Identity (Weights.N),
-          Q => Q,
-          R => R,
-          Weights => Weights));
-
-   procedure Predict_Update
-     (Object      : in out Filter;
-      F           : not null access function (Points : Matrix; DT : Duration) return Matrix;
-      H           : not null access function (Points : Matrix) return Matrix;
-      DT          : Duration;
-      Measurement : Vector)
-   with Pre => Measurement.Shape = (1 => Object.Dimension_Z);
+   type Filter (Kind : Filter_Kind; Dimension_X, Dimension_Z : Positive) is tagged private;
 
    function State (Object : Filter) return Vector
      with Post => State'Result.Shape = (1 => Object.Dimension_X);
@@ -88,9 +56,16 @@ private
    subtype Matrix_Holder is Tensor_Holders.Holder
      with Dynamic_Predicate => Tensor_Holders.Constant_Reference (Matrix_Holder).Dimensions = 2;
 
-   type Weights_Type (N : Positive) is record
-      Mean, Covariance : Vector_Holder;
-      Scaling_Squared  : Element_Type;
+   type Weights_Type (N : Positive; Kind : Filter_Kind) is record
+      Mean           : Vector_Holder;
+      Scaling_Factor : Element_Type;
+      case Kind is
+         when Filter_UKF =>
+            Covariance : Vector_Holder;
+         when Filter_CDKF =>
+            Covariance_1 : Vector_Holder;
+            Covariance_2 : Vector_Holder;
+      end case;
    end record;
 
    type State_Covariance is record
@@ -98,12 +73,14 @@ private
       Covariance : Matrix_Holder;
    end record;
 
-   type Filter (Dimension_X, Dimension_Z : Positive) is tagged record
+   type Filter (Kind : Filter_Kind; Dimension_X, Dimension_Z : Positive) is tagged record
       Process_Noise     : Matrix_Holder;
       Measurement_Noise : Matrix_Holder;
 
-      Weights  : Weights_Type (Dimension_X);
+      Weights  : Weights_Type (Dimension_X, Kind);
       Estimate : State_Covariance;
    end record;
+
+   function State (Object : Filter) return Vector is (Object.Estimate.State.Element);
 
 end Orka.Numerics.Kalman;
