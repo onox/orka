@@ -2,9 +2,6 @@ abstract project Orka_Config is
 
    for Create_Missing_Dirs use "True";
 
---   for Object_Dir use "build/obj";
---   for Library_Dir use "build/lib";
-
    type Library_Type_Type is ("relocatable", "static", "static-pic");
    Library_Type : Library_Type_Type :=
      external ("ORKA_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));

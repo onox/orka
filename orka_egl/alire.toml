@@ -20,4 +20,4 @@ configuration.disabled = true
 '...' = false
 
 [[depends-on]]
-libegl = "^1.3.2"
+libegl = "*"

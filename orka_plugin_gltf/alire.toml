@@ -12,7 +12,7 @@ maintainers-logins = ["onox"]
 configuration.disabled = true
 
 [[depends-on]]
-json = "^5.0.0"
+json = "^5.0.1"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
 

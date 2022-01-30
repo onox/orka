@@ -13,7 +13,7 @@ ALR_BUILD = alr build -- $(SCENARIO_VARS)
 .PHONY: build examples tools tests coverage docs clean
 
 build:
-#	cd orka_egl && $(ALR_BUILD)
+	cd orka_egl && $(ALR_BUILD)
 	cd orka_types && $(ALR_BUILD)
 	cd orka_simd && $(ALR_BUILD)
 	cd orka_transforms && $(ALR_BUILD)
