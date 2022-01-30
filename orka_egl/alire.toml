@@ -16,7 +16,7 @@ maintainers-logins = ["onox"]
 configuration.disabled = true
 
 [available.'case(os)']
-linux = true
+'linux|windows' = true
 '...' = false
 
 [[depends-on]]
