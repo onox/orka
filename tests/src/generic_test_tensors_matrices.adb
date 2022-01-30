@@ -605,6 +605,26 @@ package body Generic_Test_Tensors_Matrices is
       end;
    end Test_Cholesky;
 
+   procedure Test_Cholesky_Downdate (Object : in out Test) is
+      package Random is new Generic_Random (CPU_Tensor);
+
+      N : constant Natural := 100;
+
+      U : constant CPU_Tensor := Random.Uniform ((1 .. 2 => N));
+      A : constant CPU_Tensor := CPU_Tensor'(U * U.Transpose) + Element (N) * Identity (N);
+
+      R : constant CPU_Tensor := Cholesky (A, Upper);
+      V : constant CPU_Tensor := Random.Uniform ((1 => N));
+
+      D1 : constant CPU_Tensor := Cholesky (A - Outer (V, V), Upper);
+      D2 : constant CPU_Tensor := Cholesky_Update (R, V, Downdate);
+   begin
+      --  A wider absolute tolerance than All_Close's default is needed
+      --  for single precision elements
+      Assert (All_Close (D1, D2, Absolute_Tolerance => 10.0 * Element'Model_Epsilon),
+        "Unexpected downdated Cholesky factorization");
+   end Test_Cholesky_Downdate;
+
    procedure Test_Shapes_Least_Squares (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
         To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
@@ -787,6 +807,8 @@ package body Generic_Test_Tensors_Matrices is
         (Name & "Test function QR", Test_QR'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Cholesky", Test_Cholesky'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Cholesky_Update (downdate)", Test_Cholesky_Downdate'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Least_Squares (shapes)", Test_Shapes_Least_Squares'Access));
       Test_Suite.Add_Test (Caller.Create
