@@ -467,14 +467,36 @@ package Orka.Numerics.Tensors is
 
    function Cholesky (Object : Tensor; Form : Triangular_Form := Lower) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
-          Post'Class => Cholesky'Result.Dimensions = 2;
+          Post'Class => Is_Square (Cholesky'Result);
    --  Return the lower triangular matrix L of the Cholesky decomposition
    --  of A (= L * L^T) or the upper triangular matrix U of A (= U^T * U)
    --  if A is symmetric positive definite
    --
+   --  Positive definite means that for all x /= 0: x^T * A * x > 0.
+   --
    --  Raises a Not_Positive_Definite_Matrix exception if A is not positive definite.
 
-   --  TODO Add LU, SVD
+   type Update_Mode is (Update, Downdate);
+
+   function Cholesky_Update
+     (R, V : Tensor;
+      Mode : Update_Mode) return Tensor is abstract
+   with Pre'Class  => Is_Square (R) and V.Dimensions = 1,
+        Post'Class => Is_Square (Cholesky_Update'Result);
+   --  Return the rank 1 update or downdate of the given upper triangular matrix R
+   --
+   --  That is, the result D is equal to D^T*D = R^T*R +/- V*V^T:
+   --
+   --     A ----------------> R = Cholesky (A, Upper)
+   --     |                         |
+   --     v                         v
+   --  A' = A +/- V*V^T ----> D = Cholesky(A', Upper) or Cholesky_Update (R, V, Update/Downdate)
+   --
+   --  It is much faster (O(n^2)) to compute D from R and V using function
+   --  Cholesky_Update than to compute it using function Cholesky (O(n^3))
+   --  and it makes sense when A is updated repeatedly.
+
+   --  TODO Add Schur, SVD
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --

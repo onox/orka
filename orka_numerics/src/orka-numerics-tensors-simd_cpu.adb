@@ -374,7 +374,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --
       --  then there is a gap (positions 5 and 6). Howerver, if the shape
       --  of Value is (2, 5) (with a matching Index) then there are no gaps.
-      if Is_Equal (Object.Shape, Full_Value, 1) then
+      --
+      --  Another case in which there are are no gaps is when all but the last
+      --  dimension have a shape equal to 1. For example if the index is
+      --  ((2, 2), (7, 9)), which has the shape (1, 3).
+      if Is_Equal (Object.Shape, Full_Value, 1)
+        or else (for all D in Full_Value'First .. Full_Value'Last - 1 => Full_Value (D) = 1)
+      then
          declare
             Start_Index : Tensor_Index (Full_Index'Range);
             Stop_Index  : Tensor_Index (Full_Index'Range);
@@ -1727,7 +1733,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Constrained_Least_Squares;
 
    function Cholesky_Lower (Object : CPU_Tensor) return CPU_Tensor is
-      Rows  : constant Natural      := Object.Shape (1);
+      Rows  : constant Natural      := Object.Rows;
       Shape : constant Tensor_Shape := (1 .. 2 => Rows);
 
       Empty : constant CPU_Tensor := Zeros ((1 => 0));
@@ -1744,7 +1750,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                --  If = 0.0 then matrix is positive semi-definite and singular
                --  If < 0.0 then matrix is negative semi-definite or indefinite
                if Ljj_Squared <= 0.0 then
-                  raise Not_Positive_Definite_Matrix;
+                  raise Not_Positive_Definite_Matrix with
+                    Ljj_Squared'Image & " at row " & J'Image;
                end if;
 
                declare
@@ -1776,6 +1783,77 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (case Form is
         when Lower => Cholesky_Lower (Object),
         when Upper => Cholesky_Lower (Object.Transpose).Transpose);
+
+   overriding
+   function Cholesky_Update
+     (R, V : CPU_Tensor;
+      Mode : Update_Mode) return CPU_Tensor
+   is
+      Rows : constant Natural := R.Rows;
+   begin
+      case Mode is
+         when Update =>
+            raise Program_Error with "Not implemented yet";
+         when Downdate =>
+            --  Implementation of Algorithm B from [1]
+            --
+            --  [1] "A modification to the LINPACK downdating algorithm", Pan C.T.,
+            --      BIT Numerical Mathematics, 1990, 30.4: 707-722, DOI:10.1007/BF01933218
+            return Result : CPU_Tensor := Zeros (R.Shape) do
+               declare
+                  Alpha : Element := 1.0;
+                  Beta  : Element := 1.0;
+
+                  Z : CPU_Tensor := V;
+               begin
+                  for I in 1 .. Rows loop
+                     declare
+                        Rii : constant Element := R ((I, I));
+
+                        A : constant Element := Element'(Z (I)) / Rii;
+                     begin
+                        Alpha := Alpha - A**2;
+
+                        --  If = 0.0 then matrix is positive semi-definite and singular
+                        --  If < 0.0 then matrix is negative semi-definite or indefinite
+                        if Alpha <= 0.0 then
+                           raise Not_Positive_Definite_Matrix with
+                             Alpha'Image & " at row " & I'Image;
+                        end if;
+
+                        declare
+                           Previous_Beta : constant Element := Beta;
+                        begin
+                           Beta := EF.Sqrt (Alpha);
+
+                           --  Compute the jth value on the diagonal
+                           Result.Set ((I, I), Beta / Previous_Beta * Rii);
+
+                           exit when I = Rows;
+
+                           declare
+                              C1 : constant Element := Beta / Previous_Beta;
+                              C2 : constant Element := A / (Previous_Beta * Beta);
+
+                              Column_Indices : constant Range_Type   := (I + 1, Rows);
+                              Row_Indices    : constant Tensor_Range := ((I, I), Column_Indices);
+
+                              Rik_Old : constant CPU_Tensor := R (Row_Indices);
+                              Zk_Old  : constant CPU_Tensor := Z (Column_Indices);
+                              Zk_New  : constant CPU_Tensor := Zk_Old - A * Rik_Old;
+                              Rik_New : constant CPU_Tensor := C1 * Rik_Old - C2 * Zk_New;
+                           begin
+                              Z.Set (Column_Indices, Zk_New);
+                              Result.Set (Row_Indices, Rik_New.Reshape ((1, Rik_New.Elements)));
+                              --  Reshape only needed because of Pre condition on Set
+                           end;
+                        end;
+                     end;
+                  end loop;
+               end;
+            end return;
+      end case;
+   end Cholesky_Update;
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --

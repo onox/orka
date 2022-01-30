@@ -278,6 +278,11 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor;
 
+   overriding
+   function Cholesky_Update
+     (R, V : CPU_Tensor;
+      Mode : Update_Mode) return CPU_Tensor;
+
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
    ----------------------------------------------------------------------------
