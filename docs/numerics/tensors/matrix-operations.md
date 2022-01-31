@@ -285,6 +285,10 @@ Zero : constant CPU_Tensor := Zeros (Elements => Size);
 Min_Value : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;
 ```
 
+This is called the least norm problem. Some books[^1] devote quite a few
+chapters and examples to various forms of least-squares problems,
+including constrained and non-linear least-squares.
+
 ## Decompositions
 
 ### QR
@@ -299,3 +303,6 @@ Min_Value : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**
 #### Rank 1 up- and downdate
 
 ??? bug "Only downdating has been implemented at the moment"
+
+[^1]:
+    "Introduction to Applied Linear Algebra", Boyd S., Vandenberge L., 2018
