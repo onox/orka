@@ -9,8 +9,9 @@ The shape of a tensor can be retrieved using the function `Shape` and
 the dimensions with the function `Dimensions`. The total number of
 elements in the tensor is queried with the function `Elements`.
 
-It is true that `:::ada T.Shape'Length = T.Dimensions` and
-`:::ada Elements (T.Shape) = T.Elements` for a tensor `T`.
+!!! summary
+    It is true that `:::ada T.Shape'Length = T.Dimensions` and
+    `:::ada Elements (T.Shape) = T.Elements` for a tensor `T`.
 
 ## Changing the shape
 

@@ -123,6 +123,12 @@ one of the following values after the function `Solve` returns:
 
 - `Unique`. A **x** = **b** has exactly one solution for all vectors in `B`.
 
+!!! tip
+    If you do not know whether the system is always consistent with a
+    unique solution, then it is recommended to just call the function `Least_Squares`
+    instead (see below).
+    It will return a solution even if **b** is not in the column space of A.
+
 ## Trace
 
 The trace of a matrix or 2-D tensor is the sum of the elements on the main

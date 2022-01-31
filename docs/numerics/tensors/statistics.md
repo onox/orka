@@ -62,15 +62,15 @@ Reset_Random (Orka.OS.Monotonic_Clock);
 
       This gives a `Result` of roughly 0.35 or 35 %.
 
-!!! warning "Keep parameter `N` small for large tensors"
-    The runtime cost of the implementation of `Binomial` might depend on
-    `N`, thus this number should not be too large for very large tensors.
-
 - `Geometric` with parameter `P`. Create a tensor with a geometric
   distribution, modeling the number of failures. Parameter `P` must be in
   0.0 .. 1.0.
 
 - `Poisson` with parameter `Lambda`.
+
+!!! warning "Keep parameter `N` in function `Binomial` small for large tensors"
+    The runtime cost of the implementation of `Binomial` might depend on
+    `N`, thus this number should not be too large for very large tensors.
 
 ### Continuous distributions
 
@@ -101,6 +101,28 @@ Reset_Random (Orka.OS.Monotonic_Clock);
 - `Chi_Squared` with parameter `K`.
 
 - `Student_T` with parameter `V`.
+
+??? question "Exercise 1: Create `Count` evenly spaced 2-D points with `Std_Dev` Gaussian noise"
+    First create a tensor with evenly spaced points and reshape it to be a matrix
+    with one row (needed for the `&` operator). Then generate values from a
+    standard normal distribution and multiply it with the variable `Std_Dev` to
+    get the desired standard deviation. Add the noise to the points. This is
+    done separately for `X` and `Y`. The two tensors can be concatenated and
+    transposed to create a tensor with a 2-D point on each row.
+
+    ```ada
+    Reset_Random (Orka.OS.Monotonic_Clock);
+
+    declare
+       Shape : constant Tensor_Shape := (1, Count);
+       Stop  : constant Element      := Element (Count);
+
+       Indices : constant CPU_Tensor := Linear_Space (1.0, Stop, Count => Count).Reshape (Shape);
+       X, Y    : constant CPU_Tensor := Indices + Random.Normal (Shape) * Std_Dev;
+    begin
+       return CPU_Tensor'(X & Y).Transpose;
+    end;
+    ```
 
 ## Hypothesis testing
 
