@@ -30,6 +30,10 @@ result A B **x**.
 !!! warning "Matrix multiplication is not commutative"
     Matrix multiplication is not commutative: `:::ada A * B /= B * A`.
 
+## Matrix division
+
+!!! note "TODO Describe function `Divide_By`"
+
 ## Matrix power and inverse
 
 If the left operand of the operator `**` is a tensor and the right operand
@@ -128,6 +132,10 @@ one of the following values after the function `Solve` returns:
     unique solution, then it is recommended to just call the function `Least_Squares`
     instead (see below).
     It will return a solution even if **b** is not in the column space of A.
+
+### Using triangular matrices
+
+!!! note "TODO Describe function `Solve` with parameter `Form`"
 
 ## Trace
 
@@ -276,3 +284,18 @@ Zero : constant CPU_Tensor := Zeros (Elements => Size);
 
 Min_Value : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;
 ```
+
+## Decompositions
+
+### QR
+
+!!! note "TODO Describe function `QR` returning only R"
+!!! note "TODO Describe how to get Q and R from a CPU_QR_Factorization"
+
+### Cholesky
+
+!!! note "TODO Describe function `Cholesky`, including parameter `Form`"
+
+#### Rank 1 up- and downdate
+
+??? bug "Only downdating has been implemented at the moment"

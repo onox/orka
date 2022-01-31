@@ -9,6 +9,8 @@ The shape of a tensor can be retrieved using the function `Shape` and
 the dimensions with the function `Dimensions`. The total number of
 elements in the tensor is queried with the function `Elements`.
 
+!!! note "TODO Describe functions `Rows` and `Columns`"
+
 !!! summary
     It is true that `:::ada T.Shape'Length = T.Dimensions` and
     `:::ada Elements (T.Shape) = T.Elements` for a tensor `T`.
@@ -42,6 +44,8 @@ two tensors in the first dimension, increasing the number of rows to the sum of
 the rows of the two tensors. For multidimensional tensors, the size of the first
 dimension (the number of rows) can be different, but the size of the other
 dimensions must be equal.
+
+!!! note "TODO Add some code showing '&' operator"
 
 The function `Concatenate` can be used to concatenate tensors in dimensions
 other than the first dimension by specifying the parameter `Dimension`.

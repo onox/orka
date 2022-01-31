@@ -70,6 +70,10 @@ each element has the value *e*^-λ^ is created with:
 E_Lambda : CPU_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
 ```
 
+## Uninitialized
+
+!!! note "TODO Describe function `Empty`"
+
 ## Range or space
 
 The functions `Array_Range`, `Linear_Space`, `Log_Space`, and `Geometric_Space`
