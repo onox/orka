@@ -124,6 +124,7 @@ nav:
               - Expressions: numerics/tensors/expressions.md
               - Indexing: numerics/tensors/indexing.md
               - Statistics: numerics/tensors/statistics.md
+          - Filtering: numerics/filtering.md
       - Plug-ins:
           - Archives: plugins/archives.md
           - Atmosphere: plugins/atmosphere.md
