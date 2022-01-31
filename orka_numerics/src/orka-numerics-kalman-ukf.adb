@@ -125,8 +125,8 @@ package body Orka.Numerics.Kalman.UKF is
 
    procedure Predict_Update
      (Object      : in out Filter;
-      F           : not null access function (Points : Matrix; DT : Duration) return Matrix;
-      H           : not null access function (Points : Matrix) return Matrix;
+      F           : not null access function (Point : Vector; DT : Duration) return Vector;
+      H           : not null access function (Point : Vector) return Vector;
       DT          : Duration;
       Measurement : Vector) renames SPKF_Filter.Predict_Update;
 

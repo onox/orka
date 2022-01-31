@@ -45,10 +45,35 @@ package body Orka.Numerics.Kalman.SPKF is
       return Sigmas;
    end Points;
 
+   function Apply_F
+     (N      : Positive;
+      F      : not null access function (Point : Vector; DT : Duration) return Vector;
+      Points : Kalman.Matrix;
+      DT     : Duration) return Kalman.Matrix is
+   begin
+      return Result : Matrix := Empty ((Points.Rows, N)) do
+         for Index in 1 .. Points.Rows loop
+            Result.Set (Index, F (Points.Get (Index), DT));
+         end loop;
+      end return;
+   end Apply_F;
+
+   function Apply_H
+     (N      : Positive;
+      H      : not null access function (Point : Vector) return Vector;
+      Points : Kalman.Matrix) return Kalman.Matrix is
+   begin
+      return Result : Kalman.Matrix := Empty ((Points.Rows, N)) do
+         for Index in 1 .. Points.Rows loop
+            Result.Set (Index, H (Points.Get (Index)));
+         end loop;
+      end return;
+   end Apply_H;
+
    procedure Predict_Update
      (Object      : in out Filter;
-      F           : not null access function (Points : Matrix; DT : Duration) return Matrix;
-      H           : not null access function (Points : Matrix) return Matrix;
+      F           : not null access function (Point : Vector; DT : Duration) return Vector;
+      H           : not null access function (Point : Vector) return Vector;
       DT          : Duration;
       Measurement : Vector)
    is
@@ -56,15 +81,19 @@ package body Orka.Numerics.Kalman.SPKF is
       R : Matrix renames Object.Measurement_Noise.Constant_Reference;
 
       --  Compute transformed sigma points (Y)
-      Y : constant Matrix := F (Points (Object.Estimate, Object.Weights), DT);
+      Y : constant Matrix :=
+        Apply_F (Object.Dimension_X, F, Points (Object.Estimate, Object.Weights), DT);
       pragma Assert (Y.Shape = (2 * Object.Weights.N + 1, Object.Dimension_X));
 
       --  Compute predicted x and P (prior) of transformed sigma points Y
       Prediction_State : constant State_Covariance :=
         Transform (Time_Update, Y, Q, Object.Weights);
 
+      -------------------------------------------------------------------------
+
       --  Compute new sigma points and convert them to measurement space (Z)
-      Z : constant Matrix := H (Points (Prediction_State, Object.Weights));
+      Z : constant Matrix :=
+        Apply_H (Object.Dimension_Z, H, Points (Prediction_State, Object.Weights));
       pragma Assert (Z.Shape = (2 * Object.Weights.N + 1, Object.Dimension_Z));
 
       --  Compute x and P of Z
