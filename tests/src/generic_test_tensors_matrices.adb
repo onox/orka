@@ -518,6 +518,36 @@ package body Generic_Test_Tensors_Matrices is
       Assert (Solution = Unique, "Unexpected number of solutions: " & Solution'Image);
    end Test_Solve;
 
+   procedure Test_Divide_By (Object : in out Test) is
+      Tensor_A : constant CPU_Tensor := To_Tensor
+        ((3.0, 4.0, 5.0,
+          1.0, 3.0, 1.0,
+          3.0, 5.0, 9.0),
+         Shape => (3, 3));
+
+      --  Upper
+      Tensor_B : constant CPU_Tensor := To_Tensor
+        ((4.0, 9.0, 2.0,
+          0.0, 3.0, 6.0,
+          0.0, 0.0, 2.0),
+         Shape => (3, 3));
+
+      --  Lower
+      Tensor_C : constant CPU_Tensor := Tensor_B.Transpose;
+
+      A_Slash_C1 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_C, Lower);
+      A_Slash_C2 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_C);
+
+      A_Slash_B1 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_B, Upper);
+      A_Slash_B2 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_B);
+   begin
+      Assert (All_Close (A_Slash_C1, A_Slash_C2), "Results of Divide_By w/ and w/o form differs");
+      Assert (All_Close (A_Slash_B1, A_Slash_B2), "Results of Divide_By w/ and w/o form differs");
+
+      Assert (A_Slash_B1 * Tensor_B = Tensor_A, "Unexpected value returned Divide_By");
+      Assert (A_Slash_C1 * Tensor_C = Tensor_A, "Unexpected value returned Divide_By");
+   end Test_Divide_By;
+
    procedure Test_QR (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
         To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
@@ -802,6 +832,8 @@ package body Generic_Test_Tensors_Matrices is
         (Name & "Test function Transpose", Test_Transpose'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Solve", Test_Solve'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Divide_By", Test_Divide_By'Access));
 
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function QR", Test_QR'Access));

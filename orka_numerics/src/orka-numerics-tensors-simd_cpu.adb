@@ -1490,6 +1490,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Divide_By (B, A : CPU_Tensor) return CPU_Tensor is
       QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (A));
    begin
+      --  Let A = QR:
+      --              x * (Q * R) = B
+      --  Multiply sides with inverses of QR and B:
+      --                B^-1 * x  = R^-1 * Q^T
+      --           R * (B^-1 * x) = Q^T
+      --
+      --  Solve R * y = Q^T for y (= B^-1 * x) and then multiply the result with B to get x
+
       return B * Solve (QR_A.R, QR_A.Q.Transpose, Upper);
    end Divide_By;
 
