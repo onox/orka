@@ -9,8 +9,6 @@ In order to build and use Orka you need to have:
 
  * [Alire][url-alire]
 
- * `make` (on Linux)
-
  * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
    and OpenGL 4.6 core profile (or 4.0 + extensions below)
 
@@ -69,6 +67,8 @@ Optional dependencies:
 
  * `lcov` to generate a coverage report for the unit tests
 
+ * `make` (on Linux)
+
 !!! info "SDL 2"
     Although the use of [AWT][url-awt] is recommended, alternatively
     [SDLAda][url-sdlada] can be used to manage windows and input via SDL 2.
@@ -92,7 +92,7 @@ Optional dependencies:
 === ":material-ubuntu: Ubuntu"
 
     ```sh
-    $ apt install gnat gprbuild make libegl1-mesa-dev
+    $ apt install gnat gprbuild make
     ```
 
     After having installed the compiler, install the [Alire][url-alire]
@@ -101,7 +101,7 @@ Optional dependencies:
 === ":material-arch: Arch Linux"
 
     ```sh
-    $ pacman -S gcc-ada make mesa
+    $ pacman -S gcc-ada make
     ```
 
     Compile and install `gprbuild-bootstrap`, `xmlada`, `libgpr`, and then `gprbuild`
