@@ -52,9 +52,9 @@ private
 
    --  These predicates cannot be applied to the formal types above
    subtype Vector_Holder is Tensor_Holders.Holder
-     with Dynamic_Predicate => Tensor_Holders.Constant_Reference (Vector_Holder).Dimensions = 1;
+     with Dynamic_Predicate => Vector_Holder.Element.Dimensions = 1;
    subtype Matrix_Holder is Tensor_Holders.Holder
-     with Dynamic_Predicate => Tensor_Holders.Constant_Reference (Matrix_Holder).Dimensions = 2;
+     with Dynamic_Predicate => Matrix_Holder.Element.Dimensions = 2;
 
    type Weights_Type (N : Positive; Kind : Filter_Kind) is record
       Mean           : Vector_Holder;
