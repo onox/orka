@@ -544,8 +544,8 @@ package body Generic_Test_Tensors_Matrices is
       Assert (All_Close (A_Slash_C1, A_Slash_C2), "Results of Divide_By w/ and w/o form differs");
       Assert (All_Close (A_Slash_B1, A_Slash_B2), "Results of Divide_By w/ and w/o form differs");
 
-      Assert (A_Slash_B1 * Tensor_B = Tensor_A, "Unexpected value returned Divide_By");
-      Assert (A_Slash_C1 * Tensor_C = Tensor_A, "Unexpected value returned Divide_By");
+      Assert (All_Close (A_Slash_B1 * Tensor_B, Tensor_A), "Unexpected value returned Divide_By");
+      Assert (All_Close (A_Slash_C1 * Tensor_C, Tensor_A), "Unexpected value returned Divide_By");
    end Test_Divide_By;
 
    procedure Test_QR (Object : in out Test) is
