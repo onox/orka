@@ -287,7 +287,7 @@ package body AWT.Inputs.Gamepads is
          Count : Natural := 0;
       begin
          for Key in AWT.Gamepads.Input_Button'Range loop
-            if Features_Keys (Key) then
+            if Features_Keys (ED.Key_Code_Index (ED.To_Code (Key))) then
                if Count = Index then
                   return Key;
                end if;
@@ -373,7 +373,7 @@ package body AWT.Inputs.Gamepads is
             Features : constant ED.Key_Features := Object.Device.Features;
          begin
             --  Gamepads must have Button_South according to kernel documentation
-            if not Features (Button_South) then
+            if not Features (ED.Key_Code_Index (ED.To_Code (Button_South))) then
                Object.Device.Close;
                return False;
             end if;
@@ -384,10 +384,11 @@ package body AWT.Inputs.Gamepads is
          begin
             for Button in Non_Hat_Button'Range loop
                declare
-                  Key : constant ED.Key_Kind := Gamepad_Button_To_Key (Button);
+                  Key   : constant ED.Key_Kind       := Gamepad_Button_To_Key (Button);
+                  Index : constant ED.Key_Code_Index := ED.Key_Code_Index (ED.To_Code (Key));
                begin
-                  Object.Data.Keys (Key) :=
-                    (if Key_Statuses (Key) then ED.Pressed else ED.Released);
+                  Object.Data.Keys (Index) :=
+                    (if Key_Statuses (Index) then ED.Pressed else ED.Released);
                end;
             end loop;
          end;
@@ -665,7 +666,9 @@ package body AWT.Inputs.Gamepads is
                if Map.Kind /= None then
                   declare
                      use type ED.Key_State;
-                     Is_Pressed : constant Boolean := Object.Data.Keys (Key) = ED.Pressed;
+
+                     Index : constant ED.Key_Code_Index := ED.Key_Code_Index (ED.To_Code (Key));
+                     Is_Pressed : constant Boolean := Object.Data.Keys (Index) = ED.Pressed;
                   begin
                      Set_Value (Axis_Value (if Is_Pressed then 1.0 else 0.0), Map.Output);
                   end;

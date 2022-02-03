@@ -39,7 +39,7 @@ private package AWT.Gamepads is
 
    subtype Input_Hat is ED.Absolute_Axis_Kind range ED.Hat_0X .. ED.Hat_3Y;
 
-   subtype Input_Button is ED.Key_Kind;
+   subtype Input_Button is ED.Key_Kind range ED.Button_South .. ED.Button_Thumb_Right;
 
    subtype Sensor_Axis is ED.Absolute_Axis_Kind range ED.X .. ED.Rz;
 

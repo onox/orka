@@ -129,7 +129,7 @@ package body Package_Test is
 
       Object.FB.Clear ((Color => True, others => False));
 
-      Object.Cursor.Set_Vector (GL.Types.Single_Array'(Horizontal, -Vertical));
+      Object.Cursor.Set_Vector (Orka.Float_32_Array'(Horizontal, -Vertical));
       Orka.Rendering.Drawing.Draw (GL.Types.Points, 0, 1);
 
       Object.Swap_Buffers;
