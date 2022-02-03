@@ -77,7 +77,7 @@ package body Package_Test is
    end On_Configure;
 
    procedure Initialize_Framebuffer (Object : in out Test_Window) is
-      Alpha : constant GL.Types.Single := (if Object.State.Transparent then 0.5 else 1.0);
+      Alpha : constant Orka.Float_32 := (if Object.State.Transparent then 0.5 else 1.0);
    begin
       Object.FB :=
         Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Object.Width, Object.Height);
@@ -104,22 +104,22 @@ package body Package_Test is
    end Post_Initialize;
 
    procedure Render (Object : in out Test_Window) is
-      use type GL.Types.Single;
+      use type Orka.Float_32;
       use Standard.AWT.Inputs;
 
       Window_State  : constant Standard.AWT.Windows.Window_State := Object.State;
       Pointer_State : constant Standard.AWT.Inputs.Pointer_State := Object.State;
 
-      subtype Single is GL.Types.Single;
+      subtype Float_32 is Orka.Float_32;
 
-      Width  : constant Single := Single (Window_State.Width + 2 * Window_State.Margin);
-      Height : constant Single := Single (Window_State.Height + 2 * Window_State.Margin);
+      Width  : constant Float_32 := Float_32 (Window_State.Width + 2 * Window_State.Margin);
+      Height : constant Float_32 := Float_32 (Window_State.Height + 2 * Window_State.Margin);
 
-      PX : constant Single := Single (Pointer_State.Position (X));
-      PY : constant Single := Single (Pointer_State.Position (Y));
+      PX : constant Float_32 := Float_32 (Pointer_State.Position (X));
+      PY : constant Float_32 := Float_32 (Pointer_State.Position (Y));
 
-      Horizontal : constant GL.Types.Single := PX / Width * 2.0 - 1.0;
-      Vertical   : constant GL.Types.Single := PY / Height * 2.0 - 1.0;
+      Horizontal : constant Float_32 := PX / Width * 2.0 - 1.0;
+      Vertical   : constant Float_32 := PY / Height * 2.0 - 1.0;
    begin
       if Object.Resize then
          Object.Resize := False;
