@@ -37,7 +37,7 @@ tests:
 
 coverage:
 	mkdir -p tests/cov
-	lcov -q -c -d orka_types/build/obj -d orka_simd/build/obj -d orka_transforms/build/obj -d orka/build/obj -o tests/cov/unit.info
+	lcov -q -c -d orka_types/build/obj -d orka_simd/build/obj -d orka_transforms/build/obj -d orka_numerics/build/obj -d orka/build/obj -o tests/cov/unit.info
 	lcov -q -r tests/cov/unit.info */adainclude/* -o tests/cov/unit.info
 	genhtml -q --ignore-errors source -o tests/cov/html tests/cov/unit.info
 	lcov -l tests/cov/unit.info
