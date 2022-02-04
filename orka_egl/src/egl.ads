@@ -74,11 +74,13 @@ private
 
    type Native_Window_Ptr is access all Native_Window
      with Convention => C;
+   pragma No_Strict_Aliasing (Native_Window_Ptr);
 
    type Native_Display is limited null record;
 
    type Native_Display_Ptr is access all Native_Display
      with Convention => C;
+   pragma No_Strict_Aliasing (Native_Display_Ptr);
 
    function None return Int is (16#3038#);
    function None return Attrib is (16#3038#);
