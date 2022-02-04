@@ -95,7 +95,7 @@ abstract project Orka_Config is
         ("-march=native",
          "-fno-tree-vrp", -- Workaround bug box in GNAT 11.1 for orka_egl
          "-ffunction-sections",
-         "-fdata-sections",  -- In Linker: -Wl,-gc-sections
+         "-fdata-sections",
          "-gnatw.X", -- Disable warnings for No_Exception_Propagation
          "-gnatQ");  -- Don't quit. Generate ALI and tree files even if illegalities
       for Local_Configuration_Pragmas use "gnat.adc";
@@ -104,5 +104,9 @@ abstract project Orka_Config is
    package Binder is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
    end Binder;
+
+   package Linker is
+      for Linker_Options use ("-Wl,-gc-sections");
+   end Linker;
 
 end Orka_Config;
