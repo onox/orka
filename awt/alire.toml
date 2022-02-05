@@ -26,7 +26,7 @@ wayland_cursor_ada = "^1.0.0"
 wayland_protocols_ada = "^1.0.0"
 wayland_client_ada = "^1.0.0"
 orka_egl = "^1.0.0"
-evdev = "^1.0.1"
+evdev = "^2.0.0"
 inotify = "^2.0.0"
 
 [[depends-on]]
@@ -34,7 +34,6 @@ orka = "~0.2.0"
 orka_numerics = "^1.0.0"
 
 [[pins]]
-evdev = { path = "../../evdev-ada" }
 orka = { path = "../orka" }
 orka_egl = { path = "../orka_egl" }
 orka_numerics = { path = "../orka_numerics" }
