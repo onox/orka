@@ -27,7 +27,7 @@ package AWT.Drag_And_Drop is
    function Valid_Action return AWT.Inputs.Action_Kind;
    --  Return the used action for the drag'n'drop operation
    --
-   --  May be called in overriding procedure On_Drag of Window.
+   --  May be called in overriding procedure On_Drop of Window.
    --
    --  If the returned value is not None, then procedure Get can be called
    --  or a signal can be set via a protected object, followed by a call
@@ -53,9 +53,9 @@ package AWT.Drag_And_Drop is
      with Pre => Valid_Action /= None;
    --  Receive data from a drag-and-drop operation
    --
-   --  Before calling this procedure, call function Valid_Actions
+   --  Before calling this procedure, call function Supported_Actions
    --  to determine what kind of operation needs to take place. If "Ask" is
-   --  true, then the application may want to show menu to let the user
+   --  true, then the application may want to show a menu to let the user
    --  choose.
    --
    --  After the given callback has been executed, finish the operation
