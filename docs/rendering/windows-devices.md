@@ -7,7 +7,7 @@ gamepads. It has a similar purpose as GLFW and SDL.
 ## Windows
 
 Given a `:::ada Surface_Context'Class` context created by the function `Create_Context`
-in package `:::ada Orka.Contexts.AWT` (see [Contexts](/rendering/contexts/#awt), a
+in package `:::ada Orka.Contexts.AWT` (see [Contexts](/rendering/contexts/#awt)), a
 window can be created with the function `Create_Window`:
 
 ```ada
@@ -121,10 +121,11 @@ the application should call the procedure `Close`.
 
 The default implementation of `On_Close` always returns `True`.
 
-## Drag-and-drop
+## Drag and drop
 
-To implement drag-and-drop, a complicated dance of callbacks and subprogram
-calls must be performed. Two procedures must be overridden, `On_Drag` and `On_Drop`.
+To support dragging and droppping objects on a window, a complicated dance
+of callbacks and subprogram calls must be performed. Two procedures must be
+overridden, `On_Drag` and `On_Drop`.
 
 ### Dragging
 

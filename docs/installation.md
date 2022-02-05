@@ -126,10 +126,8 @@ Optional dependencies:
 Add Orka to your application:
 
 ```sh
-$ alr with orka
+$ alr with orka --use=path/to/orka
 ```
-
-You may need to add `--use=path/to/orka/crate` to use unpublished versions.
 
 To create an OpenGL context and window, add `awt` for AWT (see below) or
 `orka_plugin_sdl` for SDL.
@@ -192,3 +190,4 @@ and learn how you can render your first triangle on the screen.
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
   [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities
+  [url-wayland-ada]: https://github.com/onox/wayland-ada
