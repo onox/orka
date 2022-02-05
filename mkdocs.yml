@@ -97,6 +97,7 @@ nav:
       - Rendering:
           - Introduction: rendering/index.md
           - Contexts: rendering/contexts.md
+          - Windows and devices: rendering/windows-devices.md
           - Buffers: rendering/buffers.md
           - Vertex formats: rendering/vertex-formats.md
           - Programs: rendering/programs.md

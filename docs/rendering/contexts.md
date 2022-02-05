@@ -138,10 +138,12 @@ Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Conte
    Flags   => (Debug => True, others => False));
 ```
 
-This will create a context using the 'device' platform of EGL. A context that uses
-the Wayland platform can be created using the function `Create_Context` in package
-`:::ada Orka.Contexts.EGL.Wayland`. The Wayland platform is also used when creating
-a context on Linux via AWT.
+This will create a context using the 'device' platform of EGL.
+
+!!! note
+    A context that uses the Wayland platform can be created using the function
+    `Create_Context` in package `:::ada Orka.Contexts.EGL.Wayland`.
+    The Wayland platform is also used when creating a context on Linux via AWT.
 
 The context is created and made current on the calling task by the `Create_Context`
 function.
@@ -189,6 +191,18 @@ Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Conte
 
 If the parameter `Device` is not given, then the first device in the list
 that would be returned by function `Devices` is used.
+
+!!! summary
+    An EGL context can be created using different platforms:
+
+    - The Wayland platform, created using `:::ada Orka.Contexts.EGL.Wayland`
+      allows you to render things on the screen in a window, but rendering
+      is done using the same GPU as the one used by the Wayland compositor.
+
+    - The 'device' platform, created using `:::ada Orka.Contexts.EGL`,
+      allows you to render off-screen using any device returned by
+      `:::ada EGL.Objects.Devices.Devices`, but the results cannot be
+      displayed in a window.
 
 ## Moving a context
 

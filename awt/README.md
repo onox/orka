@@ -26,9 +26,7 @@ AWT also supports gamepads:
 
 ## Dependencies
 
-On Linux:
-
- * Wayland 1.16 or higher
+On Linux you need Wayland 1.18 or higher.
 
 ## Using the library
 

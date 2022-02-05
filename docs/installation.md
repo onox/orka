@@ -9,6 +9,8 @@ In order to build and use Orka you need to have:
 
  * [Alire][url-alire]
 
+ * Wayland 1.18 (on Linux)
+
  * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
    and OpenGL 4.6 core profile (or 4.0 + extensions below)
 
@@ -98,6 +100,9 @@ Optional dependencies:
     After having installed the compiler, install the [Alire][url-alire]
     package manager.
 
+    Make sure to clone [wayland-ada][url-wayland-ada] if you want to use
+    AWT for managing windows, input devices, and gamepads.
+
 === ":material-arch: Arch Linux"
 
     ```sh
@@ -109,11 +114,14 @@ Optional dependencies:
     After having installed the compiler, install the [Alire][url-alire]
     package manager.
 
+    Make sure to clone [wayland-ada][url-wayland-ada] if you want to use
+    AWT for managing windows, input devices, and gamepads.
+
 === ":material-microsoft-windows: Windows 10"
 
     Install [GNAT CE][url-ce] and [Alire][url-alire] package manager.
 
-## Using Orka in your application
+## Using Orka and AWT in your application
 
 Add Orka to your application:
 
@@ -123,7 +131,18 @@ $ alr with orka
 
 You may need to add `--use=path/to/orka/crate` to use unpublished versions.
 
-To create an OpenGL context and window, add `awt` for AWT or `orka_plugin_sdl` for SDL.
+To create an OpenGL context and window, add `awt` for AWT (see below) or
+`orka_plugin_sdl` for SDL.
+
+For AWT, clone [wayland-ada][url-wayland-ada] and make sure that both wayland-ada
+and orka exist in the same parent folder. Next, add AWT to your application:
+
+```sh
+$ alr with awt --use=path/to/awt
+```
+
+On Linux you need to copy the awt/data/99-leds.rules file to /etc/udev/rules.d/
+in order to be able to set the LED color of a gamepad.
 
 ###  Tools and examples
 

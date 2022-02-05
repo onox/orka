@@ -29,6 +29,11 @@ using compute shaders, or apply a blurring effect to a texture.
 - **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
 tessellated terrain.
 
+- **Windows and input devices**. Use [AWT][url-awt] to manage input devices
+like the pointer, keyboard, and gamepads, and windows that can display 3D graphics.
+It has a similar purpose as GLFW and SDL. Alternatively, a library like
+[SDL][url-sdl] can be used instead to create windows and process input.
+
 - **Joysticks and gamepads**. Manage joysticks and gamepads.
 Analog axes can be filtered with a low-pass filter, dead zones
 can be removed, and axes and triggers can be inverted or normalized.
@@ -49,15 +54,15 @@ matrices using x86 SIMD instructions.
 
 - **Numerics**. Perform element-wise operations, reductions
 using arbitrary expressions, or matrix operations on tensors using SIMD
-instructions. Generate tensors with statistical distributions or use
-Runge-Kutta 4th order numerical integrators.
+instructions. Generate tensors with statistical distributions, or use
+Runge-Kutta 4th order numerical integrators or sigma-point Kalman filters.
 
 Additionally, Orka provides several bindings:
 
 - **x86 SIMD extensions**
 Bindings for various x86 SIMD extensions, including SSE, SSE2, SSE3, SSSE3,
 SSE4.1, AVX, AVX2, FMA, and F16C, and an implementation of the
-[xoshiro128++][url-xoshiro] pseudo-random number generator using SSE2 or
+[xoshiro][url-xoshiro] pseudo-random number generator using SSE2 or
 AVX2 intrinsics.
 
 - **OpenGL 4.6**. Thick bindings are provided for the modern parts
@@ -66,31 +71,6 @@ that is deprecated or functions that have been superseded by newer extensions.
 
 - **EGL**. Thick bindings for EGL are provided to create a surfaceless
 context for rendering without the presence of a windowing system.
-
-## Ada Window Toolkit
-
-[AWT][url-awt] is used to create windows that can display 3D graphics with
-an OpenGL context and to manage input devices like the pointer, keyboard, and
-gamepads. It has a similar purpose as GLFW and SDL. Alternatively, a library like
-[SDL][url-sdl] can be used instead to create windows and process input.
-
-Currently there is only a Wayland backend for Linux. Hopefully in the future a
-backend for Windows will be added.
-
-AWT also supports gamepads:
-
-- **Mappings**. Use mappings from the [SDL gamecontroller database][url-sdl-gamecontroller-db].
-
-- **Events**. Listen for (dis)connection events.
-
-- **Force-feedback**. Play and cancel rumble and periodic force-feedback effects.
-
-- **Motion sensor**. Get the linear acceleration and angular velocity using the motion
-  sensor of a gamepad.
-
-- **Battery**. Retrieve the capacity and charging state of the battery of a gamepad.
-
-- **LED**. Get and set the color of the LED of a gamepad.
 
 ## Documentation
 
@@ -152,7 +132,6 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-learn-act]: https://learn.adacore.com/courses/intro-to-ada/index.html
   [url-sdl]: https://github.com/lucretia/sdlada
-  [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
   [url-swe-practices]: https://en.wikibooks.org/wiki/Ada_Programming#Programming_in_the_large
   [url-wikibooks]: https://en.wikibooks.org/wiki/Ada_Programming
   [url-xoshiro]: https://prng.di.unimi.it/
