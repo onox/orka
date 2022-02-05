@@ -49,67 +49,17 @@ When using AWT, an OpenGL context must be created first:
 Context : constant Orka.Contexts.Surface_Context'Class := Orka.Contexts.AWT.Create_Context
   (Version => (4, 2),
    Flags   => (Debug | Robust => True, others => False));
+
+Window : aliased Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
+  (Context, Width => 1280, Height => 720);
 ```
 
 The context is created and made current on the calling task by the `Create_Context`
 function.
 
-```ada
-Window : aliased Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
-  (Context, Width => 1280, Height => 720);
-```
-
-Although this is sufficient if the size of the window never changes, you most
-likely want to extend `:::ada Orka.Contexts.AWT.AWT_Window` and override
-`On_Configure`:
-
-```ada
-type My_Window is limited new Orka.Contexts.AWT.AWT_Window with record
-  Resize : Boolean := True with Atomic;
-end record;
-
-overriding
-procedure On_Configure
- (Object : in out My_Window;
-  State  : Standard.AWT.Windows.Window_State);
-```
-
-You can then set `Resize` when the window is visible and has a valid size:
-
-```ada
-overriding
-procedure On_Configure
- (Object : in out My_Window;
-  State  : Standard.AWT.Windows.Window_State) is
-begin
-  Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
-end On_Configure;
-```
-
-In your render subprogram you can then create a new default framebuffer
-and projection matrix if `Resize` is true.
-
-!!! note
-    You may need to override function `Create_Window` as well:
-
-    ```ada
-    overriding
-    function Create_Window
-     (Context            : Orka.Contexts.Surface_Context'Class;
-      Width, Height      : Positive;
-      Title              : String  := "";
-      Samples            : Natural := 0;
-      Visible, Resizable : Boolean := True;
-      Transparent        : Boolean := False) return My_Window is
-    begin
-      return Result : constant My_Window :=
-        (Orka.Contexts.AWT.Create_Window
-          (Context, Width, Height, Title, Samples,
-           Visible     => Visible,
-           Resizable   => Resizable,
-           Transparent => Transparent) with others => <>);
-    end Create_Window;
-    ```
+!!! tip
+    Call function `Framebuffer_Resized` in the rendering task to detect
+    that the default framebuffer must be recreated before rendering to it.
 
 ### SDL
 
