@@ -7,7 +7,7 @@ SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
 all: run
 
 build:
-	alr build $(SCENARIO_VARS)
+	alr build -- $(SCENARIO_VARS)
 run: build
 	cd example && GALLIUM_HUD=".c35frametime" MESA_LOADER_DRIVER_OVERRIDE=iris ./build/bin/example
 verbose: build
