@@ -42,6 +42,15 @@ package Orka.Contexts.EGL.Wayland.AWT is
       Transparent        : Boolean := False) return AWT_Window
    with Pre => Context in AWT_Context'Class;
 
+   function Framebuffer_Resized (Object : in out AWT_Window) return Boolean;
+   --  Return True if the framebuffer has been resized, False otherwise
+   --
+   --  This function is not pure and if it returns True, then immediately
+   --  calling it a second time will cause it to return False.
+   --
+   --  Upon returning True, the caller must recreate any default framebuffer
+   --  object it has in a task for which the rendering context is current.
+
 private
 
    type AWT_Context is limited new Wayland_EGL_Context and Surface_Context with null record;
@@ -52,7 +61,10 @@ private
       Window : in out Orka.Windows.Window'Class);
 
    type AWT_Window is limited new Standard.AWT.Wayland.Windows.Wayland_Window
-     and Orka.Windows.Window with null record;
+     and Orka.Windows.Window with
+   record
+      Resize : Boolean := False with Atomic;
+   end record;
 
    overriding
    function Width (Object : AWT_Window) return Positive;
@@ -61,6 +73,11 @@ private
    function Height (Object : AWT_Window) return Positive;
 
    ----------------------------------------------------------------------------
+
+   overriding
+   procedure On_Configure
+     (Object : in out AWT_Window;
+      State  : Standard.AWT.Windows.Window_State);
 
    overriding
    procedure On_Move

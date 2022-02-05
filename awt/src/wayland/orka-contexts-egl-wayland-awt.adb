@@ -63,6 +63,26 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
    ----------------------------------------------------------------------------
 
+   function Framebuffer_Resized (Object : in out AWT_Window) return Boolean is
+      Result : constant Boolean := Object.Resize;
+   begin
+      Object.Resize := False;
+      return Result;
+   end Framebuffer_Resized;
+
+   overriding
+   procedure On_Configure
+     (Object : in out AWT_Window;
+      State  : Standard.AWT.Windows.Window_State) is
+   begin
+      Messages.Log (Debug, "Configured window surface");
+      Messages.Log (Debug, "  size:   " &
+        Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
+      Messages.Log (Debug, "  margin: " & Trim (State.Margin'Image));
+
+      Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
+   end On_Configure;
+
    overriding
    procedure On_Move
      (Object   : in out AWT_Window;

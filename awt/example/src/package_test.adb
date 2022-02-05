@@ -63,19 +63,6 @@ package body Package_Test is
       end if;
    end On_Drop;
 
-   overriding
-   procedure On_Configure
-     (Object       : in out Test_Window;
-      State        : Standard.AWT.Windows.Window_State) is
-   begin
-      Messages.Log (Debug, "Configured window surface");
-      Messages.Log (Debug, "  size:   " &
-        Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
-      Messages.Log (Debug, "  margin: " & Trim (State.Margin'Image));
-
-      Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
-   end On_Configure;
-
    procedure Initialize_Framebuffer (Object : in out Test_Window) is
       Alpha : constant Orka.Float_32 := (if Object.State.Transparent then 0.5 else 1.0);
    begin
@@ -105,10 +92,10 @@ package body Package_Test is
 
    procedure Render (Object : in out Test_Window) is
       use type Orka.Float_32;
-      use Standard.AWT.Inputs;
+      use AWT.Inputs;
 
-      Window_State  : constant Standard.AWT.Windows.Window_State := Object.State;
-      Pointer_State : constant Standard.AWT.Inputs.Pointer_State := Object.State;
+      Window_State  : constant AWT.Windows.Window_State := Object.State;
+      Pointer_State : constant AWT.Inputs.Pointer_State := Object.State;
 
       subtype Float_32 is Orka.Float_32;
 
@@ -121,9 +108,7 @@ package body Package_Test is
       Horizontal : constant Float_32 := PX / Width * 2.0 - 1.0;
       Vertical   : constant Float_32 := PY / Height * 2.0 - 1.0;
    begin
-      if Object.Resize then
-         Object.Resize := False;
-
+      if Object.Framebuffer_Resized then
          Object.Initialize_Framebuffer;
       end if;
 

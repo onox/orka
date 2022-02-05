@@ -161,8 +161,7 @@ begin
          Window.Post_Initialize;
 
          Put_Line ("Rendering...");
-         loop
-            exit when Window.Should_Close;
+         while not Window.Should_Close loop
             delay until Clock + Microseconds (15000);
             Window.Render;
          end loop;

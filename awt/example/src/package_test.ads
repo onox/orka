@@ -15,7 +15,6 @@ package Package_Test is
       FB      : Orka.Rendering.Framebuffers.Framebuffer (Default => True);
       Program : Orka.Rendering.Programs.Program;
       Cursor  : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
-      Resize  : Boolean := False with Atomic;
    end record;
 
    overriding
@@ -29,11 +28,6 @@ package Package_Test is
    overriding
    procedure On_Drop
      (Object : in out Test_Window);
-
-   overriding
-   procedure On_Configure
-     (Object       : in out Test_Window;
-      State        : Standard.AWT.Windows.Window_State);
 
    overriding
    function Create_Window
