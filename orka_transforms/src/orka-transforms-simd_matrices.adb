@@ -156,6 +156,36 @@ package body Orka.Transforms.SIMD_Matrices is
       return Result;
    end R;
 
+   function R (Left, Right : Vector_Type) return Matrix_Type is
+      S : constant Vector4 := Vectors.Normalize (Left);
+      T : constant Vector4 := Vectors.Normalize (Right);
+
+      --  Equations 4.54 and 4.55 from chapter 4.3 Quaternions from
+      --  Real-Time Rendering (third edition, 2008)
+
+      V : constant Vector4 := Vectors.Cross (S, T);
+      E : constant Element_Type := Vectors.Dot (S, T);
+      H : constant Element_Type := 1.0 / (1.0 + E);
+
+      Result : Matrix_Type := Identity_Matrix;
+   begin
+      --  TODO Handle when Left and Right are near parallel: Norm (V) is approximately 0.0
+
+      Result (X) (X) := E + H * (V (X) ** 2);
+      Result (X) (Y) := H * V (X) * V (Y) + V (Z);
+      Result (X) (Z) := H * V (X) * V (Z) - V (Y);
+
+      Result (Y) (X) := H * V (X) * V (Y) - V (Z);
+      Result (Y) (Y) := E + H * (V (Y) ** 2);
+      Result (Y) (Z) := H * V (Y) * V (Z) + V (X);
+
+      Result (Z) (X) := H * V (X) * V (Z) + V (Y);
+      Result (Z) (Y) := H * V (Y) * V (Z) - V (X);
+      Result (Z) (Z) := E + H * (V (Z) ** 2);
+
+      return Result;
+   end R;
+
    function S (Factors : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Matrix;
    begin

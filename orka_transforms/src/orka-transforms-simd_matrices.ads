@@ -107,10 +107,13 @@ package Orka.Transforms.SIMD_Matrices is
    --
    --  The inverse is R^-1 (a, o) = R (a, -o) = (R (a, o))^T.
 
-   function R (Quaternion : Vector_Type) return Matrix_Type;
+   function R (Quaternion : Vector_Type) return Matrix_Type
+     with Pre => Vectors.Normalized (Quaternion);
    --  Converts a quaternion to a rotation matrix
-   --
-   --  Note: the quaternion must be a unit quaternion (normalized).
+
+   function R (Left, Right : Vector_Type) return Matrix_Type
+     with Pre => Vectors.Normalized (Left) and Vectors.Normalized (Right);
+   --  Return a matrix that gives a rotation from Left to Right
 
    function S (Factors : Vector_Type) return Matrix_Type;
    --  Scale points by the given amount in the x-, y-, and z-axis
