@@ -151,15 +151,15 @@ package body Orka.Transforms.SIMD_Matrices is
       --  S = 2 / Norm (Quaternion)
    begin
       Result (X) (X) := 1.0 - S * (Q_Y * Q_Y + Q_Z * Q_Z);
-      Result (X) (Y) := S * (Q_X * Q_Y - Q_Z * Q_W);
-      Result (X) (Z) := S * (Q_X * Q_Z + Q_Y * Q_W);
+      Result (X) (Y) := S * (Q_X * Q_Y + Q_Z * Q_W);
+      Result (X) (Z) := S * (Q_X * Q_Z - Q_Y * Q_W);
 
-      Result (Y) (X) := S * (Q_X * Q_Y + Q_Z * Q_W);
+      Result (Y) (X) := S * (Q_X * Q_Y - Q_Z * Q_W);
       Result (Y) (Y) := 1.0 - S * (Q_X * Q_X + Q_Z * Q_Z);
-      Result (Y) (Z) := S * (Q_Y * Q_Z - Q_X * Q_W);
+      Result (Y) (Z) := S * (Q_Y * Q_Z + Q_X * Q_W);
 
-      Result (Z) (X) := S * (Q_X * Q_Z - Q_Y * Q_W);
-      Result (Z) (Y) := S * (Q_Y * Q_Z + Q_X * Q_W);
+      Result (Z) (X) := S * (Q_X * Q_Z + Q_Y * Q_W);
+      Result (Z) (Y) := S * (Q_Y * Q_Z - Q_X * Q_W);
       Result (Z) (Z) := 1.0 - S * (Q_X * Q_X + Q_Y * Q_Y);
 
       return Result;
