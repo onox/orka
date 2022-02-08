@@ -141,27 +141,26 @@ package body Orka.Transforms.SIMD_Matrices is
 
    function R (Quaternion : Vector_Type) return Matrix_Type is
       Result : Matrix_Type := Identity_Matrix;
+
+      Q_X : constant Element_Type := Quaternion (X);
+      Q_Y : constant Element_Type := Quaternion (Y);
+      Q_Z : constant Element_Type := Quaternion (Z);
+      Q_W : constant Element_Type := Quaternion (W);
+
+      S : constant := 2.0;
+      --  S = 2 / Norm (Quaternion)
    begin
-      Result (X) (X) :=
-        1.0 - 2.0 * (Quaternion (Y) * Quaternion (Y) + Quaternion (Z) * Quaternion (Z));
-      Result (X) (Y) :=
-        2.0 * (Quaternion (X) * Quaternion (Y) - Quaternion (Z) * Quaternion (W));
-      Result (X) (Z) :=
-        2.0 * (Quaternion (X) * Quaternion (Z) + Quaternion (Y) * Quaternion (W));
+      Result (X) (X) := 1.0 - S * (Q_Y * Q_Y + Q_Z * Q_Z);
+      Result (X) (Y) := S * (Q_X * Q_Y - Q_Z * Q_W);
+      Result (X) (Z) := S * (Q_X * Q_Z + Q_Y * Q_W);
 
-      Result (Y) (X) :=
-        2.0 * (Quaternion (X) * Quaternion (Y) + Quaternion (Z) * Quaternion (W));
-      Result (Y) (Y) :=
-        1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Z) * Quaternion (Z));
-      Result (Y) (Z) :=
-        2.0 * (Quaternion (Y) * Quaternion (Z) - Quaternion (X) * Quaternion (W));
+      Result (Y) (X) := S * (Q_X * Q_Y + Q_Z * Q_W);
+      Result (Y) (Y) := 1.0 - S * (Q_X * Q_X + Q_Z * Q_Z);
+      Result (Y) (Z) := S * (Q_Y * Q_Z - Q_X * Q_W);
 
-      Result (Z) (X) :=
-        2.0 * (Quaternion (X) * Quaternion (Z) - Quaternion (Y) * Quaternion (W));
-      Result (Z) (Y) :=
-        2.0 * (Quaternion (Y) * Quaternion (Z) + Quaternion (X) * Quaternion (W));
-      Result (Z) (Z) :=
-        1.0 - 2.0 * (Quaternion (X) * Quaternion (X) + Quaternion (Y) * Quaternion (Y));
+      Result (Z) (X) := S * (Q_X * Q_Z - Q_Y * Q_W);
+      Result (Z) (Y) := S * (Q_Y * Q_Z + Q_X * Q_W);
+      Result (Z) (Z) := 1.0 - S * (Q_X * Q_X + Q_Y * Q_Y);
 
       return Result;
    end R;
