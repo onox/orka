@@ -104,8 +104,6 @@ package body Test_Transforms_Doubles_Matrices is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Transpose function", Test_Transpose'Access));
       Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Diagonal function", Test_Diagonal'Access));
-      Test_Suite.Add_Test (Caller.Create
         (Name & "Test Main_Diagonal function", Test_Main_Diagonal'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Trace function", Test_Trace'Access));
@@ -470,40 +468,19 @@ package body Test_Transforms_Doubles_Matrices is
       end loop;
    end Test_Transpose;
 
-   procedure Test_Diagonal (Object : in out Test) is
-      Values : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
-
-      A : Float_64 renames Values (X);
-      B : Float_64 renames Values (Y);
-      C : Float_64 renames Values (Z);
-      D : Float_64 renames Values (W);
-
-      Expected : constant Matrix4 :=
-        ((A, 0.0, 0.0, 0.0),
-         (0.0, B, 0.0, 0.0),
-         (0.0, 0.0, C, 0.0),
-         (0.0, 0.0, 0.0, D));
-
-      Result : constant Matrix4 := Diagonal (Values);
-   begin
-      for I in Index_4D loop
-         Assert_Equivalent (Expected (I), Result (I), I);
-      end loop;
-   end Test_Diagonal;
-
    procedure Test_Main_Diagonal (Object : in out Test) is
-      Expected : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
+      Expected : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      Result : constant Vector4 := Main_Diagonal (Diagonal (Expected));
+      Result : constant Vector4 := Main_Diagonal (S (Expected));
    begin
       Assert_Equivalent (Expected, Result);
    end Test_Main_Diagonal;
 
    procedure Test_Trace (Object : in out Test) is
-      Values : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
+      Values : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
       Expected : constant Float_64 := Values (X) + Values (Y) + Values (Z) + Values (W);
-      Result   : constant Float_64 := Trace (Diagonal (Values));
+      Result   : constant Float_64 := Trace (S (Values));
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Double");
    end Test_Trace;
