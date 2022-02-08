@@ -20,15 +20,6 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function Diagonal (Elements : Vector_Type) return Matrix_Type is
-      Result : Matrix_Type := Identity_Matrix;
-   begin
-      for Index in Elements'Range loop
-         Result (Index) (Index) := Elements (Index);
-      end loop;
-      return Result;
-   end Diagonal;
-
    function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type is
      (Matrix (X) (X), Matrix (Y) (Y), Matrix (Z) (Z), Matrix (W) (W));
 

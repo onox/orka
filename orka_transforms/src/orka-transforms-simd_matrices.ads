@@ -50,10 +50,6 @@ package Orka.Transforms.SIMD_Matrices is
    --  Return a zero vector that indicates a point. The fourth (W) component
    --  is 1.
 
-   function Diagonal (Elements : Vector_Type) return Matrix_Type;
-   --  Return a matrix with the main diagonal equal to the given
-   --  vector and zeros in all other elements
-
    function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type;
    --  Return a vector with the elements of the main diagonal
 
