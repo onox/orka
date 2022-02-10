@@ -187,8 +187,11 @@ package body Orka.Transforms.SIMD_Quaternions is
    is
       use type Vectors.Element_Type;
 
+      function Clamp (V : Vectors.Element_Type) return Vectors.Element_Type is
+        (Vectors.Element_Type'Max (-1.0, Vectors.Element_Type'Min (V, 1.0)));
+
       Cos_Angle : constant Vectors.Element_Type := Vectors.Dot (Vector4 (Left), Vector4 (Right));
-      Angle     : constant Vectors.Element_Type := EF.Arccos (Cos_Angle);
+      Angle     : constant Vectors.Element_Type := EF.Arccos (Clamp (Cos_Angle));
 
       SA : constant Vectors.Element_Type := EF.Sin (Angle);
 

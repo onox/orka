@@ -79,7 +79,7 @@ package Orka.Transforms.SIMD_Quaternions is
    function Lerp
      (Left, Right : Quaternion;
       Time        : Vectors.Element_Type) return Quaternion
-   with Pre  => Time in 0.0 .. 1.0,
+   with Pre  => Normalized (Left) and Normalized (Right) and Time in 0.0 .. 1.0,
         Post => Normalized (Lerp'Result);
    --  Return the interpolated normalized quaternion on the chord
    --  between the Left and Right quaternions.
@@ -87,7 +87,7 @@ package Orka.Transforms.SIMD_Quaternions is
    function Slerp
      (Left, Right : Quaternion;
       Time        : Vectors.Element_Type) return Quaternion
-   with Pre  => Time in 0.0 .. 1.0,
+   with Pre  => Normalized (Left) and Normalized (Right) and Time in 0.0 .. 1.0,
         Post => Normalized (Slerp'Result);
    --  Return the interpolated unit quaternion on the shortest arc
    --  between the Left and Right quaternions.
