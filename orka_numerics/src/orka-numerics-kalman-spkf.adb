@@ -47,9 +47,9 @@ package body Orka.Numerics.Kalman.SPKF is
 
    function Apply_F
      (N      : Positive;
-      F      : not null access function (Point : Vector; DT : Duration) return Vector;
+      F      : not null access function (Point : Vector; DT : Orka.Float_64) return Vector;
       Points : Kalman.Matrix;
-      DT     : Duration) return Kalman.Matrix is
+      DT     : Orka.Float_64) return Kalman.Matrix is
    begin
       return Result : Matrix := Empty ((Points.Rows, N)) do
          for Index in 1 .. Points.Rows loop
@@ -72,7 +72,7 @@ package body Orka.Numerics.Kalman.SPKF is
 
    procedure Predict_Update
      (Object      : in out Filter;
-      F           : not null access function (Point : Vector; DT : Duration) return Vector;
+      F           : not null access function (Point : Vector; DT : Orka.Float_64) return Vector;
       H           : not null access function (Point : Vector) return Vector;
       DT          : Duration;
       Measurement : Vector)
@@ -82,7 +82,7 @@ package body Orka.Numerics.Kalman.SPKF is
 
       --  Compute transformed sigma points (Y)
       Y : constant Matrix :=
-        Apply_F (Object.Dimension_X, F, Points (Object.Estimate, Object.Weights), DT);
+        Apply_F (Object.Dimension_X, F, Points (Object.Estimate, Object.Weights), Float_64 (DT));
       pragma Assert (Y.Shape = (2 * Object.Weights.N + 1, Object.Dimension_X));
 
       --  Compute predicted x and P (prior) of transformed sigma points Y
