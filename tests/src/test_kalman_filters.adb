@@ -86,7 +86,7 @@ package body Test_Kalman_Filters is
        0.0, 0.0, 0.0, 1.0),
       Shape => (4, 4));
 
-   function F_Cv (Point : Kalman.Vector; DT : Duration) return Kalman.Vector is (F * Point);
+   function F_Cv (Point : Kalman.Vector; DT : Orka.Float_64) return Kalman.Vector is (F * Point);
 
    function H_Cv (Point : Kalman.Vector) return Kalman.Vector is
      (To_Tensor ((Element'(Point (1)), Element'(Point (3)))));
