@@ -26,6 +26,7 @@ package Orka.Transforms.Doubles.Vectors is new Orka.Transforms.SIMD_Vectors
    SIMD.AVX.Doubles.Arithmetic."-", SIMD.AVX.Doubles.Arithmetic."-",
    SIMD.AVX.Doubles.Arithmetic."abs", SIMD.AVX.Doubles.Arithmetic.Sum,
    SIMD.AVX.Doubles.Arithmetic.Divide_Or_Zero,
+   SIMD.AVX.Doubles.Math.Reciprocal_Sqrt,
    SIMD.AVX.Doubles.Math.Cross_Product,
    SIMD.AVX.Doubles.Compare.Is_Equal);
 pragma Pure (Orka.Transforms.Doubles.Vectors);

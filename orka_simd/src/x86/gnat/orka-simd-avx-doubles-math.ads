@@ -29,6 +29,10 @@ package Orka.SIMD.AVX.Doubles.Math is
    --
    --  Result (I) := Double'Max (Left (I), Right (I)) for I in 1 ..4
 
+   function Reciprocal_Sqrt (Elements : m256d) return m256d
+     with Inline_Always;
+   --  Return the reciprocal of the square root (1/Sqrt(X)) of each element
+
    function Sqrt (Elements : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_sqrtpd256";
    --  Return the square root (Sqrt(X)) of each element

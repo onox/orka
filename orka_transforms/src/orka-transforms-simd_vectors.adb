@@ -72,6 +72,12 @@ package body Orka.Transforms.SIMD_Vectors is
       return Divide_Or_Zero (Elements, (Length, Length, Length, Length));
    end Normalize;
 
+   function Normalize_Fast (Elements : Vector_Type) return Vector_Type is
+      Length_Squared : constant Element_Type := Magnitude2 (Elements);
+   begin
+      return Elements * Reciprocal_Sqrt ((others => Length_Squared));
+   end Normalize_Fast;
+
    function Normalized (Elements : Vector_Type) return Boolean is
       function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
          --  Because the square root is not computed, the bounds need

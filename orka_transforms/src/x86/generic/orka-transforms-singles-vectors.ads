@@ -27,6 +27,7 @@ package Orka.Transforms.Singles.Vectors is new Orka.Transforms.SIMD_Vectors
    SIMD.SSE.Singles.Arithmetic."-", SIMD.SSE.Singles.Arithmetic."-",
    SIMD.SSE.Singles.Arithmetic."abs", SIMD.SSE3.Singles.Arithmetic.Sum,
    SIMD.SSE.Singles.Arithmetic.Divide_Or_Zero,
+   SIMD.SSE.Singles.Math.Reciprocal_Sqrt,
    SIMD.SSE.Singles.Math.Cross_Product,
    SIMD.SSE4_1.Singles.Compare.Is_Equal);
 pragma Pure (Orka.Transforms.Singles.Vectors);

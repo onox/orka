@@ -46,9 +46,11 @@ package Orka.Transforms.SIMD_Quaternions is
 
    function Norm (Elements : Quaternion) return Vectors.Element_Type;
 
-   function Normalize (Elements : Quaternion) return Quaternion;
+   function Normalize (Elements : Quaternion) return Quaternion
+     with Inline;
 
-   function Normalized (Elements : Quaternion) return Boolean;
+   function Normalized (Elements : Quaternion) return Boolean
+     with Inline;
 
    function To_Axis_Angle (Elements : Quaternion) return Axis_Angle;
 

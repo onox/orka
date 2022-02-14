@@ -26,6 +26,7 @@ generic
    with function Absolute_Vector (Elements : Vector_Type) return Vector_Type;
    with function Sum (Elements : Vector_Type) return Element_Type;
    with function Divide_Or_Zero (Left, Right : Vector_Type) return Vector_Type;
+   with function Reciprocal_Sqrt (Elements : Vector_Type) return Vector_Type;
    with function Cross_Product (Left, Right : Vector_Type) return Vector_Type;
    with function Is_Equal_Vectors (Left, Right : Vector_Type) return Boolean;
 package Orka.Transforms.SIMD_Vectors is
@@ -100,6 +101,11 @@ package Orka.Transforms.SIMD_Vectors is
 
    function Normalize (Elements : Vector_Type) return Vector_Type;
    --  Return the unit vector of the given vector
+
+   function Normalize_Fast (Elements : Vector_Type) return Vector_Type;
+   --  Return the unit vector of the given vector
+   --
+   --  This function may be faster than Normalize, but less accurate.
 
    function Normalized (Elements : Vector_Type) return Boolean;
    --  Return True if the vector is normalized, False otherwise
