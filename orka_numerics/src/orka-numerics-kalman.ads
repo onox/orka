@@ -63,8 +63,8 @@ private
          when Filter_UKF =>
             Covariance : Vector_Holder;
          when Filter_CDKF =>
-            Covariance_1 : Vector_Holder;
-            Covariance_2 : Vector_Holder;
+            Covariance_1 : Element_Type;
+            Covariance_2 : Element_Type;
       end case;
    end record;
 

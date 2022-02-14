@@ -27,8 +27,8 @@ package body Orka.Numerics.Kalman.CDKF is
 
       Weights_Mean : Vector := Fill ((1 => Count), 1.0 / (2.0 * H2));
 
-      Weights_Cov_1 : constant Vector := Fill ((1 => N), 1.0 / (4.0 * H2));
-      Weights_Cov_2 : constant Vector := Fill ((1 => N), (H2 - 1.0) / (4.0 * H2**2));
+      Weights_Cov_1 : constant Element_Type := 1.0 / (4.0 * H2);
+      Weights_Cov_2 : constant Element_Type := (H2 - 1.0) / (4.0 * H2**2);
    begin
       Weights_Mean.Set ((1 => 1), (H2 - L) / H2);
 
@@ -36,8 +36,8 @@ package body Orka.Numerics.Kalman.CDKF is
         (N              => N,
          Kind           => Filter_CDKF,
          Mean           => Tensor_Holders.To_Holder (Weights_Mean),
-         Covariance_1   => Tensor_Holders.To_Holder (Weights_Cov_1),
-         Covariance_2   => Tensor_Holders.To_Holder (Weights_Cov_2),
+         Covariance_1   => Weights_Cov_1,
+         Covariance_2   => Weights_Cov_2,
          Scaling_Factor => Tensors.Square_Root (H2));
    end Weights;
 
@@ -71,10 +71,10 @@ package body Orka.Numerics.Kalman.CDKF is
    end Duplicate;
 
    function CDKF_Covariance
-     (N     : Positive;
-      Phase : Update_Phase;
+     (N                    : Positive;
+      Phase                : Update_Phase;
       Points, S            : Matrix;
-      Weights_1, Weights_2 : Vector) return Matrix
+      Weights_1, Weights_2 : Element_Type) return Matrix
    is
       Y_1L  : constant Matrix := Points.Get (Tensors.Range_Type'(2, N + 1));
       Y_L2L : constant Matrix := Points.Get (Tensors.Range_Type'(N + 2, 2 * N + 1));
@@ -86,8 +86,8 @@ package body Orka.Numerics.Kalman.CDKF is
             when Time_Update        => Y_1L + Y_L2L - 2.0 * Y_1,
             when Measurement_Update => Y_1L - Y_L2L - 2.0 * Y_1);
 
-      M1 : constant Matrix := Tensors.Square_Root (Weights_1.Get (1)) * V1;
-      M2 : constant Matrix := Tensors.Square_Root (Weights_2.Get (1)) * V2;
+      M1 : constant Matrix := Tensors.Square_Root (Weights_1) * V1;
+      M2 : constant Matrix := Tensors.Square_Root (Weights_2) * V2;
    begin
       return Matrix'(M1 & M2 & S).QR;
    end CDKF_Covariance;
@@ -104,19 +104,19 @@ package body Orka.Numerics.Kalman.CDKF is
          Covariance => Tensor_Holders.To_Holder
            (CDKF_Covariance
               (Weights.N, Phase, Points, Noise,
-               Weights.Covariance_1.Constant_Reference,
-               Weights.Covariance_2.Constant_Reference)));
+               Weights.Covariance_1,
+               Weights.Covariance_2)));
    end Transform;
 
    function CDKF_Cross_Covariance
-     (N : Positive;
+     (N         : Positive;
       P, Y      : Matrix;
-      Weights_1 : Vector) return Matrix
+      Weights_1 : Element_Type) return Matrix
    is
       Y_1L  : Matrix renames Y.Get (Tensors.Range_Type'(2, N + 1));
       Y_L2L : Matrix renames Y.Get (Tensors.Range_Type'(N + 2, 2 * N + 1));
 
-      Root_Weight_Times_P : constant Matrix := Tensors.Square_Root (Weights_1.Get (1)) * P;
+      Root_Weight_Times_P : constant Matrix := Tensors.Square_Root (Weights_1) * P;
    begin
       return Root_Weight_Times_P * (Y_1L - Y_L2L);
    end CDKF_Cross_Covariance;
@@ -128,7 +128,7 @@ package body Orka.Numerics.Kalman.CDKF is
    is
       Pp : Matrix renames State_X.Covariance.Constant_Reference;
    begin
-      return CDKF_Cross_Covariance (Weights.N, Pp, Y, Weights.Covariance_1.Constant_Reference);
+      return CDKF_Cross_Covariance (Weights.N, Pp, Y, Weights.Covariance_1);
    end Cross_Covariance;
 
    function Kalman_Gain (State_Y : State_Covariance; Cross_Covariance : Matrix) return Matrix is
