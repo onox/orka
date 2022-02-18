@@ -44,6 +44,9 @@ package Orka.Numerics.Kalman is
    function State (Object : Filter) return Vector
      with Post => State'Result.Shape = (1 => Object.Dimension_X);
 
+   procedure Set_State (Object : in out Filter; State : Vector)
+     with Pre => State.Shape = (1 => Object.Dimension_X);
+
 private
 
    subtype Element_Type is Tensors.Element_Type;
