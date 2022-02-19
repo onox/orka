@@ -470,10 +470,7 @@ package body Generic_Test_Tensors_Matrices is
             Assert (False, "Tensor not singular");
          end;
       exception
-         when Constraint_Error | Program_Error | Storage_Error =>
-            raise;
-         when others =>
-            --  Expect Singular_Matrix (RM 11.2(8))
+         when Orka.Numerics.Singular_Matrix =>
             null;
       end;
    end Test_Inverse;
@@ -613,10 +610,7 @@ package body Generic_Test_Tensors_Matrices is
             null;
          end;
       exception
-         when Constraint_Error | Program_Error | Storage_Error =>
-            raise;
-         when others =>
-            --  Expect Not_Positive_Definite_Matrix (RM 11.2(8))
+         when Orka.Numerics.Not_Positive_Definite_Matrix =>
             Assert (False, "Unexpectedly raised exception Not_Positive_Definite_Matrix");
       end;
 
@@ -627,10 +621,7 @@ package body Generic_Test_Tensors_Matrices is
             Assert (False, "Exception Not_Positive_Definite_Matrix not raised");
          end;
       exception
-         when Constraint_Error | Program_Error | Storage_Error =>
-            raise;
-         when others =>
-            --  Expect Not_Positive_Definite_Matrix (RM 11.2(8))
+         when Orka.Numerics.Not_Positive_Definite_Matrix =>
             null;
       end;
    end Test_Cholesky;
