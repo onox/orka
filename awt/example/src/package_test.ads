@@ -6,6 +6,7 @@ with Orka.Rendering.Programs.Uniforms;
 
 with AWT.Inputs;
 with AWT.Windows;
+with AWT.Drag_And_Drop;
 
 package Package_Test is
 
@@ -15,6 +16,8 @@ package Package_Test is
       FB      : Orka.Rendering.Framebuffers.Framebuffer (Default => True);
       Program : Orka.Rendering.Programs.Program;
       Cursor  : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+
+      Drag_And_Drop_Signal : AWT.Drag_And_Drop.Signal;
    end record;
 
    overriding
@@ -41,13 +44,5 @@ package Package_Test is
    procedure Post_Initialize (Object : in out Test_Window);
 
    procedure Render (Object : in out Test_Window);
-
-   protected Dnd_Signal is
-      procedure Set;
-
-      entry Wait;
-   private
-      Dropped : Boolean := False;
-   end Dnd_Signal;
 
 end Package_Test;

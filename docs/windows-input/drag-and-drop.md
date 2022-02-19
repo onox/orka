@@ -46,14 +46,14 @@ is
    Action : constant AWT.Inputs.Action_Kind := AWT.Drag_And_Drop.Valid_Action;
 begin
    if Action /= None then
-      Dnd_Signal.Set;
+      Object.Dnd_Signal.Set;
    end if;
 end On_Drop;
 ```
 
 A data transfer must not be initiated in the `On_Drop` callback, but in the
-task containing the event loop. In the example above, a simple protected object
-`Dnd_Signal` with a procedure `Set` and an entry `Wait` is used to set a signal.
+task containing the event loop. In the example above, an object of the protected
+type `Signal` with a procedure `Set` and an entry `Wait` is used to set a signal.
 
 In the event loop, wait for the signal and then perform the drag-and-drop by
 calling subprogram `Get` in package `:::ada AWT.Drag_And_Drop`.
@@ -73,7 +73,7 @@ while not Window.Should_Close loop
    AWT.Process_Events (Interval);
 
    select
-      Dnd_Signal.Wait;
+      Window.Dnd_Signal.Wait;
 
       declare
          Result : constant String := AWT.Drag_And_Drop.Get;

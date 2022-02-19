@@ -120,7 +120,7 @@ begin
    end if;
    AWT.Inputs.Gamepads.Initialize;
 
-   AWT.Inputs.Gamepads.Poll;
+   AWT.Inputs.Gamepads.Poll (DT => 0.0);
    for Gamepad of AWT.Inputs.Gamepads.Gamepads loop
       Gamepad.Log_Information;
    end loop;
@@ -186,7 +186,7 @@ begin
          loop
             exit when Window.Should_Close;
 
-            AWT.Inputs.Gamepads.Poll;
+            AWT.Inputs.Gamepads.Poll (DT => 0.0);
 
             delay until Next_Time;
             Next_Time := Next_Time + Poll_Interval;
@@ -210,7 +210,7 @@ begin
          Index := Index + 1;
 
          select
-            Package_Test.Dnd_Signal.Wait;
+            Window.Drag_And_Drop_Signal.Wait;
 
             declare
                Result : constant String := AWT.Drag_And_Drop.Get;

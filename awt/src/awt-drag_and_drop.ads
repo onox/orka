@@ -18,6 +18,14 @@ with AWT.Inputs;
 
 package AWT.Drag_And_Drop is
 
+   protected type Signal is
+      procedure Set;
+
+      entry Wait;
+   private
+      Signaled : Boolean := False;
+   end Signal;
+
    type Receive_Callback is access protected procedure (Value : SU.Unbounded_String);
 
    use all type AWT.Inputs.Action_Kind;

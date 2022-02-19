@@ -25,6 +25,20 @@ with AWT.Registry;
 
 package body AWT.Drag_And_Drop is
 
+   protected body Signal is
+      procedure Set is
+      begin
+         Signaled := True;
+      end Set;
+
+      entry Wait when Signaled is
+      begin
+         Signaled := False;
+      end Wait;
+   end Signal;
+
+   ----------------------------------------------------------------------------
+
    package WP renames Wayland.Protocols;
    package WE renames Wayland.Enums;
 

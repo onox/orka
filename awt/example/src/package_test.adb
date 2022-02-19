@@ -6,8 +6,6 @@ with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Drawing;
 with Orka.Windows;
 
-with AWT.Drag_And_Drop;
-
 package body Package_Test is
 
    use all type Orka.Logging.Source;
@@ -15,18 +13,6 @@ package body Package_Test is
    use Orka.Logging;
 
    package Messages is new Orka.Logging.Messages (Window_System);
-
-   protected body Dnd_Signal is
-      procedure Set is
-      begin
-         Dropped := True;
-      end Set;
-
-      entry Wait when Dropped is
-      begin
-         Dropped := False;
-      end Wait;
-   end Dnd_Signal;
 
    overriding
    function On_Close (Object : Test_Window) return Boolean is
@@ -59,7 +45,7 @@ package body Package_Test is
       Messages.Log (Info, "User dropped something. Action is " & Action'Image);
 
       if Action /= None then
-         Dnd_Signal.Set;
+         Object.Drag_And_Drop_Signal.Set;
       end if;
    end On_Drop;
 
