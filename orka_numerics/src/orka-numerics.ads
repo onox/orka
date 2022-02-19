@@ -16,4 +16,8 @@
 
 package Orka.Numerics is
    pragma Pure;
+
+   Singular_Matrix              : exception;
+   Not_Positive_Definite_Matrix : exception;
+
 end Orka.Numerics;

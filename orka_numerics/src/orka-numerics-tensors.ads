@@ -73,12 +73,6 @@ package Orka.Numerics.Tensors is
 
    ----------------------------------------------------------------------------
 
-   Singular_Matrix : exception;
-
-   Not_Positive_Definite_Matrix : exception;
-
-   ----------------------------------------------------------------------------
-
    type Tensor is interface
      with Constant_Indexing => Get;
 

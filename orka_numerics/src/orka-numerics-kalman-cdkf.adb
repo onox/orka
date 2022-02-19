@@ -153,7 +153,7 @@ package body Orka.Numerics.Kalman.CDKF is
             begin
                Result := Cholesky_Update (Result, U.Get (I), Tensors.Downdate);
             exception
-               when others =>
+               when Not_Positive_Definite_Matrix =>
                   null;
             end;
          end loop;
