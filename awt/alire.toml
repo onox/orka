@@ -31,11 +31,13 @@ inotify = "^2.0.0"
 
 [[depends-on]]
 orka = "~0.2.0"
+orka_transforms = "^1.0.0"
 orka_numerics = "^1.0.0"
 
 [[pins]]
 orka = { path = "../orka" }
 orka_egl = { path = "../orka_egl" }
+orka_transforms = { path = "../orka_transforms" }
 orka_numerics = { path = "../orka_numerics" }
 wayland_client_ada = { path = "../../wayland-ada/wayland_client_ada" }
 wayland_cursor_ada = { path = "../../wayland-ada/wayland_cursor_ada" }
