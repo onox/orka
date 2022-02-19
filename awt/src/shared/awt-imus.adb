@@ -18,7 +18,7 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with Orka.Transforms.Doubles.Matrices;
 
-package body AWT.Inputs.Gamepads.IMUs is
+package body AWT.IMUs is
 
    use type Orka.Float_64;
    use all type Orka.Index_4D;
@@ -187,4 +187,4 @@ package body AWT.Inputs.Gamepads.IMUs is
       Object.Filter.Set_State (State);
    end Reset;
 
-end AWT.Inputs.Gamepads.IMUs;
+end AWT.IMUs;

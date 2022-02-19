@@ -20,7 +20,7 @@ with Orka.Transforms.Doubles.Vectors;
 private with Orka.Numerics.Doubles.Tensors.CPU;
 private with Orka.Numerics.Kalman.CDKF;
 
-package AWT.Inputs.Gamepads.IMUs is
+private package AWT.IMUs is
    pragma Preelaborate;
 
    package Quaternions renames Orka.Transforms.Doubles.Quaternions;
@@ -81,4 +81,4 @@ private
       Velocity_Index        : Natural;
    end record;
 
-end AWT.Inputs.Gamepads.IMUs;
+end AWT.IMUs;

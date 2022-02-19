@@ -476,6 +476,7 @@ package body AWT.Inputs.Gamepads is
                               Object.Sensor_Device.Close;
                            else
                               Object.Set_Motion_Sensor_Modifiers;
+                              Object.IMU.Initialize;
                               exit Find_Motion_Input_Event;
                            end if;
                         end if;
@@ -679,17 +680,48 @@ package body AWT.Inputs.Gamepads is
          Set_State (Object, State);
       end Poll_State_Gamepad;
 
-      procedure Poll_State_Sensor (Object : in out Gamepad_Object) is
+      procedure Update_IMU_State
+        (Object : in out Gamepad_Object;
+         State  : in out Motion_State;
+         DT     : Duration)
+      is
+         use type Orka.Float_64;
+
+         Velocity : constant Vectors.Direction :=
+            (Vectors.To_Radians (Orka.Float_64 (State.Axes (Rx))),
+             Vectors.To_Radians (Orka.Float_64 (State.Axes (Ry))),
+             Vectors.To_Radians (Orka.Float_64 (State.Axes (Rz))),
+             0.0);
+         Acceleration : constant Vectors.Vector4 :=
+            (-Orka.Float_64 (State.Axes (X)),
+             -Orka.Float_64 (State.Axes (Y)),
+              Orka.Float_64 (State.Axes (Z)),
+             0.0);
+         Calibrated : Boolean;
+
+         Motion_State : AWT.IMUs.Estimated_State;
+      begin
+         Object.IMU.Integrate (Velocity, Acceleration, DT, Motion_State, Calibrated);
+
+         State.Orientation      := Motion_State.Orientation;
+         State.Angular_Velocity := Motion_State.Angular_Velocity;
+
+         if Calibrated then
+            Messages.Log (Debug, "Calibrated gyro bias of IMU of " & (+Object.ID));
+         end if;
+      end Update_IMU_State;
+
+      procedure Poll_State_Sensor (Object : in out Gamepad_Object; DT : Duration) is
          Device : ED.Input_Device renames Object.Sensor_Device;
       begin
          if not Device.Is_Open then
-            Set_State (Object, Motion_State'(Is_Present => False));
+            Set_State (Object, Motion_State'(Is_Present | Has_Pose => False));
             return;
          end if;
 
          case Device.Read (Object.Sensor_Data) is
             when Error =>
-               Set_State (Object, Motion_State'(Is_Present => False));
+               Set_State (Object, Motion_State'(Is_Present | Has_Pose => False));
                return;
             when Would_Block =>
                return;
@@ -698,7 +730,7 @@ package body AWT.Inputs.Gamepads is
          end case;
 
          declare
-            State : Motion_State (Is_Present => True);
+            State : Motion_State (Is_Present => True, Has_Pose => DT > 0.0);
          begin
             for Absolute_Axis in Object.Sensors'Range loop
                declare
@@ -710,16 +742,18 @@ package body AWT.Inputs.Gamepads is
                end;
             end loop;
 
-            --  TODO Numerical Integration for orientation and position?
+            if State.Has_Pose then
+               Update_IMU_State (Object, State, DT);
+            end if;
 
             Set_State (Object, State);
          end;
       end Poll_State_Sensor;
 
-      procedure Poll_State is
+      procedure Poll_State (DT : Duration) is
       begin
          Poll_State_Gamepad (Object);
-         Poll_State_Sensor (Object);
+         Poll_State_Sensor (Object, DT);
       end Poll_State;
 
       procedure State (Result : in out Gamepad_State) is
@@ -1104,11 +1138,11 @@ package body AWT.Inputs.Gamepads is
       end loop;
    end Initialize;
 
-   procedure Poll is
+   procedure Poll (DT : Duration) is
    begin
       for Gamepad of All_Gamepads loop
          if Gamepad.Initialized then
-            Gamepad.Hardware.Poll_State;
+            Gamepad.Hardware.Poll_State (DT);
          end if;
       end loop;
    end Poll;

@@ -18,6 +18,10 @@ private with Ada.Finalization;
 private with Ada.Strings.Unbounded;
 
 private with AWT.Gamepads;
+private with AWT.IMUs;
+
+with Orka.Transforms.Doubles.Quaternions;
+with Orka.Transforms.Doubles.Vectors;
 
 package AWT.Inputs.Gamepads is
    pragma Preelaborate;
@@ -117,6 +121,9 @@ package AWT.Inputs.Gamepads is
 
    ----------------------------------------------------------------------------
 
+   package Quaternions renames Orka.Transforms.Doubles.Quaternions;
+   package Vectors     renames Orka.Transforms.Doubles.Vectors;
+
    type Sensor_Axis_Value is delta 2.0 ** (-16) range -(2.0 ** 15) .. +(2.0 ** 15 - 2.0 ** (-16))
      with Size => 32;
 
@@ -124,10 +131,18 @@ package AWT.Inputs.Gamepads is
 
    type Sensor_Axes is array (Sensor_Axis) of Sensor_Axis_Value;
 
-   type Motion_State (Is_Present : Boolean := False)  is record
+   type Motion_State (Is_Present, Has_Pose : Boolean := False)  is record
       case Is_Present is
          when True =>
             Axes : Sensor_Axes := (others => 0.0);
+            case Has_Pose is
+               when True =>
+                  Orientation      : Quaternions.Quaternion;
+                  Angular_Velocity : Vectors.Direction;
+                  --  Estimated true angular velocity is (pitch up, yaw left, roll left) in rad/s
+               when False =>
+                  null;
+            end case;
          when False =>
             null;
       end case;
@@ -185,7 +200,12 @@ package AWT.Inputs.Gamepads is
 
    procedure Initialize;
 
-   procedure Poll;
+   procedure Poll (DT : Duration);
+   --  Poll hardware state of connected gamepads
+   --
+   --  Some parts of the state (like the pose estimation, which uses the
+   --  motion sensor) may depend on how often this procedure is called.
+   --  Set DT to 0.0 if these parts should not be computed.
 
    type Gamepad_Ptr is not null access all Gamepad;
 
@@ -260,6 +280,7 @@ private
 
       Gamepad : Gamepad_State;
       Sensor  : Motion_State;
+      IMU     : AWT.IMUs.IMU;
 
       Axes : Axis_Mappings;
       Keys : Key_Mappings;
@@ -307,7 +328,7 @@ private
 
       function Initialized return Boolean;
 
-      procedure Poll_State;
+      procedure Poll_State (DT : Duration);
 
       function Path return String;
    private
