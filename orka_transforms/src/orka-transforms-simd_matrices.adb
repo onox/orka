@@ -195,6 +195,28 @@ package body Orka.Transforms.SIMD_Matrices is
       return Result;
    end S;
 
+   function Euler (R : Matrix_Type) return Vector_Type is
+      Pitch : constant Element_Type := EF.Arcsin (R (Y) (Z));
+   begin
+      --  Equations 4.22 and 4.23 from section 4.2.2 from
+      --  Real-Time Rendering (third edition, 2008)
+
+      if R (Y) (Z) = -1.0 or R (Y) (Z) = 1.0 then
+         declare
+            Roll  : constant Element_Type := EF.Arctan (-R (X) (Y), R (X) (X));
+         begin
+            return (0.0, Pitch, Roll, 0.0);
+         end;
+      else
+         declare
+            Yaw   : constant Element_Type := EF.Arctan (-R (X) (Z), R (Z) (Z));
+            Roll  : constant Element_Type := EF.Arctan (-R (Y) (X), R (Y) (Y));
+         begin
+            return (Yaw, Pitch, Roll, 0.0);
+         end;
+      end if;
+   end;
+
    ----------------------------------------------------------------------------
 
    function FOV (Width, Distance : Element_Type) return Element_Type is

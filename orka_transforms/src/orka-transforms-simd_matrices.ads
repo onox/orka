@@ -175,6 +175,9 @@ package Orka.Transforms.SIMD_Matrices is
    --  Add a rotation transformation around the Z axis with the center
    --  of rotation at the given point to the matrix
 
+   function Euler (R : Matrix_Type) return Vector_Type;
+   --  Return the Euler parameters yaw, pitch, and roll
+
    ----------------------------------------------------------------------------
    --                              Projections                               --
    ----------------------------------------------------------------------------
