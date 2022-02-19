@@ -150,7 +150,12 @@ package body Orka.Numerics.Kalman.CDKF is
    begin
       return Result : Matrix := Pp do
          for I in 1 .. U.Rows loop
-            Result := Cholesky_Update (Result, U.Get (I), Tensors.Downdate);
+            begin
+               Result := Cholesky_Update (Result, U.Get (I), Tensors.Downdate);
+            exception
+               when others =>
+                  null;
+            end;
          end loop;
       end return;
    end Posterior_Covariance;
