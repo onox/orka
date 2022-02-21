@@ -72,7 +72,15 @@ E_Lambda : CPU_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
 
 ## Uninitialized
 
-!!! note "TODO Describe function `Empty`"
+Sometimes it is useful to create a tensor with some specified shape,
+but without initializing the elements to some given value. This
+avoids useless memory copies when the elements are later set
+with the procedure `Set` by some algorithm.
+The function `Empty` can create such an uninitialized array:
+
+```ada
+Sigmas : Matrix := Empty ((2 * N + 1, N));
+```
 
 ## Range or space
 

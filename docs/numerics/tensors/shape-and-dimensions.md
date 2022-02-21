@@ -9,7 +9,9 @@ The shape of a tensor can be retrieved using the function `Shape` and
 the dimensions with the function `Dimensions`. The total number of
 elements in the tensor is queried with the function `Elements`.
 
-!!! note "TODO Describe functions `Rows` and `Columns`"
+The functions `Rows` returns the number of elements for a 1-D tensor (vector)
+or rows of a 2-D tensor (matrix). `Columns` requires a tensor with at
+least two dimensions and returns the number of columns.
 
 !!! summary
     It is true that `:::ada T.Shape'Length = T.Dimensions` and
@@ -45,7 +47,20 @@ the rows of the two tensors. For multidimensional tensors, the size of the first
 dimension (the number of rows) can be different, but the size of the other
 dimensions must be equal.
 
-!!! note "TODO Add some code showing '&' operator"
+The result of concatenating two vectors with the `&` operator is another vector:
+
+```ada
+Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0));
+Tensor_2 : constant CPU_Tensor := To_Tensor ((3.0, 4.0, 5.0));
+
+Tensor_3 : constant CPU_Tensor := Tensor_1 & Tensor_2;
+```
+
+The image of `Tensor_3` will be:
+
+```
+tensor([ 1.0, 2.0, 3.0, 4.0, 5.0])
+```
 
 The function `Concatenate` can be used to concatenate tensors in dimensions
 other than the first dimension by specifying the parameter `Dimension`.
@@ -66,6 +81,24 @@ The image of `Tensor_3` will be:
 
 ```
 tensor([[ 1.0, 0.0, 0.0, 4.0, 5.0],
-        [ 0.0, 2.0, 0.0, 6.0, 7.0]
+        [ 0.0, 2.0, 0.0, 6.0, 7.0],
         [ 0.0, 0.0, 3.0, 8.0, 9.0]])
+```
+
+The `&` operator would have concatenated the tensors vertically,
+as if `Concatenate` was called with `Dimension` set to 1:
+
+```ada
+Tensor_4 : constant CPU_Tensor := Tensor_2.Reshape ((2, 3));
+Tensor_5 : constant CPU_Tensor := Tensor_1 & Tensor_4;
+```
+
+The image of `Tensor_3` will be:
+
+```
+tensor([[ 1.0, 0.0, 0.0],
+        [ 0.0, 2.0, 0.0],
+        [ 0.0, 0.0, 3.0],
+        [ 4.0, 5.0, 6.0],
+        [ 7.0, 8.0, 9.0]])
 ```

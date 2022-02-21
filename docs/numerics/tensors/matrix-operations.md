@@ -32,7 +32,11 @@ result A B **x**.
 
 ## Matrix division
 
-!!! note "TODO Describe function `Divide_By`"
+The function `Divide_By` can solve `:::ada X * A = B` for `X`:
+
+```ada
+X : constant CPU_Tensor := Divide_By (B, A);
+```
 
 ## Matrix power and inverse
 
@@ -135,7 +139,18 @@ one of the following values after the function `Solve` returns:
 
 ### Using triangular matrices
 
-!!! note "TODO Describe function `Solve` with parameter `Form`"
+If matrix `A` is square and triangular, then a different instance of `Solve`
+can be used to solve the equation A **x** = **b** more efficiently.
+The parameter `Form` must specify whether tensor `A` is lower or upper triangular.
+For example, given a upper triangular `A`, the equation can be solved as follows:
+
+```ada
+X : constant CPU_Tensor := Solve (A, B, Form => Upper);
+```
+
+`A` must be either lower or upper triangular. If `A` does not
+have this form, then either the function `Solve` with the parameter
+`Solution` or the function `Least_Squares` must be called.
 
 ## Trace
 
@@ -293,16 +308,69 @@ including constrained and non-linear least-squares.
 
 ### QR
 
-!!! note "TODO Describe function `QR` returning only R"
-!!! note "TODO Describe how to get Q and R from a CPU_QR_Factorization"
+While the function `QR` can return a `:::ada QR_Factorization'Class`,
+for an overdetermined 2-D tensor `A`, another instance of the function
+can return just the upper triangular matrix R:
+
+```ada
+R : constant CPU_Tensor := QR (A);
+```
+
+This is useful if the orthogonal matrix Q is not needed.
+
+!!! note "TODO Describe how to get Q and R from a `CPU_QR_Factorization`"
 
 ### Cholesky
 
-!!! note "TODO Describe function `Cholesky`, including parameter `Form`"
+The Cholesky decomposition represents the matrix square root of a matrix A.
+if A is symmetric positive definite.
+Positive definite means that for all **x** /= 0 it is true that **x**^T^ A **x** > 0.
+
+The function `Cholesky` returns the lower triangular matrix L or upper
+triangular matrix L^T^ of the Cholesky decomposition of A with A = L L^T^.
+The parameter `Form` specifies whether the `Lower` or `Upper` triangular
+matrix (L or L^T^) must be returned.
+
+!!! warning "An exception is raised if the matrix is not positive definite"
+    If the matrix `A` is not positive definite, then the matrix square root
+    does not exist and function `Cholesky` will raise the exception
+    `Not_Positive_Definite_Matrix`.
 
 #### Rank 1 up- and downdate
 
+The Cholesky rank 1 update or downdate can return a Cholesky decomposition
+of the sum or difference of a matrix A and the outer product **v** **v**^T^
+in a more efficient manner. Computing `:::ada Cholesky (A + Outer (V, V)`
+for a given matrix `A` and vector `V` would have a time complexity of O(n^3^),
+while the rank 1 update of the upper triangular matrix R has a time complexity
+of O(n^2^). Thus if A is updated repeatedly and a Cholesky decomposition
+needs to be computed each time, it is more efficient to compute the rank 1
+update or downdate of R instead.
+
+The function `Cholesky_Update` can return a rank 1 update or downdate of
+the given upper triangular matrix `R` and vector `V`:
+
+```ada
+D : constant CPU_Tensor := Cholesky_Update (R, V, Downdate);
+```
+
+where `R` is:
+
+```ada
+R : constant CPU_Tensor := Cholesky (A, Upper);
+```
+
+To be more precise, the result D exists given D^T^ D = R^T^ R +/- **v **v**^T^.
+
 ??? bug "Only downdating has been implemented at the moment"
+
+### Schur
+
+??? bug "The Schur decomposition has not been implemented yet"
+
+### SVD
+
+??? bug "The SVD decomposition has not been implemented yet"
 
 [^1]:
     "Introduction to Applied Linear Algebra", Boyd S., Vandenberge L., 2018
