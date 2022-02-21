@@ -9,7 +9,7 @@ Package `:::ada Orka.Resources.Loaders` provides the limited interface `Loader`.
 
 After a specific loader has been created, it can then be registered to load
 files found in some location. For example, given the location `Location_Models`
-which points to a loction where models can be found, a glTF loader can be
+which points to a location where models can be found, a glTF loader can be
 added with:
 
 ```ada

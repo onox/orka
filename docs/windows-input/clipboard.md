@@ -17,7 +17,7 @@ end;
 
 To read content from the clipboard, use function `Get` to synchronously
 read the content, or the procedure `Get` with the parameter `Callback`
-set to point to a protected procedure receiveing a value of type
+set to point to a protected procedure receiving a value of type
 `AWT.SU.Unbounded_String`.
 The procedure `Get` will asynchronously read the content from the clipboard
 and returns immediately. The callback will be called at any time, during or

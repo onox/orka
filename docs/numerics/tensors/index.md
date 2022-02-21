@@ -58,3 +58,5 @@ The image of a tensor can be obtained with the function `Image`:
 ```ada
 Orka.OS.Put_Line (Tensor.Image);
 ```
+
+*[SIMD]: Single Instruction Multiple Data

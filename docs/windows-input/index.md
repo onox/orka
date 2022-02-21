@@ -6,7 +6,7 @@ gamepads. It has a similar purpose as GLFW and SDL.
 
 ### Initialization
 
-To initialize AWT, create a contex using the function `Create_Context`
+To initialize AWT, create a context using the function `Create_Context`
 in package `:::ada Orka.Contexts.AWT`. It will initialize AWT if
 needed.
 

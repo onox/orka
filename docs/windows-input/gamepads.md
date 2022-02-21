@@ -9,8 +9,8 @@ like gamepads, including the following features:
 
 - **Force-feedback**. Play and cancel rumble and periodic force-feedback effects.
 
-- **Motion sensor**. Get the linear acceleration and angular velocity using the motion
-  sensor of a gamepad.
+- **Motion sensor**. Get the estimated orientation or measured linear acceleration
+  and angular velocity using the motion sensor of a gamepad.
 
 - **Battery**. Retrieve the capacity and charging state of the battery of a gamepad.
 
@@ -150,7 +150,7 @@ two arrays; the next value of a button whose current value is `True` in the arra
 `Pressed`, will be `False` again.
 
 For example, a rumble effect can be uploaded and played when the user presses
-the right shoulder button, and cancelled when the user releases the button:
+the right shoulder button, and canceled when the user releases the button:
 
 ```ada
 if State.Pressed (Shoulder_Right) then
@@ -187,7 +187,7 @@ Battery : constant AWT.Inputs.Gamepads.Battery_State := Gamepad.State;
 
 The discriminant `Is_Present` is `True` if a battery is present, and `False` otherwise.
 If present, the `Capacity` gives a whole number between 0 and 100.
-The component `Status` can have the values `Discharging`, `Charging`, `Not_Charging`.
+The component `Status` has the value `Discharging`, `Charging`, or `Not_Charging`.
 
 ## LED
 
@@ -222,9 +222,9 @@ Motion : constant AWT.Inputs.Gamepads.Motion_State := Gamepad.State;
 
 If a gamepad has a motion sensor, then `Is_Present` will return `True`,
 otherwise it will return `False`.
-If a motion sensor is pressent, then the component `Axes` will contain the raw values.
+If a motion sensor is present, then the component `Axes` will contain the raw values.
 `X`, `Y`, and `Z` are the measured acceleration values in *g*'s,
-where *g* is the gravitational acceleration constant (1 g = 9.81 m/s^2).
+where *g* is the gravitational acceleration constant (1 g = 9.81 m/s^2^).
 `Rx`, `Ry`, and `Rz` are the measured angular velocity in degrees per second.
 
 If the hardware has been polled with a `DT` greater than 0.0, then `Has_Pose` will
@@ -242,7 +242,7 @@ If the application tries to play too many effects at once, the oldest one will
 be removed to make space on the device.
 
 First, create an `Effect` object and store it somewhere at the library level.
-An effect can then be played with the procedure `Play_Effect` and cancelled
+An effect can then be played with the procedure `Play_Effect` and canceled
 with the procedure `Cancel_Effect`:
 
 ```ada
@@ -261,11 +261,15 @@ The effect will be automatically uploaded to the gamepad if necessary.
 
 ### Effects
 
-Two kinds of effects are supported: rumble and periodic.
+The following effects are supported:
+
+- Rumble
+
+- Periodic
 
 !!! warning "Do not unnecessarily recreate `Effect` objects"
-    Parts of an `Effect` object returned by the functions mentioned below
-    are internally stored in some data structure. Therefore, do not
+    The `Effect` object returned by one of the functions mentioned below
+    is partially stored in some hidden data structure. Therefore, do not
     unnecessarily recreate these objects.
     Instead, create the effects once and store them somewhere at the library level.
 

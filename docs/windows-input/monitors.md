@@ -78,7 +78,7 @@ a monitor is connected or disconnected.
 
 If a window is moved to or from a monitor, the procedure `On_Move` is
 invoked on the corresponding `Window` object.
-If not overriden, then by default information about the monitor will
+If not overridden, then by default information about the monitor will
 be printed to the default logger.
 
 ```ada

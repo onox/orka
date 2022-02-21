@@ -1,6 +1,6 @@
 # Drag and drop
 
-To support dragging and droppping objects on a window, a complicated dance
+To support dragging and dropping objects on a window, a complicated dance
 of callbacks and subprogram calls must be performed. Two procedures must be
 overridden, `On_Drag` and `On_Drop`.
 

@@ -112,7 +112,7 @@ On monitors with a very high resolution, a buffer scale greater than 1 can be se
 with the procedure `Set_Framebuffer_Scale`.
 
 !!! tip "Keep the same framebuffer scale as `Scale` in `Monitor_State`"
-    Keeping the same framebuffer scale as the monitor, allows the
+    Keeping the same framebuffer scale as the monitor allows the
     compositor to avoid any scaling.
 
 A window can be minimized, maximized, or set to fullscreen with procedure `Set_Size_Mode`:
