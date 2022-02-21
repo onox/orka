@@ -46,7 +46,7 @@ TF : constant Kalman.Matrix := To_Tensor
     0.0, 0.0, 0.0, 1.0),
    Shape => (4, 4));
 
-function F (Point : Kalman.Vector; DT : Duration) return Kalman.Vector is
+function F (Point : Kalman.Vector; DT : Orka.Float_64) return Kalman.Vector is
   (TF * Point);
 
 function H (Point : Kalman.Vector) return Kalman.Vector is
@@ -57,6 +57,7 @@ function H (Point : Kalman.Vector) return Kalman.Vector is
 
 The filter requires two matrices, `Q`, the process noise covariance matrix,
 and `R`, the measurement noise covariance matrix. These two matrices
+should be diagonal or block diagonal matrices and
 determine how much weight is given to the prediction or measurement.
 For example, if you have a very noisy sensor, the variances on the main
 diagonal of `R` will be quite large, and the filter will give more weight
@@ -80,6 +81,21 @@ R : constant Kalman.Matrix := Diagonal ((Std_Dev**2, Std_Dev**2));
 Next, instantiate the generic package `UKF` or `CDKF` and use
 the function `Create_Filter` in the instantiated package to
 create a filter.
+
+To store a `Filter` in a record, the implementation kind and
+dimension of the state and measurement must be specified:
+
+```ada
+type Estimator is tagged record
+   Filter : Kalman.Filter
+     (Kind        => Kalman.Filter_CDKF,
+      Dimension_X => 4,
+      Dimension_Z => 2);
+end record;
+```
+
+The `Filter` must still be initialized using the function `Create_Filter`
+from one of the instantiated packages.
 
 #### UKF
 
