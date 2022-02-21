@@ -883,7 +883,7 @@ package body AWT.Inputs.Gamepads is
          Maximum_Color : constant Normalized :=
            Normalized'Max (Normalized'Max (Color (Red), Color (Green)), Color (Blue));
 
-         Max_Brightness : constant Normalized :=
+         Max_Brightness : constant Normalized'Base :=
            (if Maximum_Color > 0.0 then 1.0 / Maximum_Color else 0.0) * Brightness;
 
          function Image (Value : Normalized) return String is
