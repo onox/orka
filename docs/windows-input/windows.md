@@ -9,7 +9,18 @@ Window : aliased Orka.Windows.Window'Class := Orka.Contexts.AWT.Create_Window
   (Context, Width => 1280, Height => 720);
 ```
 
-If the type `AWT_Window` is extended, then the function `Create_Window` must be overridden:
+If the type `AWT_Window` in package `:::ada Orka.Contexts.AWT` is extended:
+
+```ada
+type My_Window is limited new Orka.Contexts.AWT.AWT_Window with record
+  FB      : Orka.Rendering.Framebuffers.Framebuffer (Default => True);
+  Program : Orka.Rendering.Programs.Program;
+
+  Drag_And_Drop_Signal : AWT.Drag_And_Drop.Signal;
+end record;
+```
+
+then the function `Create_Window` must be overridden:
 
 ```ada
 overriding
@@ -74,7 +85,60 @@ The `Scale` is a `Positive` and is usually equal to 1.
 
 ## Changing the state
 
-!!! note "TODO Set app ID, title, margin, size, size limits, size mode, visibility, pointer"
+### Title and ID
+
+The window title can be set with procedure `Set_Title` and the application ID
+with `Set_Application_ID`:
+
+```ada
+Window.Set_Title ("My Application");
+```
+
+### Size
+
+A margin around the window can be set with the procedure `Set_Margin`.
+If greater than zero, it will increase the size of the framebuffer.
+This is useful for rendering a shadow around the window.
+
+The size of the window may be changed with procedure `Set_Size`:
+
+```ada
+Window.Set_Size (Width => 1280, Height => 720);
+```
+
+The minimum and maximum width and height can be set using the procedure `Set_Size_Limits`.
+
+On monitors with a very high resolution, a buffer scale greater than 1 can be set
+with the procedure `Set_Framebuffer_Scale`.
+
+!!! tip "Keep the same framebuffer scale as `Scale` in `Monitor_State`"
+    Keeping the same framebuffer scale as the monitor, allows the
+    compositor to avoid any scaling.
+
+A window can be minimized, maximized, or set to fullscreen with procedure `Set_Size_Mode`:
+
+```ada
+Window.Set_Size_Mode (Fullscreen);
+```
+
+!!! info "A transparent window may not actually be transparent in fullscreen mode"
+
+!!! warning "The compositor may ignore requests to change size related state"
+    The compositor may ignore requests if it deems necessary. For example, a
+    tiling window compositor may keep the margin of the window at zero for
+    non-floating windows.
+
+### Visibility
+
+To show or hide the window, call procedure `Set_Visible`.
+For example, to hide the window, set parameter `Visible` to `False`:
+
+```ada
+Window.Set_Visible (False);
+```
+
+Changing the visibility of a window will always work and will not get ignored
+by the compositor like the requests to change the size related state.
 
 ## Closing windows
 
@@ -101,7 +165,7 @@ function `On_Close`:
 
 ```ada
 overriding
-function On_Close (Object : Test_Window) return Boolean is
+function On_Close (Object : My_Window) return Boolean is
 begin
    Messages.Log (Debug, "User tried to close the window");
    return True;
