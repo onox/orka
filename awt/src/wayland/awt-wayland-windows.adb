@@ -822,6 +822,8 @@ package body AWT.Wayland.Windows is
          Cursor_Name   := Cursor;
          Cursor_Images := Cursor_Object.Length;
 
+         Pointer_State.Cursor := Cursor;
+
          Restore_Cursor;
       end Set_Pointer_Cursor;
 
@@ -915,14 +917,11 @@ package body AWT.Wayland.Windows is
       end Reset_Input_State;
 
       procedure Set_State (State : AWT.Inputs.Pointer_State) is
-         Mode : constant AWT.Inputs.Pointer_Mode := Pointer_State.Mode;
-
-         use all type AWT.Inputs.Pointer_Mode;
-
          function Convert is new Ada.Unchecked_Conversion
            (Source => AWT.Inputs.Pointer_Buttons,
             Target => AWT.Inputs.Changed_Buttons);
 
+         use all type AWT.Inputs.Pointer_Mode;
          use type AWT.Inputs.Changed_Buttons;
 
          Old_State : constant AWT.Inputs.Pointer_State := Pointer_State;
@@ -935,8 +934,9 @@ package body AWT.Wayland.Windows is
          Pointer_State := State;
          Pointer_State.Pressed  := Old_State.Pressed  or (Changed and     New_State_Buttons);
          Pointer_State.Released := Old_State.Released or (Changed and not New_State_Buttons);
-         Pointer_State.Mode := Mode;
-         if Mode /= Locked then
+         Pointer_State.Mode   := Old_State.Mode;
+         Pointer_State.Cursor := Old_State.Cursor;
+         if Pointer_State.Mode /= Locked then
             Pointer_State.Relative := (others => 0.0);
          end if;
       end Set_State;

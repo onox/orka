@@ -111,7 +111,9 @@ package AWT.Inputs with SPARK_Mode => On is
       --  If Focused is True and Scrolling transitions from True to False, then,
       --  and only then, you should activate kinetic scrolling
 
-      Mode      : Pointer_Mode    := Visible;
+      Mode      : Pointer_Mode           := Visible;
+      Cursor    : Cursors.Pointer_Cursor := Cursors.Default;
+
       Position  : Coordinate      := (others => 0.0);
       Relative  : Coordinate      := (others => 0.0);
       Scroll    : Coordinate      := (others => 0.0);
