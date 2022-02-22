@@ -17,11 +17,11 @@
 package body Orka.Integrators is
 
    function RK4
-     (Y  : Element_Type;
+     (Y  : Value;
       DT : Duration_Type;
-      F  : not null access function (Y : Element_Type; DT : Duration_Type) return Element_Type)
-   return Element_Type is
-      A, B, C, D : Element_Type;
+      F  : not null access function (Y : Value; DT : Duration_Type) return Derivative)
+   return Derivative is
+      A, B, C, D : Derivative;
    begin
       A := DT * F (Y,           DT * 0.0);
       B := DT * F (Y + 0.5 * A, DT * 0.5);

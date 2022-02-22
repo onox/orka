@@ -18,29 +18,30 @@ package Orka.Integrators is
    pragma Pure;
 
    generic
-      type Element_Type is private;
+      type Value      is private;
+      type Derivative is private;
 
       type Duration_Type is digits <>;
 
-      with function "*" (Left : Duration_Type; Right : Element_Type) return Element_Type is <>;
-      with function "+" (Left, Right : Element_Type) return Element_Type is <>;
+      with function "*" (Left : Duration_Type; Right : Derivative) return Derivative is <>;
+      with function "+" (Left : Value;         Right : Derivative) return Value      is <>;
+      with function "+" (Left : Derivative;    Right : Derivative) return Derivative is <>;
    function RK4
-     (Y  : Element_Type;
+     (Y  : Value;
       DT : Duration_Type;
-      F  : not null access function (Y : Element_Type; DT : Duration_Type) return Element_Type)
-   return Element_Type;
+      F  : not null access function (Y : Value; DT : Duration_Type) return Derivative)
+   return Derivative;
    --  Return the change to Y for the given DT time step using
    --  the Runge-Kutta 4th order method
-   --
-   --  The returned value must be added to Y to perform numerical integration.
-   --  Do Y := Result + Y if Y is a vector and Y := Result * Y if Y is a quaternion.
    --
    --  If F represent a time-variant system, that is, F depends on a time T,
    --  then you must compute the derivative at time T + DT. In this case you
    --  must keep track of T yourself and add it to the given DT.
    --
-   --  For example:
+   --  The returned value must be added to Y to perform the numerical integration.
    --
-   --     Q := Quaternions.Normalize (RK4 (Q, 0.1, Get_Angular_Velocity'Access) * Q);
+   --  For example, to numerically integrate a position 10 times per second:
+   --
+   --     X := X + RK4 (X, 0.1, DX'Access);
 
 end Orka.Integrators;
