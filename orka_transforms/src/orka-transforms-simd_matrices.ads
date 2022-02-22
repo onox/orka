@@ -50,12 +50,6 @@ package Orka.Transforms.SIMD_Matrices is
    --  Return a zero vector that indicates a point. The fourth (W) component
    --  is 1.
 
-   function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type;
-   --  Return a vector with the elements of the main diagonal
-
-   function Trace (Matrix : Matrix_Type) return Element_Type;
-   --  Return the trace of the (square) matrix
-
    ----------------------------------------------------------------------------
    --                             Transformations                            --
    ----------------------------------------------------------------------------
@@ -129,9 +123,6 @@ package Orka.Transforms.SIMD_Matrices is
      (Left  : Matrix_Type;
       Right : Vector_Type) return Vector_Type renames Multiply_Vector;
 
-   function "*" (Left : Vector_Type; Right : Matrix_Type) return Vector_Type;
-   --  Return sum of inner products
-
    function "+" (Offset : Vector_Type; Matrix : Matrix_Type) return Matrix_Type is
      (T (Offset) * Matrix);
    --  Add a translation transformation to the matrix
@@ -142,8 +133,6 @@ package Orka.Transforms.SIMD_Matrices is
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;
    --  Return the transpose of the matrix
-
-   function Outer (Left, Right : Vector_Type) return Matrix_Type;
 
    function R
      (Axis  : Vector_Type;

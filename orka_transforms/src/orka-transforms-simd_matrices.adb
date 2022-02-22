@@ -20,36 +20,6 @@ package body Orka.Transforms.SIMD_Matrices is
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function Main_Diagonal (Matrix : Matrix_Type) return Vector_Type is
-     (Matrix (X) (X), Matrix (Y) (Y), Matrix (Z) (Z), Matrix (W) (W));
-
-   function Trace (Matrix : Matrix_Type) return Element_Type is
-     (Vectors.Sum (Main_Diagonal (Matrix)));
-
-   function "*" (Left : Vector_Type; Right : Matrix_Type) return Vector_Type is
-      Result : Vector_Type;
-   begin
-      for Column in Right'Range loop
-         Result (Column) := Vectors.Dot (Left, Right (Column));
-      end loop;
-
-      return Result;
-   end "*";
-
-   function Outer (Left, Right : Vector_Type) return Matrix_Type is
-      use Vectors;
-
-      Result : Matrix_Type;
-   begin
-      for Index in Right'Range loop
-         Result (Index) := Right (Index) * Left;
-      end loop;
-
-      return Result;
-   end Outer;
-
-   ----------------------------------------------------------------------------
-
    function T (Offset : Vectors.Point) return Matrix_Type is
       Result : Matrix_Type := Identity_Matrix;
    begin
