@@ -360,7 +360,7 @@ where `R` is:
 R : constant CPU_Tensor := Cholesky (A, Upper);
 ```
 
-To be more precise, the result D exists given D^T^ D = R^T^ R +/- **v **v**^T^.
+To be more precise, the result D exists given D^T^D = R^T^R +/- **v** **v**^T^.
 
 ??? bug "Only downdating has been implemented at the moment"
 

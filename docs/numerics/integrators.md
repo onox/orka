@@ -10,7 +10,7 @@ If the parameter `F` represent a time-variant system, that is, `F` depends on a 
 then you must compute the derivative at time `:::ada T + DT`. In this case you
 must keep track of `T` yourself and add it to the given `DT`.
 
-The returned value must be added to Y to perform the numerical integration.
+The returned change must be added to the old value to perform the numerical integration.
 
 For example, to numerically compute the position and velocity of an object
 using the momentum and the inverse of the mass:
