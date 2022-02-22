@@ -45,7 +45,5 @@ private
    procedure Test_Scale_Factors (Object : in out Test);
    procedure Test_Scale_Factor (Object : in out Test);
    procedure Test_Transpose (Object : in out Test);
-   procedure Test_Main_Diagonal (Object : in out Test);
-   procedure Test_Trace (Object : in out Test);
 
 end Test_Transforms_Doubles_Matrices;
