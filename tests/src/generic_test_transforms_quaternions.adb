@@ -18,27 +18,26 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with AUnit.Assertions;
 with AUnit.Test_Caller;
+with AUnit.Test_Fixtures;
 
-with Orka.Transforms.Singles.Quaternions;
-with Orka.Transforms.Singles.Vectors;
-
-package body Test_Transforms_Singles_Quaternions is
+package body Generic_Test_Transforms_Quaternions is
 
    use Orka;
-   use Orka.Transforms.Singles.Quaternions;
+   use Quaternions;
 
    use AUnit.Assertions;
 
-   package Vectors renames Orka.Transforms.Singles.Vectors;
-
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
+   subtype Element_Type is Vectors.Element_Type;
+   use type Element_Type;
 
-   function To_Radians (Angle : Float_32) return Float_32 renames Vectors.To_Radians;
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function Is_Equivalent (Expected, Result : Float_32) return Boolean is
-     (abs (Result - Expected) <= 2.0 * Float_32'Model_Epsilon);
+   function To_Radians (Angle : Element_Type) return Element_Type renames Vectors.To_Radians;
+
+   function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
+     (abs (Result - Expected) <= 2.0 * Element_Type'Model_Epsilon);
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
@@ -58,43 +57,16 @@ package body Test_Transforms_Singles_Quaternions is
       end loop;
    end Assert_Equivalent;
 
-   package Caller is new AUnit.Test_Caller (Test);
-
-   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
-
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Transforms - Singles - Quaternions) ";
-   begin
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '*' operator", Test_Multiplication'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Conjugate function", Test_Conjugate'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Norm function", Test_Norm'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Normalize function", Test_Normalize'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Normalized function", Test_Normalized'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Axis_Angle function", Test_Rotate_Axis_Angle'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Vectors function", Test_Rotate_Vectors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_At_Origin procedure", Test_Rotate_At_Origin'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Slerp function", Test_Slerp'Access));
-
-      return Test_Suite'Access;
-   end Suite;
+   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Multiplication (Object : in out Test) is
-      Half_Angle : constant Float_32 := 45.0;
+      Half_Angle : constant Element_Type := 45.0;
    begin
       declare
          Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
 
-         Sin_Value : constant Float_32 := EF.Sin (Half_Angle, 360.0);
-         Cos_Value : constant Float_32 := EF.Cos (Half_Angle, 360.0);
+         Sin_Value : constant Element_Type := EF.Sin (Half_Angle, 360.0);
+         Cos_Value : constant Element_Type := EF.Cos (Half_Angle, 360.0);
 
          Result   : constant Quaternion :=
            R (Axis, To_Radians (Half_Angle)) * R (Axis, To_Radians (Half_Angle));
@@ -109,7 +81,7 @@ package body Test_Transforms_Singles_Quaternions is
 
       declare
          Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-         Angle_Radians : constant Float_32 := To_Radians (30.0);
+         Angle_Radians : constant Element_Type := To_Radians (30.0);
 
          Rotation : constant Quaternion :=
            R (Axis, Angle_Radians) * R (Axis, Angle_Radians) * R (Axis, Angle_Radians);
@@ -136,13 +108,13 @@ package body Test_Transforms_Singles_Quaternions is
       Elements_2 : constant Quaternion := (-1.0, 2.0, -3.0, 4.0);
       Elements_3 : constant Quaternion := (0.0, 0.0, 0.0, 0.0);
 
-      Result_1   : constant Float_32 := Norm (Elements_1);
-      Result_2   : constant Float_32 := Norm (Elements_2);
-      Result_3   : constant Float_32 := Norm (Elements_3);
+      Result_1   : constant Element_Type := Norm (Elements_1);
+      Result_2   : constant Element_Type := Norm (Elements_2);
+      Result_3   : constant Element_Type := Norm (Elements_3);
 
-      Expected_1 : constant Float_32 := EF.Sqrt (30.0);
-      Expected_2 : constant Float_32 := EF.Sqrt (30.0);
-      Expected_3 : constant Float_32 := 0.0;
+      Expected_1 : constant Element_Type := EF.Sqrt (30.0);
+      Expected_2 : constant Element_Type := EF.Sqrt (30.0);
+      Expected_3 : constant Element_Type := 0.0;
    begin
       Assert (Is_Equivalent (Expected_1, Result_1), "Unexpected Single " & Result_1'Image);
       Assert (Is_Equivalent (Expected_2, Result_2), "Unexpected Single " & Result_2'Image);
@@ -176,10 +148,10 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Rotate_Axis_Angle (Object : in out Test) is
       Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
-      Angle : constant Float_32 := 90.0;
+      Angle : constant Element_Type := 90.0;
 
-      Sin_Value : constant Float_32 := EF.Sin (45.0, 360.0);
-      Cos_Value : constant Float_32 := EF.Cos (45.0, 360.0);
+      Sin_Value : constant Element_Type := EF.Sin (45.0, 360.0);
+      Cos_Value : constant Element_Type := EF.Cos (45.0, 360.0);
 
       Result   : constant Quaternion := R (Axis, To_Radians (Angle));
       Expected : constant Quaternion := (Axis (X) * Sin_Value,
@@ -196,7 +168,7 @@ package body Test_Transforms_Singles_Quaternions is
       End_Vector   : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
 
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant Float_32 := 90.0;
+      Angle : constant Element_Type := 90.0;
 
       Expected_1 : constant Quaternion := R (Axis, To_Radians (Angle));
       Result_1   : constant Quaternion := R (Start_Vector, End_Vector);
@@ -210,7 +182,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Rotate_At_Origin (Object : in out Test) is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant Float_32 := 90.0;
+      Angle : constant Element_Type := 90.0;
 
       Rotation : constant Quaternion := R (Axis, To_Radians (Angle));
 
@@ -223,7 +195,7 @@ package body Test_Transforms_Singles_Quaternions is
 
    procedure Test_Slerp (Object : in out Test) is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
-      Angle : constant Float_32 := 45.0;
+      Angle : constant Element_Type := 45.0;
 
       Start_Quaternion : constant Quaternion := R (Axis, To_Radians (0.0));
       End_Quaternion   : constant Quaternion := R (Axis, To_Radians (90.0));
@@ -234,4 +206,35 @@ package body Test_Transforms_Singles_Quaternions is
       Assert_Equivalent (Expected, Result);
    end Test_Slerp;
 
-end Test_Transforms_Singles_Quaternions;
+   ----------------------------------------------------------------------------
+
+   package Caller is new AUnit.Test_Caller (Test);
+
+   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+      Name : constant String := "(Transforms - " & Suite_Name & " - Quaternions) ";
+   begin
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '*' operator", Test_Multiplication'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Conjugate function", Test_Conjugate'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Norm function", Test_Norm'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Normalize function", Test_Normalize'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Normalized function", Test_Normalized'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Axis_Angle function", Test_Rotate_Axis_Angle'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Vectors function", Test_Rotate_Vectors'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_At_Origin procedure", Test_Rotate_At_Origin'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Slerp function", Test_Slerp'Access));
+
+      return Test_Suite'Access;
+   end Suite;
+
+end Generic_Test_Transforms_Quaternions;

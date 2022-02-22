@@ -14,12 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Singles.Quaternions;
-with Orka.Transforms.Singles.Vectors;
+with AUnit.Test_Suites;
 
-with Generic_Test_Transforms_Quaternions;
+with Orka.Transforms.SIMD_Quaternions;
+with Orka.Transforms.SIMD_Vectors;
 
-package Test_Transforms_Singles_Quaternions is new Generic_Test_Transforms_Quaternions
-  ("Singles",
-   Orka.Transforms.Singles.Vectors,
-   Orka.Transforms.Singles.Quaternions);
+generic
+   Suite_Name : String;
+
+   with package Vectors     is new Orka.Transforms.SIMD_Vectors (<>);
+   with package Quaternions is new Orka.Transforms.SIMD_Quaternions (Vectors);
+package Generic_Test_Transforms_Quaternions is
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+end Generic_Test_Transforms_Quaternions;

@@ -28,6 +28,7 @@ with Test_Transforms_Singles_Matrices;
 with Test_Transforms_Singles_Quaternions;
 with Test_Transforms_Singles_Vectors;
 with Test_Transforms_Doubles_Matrices;
+with Test_Transforms_Doubles_Quaternions;
 with Test_Transforms_Doubles_Vectors;
 
 with Test_Tensors_Singles_Vectors;
@@ -96,6 +97,7 @@ procedure Orka_Tests is
       --  Transforms (Doubles)
       Result.Add_Test (Test_Transforms_Doubles_Matrices.Suite);
       Result.Add_Test (Test_Transforms_Doubles_Vectors.Suite);
+      Result.Add_Test (Test_Transforms_Doubles_Quaternions.Suite);
 
       --  Trees
       Result.Add_Test (Test_Scene_Trees.Suite);

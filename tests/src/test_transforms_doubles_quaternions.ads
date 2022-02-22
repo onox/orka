@@ -14,12 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Singles.Quaternions;
-with Orka.Transforms.Singles.Vectors;
+with Orka.Transforms.Doubles.Quaternions;
+with Orka.Transforms.Doubles.Vectors;
 
 with Generic_Test_Transforms_Quaternions;
 
-package Test_Transforms_Singles_Quaternions is new Generic_Test_Transforms_Quaternions
-  ("Singles",
-   Orka.Transforms.Singles.Vectors,
-   Orka.Transforms.Singles.Quaternions);
+package Test_Transforms_Doubles_Quaternions is new Generic_Test_Transforms_Quaternions
+  ("Doubles",
+   Orka.Transforms.Doubles.Vectors,
+   Orka.Transforms.Doubles.Quaternions);
