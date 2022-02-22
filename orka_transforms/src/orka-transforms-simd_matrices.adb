@@ -215,7 +215,7 @@ package body Orka.Transforms.SIMD_Matrices is
             return (Yaw, Pitch, Roll, 0.0);
          end;
       end if;
-   end;
+   end Euler;
 
    ----------------------------------------------------------------------------
 

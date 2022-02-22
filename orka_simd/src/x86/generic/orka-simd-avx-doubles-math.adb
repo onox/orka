@@ -22,7 +22,7 @@ package body Orka.SIMD.AVX.Doubles.Math is
    function Reciprocal_Sqrt (Elements : m256d) return m256d is
       use SIMD.AVX.Doubles.Arithmetic;
    begin
-     return (others => 1.0) / Sqrt (Elements);
+      return (others => 1.0) / Sqrt (Elements);
    end Reciprocal_Sqrt;
 
    function Cross_Product (Left, Right : m256d) return m256d is
