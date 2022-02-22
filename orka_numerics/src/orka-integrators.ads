@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 package Orka.Integrators is
-   pragma Pure;
+   pragma Preelaborate;
 
    generic
       type Value      is private;
