@@ -18,25 +18,24 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with AUnit.Assertions;
 with AUnit.Test_Caller;
+with AUnit.Test_Fixtures;
 
-with Orka.SIMD.AVX.Doubles.Arithmetic;
-with Orka.Transforms.Doubles.Matrices;
-
-package body Test_Transforms_Doubles_Matrices is
+package body Generic_Test_Transforms_Matrices is
 
    use Orka;
-   use Orka.Transforms.Doubles.Matrices;
+   use Matrices;
+   use type Matrices.Element_Type;
 
    use AUnit.Assertions;
 
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function To_Radians (Angle : Float_64) return Float_64 renames Vectors.To_Radians;
+   function To_Radians (Angle : Element_Type) return Element_Type renames Vectors.To_Radians;
 
-   function Is_Equivalent (Expected, Result : Float_64) return Boolean is
-     (abs (Result - Expected) <= 2.0 * Float_64'Model_Epsilon);
+   function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
+     (abs (Result - Expected) <= 2.0 * Element_Type'Model_Epsilon);
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
@@ -56,56 +55,7 @@ package body Test_Transforms_Doubles_Matrices is
       end loop;
    end Assert_Equivalent;
 
-   package Caller is new AUnit.Test_Caller (Test);
-
-   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
-
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Transforms - Doubles - Matrices) ";
-   begin
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test T function", Test_T'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rx function", Test_Rx'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Ry function", Test_Ry'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rz function", Test_Rz'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test R function", Test_R'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test S function", Test_S'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '+' operator (translate)", Test_Add_Offset'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '*' operator (scale)", Test_Multiply_Factor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_At_Origin procedure", Test_Rotate_At_Origin'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate procedure", Test_Rotate'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_X_At_Origin procedure", Test_Rotate_X_At_Origin'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Y_At_Origin procedure", Test_Rotate_Y_At_Origin'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Z_At_Origin procedure", Test_Rotate_Z_At_Origin'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_X procedure", Test_Rotate_X'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Y procedure", Test_Rotate_Y'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_Z procedure", Test_Rotate_Z'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Translate procedure", Test_Translate'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Scale_Factors procedure", Test_Scale_Factors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Scale_Factor procedure", Test_Scale_Factor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Transpose function", Test_Transpose'Access));
-
-      return Test_Suite'Access;
-   end Suite;
+   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_T (Object : in out Test) is
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
@@ -124,10 +74,10 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_T;
 
    procedure Test_Rx (Object : in out Test) is
-      Angle : constant Float_64 := 60.0;
+      Angle : constant Element_Type := 60.0;
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0, 0.0, 0.0, 0.0),
@@ -143,10 +93,10 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rx;
 
    procedure Test_Ry (Object : in out Test) is
-      Angle : constant Float_64 := 60.0;
+      Angle : constant Element_Type := 60.0;
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0, -SA, 0.0),
@@ -162,10 +112,10 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Ry;
 
    procedure Test_Rz (Object : in out Test) is
-      Angle : constant Float_64 := 60.0;
+      Angle : constant Element_Type := 60.0;
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,   SA, 0.0, 0.0),
@@ -181,7 +131,7 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rz;
 
    procedure Test_R (Object : in out Test) is
-      Angle : constant Float_64 := 90.0;
+      Angle : constant Element_Type := 90.0;
 
       Expected : constant Matrix4 :=
         Rz (To_Radians (Angle)) * Ry (To_Radians (Angle)) * Rx (To_Radians (Angle));
@@ -209,8 +159,6 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_S;
 
    procedure Test_Add_Offset (Object : in out Test) is
-      use Orka.SIMD.AVX.Doubles.Arithmetic;
-
       --  W of sum must be 1.0
       Offset_A : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
       Offset_B : constant Vector4 := (-5.0, 3.0, 6.0, 0.0);
@@ -219,7 +167,7 @@ package body Test_Transforms_Doubles_Matrices is
         := ((1.0, 0.0, 0.0, 0.0),
             (0.0, 1.0, 0.0, 0.0),
             (0.0, 0.0, 1.0, 0.0),
-            Offset_A + Offset_B);
+            Vectors."+" (Offset_A, Offset_B));
 
       Result : constant Matrix4 := Offset_A + (Offset_B + Identity_Matrix);
    begin
@@ -229,10 +177,10 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Add_Offset;
 
    procedure Test_Multiply_Factor (Object : in out Test) is
-      Factor_A : constant Float_64 := 2.0;
-      Factor_B : constant Float_64 := 2.0;
+      Factor_A : constant Element_Type := 2.0;
+      Factor_B : constant Element_Type := 2.0;
 
-      Total : constant Float_64 := Factor_A * Factor_B;
+      Total : constant Element_Type := Factor_A * Factor_B;
 
       Expected : constant Matrix4
         := ((Total, 0.0, 0.0, 0.0),
@@ -248,7 +196,7 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Multiply_Factor;
 
    procedure Test_Rotate_At_Origin (Object : in out Test) is
-      Angle  : constant Float_64 := 90.0;
+      Angle  : constant Element_Type := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
       Expected : constant Matrix4 :=
@@ -261,7 +209,7 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_At_Origin;
 
    procedure Test_Rotate (Object : in out Test) is
-      Angle  : constant Float_64 := 90.0;
+      Angle  : constant Element_Type := 90.0;
       Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
       Expected : Matrix4 :=
@@ -277,11 +225,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate;
 
    procedure Test_Rotate_X_At_Origin (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -297,11 +245,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_X_At_Origin;
 
    procedure Test_Rotate_Y_At_Origin (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -317,11 +265,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_Y_At_Origin;
 
    procedure Test_Rotate_Z_At_Origin (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vector4 := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -337,11 +285,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_Z_At_Origin;
 
    procedure Test_Rotate_X (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((1.0,  0.0, 0.0, 0.0),
@@ -357,11 +305,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_X;
 
    procedure Test_Rotate_Y (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,  0.0,  -SA, 0.0),
@@ -377,11 +325,11 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Rotate_Y;
 
    procedure Test_Rotate_Z (Object : in out Test) is
-      Angle  : constant Float_64  := 90.0;
+      Angle  : constant Element_Type  := 90.0;
       Offset : constant Vectors.Point := (2.0, 3.0, 4.0, 1.0);
 
-      CA : constant Float_64 := EF.Cos (Angle, 360.0);
-      SA : constant Float_64 := EF.Sin (Angle, 360.0);
+      CA : constant Element_Type := EF.Cos (Angle, 360.0);
+      SA : constant Element_Type := EF.Sin (Angle, 360.0);
 
       Expected : constant Matrix4
         := ((CA,    SA, 0.0, 0.0),
@@ -429,7 +377,7 @@ package body Test_Transforms_Doubles_Matrices is
    end Test_Scale_Factors;
 
    procedure Test_Scale_Factor (Object : in out Test) is
-      Factor : constant Float_64 := 2.0;
+      Factor : constant Element_Type := 2.0;
 
       Expected : constant Matrix4
         := ((Factor, 0.0, 0.0, 0.0),
@@ -464,4 +412,57 @@ package body Test_Transforms_Doubles_Matrices is
       end loop;
    end Test_Transpose;
 
-end Test_Transforms_Doubles_Matrices;
+   ----------------------------------------------------------------------------
+
+   package Caller is new AUnit.Test_Caller (Test);
+
+   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+      Name : constant String := "(Transforms - " & Suite_Name & " - Matrices) ";
+   begin
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test T function", Test_T'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rx function", Test_Rx'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Ry function", Test_Ry'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rz function", Test_Rz'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test R function", Test_R'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test S function", Test_S'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '+' operator (translate)", Test_Add_Offset'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '*' operator (scale)", Test_Multiply_Factor'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_At_Origin procedure", Test_Rotate_At_Origin'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate procedure", Test_Rotate'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_X_At_Origin procedure", Test_Rotate_X_At_Origin'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Y_At_Origin procedure", Test_Rotate_Y_At_Origin'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Z_At_Origin procedure", Test_Rotate_Z_At_Origin'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_X procedure", Test_Rotate_X'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Y procedure", Test_Rotate_Y'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Rotate_Z procedure", Test_Rotate_Z'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Translate procedure", Test_Translate'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Scale_Factors procedure", Test_Scale_Factors'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Scale_Factor procedure", Test_Scale_Factor'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Transpose function", Test_Transpose'Access));
+
+      return Test_Suite'Access;
+   end Suite;
+
+end Generic_Test_Transforms_Matrices;

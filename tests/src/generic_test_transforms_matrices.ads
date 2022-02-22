@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2016 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,10 +14,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Doubles.Matrices;
+with AUnit.Test_Suites;
 
-with Generic_Test_Transforms_Matrices;
+with Orka.Transforms.SIMD_Matrices;
 
-package Test_Transforms_Doubles_Matrices is new Generic_Test_Transforms_Matrices
-  ("Doubles",
-   Orka.Transforms.Doubles.Matrices);
+generic
+   Suite_Name : String;
+
+   with package Matrices is new Orka.Transforms.SIMD_Matrices (<>);
+package Generic_Test_Transforms_Matrices is
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+end Generic_Test_Transforms_Matrices;
