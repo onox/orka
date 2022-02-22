@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2017 onox <denkpadje@gmail.com>
+--  Copyright (c) 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,28 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with AUnit.Test_Suites;
-with AUnit.Test_Fixtures;
+with Orka.Transforms.Singles.Vectors;
 
-package Test_Transforms_Singles_Vectors is
+with Generic_Test_Transforms_Vectors;
 
-   function Suite return AUnit.Test_Suites.Access_Test_Suite;
-
-private
-
-   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
-
-   procedure Test_Add (Object : in out Test);
-   procedure Test_Subtract (Object : in out Test);
-   procedure Test_Scale (Object : in out Test);
-   procedure Test_Absolute (Object : in out Test);
-   procedure Test_Magnitude (Object : in out Test);
-   procedure Test_Normalize (Object : in out Test);
-   procedure Test_Distance (Object : in out Test);
-   procedure Test_Projection (Object : in out Test);
-   procedure Test_Perpendicular (Object : in out Test);
-   procedure Test_Angle (Object : in out Test);
-   procedure Test_Dot_Product (Object : in out Test);
-   procedure Test_Cross_Product (Object : in out Test);
-
-end Test_Transforms_Singles_Vectors;
+package Test_Transforms_Singles_Vectors is new Generic_Test_Transforms_Vectors
+  ("Singles",
+   Orka.Transforms.Singles.Vectors);

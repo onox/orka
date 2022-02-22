@@ -18,57 +18,24 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with AUnit.Assertions;
 with AUnit.Test_Caller;
+with AUnit.Test_Fixtures;
 
-with Orka.Transforms.Singles.Vectors;
-
-package body Test_Transforms_Singles_Vectors is
+package body Generic_Test_Transforms_Vectors is
 
    use Orka;
-   use Orka.Transforms.Singles.Vectors;
+   use Vectors;
+   use type Vectors.Element_Type;
 
    use type Vector4;
 
-   package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
+   package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
-   function Is_Equivalent (Expected, Result : Float_32) return Boolean is
-     (abs (Result - Expected) <= Float_32'Model_Epsilon);
+   function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
+     (abs (Result - Expected) <= Element_Type'Model_Epsilon);
 
    use AUnit.Assertions;
 
-   package Caller is new AUnit.Test_Caller (Test);
-
-   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
-
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Transforms - Singles - Vectors) ";
-   begin
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '+' operator", Test_Add'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '-' operator", Test_Subtract'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '*' operator", Test_Scale'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'abs' operator", Test_Absolute'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Magnitude function", Test_Magnitude'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Normalize function", Test_Normalize'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Distance function", Test_Distance'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Projection function", Test_Projection'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Perpendicular function", Test_Perpendicular'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Angle function", Test_Angle'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Dot function", Test_Dot_Product'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Cross function", Test_Cross_Product'Access));
-
-      return Test_Suite'Access;
-   end Suite;
+   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Add (Object : in out Test) is
       Left  : constant Vector4 := (2.0, 3.0, 4.0, 0.0);
@@ -119,8 +86,8 @@ package body Test_Transforms_Singles_Vectors is
    procedure Test_Magnitude (Object : in out Test) is
       Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
 
-      Expected : constant Float_32 := EF.Sqrt (1.0**2 + (-2.0)**2 + 3.0**2 + (-4.0)**2);
-      Result   : constant Float_32 := Magnitude (Elements);
+      Expected : constant Element_Type := EF.Sqrt (1.0**2 + (-2.0)**2 + 3.0**2 + (-4.0)**2);
+      Result   : constant Element_Type := Magnitude (Elements);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Result'Image);
    end Test_Magnitude;
@@ -128,8 +95,8 @@ package body Test_Transforms_Singles_Vectors is
    procedure Test_Normalize (Object : in out Test) is
       Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
 
-      Expected : constant Float_32 := 1.0;
-      Result   : constant Float_32 := Magnitude (Normalize (Elements));
+      Expected : constant Element_Type := 1.0;
+      Result   : constant Element_Type := Magnitude (Normalize (Elements));
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Result'Image);
    end Test_Normalize;
@@ -138,8 +105,8 @@ package body Test_Transforms_Singles_Vectors is
       Left  : constant Point := (2.0, 5.0, 0.0, 1.0);
       Right : constant Point := (2.0, 2.0, 0.0, 1.0);
 
-      Expected : constant Float_32 := 3.0;
-      Result   : constant Float_32 := Distance (Left, Right);
+      Expected : constant Element_Type := 3.0;
+      Result   : constant Element_Type := Distance (Left, Right);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Result'Image);
    end Test_Distance;
@@ -172,8 +139,8 @@ package body Test_Transforms_Singles_Vectors is
       Left  : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
       Right : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
 
-      Expected : constant Float_32 := To_Radians (90.0);
-      Result   : constant Float_32 := Angle (Left, Right);
+      Expected : constant Element_Type := To_Radians (90.0);
+      Result   : constant Element_Type := Angle (Left, Right);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Result'Image);
    end Test_Angle;
@@ -182,8 +149,8 @@ package body Test_Transforms_Singles_Vectors is
       Left  : constant Vector4 := (1.0, 2.0, 3.0, 4.0);
       Right : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
 
-      Expected : constant Float_32 := 40.0;
-      Result   : constant Float_32 := Dot (Left, Right);
+      Expected : constant Element_Type := 40.0;
+      Result   : constant Element_Type := Dot (Left, Right);
    begin
       Assert (Is_Equivalent (Expected, Result), "Unexpected Single " & Result'Image);
    end Test_Dot_Product;
@@ -200,4 +167,41 @@ package body Test_Transforms_Singles_Vectors is
       end loop;
    end Test_Cross_Product;
 
-end Test_Transforms_Singles_Vectors;
+   ----------------------------------------------------------------------------
+
+   package Caller is new AUnit.Test_Caller (Test);
+
+   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+      Name : constant String := "(Transforms - " & Suite_Name & " - Vectors) ";
+   begin
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '+' operator", Test_Add'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '-' operator", Test_Subtract'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test '*' operator", Test_Scale'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test 'abs' operator", Test_Absolute'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Magnitude function", Test_Magnitude'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Normalize function", Test_Normalize'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Distance function", Test_Distance'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Projection function", Test_Projection'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Perpendicular function", Test_Perpendicular'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Angle function", Test_Angle'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Dot function", Test_Dot_Product'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Cross function", Test_Cross_Product'Access));
+
+      return Test_Suite'Access;
+   end Suite;
+
+end Generic_Test_Transforms_Vectors;

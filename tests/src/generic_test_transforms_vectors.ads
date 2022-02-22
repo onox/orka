@@ -14,10 +14,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Transforms.Doubles.Vectors;
+with AUnit.Test_Suites;
 
-with Generic_Test_Transforms_Vectors;
+with Orka.Transforms.SIMD_Vectors;
 
-package Test_Transforms_Doubles_Vectors is new Generic_Test_Transforms_Vectors
-  ("Doubles",
-   Orka.Transforms.Doubles.Vectors);
+generic
+   Suite_Name : String;
+
+   with package Vectors is new Orka.Transforms.SIMD_Vectors (<>);
+package Generic_Test_Transforms_Vectors is
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+end Generic_Test_Transforms_Vectors;
