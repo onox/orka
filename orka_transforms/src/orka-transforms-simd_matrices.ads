@@ -105,9 +105,9 @@ package Orka.Transforms.SIMD_Matrices is
      with Pre => Vectors.Normalized (Quaternion);
    --  Converts a quaternion to a rotation matrix
 
-   function R (Left, Right : Vector_Type) return Matrix_Type
-     with Pre => Vectors.Normalized (Left) and Vectors.Normalized (Right);
-   --  Return a matrix that gives a rotation from Left to Right
+   function R (From, To : Vector_Type) return Matrix_Type
+     with Pre => Vectors.Normalized (From) and Vectors.Normalized (To);
+   --  Return a matrix that gives a rotation from one vector to the other
 
    function S (Factors : Vector_Type) return Matrix_Type;
    --  Scale points by the given amount in the x-, y-, and z-axis
