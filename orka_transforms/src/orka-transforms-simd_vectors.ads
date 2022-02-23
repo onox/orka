@@ -96,7 +96,7 @@ package Orka.Transforms.SIMD_Vectors is
    function Magnitude (Elements : Vector_Type) return Element_Type;
    --  Return the magnitude or length of the vector
 
-   function Length (Elements : Vector_Type) return Element_Type renames Magnitude;
+   function Norm (Elements : Vector_Type) return Element_Type renames Magnitude;
    --  Return the magnitude or length of the vector
 
    function Normalize (Elements : Vector_Type) return Vector_Type;
