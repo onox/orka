@@ -151,7 +151,7 @@ package body Orka.Features.Atmosphere.Rendering is
          Expected_Surface : constant Vector4 := Camera_Normal_Inert * Object.Bottom_Radius;
 
          Offset   : constant Vector4  := Expected_Surface - Actual_Surface;
-         Altitude : constant Float_64 := Length (Planet_To_Camera) - Length (Actual_Surface);
+         Altitude : constant Float_64 := Norm (Planet_To_Camera) - Norm (Actual_Surface);
       begin
          Object.Uniform_Ground_Hack.Set_Boolean (Altitude < Altitude_Hack_Threshold);
          Object.Uniform_Camera_Offset.Set_Vector (Convert (Offset * Object.Distance_Scale));
@@ -174,7 +174,7 @@ package body Orka.Features.Atmosphere.Rendering is
       --  Sun_Angular_Radius of Model_Data
       declare
          Angular_Radius : constant Float_64 :=
-           EF.Arctan (Object.Parameters.Star_Radius, Length (Camera_To_Star));
+           EF.Arctan (Object.Parameters.Star_Radius, Norm (Camera_To_Star));
       begin
          Object.Uniform_Star_Size.Set_Single (Float_32 (EF.Cos (Angular_Radius)));
       end;

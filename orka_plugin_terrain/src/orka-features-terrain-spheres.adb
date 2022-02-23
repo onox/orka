@@ -52,7 +52,7 @@ package body Orka.Features.Terrain.Spheres is
 
       declare
          Height : constant Float_32 :=
-           Length ((Unit (Y), Unit (Z), 0.0, 0.0) * (Y_Mask, Z_Mask, 0.0, 0.0));
+           Norm ((Unit (Y), Unit (Z), 0.0, 0.0) * (Y_Mask, Z_Mask, 0.0, 0.0));
 
          N : constant Float_32 :=
            Axis / EF.Sqrt (1.0 - E2 * Height * Height);
