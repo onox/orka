@@ -1924,9 +1924,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Divide_Or_Zero;
 
+   function Power (Left, Right : Element) return Element is
+     (if Left = 0.0 and Right = 0.0 then 1.0 else EF."**" (Left, Right));
+   --  0.0 ** X = 1.0 if X = 0.0 (EF."**" raises Argument_Error instead of returning 1.0)
+   --  0.0 ** X = 0.0 if X > 0.0
+
    overriding function "**" (Left, Right : CPU_Tensor) return CPU_Tensor is
 --     (Exp (Multiply (Right, Log (Left))));
-      use EF;
 
       Padding : constant Natural :=
         Data_Padding (Size => Left.Size, Count => Elements (Left.Shape));
@@ -1941,19 +1945,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   Left_Element  : Element renames Left.Data (Index) (Offset);
                   Right_Element : Element renames Right.Data (Index) (Offset);
                begin
-                  if Left_Element = 0.0 and Right_Element = 0.0 then
-                     --  EF."**" raises Argument_Error instead of returning 1.0
-                     Result.Data (Index) (Offset) := 1.0;
-                  else
-                     Result.Data (Index) (Offset) := Left_Element ** Right_Element;
-                  end if;
+                  Result.Data (Index) (Offset) := Power (Left_Element, Right_Element);
                end;
             end loop;
          end loop;
 
          for Offset in Vector_Type'Range loop
             Result.Data (Result.Data'Last) (Offset) :=
-              Last_Left (Offset) ** Last_Right (Offset);
+              Power (Last_Left (Offset), Last_Right (Offset));
          end loop;
       end return;
    end "**";
@@ -2005,19 +2004,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   declare
                      Right_Element : Element renames Right.Data (Index) (Offset);
                   begin
-                     if Left = 0.0 and Right_Element = 0.0 then
-                        Result.Data (Index) (Offset) := 1.0;
-                     else
-                        --  0.0 ** X = 1.0 if X = 0.0
-                        --  0.0 ** X = 0.0 if X > 0.0
-                        Result.Data (Index) (Offset) := Left ** Right_Element;
-                     end if;
+                     Result.Data (Index) (Offset) := Power (Left, Right_Element);
                   end;
                end loop;
             end loop;
 
             for Offset in Vector_Type'Range loop
-               Result.Data (Result.Data'Last) (Offset) := Left ** Last_Right (Offset);
+               Result.Data (Result.Data'Last) (Offset) := Power (Left, Last_Right (Offset));
             end loop;
          end return;
       end if;
