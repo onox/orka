@@ -335,7 +335,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       case Object.Dimensions is
          when 1 =>
-            Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
+            raise Program_Error;
          when 2 =>
             Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
       end case;
@@ -2615,16 +2615,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          when Float_Type =>
             return (abs (Left - Right) <= Element_Type'Model_Epsilon);
          when Int_Type | Bool_Type =>
-            declare
-               Right_Vector : constant Vector_Type := (others => Right);
-            begin
-               return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
-                  for Index in Result.Data'Range loop
-                     Result.Data (Index) := Left.Data (Index) = Right_Vector;
-                  end loop;
-                  Result.Data (Result.Data'Last) := Disable_Padding (Result);
-               end return;
-            end;
+            raise Program_Error;
       end case;
    end "=";
 
@@ -2634,16 +2625,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          when Float_Type =>
             return (abs (Left - Right) > Element_Type'Model_Epsilon);
          when Int_Type | Bool_Type =>
-            declare
-               Right_Vector : constant Vector_Type := (others => Right);
-            begin
-               return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
-                  for Index in Result.Data'Range loop
-                     Result.Data (Index) := Left.Data (Index) /= Right_Vector;
-                  end loop;
-                  Result.Data (Result.Data'Last) := Disable_Padding (Result);
-               end return;
-            end;
+            raise Program_Error;
       end case;
    end "/=";
 
