@@ -73,7 +73,7 @@ abstract project Orka_Config is
       when "debug" =>
          Build_Switches := ("-Og"); -- No optimization
       when "coverage" =>
-         Build_Switches := ("-O0", "-fprofile-arcs", "-ftest-coverage");
+         Build_Switches := ("-O0", "--coverage");
       when "profiling" =>
          Build_Switches := ("-pg");
    end case;
@@ -93,7 +93,6 @@ abstract project Orka_Config is
         Style_Checks_Switches &
         Contracts_Switches &
         ("-march=native",
-         "-fno-tree-vrp", -- Workaround bug box in GNAT 11.1 for orka_egl
          "-ffunction-sections",
          "-fdata-sections",
          "-gnatw.X", -- Disable warnings for No_Exception_Propagation
