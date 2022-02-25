@@ -14,6 +14,9 @@ project Orka_Plugin_Atmosphere is
    for Library_Dir use "build/lib";
 
    package Compiler extends Orka_Config.Compiler is
+      for Default_Switches ("Ada") use
+        Orka_Config.Compiler'Default_Switches ("Ada") &
+        ("-fno-tree-vrp");
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
