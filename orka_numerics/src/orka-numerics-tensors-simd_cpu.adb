@@ -428,6 +428,16 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return To_Index (Index, Object.Shape);
    end Flattened_Index;
 
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Value : Element) is
+   begin
+      Object.Set ((1 => Index), Value);
+   end Set;
+
+   overriding procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Value : Boolean) is
+   begin
+      Object.Set ((1 => Index), Value);
+   end Set;
+
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Element) is
       Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
    begin

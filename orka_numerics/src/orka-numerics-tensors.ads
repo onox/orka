@@ -112,6 +112,12 @@ package Orka.Numerics.Tensors is
 
    ----------------------------------------------------------------------------
 
+   procedure Set (Object : in out Tensor; Index : Index_Type; Value : Element) is abstract
+     with Pre'Class => Object.Dimensions = 1 and Object.Kind = Float_Type;
+
+   procedure Set (Object : in out Tensor; Index : Index_Type; Value : Boolean) is abstract
+     with Pre'Class => Object.Dimensions = 1 and Object.Kind = Bool_Type;
+
    procedure Set (Object : in out Tensor; Index : Tensor_Index; Value : Element) is abstract
      with Pre'Class => Object.Kind = Float_Type;
 
