@@ -241,6 +241,7 @@ package body Generic_Test_Tensors_Matrices is
       Expected : constant Element_Array := (1.0, 2.0, 7.0, 8.0, 5.0, 6.0);
    begin
       Tensor.Set (2, To_Tensor ((7.0, 8.0)));
+
       Assert_Equal (Expected, Tensor.Flatten);
    end Test_Set_Value_Index_Row;
 
@@ -260,6 +261,7 @@ package body Generic_Test_Tensors_Matrices is
          13.0, 14.0, 15.0, 16.0);
    begin
       Tensor_1.Set (Range_Type'(2, 3), Tensor_2);
+
       Assert_Equal (Expected, Tensor_1.Flatten);
    end Test_Set_Value_Index_Range;
 
@@ -402,6 +404,11 @@ package body Generic_Test_Tensors_Matrices is
       Expected_5 : constant CPU_Tensor := Tensor_2.Inverse;
       Expected_6 : constant CPU_Tensor := Expected_5 ** 2;
 
+      Expected_7 : constant Element_Array :=
+        (2.0**1,    2.0**2,    2.0**(-3),
+         2.0**4,    2.0**(-5), 2.0**6,
+         2.0**(-7), 2.0**8,    2.0**9);
+
       Actual_1 : constant CPU_Tensor := Tensor_1 ** 0;
       Actual_2 : constant CPU_Tensor := Tensor_1 ** 1;
       Actual_3 : constant CPU_Tensor := Tensor_1 ** 2;
@@ -409,6 +416,8 @@ package body Generic_Test_Tensors_Matrices is
 
       Actual_5 : constant CPU_Tensor := Tensor_2 ** (-1);
       Actual_6 : constant CPU_Tensor := Tensor_2 ** (-2);
+
+      Actual_7 : constant CPU_Tensor := 2.0 ** Tensor_2;
    begin
       Assert (Expected_1 = Actual_1, "Tensor ** 0 /= I");
       Assert (Expected_2 = Actual_2, "Tensor ** 1 /= Tensor");
@@ -417,6 +426,8 @@ package body Generic_Test_Tensors_Matrices is
 
       Assert (Expected_5 = Actual_5, "Tensor ** -1 /= Tensor.Inverse");
       Assert (Expected_6 = Actual_6, "Tensor ** -2 /= Tensor.Inverse ** 2");
+
+      Assert_Equal (Expected_7, Actual_7.Flatten);
    end Test_Operator_Power;
 
    procedure Test_Outer (Object : in out Test) is
@@ -515,6 +526,20 @@ package body Generic_Test_Tensors_Matrices is
       Assert (Solution = Unique, "Unexpected number of solutions: " & Solution'Image);
    end Test_Solve;
 
+   procedure Test_Solve_Triangular (Object : in out Test) is
+      Tensor_A : constant CPU_Tensor :=
+        To_Tensor ((2.0, -3.0,  4.0,
+                    0.0,  6.0, -8.0,
+                    0.0,  0.0,  9.0)).Reshape ((3, 3));
+
+      Tensor_B : constant CPU_Tensor := To_Tensor ((0.0, 8.0, -9.0));
+
+      Expected : constant Element_Array := (2.0, 0.0, -1.0);
+      Actual   : constant CPU_Tensor    := Solve (Tensor_A, Tensor_B, Upper);
+   begin
+      Assert_Equal (Expected, Actual);
+   end Test_Solve_Triangular;
+
    procedure Test_Divide_By (Object : in out Test) is
       Tensor_A : constant CPU_Tensor := To_Tensor
         ((3.0, 4.0, 5.0,
@@ -544,6 +569,19 @@ package body Generic_Test_Tensors_Matrices is
       Assert (All_Close (A_Slash_B1 * Tensor_B, Tensor_A), "Unexpected value returned Divide_By");
       Assert (All_Close (A_Slash_C1 * Tensor_C, Tensor_A), "Unexpected value returned Divide_By");
    end Test_Divide_By;
+
+   procedure Test_Upper_Triangular (Object : in out Test) is
+      Tensor : constant CPU_Tensor := Linear_Space (1.0, 9.0, Count => 9).Reshape ((3, 3));
+      --   1  2  3
+      --   4  5  6
+      --   7  8  9
+
+      Expected : constant Element_Array := (1.0, 2.0, 3.0, 0.0, 5.0, 6.0, 0.0, 0.0, 9.0);
+
+      Actual : constant CPU_Tensor := Tensor.Upper_Triangular;
+   begin
+      Assert_Equal (Expected, Actual.Flatten);
+   end Test_Upper_Triangular;
 
    procedure Test_QR (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
@@ -677,6 +715,9 @@ package body Generic_Test_Tensors_Matrices is
 
          X_1D : constant CPU_Tensor := Least_Squares (QR_A, B_1D);
          X_2D : constant CPU_Tensor := Least_Squares (QR_A, B_2D);
+
+         Y_1D : constant CPU_Tensor := Least_Squares (A, B_1D);
+         Y_2D : constant CPU_Tensor := Least_Squares (A, B_2D);
       begin
          Assert (X_1D.Dimensions = B_1D.Dimensions, "Unexpected number of dimensions of X");
          Assert (X_2D.Dimensions = B_2D.Dimensions, "Unexpected number of dimensions of X");
@@ -685,6 +726,9 @@ package body Generic_Test_Tensors_Matrices is
 
          Assert (X_1D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
          Assert (X_2D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
+
+         Assert (All_Close (X_1D, Y_1D), "Unxpected least-squares solution");
+         Assert (All_Close (X_2D, Y_2D), "Unxpected least-squares solution");
       end Test_Shape_Least_Squares;
    begin
       Test_Shape_Least_Squares (Tensor_1);
@@ -824,7 +868,11 @@ package body Generic_Test_Tensors_Matrices is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Solve", Test_Solve'Access));
       Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Solve (triangular)", Test_Solve_Triangular'Access));
+      Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Divide_By", Test_Divide_By'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Upper_Triangular", Test_Upper_Triangular'Access));
 
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function QR", Test_QR'Access));
