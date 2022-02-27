@@ -37,7 +37,7 @@ package body Generic_Test_Transforms_Quaternions is
    function To_Radians (Angle : Element_Type) return Element_Type renames Vectors.To_Radians;
 
    function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
-     (abs (Result - Expected) <= 2.0 * Element_Type'Model_Epsilon);
+     (abs (Result - Expected) <= Element_Type'Model_Epsilon + 1.0e-05 * abs Expected);
 
    procedure Assert_Equivalent (Expected, Result : Vector4) is
    begin
@@ -162,6 +162,26 @@ package body Generic_Test_Transforms_Quaternions is
       Assert (Normalized (Result), "Result not normalized");
    end Test_Rotate_Axis_Angle;
 
+   procedure Test_Axis_Angle (Object : in out Test) is
+      Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
+      Angle : constant Element_Type := 90.0;
+
+      Expected : constant Axis_Angle := (Axis  => Vectors.Direction (Axis),
+                                         Angle => To_Radians (Angle));
+      Actual : constant Axis_Angle := To_Axis_Angle (From_Axis_Angle (Expected));
+   begin
+      Assert_Equivalent (Vector4 (Expected.Axis), Vector4 (Actual.Axis));
+      Assert (Is_Equivalent (Expected.Angle, Actual.Angle),
+        "Unexpected angle " & Actual.Angle'Image);
+   end Test_Axis_Angle;
+
+   procedure Test_Axis_Angle_No_Rotation (Object : in out Test) is
+      Actual   : constant Element_Type := To_Axis_Angle (Identity).Angle;
+      Expected : constant Element_Type := 0.0;
+   begin
+      Assert (Is_Equivalent (Expected, Actual), "Unexpected angle " & Actual'Image);
+   end Test_Axis_Angle_No_Rotation;
+
    procedure Test_Rotate_Vectors (Object : in out Test) is
       Start_Vector : constant Vector4 := (0.0, 1.0, 0.0, 0.0);
       End_Vector   : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
@@ -190,6 +210,23 @@ package body Generic_Test_Transforms_Quaternions is
    begin
       Assert_Equivalent (Expected, Result);
    end Test_Rotate;
+
+   procedure Test_Difference (Object : in out Test) is
+      Axis    : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+      Angle_A : constant Element_Type := 30.0;
+      Angle_B : constant Element_Type := 90.0;
+
+      Rotation_A : constant Quaternion := R (Axis, To_Radians (Angle_A));
+      Rotation_B : constant Quaternion := R (Axis, To_Radians (Angle_B));
+
+      Actual   : constant Axis_Angle := To_Axis_Angle (Difference (Rotation_A, Rotation_B));
+      Expected : constant Axis_Angle := (Axis  => Vectors.Direction (Axis),
+                                         Angle => To_Radians (60.0));
+   begin
+      Assert_Equivalent (Vector4 (Expected.Axis), Vector4 (Actual.Axis));
+      Assert (Is_Equivalent (Expected.Angle, Actual.Angle),
+        "Unexpected angle " & Actual.Angle'Image);
+   end Test_Difference;
 
    procedure Test_Slerp (Object : in out Test) is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
@@ -224,11 +261,17 @@ package body Generic_Test_Transforms_Quaternions is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Normalized function", Test_Normalized'Access));
       Test_Suite.Add_Test (Caller.Create
+        (Name & "Test to/from Axis_Angle functions", Test_Axis_Angle'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test To_Axis_Angle function with Identity", Test_Axis_Angle_No_Rotation'Access));
+      Test_Suite.Add_Test (Caller.Create
         (Name & "Test Rotate_Axis_Angle function", Test_Rotate_Axis_Angle'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Rotate_Vectors function", Test_Rotate_Vectors'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Rotate function", Test_Rotate'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test Difference function", Test_Difference'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Slerp function", Test_Slerp'Access));
 
