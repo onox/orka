@@ -14,9 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Ada.Strings.Fixed;
+
 with Orka.Terminals;
 
 package body Orka.Loggers.Formatting is
+
+   package SF renames Ada.Strings.Fixed;
+
+   Length_Level : constant := 5;
+
+   Length_Source : constant := 15;
 
    function Format_Message
      (From     : Source;
@@ -32,18 +40,19 @@ package body Orka.Loggers.Formatting is
               when Info    => Terminals.Blue,
               when Debug   => Terminals.Green);
 
-      Time_Level : constant String := "[" & Terminals.Time_Image & " " & Level'Image & "]";
-      From_Kind  : constant String := "[" & From'Image & ":" & Kind'Image & "]";
+      Time_Level : constant String :=
+        "[" & Terminals.Time_Image & " " & SF.Head (Level'Image, Length_Level) & "]";
+      Kind_Image : constant String := "[" & SF.Head (From'Image, Length_Source) & "]"
+       & (if Kind in Other | Error then "" else " [" & Kind'Image & "]");
+
+      function Colorize_Text (Text : String; Color : Terminals.Color) return String is
+        (if Colorize then Terminals.Colorize (Text, Color) else Text);
    begin
-      if Colorize then
-         return
-           Terminals.Colorize (Time_Level, Level_Color) &
-           " " &
-           Terminals.Colorize (From_Kind, Terminals.Magenta) &
-           " " & Terminals.Strip_Line_Term (Message);
-      else
-         return Time_Level & " " & From_Kind & " " & Terminals.Strip_Line_Term (Message);
-      end if;
+      return
+        Colorize_Text (Time_Level, Level_Color) &
+        " " &
+        Colorize_Text (Kind_Image, Terminals.Magenta) &
+        " " & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 
 end Orka.Loggers.Formatting;
