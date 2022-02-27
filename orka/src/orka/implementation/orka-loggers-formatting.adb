@@ -19,10 +19,11 @@ with Orka.Terminals;
 package body Orka.Loggers.Formatting is
 
    function Format_Message
-     (From    : Source;
-      Kind    : Message_Type;
-      Level   : Severity;
-      Message : String) return String
+     (From     : Source;
+      Kind     : Message_Type;
+      Level    : Severity;
+      Message  : String;
+      Colorize : Boolean) return String
    is
       Level_Color : constant Terminals.Color
         := (case Level is
@@ -31,26 +32,18 @@ package body Orka.Loggers.Formatting is
               when Info    => Terminals.Blue,
               when Debug   => Terminals.Green);
 
-      Time_Image : constant String := Terminals.Time_Image;
+      Time_Level : constant String := "[" & Terminals.Time_Image & " " & Level'Image & "]";
+      From_Kind  : constant String := "[" & From'Image & ":" & Kind'Image & "]";
    begin
-      return Terminals.Colorize ("[" & Time_Image & " " & Level'Image & "]", Level_Color) &
-             " " &
-             Terminals.Colorize ("[" & From'Image & ":" & Kind'Image & "]", Terminals.Magenta) &
-             " " & Terminals.Strip_Line_Term (Message);
+      if Colorize then
+         return
+           Terminals.Colorize (Time_Level, Level_Color) &
+           " " &
+           Terminals.Colorize (From_Kind, Terminals.Magenta) &
+           " " & Terminals.Strip_Line_Term (Message);
+      else
+         return Time_Level & " " & From_Kind & " " & Terminals.Strip_Line_Term (Message);
+      end if;
    end Format_Message;
-
-   function Format_Message_No_Color
-     (From    : Source;
-      Kind    : Message_Type;
-      Level   : Severity;
-      Message : String) return String
-   is
-      Time_Image : constant String := Terminals.Time_Image;
-   begin
-      return "[" & Time_Image & " " & Level'Image & "]" &
-             " " &
-             "[" & From'Image & ":" & Kind'Image & "]" &
-             " " & Terminals.Strip_Line_Term (Message);
-   end Format_Message_No_Color;
 
 end Orka.Loggers.Formatting;

@@ -25,7 +25,7 @@ with Orka.OS;
 
 package body Orka.Loggers.Location is
 
-   package L  renames Ada.Characters.Latin_1;
+   package L1 renames Ada.Characters.Latin_1;
    package SU renames Ada.Strings.Unbounded;
 
    type Log_Request is record
@@ -65,7 +65,7 @@ package body Orka.Loggers.Location is
             Messages.Add_Last
               ((Path    => Path,
                 Message => SU.To_Unbounded_String
-                  (Formatting.Format_Message_No_Color (From, Kind, Level, Message) & L.LF)));
+                  (Formatting.Format_Message (From, Kind, Level, Message, False) & L1.LF)));
          else
             Orka.Loggers.Terminal.Logger.Log (From, Kind, Level, Message);
          end if;

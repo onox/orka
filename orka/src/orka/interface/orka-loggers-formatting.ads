@@ -18,15 +18,10 @@ private package Orka.Loggers.Formatting is
    pragma Preelaborate;
 
    function Format_Message
-     (From    : Source;
-      Kind    : Message_Type;
-      Level   : Severity;
-      Message : String) return String;
-
-   function Format_Message_No_Color
-     (From    : Source;
-      Kind    : Message_Type;
-      Level   : Severity;
-      Message : String) return String;
+     (From     : Source;
+      Kind     : Message_Type;
+      Level    : Severity;
+      Message  : String;
+      Colorize : Boolean) return String;
 
 end Orka.Loggers.Formatting;

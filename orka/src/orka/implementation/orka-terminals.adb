@@ -54,15 +54,15 @@ package body Orka.Terminals is
       Cyan    => 46,
       White   => 47);
 
-   package L renames Ada.Characters.Latin_1;
+   package L1 renames Ada.Characters.Latin_1;
    package SF renames Ada.Strings.Fixed;
 
-   Reset : constant String := L.ESC & "[0m";
+   Reset : constant String := L1.ESC & "[0m";
 
    function Sequence (Code : Natural) return String is
       Image : constant String := SF.Trim (Code'Image, Ada.Strings.Both);
    begin
-      return (if Code /= 0 then L.ESC & "[" & Image & "m" else "");
+      return (if Code /= 0 then L1.ESC & "[" & Image & "m" else "");
    end Sequence;
 
    function Colorize (Text : String; Foreground, Background : Color := Default;
