@@ -120,7 +120,6 @@ nav:
           - Vectors: transforms/vectors.md
           - Matrices: transforms/matrices.md
           - Quaternions: transforms/quaternions.md
-          - Scene trees: transforms/scene-trees.md
       - Numerics:
           - Integrators: numerics/integrators.md
           - Tensors:
