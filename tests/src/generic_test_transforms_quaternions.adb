@@ -87,9 +87,8 @@ package body Generic_Test_Transforms_Quaternions is
            R (Axis, Angle_Radians) * R (Axis, Angle_Radians) * R (Axis, Angle_Radians);
 
          Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
-         Result   : Vector4 := (0.0, 1.0, 0.0, 0.0);
+         Result   : constant Vector4 := Rotate ((0.0, 1.0, 0.0, 0.0), Rotation);
       begin
-         Rotate_At_Origin (Result, Rotation);
          Assert_Equivalent (Expected, Result);
       end;
    end Test_Multiplication;
@@ -180,18 +179,17 @@ package body Generic_Test_Transforms_Quaternions is
       Assert_Equivalent (Expected_2, Result_2);
    end Test_Rotate_Vectors;
 
-   procedure Test_Rotate_At_Origin (Object : in out Test) is
+   procedure Test_Rotate (Object : in out Test) is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
       Angle : constant Element_Type := 90.0;
 
       Rotation : constant Quaternion := R (Axis, To_Radians (Angle));
 
       Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
-      Result   : Vector4 := (0.0, 1.0, 0.0, 0.0);
+      Result   : constant Vector4 := Rotate ((0.0, 1.0, 0.0, 0.0), Rotation);
    begin
-      Rotate_At_Origin (Result, Rotation);
       Assert_Equivalent (Expected, Result);
-   end Test_Rotate_At_Origin;
+   end Test_Rotate;
 
    procedure Test_Slerp (Object : in out Test) is
       Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
@@ -230,7 +228,7 @@ package body Generic_Test_Transforms_Quaternions is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Rotate_Vectors function", Test_Rotate_Vectors'Access));
       Test_Suite.Add_Test (Caller.Create
-        (Name & "Test Rotate_At_Origin procedure", Test_Rotate_At_Origin'Access));
+        (Name & "Test Rotate function", Test_Rotate'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test Slerp function", Test_Slerp'Access));
 

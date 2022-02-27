@@ -98,7 +98,7 @@ package body Orka.Transforms.SIMD_Quaternions is
             Axis : Vector4 := Vector4 (Elements) * (1.0 / SA);
          begin
             Axis (W) := 0.0;
-            return (Axis => Vectors.Direction (Axis), Angle => Angle);
+            return (Axis => Vectors.Direction (Vectors.Normalize (Axis)), Angle => Angle);
          end;
       else
          --  Singularity occurs when angle is 0. Return an arbitrary axis
@@ -162,15 +162,10 @@ package body Orka.Transforms.SIMD_Quaternions is
       return Right * Conjugate (Left);
    end Difference;
 
-   procedure Rotate_At_Origin
-     (Vector   : in out Vector4;
-      Elements : Quaternion)
-   is
-      Result : Vectors.Vector_Type;
-   begin
-      Result := Vectors.Vector_Type (Elements * Quaternion (Vector) * Conjugate (Elements));
-      Vector := Result;
-   end Rotate_At_Origin;
+   function Rotate
+     (Vector   : Vector4;
+      Rotation : Quaternion) return Vector4
+   is (Vectors.Vector_Type (Rotation * Quaternion (Vector) * Conjugate (Rotation)));
 
    function Lerp
      (Left, Right : Quaternion;

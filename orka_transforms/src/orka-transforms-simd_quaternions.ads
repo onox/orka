@@ -28,7 +28,8 @@ package Orka.Transforms.SIMD_Quaternions is
    type Axis_Angle is record
       Axis  : Vectors.Direction;
       Angle : Vectors.Element_Type;
-   end record;
+   end record
+     with Dynamic_Predicate => Vectors.Normalized (Vector4 (Axis));
 
    Identity : constant Quaternion := (0.0, 0.0, 0.0, 1.0);
 
@@ -52,9 +53,11 @@ package Orka.Transforms.SIMD_Quaternions is
    function Normalized (Elements : Quaternion) return Boolean
      with Inline;
 
-   function To_Axis_Angle (Elements : Quaternion) return Axis_Angle;
+   function To_Axis_Angle (Elements : Quaternion) return Axis_Angle
+     with Pre => Normalized (Elements);
 
-   function From_Axis_Angle (Value : Axis_Angle) return Quaternion;
+   function From_Axis_Angle (Value : Axis_Angle) return Quaternion
+     with Post => Normalized (From_Axis_Angle'Result);
 
    function R
      (Axis  : Vector4;
@@ -73,10 +76,10 @@ package Orka.Transforms.SIMD_Quaternions is
    --  Return a quaternion describing the rotation from quaternion Left
    --  to Right (Right is a composite rotation of Left and the result)
 
-   procedure Rotate_At_Origin
-     (Vector   : in out Vector4;
-      Elements : Quaternion)
-   with Pre => Normalized (Elements);
+   function Rotate
+     (Vector   : Vector4;
+      Rotation : Quaternion) return Vector4
+   with Pre => Normalized (Rotation);
 
    function Lerp
      (Left, Right : Quaternion;
