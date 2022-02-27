@@ -171,7 +171,7 @@ to generate messages with any severity, including `Debug`.
 
 The callback may be called by the graphics driver from multiple tasks,
 concurrently, and/or asynchronously after executing an OpenGL command
-if `:::ada GL.Toggles.State (Debug_Output_Synchronous) = Disabled`.
+if `Raise_API_Error` is `False`.
 
 If you would like to raise an exception if an OpenGL command fails, set
 the parameter `Raise_API_Error` to `True`:
