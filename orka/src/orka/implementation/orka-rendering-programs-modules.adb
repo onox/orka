@@ -26,7 +26,7 @@ package body Orka.Rendering.Programs.Modules is
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
 
-   package Messages is new Orka.Logging.Messages (Shader_Compiler);
+   procedure Log is new Orka.Logging.Generic_Log (Shader_Compiler);
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
@@ -79,7 +79,7 @@ package body Orka.Rendering.Programs.Modules is
 
          Line_Digits : constant Positive := Trim (Last_Row'Image)'Length + Line_Number_Padding;
       begin
-         Messages.Log (Error, Message);
+         Log (Error, Message);
 
          for Row_Index in First_Row .. Last_Row loop
             declare
@@ -105,10 +105,10 @@ package body Orka.Rendering.Programs.Modules is
                Prefix_Image : constant String :=
                  (Row_Image'Length + Separator'Length) * " ";
             begin
-               Messages.Log (Error, Row_Image_Colorized  & Separator & Line_Image);
+               Log (Error, Row_Image_Colorized  & Separator & Line_Image);
                if Row_Index = Error_Row then
-                  Messages.Log (Error, Prefix_Image  & Error_Indicator);
-                  Messages.Log (Error, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
+                  Log (Error, Prefix_Image  & Error_Indicator);
+                  Log (Error, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
                end if;
             end;
          end loop;
@@ -150,10 +150,10 @@ package body Orka.Rendering.Programs.Modules is
                   raise Shader_Compile_Error with Path & ":" & Log;
                end;
             end if;
-            Messages.Log (Debug, "Compiled shader " & Path);
-            Messages.Log (Debug, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
+            Log (Debug, "Compiled shader " & Path);
+            Log (Debug, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
               " lines (" & Trim_Image (Source.Get.Value'Length) & " bytes)");
-            Messages.Log (Debug, "  kind: " & Shader_Kind'Image);
+            Log (Debug, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
@@ -187,11 +187,11 @@ package body Orka.Rendering.Programs.Modules is
                   raise Shader_Compile_Error with Shader_Kind'Image & ":" & Log;
                end;
             end if;
-            Messages.Log (Debug, "Compiled string with " &
+            Log (Debug, "Compiled string with " &
               Trim_Image (Source'Length) & " characters");
-            Messages.Log (Debug, "  size: " &
+            Log (Debug, "  size: " &
               Trim_Image (Orka.Strings.Lines (Source)) & " lines");
-            Messages.Log (Debug, "  kind: " & Shader_Kind'Image);
+            Log (Debug, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;

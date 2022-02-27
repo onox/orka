@@ -19,7 +19,7 @@ with GL.Debug;
 package body Orka.Rendering.Fences is
 
    use GL.Debug;
-   package Messages is new GL.Debug.Messages (Third_Party, Performance);
+   procedure Log is new GL.Debug.Log (Third_Party, Performance);
 
    function Create_Buffer_Fence return Buffer_Fence is
    begin
@@ -38,10 +38,10 @@ package body Orka.Rendering.Fences is
 
       case Object.Fences (Object.Index).Client_Wait (Maximum_Wait) is
          when Condition_Satisfied =>
-            Messages.Log (Medium, "Fence not already signalled");
+            Log (Medium, "Fence not already signalled");
             Status := Signaled;
          when Timeout_Expired | Wait_Failed =>
-            Messages.Log (High, "Fence timed out or failed");
+            Log (High, "Fence timed out or failed");
             Status := Not_Signaled;
          when Already_Signaled =>
             Status := Signaled;

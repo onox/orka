@@ -30,19 +30,19 @@ package body Orka.Contexts.EGL.Wayland.AWT is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Window_System);
+   procedure Log is new Orka.Logging.Generic_Log (Window_System);
 
    procedure Print_Monitor (Monitor : Standard.AWT.Monitors.Monitor'Class) is
       State : constant Standard.AWT.Monitors.Monitor_State := Monitor.State;
 
       use Standard.AWT.Monitors;
    begin
-      Messages.Log (Debug, "Window visible on monitor " & (+State.Name));
-      Messages.Log (Debug, "  offset:     " &
+      Log (Debug, "Window visible on monitor " & (+State.Name));
+      Log (Debug, "  offset:     " &
         Trim (State.X'Image) & ", " & Trim (State.Y'Image));
-      Messages.Log (Debug, "  size:       " &
+      Log (Debug, "  size:       " &
         Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
-      Messages.Log (Debug, "  refresh: " & Orka.Terminals.Image (State.Refresh));
+      Log (Debug, "  refresh: " & Orka.Terminals.Image (State.Refresh));
    end Print_Monitor;
 
    ----------------------------------------------------------------------------
@@ -75,10 +75,10 @@ package body Orka.Contexts.EGL.Wayland.AWT is
      (Object : in out AWT_Window;
       State  : Standard.AWT.Windows.Window_State) is
    begin
-      Messages.Log (Debug, "Configured window surface");
-      Messages.Log (Debug, "  size:   " &
+      Log (Debug, "Configured window surface");
+      Log (Debug, "  size:   " &
         Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
-      Messages.Log (Debug, "  margin: " & Trim (State.Margin'Image));
+      Log (Debug, "  margin: " & Trim (State.Margin'Image));
 
       Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
    end On_Configure;
@@ -96,7 +96,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
          when Entered =>
             Print_Monitor (Monitor);
          when Left =>
-            Messages.Log (Debug, "Window not visible on monitor " & (+Monitor.State.Name));
+            Log (Debug, "Window not visible on monitor " & (+Monitor.State.Name));
       end case;
    end On_Move;
 
@@ -176,7 +176,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
             Used_Config : EGL_Configs.Config renames Configs (Configs'First);
          begin
-            Messages.Log (Debug, "Available EGL configs: " &
+            Log (Debug, "Available EGL configs: " &
               Trim (Natural'Image (Configs'Length)));
 
             Result.Set_EGL_Data (Object.Context, Used_Config, sRGB => False);
@@ -191,23 +191,23 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
             pragma Assert (Object.Context.Buffer = Back);
 
-            Messages.Log (Debug, "Created AWT window");
-            Messages.Log (Debug, "  size:        " &
+            Log (Debug, "Created AWT window");
+            Log (Debug, "  size:        " &
               Trim (Width'Image) & " × " & Trim (Height'Image));
-            Messages.Log (Debug, "  flags:       " & Flags);
+            Log (Debug, "  flags:       " & Flags);
 
-            Messages.Log (Debug, "  framebuffer:");
+            Log (Debug, "  framebuffer:");
             declare
                State : constant EGL_Configs.Config_State := Used_Config.State;
             begin
-               Messages.Log (Debug, "    colors:  " &
+               Log (Debug, "    colors:  " &
                 Trim (State.Red'Image) & " " &
                 Trim (State.Green'Image) & " " &
                 Trim (State.Blue'Image) & " " &
                 Trim (State.Alpha'Image));
-               Messages.Log (Debug, "    depth:   " & Trim (State.Depth'Image));
-               Messages.Log (Debug, "    stencil: " & Trim (State.Stencil'Image));
-               Messages.Log (Debug, "    samples: " & Trim (State.Samples'Image));
+               Log (Debug, "    depth:   " & Trim (State.Depth'Image));
+               Log (Debug, "    stencil: " & Trim (State.Stencil'Image));
+               Log (Debug, "    samples: " & Trim (State.Samples'Image));
             end;
          end;
       end return;

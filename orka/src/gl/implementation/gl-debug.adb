@@ -157,11 +157,9 @@ package body GL.Debug is
       return Result;
    end Max_Message_Length;
 
-   package body Messages is
-      procedure Log (Level : Severity; Message : String) is
-      begin
-         GL.Debug.Insert_Message (From, Kind, Level, ID, Message);
-      end Log;
-   end Messages;
+   procedure Log (Level : Severity; Message : String) is
+   begin
+      GL.Debug.Insert_Message (From, Kind, Level, ID, Message);
+   end Log;
 
 end GL.Debug;

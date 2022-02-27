@@ -39,7 +39,7 @@ package body AWT.Inputs.Gamepads is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Window_System);
+   procedure Log is new Orka.Logging.Generic_Log (Window_System);
 
    package SF renames Ada.Strings.Fixed;
    package ED renames Event_Device;
@@ -134,7 +134,7 @@ package body AWT.Inputs.Gamepads is
                Effect.Stop_At := Orka.OS.Monotonic_Clock +
                  (if Count > 0 then Count * FF.To_Duration (Effect.Effect.Replay.Length) else 0.0);
             else
-               Messages.Log (Error,
+               Log (Error,
                  "Failed to play " & Effect.Effect.Kind'Image & " force-feedback effect");
             end if;
             exit;
@@ -707,7 +707,7 @@ package body AWT.Inputs.Gamepads is
          State.Angular_Velocity := Motion_State.Angular_Velocity;
 
          if Calibrated then
-            Messages.Log (Debug, "Calibrated gyro bias of IMU of " & (+Object.ID));
+            Log (Debug, "Calibrated gyro bias of IMU of " & (+Object.ID));
          end if;
       end Update_IMU_State;
 
@@ -923,7 +923,7 @@ package body AWT.Inputs.Gamepads is
             Uploaded_OK := Element.Effect.ID /= -1;
 
             if not Uploaded_OK then
-               Messages.Log (Error,
+               Log (Error,
                  "Failed to upload " & Element.Effect.Kind'Image & " force-feedback effect");
             end if;
          end Upload_Effect;

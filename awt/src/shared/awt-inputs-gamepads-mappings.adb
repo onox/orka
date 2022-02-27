@@ -27,7 +27,7 @@ package body AWT.Inputs.Gamepads.Mappings is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Window_System);
+   procedure Log is new Orka.Logging.Generic_Log (Window_System);
 
    package SF renames Ada.Strings.Fixed;
 
@@ -83,7 +83,7 @@ package body AWT.Inputs.Gamepads.Mappings is
          end;
       end loop;
 
-      Messages.Log (Debug,
+      Log (Debug,
         "Added " & Trim (Count'Image) & " gamepad mappings for " & Platform_Value & " platform");
    end Set_Mappings;
 

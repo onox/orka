@@ -52,8 +52,6 @@ package Orka.Logging is
 
    generic
       From : Source;
-   package Messages is
-      procedure Log (Level : Severity; Message : String);
-   end Messages;
+   procedure Generic_Log (Level : Severity; Message : String);
 
 end Orka.Logging;

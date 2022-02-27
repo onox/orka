@@ -119,10 +119,8 @@ package GL.Debug is
       From : Source;
       Kind : Message_Type;
       ID   : UInt := 0;
-   package Messages is
-      procedure Log (Level : Severity; Message : String);
-      --  Generate a new debug message
-   end Messages;
+   procedure Log (Level : Severity; Message : String);
+   --  Generate a new debug message
 
 private
 

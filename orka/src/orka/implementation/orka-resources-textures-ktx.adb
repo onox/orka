@@ -34,7 +34,7 @@ package body Orka.Resources.Textures.KTX is
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
 
-   package Messages is new Orka.Logging.Messages (Resource_Loader);
+   procedure Log is new Orka.Logging.Generic_Log (Resource_Loader);
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
@@ -144,7 +144,7 @@ package body Orka.Resources.Textures.KTX is
          declare
             procedure Iterate (Position : Orka.KTX.String_Maps.Cursor) is
             begin
-               Messages.Log (Warning, "Metadata: " & Orka.KTX.String_Maps.Key (Position) &
+               Log (Warning, "Metadata: " & Orka.KTX.String_Maps.Key (Position) &
                  " = " & Orka.KTX.String_Maps.Element (Position));
             end Iterate;
          begin
@@ -211,30 +211,30 @@ package body Orka.Resources.Textures.KTX is
          end if;
          T6 := Orka.OS.Monotonic_Clock;
 
-         Messages.Log (Info, "Loaded texture " & Path & " in " &
+         Log (Info, "Loaded texture " & Path & " in " &
            Logging.Trim (Logging.Image (T6 - T1)));
-         Messages.Log (Info, "  dims:   " &
+         Log (Info, "  dims:   " &
             Logging.Trim (Width'Image) & " × " &
             Logging.Trim (Height'Image) & " × " &
             Logging.Trim (Depth'Image) &
             ", mipmap levels:" & Levels'Image);
-         Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Value'Length) & " bytes");
-         Messages.Log (Info, "  kind:   " & Header.Kind'Image);
+         Log (Info, "  size:   " & Trim_Image (Bytes.Value'Length) & " bytes");
+         Log (Info, "  kind:   " & Header.Kind'Image);
          if Header.Compressed then
-            Messages.Log (Info, "  format: " & Header.Compressed_Format'Image);
+            Log (Info, "  format: " & Header.Compressed_Format'Image);
          else
-            Messages.Log (Info, "  format: " & Header.Internal_Format'Image &
+            Log (Info, "  format: " & Header.Internal_Format'Image &
               " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
               "x " & Header.Data_Type'Image & ")");
          end if;
 
-         Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
-         Messages.Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
-         Messages.Log (Info, "    storage:        " & Logging.Image (T4 - T3));
-         Messages.Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
+         Log (Info, "  statistics:");
+         Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
+         Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
+         Log (Info, "    storage:        " & Logging.Image (T4 - T3));
+         Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
          if Header.Mipmap_Levels = 0 then
-            Messages.Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
+            Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
          end if;
 
          return Texture;
@@ -454,27 +454,27 @@ package body Orka.Resources.Textures.KTX is
 
          T4 := Orka.OS.Monotonic_Clock;
 
-         Messages.Log (Info, "Saved texture " & Path & " in " &
+         Log (Info, "Saved texture " & Path & " in " &
            Logging.Trim (Logging.Image (+(T4 - T1))));
-         Messages.Log (Info, "  dims:   " &
+         Log (Info, "  dims:   " &
             Logging.Trim (Texture.Width (Base_Level)'Image) & " × " &
             Logging.Trim (Texture.Height (Base_Level)'Image) & " × " &
             Logging.Trim (Texture.Depth (Base_Level)'Image) &
             ", mipmap levels:" & Texture.Mipmap_Levels'Image);
-         Messages.Log (Info, "  size:   " & Trim_Image (Bytes.Get.Value'Length) & " bytes");
-         Messages.Log (Info, "  kind:   " & Texture.Kind'Image);
+         Log (Info, "  size:   " & Trim_Image (Bytes.Get.Value'Length) & " bytes");
+         Log (Info, "  kind:   " & Texture.Kind'Image);
          if Header.Compressed then
-            Messages.Log (Info, "  format: " & Texture.Compressed_Format'Image);
+            Log (Info, "  format: " & Texture.Compressed_Format'Image);
          else
-            Messages.Log (Info, "  format: " & Texture.Internal_Format'Image &
+            Log (Info, "  format: " & Texture.Internal_Format'Image &
               " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
               "x " & Header.Data_Type'Image & ")");
          end if;
 
-         Messages.Log (Info, "  statistics:");
-         Messages.Log (Info, "    creating header: " & Logging.Image (+(T2 - T1)));
-         Messages.Log (Info, "    retrieving data: " & Logging.Image (+(T3 - T2)));
-         Messages.Log (Info, "    writing file:    " & Logging.Image (+(T4 - T3)));
+         Log (Info, "  statistics:");
+         Log (Info, "    creating header: " & Logging.Image (+(T2 - T1)));
+         Log (Info, "    retrieving data: " & Logging.Image (+(T3 - T2)));
+         Log (Info, "    writing file:    " & Logging.Image (+(T4 - T3)));
       end;
    end Write_Texture;
 

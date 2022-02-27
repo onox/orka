@@ -32,7 +32,7 @@ package body Orka.Loops is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Game_Loop);
+   procedure Log is new Orka.Logging.Generic_Log (Game_Loop);
 
    function "+" (Value : Ada.Real_Time.Time_Span) return Duration
      renames Ada.Real_Time.To_Duration;
@@ -147,7 +147,7 @@ package body Orka.Loops is
    begin
       Scene.Replace_Array (Scene_Array);
 
-      Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (+Tick)));
+      Log (Debug, "Simulation tick resolution: " & Trim (Image (+Tick)));
 
       --  Based on http://gameprogrammingpatterns.com/game-loop.html
       loop
@@ -230,7 +230,7 @@ package body Orka.Loops is
                      Frame_Time : constant Time_Span := Total_Elapsed / Frame_Counter;
                      FPS        : constant Integer   := Integer (1.0 / To_Duration (Frame_Time));
                   begin
-                     Messages.Log (Debug, Trim (FPS'Image) & " FPS, frame time: " &
+                     Log (Debug, Trim (FPS'Image) & " FPS, frame time: " &
                        Trim (Image (+Frame_Time)));
                   end;
 
@@ -238,10 +238,10 @@ package body Orka.Loops is
                      declare
                         Stat_Avg : constant Duration := +(Stat_Sum / Exceeded_Frame_Counter);
                      begin
-                        Messages.Log (Debug, "  deadline missed: " &
+                        Log (Debug, "  deadline missed: " &
                           Trim (Exceeded_Frame_Counter'Image) & " (limit is " &
                           Trim (Image (+Handler.Frame_Limit)) & ")");
-                        Messages.Log (Debug, "    avg/min/max: " &
+                        Log (Debug, "    avg/min/max: " &
                           Image (Stat_Avg) &
                           Image (Stat_Min) &
                           Image (Stat_Max));
@@ -298,7 +298,7 @@ package body Orka.Loops is
             Run_Game_Loop (Fence'Unchecked_Access, Render);
          exception
             when Error : others =>
-               Messages.Log (Loggers.Error, Ada.Exceptions.Exception_Information (Error));
+               Log (Loggers.Error, Ada.Exceptions.Exception_Information (Error));
          end Simulation;
       begin
          System.Multiprocessors.Dispatching_Domains.Set_CPU (1);

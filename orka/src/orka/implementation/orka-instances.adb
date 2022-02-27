@@ -19,7 +19,7 @@ with GL.Debug;
 package body Orka.Instances is
 
    use GL.Debug;
-   package Messages is new GL.Debug.Messages (Third_Party, Other);
+   procedure Log is new GL.Debug.Log (Third_Party, Other);
 
    function Create_Manager (Capacity, Parts : Positive) return Manager is
       Transforms : constant Positive := Capacity * Parts;
@@ -42,9 +42,9 @@ package body Orka.Instances is
          Result.Transforms := PMB.Create_Buffer
            (Orka.Types.Single_Matrix_Type, Transforms, Rendering.Buffers.Mapped.Write);
 
-         Messages.Log (Notification, "Created group for" &
+         Log (Notification, "Created group for" &
            Capacity'Image & " instances");
-         Messages.Log (Notification, " " &
+         Log (Notification, " " &
            Capacity'Image & " instances x" & Parts'Image & " parts =" &
            Transforms'Image & " transforms");
       end return;

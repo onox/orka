@@ -63,11 +63,6 @@ procedure Orka_KTX is
 
    use type Orka.Integer_32;
 
-   use all type Orka.Logging.Source;
-   use all type Orka.Logging.Severity;
-
-   package Messages is new Orka.Logging.Messages (Application);
-
    package SU renames Ada.Strings.Unbounded;
 
    use type SU.Unbounded_String;

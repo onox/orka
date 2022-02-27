@@ -24,7 +24,7 @@ with Orka.Rendering.Programs.Modules;
 package body Orka.Culling is
 
    use GL.Debug;
-   package Messages is new GL.Debug.Messages (Third_Party, Other);
+   procedure Log is new GL.Debug.Log (Third_Party, Other);
 
    function Create_Culler
      (Location : Resources.Locations.Location_Ptr) return Culler
@@ -84,10 +84,10 @@ package body Orka.Culling is
                Kind   => Elements_Command_Type,
                Length => Commands))
       do
-         Messages.Log (Notification, "Created culler for" &
+         Log (Notification, "Created culler for" &
            Transforms'Image & " transforms and" &
            Commands'Image & " commands");
-         Messages.Log (Notification, "  cull frustum:" &
+         Log (Notification, "  cull frustum:" &
            Work_Groups'Image & " groups x" & Local_Size'Image & " transforms");
       end return;
    end Create_Instance;

@@ -27,7 +27,7 @@ package body Orka.Contexts.EGL is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Window_System);
+   procedure Log is new Orka.Logging.Generic_Log (Window_System);
 
    procedure Print_Error
      (Error : Standard.EGL.Errors.Error_Code;
@@ -43,26 +43,26 @@ package body Orka.Contexts.EGL is
            when Debug.Warning  => Loggers.Warning,
            when Debug.Info     => Loggers.Debug);
    begin
-      Messages.Log (Severity, Error'Image & " in " & Command & ": " & Trim (Message));
+      Log (Severity, Error'Image & " in " & Command & ": " & Trim (Message));
    end Print_Error;
 
    procedure Print_Debug
      (Display : Standard.EGL.Objects.Displays.Display;
       Flags   : Context_Flags) is
    begin
-      Messages.Log (Debug, "Created EGL context");
-      Messages.Log (Debug, "  platform: " & Display.Platform'Image);
+      Log (Debug, "Created EGL context");
+      Log (Debug, "  platform: " & Display.Platform'Image);
       declare
          Name : constant String := Display.Device.Name;
       begin
-         Messages.Log (Debug, "  device:   " & (if Name /= "" then Name else "unknown"));
+         Log (Debug, "  device:   " & (if Name /= "" then Name else "unknown"));
       end;
-      Messages.Log (Debug, "  vendor:   " & Display.Vendor);
-      Messages.Log (Debug, "  version:  " & Display.Version);
-      Messages.Log (Debug, "  context:");
-      Messages.Log (Debug, "    flags:    " & Image (Flags));
-      Messages.Log (Debug, "    version:  " & GL.Context.Version_String);
-      Messages.Log (Debug, "    renderer: " & GL.Context.Renderer);
+      Log (Debug, "  vendor:   " & Display.Vendor);
+      Log (Debug, "  version:  " & Display.Version);
+      Log (Debug, "  context:");
+      Log (Debug, "    flags:    " & Image (Flags));
+      Log (Debug, "    version:  " & GL.Context.Version_String);
+      Log (Debug, "    renderer: " & GL.Context.Renderer);
    end Print_Debug;
 
    procedure Post_Initialize (Object : in out EGL_Context'Class) is
@@ -124,12 +124,12 @@ package body Orka.Contexts.EGL is
 
       Devices : constant EGL_Devices.Device_List := EGL_Devices.Devices;
    begin
-      Messages.Log (Debug, "EGL devices:");
+      Log (Debug, "EGL devices:");
       for Device of Devices loop
          declare
             Name : constant String := Device.Name;
          begin
-            Messages.Log (Debug, "  - " & (if Name /= "" then Name else "unknown"));
+            Log (Debug, "  - " & (if Name /= "" then Name else "unknown"));
          end;
       end loop;
 
@@ -140,7 +140,7 @@ package body Orka.Contexts.EGL is
    procedure Finalize (Object : in out EGL_Context) is
    begin
       if Object.Flags.Debug then
-         Messages.Log (Debug, "Shutting down EGL");
+         Log (Debug, "Shutting down EGL");
       end if;
 
       Object.Vertex_Array.Delete;

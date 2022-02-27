@@ -78,14 +78,10 @@ package body Orka.Logging is
       Current_Logger.Log (From, Kind, Level, Message);
    end Log;
 
-   package body Messages is
+   procedure Generic_Log (Level : Severity; Message : String) is
       Kind : constant Message_Type := Message_Type (GL.Debug.Message_Type'(GL.Debug.Other));
-      --  TODO Make generic parameter
-
-      procedure Log (Level : Severity; Message : String) is
-      begin
-         Orka.Logging.Log (From, Kind, Level, Message);
-      end Log;
-   end Messages;
+   begin
+      Orka.Logging.Log (From, Kind, Level, Message);
+   end Generic_Log;
 
 end Orka.Logging;

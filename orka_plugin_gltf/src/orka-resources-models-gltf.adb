@@ -42,7 +42,7 @@ package body Orka.Resources.Models.glTF is
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
 
-   package Messages is new Orka.Logging.Messages (Resource_Loader);
+   procedure Log is new Orka.Logging.Generic_Log (Resource_Loader);
 
    Default_Root_Name : constant String := "root";
 
@@ -747,26 +747,26 @@ package body Orka.Resources.Models.glTF is
       declare
          Times : Times_Data renames Data.Times;
       begin
-         Messages.Log (Info, "Loaded model " & Path & " in " &
+         Log (Info, "Loaded model " & Path & " in " &
            Logging.Trim (Logging.Image (Orka.OS.Monotonic_Clock - Data.Start_Time)));
-         Messages.Log (Info, " " &
+         Log (Info, " " &
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Messages.Log (Info, "  timing:");
-         Messages.Log (Info, "    reading file:    " & Logging.Image (Times (Time_Reading)));
-         Messages.Log (Info, "    parsing JSON:    " & Logging.Image (Times (Time_Parsing)));
-         Messages.Log (Info, "    processing glTF: " & Logging.Image (Times (Time_Processing)));
+         Log (Info, "  timing:");
+         Log (Info, "    reading file:    " & Logging.Image (Times (Time_Reading)));
+         Log (Info, "    parsing JSON:    " & Logging.Image (Times (Time_Parsing)));
+         Log (Info, "    processing glTF: " & Logging.Image (Times (Time_Processing)));
 
-         Messages.Log (Info, "      buffers:       " & Logging.Image (Times (Time_Buffers)));
-         Messages.Log (Info, "      views:         " & Logging.Image (Times (Time_Views)));
-         Messages.Log (Info, "      accessors:     " & Logging.Image (Times (Time_Accessors)));
-         Messages.Log (Info, "      meshes:        " & Logging.Image (Times (Time_Meshes)));
-         Messages.Log (Info, "      nodes:         " & Logging.Image (Times (Time_Nodes)));
-         Messages.Log (Info, "      scenes:        " & Logging.Image (Times (Time_Scenes)));
+         Log (Info, "      buffers:       " & Logging.Image (Times (Time_Buffers)));
+         Log (Info, "      views:         " & Logging.Image (Times (Time_Views)));
+         Log (Info, "      accessors:     " & Logging.Image (Times (Time_Accessors)));
+         Log (Info, "      meshes:        " & Logging.Image (Times (Time_Meshes)));
+         Log (Info, "      nodes:         " & Logging.Image (Times (Time_Nodes)));
+         Log (Info, "      scenes:        " & Logging.Image (Times (Time_Scenes)));
 
-         Messages.Log (Info, "    scene tree:      " & Logging.Image (Times (Time_Scene_Tree)));
-         Messages.Log (Info, "    buffers:         " & Logging.Image (Times (Time_Write_Buffers)));
+         Log (Info, "    scene tree:      " & Logging.Image (Times (Time_Scene_Tree)));
+         Log (Info, "    buffers:         " & Logging.Image (Times (Time_Write_Buffers)));
       end;
    end Execute;
 

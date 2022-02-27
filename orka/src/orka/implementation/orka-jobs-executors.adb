@@ -29,7 +29,7 @@ package body Orka.Jobs.Executors is
    use all type Orka.Logging.Source;
    use all type Orka.Logging.Severity;
 
-   package Messages is new Orka.Logging.Messages (Worker);
+   procedure Log is new Orka.Logging.Generic_Log (Worker);
 
    function Get_Root_Dependent (Element : Job_Ptr) return Job_Ptr is
       Result : Job_Ptr := Element;
@@ -118,11 +118,11 @@ package body Orka.Jobs.Executors is
                   when Error : others =>
                      Promise.Set_Failed (Error);
 
-                     Messages.Log (Loggers.Error,
+                     Log (Loggers.Error,
                        Kind'Image & " job " & Tag & " " & Exception_Information (Error));
                end;
             else
-               Messages.Log (Warning,
+               Log (Warning,
                  Kind'Image & " job " & Tag & " already " & Future.Current_Status'Image);
             end if;
 
@@ -178,7 +178,7 @@ package body Orka.Jobs.Executors is
       end loop;
    exception
       when Error : others =>
-         Messages.Log (Loggers.Error, Exception_Information (Error));
+         Log (Loggers.Error, Exception_Information (Error));
    end Execute_Jobs;
 
 end Orka.Jobs.Executors;
