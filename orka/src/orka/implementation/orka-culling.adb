@@ -16,15 +16,17 @@
 
 with GL.Barriers;
 with GL.Compute;
-with GL.Debug;
 with GL.Types.Compute;
 
+with Orka.Logging;
 with Orka.Rendering.Programs.Modules;
 
 package body Orka.Culling is
 
-   use GL.Debug;
-   procedure Log is new GL.Debug.Log (Third_Party, Other);
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
+   procedure Log is new Orka.Logging.Generic_Log (Third_Party);
 
    function Create_Culler
      (Location : Resources.Locations.Location_Ptr) return Culler
@@ -84,10 +86,10 @@ package body Orka.Culling is
                Kind   => Elements_Command_Type,
                Length => Commands))
       do
-         Log (Notification, "Created culler for" &
+         Log (Debug, "Created culler for" &
            Transforms'Image & " transforms and" &
            Commands'Image & " commands");
-         Log (Notification, "  cull frustum:" &
+         Log (Debug, "  cull frustum:" &
            Work_Groups'Image & " groups x" & Local_Size'Image & " transforms");
       end return;
    end Create_Instance;

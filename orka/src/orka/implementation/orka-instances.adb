@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Debug;
+with Orka.Logging;
 
 package body Orka.Instances is
 
-   use GL.Debug;
-   procedure Log is new GL.Debug.Log (Third_Party, Other);
+   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Severity;
+
+   procedure Log is new Orka.Logging.Generic_Log (Third_Party);
 
    function Create_Manager (Capacity, Parts : Positive) return Manager is
       Transforms : constant Positive := Capacity * Parts;
@@ -42,9 +44,9 @@ package body Orka.Instances is
          Result.Transforms := PMB.Create_Buffer
            (Orka.Types.Single_Matrix_Type, Transforms, Rendering.Buffers.Mapped.Write);
 
-         Log (Notification, "Created group for" &
+         Log (Debug, "Created group for" &
            Capacity'Image & " instances");
-         Log (Notification, " " &
+         Log (Debug, " " &
            Capacity'Image & " instances x" & Parts'Image & " parts =" &
            Transforms'Image & " transforms");
       end return;
