@@ -32,27 +32,25 @@ package body Orka.Terminals is
       Reversed  => 7,
       Cross_Out => 9);
 
-   Foreground_Color_Codes : constant array (Color) of Natural :=
-     (Default => 0,
-      Grey    => 30,
-      Red     => 31,
-      Green   => 32,
-      Yellow  => 33,
-      Blue    => 34,
-      Magenta => 35,
-      Cyan    => 36,
-      White   => 37);
+   type Color_Kind is (FG, BG, None);
 
-   Background_Color_Codes : constant array (Color) of Natural :=
-     (Default => 0,
-      Grey    => 40,
-      Red     => 41,
-      Green   => 42,
-      Yellow  => 43,
-      Blue    => 44,
-      Magenta => 45,
-      Cyan    => 46,
-      White   => 47);
+   type Color_Code      is range 0 .. 255;
+   type Color_Component is range 0 .. 5;
+
+   type Color_Index is (R, G, B);
+
+   type Color_RGB is array (Color_Index) of Color_Component;
+
+   Colors : constant array (Color) of Color_RGB :=
+     (Default => (0, 0, 0),
+      Grey    => (2, 2, 2),
+      Red     => (4, 0, 0),
+      Green   => (1, 3, 0),
+      Yellow  => (4, 3, 0),
+      Blue    => (0, 1, 4),
+      Magenta => (4, 0, 3),
+      Cyan    => (0, 4, 3),
+      White   => (4, 4, 4));
 
    package L1 renames Ada.Characters.Latin_1;
    package SF renames Ada.Strings.Fixed;
@@ -65,10 +63,31 @@ package body Orka.Terminals is
       return (if Code /= 0 then L1.ESC & "[" & Image & "m" else "");
    end Sequence;
 
-   function Colorize (Text : String; Foreground, Background : Color := Default;
-                      Attribute : Style := Default) return String is
-      FG : constant String := Sequence (Foreground_Color_Codes (Foreground));
-      BG : constant String := Sequence (Background_Color_Codes (Background));
+   function Sequence (Kind : Color_Kind; Color : Color_RGB) return String is
+      Code : constant Color_Code :=
+        Color_Code (16 + 36 * Color_Code (Color (R)) +
+                          6 * Color_Code (Color (G)) +
+                              Color_Code (Color (B)));
+
+      Image : constant String := SF.Trim (Code'Image, Ada.Strings.Both);
+   begin
+      return
+        (case Kind is
+           when FG   => L1.ESC & "[38;5;" & Image & "m",
+           when BG   => L1.ESC & "[48;5;" & Image & "m",
+           when None => "");
+   end Sequence;
+
+   function Colorize
+     (Text                   : String;
+      Foreground, Background : Color := Default;
+      Attribute              : Style := Default) return String
+   is
+      FG_Kind : constant Color_Kind := (if Foreground /= Default then FG else None);
+      BG_Kind : constant Color_Kind := (if Background /= Default then BG else None);
+
+      FG : constant String := Sequence (FG_Kind, Colors (Foreground));
+      BG : constant String := Sequence (BG_Kind, Colors (Background));
       ST : constant String := Sequence (Style_Codes (Attribute));
    begin
       return Reset & FG & BG & ST & Text & Reset;
