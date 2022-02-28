@@ -22,7 +22,6 @@ package body Orka.Loggers.Terminal is
    protected body Logger_Object is
       procedure Log
         (From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String)
       is
@@ -30,7 +29,7 @@ package body Orka.Loggers.Terminal is
       begin
          if Level <= Min_Level then
             Orka.OS.Put_Line
-              (Formatting.Format_Message (From, Kind, Level, Message, True),
+              (Formatting.Format_Message (From, Level, Message, Colorize => True),
                (if Level = Error then Standard_Error else Standard_Output));
          end if;
       end Log;

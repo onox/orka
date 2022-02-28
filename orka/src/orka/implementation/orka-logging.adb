@@ -16,8 +16,6 @@
 
 with Ada.Finalization;
 
-with GL.Debug;
-
 with Orka.Loggers.Terminal;
 with Orka.OS;
 with Orka.Terminals;
@@ -71,17 +69,15 @@ package body Orka.Logging is
 
    procedure Log
      (From    : Source;
-      Kind    : Message_Type;
       Level   : Severity;
       Message : String) is
    begin
-      Current_Logger.Log (From, Kind, Level, Message);
+      Current_Logger.Log (From, Level, Message);
    end Log;
 
    procedure Generic_Log (Level : Severity; Message : String) is
-      Kind : constant Message_Type := Message_Type (GL.Debug.Message_Type'(GL.Debug.Other));
    begin
-      Orka.Logging.Log (From, Kind, Level, Message);
+      Orka.Logging.Log (From, Level, Message);
    end Generic_Log;
 
 end Orka.Logging;

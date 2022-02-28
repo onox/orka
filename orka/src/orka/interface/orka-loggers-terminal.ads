@@ -21,7 +21,6 @@ package Orka.Loggers.Terminal is
       overriding
       procedure Log
         (From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String);
    end Logger_Object;

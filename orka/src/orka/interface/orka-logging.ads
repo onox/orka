@@ -21,10 +21,7 @@ with Orka.Transforms.Doubles.Vectors;
 package Orka.Logging is
    pragma Preelaborate;
 
-   subtype Source is Loggers.Source;
-
-   subtype Message_Type is Loggers.Message_Type;
-
+   subtype Source   is Loggers.Source;
    subtype Severity is Loggers.Severity;
 
    -----------------------------------------------------------------------------
@@ -43,7 +40,6 @@ package Orka.Logging is
 
    procedure Log
      (From    : Source;
-      Kind    : Message_Type;
       Level   : Severity;
       Message : String);
    --  Log the message using the logger

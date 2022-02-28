@@ -14,16 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Debug;
-
 package Orka.Loggers is
    pragma Preelaborate;
 
    type Source is
      (Worker, Game_Loop, Resource_Loader,
       OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
-
-   type Message_Type is new GL.Debug.Message_Type;
 
    type Severity is (Error, Warning, Info, Debug);
 
@@ -32,7 +28,6 @@ package Orka.Loggers is
    procedure Log
      (Object  : in out Logger;
       From    : Source;
-      Kind    : Message_Type;
       Level   : Severity;
       Message : String) is abstract
    with Synchronization => By_Protected_Procedure;

@@ -39,7 +39,6 @@ package body Orka.Loggers.Location is
       procedure Enqueue
         (Path    : SU.Unbounded_String;
          From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String);
 
@@ -57,7 +56,6 @@ package body Orka.Loggers.Location is
       procedure Enqueue
         (Path    : SU.Unbounded_String;
          From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String) is
       begin
@@ -65,9 +63,9 @@ package body Orka.Loggers.Location is
             Messages.Add_Last
               ((Path    => Path,
                 Message => SU.To_Unbounded_String
-                  (Formatting.Format_Message (From, Kind, Level, Message, False) & L1.LF)));
+                  (Formatting.Format_Message (From, Level, Message, Colorize => False) & L1.LF)));
          else
-            Orka.Loggers.Terminal.Logger.Log (From, Kind, Level, Message);
+            Orka.Loggers.Terminal.Logger.Log (From, Level, Message);
          end if;
       end Enqueue;
 
@@ -123,7 +121,6 @@ package body Orka.Loggers.Location is
       overriding
       procedure Log
         (From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String);
 
@@ -135,12 +132,11 @@ package body Orka.Loggers.Location is
    protected body Location_Logger is
       procedure Log
         (From    : Source;
-         Kind    : Message_Type;
          Level   : Severity;
          Message : String) is
       begin
          if Level <= Min_Level then
-            Queue.Enqueue (File_Path, From, Kind, Level, Message);
+            Queue.Enqueue (File_Path, From, Level, Message);
          end if;
       end Log;
 

@@ -28,7 +28,6 @@ package body Orka.Loggers.Formatting is
 
    function Format_Message
      (From     : Source;
-      Kind     : Message_Type;
       Level    : Severity;
       Message  : String;
       Colorize : Boolean) return String
@@ -42,8 +41,7 @@ package body Orka.Loggers.Formatting is
 
       Time_Level : constant String :=
         "[" & Terminals.Time_Image & " " & SF.Head (Level'Image, Length_Level) & "]";
-      Kind_Image : constant String := "[" & SF.Head (From'Image, Length_Source) & "]"
-       & (if Kind in Other | Error then "" else " [" & Kind'Image & "]");
+      From_Image : constant String := "[" & SF.Head (From'Image, Length_Source) & "]";
 
       function Colorize_Text (Text : String; Color : Terminals.Color) return String is
         (if Colorize then Terminals.Colorize (Text, Color) else Text);
@@ -51,7 +49,7 @@ package body Orka.Loggers.Formatting is
       return
         Colorize_Text (Time_Level, Level_Color) &
         " " &
-        Colorize_Text (Kind_Image, Terminals.Magenta) &
+        Colorize_Text (From_Image, Terminals.Magenta) &
         " " & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 

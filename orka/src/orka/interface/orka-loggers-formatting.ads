@@ -19,7 +19,6 @@ private package Orka.Loggers.Formatting is
 
    function Format_Message
      (From     : Source;
-      Kind     : Message_Type;
       Level    : Severity;
       Message  : String;
       Colorize : Boolean) return String;
