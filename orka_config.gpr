@@ -29,13 +29,13 @@ abstract project Orka_Config is
             "-gnatVa",  -- all validity checks
             "-gnatf",   -- full errors
 --            "-gnatwe", -- warnings as errors
-            "-gnatwfl.s");
+            "-gnatwl.s");
       when "warnings" =>
          compile_checks_switches :=
            ("-gnatwa",  -- all warnings
             "-gnatVa",  -- all validity checks
             "-gnatf",   -- full errors
-            "-gnatwfl.s");
+            "-gnatwl.s");
       when "none" => null;
    end case;
 
