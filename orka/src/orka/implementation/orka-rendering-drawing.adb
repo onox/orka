@@ -18,8 +18,6 @@ with GL.Drawing;
 
 package body Orka.Rendering.Drawing is
 
-   use GL.Types;
-
    procedure Draw
      (Mode          : GL.Types.Connection_Mode;
       Offset, Count : Natural;

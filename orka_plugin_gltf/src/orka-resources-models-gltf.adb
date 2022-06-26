@@ -236,7 +236,6 @@ package body Orka.Resources.Models.glTF is
       Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector)
      return Orka.Types.Singles.Vector4_Array
    is
-      use type GL.Types.Size;
       use Orka.glTF.Accessors;
       use all type Orka.glTF.Meshes.Attribute_Kind;
 
@@ -329,7 +328,6 @@ package body Orka.Resources.Models.glTF is
       Meshes    : in out Orka.glTF.Meshes.Mesh_Vectors.Vector;
       Vertices, Indices : out Natural)
    is
-      use type Ada.Containers.Count_Type;
       use type Orka.glTF.Accessors.Component_Kind;
       use type GL.Types.Index_Type;
       use Orka.glTF.Accessors;

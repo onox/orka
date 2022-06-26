@@ -292,7 +292,6 @@ package body Orka.Features.Terrain is
       Timer_Update, Timer_Render : in out Orka.Timers.Timer)
    is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
-      use all type Float_32;
       use all type GL.Types.Connection_Mode;
 
       Subdivision  : constant Size     := Size (Parameters.Meshlet_Subdivision);
@@ -374,8 +373,6 @@ package body Orka.Features.Terrain is
       Flattening      : Float_32 := 0.0;
       Side            : Boolean  := True) return Spheroid_Parameters
    is
-      use type Float_32_Array;
-
       --  Convert from geodetic coordinates to geocentric coordinates
       --  using the semi-major axis and the flattening of the sphere.
       --  See https://en.wikipedia.org/wiki/Geographic_coordinate_conversion

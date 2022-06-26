@@ -61,7 +61,6 @@ package body Orka.Resources.Textures.KTX is
 
       use Ada.Streams;
       use GL.Low_Level.Enums;
-      use type Time;
 
       T3, T4, T5, T6 : Time;
    begin

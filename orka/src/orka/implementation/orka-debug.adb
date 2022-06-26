@@ -35,7 +35,7 @@ package body Orka.Debug is
      (From      : Source;
       Kind      : Message_Type;
       Level     : Severity;
-      ID        : Unsigned_32;
+      Unused_ID : Unsigned_32;
       Message   : String)
    is
       use all type Orka.Loggers.Source;

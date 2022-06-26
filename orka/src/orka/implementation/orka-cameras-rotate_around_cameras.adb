@@ -53,8 +53,6 @@ package body Orka.Cameras.Rotate_Around_Cameras is
    procedure Update (Object : in out Rotate_Around_Camera; Delta_Time : Duration) is
       Change : Vector4;
       Mode   : Update_Mode;
-
-      use Orka.Transforms.Doubles.Vectors;
    begin
       Object.Updater.Get (Change, Mode);
 

@@ -18,7 +18,6 @@ with GL.Low_Level.Enums;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Textures;
 with GL.Pixels.Extensions;
-with GL.Types;
 
 with Orka.Rendering.Textures;
 with Orka.Types;

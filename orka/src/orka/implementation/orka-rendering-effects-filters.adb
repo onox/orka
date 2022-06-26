@@ -64,8 +64,6 @@ package body Orka.Rendering.Effects.Filters is
          --  [1] http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
          Weights : Float_32_Array (0 .. Radius / 2);
          Offsets : Float_32_Array (0 .. Radius / 2);
-
-         use type Float_32_Array;
       begin
          Weights (Weights'First) := Float_32 (Kernel (Weights'First));
          Offsets (Offsets'First) := 0.0;
@@ -173,7 +171,6 @@ package body Orka.Rendering.Effects.Filters is
       pragma Assert (Subject.Kind = LE.Texture_Rectangle);
 
       use Rendering.Programs;
-      use type Float_32;
 
       Width  : constant Size := Subject.Width  (0);
       Height : constant Size := Subject.Height (0);

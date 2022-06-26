@@ -36,7 +36,7 @@ package body GL.Debug is
       Level     : Severity;
       Length    : GL.Types.Size;
       C_Message : C.Strings.chars_ptr;
-      User_Data : System.Address)
+      Unused_User_Data : System.Address)
    with Convention => StdCall;
 
    procedure Debug_Callback
@@ -46,7 +46,7 @@ package body GL.Debug is
       Level     : Severity;
       Length    : GL.Types.Size;
       C_Message : C.Strings.chars_ptr;
-      User_Data : System.Address)
+      Unused_User_Data : System.Address)
    is
       Message : constant String := C.Strings.Value (C_Message, C.size_t (Length));
    begin

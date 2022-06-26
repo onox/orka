@@ -22,7 +22,6 @@ with Orka.Jobs;
 with Orka.Rendering.Fences;
 with Orka.Simulation;
 with Orka.Transforms.Singles.Vectors;
-with Orka.Windows;
 
 private package Orka.Simulation_Jobs is
 

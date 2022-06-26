@@ -39,8 +39,6 @@ package body Orka.Cameras.Look_From_Cameras is
    procedure Update (Object : in out Look_From_Camera; Delta_Time : Duration) is
       Change : Vector4;
       Mode   : Update_Mode;
-
-      use Orka.Transforms.Doubles.Vectors;
    begin
       Object.Updater.Get (Change, Mode);
 

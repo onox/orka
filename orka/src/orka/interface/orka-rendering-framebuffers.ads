@@ -24,7 +24,6 @@ with GL.Types.Colors;
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
-with Orka.Windows;
 
 package Orka.Rendering.Framebuffers is
    pragma Preelaborate;
