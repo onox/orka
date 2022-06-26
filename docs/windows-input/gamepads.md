@@ -222,13 +222,15 @@ Motion : constant AWT.Inputs.Gamepads.Motion_State := Gamepad.State;
 
 If a gamepad has a motion sensor, then `Is_Present` will return `True`,
 otherwise it will return `False`.
-If a motion sensor is present, then the component `Axes` will contain the raw values.
-`X`, `Y`, and `Z` are the measured acceleration values in *g*'s,
+If a motion sensor is present, then the component `Axes` is an array with
+the raw measured values of the linear acceleration and angular velocity.
+The values at the indices `X`, `Y`, and `Z` are the measured acceleration values in *g*'s,
 where *g* is the gravitational acceleration constant (1 g = 9.81 m/s^2^).
-`Rx`, `Ry`, and `Rz` are the measured angular velocity in degrees per second.
+The values of the `Rx`, `Ry`, and `Rz` are the measured angular velocity in degrees per second.
 
-If the hardware has been polled with a `DT` greater than 0.0, then `Has_Pose` will
-be `True` as well, otherwise it will be `False`.
+If the hardware has been polled with a `DT` greater than 0.0
+(see [Updating state](#updating-state) on how to poll the hardware),
+then `Has_Pose` will be `True` as well, otherwise it will be `False`.
 The estimated true angular velocity (pitch up, yaw left, roll left) in
 radians per second is then stored in `Angular_Velocity`,
 while the estimated orientation is stored as a quaternion in the component `Orientation`.
