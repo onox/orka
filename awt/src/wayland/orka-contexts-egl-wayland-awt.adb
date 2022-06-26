@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Fixed;
-
 with Orka.Logging;
 with Orka.Terminals;
 
@@ -137,13 +135,10 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       Visible, Resizable : Boolean := True;
       Transparent        : Boolean := False) return AWT_Window
    is
-      package EGL_Configs  renames Standard.EGL.Objects.Configs;
-      package EGL_Surfaces renames Standard.EGL.Objects.Surfaces;
+      package EGL_Configs renames Standard.EGL.Objects.Configs;
 
       use all type Standard.EGL.Objects.Contexts.Buffer_Kind;
-      use type EGL_Configs.Config;
 
-      package SF renames Ada.Strings.Fixed;
       package SU renames Standard.AWT.SU;
 
       function Flags return String is

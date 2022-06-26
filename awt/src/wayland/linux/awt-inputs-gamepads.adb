@@ -541,8 +541,6 @@ package body AWT.Inputs.Gamepads is
            (Source => Gamepad_Buttons,
             Target => Changed_Gamepad_Buttons);
 
-         use type Changed_Gamepad_Buttons;
-
          Old_State : constant Gamepad_State := Object.Gamepad;
 
          Old_State_Buttons : constant Changed_Gamepad_Buttons := Convert (Old_State.Buttons);
@@ -1036,7 +1034,6 @@ package body AWT.Inputs.Gamepads is
          Is_Directory : Boolean;
          Path         : String)
       is
-         use type SU.Unbounded_String;
          use all type Inotify.Event_Kind;
 
          Name : String renames Path (Path'First - 1 + Input_Folder'Length + 2 .. Path'Last);
@@ -1237,7 +1234,6 @@ package body AWT.Inputs.Gamepads is
    ----------------------------------------------------------------------------
 
    overriding procedure Initialize (Object : in out Gamepad_Event_Listener) is
-      use type Wayland.File_Descriptor;
    begin
       if Gamepad_Listener /= null then
          raise Program_Error;
@@ -1247,7 +1243,6 @@ package body AWT.Inputs.Gamepads is
    end Initialize;
 
    overriding procedure Finalize (Object : in out Gamepad_Event_Listener) is
-      use type Wayland.File_Descriptor;
    begin
       if Gamepad_Listener /= null
         and Gamepad_Listener /= Object'Unchecked_Access

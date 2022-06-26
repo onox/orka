@@ -18,7 +18,6 @@ with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
 with Wayland.Enums.Client;
-with Wayland.Protocols.Client;
 
 with AWT.OS;
 with AWT.Registry;
@@ -39,7 +38,6 @@ package body AWT.Drag_And_Drop is
 
    ----------------------------------------------------------------------------
 
-   package WP renames Wayland.Protocols;
    package WE renames Wayland.Enums;
 
    Global : AWT.Registry.Compositor renames AWT.Registry.Global;

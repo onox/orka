@@ -16,8 +16,6 @@
 
 with Ada.Strings.Unbounded;
 
-private with Ada.Characters.Latin_1;
-
 package AWT with SPARK_Mode => On is
    pragma Preelaborate;
 
@@ -45,8 +43,6 @@ package AWT with SPARK_Mode => On is
    package SU renames Ada.Strings.Unbounded;
 
 private
-
-   package L1 renames Ada.Characters.Latin_1;
 
    function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
    function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;

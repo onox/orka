@@ -16,6 +16,7 @@
 
 with Interfaces.C.Pointers;
 
+with Ada.Characters.Latin_1;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 
@@ -23,6 +24,8 @@ package body AWT.OS is
 
    use all type AWT.Inputs.Pointer_Button;
    use all type AWT.Inputs.Keyboard_Button;
+
+   package L1 renames Ada.Characters.Latin_1;
 
    function Code_To_Button (Code : Unsigned_32) return AWT.Inputs.Pointer_Button is
      (case Code is

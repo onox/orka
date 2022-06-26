@@ -17,9 +17,6 @@
 with Ada.Containers.Vectors;
 with Ada.Unchecked_Conversion;
 
-with Wayland.Enums.Pointer_Constraints_Unstable_V1;
-
-with AWT.Gamepads;
 with AWT.OS;
 with AWT.Windows;
 
@@ -76,8 +73,6 @@ package body AWT.Registry is
    is
       Monitor : constant not null access Monitor_Device :=
         Output_With_Monitor (Output).Monitor;
-
-      use all type WE.Client.Output_Mode;
    begin
       if Flags.Current then
          Monitor.Pending_State.Width   := Width;
@@ -675,9 +670,7 @@ package body AWT.Registry is
 
    --  Drag and drop
    procedure Data_Device_Leave
-     (Data_Device : in out WP.Client.Data_Device'Class)
-   is
-      use all type AWT.Inputs.Action_Kind;
+     (Data_Device : in out WP.Client.Data_Device'Class) is
    begin
       if Global.Seat.Drag_Drop_Window = null then
          raise Program_Error;

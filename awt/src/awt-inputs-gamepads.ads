@@ -14,8 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Characters.Latin_1;
 private with Ada.Finalization;
-private with Ada.Strings.Unbounded;
 
 private with AWT.Gamepads;
 private with AWT.IMUs;
@@ -226,6 +226,8 @@ package AWT.Inputs.Gamepads is
       Gamepad : Gamepad_Ptr) is abstract;
 
 private
+
+   package L1 renames Ada.Characters.Latin_1;
 
    type Axis_Value is delta 2.0 ** (-16)
      range -(2.0 ** 47) ..

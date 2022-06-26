@@ -16,7 +16,6 @@
 
 with Ada.Unchecked_Conversion;
 
-with Wayland.Enums.Client;
 with Wayland.Enums.Presentation_Time;
 with Wayland.Enums.Pointer_Constraints_Unstable_V1;
 with Wayland.Enums.Xdg_Shell;
@@ -344,10 +343,6 @@ package body AWT.Wayland.Windows is
 
       procedure Configure_Surface (Serial : Unsigned_32) is
          State : AWT.Windows.Window_State renames Pending_State;
-
-         Size_Changed : constant Boolean :=
-           Current_State.Width /= State.Width or
-             Current_State.Height /= State.Height;
       begin
          Current_State := State;
 
@@ -369,7 +364,6 @@ package body AWT.Wayland.Windows is
       is
          use all type WE.Xdg_Shell.Xdg_Toplevel_State;
          use all type AWT.Windows.Size_Mode;
-         use all type AWT.Windows.Window_State;
 
          Is_Maximized, Is_Fullscreen : Boolean := False;
       begin
@@ -403,9 +397,6 @@ package body AWT.Wayland.Windows is
 
          declare
             State : AWT.Windows.Window_State renames Pending_State;
-
-            State_Changed : constant Boolean :=
-               Current_State /= State;
 
             Size_Changed : constant Boolean :=
               Current_State.Width /= State.Width or
