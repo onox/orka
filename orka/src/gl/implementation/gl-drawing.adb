@@ -108,7 +108,7 @@ package body GL.Drawing is
       Offset_In_Bytes : constant Size
         := Offset * Elements_Indirect_Command'Size / System.Storage_Unit;
       Count_Offset_In_Bytes : constant Size
-        := Offset * Size'Size / System.Storage_Unit;
+        := Count_Offset * Size'Size / System.Storage_Unit;
       pragma Assert (Count_Offset_In_Bytes mod 4 = 0);
    begin
       API.Multi_Draw_Elements_Indirect_Count.Ref
