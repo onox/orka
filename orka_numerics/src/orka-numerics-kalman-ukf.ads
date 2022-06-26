@@ -18,6 +18,9 @@ generic
 package Orka.Numerics.Kalman.UKF is
    pragma Preelaborate;
 
+   use type Tensors.Tensor_Dimension;
+   use type Tensors.Element_Type;
+
    --  This package implements the state estimation form with additive noise
    --  of the Unscented Kalman Filter, Algorithm 8 from [1]
    --

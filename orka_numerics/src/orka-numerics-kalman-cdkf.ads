@@ -18,6 +18,9 @@ generic
 package Orka.Numerics.Kalman.CDKF is
    pragma Preelaborate;
 
+   use type Tensors.Tensor_Dimension;
+   use type Tensors.Element_Type;
+
    --  This package implements the state estimation form with additive noise
    --  of the square-root Central Difference Kalman Filter, Algorithm 13 from [1]
    --

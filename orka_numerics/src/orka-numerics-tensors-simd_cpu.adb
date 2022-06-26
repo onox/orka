@@ -1992,7 +1992,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function "**" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
 --     (Exp (Right * EF.Log (Left)));
-      use EF;
 
       Padding : constant Natural :=
         Data_Padding (Size => Right.Size, Count => Elements (Right.Shape));

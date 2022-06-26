@@ -24,9 +24,7 @@ generic
 package Orka.Numerics.Kalman is
    pragma Preelaborate;
 
-   use type Tensors.Tensor_Dimension;
    use type Tensors.Tensor_Shape;
-   use type Tensors.Element_Type;
 
    subtype Vector is Tensor;
    subtype Matrix is Tensor;
