@@ -218,8 +218,6 @@ begin
             Level, Levels : Mipmap_Level)
          is
             use all type LE.Texture_Kind;
-            use type Zoom_Mode;
-            use type View_Mode;
 
             Text : SU.Unbounded_String := "KTX viewer - " & Texture_Path;
          begin
@@ -420,7 +418,6 @@ begin
                      use all type AWT.Inputs.Keyboard_Button;
                      use all type AWT.Inputs.Pointer_Button;
                      use all type AWT.Inputs.Pointer_Mode;
-                     use all type AWT.Inputs.Dimension;
 
                      Rotate_Camera : constant Boolean :=
                        Pointer.Focused and Pointer.Buttons (Right) = Pressed;

@@ -25,18 +25,16 @@ with Orka.Logging;
 with Orka.OS;
 
 procedure Orka_Info is
-   procedure Display_Context_Information is
+   procedure Display_Context_Information (Context : Orka.Contexts.Context'Class) is
       package SU renames Ada.Strings.Unbounded;
       use Orka.OS;
    begin
-      Put_Line ("Major version: " & Natural'Image (GL.Context.Major_Version));
-      Put_Line ("Minor version: " & Natural'Image (GL.Context.Minor_Version));
+      Put_Line ("Version:  " & Orka.Contexts.Image (Context.Version));
+      Put_Line ("  OpenGL: " & GL.Context.Version_String);
+      Put_Line ("  GLSL:   " & GL.Context.Primary_Shading_Language_Version);
 
-      Put_Line ("  Vendor: " & GL.Context.Vendor);
+      Put_Line ("Vendor:   " & GL.Context.Vendor);
       Put_Line ("Renderer: " & GL.Context.Renderer);
-
-      Put_Line ("OpenGL version: " & GL.Context.Version_String);
-      Put_Line ("  GLSL version: " & GL.Context.Primary_Shading_Language_Version);
 
       Put_Line ("Extensions: ");
 
@@ -63,6 +61,6 @@ begin
         (Version => (3, 2), Flags  => (Debug => True, others => False));
    begin
       Orka.Debug.Set_Log_Messages (Enable => True);
-      Display_Context_Information;
+      Display_Context_Information (Context);
    end;
 end Orka_Info;
