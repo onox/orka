@@ -62,7 +62,7 @@ procedure Example is
       Monitor_Events := Monitor_Events + 1;
    end On_Disconnect;
 
-   Monitor_Listener : Test_Listener;
+   Unused_Monitor_Listener : Test_Listener;
 
    type Print_Gamepad_Listener is new AWT.Inputs.Gamepads.Gamepad_Event_Listener with null record;
 
@@ -92,7 +92,7 @@ procedure Example is
       Gamepad.Log_Information;
    end On_Disconnect;
 
-   Test_Print_Gamepad_Listener : Print_Gamepad_Listener;
+   Unused_Print_Gamepad_Listener : Print_Gamepad_Listener;
 
    Effect_1 : constant AWT.Inputs.Gamepads.Effect :=
      AWT.Inputs.Gamepads.Rumble_Effect (0.15, 0.0, 0.7, 1.0);
@@ -240,8 +240,8 @@ begin
          declare
             Pointer : constant AWT.Inputs.Pointer_State := AWT_Window.State;
 
-            use all type AWT.Inputs.Button_State;
-            use all type AWT.Inputs.Dimension;
+--            use all type AWT.Inputs.Button_State;
+--            use all type AWT.Inputs.Dimension;
             use all type AWT.Inputs.Pointer_Button;
             use all type AWT.Inputs.Pointer_Mode;
             use type AWT.Inputs.Cursors.Pointer_Cursor;
@@ -278,7 +278,7 @@ begin
          declare
             Keyboard : constant AWT.Inputs.Keyboard_State := AWT_Window.State;
 
-            use type AWT.Inputs.Keyboard_Modifiers;
+--            use type AWT.Inputs.Keyboard_Modifiers;
             use all type AWT.Inputs.Button_State;
             use all type AWT.Inputs.Keyboard_Button;
          begin

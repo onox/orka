@@ -4,7 +4,8 @@ with Orka.Logging;
 with Orka.Resources.Locations.Directories;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Drawing;
-with Orka.Windows;
+
+with AWT.Windows;
 
 package body Package_Test is
 
@@ -12,12 +13,12 @@ package body Package_Test is
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   package Messages is new Orka.Logging.Messages (Window_System);
+   procedure Log is new Orka.Logging.Generic_Log (Window_System);
 
    overriding
    function On_Close (Object : Test_Window) return Boolean is
    begin
-      Messages.Log (Debug, "User is trying to close window");
+      Log (Debug, "User is trying to close window");
       return True;
    end On_Close;
 
@@ -29,7 +30,7 @@ package body Package_Test is
       use all type AWT.Inputs.Action_Kind;
       use type AWT.Inputs.Fixed;
    begin
-      Messages.Log (Debug, "User dragged something to " &
+      Log (Debug, "User dragged something to " &
         "(" & Trim (X'Image) & ", " & Trim (Y'Image) & ")");
       AWT.Drag_And_Drop.Set_Action (if X < 300.0 and Y < 300.0 then Copy else None);
    end On_Drag;
@@ -42,7 +43,7 @@ package body Package_Test is
 
       Action : constant AWT.Inputs.Action_Kind := AWT.Drag_And_Drop.Valid_Action;
    begin
-      Messages.Log (Info, "User dropped something. Action is " & Action'Image);
+      Log (Info, "User dropped something. Action is " & Action'Image);
 
       if Action /= None then
          Object.Drag_And_Drop_Signal.Set;
@@ -56,7 +57,7 @@ package body Package_Test is
         Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Object.Width, Object.Height);
       Object.FB.Set_Default_Values ((Color => (0.0, 0.0, 0.0, Alpha), others => <>));
       Object.FB.Use_Framebuffer;
-      Messages.Log (Debug, "Changed size of framebuffer to " &
+      Log (Debug, "Changed size of framebuffer to " &
         Trim (Object.Width'Image) & " × " & Trim (Object.Height'Image));
    end Initialize_Framebuffer;
 

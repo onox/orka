@@ -5,7 +5,6 @@ with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
 
 with AWT.Inputs;
-with AWT.Windows;
 with AWT.Drag_And_Drop;
 
 package Package_Test is
