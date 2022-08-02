@@ -9,12 +9,12 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
+  workflow_dispatch:
   release:
     types: [created]
 
 jobs:
   build:
-    name: Building on ${{matrix.os}} using ${{matrix.compiler}}
     runs-on: ${{matrix.os}}
     continue-on-error: ${{matrix.experimental}}
     timeout-minutes: 15
@@ -22,28 +22,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        compiler: [fsf]
         experimental: [false]
         include:
           - os: windows-latest
-            compiler: community
             experimental: true
     steps:
     - uses: actions/checkout@v2
-
-    - name: Install toolchain
-      uses: ada-actions/toolchain@ce2021
-      with:
-        distrib: ${{matrix.compiler}}
-        target: native
-
-    - name: Install Alire
-      uses: alire-project/setup-alire@v1
-      with:
-        branch: "master"
-        toolchain: "gprbuild gnat_native --disable-assistant"
-        # Select gnat_native instead of gnat_external because
-        # ada-actions/toolchain installs gnat 9 instead of 10 on ubuntu-latest
+    - uses: alire-project/setup-alire@v1
 
     - name: Build crates
       run: make
