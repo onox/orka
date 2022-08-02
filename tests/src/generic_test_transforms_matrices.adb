@@ -37,15 +37,6 @@ package body Generic_Test_Transforms_Matrices is
    function Is_Equivalent (Expected, Result : Element_Type) return Boolean is
      (abs (Result - Expected) <= 2.0 * Element_Type'Model_Epsilon);
 
-   procedure Assert_Equivalent (Expected, Result : Vector4) is
-   begin
-      for I in Index_4D loop
-         Assert (Is_Equivalent (Expected (I), Result (I)),
-           "Unexpected element " & Expected (I)'Image & " instead of " & Result (I)'Image &
-           " at " & I'Image);
-      end loop;
-   end Assert_Equivalent;
-
    procedure Assert_Equivalent (Expected, Result : Vector4; Column : Index_4D) is
    begin
       for Row in Index_4D loop

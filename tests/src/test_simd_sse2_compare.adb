@@ -18,7 +18,6 @@ with AUnit.Assertions;
 with AUnit.Test_Caller;
 with AUnit.Test_Fixtures;
 
-with Orka.SIMD.SSE2.Integers.Arithmetic;
 with Orka.SIMD.SSE2.Integers.Compare;
 
 package body Test_SIMD_SSE2_Compare is

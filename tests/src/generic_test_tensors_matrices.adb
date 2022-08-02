@@ -476,7 +476,7 @@ package body Generic_Test_Tensors_Matrices is
 
       begin
          declare
-            Actual_3 : constant CPU_Tensor := Tensor_3.Inverse;
+            Unused_Actual_3 : constant CPU_Tensor := Tensor_3.Inverse;
          begin
             Assert (False, "Tensor not singular");
          end;
@@ -643,7 +643,7 @@ package body Generic_Test_Tensors_Matrices is
 
       begin
          declare
-            Actual_3 : constant CPU_Tensor := Tensor_3.Cholesky;
+            Unused_Actual_3 : constant CPU_Tensor := Tensor_3.Cholesky;
          begin
             null;
          end;
@@ -654,7 +654,7 @@ package body Generic_Test_Tensors_Matrices is
 
       begin
          declare
-            Actual_4 : constant CPU_Tensor := Tensor_4.Cholesky;
+            Unused_Actual_4 : constant CPU_Tensor := Tensor_4.Cholesky;
          begin
             Assert (False, "Exception Not_Positive_Definite_Matrix not raised");
          end;

@@ -135,10 +135,16 @@ package body AWT.Registry is
 
       Window : constant not null access AWT.Wayland.Windows.Wayland_Window :=
         Surface_Data.Get_Data (Surface).Window;
+
+      use all type AWT.Inputs.Dimension;
    begin
       Seat.Window := Window.all'Access;
 
-      Seat.Pointer_State   := (Focused => True, others => <>);
+      Seat.Pointer_State :=
+        (Focused  => True,
+         Position => (X => AWT.Inputs.Fixed (Surface_X),
+                      Y => AWT.Inputs.Fixed (Surface_Y)),
+         others   => <>);
       Seat.Scroll_Discrete := False;
       Seat.Scrolling       := (others => False);
 

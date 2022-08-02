@@ -27,7 +27,6 @@ with GL.Enums.Textures;
 with GL.Errors;
 with GL.Fences;
 with GL.Low_Level.Enums;
-with GL.Objects.Buffers;
 with GL.Objects.Framebuffers;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;

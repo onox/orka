@@ -22,7 +22,6 @@ with Orka.SIMD.SSE.Singles.Swizzle;
 package body Test_SIMD_SSE_Swizzle is
 
    use Orka;
-   use Orka.SIMD;
    use Orka.SIMD.SSE.Singles;
    use Orka.SIMD.SSE.Singles.Swizzle;
 
@@ -78,8 +77,6 @@ package body Test_SIMD_SSE_Swizzle is
    end Test_Shuffle;
 
    procedure Test_Transpose_Function (Object : in out Test) is
-      subtype IH is Index_4D;
-
       Elements : constant m128_Array
         := ((1.0,   2.0,  3.0,  4.0),
             (5.0,   6.0,  7.0,  8.0),
@@ -103,8 +100,6 @@ package body Test_SIMD_SSE_Swizzle is
    end Test_Transpose_Function;
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
-      subtype IH is Index_4D;
-
       Elements : m128_Array
         := ((1.0,   2.0,  3.0,  4.0),
             (5.0,   6.0,  7.0,  8.0),

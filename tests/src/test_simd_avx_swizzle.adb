@@ -22,7 +22,6 @@ with Orka.SIMD.AVX.Doubles.Swizzle;
 package body Test_SIMD_AVX_Swizzle is
 
    use Orka;
-   use Orka.SIMD;
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX.Doubles.Swizzle;
 
@@ -156,8 +155,6 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Blend;
 
    procedure Test_Transpose_Function (Object : in out Test) is
-      subtype IH is Index_4D;
-
       Elements : constant m256d_Array
         := ((1.0,   2.0,  3.0,  4.0),
             (5.0,   6.0,  7.0,  8.0),
@@ -181,8 +178,6 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Transpose_Function;
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
-      subtype IH is Index_4D;
-
       Elements : m256d_Array
         := ((1.0,   2.0,  3.0,  4.0),
             (5.0,   6.0,  7.0,  8.0),

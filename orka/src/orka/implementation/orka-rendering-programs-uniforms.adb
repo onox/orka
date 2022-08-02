@@ -16,6 +16,8 @@
 
 with Ada.Unchecked_Conversion;
 
+with GL.Types;
+
 package body Orka.Rendering.Programs.Uniforms is
 
    function Texture_Kind (Sampler : LE.Resource_Type) return LE.Texture_Kind is

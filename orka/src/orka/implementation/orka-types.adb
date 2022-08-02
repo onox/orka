@@ -54,8 +54,6 @@ package body Orka.Types is
    procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type);
 
    procedure Generic_Convert (Elements : Source_Array_Type; Result : out Target_Array_Type) is
-      use type GL.Types.Int;
-
       Iterations : constant Orka.Size := Elements'Length / Size;
       Remainder  : constant Orka.Size := Elements'Length rem Size;
 

@@ -23,7 +23,6 @@ with Orka.SIMD.AVX2.Doubles.Swizzle;
 package body Test_SIMD_AVX2_Swizzle is
 
    use Orka;
-   use Orka.SIMD;
    use Orka.SIMD.AVX.Doubles;
    use Orka.SIMD.AVX2.Doubles.Swizzle;
 

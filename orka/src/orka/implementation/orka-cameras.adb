@@ -127,7 +127,6 @@ package body Orka.Cameras is
       end Add;
 
       procedure Set (Value : Vector4) is
-         use Orka.Transforms.Doubles.Vectors;
       begin
 --         Change := Value;
 
@@ -141,8 +140,6 @@ package body Orka.Cameras is
       end Set;
 
       procedure Get (Value : in out Vector4; Mode : out Update_Mode) is
-         use Orka.Transforms.Doubles.Vectors;
-         use type Vector4;
       begin
          Value (X) := Change (X);
          Value (Y) := Change (Y);
