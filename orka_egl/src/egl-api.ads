@@ -22,7 +22,6 @@ with EGL.Errors;
 with EGL.Loading;
 with EGL.Objects.Contexts;
 with EGL.Objects.Displays;
-with EGL.Objects.Devices;
 
 private package EGL.API is
    pragma Preelaborate;
