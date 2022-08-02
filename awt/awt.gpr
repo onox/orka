@@ -1,19 +1,31 @@
-with "../orka_config";
-with "orka_numerics";
+with "config/awt_config";
 
 project Awt is
 
    for Library_Name use "awt";
-   for Library_Version use "1.0.0";
+   for Library_Version use Project'Library_Name & ".so." & Awt_Config.Crate_Version;
+
+   for Create_Missing_Dirs use "True";
 
    for Source_Dirs use ("src");
-   for Object_Dir use "build/obj";
+
+   for Object_Dir use "build/obj/" & Awt_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
-   package Compiler extends Orka_Config.Compiler is
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("AWT_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   Switches := ("-mavx");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Awt_Config.Ada_Compiler_Switches & ("-gnatyM99") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
 end Awt;

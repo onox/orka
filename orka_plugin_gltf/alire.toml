@@ -9,10 +9,12 @@ authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
-configuration.disabled = true
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAO-Is"]
 
 [[depends-on]]
-json = "^5.0.1"
+json = "^5.0.2"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
 

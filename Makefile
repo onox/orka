@@ -1,14 +1,5 @@
-SIMD := $(shell ((gcc -march=native -dN -E - < /dev/null | grep -q "AVX2") && echo "AVX2") || echo "AVX")
-
-SCENARIO_VARS = -XORKA_SIMD_EXT="$(SIMD)"
-
-COVERAGE_VARS = -XORKA_BUILD_MODE=coverage
-
-DEBUG_VARS = -XORKA_BUILD_MODE=debug -XORKA_DEBUG_SYMBOLS=enabled
-RELEASE_VARS = -XORKA_COMPILE_CHECKS=none -XORKA_RUNTIME_CHECKS=none -XORKA_CONTRACTS=disabled
-
 ALR_CLEAN = alr clean -- -p
-ALR_BUILD = alr build -- $(SCENARIO_VARS)
+ALR_BUILD = alr build --validation
 
 .PHONY: build examples tools tests coverage docs clean
 
@@ -32,7 +23,7 @@ tools:
 	cd orka_tools && $(ALR_BUILD)
 
 tests:
-	cd tests && $(ALR_BUILD) $(COVERAGE_VARS)
+	cd tests && $(ALR_BUILD)
 	cd tests && alr run -s
 
 coverage:

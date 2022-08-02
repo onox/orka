@@ -38,6 +38,9 @@ package body EGL.Debug is
       Object    : System.Address;
       C_Message : C.Strings.chars_ptr)
    is
+      pragma Unreferenced (Label);
+      pragma Unreferenced (Object);
+
       Command : constant String := C.Strings.Value (C_Command);
       Message : constant String := C.Strings.Value (C_Message);
    begin

@@ -1,25 +1,32 @@
-with "../orka_config";
-with "orka_transforms";
-with "orka";
+with "config/orka_plugin_atmosphere_config";
 
 project Orka_Plugin_Atmosphere is
 
-   for Library_Name use "orka-plugin-atmosphere";
-   for Library_Version use "1.0.0";
+   for Library_Name use "orka-plugin-Atmosphere";
+   for Library_Version use
+     Project'Library_Name & ".so." & Orka_Plugin_Atmosphere_Config.Crate_Version;
 
    for Create_Missing_Dirs use "True";
 
    for Source_Dirs use ("src");
-   for Object_Dir use "build/obj";
+   for Object_Dir  use "build/obj/" & Orka_Plugin_Atmosphere_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
-   package Compiler extends Orka_Config.Compiler is
-      for Default_Switches ("Ada") use
-        Orka_Config.Compiler'Default_Switches ("Ada") &
-        ("-fno-tree-vrp");
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("ORKA_PLUGIN_ATMOSPHERE_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   Switches := ("-mavx");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Orka_Plugin_Atmosphere_Config.Ada_Compiler_Switches &
+        ("-gnatyM99", "-fno-tree-vrp") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
 end Orka_Plugin_Atmosphere;

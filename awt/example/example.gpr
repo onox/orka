@@ -1,5 +1,6 @@
 with "awt-linux";
 with "awt";
+with "../config/awt_config";
 
 project Example is
 
@@ -7,7 +8,7 @@ project Example is
 
    for Create_Missing_Dirs use "True";
 
-   for Object_Dir  use "build/obj";
+   for Object_Dir  use "build/example/obj/" & Awt_Config.Build_Profile;
    for Exec_Dir use "build/bin";
 
    for Source_Dirs use ("src");

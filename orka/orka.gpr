@@ -1,12 +1,13 @@
-with "../orka_config";
-with "orka_types";
-with "orka_simd";
-with "orka_transforms";
+with "config/orka_config";
 
 project Orka is
 
    for Library_Name use "orka";
-   for Library_Version use "0.2.0";
+   for Library_Version use Project'Library_Name & ".so." & Orka_Config.Crate_Version;
+
+   for Create_Missing_Dirs use "True";
+
+   Switches := ("-mavx", "-mf16c");
 
    OpenGL_Sources := ("src/gl/interface",
                       "src/gl/implementation");
@@ -15,7 +16,7 @@ project Orka is
                     "src/orka/implementation");
 
    type OS_Type is ("windows", "linux");
-   OS : OS_Type := External ("ALR_OS");
+   OS : OS_Type := Orka_Config.Alire_Host_OS;
 
    case OS is
       when "linux"     =>
@@ -26,13 +27,22 @@ project Orka is
 
    for Source_Dirs use OpenGL_Sources & Orka_Sources;
 
-   for Object_Dir use "build/obj";
+   for Object_Dir use "build/obj/" & Orka_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
-   package Compiler extends Orka_Config.Compiler is
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("ORKA_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Orka_Config.Ada_Compiler_Switches &
+        ("-gnatyM99") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
 end Orka;

@@ -1,37 +1,49 @@
-with "../orka_config";
-with "orka_simd";
+with "config/orka_numerics_config";
 
 project Orka_Numerics is
 
    for Library_Name use "orka-numerics";
-   for Library_Version use "1.0.0";
+   for Library_Version use Project'Library_Name & ".so." & Orka_Numerics_Config.Crate_Version;
+
+   for Create_Missing_Dirs use "True";
 
    Sources := ("src", "src/x86/generic");
+   Switches := ();
 
-   type Compiler_Type is ("gnat");
-   Compiler_Name : Compiler_Type := external ("ORKA_SIMD_COMPILER", "gnat");
-
-   SIMD_Extensions : Orka_Simd.SIMD_Type := external ("ORKA_SIMD_EXT", "AVX2");
+   type SIMD_Type is ("SSE4.1", "AVX", "AVX2");
+   SIMD_Extensions : SIMD_Type := external ("ORKA_NUMERICS_SIMD_TYPE");
 
    --  Note: AVX(2) implementations require GNAT 11 or later to avoid a Storage_Error
    case SIMD_Extensions is
       when "AVX2" =>
---         Sources := Sources & ("src/x86/generic/avx2");
+         Sources := Sources & ("src/x86/generic/avx2");
+         Switches := Switches & ("-mavx2");
+      when "AVX" =>
+         Sources := Sources & ("src/x86/generic/avx");
+         Switches := Switches & ("-mavx");
+      when "SSE4.1" =>
          Sources := Sources & ("src/x86/generic/sse4_1");
-      when others =>
---         Sources := Sources & ("src/x86/generic/avx");
-         Sources := Sources & ("src/x86/generic/sse4_1");
+         Switches := Switches & ("-msse4.1");
    end case;
 
    for Source_Dirs use Sources;
 
-   for Object_Dir use "build/obj";
+   for Object_Dir use "build/obj/" & Orka_Numerics_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
-   package Compiler extends Orka_Config.Compiler is
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("ORKA_NUMERICS_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Orka_Numerics_Config.Ada_Compiler_Switches &
+        ("-gnatyM99") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
 end Orka_Numerics;

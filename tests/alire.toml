@@ -8,7 +8,15 @@ maintainers-logins = ["onox"]
 
 executables = ["orka_tests"]
 
-configuration.disabled = true
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAO-Is"]
+
+[gpr-externals]
+ORKA_TESTS_SIMD_TYPE = ["AVX", "AVX2"]
+
+[gpr-set-externals]
+ORKA_TESTS_SIMD_TYPE = "AVX"
 
 [[depends-on]]
 aunit = "^21.0.0"

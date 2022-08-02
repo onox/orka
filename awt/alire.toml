@@ -3,14 +3,15 @@ description = "Ada Window Toolkit"
 version = "1.0.0"
 website = "https://github.com/onox/awt"
 licenses = "Apache-2.0"
-tags = ["egl", "wayland", "windows", "graphics", "opengl"]
+tags = ["egl", "wayland", "windows", "graphics", "opengl", "input", "gamepad"]
 
 authors = ["onox"]
 maintainers = ["onox <denkpadje@gmail.com>"]
 maintainers-logins = ["onox"]
 
-[configuration]
-disabled = true
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAO-Is"]
 
 [available.'case(os)']
 linux = true
@@ -26,7 +27,7 @@ wayland_cursor_ada = "^1.0.0"
 wayland_protocols_ada = "^1.0.0"
 wayland_client_ada = "^1.0.0"
 orka_egl = "^1.0.0"
-evdev = "^2.0.0"
+evdev = "^2.0.1"
 inotify = "^2.0.0"
 
 [[depends-on]]

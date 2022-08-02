@@ -1,16 +1,18 @@
-with "orka_egl";
 with "orka";
+with "config/orka_config";
 
 project Orka.EGL is
 
    for Library_Name use "orka-egl-context";
-   for Library_Version use Orka'Library_Version;
+   for Library_Version use Project'Library_Name & ".so." & Orka_Config.Crate_Version;
    for Library_Kind use Orka'Library_Kind;
+
+   for Create_Missing_Dirs use "True";
 
    for Source_Dirs use ("src/orka/interface/egl",
                         "src/orka/implementation/egl");
 
-   for Object_Dir use "build/egl/obj";
+   for Object_Dir use "build/egl/obj/" & Orka_Config.Build_Profile;
    for Library_Dir use "build/egl/lib";
 
    package Compiler renames Orka.Compiler;

@@ -16,3 +16,5 @@ pragma Restrictions (No_Implementation_Attributes);
 pragma Restrictions (No_Implementation_Identifiers);
 --  pragma Restrictions (No_Implementation_Pragmas);
 pragma Restrictions (No_Implementation_Units);
+
+pragma Warnings (Off, "formal parameter * is not referenced");

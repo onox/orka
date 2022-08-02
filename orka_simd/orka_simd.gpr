@@ -1,18 +1,20 @@
-with "../orka_config";
-with "orka_types";
+with "config/orka_simd_config";
 
 project Orka_Simd is
 
    for Library_Name use "orka-simd";
-   for Library_Version use "1.0.0";
+   for Library_Version use Project'Library_Name & ".so." & Orka_Simd_Config.Crate_Version;
+
+   for Create_Missing_Dirs use "True";
 
    Sources := ("src", "src/x86/generic");
+   Switches := ();
 
    type Compiler_Type is ("gnat");
    Compiler_Name : Compiler_Type := external ("ORKA_SIMD_COMPILER", "gnat");
 
    type SIMD_Type is ("AVX", "AVX2");
-   SIMD_Extensions : SIMD_Type := external ("ORKA_SIMD_EXT", "AVX2");
+   SIMD_Extensions : SIMD_Type := external ("ORKA_SIMD_SIMD_TYPE");
 
    case Compiler_Name is
       when "gnat" =>
@@ -23,8 +25,9 @@ project Orka_Simd is
                Sources := Sources &
                  ("src/x86/gnat/avx2",
                   "src/x86/gnat/fma");
-            when others =>
-               null;
+               Switches := Switches & ("-mavx2", "-mf16c");
+            when "AVX" =>
+               Switches := Switches & ("-mavx", "-mf16c");
          end case;
       when others =>
          null;
@@ -40,13 +43,23 @@ project Orka_Simd is
    end case;
 
    for Source_Dirs use Sources;
-   for Object_Dir use "build/obj";
+
+   for Object_Dir use "build/obj/" & Orka_Simd_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
-   package Compiler extends Orka_Config.Compiler is
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("ORKA_SIMD_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Orka_Simd_Config.Ada_Compiler_Switches &
+        ("-gnatyM99") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
 end Orka_Simd;

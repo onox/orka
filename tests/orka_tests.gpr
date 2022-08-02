@@ -1,41 +1,42 @@
-with "../orka_config";
-with "orka_simd";
-with "orka_transforms";
-with "orka_numerics";
-with "orka";
-with "aunit";
+with "config/orka_tests_config";
 
 project Orka_Tests is
 
    for Create_Missing_Dirs use "True";
 
-   case Orka_SIMD.SIMD_Extensions is
+   type SIMD_Type is ("AVX", "AVX2");
+   SIMD_Extensions : SIMD_Type := external ("ORKA_TESTS_SIMD_TYPE");
+
+   Switches := ();
+
+   case SIMD_Extensions is
       when "AVX2" =>
          for Source_Dirs use ("src", "src/avx2");
-      when others =>
+         Switches := Switches & ("-mavx2");
+      when "AVX" =>
          for Source_Dirs use ("src", "src/no-avx2");
+         Switches := Switches & ("-mavx");
    end case;
 
-   for Object_Dir use "build/obj";
+   for Object_Dir use "build/obj/" & Orka_Tests_Config.Build_Profile;
    for Library_Dir use "build/lib";
 
    for Exec_Dir use "build/bin";
 
    for Main use ("orka_tests.adb");
 
-   package Compiler extends Orka_Config.Compiler is
+   package Compiler is
+      for Default_Switches ("Ada") use Orka_Tests_Config.Ada_Compiler_Switches &
+        ("-gnatyM99") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-   package Binder renames Orka_Config.Binder;
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
 
    package Linker is
-      case Orka_Config.Build_Mode is
-         when "coverage" =>
-            for Switches ("Ada") use ("-lgcov");
-         when others =>
-            null;
-      end case;
+      for Switches ("Ada") use ("-lgcov");
    end Linker;
 
 end Orka_Tests;

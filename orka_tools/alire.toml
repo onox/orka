@@ -11,7 +11,9 @@ maintainers-logins = ["onox"]
 
 executables = ["orka_info", "orka_gltf", "orka_ktx"]
 
-configuration.disabled = true
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAO-Is"]
 
 [[depends-on]]
 awt = "^1.0.0"
