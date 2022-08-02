@@ -21,7 +21,7 @@ package Orka.SIMD.SSE4_1.Doubles.Swizzle is
 
    use Orka.SIMD.SSE2.Doubles;
 
-   function Blend (Left, Right : m128d; Mask : Unsigned_32) return m128d
+   function Blend (Left, Right : m128d; Mask : Integer_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendpd";
    --  Select elements from two sources (Left and Right) using a constant mask
 

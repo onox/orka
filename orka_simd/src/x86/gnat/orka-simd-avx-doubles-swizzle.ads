@@ -23,7 +23,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    use SIMD.SSE2.Doubles;
    use SIMD.SSE.Singles;
 
-   function Shuffle_Within_Lanes (Left, Right : m256d; Mask : Unsigned_32) return m256d
+   function Shuffle_Within_Lanes (Left, Right : m256d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd256";
    --  Shuffle the 64-bit doubles in Left and Right per 128-bit lane
    --  using the given Mask. The first and third doubles are retrieved
@@ -74,7 +74,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Transpose (Matrix : m256d_Array) return m256d_Array
      with Inline_Always;
 
-   function Blend (Left, Right : m256d; Mask : Unsigned_32) return m256d
+   function Blend (Left, Right : m256d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendpd256";
    --  Select elements from two sources (Left and Right) using a constant mask.
    --
@@ -101,19 +101,19 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Convert (Elements : m128) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtps2pd256";
 
-   function Extract (Elements : m256d; Mask : Unsigned_32) return m128d
+   function Extract (Elements : m256d; Mask : Integer_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_pd256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256d; Right : m128d; Mask : Unsigned_32) return m256d
+   function Insert (Left : m256d; Right : m128d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_pd256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
    function Pack (High, Low : m128d) return m256d is (Insert (Cast (Low), High, 1))
      with Inline_Always;
 
-   function Permute (Elements : m128d; Mask : Unsigned_32) return m128d
+   function Permute (Elements : m128d; Mask : Integer_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd";
    --  Shuffle the 64-bit doubles in Elements. Similar to Shuffle (Elements, Elements, Mask):
    --
@@ -127,7 +127,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --
    --  or by simply writing 2#ba#. a and b must be either 0 or 1.
 
-   function Permute_Within_Lanes (Elements : m256d; Mask : Unsigned_32) return m256d
+   function Permute_Within_Lanes (Elements : m256d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd256";
    --  Shuffle elements within the two 128-bit lanes. Similar to
    --  Shuffle_Within_Lanes (Elements, Elements, Mask):
@@ -144,7 +144,7 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --
    --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
 
-   function Permute_Lanes (Left, Right : m256d; Mask : Unsigned_32) return m256d
+   function Permute_Lanes (Left, Right : m256d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vperm2f128_pd256";
    --  Shuffle 128-bit lanes.
    --

@@ -17,7 +17,7 @@
 package Orka.SIMD.AVX.Singles.Compare is
    pragma Pure;
 
-   function Compare (Left, Right : m256; Mask : Unsigned_32) return m256
+   function Compare (Left, Right : m256; Mask : Integer_32) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmpps256";
 
    --  Predicates used are ordered and signaling

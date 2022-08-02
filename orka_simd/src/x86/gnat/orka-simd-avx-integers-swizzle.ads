@@ -27,19 +27,19 @@ package Orka.SIMD.AVX.Integers.Swizzle is
    function Cast (Elements : m128i) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_si256_si";
 
-   function Extract (Elements : m256i; Mask : Unsigned_32) return m128i
+   function Extract (Elements : m256i; Mask : Integer_32) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_si256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256i; Right : m128i; Mask : Unsigned_32) return m256i
+   function Insert (Left : m256i; Right : m128i; Mask : Integer_32) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_si256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
    function Pack (High, Low : m128i) return m256i is (Insert (Cast (Low), High, 1))
      with Inline_Always;
 
-   function Permute_Lanes (Left, Right : m256i; Mask : Unsigned_32) return m256i
+   function Permute_Lanes (Left, Right : m256i; Mask : Integer_32) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vperm2f128_si256";
    --  Shuffle 128-bit lanes.
    --

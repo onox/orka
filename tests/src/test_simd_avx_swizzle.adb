@@ -53,10 +53,10 @@ package body Test_SIMD_AVX_Swizzle is
    procedure Test_Shuffle (Object : in out Test) is
       Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 2 or 0 * 4 or 0 * 8;
-      Mask_1_1_1_1 : constant Unsigned_32 := 1 or 1 * 2 or 1 * 4 or 1 * 8;
-      Mask_1_0_1_1 : constant Unsigned_32 := 1 or 0 * 2 or 1 * 4 or 1 * 8;
-      Mask_1_1_0_1 : constant Unsigned_32 := 1 or 1 * 2 or 0 * 4 or 1 * 8;
+      Mask_0_0_0_0 : constant := 0 + 0 * 2 + 0 * 4 + 0 * 8;
+      Mask_1_1_1_1 : constant := 1 + 1 * 2 + 1 * 4 + 1 * 8;
+      Mask_1_0_1_1 : constant := 1 + 0 * 2 + 1 * 4 + 1 * 8;
+      Mask_1_1_0_1 : constant := 1 + 1 * 2 + 0 * 4 + 1 * 8;
 
       Expected : constant array (Positive range <>) of m256d
         := ((1.0, 1.0, 3.0, 3.0),
@@ -81,9 +81,9 @@ package body Test_SIMD_AVX_Swizzle is
    procedure Test_Shuffle_Across_Lanes (Object : in out Test) is
       Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 2 or 0 * 4 or 0 * 8;
-      Mask_1_1_0_0 : constant Unsigned_32 := 1 or 1 * 2 or 0 * 4 or 0 * 8;
-      Mask_0_0_1_1 : constant Unsigned_32 := 0 or 0 * 2 or 1 * 4 or 1 * 8;
+      Mask_0_0_0_0 : constant := 0 + 0 * 2 + 0 * 4 + 0 * 8;
+      Mask_1_1_0_0 : constant := 1 + 1 * 2 + 0 * 4 + 0 * 8;
+      Mask_0_0_1_1 : constant := 0 + 0 * 2 + 1 * 4 + 1 * 8;
 
       Expected : constant array (Positive range <>) of m256d
         := ((1.0, 1.0, 1.0, 1.0),
@@ -113,10 +113,10 @@ package body Test_SIMD_AVX_Swizzle is
    procedure Test_Permute_Lanes (Object : in out Test) is
       Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
 
-      Mask_1_0_0_0 : constant Unsigned_32 := 1 or 0 * 16 or 0 * 8 or 0 * 128;
-      Mask_0_1_0_0 : constant Unsigned_32 := 0 or 1 * 16 or 0 * 8 or 0 * 128;
-      Mask_2_1_0_1 : constant Unsigned_32 := 2 or 1 * 16 or 0 * 8 or 1 * 128;
-      Mask_2_3_1_0 : constant Unsigned_32 := 2 or 3 * 16 or 1 * 8 or 0 * 128;
+      Mask_1_0_0_0 : constant := 1 + 0 * 16 + 0 * 8 + 0 * 128;
+      Mask_0_1_0_0 : constant := 0 + 1 * 16 + 0 * 8 + 0 * 128;
+      Mask_2_1_0_1 : constant := 2 + 1 * 16 + 0 * 8 + 1 * 128;
+      Mask_2_3_1_0 : constant := 2 + 3 * 16 + 1 * 8 + 0 * 128;
 
       Expected : constant array (Positive range <>) of m256d
         := ((3.0, 4.0, 1.0, 2.0),

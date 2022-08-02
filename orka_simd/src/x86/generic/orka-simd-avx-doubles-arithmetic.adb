@@ -33,9 +33,9 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
    function "*" (Left : m256d_Array; Right : m256d) return m256d is
       use SIMD.AVX.Doubles.Swizzle;
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 2 or 0 * 4 or 0 * 8;
-      Mask_1_1_0_0 : constant Unsigned_32 := 1 or 1 * 2 or 0 * 4 or 0 * 8;
-      Mask_0_0_1_1 : constant Unsigned_32 := 0 or 0 * 2 or 1 * 4 or 1 * 8;
+      Mask_0_0_0_0 : constant := 0 + 0 * 2 + 0 * 4 + 0 * 8;
+      Mask_1_1_0_0 : constant := 1 + 1 * 2 + 0 * 4 + 0 * 8;
+      Mask_0_0_1_1 : constant := 0 + 0 * 2 + 1 * 4 + 1 * 8;
 
       XXXX, YYYY, ZZZZ, WWWW, M0, M1, M2, M3 : m256d;
    begin
@@ -90,7 +90,7 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
       --  Based on SIMD.SSE.Singles.Arithmetic.Sum
 
-      Mask_1_0_1_0 : constant Unsigned_32 := 1 or 0 * 2 or 1 * 4 or 0 * 8;
+      Mask_1_0_1_0 : constant := 1 + 0 * 2 + 1 * 4 + 0 * 8;
 
       --  Elements:  X   Y   Z   W
       --  Shuffled:  Y   X   W   Z
@@ -103,7 +103,7 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
       --  Move:     Z+W Z+W Z+W Z+W
       --            --------------- +
       --  New sum:  X+Y+Z+W . . .
-      return Extract_X (Cast (Duplicate_HL (Sum) + Sum), 0);
+      return Cast (Duplicate_HL (Sum) + Sum) (X);
    end Sum;
 
 end Orka.SIMD.AVX.Doubles.Arithmetic;

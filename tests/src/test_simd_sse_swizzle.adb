@@ -47,10 +47,10 @@ package body Test_SIMD_SSE_Swizzle is
    procedure Test_Shuffle (Object : in out Test) is
       Elements : constant m128 := (1.0, 2.0, 3.0, 4.0);
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 4 or 0 * 16 or 0 * 64;
-      Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 4 or 2 * 16 or 2 * 64;
-      Mask_1_0_3_2 : constant Unsigned_32 := 1 or 0 * 4 or 3 * 16 or 2 * 64;
-      Mask_2_3_0_1 : constant Unsigned_32 := 2 or 3 * 4 or 0 * 16 or 1 * 64;
+      Mask_0_0_0_0 : constant := 0 + 0 * 4 + 0 * 16 + 0 * 64;
+      Mask_2_2_2_2 : constant := 2 + 2 * 4 + 2 * 16 + 2 * 64;
+      Mask_1_0_3_2 : constant := 1 + 0 * 4 + 3 * 16 + 2 * 64;
+      Mask_2_3_0_1 : constant := 2 + 3 * 4 + 0 * 16 + 1 * 64;
 
       Expected : constant array (Positive range <>) of m128
         := ((1.0, 1.0, 1.0, 1.0),

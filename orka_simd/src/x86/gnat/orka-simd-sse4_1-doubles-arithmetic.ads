@@ -21,7 +21,7 @@ package Orka.SIMD.SSE4_1.Doubles.Arithmetic is
 
    use Orka.SIMD.SSE2.Doubles;
 
-   function Dot (Left, Right : m128d; Mask : Unsigned_32) return m128d
+   function Dot (Left, Right : m128d; Mask : Integer_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_dppd";
 
 end Orka.SIMD.SSE4_1.Doubles.Arithmetic;

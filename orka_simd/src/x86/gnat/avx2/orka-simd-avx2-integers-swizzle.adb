@@ -32,13 +32,13 @@ package body Orka.SIMD.AVX2.Integers.Swizzle is
    function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
    function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
 
-   function Extract (Elements : m256i; Mask : Unsigned_32) return m128i is
+   function Extract (Elements : m256i; Mask : Integer_32) return m128i is
      (Convert (AVX2.Longs.Swizzle.Extract (Convert (Elements), Mask)));
 
-   function Insert (Left : m256i; Right : m128i; Mask : Unsigned_32) return m256i is
+   function Insert (Left : m256i; Right : m128i; Mask : Integer_32) return m256i is
      (Convert (AVX2.Longs.Swizzle.Insert (Convert (Left), Convert (Right), Mask)));
 
-   function Permute_Lanes (Left, Right : m256i; Mask : Unsigned_32) return m256i is
+   function Permute_Lanes (Left, Right : m256i; Mask : Integer_32) return m256i is
      (Convert (AVX2.Longs.Swizzle.Permute_Lanes (Convert (Left), Convert (Right), Mask)));
 
 end Orka.SIMD.AVX2.Integers.Swizzle;

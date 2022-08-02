@@ -14,12 +14,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.SSE2.Integers;
-
 package Orka.SIMD.AVX2.Longs.Shift is
    pragma Pure;
-
-   use SIMD.SSE2.Integers;
 
    function Shift_Bits_Left_Zeros (Elements : m256l; Bits : m128l) return m256l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psllq256";

@@ -32,10 +32,10 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
    function "*" (Left : m128_Array; Right : m128) return m128 is
       use SIMD.SSE.Singles.Swizzle;
 
-      Mask_0_0_0_0 : constant Unsigned_32 := 0 or 0 * 4 or 0 * 16 or 0 * 64;
-      Mask_1_1_1_1 : constant Unsigned_32 := 1 or 1 * 4 or 1 * 16 or 1 * 64;
-      Mask_2_2_2_2 : constant Unsigned_32 := 2 or 2 * 4 or 2 * 16 or 2 * 64;
-      Mask_3_3_3_3 : constant Unsigned_32 := 3 or 3 * 4 or 3 * 16 or 3 * 64;
+      Mask_0_0_0_0 : constant := 0 + 0 * 4 + 0 * 16 + 0 * 64;
+      Mask_1_1_1_1 : constant := 1 + 1 * 4 + 1 * 16 + 1 * 64;
+      Mask_2_2_2_2 : constant := 2 + 2 * 4 + 2 * 16 + 2 * 64;
+      Mask_3_3_3_3 : constant := 3 + 3 * 4 + 3 * 16 + 3 * 64;
 
       XXXX, YYYY, ZZZZ, WWWW, M0, M1, M2, M3 : m128;
    begin
@@ -81,7 +81,7 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
 
       --  From https://stackoverflow.com/a/35270026
 
-      Mask_1_0_3_2 : constant Unsigned_32 := 1 or 0 * 4 or 3 * 16 or 2 * 64;
+      Mask_1_0_3_2 : constant := 1 + 0 * 4 + 3 * 16 + 2 * 64;
 
       --  Elements:  X   Y   Z   W
       --  Shuffled:  Y   X   W   Z

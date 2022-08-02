@@ -61,7 +61,7 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
    --  and sixth position, differences from Right in the third, fourth,
    --  seventh, and eight.
 
-   function Dot (Left, Right : m256; Mask : Unsigned_32) return m256
+   function Dot (Left, Right : m256; Mask : Integer_32) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_dpps256";
 
 end Orka.SIMD.AVX.Singles.Arithmetic;

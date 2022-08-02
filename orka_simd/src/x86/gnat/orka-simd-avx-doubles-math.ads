@@ -37,7 +37,7 @@ package Orka.SIMD.AVX.Doubles.Math is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_sqrtpd256";
    --  Return the square root (Sqrt(X)) of each element
 
-   function Round (Elements : m256d; Rounding : Unsigned_32) return m256d
+   function Round (Elements : m256d; Rounding : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_roundpd256";
 
    function Round_Nearest_Integer (Elements : m256d) return m256d is

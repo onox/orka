@@ -21,7 +21,7 @@ package Orka.SIMD.SSE4_1.Doubles.Math is
 
    use Orka.SIMD.SSE2.Doubles;
 
-   function Round (Elements : m128d; Rounding : Unsigned_32) return m128d
+   function Round (Elements : m128d; Rounding : Integer_32) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_roundpd";
 
    function Round_Nearest_Integer (Elements : m128d) return m128d is

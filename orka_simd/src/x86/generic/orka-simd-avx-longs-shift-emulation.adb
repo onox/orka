@@ -17,7 +17,6 @@
 with Ada.Unchecked_Conversion;
 
 with Orka.SIMD.AVX.Integers.Swizzle;
-with Orka.SIMD.AVX.Longs;
 with Orka.SIMD.SSE2.Integers;
 with Orka.SIMD.SSE2.Longs.Shift;
 with Orka.SIMD.SSSE3.Longs.Shift;
@@ -26,7 +25,6 @@ package body Orka.SIMD.AVX.Longs.Shift.Emulation is
 
    use SIMD.AVX.Integers;
    use SIMD.AVX.Integers.Swizzle;
-   use SIMD.AVX.Longs;
    use SIMD.SSE2.Integers;
    use SIMD.SSE2.Longs;
    use SIMD.SSE2.Longs.Shift;

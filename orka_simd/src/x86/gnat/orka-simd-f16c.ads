@@ -38,7 +38,7 @@ package Orka.SIMD.F16C is
 
    -----------------------------------------------------------------------------
 
-   function Convert (Elements : m128; Rounding : Unsigned_32) return m128s
+   function Convert (Elements : m128; Rounding : Integer_32) return m128s
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtps2ph";
    --  Convert 4x 32-bit floats to 4x 16-bit floats (in lower half)
 
@@ -60,7 +60,7 @@ package Orka.SIMD.F16C is
 
    -----------------------------------------------------------------------------
 
-   function Convert (Elements : m256; Rounding : Unsigned_32) return m128s
+   function Convert (Elements : m256; Rounding : Integer_32) return m128s
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vcvtps2ph256";
    --  Convert 8x 32-bit floats to 8x 16-bit
 

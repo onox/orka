@@ -18,7 +18,6 @@ with Ada.Unchecked_Conversion;
 
 with Orka.SIMD.AVX.Doubles.Swizzle;
 with Orka.SIMD.AVX.Integers.Swizzle;
-with Orka.SIMD.SSE2.Doubles.Swizzle;
 with Orka.SIMD.SSE2.Doubles;
 with Orka.SIMD.SSE2.Longs.Shift;
 with Orka.SIMD.SSE2.Longs.Convert;
@@ -28,7 +27,6 @@ package body Orka.SIMD.AVX.Longs.Random.Emulation is
    package SSE2_Random renames Orka.SIMD.SSE2.Integers.Random;
 
    use SIMD.SSE2.Doubles;
-   use SIMD.SSE2.Doubles.Swizzle;
    use SIMD.SSE2.Integers;
    use SIMD.SSE2.Longs;
    use SIMD.SSE2.Longs.Shift;

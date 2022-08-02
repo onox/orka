@@ -16,8 +16,8 @@
 
 package body Orka.SIMD.AVX.Doubles.Swizzle is
 
-   Mask_LH : constant Unsigned_32 := 0 or 0 * 16 or 0 * 8 or 0 * 128;
-   Mask_HL : constant Unsigned_32 := 1 or 1 * 16 or 0 * 8 or 0 * 128;
+   Mask_LH : constant := 0 + 0 * 16 + 0 * 8 + 0 * 128;
+   Mask_HL : constant := 1 + 1 * 16 + 0 * 8 + 0 * 128;
 
    function Duplicate_LH (Elements : m256d) return m256d is
      (Permute_Lanes (Elements, Elements, Mask_LH));
@@ -25,8 +25,8 @@ package body Orka.SIMD.AVX.Doubles.Swizzle is
    function Duplicate_HL (Elements : m256d) return m256d is
      (Permute_Lanes (Elements, Elements, Mask_HL));
 
-   Mask_0_2_0_0 : constant Unsigned_32 := 0 or 2 * 16 or 0 * 8 or 0 * 128;
-   Mask_1_3_0_0 : constant Unsigned_32 := 1 or 3 * 16 or 0 * 8 or 0 * 128;
+   Mask_0_2_0_0 : constant := 0 + 2 * 16 + 0 * 8 + 0 * 128;
+   Mask_1_3_0_0 : constant := 1 + 3 * 16 + 0 * 8 + 0 * 128;
 
    procedure Transpose (Matrix : in out m256d_Array) is
       M0 : constant m256d := Unpack_Low  (Matrix (X), Matrix (Y));

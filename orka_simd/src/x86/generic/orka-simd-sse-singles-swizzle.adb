@@ -16,10 +16,10 @@
 
 package body Orka.SIMD.SSE.Singles.Swizzle is
 
-   Mask_1_0_1_0 : constant Unsigned_32 := 1 * 64 or 0 * 16 or 1 * 4 or 0;
-   Mask_3_2_3_2 : constant Unsigned_32 := 3 * 64 or 2 * 16 or 3 * 4 or 2;
-   Mask_2_0_2_0 : constant Unsigned_32 := 2 * 64 or 0 * 16 or 2 * 4 or 0;
-   Mask_3_1_3_1 : constant Unsigned_32 := 3 * 64 or 1 * 16 or 3 * 4 or 1;
+   Mask_1_0_1_0 : constant := 1 * 64 + 0 * 16 + 1 * 4 + 0;
+   Mask_3_2_3_2 : constant := 3 * 64 + 2 * 16 + 3 * 4 + 2;
+   Mask_2_0_2_0 : constant := 2 * 64 + 0 * 16 + 2 * 4 + 0;
+   Mask_3_1_3_1 : constant := 3 * 64 + 1 * 16 + 3 * 4 + 1;
 
    procedure Transpose (Matrix : in out m128_Array) is
       M0 : constant m128 := Unpack_Low  (Matrix (X), Matrix (Y));

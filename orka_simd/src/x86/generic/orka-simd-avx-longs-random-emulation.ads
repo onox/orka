@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.SIMD.AVX.Longs;
 with Orka.SIMD.AVX.Doubles;
 
 private with Orka.SIMD.SSE2.Integers.Random;
@@ -24,7 +23,6 @@ package Orka.SIMD.AVX.Longs.Random.Emulation
 is
    pragma Pure;
 
-   use Orka.SIMD.AVX.Longs;
    use Orka.SIMD.AVX.Doubles;
 
    type State is limited private;

@@ -21,7 +21,7 @@ package Orka.SIMD.SSE4_1.Singles.Swizzle is
 
    use Orka.SIMD.SSE.Singles;
 
-   function Blend (Left, Right : m128; Mask : Unsigned_32) return m128
+   function Blend (Left, Right : m128; Mask : Integer_32) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendps";
    --  Select elements from two sources (Left and Right) using a constant mask
 
@@ -29,10 +29,12 @@ package Orka.SIMD.SSE4_1.Singles.Swizzle is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvps";
    --  Select elements from two sources (Left and Right) using a variable mask
 
-   function Extract (Elements : m128; Mask : Unsigned_32) return Float_32
+   type Index_Type is new Integer_32 range 0 .. 3;
+
+   function Extract (Elements : m128; Index : Index_Type) return Float_32
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vec_ext_v4sf";
 
-   function Insert (Left, Right : m128; Mask : Unsigned_32) return m128
+   function Insert (Left, Right : m128; Mask : Integer_32) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_insertps128";
    --  Insert an element from Right into Left. Bits 6-7 of Mask
    --  define the index of the source (Right), bits 4-5 define

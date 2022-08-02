@@ -21,7 +21,7 @@ package Orka.SIMD.SSSE3.Integers.Shift is
 
    use SIMD.SSE2.Integers;
 
-   function Align_Right_Bytes (Left, Right : m128i; Mask : Unsigned_32) return m128i
+   function Align_Right_Bytes (Left, Right : m128i; Mask : Integer_32) return m128i
      with Inline_Always;
 
 end Orka.SIMD.SSSE3.Integers.Shift;

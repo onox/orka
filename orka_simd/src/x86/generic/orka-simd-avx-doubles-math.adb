@@ -33,9 +33,9 @@ package body Orka.SIMD.AVX.Doubles.Math is
         with Inline_Always;
 
       function Shuffle (Elements : m256d) return m256d is
-         Mask_1_0_1_0 : constant Unsigned_32 := 1 or 0 * 2 or 1 * 4 or 0 * 8;
-         Mask_1_2_0_0 : constant Unsigned_32 := 1 or 2 * 16 or 0 * 8 or 0 * 128;
-         Mask_0_1_1_1 : constant Unsigned_32 := 0 or 1 * 2 or 1 * 4 or 1 * 8;
+         Mask_1_0_1_0 : constant := 1 + 0 * 2 + 1 * 4 + 0 * 8;
+         Mask_1_2_0_0 : constant := 1 + 2 * 16 + 0 * 8 + 0 * 128;
+         Mask_0_1_1_1 : constant := 0 + 1 * 2 + 1 * 4 + 1 * 8;
 
          YXWZ : constant m256d := Permute_Within_Lanes (Elements, Mask_1_0_1_0);
          WZXY : constant m256d := Permute_Lanes (YXWZ, Elements, Mask_1_2_0_0);

@@ -23,7 +23,7 @@ package body Orka.SIMD.SSE.Singles.Math is
       use SIMD.SSE.Singles.Arithmetic;
       use SIMD.SSE.Singles.Swizzle;
 
-      Mask_1_2_0_3 : constant Unsigned_32 := 1 or 2 * 4 or 0 * 16 or 3 * 64;
+      Mask_1_2_0_3 : constant := 1 + 2 * 4 + 0 * 16 + 3 * 64;
 
       Left_YZX  : constant m128 := Shuffle (Left, Left, Mask_1_2_0_3);
       Right_YZX : constant m128 := Shuffle (Right, Right, Mask_1_2_0_3);
