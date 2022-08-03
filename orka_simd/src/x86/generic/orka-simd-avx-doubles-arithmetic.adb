@@ -17,7 +17,6 @@
 with Orka.SIMD.AVX.Doubles.Compare;
 with Orka.SIMD.AVX.Doubles.Logical;
 with Orka.SIMD.AVX.Doubles.Swizzle;
-with Orka.SIMD.SSE2.Doubles.Swizzle;
 
 package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
@@ -86,7 +85,6 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
 
    function Sum (Elements : m256d) return Float_64 is
       use SIMD.AVX.Doubles.Swizzle;
-      use SIMD.SSE2.Doubles.Swizzle;
 
       --  Based on SIMD.SSE.Singles.Arithmetic.Sum
 

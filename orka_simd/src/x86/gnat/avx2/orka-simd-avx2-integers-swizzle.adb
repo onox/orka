@@ -23,7 +23,6 @@ with Orka.SIMD.SSE2.Longs;
 package body Orka.SIMD.AVX2.Integers.Swizzle is
 
    use SIMD.AVX.Longs;
-   use SIMD.AVX2.Longs.Swizzle;
    use SIMD.SSE2.Longs;
 
    function Convert is new Ada.Unchecked_Conversion (m256i, m256l);

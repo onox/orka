@@ -16,7 +16,6 @@
 
 with Ada.Unchecked_Conversion;
 
-with Orka.SIMD.SSE.Singles;
 with Orka.SIMD.SSE2.Integers;
 with Orka.SIMD.SSE2.Longs.Convert;
 
@@ -24,7 +23,6 @@ package body Orka.SIMD.SSE2.Longs.Random is
 
    package SSE2_Random renames Orka.SIMD.SSE2.Integers.Random;
 
-   use SIMD.SSE.Singles;
    use SIMD.SSE2.Integers;
 
    function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
