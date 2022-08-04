@@ -63,15 +63,10 @@ package body Orka.OS is
    with Import, Convention => C, External_Name => "clock_gettime";
 
    function Monotonic_Clock return Duration is
-      use type Interfaces.C.int;
-
       Value  : aliased Timespec;
-      Result : Interfaces.C.int;
+      Unused_Result : Interfaces.C.int;
    begin
-      Result := C_Clock_Gettime (Monotonic, Value'Access);
-
-      pragma Assert (Result = 0);
-      --  Makes compiler happy and can be optimized away (unlike raise Program_Error)
+      Unused_Result := C_Clock_Gettime (Monotonic, Value'Access);
 
       return Duration (Value.Seconds) + Duration (Value.Nanoseconds) / 1e9;
    end Monotonic_Clock;
