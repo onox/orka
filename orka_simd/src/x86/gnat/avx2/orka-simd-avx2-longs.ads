@@ -21,7 +21,6 @@ package Orka.SIMD.AVX2.Longs is
    pragma Pure;
 
    subtype m128l is Orka.SIMD.SSE2.Longs.m128l;
-
-   use Orka.SIMD.AVX.Longs;
+   subtype m256l is Orka.SIMD.AVX.Longs.m256l;
 
 end Orka.SIMD.AVX2.Longs;

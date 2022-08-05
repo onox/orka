@@ -19,6 +19,6 @@ with Orka.SIMD.AVX.Integers;
 package Orka.SIMD.AVX2.Integers is
    pragma Pure;
 
-   use Orka.SIMD.AVX.Integers;
+   subtype m256i is Orka.SIMD.AVX.Integers.m256i;
 
 end Orka.SIMD.AVX2.Integers;
