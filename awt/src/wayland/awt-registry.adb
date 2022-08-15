@@ -918,6 +918,7 @@ package body AWT.Registry is
 
    procedure Initialize is
    begin
+      WP.Client.Initialize;
       WP.Idle_Inhibit_Unstable_V1.Initialize;
       WP.Pointer_Constraints_Unstable_V1.Initialize;
       WP.Presentation_Time.Initialize;
