@@ -18,7 +18,6 @@ with Orka.Logging;
 with Orka.Terminals;
 
 with EGL.Objects.Configs;
-with EGL.Objects.Surfaces;
 
 with Wayland.Protocols.Client.AWT;
 
