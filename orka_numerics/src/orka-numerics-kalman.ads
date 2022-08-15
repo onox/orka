@@ -52,10 +52,8 @@ private
    package Tensor_Holders is new Ada.Containers.Indefinite_Holders (Tensor);
 
    --  These predicates cannot be applied to the formal types above
-   subtype Vector_Holder is Tensor_Holders.Holder
-     with Dynamic_Predicate => Vector_Holder.Element.Dimensions = 1;
-   subtype Matrix_Holder is Tensor_Holders.Holder
-     with Dynamic_Predicate => Matrix_Holder.Element.Dimensions = 2;
+   subtype Vector_Holder is Tensor_Holders.Holder;
+   subtype Matrix_Holder is Tensor_Holders.Holder;
 
    type Weights_Type (N : Positive; Kind : Filter_Kind) is record
       Mean           : Vector_Holder;
