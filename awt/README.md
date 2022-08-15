@@ -30,12 +30,6 @@ On Linux you need Wayland 1.18 or higher.
 
 ## Using the library
 
-Clone [wayland-ada][url-wayland-ada] and then add AWT to your application:
-
-```sh
-$ alr with awt --use=path/to/awt
-```
-
 On Linux you need to copy the data/99-leds.rules file to /etc/udev/rules.d/
 in order to be able to set the LED color of a gamepad.
 
@@ -47,4 +41,3 @@ AWT is distributed under the terms of the [Apache License 2.0][url-apache].
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-contributing]: /CONTRIBUTING.md
   [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
-  [url-wayland-ada]: https://github.com/onox/wayland-ada

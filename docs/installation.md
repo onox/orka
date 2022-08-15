@@ -100,9 +100,6 @@ Optional dependencies:
     After having installed the compiler, install the [Alire][url-alire]
     package manager.
 
-    Make sure to clone [wayland-ada][url-wayland-ada] if you want to use
-    AWT for managing windows, input devices, and gamepads.
-
 === ":material-arch: Arch Linux"
 
     ```sh
@@ -113,9 +110,6 @@ Optional dependencies:
     from the AUR.
     After having installed the compiler, install the [Alire][url-alire]
     package manager.
-
-    Make sure to clone [wayland-ada][url-wayland-ada] if you want to use
-    AWT for managing windows, input devices, and gamepads.
 
 === ":material-microsoft-windows: Windows 10"
 
@@ -130,10 +124,7 @@ $ alr with orka --use=path/to/orka
 ```
 
 To create an OpenGL context and window, add `awt` for AWT (see below) or
-`orka_plugin_sdl` for SDL.
-
-For AWT, clone [wayland-ada][url-wayland-ada] and make sure that both wayland-ada
-and orka exist in the same parent folder. Next, add AWT to your application:
+`orka_plugin_sdl` for SDL:
 
 ```sh
 $ alr with awt --use=path/to/awt
@@ -190,4 +181,3 @@ and learn how you can render your first triangle on the screen.
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
   [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities
-  [url-wayland-ada]: https://github.com/onox/wayland-ada
