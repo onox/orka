@@ -27,8 +27,8 @@ wayland_cursor_ada = "^1.0.0"
 wayland_protocols_ada = "^1.0.0"
 wayland_client_ada = "^1.0.0"
 orka_egl = "^1.0.0"
-evdev = "^2.0.1"
-inotify = "^2.0.0"
+evdev = "^2.0.2"
+inotify = "^2.0.1"
 
 [[depends-on]]
 orka = "~0.2.0"

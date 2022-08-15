@@ -14,7 +14,7 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAO-Is"]
 
 [[depends-on]]
-json = "^5.0.2"
+json = "^5.0.3"
 orka_transforms = "^1.0.0"
 orka = "~0.2.0"
 

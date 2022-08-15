@@ -14,7 +14,7 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAO-Is"]
 
 [[depends-on]]
-dcf = "^2.0.2"
+dcf = "^2.0.3"
 orka = "~0.2.0"
 
 [[pins]]
