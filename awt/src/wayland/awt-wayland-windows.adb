@@ -145,6 +145,21 @@ package body AWT.Wayland.Windows is
       end if;
    end XDG_Toplevel_Close;
 
+   procedure XDG_Toplevel_Configure_Bounds
+     (Xdg_Toplevel : in out WP.Xdg_Shell.Xdg_Toplevel'Class;
+      Width        : Natural;
+      Height       : Natural) is
+   begin
+      null;
+   end XDG_Toplevel_Configure_Bounds;
+
+   procedure XDG_Toplevel_Capabilities
+     (Xdg_Toplevel : in out WP.Xdg_Shell.Xdg_Toplevel'Class;
+      Capabilities : WP.Xdg_Shell.Capability_Array) is
+   begin
+      null;
+   end XDG_Toplevel_Capabilities;
+
    procedure XDG_Toplevel_Decoration_Configure
      (Decoration : in out WP.Xdg_Decoration_Unstable_V1.Toplevel_Decoration_V1'Class;
       Mode       : WE.Xdg_Decoration_Unstable_V1.Toplevel_Decoration_V1_Mode)
@@ -200,8 +215,10 @@ package body AWT.Wayland.Windows is
      (Configure => XDG_Surface_Configure);
 
    package XDG_Toplevel_Events is new WP.Xdg_Shell.Xdg_Toplevel_Events
-     (Configure => XDG_Toplevel_Configure,
-      Close     => XDG_Toplevel_Close);
+     (Configure        => XDG_Toplevel_Configure,
+      Close            => XDG_Toplevel_Close,
+      Configure_Bounds => XDG_Toplevel_Configure_Bounds,
+      Capabilities     => XDG_Toplevel_Capabilities);
 
    package XDG_Toplevel_Decoration_Events is
      new WP.Xdg_Decoration_Unstable_V1.Toplevel_Decoration_V1_Events
