@@ -20,7 +20,7 @@ package Orka.Loggers.Terminal is
    protected type Logger_Object (Min_Level : Severity) is new Orka.Loggers.Logger with
       overriding
       procedure Log
-        (From    : Source;
+        (From    : String;
          Level   : Severity;
          Message : String);
    end Logger_Object;

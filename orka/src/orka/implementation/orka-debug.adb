@@ -19,7 +19,7 @@ with GL.Debug.Logs;
 with GL.Toggles;
 
 with Orka.Loggers;
-with Orka.Logging;
+with Orka.Logging.Default;
 
 package body Orka.Debug is
 
@@ -38,19 +38,19 @@ package body Orka.Debug is
       Unused_ID : Unsigned_32;
       Message   : String)
    is
-      use all type Orka.Loggers.Source;
-      use all type Orka.Loggers.Severity;
+      use all type Orka.Logging.Default_Module;
+      use all type Orka.Logging.Severity;
 
-      Source : constant Orka.Loggers.Source
+      Source : constant Orka.Logging.Default_Module
         := (case From is
-               when OpenGL          => OpenGL,
+               when OpenGL          => Renderer,
                when Window_System   => Window_System,
                when Shader_Compiler => Shader_Compiler,
-               when Third_Party     => Third_Party,
+               when Third_Party     => Middleware,
                when Application     => Application,
                when Other           => Other);
 
-      Severity : constant Orka.Loggers.Severity
+      Severity : constant Orka.Logging.Severity
         := (case Level is
                when High         => Loggers.Error,
                when Medium       => Loggers.Warning,
@@ -62,9 +62,9 @@ package body Orka.Debug is
          GL.Errors.Raise_Exception_On_OpenGL_Error;
       end if;
 
-      Logging.Log (Source, Severity, Message);
+      Logging.Default.Log (Source, Severity, Message);
 
-      if Debug_Synchronous and then (Source = OpenGL and Kind = Error) then
+      if Debug_Synchronous and then (From = OpenGL and Kind = Error) then
          GL.Errors.Raise_Exception_On_OpenGL_Error;
          Has_Seen_API_Error := True;
       end if;

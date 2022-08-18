@@ -21,7 +21,6 @@ with Orka.Transforms.Doubles.Vectors;
 package Orka.Logging is
    pragma Preelaborate;
 
-   subtype Source   is Loggers.Source;
    subtype Severity is Loggers.Severity;
 
    -----------------------------------------------------------------------------
@@ -38,16 +37,29 @@ package Orka.Logging is
 
    procedure Set_Logger (Logger : Loggers.Logger_Ptr);
 
-   procedure Log
-     (From    : Source;
-      Level   : Severity;
-      Message : String);
-   --  Log the message using the logger
-   --
-   --  If no logger has been set, it will log the message to the terminal.
-
    generic
-      From : Source;
-   procedure Generic_Log (Level : Severity; Message : String);
+      type Module_Type is (<>);
+   package Generic_Logger is
+
+      procedure Log
+        (Module  : Module_Type;
+         Level   : Severity;
+         Message : String);
+
+      generic
+         Module : Module_Type;
+      procedure Generic_Log
+        (Level   : Severity;
+         Message : String);
+      --  Log the message using the logger
+      --
+      --  If no logger has been set, it will log the message to the terminal.
+
+   end Generic_Logger;
+
+   type Default_Module is
+     (Renderer, Engine,
+      Shader_Compiler, Resource_Loader, Window_System,
+      Middleware, Application, Other);
 
 end Orka.Logging;

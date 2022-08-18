@@ -17,17 +17,13 @@
 package Orka.Loggers is
    pragma Preelaborate;
 
-   type Source is
-     (Worker, Game_Loop, Resource_Loader,
-      OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
-
    type Severity is (Error, Warning, Failure, Success, Info, Debug);
 
    type Logger is synchronized interface;
 
    procedure Log
      (Object  : in out Logger;
-      From    : Source;
+      From    : String;
       Level   : Severity;
       Message : String) is abstract
    with Synchronization => By_Protected_Procedure;

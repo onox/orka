@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2018 onox <denkpadje@gmail.com>
+--  Copyright (c) 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,13 +14,5 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private package Orka.Loggers.Formatting is
-   pragma Preelaborate;
-
-   function Format_Message
-     (From     : String;
-      Level    : Severity;
-      Message  : String;
-      Colorize : Boolean) return String;
-
-end Orka.Loggers.Formatting;
+package Orka.Logging.Default is new Orka.Logging.Generic_Logger (Orka.Logging.Default_Module);
+pragma Preelaborate (Orka.Logging.Default);

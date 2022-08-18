@@ -23,10 +23,9 @@ package body Orka.Loggers.Formatting is
    package SF renames Ada.Strings.Fixed;
 
    Length_Level  : constant := 7;
-   Length_Source : constant := 15;
 
    function Format_Message
-     (From     : Source;
+     (From     : String;
       Level    : Severity;
       Message  : String;
       Colorize : Boolean) return String
@@ -49,7 +48,7 @@ package body Orka.Loggers.Formatting is
               when Info    => "",
               when Debug   => " ");
 
-      Level_Image : String (1 .. Length_Level);
+      Level_Image  : String (1 .. Length_Level);
 
       function Colorize_Text (Text : String; Color : Terminals.Color) return String is
         (if Colorize then Terminals.Colorize (Text, Color) else Text);
@@ -61,7 +60,7 @@ package body Orka.Loggers.Formatting is
         " " &
         Colorize_Text ("[" & Level_Icon & " " & Level_Image & "]", Level_Color) &
         " " &
-        Colorize_Text ("[" & SF.Head (From'Image, Length_Source) & "]", Terminals.Magenta) &
+        Colorize_Text ("[" & From & "]", Terminals.Magenta) &
         " " & Terminals.Strip_Line_Term (Message);
    end Format_Message;
 

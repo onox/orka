@@ -38,7 +38,7 @@ package body Orka.Loggers.Location is
    protected Queue is
       procedure Enqueue
         (Path    : SU.Unbounded_String;
-         From    : Source;
+         From    : String;
          Level   : Severity;
          Message : String);
 
@@ -55,7 +55,7 @@ package body Orka.Loggers.Location is
    protected body Queue is
       procedure Enqueue
         (Path    : SU.Unbounded_String;
-         From    : Source;
+         From    : String;
          Level   : Severity;
          Message : String) is
       begin
@@ -120,7 +120,7 @@ package body Orka.Loggers.Location is
    protected type Location_Logger (Min_Level : Severity) is new Logger with
       overriding
       procedure Log
-        (From    : Source;
+        (From    : String;
          Level   : Severity;
          Message : String);
 
@@ -131,7 +131,7 @@ package body Orka.Loggers.Location is
 
    protected body Location_Logger is
       procedure Log
-        (From    : Source;
+        (From    : String;
          Level   : Severity;
          Message : String) is
       begin

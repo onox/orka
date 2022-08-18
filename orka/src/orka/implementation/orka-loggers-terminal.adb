@@ -21,7 +21,7 @@ package body Orka.Loggers.Terminal is
 
    protected body Logger_Object is
       procedure Log
-        (From    : Source;
+        (From    : String;
          Level   : Severity;
          Message : String)
       is

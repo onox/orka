@@ -67,17 +67,21 @@ package body Orka.Logging is
       Current_Logger := Logger;
    end Set_Logger;
 
-   procedure Log
-     (From    : Source;
-      Level   : Severity;
-      Message : String) is
-   begin
-      Current_Logger.Log (From, Level, Message);
-   end Log;
+   package body Generic_Logger is
 
-   procedure Generic_Log (Level : Severity; Message : String) is
-   begin
-      Orka.Logging.Log (From, Level, Message);
-   end Generic_Log;
+      procedure Log
+        (Module  : Module_Type;
+         Level   : Severity;
+         Message : String) is
+      begin
+         Current_Logger.Log (Module'Image, Level, Message);
+      end Log;
+
+      procedure Generic_Log (Level : Severity; Message : String) is
+      begin
+         Log (Module, Level, Message);
+      end Generic_Log;
+
+   end Generic_Logger;
 
 end Orka.Logging;
