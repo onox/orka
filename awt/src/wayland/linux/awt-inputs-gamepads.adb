@@ -20,7 +20,7 @@ with Ada.Streams;
 with Ada.Strings.Fixed;
 with Ada.Unchecked_Conversion;
 
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.OS;
 with Orka.Strings;
 
@@ -35,11 +35,11 @@ with AWT.Registry;
 
 package body AWT.Inputs.Gamepads is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Window_System);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Window_System);
 
    package SF renames Ada.Strings.Fixed;
    package ED renames Event_Device;

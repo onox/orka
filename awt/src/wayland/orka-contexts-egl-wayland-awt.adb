@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Terminals;
 
 with EGL.Objects.Configs;
@@ -23,11 +23,11 @@ with Wayland.Protocols.Client.AWT;
 
 package body Orka.Contexts.EGL.Wayland.AWT is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Window_System);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Window_System);
 
    procedure Print_Monitor (Monitor : Standard.AWT.Monitors.Monitor'Class) is
       State : constant Standard.AWT.Monitors.Monitor_State := Monitor.State;

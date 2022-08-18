@@ -19,15 +19,15 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Hash;
 
 with Orka.Strings;
-with Orka.Logging;
+with Orka.Logging.Default;
 
 package body AWT.Inputs.Gamepads.Mappings is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Window_System);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Window_System);
 
    package SF renames Ada.Strings.Fixed;
 
