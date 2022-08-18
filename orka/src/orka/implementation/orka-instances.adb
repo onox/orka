@@ -14,14 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Logging;
+with Orka.Logging.Default;
 
 package body Orka.Instances is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Third_Party);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Create_Manager (Capacity, Parts : Positive) return Manager is
       Transforms : constant Positive := Capacity * Parts;

@@ -22,14 +22,14 @@ with Ada.Tags;
 with Orka.Containers.Bounded_Vectors;
 with Orka.Futures;
 with Orka.Loggers;
-with Orka.Logging;
+with Orka.Logging.Default;
 
 package body Orka.Jobs.Executors is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Worker);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Engine);
 
    function Get_Root_Dependent (Element : Job_Ptr) return Job_Ptr is
       Result : Job_Ptr := Element;

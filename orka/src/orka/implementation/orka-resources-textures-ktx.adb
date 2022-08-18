@@ -25,16 +25,16 @@ with GL.Types.Pointers;
 
 with Orka.Jobs;
 with Orka.KTX;
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.OS;
 with Orka.Strings;
 
 package body Orka.Resources.Textures.KTX is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Resource_Loader);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Resource_Loader);
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));

@@ -22,17 +22,17 @@ with Ada.Exceptions;
 
 with Orka.Futures;
 with Orka.Loggers;
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Simulation;
 with Orka.Simulation_Jobs;
 
 package body Orka.Loops is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Game_Loop);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Engine);
 
    function "+" (Value : Ada.Real_Time.Time_Span) return Duration
      renames Ada.Real_Time.To_Duration;

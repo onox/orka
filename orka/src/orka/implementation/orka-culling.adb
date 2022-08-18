@@ -18,15 +18,15 @@ with GL.Barriers;
 with GL.Compute;
 with GL.Types.Compute;
 
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Rendering.Programs.Modules;
 
 package body Orka.Culling is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Third_Party);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Create_Culler
      (Location : Resources.Locations.Location_Ptr) return Culler

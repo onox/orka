@@ -17,16 +17,16 @@
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Strings;
 with Orka.Terminals;
 
 package body Orka.Rendering.Programs.Modules is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Shader_Compiler);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));

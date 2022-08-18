@@ -19,15 +19,15 @@ with GL.Rasterization;
 with GL.Viewports;
 
 with Orka.Loggers;
-with Orka.Logging;
+with Orka.Logging.Default;
 
 package body Orka.Contexts.EGL is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Window_System);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Window_System);
 
    procedure Print_Error
      (Error : Standard.EGL.Errors.Error_Code;

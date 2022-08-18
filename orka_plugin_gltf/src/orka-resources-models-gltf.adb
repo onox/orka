@@ -32,17 +32,17 @@ with Orka.glTF.Scenes;
 
 with Orka.OS;
 with Orka.Jobs;
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Resources.Locations;
 with Orka.Strings;
 with Orka.Types;
 
 package body Orka.Resources.Models.glTF is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
-   procedure Log is new Orka.Logging.Generic_Log (Resource_Loader);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Resource_Loader);
 
    Default_Root_Name : constant String := "root";
 
