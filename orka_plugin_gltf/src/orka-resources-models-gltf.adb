@@ -751,20 +751,20 @@ package body Orka.Resources.Models.glTF is
            Object.Parts'Image & " parts," &
            Object.Vertices'Image & " vertices," &
            Object.Indices'Image & " indices");
-         Log (Info, "  timing:");
-         Log (Info, "    reading file:    " & Logging.Image (Times (Time_Reading)));
-         Log (Info, "    parsing JSON:    " & Logging.Image (Times (Time_Parsing)));
-         Log (Info, "    processing glTF: " & Logging.Image (Times (Time_Processing)));
+         Log (Debug, "  timing:");
+         Log (Debug, "    reading file:    " & Logging.Image (Times (Time_Reading)));
+         Log (Debug, "    parsing JSON:    " & Logging.Image (Times (Time_Parsing)));
+         Log (Debug, "    processing glTF: " & Logging.Image (Times (Time_Processing)));
 
-         Log (Info, "      buffers:       " & Logging.Image (Times (Time_Buffers)));
-         Log (Info, "      views:         " & Logging.Image (Times (Time_Views)));
-         Log (Info, "      accessors:     " & Logging.Image (Times (Time_Accessors)));
-         Log (Info, "      meshes:        " & Logging.Image (Times (Time_Meshes)));
-         Log (Info, "      nodes:         " & Logging.Image (Times (Time_Nodes)));
-         Log (Info, "      scenes:        " & Logging.Image (Times (Time_Scenes)));
+         Log (Debug, "      buffers:       " & Logging.Image (Times (Time_Buffers)));
+         Log (Debug, "      views:         " & Logging.Image (Times (Time_Views)));
+         Log (Debug, "      accessors:     " & Logging.Image (Times (Time_Accessors)));
+         Log (Debug, "      meshes:        " & Logging.Image (Times (Time_Meshes)));
+         Log (Debug, "      nodes:         " & Logging.Image (Times (Time_Nodes)));
+         Log (Debug, "      scenes:        " & Logging.Image (Times (Time_Scenes)));
 
-         Log (Info, "    scene tree:      " & Logging.Image (Times (Time_Scene_Tree)));
-         Log (Info, "    buffers:         " & Logging.Image (Times (Time_Write_Buffers)));
+         Log (Debug, "    scene tree:      " & Logging.Image (Times (Time_Scene_Tree)));
+         Log (Debug, "    buffers:         " & Logging.Image (Times (Time_Write_Buffers)));
       end;
    end Execute;
 

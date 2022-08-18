@@ -227,13 +227,13 @@ package body Orka.Resources.Textures.KTX is
               "x " & Header.Data_Type'Image & ")");
          end if;
 
-         Log (Info, "  statistics:");
-         Log (Info, "    reading file:   " & Logging.Image (T2 - T1));
-         Log (Info, "    parsing header: " & Logging.Image (T3 - T2));
-         Log (Info, "    storage:        " & Logging.Image (T4 - T3));
-         Log (Info, "    buffers:        " & Logging.Image (T5 - T4));
+         Log (Debug, "  timing:");
+         Log (Debug, "    reading file:   " & Logging.Image (T2 - T1));
+         Log (Debug, "    parsing header: " & Logging.Image (T3 - T2));
+         Log (Debug, "    storage:        " & Logging.Image (T4 - T3));
+         Log (Debug, "    buffers:        " & Logging.Image (T5 - T4));
          if Header.Mipmap_Levels = 0 then
-            Log (Info, "    generating mipmap:" & Logging.Image (T6 - T5));
+            Log (Debug, "    generating mipmap:" & Logging.Image (T6 - T5));
          end if;
 
          return Texture;
@@ -470,10 +470,10 @@ package body Orka.Resources.Textures.KTX is
               "x " & Header.Data_Type'Image & ")");
          end if;
 
-         Log (Info, "  statistics:");
-         Log (Info, "    creating header: " & Logging.Image (+(T2 - T1)));
-         Log (Info, "    retrieving data: " & Logging.Image (+(T3 - T2)));
-         Log (Info, "    writing file:    " & Logging.Image (+(T4 - T3)));
+         Log (Debug, "  timing:");
+         Log (Debug, "    creating header: " & Logging.Image (+(T2 - T1)));
+         Log (Debug, "    retrieving data: " & Logging.Image (+(T3 - T2)));
+         Log (Debug, "    writing file:    " & Logging.Image (+(T4 - T3)));
       end;
    end Write_Texture;
 
