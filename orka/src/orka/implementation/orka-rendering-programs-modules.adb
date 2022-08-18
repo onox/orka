@@ -35,7 +35,7 @@ package body Orka.Rendering.Programs.Modules is
 
    use Orka.Strings;
 
-   procedure Log_Error_With_Source (Text, Info_Log, Message : String) is
+   procedure Log_Error_With_Source (Text, Info_Log : String) is
       package SF renames Ada.Strings.Fixed;
 
       Extra_Rows          : constant := 1;
@@ -63,6 +63,16 @@ package body Orka.Rendering.Programs.Modules is
             else
               Default);
 
+         Log_Severity : constant Orka.Logging.Severity :=
+           (if +Message_Parts (1) = "error" then
+              Error
+            elsif +Message_Parts (1) = "warning" then
+              Warning
+            elsif +Message_Parts (1) = "note" then
+              Info
+            else
+              Error);
+
          Message_Kind : constant String :=
            Orka.Terminals.Colorize (+Message_Parts (1) & ":", Foreground => Message_Kind_Color);
          Message_Value : constant String :=
@@ -79,8 +89,6 @@ package body Orka.Rendering.Programs.Modules is
 
          Line_Digits : constant Positive := Trim (Last_Row'Image)'Length + Line_Number_Padding;
       begin
-         Log (Error, Message);
-
          for Row_Index in First_Row .. Last_Row loop
             declare
                Row_Image : constant String :=
@@ -105,10 +113,10 @@ package body Orka.Rendering.Programs.Modules is
                Prefix_Image : constant String :=
                  (Row_Image'Length + Separator'Length) * " ";
             begin
-               Log (Error, Row_Image_Colorized  & Separator & Line_Image);
+               Log (Log_Severity, Row_Image_Colorized  & Separator & Line_Image);
                if Row_Index = Error_Row then
-                  Log (Error, Prefix_Image  & Error_Indicator);
-                  Log (Error, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
+                  Log (Log_Severity, Prefix_Image  & Error_Indicator);
+                  Log (Log_Severity, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
                end if;
             end;
          end loop;
@@ -118,6 +126,17 @@ package body Orka.Rendering.Programs.Modules is
          --  Continue if parsing Info_Log fails
          null;
    end Log_Error_With_Source;
+
+   use all type GL.Objects.Shaders.Shader_Type;
+
+   function Image (Kind : GL.Objects.Shaders.Shader_Type) return String is
+     (case Kind is
+        when Vertex_Shader          => "vertex shader",
+        when Fragment_Shader        => "fragment shader",
+        when Geometry_Shader        => "geometry shader",
+        when Tess_Evaluation_Shader => "tesselation evaluation shader",
+        when Tess_Control_Shader    => "tesselation control shader",
+        when Compute_Shader         => "compute shader");
 
    procedure Load_And_Compile
      (Object      : in out Module;
@@ -139,21 +158,21 @@ package body Orka.Rendering.Programs.Modules is
             Shader.Compile;
             if not Shader.Compile_Status then
                declare
-                  Log : constant String := Shader.Info_Log;
+                  Shader_Log : constant String := Shader.Info_Log;
 
-                  Log_Parts : constant Orka.Strings.String_List := Split (Log, "" & L1.LF);
+                  Log_Parts : constant Orka.Strings.String_List := Split (Shader_Log, "" & L1.LF);
                begin
+                  Log (Error, "Compiling shader " & Path & " failed:");
                   for Part of Log_Parts loop
-                     Log_Error_With_Source (Text, +Part, "Compiling shader " & Path & " failed:");
+                     Log_Error_With_Source (Text, +Part);
                   end loop;
 
-                  raise Shader_Compile_Error with Path & ":" & Log;
+                  raise Shader_Compile_Error with Path & ":" & Shader_Log;
                end;
             end if;
-            Log (Debug, "Compiled shader " & Path);
+            Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path);
             Log (Debug, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
               " lines (" & Trim_Image (Source.Get.Value'Length) & " bytes)");
-            Log (Debug, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
@@ -175,23 +194,22 @@ package body Orka.Rendering.Programs.Modules is
             Shader.Compile;
             if not Shader.Compile_Status then
                declare
-                  Log : constant String := Shader.Info_Log;
+                  Shader_Log : constant String := Shader.Info_Log;
 
-                  Log_Parts : constant Orka.Strings.String_List := Split (Log, "" & L1.LF);
+                  Log_Parts : constant Orka.Strings.String_List := Split (Shader_Log, "" & L1.LF);
                begin
+                  Log (Error, "Compiling " & Shader_Kind'Image & " shader failed:");
                   for Part of Log_Parts loop
-                     Log_Error_With_Source (Source, +Part,
-                       "Compiling " & Shader_Kind'Image & " shader failed:");
+                     Log_Error_With_Source (Source, +Part);
                   end loop;
 
-                  raise Shader_Compile_Error with Shader_Kind'Image & ":" & Log;
+                  raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader_Log;
                end;
             end if;
-            Log (Debug, "Compiled string with " &
+            Log (Debug, "Compiled " & Image (Shader_Kind) & " text with " &
               Trim_Image (Source'Length) & " characters");
             Log (Debug, "  size: " &
               Trim_Image (Orka.Strings.Lines (Source)) & " lines");
-            Log (Debug, "  kind: " & Shader_Kind'Image);
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
