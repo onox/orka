@@ -21,7 +21,7 @@ package Orka.Loggers is
      (Worker, Game_Loop, Resource_Loader,
       OpenGL, Window_System, Shader_Compiler, Third_Party, Application, Other);
 
-   type Severity is (Error, Warning, Info, Debug);
+   type Severity is (Error, Warning, Failure, Success, Info, Debug);
 
    type Logger is synchronized interface;
 

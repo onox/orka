@@ -35,13 +35,17 @@ package body Orka.Loggers.Formatting is
         := (case Level is
               when Error   => Terminals.Red,
               when Warning => Terminals.Yellow,
+              when Failure => Terminals.Red,
+              when Success => Terminals.Green,
               when Info    => Terminals.Blue,
-              when Debug   => Terminals.Green);
+              when Debug   => Terminals.Default);
 
       Level_Icon : constant String
         := (case Level is
               when Error   => "",
               when Warning => "",
+              when Failure => "",
+              when Success => "",
               when Info    => "",
               when Debug   => " ");
 
