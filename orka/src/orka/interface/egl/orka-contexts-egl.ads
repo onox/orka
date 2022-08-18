@@ -89,6 +89,7 @@ private
 
    procedure Print_Debug
      (Display : Standard.EGL.Objects.Displays.Display;
+      Version : Context_Version;
       Flags   : Context_Flags);
 
    procedure Print_Error

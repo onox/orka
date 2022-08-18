@@ -72,10 +72,11 @@ package body Orka.Contexts.EGL.Wayland.AWT is
      (Object : in out AWT_Window;
       State  : Standard.AWT.Windows.Window_State) is
    begin
-      Log (Debug, "Configured window surface");
-      Log (Debug, "  size:   " &
+      Log (Debug, "Configured window surface of " &
         Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
-      Log (Debug, "  margin: " & Trim (State.Margin'Image));
+      if State.Margin > 0 then
+         Log (Debug, "  margin: " & Trim (State.Margin'Image));
+      end if;
 
       Object.Resize := State.Visible and State.Width > 0 and State.Height > 0;
    end On_Configure;
@@ -185,8 +186,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
             pragma Assert (Object.Context.Buffer = Back);
 
-            Log (Debug, "Created AWT window");
-            Log (Debug, "  size:        " &
+            Log (Info,  "Created window of " &
               Trim (Width'Image) & " × " & Trim (Height'Image));
             Log (Debug, "  flags:       " & Flags);
 

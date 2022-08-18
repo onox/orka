@@ -57,7 +57,7 @@ package body Orka.Contexts.EGL.Wayland is
             Result.Context.Make_Current;
 
             Post_Initialize (Result);
-            Print_Debug (Display, Flags);
+            Print_Debug (Display, Result.Version, Flags);
          end return;
       end;
    end Create_Context;

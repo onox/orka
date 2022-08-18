@@ -48,9 +48,10 @@ package body Orka.Contexts.EGL is
 
    procedure Print_Debug
      (Display : Standard.EGL.Objects.Displays.Display;
+      Version : Context_Version;
       Flags   : Context_Flags) is
    begin
-      Log (Debug, "Created EGL context");
+      Log (Info,  "Created EGL context for " & Image (Version));
       Log (Debug, "  platform: " & Display.Platform'Image);
       declare
          Name : constant String := Display.Device.Name;
@@ -110,7 +111,7 @@ package body Orka.Contexts.EGL is
             Result.Context.Make_Current;
 
             Post_Initialize (Result);
-            Print_Debug (Display, Flags);
+            Print_Debug (Display, Result.Version, Flags);
          end return;
       end;
    end Create_Context;
