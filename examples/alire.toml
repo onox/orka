@@ -25,7 +25,7 @@ executables = [
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAO-Is"]
+"*".style_checks = ["-gnatygAOM99-Is"]
 
 [[depends-on]]
 awt = "^1.0.0"

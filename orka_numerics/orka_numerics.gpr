@@ -37,8 +37,7 @@ project Orka_Numerics is
    for Library_Kind use Library_Type;
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Numerics_Config.Ada_Compiler_Switches &
-        ("-gnatyM99") & Switches;
+      for Default_Switches ("Ada") use Orka_Numerics_Config.Ada_Compiler_Switches & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

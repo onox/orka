@@ -18,8 +18,7 @@ project Orka_Plugin_Archives is
    for Library_Kind use Library_Type;
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Plugin_Archives_Config.Ada_Compiler_Switches &
-        ("-gnatyM99");
+      for Default_Switches ("Ada") use Orka_Plugin_Archives_Config.Ada_Compiler_Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

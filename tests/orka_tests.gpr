@@ -26,8 +26,7 @@ project Orka_Tests is
    for Main use ("orka_tests.adb");
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Tests_Config.Ada_Compiler_Switches &
-        ("-gnatyM99") & Switches;
+      for Default_Switches ("Ada") use Orka_Tests_Config.Ada_Compiler_Switches & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

@@ -17,7 +17,7 @@ project Orka_Egl is
    for Library_Kind use Library_Type;
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Egl_Config.Ada_Compiler_Switches & ("-gnatyM99");
+      for Default_Switches ("Ada") use Orka_Egl_Config.Ada_Compiler_Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

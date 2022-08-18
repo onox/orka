@@ -20,8 +20,7 @@ project Orka_Transforms is
    Switches := ("-mavx");
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Transforms_Config.Ada_Compiler_Switches &
-        ("-gnatyM99") & Switches;
+      for Default_Switches ("Ada") use Orka_Transforms_Config.Ada_Compiler_Switches & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

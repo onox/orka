@@ -10,7 +10,7 @@ executables = ["orka_tests"]
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAO-Is"]
+"*".style_checks = ["-gnatygAOM99-Is"]
 
 [gpr-externals]
 ORKA_TESTS_SIMD_TYPE = ["AVX", "AVX2"]

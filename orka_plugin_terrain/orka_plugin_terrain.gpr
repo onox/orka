@@ -18,7 +18,7 @@ project Orka_Plugin_Terrain is
 
    package Compiler is
       for Default_Switches ("Ada") use Orka_Plugin_Terrain_Config.Ada_Compiler_Switches &
-        ("-gnatyM100", "-fno-tree-vrp");
+        ("-fno-tree-vrp");
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

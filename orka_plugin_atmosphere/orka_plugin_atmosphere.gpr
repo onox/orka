@@ -21,7 +21,7 @@ project Orka_Plugin_Atmosphere is
 
    package Compiler is
       for Default_Switches ("Ada") use Orka_Plugin_Atmosphere_Config.Ada_Compiler_Switches &
-        ("-gnatyM99", "-fno-tree-vrp") & Switches;
+        ("-fno-tree-vrp") & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

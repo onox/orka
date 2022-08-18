@@ -20,7 +20,7 @@ project Awt is
    Switches := ("-mavx");
 
    package Compiler is
-      for Default_Switches ("Ada") use Awt_Config.Ada_Compiler_Switches & ("-gnatyM99") & Switches;
+      for Default_Switches ("Ada") use Awt_Config.Ada_Compiler_Switches & Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
