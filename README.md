@@ -31,8 +31,7 @@ tessellated terrain.
 
 - **Windows and input devices**. Use [AWT][url-awt] to manage input devices
 like the pointer, keyboard, and gamepads, and windows that can display 3D graphics.
-It has a similar purpose as GLFW and SDL. Alternatively, a library like
-[SDL][url-sdl] can be used instead to create windows and process input.
+It has a similar purpose as GLFW and SDL.
 
 - **Joysticks and gamepads**. Manage joysticks and gamepads.
 Analog axes can be filtered with a low-pass filter, dead zones
@@ -131,7 +130,6 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-issue]: https://github.com/onox/orka/issues
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-learn-act]: https://learn.adacore.com/courses/intro-to-ada/index.html
-  [url-sdl]: https://github.com/lucretia/sdlada
   [url-swe-practices]: https://en.wikibooks.org/wiki/Ada_Programming#Programming_in_the_large
   [url-wikibooks]: https://en.wikibooks.org/wiki/Ada_Programming
   [url-xoshiro]: https://prng.di.unimi.it/

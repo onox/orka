@@ -71,10 +71,6 @@ Optional dependencies:
 
  * `make` (on Linux)
 
-!!! info "SDL 2"
-    Although the use of [AWT][url-awt] is recommended, alternatively
-    [SDLAda][url-sdlada] can be used to manage windows and input via SDL 2.
-
 !!! warning "CPU and OpenGL requirements"
     For the SIMD intrinsics, the x86 extensions AVX and F16C are needed.
     The following CPUs should have support for these extensions:
@@ -123,8 +119,7 @@ Add Orka to your application:
 $ alr with orka --use=path/to/orka
 ```
 
-To create an OpenGL context and window, add `awt` for AWT (see below) or
-`orka_plugin_sdl` for SDL:
+To create an OpenGL context and window, add `awt`:
 
 ```sh
 $ alr with awt --use=path/to/awt
@@ -177,7 +172,6 @@ and learn how you can render your first triangle on the screen.
   [url-awt]: https://github.com/onox/orka/tree/master/awt
   [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
-  [url-sdlada]: https://github.com/Lucretia/sdlada
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview
   [url-hd]: https://en.wikipedia.org/wiki/Intel_Graphics_Technology#Capabilities

@@ -17,14 +17,14 @@ the context has been attached.
 
 ## Creating a context
 
-An OpenGL context can be created using either AWT or SDL, or EGL.
-Using AWT or SDL requires the presence of a windowing system such
-as Wayland or the windowing system of Windows.
+An OpenGL context can be created with either AWT or EGL.
+Using AWT requires the presence of a windowing system such
+as Wayland.
 EGL supports multiple platforms and can be used on Wayland as well
 as without any windowing system by directly using a GPU device.
 
 A context is created by calling the function `Create_Context` in the packages
-`:::ada Orka.Windows.AWT`, `:::ada Orka.Windows.SDL` or `:::ada Orka.Contexts.EGL`.
+`:::ada Orka.Contexts.AWT` or `:::ada Orka.Contexts.EGL`.
 The requested version of OpenGL must be given and optionally some flags.
 The following flags can be used:
 
@@ -60,22 +60,6 @@ function.
 !!! tip
     Call function `Framebuffer_Resized` in the rendering task to detect
     that the default framebuffer must be recreated before rendering to it.
-
-### SDL
-
-When using SDL, an OpenGL context can be created by creating a window:
-
-```ada
-Context : constant Orka.Contexts.Surface_Context'Class := Orka.Windows.SDL.Create_Context
-  (Version => (4, 2),
-   Flags   => (Debug => True, others => False));
-
-Window : constant Orka.Windows.Window'Class
-  := Orka.Windows.SDL.Create_Window (Context, Width => 1280, Height => 720);
-```
-
-When using SDL, the actual context is created and made current on the calling
-task by the `Create_Window` function and depends on the active windowing system.
 
 ### EGL
 
