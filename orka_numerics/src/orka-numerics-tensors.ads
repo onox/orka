@@ -695,6 +695,19 @@ package Orka.Numerics.Tensors is
 
    --  TODO Add function Cumulative
 
+   function Reduce_Associative
+     (Object    : Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element) return Element is abstract
+   with Pre'Class => Object.Kind /= Bool_Type;
+
+   function Reduce_Associative
+     (Object    : Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element;
+      Dimension : Tensor_Dimension) return Tensor is abstract
+   with Pre'Class => Object.Kind /= Bool_Type and Dimension <= Object.Dimensions;
+
    function Reduce
      (Object    : Tensor;
       Subject   : Expression'Class;

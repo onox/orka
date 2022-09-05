@@ -387,6 +387,19 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    ----------------------------------------------------------------------------
 
    overriding
+   function Reduce_Associative
+     (Object    : CPU_Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element) return Element;
+
+   overriding
+   function Reduce_Associative
+     (Object    : CPU_Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element;
+      Dimension : Tensor_Dimension) return CPU_Tensor;
+
+   overriding
    function Reduce
      (Object    : CPU_Tensor;
       Subject   : Expression'Class;

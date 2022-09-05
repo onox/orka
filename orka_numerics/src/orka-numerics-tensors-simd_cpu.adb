@@ -2338,67 +2338,90 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    ----------------------------------------------------------------------------
 
    overriding
-   function Reduce
+   function Reduce_Associative
      (Object    : CPU_Tensor;
       Subject   : Expression'Class;
       Initial   : Element) return Element
    is
-      Result : Element_Type := Initial;
-
       CPU_Subject : constant CPU_Expression := CPU_Expression (Subject);
+
+      Max_Length_Sequential : constant Positive := 128 / Vector_Type'Length;
+
+      function Pairwise (Lower, Upper : Positive) return Vector_Type is
+         Length : constant Positive := Upper - Lower + 1;
+      begin
+         if Length <= Max_Length_Sequential then
+            declare
+               Result : Vector_Type := Object.Data (Lower);
+            begin
+               for Index in Lower + 1 .. Upper loop
+                  Result := CPU_Subject.Apply (Result, Object.Data (Index));
+               end loop;
+               return Result;
+            end;
+         else
+            declare
+               Half_Index : constant Positive := Lower + Length / 2;
+            begin
+               return CPU_Subject.Apply
+                 (Pairwise (Lower, Half_Index - 1),
+                  Pairwise (Half_Index, Upper));
+            end;
+         end if;
+      end Pairwise;
 
       Padding : constant Natural :=
         Data_Padding (Size => Object.Size, Count => Object.Elements);
 
-      type Result_Index_Type is mod 8;
-
-      Sums : array (Result_Index_Type) of Vector_Type := (others => (others => Initial));
-      --  TODO Do pairwise summation recursively
-
-      Accumulated_Result : Vector_Type := (others => Initial);
-
-      Last_Index : constant Integer :=
-        Integer'Min (Object.Data'First + Sums'Length - 1, Object.Data'Last - 1);
-      pragma Assert (Last_Index >= -1);  --  Last_Index = -1 if tensor is empty
+      Result : Element_Type := Initial;
    begin
-      if Last_Index < Natural'First then
+      if Object.Data'Last = 0 then
          return Result;
       end if;
 
-      for Index in Object.Data'First .. Last_Index loop
-         Sums (Result_Index_Type (Index mod Sums'Length)) := Object.Data (Index);
-      end loop;
-
-      for Index in Last_Index + 1 .. Object.Data'Last - 1 loop
-         declare
-            Result_Index : constant Result_Index_Type := Result_Index_Type (Index mod Sums'Length);
-         begin
-            Sums (Result_Index) := CPU_Subject.Apply (Sums (Result_Index), Object.Data (Index));
-         end;
-      end loop;
-
-      Accumulated_Result := Sums (Result_Index_Type (Object.Data'First mod Sums'Length));
-
-      for Index in Object.Data'First + 1 .. Last_Index loop
-         declare
-            Result_Index : constant Result_Index_Type := Result_Index_Type (Index mod Sums'Length);
-         begin
-            Accumulated_Result := CPU_Subject.Apply (Accumulated_Result, Sums (Result_Index));
-         end;
-      end loop;
-
       if Object.Elements > Vector_Type'Length then
-         for Element of Accumulated_Result loop
+         for Element of Pairwise (Object.Data'First, Object.Data'Last - 1) loop
             Result := CPU_Subject.Apply (Result, Element);
          end loop;
       else
-         --  Ignore Accumulated_Result because Object.Data has only 1 vector,
+         --  Do not perform pairwise applying of expression because Object.Data has only 1 vector,
          --  which is added to Result below
          null;
       end if;
 
       for Index in Vector_Index_Type'First .. From_Last (Padding) loop
          Result := CPU_Subject.Apply (Result, Object.Data (Object.Data'Last) (Index));
+      end loop;
+
+      return Result;
+   end Reduce_Associative;
+
+   overriding
+   function Reduce_Associative
+     (Object    : CPU_Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element;
+      Dimension : Tensor_Dimension) return CPU_Tensor is
+   begin
+      raise Program_Error;
+      return Zeros ((1 => 1));  --  FIXME
+   end Reduce_Associative;
+
+   overriding
+   function Reduce
+     (Object    : CPU_Tensor;
+      Subject   : Expression'Class;
+      Initial   : Element) return Element
+   is
+      CPU_Subject : constant CPU_Expression := CPU_Expression (Subject);
+
+      Data : Element_Array (1 .. Object.Elements)
+        with Import, Convention => Ada, Address => Object.Data'Address;
+
+      Result : Element_Type := Initial;
+   begin
+      for Value of Data loop
+         Result := CPU_Subject.Apply (Result, Value);
       end loop;
 
       return Result;
@@ -2418,13 +2441,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Sum (Object : CPU_Tensor) return Element is
       Expression_Sum : constant CPU_Expression := X + Y;
    begin
-      return Object.Reduce (Expression_Sum, 0.0);
+      return Object.Reduce_Associative (Expression_Sum, 0.0);
    end Sum;
 
    overriding function Product (Object : CPU_Tensor) return Element is
       Expression_Product : constant CPU_Expression := X * Y;
    begin
-      return Object.Reduce (Expression_Product, 1.0);
+      return Object.Reduce_Associative (Expression_Product, 1.0);
    end Product;
 
    ----------------------------------------------------------------------------
@@ -2434,13 +2457,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Min (Object : CPU_Tensor) return Element is
       Expression_Min : constant CPU_Expression := Min (X, Y);
    begin
-      return Object.Reduce (Expression_Min, Element'Last);
+      return Object.Reduce_Associative (Expression_Min, Element'Last);
    end Min;
 
    overriding function Max (Object : CPU_Tensor) return Element is
       Expression_Max : constant CPU_Expression := Max (X, Y);
    begin
-      return Object.Reduce (Expression_Max, Element'First);
+      return Object.Reduce_Associative (Expression_Max, Element'First);
    end Max;
 
    --  See https://en.wikipedia.org/wiki/Median#Medians_for_samples
