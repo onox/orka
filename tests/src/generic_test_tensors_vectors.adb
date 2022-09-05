@@ -935,6 +935,23 @@ package body Generic_Test_Tensors_Vectors is
       Assert (Expected_4 = Actual_4, "Unexpected reduction result: " & Actual_4'Image);
    end Test_Reduction_Binary_Operator;
 
+   procedure Test_Reduction_Associative_Binary_Operator (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.1, 0.2, 0.4, 0.2, 0.5));
+
+      Expression_Sum     : constant CPU_Expression := X + Y;
+      Expression_Product : constant CPU_Expression := X * Y;
+
+      Expected_1 : constant Element := 15.0;
+      Expected_3 : constant Element := 120.0;
+
+      Actual_1 : constant Element := Tensor_1.Reduce (Expression_Sum, 0.0);
+      Actual_3 : constant Element := Tensor_1.Reduce (Expression_Product, 1.0);
+   begin
+      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
+   end Test_Reduction_Associative_Binary_Operator;
+
    procedure Test_Reduction_Unary_Operator (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((-1.0, -2.0, -3.0, -4.0, -5.0));
       Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 9.0, 16.0, 25.0, 36.0));
@@ -1554,6 +1571,9 @@ package body Generic_Test_Tensors_Vectors is
       --  Expressions
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test reduction binary operator", Test_Reduction_Binary_Operator'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test associative reduction binary operator",
+         Test_Reduction_Associative_Binary_Operator'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test reduction unary operator", Test_Reduction_Unary_Operator'Access));
       Test_Suite.Add_Test (Caller.Create
