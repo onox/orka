@@ -35,6 +35,9 @@ a reduction:
 Count : constant Element := Object.Reduce (Expression_Sum, 0.0);
 ```
 
+If an expression is associative, then function `Reduce_Associative` instead
+of `Reduce` can be used.
+
 The second parameter of the function `Reduce` contains the initial value of
 the result and may be used as the actual parameter of one of the two arguments
 when evaluating an expression. For example, when computing the sum, the
@@ -43,3 +46,9 @@ initial value should be 0.0, while computing the product requires the value 1.0.
 There exist a few predefined functions that perform some common reductions
 like the sum or product, and the minimum or maximum value in a tensor. These
 are the functions `Sum`, `Product`, `Min`, and `Max`.
+
+!!! summary
+    A binary operation `*` is associative if for any `a`, `b`, and `c`,
+    it is true that:
+
+    - `:::ada a * (b * c) = (a * b) * c`
