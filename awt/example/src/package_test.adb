@@ -1,6 +1,6 @@
 with GL.Types;
 
-with Orka.Logging;
+with Orka.Logging.Default;
 with Orka.Resources.Locations.Directories;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Drawing;
@@ -9,11 +9,11 @@ with AWT.Windows;
 
 package body Package_Test is
 
-   use all type Orka.Logging.Source;
+   use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
    use Orka.Logging;
 
-   procedure Log is new Orka.Logging.Generic_Log (Window_System);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Window_System);
 
    overriding
    function On_Close (Object : Test_Window) return Boolean is
