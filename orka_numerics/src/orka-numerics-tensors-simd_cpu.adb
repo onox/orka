@@ -2466,11 +2466,82 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Object.Reduce_Associative (Expression_Max, Element'First);
    end Max;
 
-   --  See https://en.wikipedia.org/wiki/Median#Medians_for_samples
-   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element is
+   function Median_Of_Three (A, B, C : Element) return Element is
    begin
-      raise Program_Error;
-      return 0.0;  --  FIXME
+      if A in B .. C | C .. B then
+         return A;
+      elsif B in A .. C | C .. A then
+         return B;
+      else
+         return C;
+      end if;
+   end Median_Of_Three;
+
+   function Quick_Select (Object : CPU_Tensor; K : Positive) return Element
+     with Pre => K <= Object.Elements
+   is
+      N : constant Positive := Object.Elements;
+
+      Object_Data : Element_Array (1 .. N)
+        with Import, Convention => Ada, Address => Object.Data'Address;
+
+      Splitter : constant Element :=
+        (if N > 1 then
+           Median_Of_Three (Object_Data (1), Object_Data (N / 2), Object_Data (N))
+         else
+           Object_Data (1));
+
+      Less : constant CPU_Tensor := Object (Object < Splitter);
+      L    : constant Natural    := Less.Elements;
+   begin
+      if L >= K then
+         --  Kth element in Less
+         return Quick_Select (Less, K);
+      else
+         declare
+            More : constant CPU_Tensor := Object (Object > Splitter);
+            M    : constant Natural    := More.Elements;
+
+            pragma Assert (L + M < N);
+         begin
+            if L < K and K <= N - M then
+               --  Kth element not in Less or More
+               return Splitter;
+            else
+               --  Kth element in More
+               return Quick_Select (More, K - (N - M));
+            end if;
+         end;
+      end if;
+   end Quick_Select;
+
+   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element is
+      function Internal_Quantile (Object : CPU_Tensor; P : Probability) return Element is
+         Last_Index : constant Element := Element (Object.Elements - 1);
+
+         K_Lower : constant Positive := Natural (Element'Floor (Last_Index * Element (P))) + 1;
+         K_Upper : constant Positive := Positive'Min (Object.Elements, K_Lower + 1);
+
+         P_Lower : constant Probability := Probability (Element (K_Lower - 1) / Last_Index);
+         --  Convert K_Lower back to a probability so that the difference
+         --  with P can be computed (needed for interpolation when P would
+         --  map to an element that is between two indices)
+
+         Element_Lower : constant Element := Quick_Select (Object, K_Lower);
+         Element_Upper : constant Element :=
+           (if P_Lower < P then Quick_Select (Object, K_Upper) else Element_Lower);
+
+         Probability_Per_Index : constant Probability := Probability (1.0 / Last_Index);
+         Probability_Ratio     : constant Probability := (P - P_Lower) / Probability_Per_Index;
+      begin
+         return (Element_Upper - Element_Lower) * Element (Probability_Ratio) + Element_Lower;
+      end Internal_Quantile;
+   begin
+      case Object.Elements is
+         when 0      => raise Constraint_Error with "Tensor is empty";
+         when 1      => return Object (1);
+         when others => return Internal_Quantile (Object, P);
+      end case;
    end Quantile;
 
    overriding function Median (Object : CPU_Tensor) return Element is
