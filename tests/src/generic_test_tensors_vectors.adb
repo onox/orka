@@ -937,7 +937,6 @@ package body Generic_Test_Tensors_Vectors is
 
    procedure Test_Reduction_Associative_Binary_Operator (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.1, 0.2, 0.4, 0.2, 0.5));
 
       Expression_Sum     : constant CPU_Expression := X + Y;
       Expression_Product : constant CPU_Expression := X * Y;
@@ -1078,13 +1077,52 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Max;
 
    procedure Test_Function_Quantile (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor :=
+        To_Tensor ((3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0));
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0));
+      --  Tensor_2 is Tensor_1 sorted
+
+      Last_Index : constant Element := Element (Tensor_1.Elements - 1);
    begin
-      Assert (False, "FIXME");
+      for I in 1 .. Tensor_1.Elements loop
+         declare
+            P : constant Probability := Probability (Element (I - 1) / Last_Index);
+            K : constant Positive    := Natural (Last_Index * Element (P)) + 1;
+            pragma Assert (I = K);
+
+            Expected : constant Element := Tensor_2 (I);
+            Actual   : constant Element := Tensor_1.Quantile (P => P);
+         begin
+            Assert (Expected = Actual,
+              "Unexpected quantile: " & Actual'Image & " instead of " & Expected'Image &
+              " for index " & I'Image);
+         end;
+      end loop;
    end Test_Function_Quantile;
 
    procedure Test_Function_Median (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor :=
+        To_Tensor ((3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0));
+      Tensor_2 : constant CPU_Tensor :=
+        To_Tensor ((0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0));
+      --  Tensor_2 is Tensor_1 sorted
+
+      pragma Assert (Tensor_1.Elements = Tensor_2.Elements);
+
+      Tensor_3 : constant CPU_Tensor :=
+        To_Tensor ((0.0, 1.0, 2.0, 3.0, 4.0, 5.0));
+
+      Middle_Offset_1 : constant Natural := (if Tensor_2.Elements mod 2 = 0 then 0 else 1);
+
+      Expected_1 : constant Element := Tensor_2 ((Tensor_2.Elements + Middle_Offset_1) / 2);
+      Expected_3 : constant Element := 2.5;
+
+      Actual_1   : constant Element := Tensor_1.Median;
+      Actual_3   : constant Element := Tensor_3.Median;
    begin
-      Assert (False, "FIXME");
+      Assert (Expected_1 = Actual_1, "Unexpected median (1): " & Actual_1'Image);
+      Assert (Expected_3 = Actual_3, "Unexpected median (2): " & Actual_3'Image);
    end Test_Function_Median;
 
    procedure Test_Function_Mean (Object : in out Test) is
