@@ -23,7 +23,7 @@ tools:
 	cd orka_tools && $(ALR_BUILD)
 
 tests:
-	cd tests && $(ALR_BUILD)
+	cd tests && ADA_FLAGS="--coverage" $(ALR_BUILD)
 	cd tests && alr run -s
 
 coverage:
