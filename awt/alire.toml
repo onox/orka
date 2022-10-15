@@ -32,11 +32,13 @@ inotify = "^2.0.1"
 
 [[depends-on]]
 orka = "~0.2.0"
-orka_transforms = "^1.0.0"
 orka_numerics = "^1.0.0"
+orka_tensors_cpu = "^1.0.0"
+orka_transforms = "^1.0.0"
 
 [[pins]]
 orka = { path = "../orka" }
 orka_egl = { path = "../orka_egl" }
-orka_transforms = { path = "../orka_transforms" }
 orka_numerics = { path = "../orka_numerics" }
+orka_tensors_cpu = { path = "../orka_tensors_cpu" }
+orka_transforms = { path = "../orka_transforms" }

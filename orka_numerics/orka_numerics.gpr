@@ -7,26 +7,7 @@ project Orka_Numerics is
 
    for Create_Missing_Dirs use "True";
 
-   Sources := ("src", "src/x86/generic");
-   Switches := ();
-
-   type SIMD_Type is ("SSE4.1", "AVX", "AVX2");
-   SIMD_Extensions : SIMD_Type := external ("ORKA_NUMERICS_SIMD_TYPE");
-
-   --  Note: AVX(2) implementations require GNAT 11 or later to avoid a Storage_Error
-   case SIMD_Extensions is
-      when "AVX2" =>
-         Sources := Sources & ("src/x86/generic/avx2");
-         Switches := Switches & ("-mavx2");
-      when "AVX" =>
-         Sources := Sources & ("src/x86/generic/avx");
-         Switches := Switches & ("-mavx");
-      when "SSE4.1" =>
-         Sources := Sources & ("src/x86/generic/sse4_1");
-         Switches := Switches & ("-msse4.1");
-   end case;
-
-   for Source_Dirs use Sources;
+   for Source_Dirs use ("src");
 
    for Object_Dir use "build/obj/" & Orka_Numerics_Config.Build_Profile;
    for Library_Dir use "build/lib";
@@ -37,7 +18,7 @@ project Orka_Numerics is
    for Library_Kind use Library_Type;
 
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Numerics_Config.Ada_Compiler_Switches & Switches;
+      for Default_Switches ("Ada") use Orka_Numerics_Config.Ada_Compiler_Switches;
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 

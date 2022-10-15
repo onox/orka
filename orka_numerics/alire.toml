@@ -13,16 +13,8 @@ maintainers-logins = ["onox"]
 validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
 
-[gpr-externals]
-ORKA_NUMERICS_SIMD_TYPE = ["SSE4.1", "AVX", "AVX2"]
-
-[gpr-set-externals]
-ORKA_NUMERICS_SIMD_TYPE = "SSE4.1"
-
 [[depends-on]]
-orka_simd = "^1.0.0"
 orka_types = "^1.0.0"
 
 [[pins]]
-orka_simd = { path = "../orka_simd" }
 orka_types = { path = "../orka_types" }
