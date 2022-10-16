@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package body Orka.Inputs.Joysticks.Filtering is
+package body AWT.Inputs.Gamepads.Filtering is
 
    function Low_Pass_Filter
      (Current, Last : Axis_Position;
@@ -46,4 +46,4 @@ package body Orka.Inputs.Joysticks.Filtering is
    function Invert (Value : Axis_Position; Enable : Boolean) return Axis_Position is
      (if Enable then -1.0 * Value else Value);
 
-end Orka.Inputs.Joysticks.Filtering;
+end AWT.Inputs.Gamepads.Filtering;

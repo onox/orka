@@ -16,7 +16,7 @@
 
 with Ada.Numerics;
 
-package Orka.Inputs.Joysticks.Filtering is
+package AWT.Inputs.Gamepads.Filtering is
    pragma Preelaborate;
 
    function RC (Cutoff_Frequency : Float_32) return Float_32 is
@@ -36,4 +36,4 @@ package Orka.Inputs.Joysticks.Filtering is
 
    function Invert (Value : Axis_Position; Enable : Boolean) return Axis_Position;
 
-end Orka.Inputs.Joysticks.Filtering;
+end AWT.Inputs.Gamepads.Filtering;

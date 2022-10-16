@@ -14,40 +14,43 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Inputs.Joysticks.Chords is
+package AWT.Inputs.Gamepads.Chords is
    pragma Preelaborate;
 
    subtype Chord_Button_Index is Positive range 1 .. 4;
 
-   type Button_Index_Array is array (Chord_Button_Index range <>) of Button_Index;
+   type Button_Index_Array is array (Chord_Button_Index range <>) of Gamepad_Button;
 
    type Chord (<>) is tagged private;
 
    function Create_Chord
-     (Buttons : Button_Index_Array;
-      Frames  : Positive) return Chord
+     (Buttons  : Button_Index_Array;
+      Max_Time : Duration) return Chord
    with Pre => Buttons'Length >= 2;
    --  Return a chord for the given button indices, which must be pressed
-   --  at the same time in one or a few frames
+   --  at the same time within small duration
    --
    --  Because humans are not perfect, they may press some buttons of the
-   --  chord a few frames after the first one. Therefore, Frames should
-   --  be a small number, something between 2 and 4.
+   --  chord a little bit later after the first one. Therefore, Max_Time should
+   --  be a small duration, something between 30 and 80 ms.
 
    function Detect_Activation
-     (Object   : in out Chord;
-      Joystick : Joystick_Input'Class) return Boolean;
+     (Object : in out Chord;
+      State  : Gamepad_State) return Boolean;
    --  Return True if all buttons of the chord are currently pressed and
-   --  have been pressed in the current or last few frames, False otherwise
+   --  were pressed within the maximum duration before now, False otherwise
 
 private
 
-   type State_Array is array (Positive range <>) of Boolean_Button_States;
+   type State_Array is array (Positive range <>) of Changed_Gamepad_Buttons;
 
-   type Chord (Frame_Count, Button_Count : Positive) is tagged record
-      Buttons     : Button_Index_Array (1 .. Button_Count);
-      States      : State_Array (1 .. Frame_Count);
-      Frame_Index : Positive;
+   type State_Type is (Idle, Active, Deactivated);
+
+   type Chord (Button_Count : Positive) is tagged record
+      Buttons       : Button_Index_Array (1 .. Button_Count);
+      Max_Time      : Duration;
+      Current_State : State_Type := Idle;
+      Start_Press   : Orka.Time;
    end record;
 
-end Orka.Inputs.Joysticks.Chords;
+end AWT.Inputs.Gamepads.Chords;

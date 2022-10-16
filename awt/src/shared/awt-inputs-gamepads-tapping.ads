@@ -14,27 +14,27 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Inputs.Joysticks.Tapping is
+package AWT.Inputs.Gamepads.Tapping is
 
    type Button_Tap_Detector is tagged private;
 
    function Create_Tap_Detector
-     (Button    : Button_Index;
+     (Button    : Gamepad_Button;
       Max_Delta : Duration) return Button_Tap_Detector;
-   --  Return a button tap detector for the given button index
+   --  Return a button tap detector for the given button
 
    function Detect_Activation
-     (Object   : in out Button_Tap_Detector;
-      Joystick : Joystick_Input'Class) return Boolean;
+     (Object : in out Button_Tap_Detector;
+      State  : Gamepad_State) return Boolean;
    --  Return True if the button is tapped rapidly, False otherwise
 
 private
 
    type Button_Tap_Detector is tagged record
-      Button     : Button_Index;
+      Button     : Gamepad_Button;
       Max_Delta  : Duration;
-      Last_Press : Time;
+      Last_Press : Orka.Time;
       Active     : Boolean;
    end record;
 
-end Orka.Inputs.Joysticks.Tapping;
+end AWT.Inputs.Gamepads.Tapping;

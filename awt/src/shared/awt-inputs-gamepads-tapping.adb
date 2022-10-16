@@ -16,11 +16,13 @@
 
 with Orka.OS;
 
-package body Orka.Inputs.Joysticks.Tapping is
+package body AWT.Inputs.Gamepads.Tapping is
 
    function Create_Tap_Detector
-     (Button    : Button_Index;
-      Max_Delta : Duration) return Button_Tap_Detector is
+     (Button    : Gamepad_Button;
+      Max_Delta : Duration) return Button_Tap_Detector
+   is
+      use type Orka.Time;
    begin
       return
         (Button     => Button,
@@ -30,14 +32,16 @@ package body Orka.Inputs.Joysticks.Tapping is
    end Create_Tap_Detector;
 
    function Detect_Activation
-     (Object   : in out Button_Tap_Detector;
-      Joystick : Joystick_Input'Class) return Boolean
+     (Object : in out Button_Tap_Detector;
+      State  : Gamepad_State) return Boolean
    is
-      Current_Time : constant Time := Orka.OS.Monotonic_Clock;
+      use type Orka.Time;
+
+      Current_Time : constant Orka.Time := Orka.OS.Monotonic_Clock;
 
       On_Time : constant Boolean := Current_Time - Object.Last_Press < Object.Max_Delta;
    begin
-      if Joystick.Just_Pressed (Object.Button) then
+      if State.Pressed (Object.Button) then
          Object.Last_Press := Current_Time;
          Object.Active := On_Time;
       end if;
@@ -45,4 +49,4 @@ package body Orka.Inputs.Joysticks.Tapping is
       return On_Time and Object.Active;
    end Detect_Activation;
 
-end Orka.Inputs.Joysticks.Tapping;
+end AWT.Inputs.Gamepads.Tapping;

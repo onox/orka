@@ -16,11 +16,13 @@
 
 with Orka.OS;
 
-package body Orka.Inputs.Joysticks.Sequences is
+package body AWT.Inputs.Gamepads.Sequences is
 
    function Create_Sequence
      (Buttons  : Button_Index_Array;
-      Max_Time : Duration) return Sequence is
+      Max_Time : Duration) return Sequence
+   is
+      use type Orka.Time;
    begin
       return
         (Button_Count => Buttons'Length,
@@ -31,25 +33,28 @@ package body Orka.Inputs.Joysticks.Sequences is
    end Create_Sequence;
 
    function Detect_Activation
-     (Object   : in out Sequence;
-      Joystick : Joystick_Input'Class) return Boolean
+     (Object : in out Sequence;
+      State  : Gamepad_State) return Boolean
    is
-      Current_Time : constant Time := Orka.OS.Monotonic_Clock;
+      use type Orka.Time;
+
+      Current_Time : constant Orka.Time := Orka.OS.Monotonic_Clock;
 
       On_Time : constant Boolean := Current_Time - Object.Start_Press < Object.Max_Time;
 
-      Pressed_Buttons : constant Boolean_Button_States := Joystick.Just_Pressed;
-      Expected_Button : Boolean_Button_States := (others => False);
+      Pressed_Buttons : constant Changed_Gamepad_Buttons := State.Pressed;
+      Expected_Button : Changed_Gamepad_Buttons := (others => False);
    begin
       Expected_Button (Object.Buttons (Object.Index)) := True;
+
       declare
-         Unexpected_Buttons : constant Boolean_Button_States :=
+         Unexpected_Buttons : constant Changed_Gamepad_Buttons :=
            Pressed_Buttons and not Expected_Button;
       begin
          --  If the user presses a wrong button, it might actually be
          --  the correct button of the start of the sequence. Therefore,
          --  do not stop, but just reset the sequence
-         if (for some Button of Unexpected_Buttons => Button) then
+         if (for some Is_Pressed of Unexpected_Buttons => Is_Pressed) then
             Object.Index := 1;
          end if;
 
@@ -73,4 +78,4 @@ package body Orka.Inputs.Joysticks.Sequences is
       return False;
    end Detect_Activation;
 
-end Orka.Inputs.Joysticks.Sequences;
+end AWT.Inputs.Gamepads.Sequences;

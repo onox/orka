@@ -14,11 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.Inputs.Joysticks.Sequences is
+package AWT.Inputs.Gamepads.Sequences is
 
    subtype Sequence_Button_Index is Positive range 1 .. 16;
 
-   type Button_Index_Array is array (Sequence_Button_Index range <>) of Button_Index;
+   type Button_Index_Array is array (Sequence_Button_Index range <>) of Gamepad_Button;
 
    type Sequence (<>) is tagged private;
 
@@ -30,8 +30,8 @@ package Orka.Inputs.Joysticks.Sequences is
    --  pressed one after another within a certain duration
 
    function Detect_Activation
-     (Object   : in out Sequence;
-      Joystick : Joystick_Input'Class) return Boolean;
+     (Object : in out Sequence;
+      State  : Gamepad_State) return Boolean;
    --  Return True if the buttons in the sequence have been pressed,
    --  False otherwise
 
@@ -41,7 +41,7 @@ private
       Buttons     : Button_Index_Array (1 .. Button_Count);
       Index       : Sequence_Button_Index;
       Max_Time    : Duration;
-      Start_Press : Time;
+      Start_Press : Orka.Time;
    end record;
 
-end Orka.Inputs.Joysticks.Sequences;
+end AWT.Inputs.Gamepads.Sequences;
