@@ -188,7 +188,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
             Log (Info,  "Created window of " &
               Trim (Width'Image) & " × " & Trim (Height'Image));
-            Log (Debug, "  flags:       " & Flags);
+            Log (Info,  "  flags:       " & Flags);
 
             Log (Debug, "  framebuffer:");
             declare

@@ -52,18 +52,18 @@ package body Orka.Contexts.EGL is
       Flags   : Context_Flags) is
    begin
       Log (Info,  "Created EGL context for " & Image (Version));
-      Log (Debug, "  platform: " & Display.Platform'Image);
+      Log (Info,  "  platform: " & Display.Platform'Image);
       declare
          Name : constant String := Display.Device.Name;
       begin
-         Log (Debug, "  device:   " & (if Name /= "" then Name else "unknown"));
+         Log (Info, "  device:   " & (if Name /= "" then Name else "unknown"));
       end;
       Log (Debug, "  vendor:   " & Display.Vendor);
       Log (Debug, "  version:  " & Display.Version);
-      Log (Debug, "  context:");
-      Log (Debug, "    flags:    " & Image (Flags));
-      Log (Debug, "    version:  " & GL.Context.Version_String);
-      Log (Debug, "    renderer: " & GL.Context.Renderer);
+      Log (Info,  "  context:");
+      Log (Info,  "    flags:    " & Image (Flags));
+      Log (Info,  "    version:  " & GL.Context.Version_String);
+      Log (Info,  "    renderer: " & GL.Context.Renderer);
    end Print_Debug;
 
    procedure Post_Initialize (Object : in out EGL_Context'Class) is
