@@ -7,6 +7,8 @@ like gamepads, including the following features:
 
 - **Events**. Listen for (dis)connection events.
 
+- **Detectors**. Detect chords, sequences, and button tapping.
+
 - **Force-feedback**. Play and cancel rumble and periodic force-feedback effects.
 
 - **Motion sensor**. Get the estimated orientation or measured linear acceleration
@@ -177,6 +179,146 @@ Options_Visible : constant Boolean := State.Buttons (Center_Right) = Pressed;
     use all type AWT.Inputs.Gamepads.Gamepad_Trigger;
     ```
 
+## Detectors
+
+Package `:::ada AWT.Inputs.Gamepads` has several child packages which can be
+used to detect several ways in which the user presses one or more buttons:
+
+- **Chord**. Pressing multiple buttons at the same time.
+
+- **Sequence**. Pressing multiple buttons, one at a time, in a specific order.
+
+- **Tapping**. Rapidly pressing a single button.
+
+The detectors use a `Gamepad_State` object to perform the detection.
+This state should be retrieved and stored in a constant
+every time after the gamepad state has been polled with
+procedure `::ada AWT.Inputs.Gamepads.Poll` and before any of the
+detectors are used:
+
+```ada
+declare
+   State : constant AWT.Inputs.Gamepads.Gamepad_State := Gamepad.State;
+begin
+   --  Perform the detection here
+end;
+```
+
+### Chords
+
+A chord refers to multiple buttons pressed by the user at the same time.
+A chord must consist of 2 to 4 buttons.
+The type `Chord` in package `:::ada AWT.Inputs.Gamepads.Chords` is used
+to detect a chord.
+
+Because humans are not perfect, they may press some buttons of the
+chord a little bit later after the first one. The detector should therefore
+allow for a small duration of between something like 30 to 80 milliseconds
+between the first and last button press.
+
+The function `Create_Chord` is used to create a chord detector:
+
+```ada
+Chord_Detector : AWT.Inputs.Gamepads.Chords.Chord :=
+  AWT.Inputs.Gamepads.Chords.Create_Chord
+    (Buttons  => (Shoulder_Left, Action_Down, Action_Right),
+     Max_Time => 0.080);
+```
+
+This detector detects when the user presses the buttons L1, triangle/A, and circle/B
+within 80 milliseconds of each other. To test whether a chord was activated, call
+function `Detect_Activation`:
+
+```ada
+if Chord_Detector.Detect_Activation (State) then
+   --  The user has pressed the required buttons at the same time
+end if;
+```
+
+The detector detects a chord exactly once.
+After a detection, the user must release all buttons of the chord to reset
+the detector.
+
+### Sequences
+
+A sequence of button presses can be detected by the type `Sequence` in package
+`:::ada AWT.Inputs.Gamepads.Sequences`.
+A sequence must consist of between 2 to 16 button presses and buttons may
+occur multiple times.
+
+The user should be given multiple seconds to press the buttons of a sequence,
+depending on the length of the sequence.
+
+The function `Create_Sequence` is used to create a sequence detector:
+
+```ada
+Sequence_Detector : AWT.Inputs.Gamepads.Sequences.Sequence :=
+  AWT.Inputs.Gamepads.Sequences.Create_Sequence
+    (Buttons  => (Direction_Up,
+                  Direction_Up,
+                  Direction_Down,
+                  Direction_Down,
+                  Direction_Left,
+                  Direction_Right,
+                  Direction_Left,
+                  Direction_Right,
+                  Action_Down,
+                  Action_Right),
+     Max_Time => 7.0);
+```
+
+This detector detects if the user presses the indicated buttons within 7 seconds.
+Just like with the chord detector, the function `Detect_Activation` is used to
+detect whether the sequence has activated.
+
+```ada
+if Sequence_Detector.Detect_Activation (State) then
+   --  The user has pressed the required buttons in the correct order
+   --  within the allowed time
+end if;
+```
+
+The detector detects a sequence exactly once.
+After a detection, the user can press the buttons of the sequence again
+starting with the first button of the sequence.
+If the user presses a wrong button during the sequence, the sequence will
+reset and the user can simply try again starting with the first button of
+the sequence.
+
+### Tapping
+
+Some actions may require the user to rapidly press a single button multiple
+times.
+The type `Button_Tap_Detector` in package `:::ada AWT.Inputs.Gamepads.Tapping`
+can be used to detect this.
+
+The user should be given the time to press the button within something like
+between 200 to 300 milliseconds between button presses.
+
+The function `Create_Tap_Detector` is used to create a button tap detector:
+
+```ada
+Tap_Detector : AWT.Inputs.Gamepads.Tapping.Button_Tap_Detector :=
+  AWT.Inputs.Gamepads.Tapping.Create_Tap_Detector
+    (Button    => Action_Down,
+     Max_Delta => 0.28);
+```
+
+This detector detects whethe the user is rapidly pressing the triangle/A button
+within 280 milliseconds of the previous press.
+The function `Detect_Activation` can be used to detect whether the user is tapping
+the button:
+
+```ada
+if Tap_Detector.Detect_Activation (State) then
+   --  The user is rapidly pressing the button
+end if;
+```
+
+The function returns `True` when the user has pressed the button
+(after releasing it first) within the required duration after the
+previous press of the button.
+
 ## Battery
 
 The state of a battery can be retrieved with the overloaded function `State`:
@@ -243,7 +385,7 @@ that tells how many effects can be stored.
 If the application tries to play too many effects at once, the oldest one will
 be removed to make space on the device.
 
-First, create an `Effect` object and store it somewhere at the library level.
+First, create an `Effect` object and store it as a constant in a package.
 An effect can then be played with the procedure `Play_Effect` and canceled
 with the procedure `Cancel_Effect`:
 
@@ -273,7 +415,7 @@ The following effects are supported:
     The `Effect` object returned by one of the functions mentioned below
     is partially stored in some hidden data structure. Therefore, do not
     unnecessarily recreate these objects.
-    Instead, create the effects once and store them somewhere at the library level.
+    Instead, create the effects once and store it as a constant in a package.
 
 #### Rumble
 
