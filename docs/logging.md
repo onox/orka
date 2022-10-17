@@ -4,19 +4,18 @@ The packages `:::ada Orka.Logging` and `:::ada Orka.Loggers.*` are used
 to log messages to various destinations like the terminal or a file. This
 can help to debug your application.
 
-Each message has a source, a message type, and a severity:
+Each message has a module from wich the message originates and a level:
 
-| Source           | Type                 | Severity     |
-|------------------|----------------------|--------------|
-| Worker           | Error                | Error        |
-| Game\_Loop       | Deprecated\_Behavior | Warning      |
-| Resource\_Loader | Undefined\_Behavior  | Info         |
-| OpenGL           | Portability          | Debug        |
-| Window\_System   | Performance          |              |
-| Shader\_Compiler | Other                |              |
-| Third\_Party     | Marker               |              |
-| Application      | Push\_Group          |              |
-| Other            | Pop\_Group           |              |
+| Module           | Level        |
+|------------------|--------------|
+| Renderer         | Error        |
+| Engine           | Warning      |
+| Resource\_Loader | Failure      |
+| Window\_System   | Success      |
+| Shader\_Compiler | Info         |
+| Middleware       | Debug        |
+| Application      |              |
+| Other            |              |
 
 ## Loggers
 
@@ -99,14 +98,16 @@ parameter can be given to specify the minimum severity of messages
 
 ## Logging
 
-The package `:::ada Orka.Logging` provides subprograms to log messages.
+The package `:::ada Orka.Logging.Default` provides subprograms to log messages.
 These subprograms can be called from any task. To log a message, use the
 procedure `Log`:
 
 ```ada
-Orka.Logging.Log
-  (From    => Application,
-   Kind    => Other,
+use all type Orka.Logging.Default_Module;
+use all type Orka.Logging.Severity;
+
+Orka.Logging.Default.Log
+  (Module  => Renderer,
    Level   => Info,
    Message => "FPS: " & FPS'Image);
 ```
@@ -114,25 +115,25 @@ Orka.Logging.Log
 The identifier should be unique per source and is an application-defined
 number.
 
-Alternatively, the generic package `Messages` can be instantiated:
+Alternatively, the generic procedure `Generic_Log` can be instantiated:
 
 ```ada
-use all type Orka.Logging.Source;
+use all type Orka.Logging.Default_Module;
 use all type Orka.Logging.Severity;
 use Orka.Logging;
 
-package Messages is new Orka.Logging.Messages (Game_Loop);
+procedure Log is new Orka.Logging.Default.Generic_Log (Engine);
 ```
 
 and then call `Log` of the instantiated package:
 
 ```ada
-Messages.Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
+Log (Debug, "Simulation tick resolution: " & Trim (Image (Tick)));
 ```
 
 This will log the following text:
 
-`[00:00:13.370042 DEBUG] [GAME_LOOP:OTHER] 0: Simulation tick resolution: 0.001 us`
+`00:00:00.634529 [   DEBUG ] [ENGINE] Simulation tick resolution: 0.001 us`
 
 ### Formatting
 
@@ -145,7 +146,9 @@ function `Image`.
 
 The graphics driver has the ability to notify the application of various
 events that may occur. Each message has a source, message type, severity,
-implementation-defined ID, and a human-readable description:
+implementation-defined ID, and a human-readable description.
+The ID and the message type are not used (except for the message type that
+indicates an error).
 
 To make sure the driver generates messages, use the `Debug` flag when
 initializing the windowing library:
