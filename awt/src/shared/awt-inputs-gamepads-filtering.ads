@@ -19,7 +19,9 @@ with Ada.Numerics;
 package AWT.Inputs.Gamepads.Filtering is
    pragma Preelaborate;
 
-   function RC (Cutoff_Frequency : Float_32) return Float_32 is
+   use type Orka.Float_32;
+
+   function RC (Cutoff_Frequency : Orka.Float_32) return Orka.Float_32 is
      (1.0 / (2.0 * Ada.Numerics.Pi * Cutoff_Frequency));
    --  Return the RC for a given cutoff frequency in Hertz
    --
@@ -29,7 +31,7 @@ package AWT.Inputs.Gamepads.Filtering is
 
    function Low_Pass_Filter
      (Current, Last : Axis_Position;
-      RC, DT        : Float_32) return Axis_Position;
+      RC, DT        : Orka.Float_32) return Axis_Position;
 
    function Dead_Zone (Value, Threshold : Axis_Position) return Axis_Position
      with Pre => Threshold >= 0.0;

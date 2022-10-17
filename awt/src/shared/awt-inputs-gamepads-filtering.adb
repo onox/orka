@@ -18,29 +18,32 @@ package body AWT.Inputs.Gamepads.Filtering is
 
    function Low_Pass_Filter
      (Current, Last : Axis_Position;
-      RC, DT        : Float_32) return Axis_Position
+      RC, DT        : Orka.Float_32) return Axis_Position
    is
       A : constant Axis_Position := Axis_Position (DT / (RC + DT));
    begin
-      return A * Current + (1.0 - A) * Last;
+      return A * Current + (Axis_Position'Last - A) * Last;
    end Low_Pass_Filter;
 
    function Dead_Zone (Value, Threshold : Axis_Position) return Axis_Position is
-      Result : Axis_Position;
+      Result : Orka.Float_32;
 
-      Scale : constant Axis_Position'Base := 1.0 / (1.0 - Threshold);
+      V : constant Orka.Float_32 := Orka.Float_32 (Value);
+      T : constant Orka.Float_32 := Orka.Float_32 (Threshold);
+
+      Scale : constant Orka.Float_32 := 1.0 / (1.0 - T);
    begin
-      Result := (if abs Value <= Threshold then 0.0 else Value);
+      Result := (if abs V <= T then 0.0 else V);
 
-      if Value >= 0.0 then
-         Result := Axis_Position'Max (Result - Threshold, 0.0);
-         Result := Axis_Position'Min (Result * Scale, 1.0);
+      if V >= 0.0 then
+         Result := Orka.Float_32'Max (Result - T, 0.0);
+         Result := Orka.Float_32'Min (Result * Scale, Orka.Float_32 (Axis_Position'Last));
       else
-         Result := Axis_Position'Min (Result + Threshold, 0.0);
-         Result := Axis_Position'Max (Result * Scale, -1.0);
+         Result := Orka.Float_32'Min (Result + T, 0.0);
+         Result := Orka.Float_32'Max (Result * Scale, Orka.Float_32 (Axis_Position'First));
       end if;
 
-      return Result;
+      return Axis_Position (Result);
    end Dead_Zone;
 
    function Invert (Value : Axis_Position; Enable : Boolean) return Axis_Position is
