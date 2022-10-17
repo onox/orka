@@ -360,7 +360,7 @@ package body Orka.Features.Atmosphere is
    -----------------------------------------------------------------------------
 
    function Create_Model
-     (Data     : not null access constant Model_Data;
+     (Data     : aliased Model_Data;
       Location : Resources.Locations.Location_Ptr) return Model
    is
       --  Compute the values for the SKY_RADIANCE_TO_LUMINANCE constant. In theory
@@ -375,7 +375,7 @@ package body Orka.Features.Atmosphere is
       Power_Sky : constant Float_64 := -3.0;
       Power_Sun : constant Float_64 :=  0.0;
    begin
-      return Result : Model (Data) do
+      return Result : Model (Data'Access) do
          if Precompute_Illuminance then
             Result.Sky_K_R := Max_Luminous_Efficacy;
             Result.Sky_K_G := Max_Luminous_Efficacy;

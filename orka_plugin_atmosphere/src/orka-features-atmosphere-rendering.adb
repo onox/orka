@@ -37,7 +37,7 @@ package body Orka.Features.Atmosphere.Rendering is
       Location   : Resources.Locations.Location_Ptr;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere
    is
-      Atmosphere_Model : constant Model := Create_Model (Data'Access, Location);
+      Atmosphere_Model : constant Model := Create_Model (Data, Location);
 
       Sky_GLSL : constant String := Resources.Convert
         (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));

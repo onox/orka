@@ -286,7 +286,7 @@ package Orka.Features.Atmosphere is
    type Model (Data : not null access constant Model_Data) is tagged limited private;
 
    function Create_Model
-     (Data     : not null access constant Model_Data;
+     (Data     : aliased Model_Data;
       Location : Resources.Locations.Location_Ptr) return Model;
 
    function Compute_Textures (Object : Model; Scattering_Orders : Natural := 4)
