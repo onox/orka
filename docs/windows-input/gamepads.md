@@ -193,7 +193,7 @@ used to detect several ways in which the user presses one or more buttons:
 The detectors use a `Gamepad_State` object to perform the detection.
 This state should be retrieved and stored in a constant
 every time after the gamepad state has been polled with
-procedure `::ada AWT.Inputs.Gamepads.Poll` and before any of the
+procedure `:::ada AWT.Inputs.Gamepads.Poll` and before any of the
 detectors are used:
 
 ```ada
@@ -267,9 +267,10 @@ Sequence_Detector : AWT.Inputs.Gamepads.Sequences.Sequence :=
      Max_Time => 7.0);
 ```
 
-This detector detects if the user presses the indicated buttons within 7 seconds.
+This detector detects if the user has pressed the buttons in the sequence
+within 7 seconds.
 Just like with the chord detector, the function `Detect_Activation` is used to
-detect whether the sequence has activated.
+detect whether the sequence has activated:
 
 ```ada
 if Sequence_Detector.Detect_Activation (State) then

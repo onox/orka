@@ -4,7 +4,7 @@ The packages `:::ada Orka.Logging` and `:::ada Orka.Loggers.*` are used
 to log messages to various destinations like the terminal or a file. This
 can help to debug your application.
 
-Each message has a module from wich the message originates and a level:
+Each message has a module, from wich the message originates, and a level:
 
 | Module           | Level        |
 |------------------|--------------|
