@@ -33,10 +33,13 @@ tessellated terrain.
 like the pointer, keyboard, and gamepads, and windows that can display 3D graphics.
 It has a similar purpose as GLFW and SDL.
 
-- **Joysticks and gamepads**. Manage joysticks and gamepads.
-Analog axes can be filtered with a low-pass filter, dead zones
-can be removed, and axes and triggers can be inverted or normalized.
-It is possible to detect chords (groups of buttons), button sequences,
+- **Gamepads**. Apply mappings from
+[SDL gamecontroller database][url-sdl-gamecontroller-db],
+play force-feedback effects,
+get the estimated orientation and angular velocity of the motion sensor,
+get the capacity and charging state of the battery,
+change the color of the LED,
+and detect chords (groups of buttons), button sequences,
 and rapid button tapping.
 
 - **Job graph processing system**. A job graph processing system provides
@@ -81,7 +84,7 @@ Ada is an imperative and object-oriented programming language focused
 on correctness, readability, and good [software engineering practices][url-swe-practices]
 for large scale systems and safety-critical and embedded real-time systems.
 
-It has a very strong static type system where you can create your own
+It has a strong static type system which allows you to create your own
 types that reflect the problem domain, with optional low-level control
 of your data. Packages provide modularity and information hiding. High-level
 concurrency primitives like protected objects allow safe communication
@@ -130,6 +133,7 @@ the [Apache License 2.0][url-apache] AND [MIT license][url-mit].
   [url-issue]: https://github.com/onox/orka/issues
   [url-ktx]: https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
   [url-learn-act]: https://learn.adacore.com/courses/intro-to-ada/index.html
+  [url-sdl-gamecontroller-db]: https://github.com/gabomdq/SDL_GameControllerDB
   [url-swe-practices]: https://en.wikibooks.org/wiki/Ada_Programming#Programming_in_the_large
   [url-wikibooks]: https://en.wikibooks.org/wiki/Ada_Programming
   [url-xoshiro]: https://prng.di.unimi.it/
