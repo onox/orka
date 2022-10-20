@@ -35,7 +35,7 @@ package Orka.Rendering.Framebuffers is
    package Textures renames GL.Objects.Textures;
 
    subtype Color_Attachment_Point is FB.Attachment_Point
-     range FB.Color_Attachment_0 .. FB.Color_Attachment_15;
+     range FB.Color_Attachment_0 .. FB.Color_Attachment_7;
 
    type Use_Point_Array is array (Rendering.Framebuffers.Color_Attachment_Point) of Boolean;
    --  TODO Use as formal parameter in procedure Invalidate
