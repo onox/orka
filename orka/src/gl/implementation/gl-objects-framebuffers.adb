@@ -136,7 +136,7 @@ package body GL.Objects.Framebuffers is
                    Src_X0, Src_Y0, Src_X1, Src_Y1,
                    Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;
                    Mask : Buffers.Buffer_Bits;
-                   Filter : Textures.Magnifying_Function)
+                   Filter : Interpolation_Function)
    is
       use type Low_Level.Bitfield;
 

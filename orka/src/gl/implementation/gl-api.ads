@@ -585,7 +585,7 @@ private package GL.API is
 
    package Blit_Named_Framebuffer is new Loader.Procedure_With_12_Params
      ("glBlitNamedFramebuffer", UInt, UInt, Int, Int, Int, Int, Int, Int, Int, Int,
-      Low_Level.Bitfield, Objects.Textures.Magnifying_Function);
+      Low_Level.Bitfield, Objects.Framebuffers.Interpolation_Function);
 
    package Invalidate_Named_Framebuffer_Data is new Loader.Array_Proc_With_3_Params
      ("glInvalidateNamedFramebufferData", UInt, Size,

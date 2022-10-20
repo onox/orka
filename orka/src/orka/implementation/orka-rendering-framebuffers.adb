@@ -285,13 +285,20 @@ package body Orka.Rendering.Framebuffers is
      (Object, Subject : Framebuffer;
       Mask : GL.Buffers.Buffer_Bits := (Color => True, others => False))
    is
-      use all type GL.Objects.Textures.Minifying_Function;
+      use all type GL.Objects.Framebuffers.Interpolation_Function;
    begin
       FB.Blit
         (Object.GL_Framebuffer, Subject.GL_Framebuffer,
          0, 0, Object.Width, Object.Height,
          0, 0, Subject.Width, Subject.Height,
-         Mask, (if Mask.Depth or Mask.Stencil then Nearest else Linear));
+         Mask,
+         (if Mask.Depth or Mask.Stencil then
+            Nearest
+          elsif Object.Samples > 0 and Subject.Samples = 0
+            and (Object.Width /= Subject.Width or Object.Height /= Subject.Height)
+          then
+            Scaled_Resolve_Nicest
+          else Linear));
    end Resolve_To;
 
    procedure Attach

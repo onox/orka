@@ -135,7 +135,9 @@ package Orka.Rendering.Framebuffers is
    --  supported). Formats of depth and stencil buffers must match.
    --
    --  Note: simultaneously resolving multiple samples and scaling
-   --  requires GL_EXT_framebuffer_multisample_blit_scaled.
+   --  of color buffers requires GL_EXT_framebuffer_multisample_blit_scaled.
+   --  If this extension is not present, then two separate calls to this
+   --  procedure are needed.
 
    procedure Attach
      (Object     : in out Framebuffer;

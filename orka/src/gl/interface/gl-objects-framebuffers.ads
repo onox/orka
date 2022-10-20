@@ -27,6 +27,9 @@ package GL.Objects.Framebuffers is
 
    use all type GL.Low_Level.Enums.Texture_Kind;
 
+   type Interpolation_Function is
+     (Nearest, Linear, Scaled_Resolve_Fastest, Scaled_Resolve_Nicest);
+
    type Framebuffer_Status is (Undefined, Complete, Incomplete_Attachment,
                                Incomplete_Missing_Attachment,
                                Incomplete_Draw_Buffer, Incomplete_Read_Buffer,
@@ -184,7 +187,7 @@ package GL.Objects.Framebuffers is
                    Src_X0, Src_Y0, Src_X1, Src_Y1,
                    Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;
                    Mask : Buffers.Buffer_Bits;
-                   Filter : Textures.Magnifying_Function);
+                   Filter : Interpolation_Function);
    --  Copy a rectangle of pixels in Read_Object framebuffer to a region
    --  in Draw_Object framebuffer
 
@@ -217,6 +220,13 @@ package GL.Objects.Framebuffers is
    function Default_Framebuffer return Framebuffer;
 
 private
+
+   for Interpolation_Function use
+     (Nearest                => 16#2600#,
+      Linear                 => 16#2601#,
+      Scaled_Resolve_Fastest => 16#90BA#,
+      Scaled_Resolve_Nicest  => 16#90BB#);
+   for Interpolation_Function'Size use Low_Level.Enum'Size;
 
    for Framebuffer_Status use (Undefined                     => 16#8219#,
                                Complete                      => 16#8CD5#,
