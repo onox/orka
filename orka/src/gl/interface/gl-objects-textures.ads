@@ -45,24 +45,6 @@ package GL.Objects.Textures is
    --                            Basic Types                                  --
    -----------------------------------------------------------------------------
 
-   type Minifying_Function is (Nearest, Linear, Nearest_Mipmap_Nearest,
-                               Linear_Mipmap_Nearest, Nearest_Mipmap_Linear,
-                               Linear_Mipmap_Linear);
-
-   --  Has to be defined here because of following subtype declaration.
-   for Minifying_Function use (Nearest                => 16#2600#,
-                               Linear                 => 16#2601#,
-                               Nearest_Mipmap_Nearest => 16#2700#,
-                               Linear_Mipmap_Nearest  => 16#2701#,
-                               Nearest_Mipmap_Linear  => 16#2702#,
-                               Linear_Mipmap_Linear   => 16#2703#);
-   for Minifying_Function'Size use Int'Size;
-
-   subtype Magnifying_Function is Minifying_Function range Nearest .. Linear;
-
-   type Wrapping_Mode is (Repeat, Clamp_To_Border, Clamp_To_Edge,
-                          Mirrored_Repeat, Mirror_Clamp_To_Edge);
-
    --  Actual range is implementation-defined
    --
    --  - OpenGL 2.x: At least 2
@@ -378,14 +360,6 @@ package GL.Objects.Textures is
    --  of the original texture's data
 
 private
-
-   for Wrapping_Mode use
-     (Repeat               => 16#2901#,
-      Clamp_To_Border      => 16#812D#,
-      Clamp_To_Edge        => 16#812F#,
-      Mirrored_Repeat      => 16#8370#,
-      Mirror_Clamp_To_Edge => 16#8743#);
-   for Wrapping_Mode'Size use Int'Size;
 
    type Texture_Base (Kind : LE.Texture_Kind)
      is new GL_Object with null record;

@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with GL.Low_Level.Enums;
+with GL.Objects.Samplers;
 with GL.Pixels.Extensions;
 with GL.Types;
 
@@ -36,8 +37,8 @@ package body Orka.Rendering.Textures is
    end Bind;
 
    function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler is
-      use all type GL.Objects.Textures.Minifying_Function;
-      use all type GL.Objects.Textures.Wrapping_Mode;
+      use all type GL.Objects.Samplers.Minifying_Function;
+      use all type GL.Objects.Samplers.Wrapping_Mode;
    begin
       return Result : GL.Objects.Samplers.Sampler do
          Result.Set_X_Wrapping (Repeat);

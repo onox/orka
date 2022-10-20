@@ -30,6 +30,7 @@ with GL.Low_Level.Enums;
 with GL.Objects.Framebuffers;
 with GL.Objects.Queries;
 with GL.Objects.Shaders;
+with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels.Queries;
 with GL.Rasterization;
@@ -805,13 +806,13 @@ private package GL.API is
      ("glSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
 
    package Sampler_Parameter_Minifying_Function is new Loader.Procedure_With_3_Params
-     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Minifying_Function);
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Samplers.Minifying_Function);
 
    package Sampler_Parameter_Magnifying_Function is new Loader.Procedure_With_3_Params
-     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Magnifying_Function);
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Samplers.Magnifying_Function);
 
    package Sampler_Parameter_Wrapping_Mode is new Loader.Procedure_With_3_Params
-     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
+     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Objects.Samplers.Wrapping_Mode);
 
    package Sampler_Parameter_Compare_Kind is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
@@ -827,14 +828,14 @@ private package GL.API is
 
    package Get_Sampler_Parameter_Minifying_Function is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
-      Objects.Textures.Minifying_Function);
+      Objects.Samplers.Minifying_Function);
 
    package Get_Sampler_Parameter_Magnifying_Function is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
-      Objects.Textures.Magnifying_Function);
+      Objects.Samplers.Magnifying_Function);
 
    package Get_Sampler_Parameter_Wrapping_Mode is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Textures.Wrapping_Mode);
+     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Samplers.Wrapping_Mode);
 
    package Get_Sampler_Parameter_Compare_Kind is new Loader.Getter_With_3_Params
      ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
