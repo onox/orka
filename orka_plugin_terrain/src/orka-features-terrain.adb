@@ -25,6 +25,7 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with GL.Barriers;
 with GL.Compute;
+with GL.Objects.Samplers;
 with GL.Types.Indirect;
 
 with Orka.Rendering.Drawing;
@@ -56,8 +57,8 @@ package body Orka.Features.Terrain is
    function Create_Sampler return GL.Objects.Samplers.Sampler is
       Result : GL.Objects.Samplers.Sampler;
 
-      use all type GL.Objects.Textures.Wrapping_Mode;
-      use all type GL.Objects.Textures.Minifying_Function;
+      use all type GL.Objects.Samplers.Wrapping_Mode;
+      use all type GL.Objects.Samplers.Minifying_Function;
    begin
       Result.Set_X_Wrapping (Clamp_To_Edge);
       Result.Set_Y_Wrapping (Clamp_To_Edge);
