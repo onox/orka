@@ -17,9 +17,9 @@
 with Ada.Strings.Bounded;
 
 with GL.Low_Level.Enums;
-with GL.Objects.Textures;
 with GL.Pixels;
 
+with Orka.Resources.Locations;
 with Orka.Rendering.Framebuffers;
 with Orka.Resources.Locations;
 
@@ -27,6 +27,7 @@ private with Ada.Containers.Indefinite_Holders;
 
 private with GL.Buffers;
 
+private with Orka.Rendering.Programs;
 private with Orka.Containers.Bounded_Vectors;
 
 package Orka.Frame_Graphs is
@@ -63,27 +64,9 @@ package Orka.Frame_Graphs is
 
    type Write_Mode is (Not_Used, Framebuffer_Attachment, Image_Store);
 
-   type Input_Resource is record
-      Mode : Read_Mode;
-      Data : Resource;
+   type Binding_Point is new Natural;
 
-      Implicit : Boolean;
-      Written  : Boolean;
-      --  Written to by a previous render pass
-   end record;
-
-   type Output_Resource is record
-      Mode : Write_Mode;
-      Data : Resource;
-
-      Implicit : Boolean;
-      Read     : Boolean;
-      --  Read by a subsequent render pass
-   end record;
-
-   type Input_Resource_Array is array (Positive range <>) of Input_Resource;
-
-   type Output_Resource_Array is array (Positive range <>) of Output_Resource;
+   subtype Attachment_Point is Binding_Point range 0 .. 7;
 
    ----------------------------------------------------------------------
 
@@ -91,10 +74,14 @@ package Orka.Frame_Graphs is
 
    function Name (Object : Render_Pass) return String;
 
+   --  TODO Does it make sense to add non-depth/stencil textures as FBO attachment?
+   --  TODO Support adding a layer of a resource as an input?
    procedure Add_Input
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode);
+      Read    : Read_Mode;
+      Binding : Binding_Point)
+   with Pre => (if Read = Framebuffer_Attachment then Binding in Attachment_Point);
    --  Add the given resource as an input to the render pass, so that it
    --  can be read as a texture, an image texture, or attached to the
    --  framebuffer
@@ -102,7 +89,9 @@ package Orka.Frame_Graphs is
    procedure Add_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Write   : Write_Mode);
+      Write   : Write_Mode;
+      Binding : Binding_Point)
+   with Pre => (if Write = Framebuffer_Attachment then Binding in Attachment_Point);
    --  Add the given resource as an output to the render pass, so that it
    --  can be written as an image texture or attached to the framebuffer
 
@@ -110,8 +99,10 @@ package Orka.Frame_Graphs is
      (Object  : Render_Pass;
       Subject : Resource;
       Read    : Read_Mode;
-      Write   : Write_Mode) return Resource
-   with Pre => not (Read = Framebuffer_Attachment xor Write = Framebuffer_Attachment);
+      Write   : Write_Mode;
+      Binding : Binding_Point) return Resource
+   with Pre => not (Read = Framebuffer_Attachment xor Write = Framebuffer_Attachment)
+                 and (if Write = Framebuffer_Attachment then Binding in Attachment_Point);
    --  Add the given resource as an input and an output to the render pass,
    --  indicating that the resource will be modified by the pass. The modified
    --  resource is returned and may be used as an input for other render passes.
@@ -121,8 +112,6 @@ package Orka.Frame_Graphs is
    type Render_Pass_Data is private;
 
    function Name (Pass : Render_Pass_Data) return String;
-
-   type Execute_Callback is access procedure (Pass : Render_Pass_Data);
 
    ----------------------------------------------------------------------
 
@@ -135,7 +124,6 @@ package Orka.Frame_Graphs is
    function Add_Pass
      (Object  : in out Builder;
       Name    : String;
-      Execute : not null Execute_Callback;
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
 
@@ -146,19 +134,16 @@ package Orka.Frame_Graphs is
    ----------------------------------------------------------------------
 
    procedure Initialize
-     (Object  : in out Graph;
-      Default : Rendering.Framebuffers.Framebuffer)
+     (Object   : in out Graph;
+      Location : Resources.Locations.Location_Ptr;
+      Default  : Rendering.Framebuffers.Framebuffer)
    with Pre => Default.Default;
 
-   procedure Render (Object : in out Graph);
+   procedure Render
+     (Object  : in out Graph;
+      Execute : access procedure (Pass : Render_Pass_Data));
 
-   function Input_Resources
-     (Object : Graph;
-      Pass   : Render_Pass_Data) return Input_Resource_Array;
-
-   function Output_Resources
-     (Object : Graph;
-      Pass   : Render_Pass_Data) return Output_Resource_Array;
+   procedure Log_Graph (Object : in out Graph);
 
    procedure Write_Graph
      (Object   : in out Graph;
@@ -171,9 +156,6 @@ package Orka.Frame_Graphs is
    --
    --    python3 -m json.tool < graph.json
 
-   function Get_Texture (Subject : Resource) return GL.Objects.Textures.Texture
-     with Post => Get_Texture'Result.Allocated;
-
 private
 
    type Render_Pass (Frame_Graph : access Builder) is tagged limited record
@@ -182,7 +164,6 @@ private
 
    type Render_Pass_Data is record
       Name        : Name_Strings.Bounded_String;
-      Execute     : Execute_Callback;
 
       Side_Effect : Boolean;
       Present     : Boolean;
@@ -200,14 +181,16 @@ private
    end record;
 
    type Resource_Data is record
-      Description : Resource;
-      Modified    : Boolean    := False;  --  True if there is a next version of this resource
-      Implicit    : Boolean    := False;  --  Internally added for framebuffer attachments
-      Input_Mode  : Read_Mode  := Not_Used;
-      Output_Mode : Write_Mode := Not_Used;
-      Render_Pass : Natural := 0;  --  The render pass that writes to this resource, 0 if none
-      Read_Count  : Natural := 0;
-      References  : Natural := 0;
+      Description    : Resource;
+      Modified       : Boolean    := False;  --  True if there is a next version of this resource
+      Implicit       : Boolean    := False;  --  Internally added for framebuffer attachments
+      Input_Mode     : Read_Mode  := Not_Used;
+      Output_Mode    : Write_Mode := Not_Used;
+      Input_Binding  : Binding_Point := 0;
+      Output_Binding : Binding_Point := 0;
+      Render_Pass    : Natural := 0;  --  The render pass that writes to this resource, 0 if none
+      Read_Count     : Natural := 0;
+      References     : Natural := 0;
    end record;
 
    package Pass_Vectors     is new Containers.Bounded_Vectors (Positive, Render_Pass_Data);
@@ -270,12 +253,17 @@ private
    package Framebuffer_Pass_Vectors is new Containers.Bounded_Vectors
      (Positive, Framebuffer_Pass);
 
+   type Present_Mode_Type is (Use_Default, Blit_To_Default, Render_To_Default);
+
    type Graph
      (Maximum_Passes, Maximum_Handles : Positive;
       Maximum_Resources : Handle_Type) is tagged limited
    record
-      Graph        : Builder (Maximum_Passes, Maximum_Handles, Maximum_Resources);
-      Framebuffers : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
+      Graph           : Builder (Maximum_Passes, Maximum_Handles, Maximum_Resources);
+      Framebuffers    : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
+      Present_Mode    : Present_Mode_Type;
+      Present_Program : Rendering.Programs.Program;
+      Last_Pass_Index : Positive;
    end record;
 
 end Orka.Frame_Graphs;

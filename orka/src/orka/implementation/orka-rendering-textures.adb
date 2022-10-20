@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 with GL.Low_Level.Enums;
-with GL.Pixels;
+with GL.Pixels.Extensions;
 with GL.Types;
 
 with Orka.Strings;
@@ -73,6 +73,22 @@ package body Orka.Rendering.Textures is
             Source        => Pixels'Address);
       end return;
    end Bayer_Dithering_Pattern;
+
+   function Get_Format_Kind
+     (Format : GL.Pixels.Internal_Format) return Format_Kind
+   is
+      package PE renames GL.Pixels.Extensions;
+   begin
+      if PE.Depth_Stencil_Format (Format) then
+         return Depth_Stencil;
+      elsif PE.Depth_Format (Format) then
+         return Depth;
+      elsif PE.Stencil_Format (Format) then
+         return Stencil;
+      else
+         return Color;
+      end if;
+   end Get_Format_Kind;
 
    function Image
      (Texture : GL.Objects.Textures.Texture;

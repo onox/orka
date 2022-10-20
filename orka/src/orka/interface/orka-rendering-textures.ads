@@ -16,6 +16,7 @@
 
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
+with GL.Pixels;
 
 package Orka.Rendering.Textures is
    pragma Preelaborate;
@@ -42,6 +43,11 @@ package Orka.Rendering.Textures is
    --
    --  uniform sampler2D dither;
    --  color.xyz += vec3(texture(dither, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
+
+   type Format_Kind is (Depth_Stencil, Depth, Stencil, Color);
+
+   function Get_Format_Kind
+     (Format : GL.Pixels.Internal_Format) return Format_Kind;
 
    function Image
      (Texture : GL.Objects.Textures.Texture;

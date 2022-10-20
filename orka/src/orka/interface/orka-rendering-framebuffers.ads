@@ -29,8 +29,9 @@ package Orka.Rendering.Framebuffers is
    pragma Preelaborate;
 
    use GL.Types;
+   use all type Rendering.Textures.Format_Kind;
 
-   package FB renames GL.Objects.Framebuffers;
+   package FB       renames GL.Objects.Framebuffers;
    package Textures renames GL.Objects.Textures;
 
    subtype Color_Attachment_Point is FB.Attachment_Point
@@ -48,13 +49,9 @@ package Orka.Rendering.Framebuffers is
    type Framebuffer (Default : Boolean) is tagged private;
 
    function Create_Framebuffer
-     (Width, Height, Samples : Size;
-      Context : Contexts.Context'Class) return Framebuffer
-   with Pre  => (if Samples > 0 then Context.Enabled (Contexts.Multisample)),
-        Post => not Create_Framebuffer'Result.Default;
-
-   function Create_Framebuffer (Width, Height : Size) return Framebuffer
-     with Post => not Create_Framebuffer'Result.Default;
+     (Width, Height : Size;
+      Samples       : Size := 0) return Framebuffer
+   with Post => not Create_Framebuffer'Result.Default;
 
    -----------------------------------------------------------------------------
 
@@ -142,18 +139,21 @@ package Orka.Rendering.Framebuffers is
 
    procedure Attach
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
-      Level      : Textures.Mipmap_Level := 0)
+      Attachment : Color_Attachment_Point := FB.Color_Attachment_0;
+      Level      : Textures.Mipmap_Level  := 0)
    with Pre  => (not Object.Default and Texture.Allocated and
-                  (if Attachment in Color_Attachment_Point then
+                  (if Rendering.Textures.Get_Format_Kind (Texture.Internal_Format) = Color then
                     (Object.Width  = Texture.Width  (Level) and
                      Object.Height = Texture.Height (Level))))
                 or else raise Constraint_Error with
                   "Cannot attach " & Rendering.Textures.Image (Texture, Level) &
                   " to " & Object.Image,
-        Post => Object.Has_Attachment (Attachment);
-   --  Attach the texture to the attachment point
+        Post => (if Rendering.Textures.Get_Format_Kind (Texture.Internal_Format) = Color then
+                   Object.Has_Attachment (Attachment));
+   --  Attach the texture to an attachment point based on the internal
+   --  format of the texture or to the given attachment point if the
+   --  texture is color renderable
    --
    --  The internal format of the texture must be valid for the given
    --  attachment point.
@@ -162,30 +162,17 @@ package Orka.Rendering.Framebuffers is
    --  map [array], or 2D multisampled array), then all attachments must
    --  have the same kind.
    --
+   --  If the texture is layered and you want to attach a specific layer,
+   --  then you must call the procedure Attach_Layer below instead.
+   --
    --  All attachments of the framebuffer must have the same amount of
    --  samples and they must all have fixed sample locations, or none of
    --  them must have them.
 
-   procedure Attach
-     (Object  : in out Framebuffer;
-      Texture : Textures.Texture;
-      Level   : Textures.Mipmap_Level := 0);
-   --  Attach the texture to an attachment point based on the internal
-   --  format of the texture
-   --
-   --  Internally calls the procedure Attach above.
-   --
-   --  If the texture is color renderable, it will always be attached to
-   --  Color_Attachment_0. If you need to attach a texture to a different
-   --  color attachment point then use the other procedure Attach directly.
-   --
-   --  If the texture is layered and you want to attach a specific layer,
-   --  then you must call the procedure Attach_Layer below instead.
-
    procedure Attach_Layer
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
+      Attachment : FB.Attachment_Point;
       Layer      : Natural;
       Level      : Textures.Mipmap_Level := 0)
    with Pre  => (not Object.Default and Texture.Allocated and

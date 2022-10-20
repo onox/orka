@@ -29,7 +29,8 @@ package body Orka.Rendering.Framebuffers is
      (Positive, FB.Default_Attachment_Point);
 
    function Create_Framebuffer
-     (Width, Height, Samples : Size) return Framebuffer is
+     (Width, Height : Size;
+      Samples       : Size := 0) return Framebuffer is
    begin
       return Result : Framebuffer :=
         (Default => False,
@@ -47,15 +48,6 @@ package body Orka.Rendering.Framebuffers is
          Result.Set_Read_Buffer (GL.Buffers.Color_Attachment0);
       end return;
    end Create_Framebuffer;
-
-   function Create_Framebuffer
-     (Width, Height, Samples : Size;
-      Context : Contexts.Context'Class) return Framebuffer
-   is (Create_Framebuffer (Width, Height, Samples => Samples));
-
-   function Create_Framebuffer
-     (Width, Height : Size) return Framebuffer
-   is (Create_Framebuffer (Width, Height, Samples => 0));
 
    -----------------------------------------------------------------------------
 
@@ -304,37 +296,38 @@ package body Orka.Rendering.Framebuffers is
 
    procedure Attach
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
-      Level      : Textures.Mipmap_Level := 0) is
-   begin
-      Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
-      Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
-   end Attach;
-
-   procedure Attach
-     (Object  : in out Framebuffer;
-      Texture : Textures.Texture;
-      Level   : Textures.Mipmap_Level := 0)
+      Attachment : Color_Attachment_Point := FB.Color_Attachment_0;
+      Level      : Textures.Mipmap_Level  := 0)
    is
+      procedure Attach
+        (Object     : in out Framebuffer;
+         Attachment : FB.Attachment_Point;
+         Texture    : Textures.Texture;
+         Level      : Textures.Mipmap_Level) is
+      begin
+         Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
+         Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
+      end Attach;
+
       use all type GL.Pixels.Internal_Format;
    begin
       case Texture.Internal_Format is
          when Depth24_Stencil8 | Depth32F_Stencil8 =>
-            Object.Attach (FB.Depth_Stencil_Attachment, Texture, Level);
+            Attach (Object, FB.Depth_Stencil_Attachment, Texture, Level);
          when Depth_Component16 | Depth_Component24 | Depth_Component32F =>
-            Object.Attach (FB.Depth_Attachment, Texture, Level);
+            Attach (Object, FB.Depth_Attachment, Texture, Level);
          when Stencil_Index8 =>
-            Object.Attach (FB.Stencil_Attachment, Texture, Level);
+            Attach (Object, FB.Stencil_Attachment, Texture, Level);
          when others =>
-            Object.Attach (FB.Color_Attachment_0, Texture, Level);
+            Attach (Object, Attachment, Texture, Level);
       end case;
    end Attach;
 
    procedure Attach_Layer
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point;
       Texture    : Textures.Texture;
+      Attachment : FB.Attachment_Point;
       Layer      : Natural;
       Level      : Textures.Mipmap_Level := 0) is
    begin

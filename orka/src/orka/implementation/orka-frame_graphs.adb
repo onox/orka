@@ -21,13 +21,62 @@ with Ada.Strings.Unbounded;
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
-with GL.Pixels.Extensions;
+with GL.Pixels;
+with GL.Objects.Framebuffers;
+with GL.Objects.Textures;
+with GL.Types;
+
+with Orka.Logging.Default;
+with Orka.Rendering.Drawing;
+with Orka.Rendering.Textures;
+with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Uniforms;
+with Orka.Strings;
+with Orka.Types;
 
 package body Orka.Frame_Graphs is
 
-   package PE renames GL.Pixels.Extensions;
+   use all type Orka.Logging.Default_Module;
+   use all type Orka.Logging.Severity;
 
-   type Attachment_Format is (Depth_Stencil, Depth, Stencil, Color);
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
+
+   function Trim_Image (Value : Integer) return String is
+     (Orka.Strings.Trim (Integer'Image (Value)));
+
+   function Trim_Image (Value : Extent_3D) return String is
+     (Trim_Image (Value.Width) & " × " &
+            Trim_Image (Value.Height) & " × " &
+            Trim_Image (Value.Depth));
+
+   function Trim_Image (Value : GL.Buffers.Buffer_Bits) return String is
+      package SU renames Ada.Strings.Unbounded;
+
+      Result : SU.Unbounded_String;
+   begin
+      if Value.Color then
+         SU.Append (Result, " color");
+      end if;
+      if Value.Depth then
+         SU.Append (Result, " depth");
+      end if;
+      if Value.Stencil then
+         SU.Append (Result, " stencil");
+      end if;
+      return Orka.Strings.Trim (SU.To_String (Result));
+   end Trim_Image;
+
+   procedure Log_Resource (Value : Resource) is
+   begin
+      Log (Debug, "    " & (+Value.Name) & ":");
+      Log (Debug, "      kind:     " & Value.Kind'Image);
+      Log (Debug, "      format:   " & Value.Format'Image);
+      Log (Debug, "      extent:   " & Trim_Image (Value.Extent));
+      Log (Debug, "      samples:  " & Trim_Image (Value.Samples));
+      Log (Debug, "      version:  " & Trim_Image (Value.Version.Version));
+   end Log_Resource;
+
+   package LE renames GL.Low_Level.Enums;
 
    function Name (Object : Resource_Data) return String is (+Object.Description.Name);
 
@@ -78,6 +127,38 @@ package body Orka.Frame_Graphs is
       end if;
    end Add_Resource;
 
+   -----------------------------------------------------------------------------
+
+   type Input_Resource is record
+      Mode    : Read_Mode;
+      Data    : Resource;
+      Binding : Binding_Point;
+
+      Implicit : Boolean;
+      Written  : Boolean;
+      --  Written to by a previous render pass
+   end record;
+
+   type Output_Resource is record
+      Mode    : Write_Mode;
+      Data    : Resource;
+      Binding : Binding_Point;
+
+      Implicit : Boolean;
+      Read     : Boolean;
+      --  Read by a subsequent render pass
+   end record;
+
+   type Input_Resource_Array is array (Positive range <>) of Input_Resource;
+
+   type Output_Resource_Array is array (Positive range <>) of Output_Resource;
+
+   -----------------------------------------------------------------------------
+
+   subtype Attachment_Format is Orka.Rendering.Textures.Format_Kind;
+
+   use all type Attachment_Format;
+
    procedure Verify_Depth_Stencil
      (Pass   : Render_Pass_Data;
       Format : Attachment_Format) is
@@ -106,20 +187,10 @@ package body Orka.Frame_Graphs is
    end Set_Depth_Stencil;
 
    function Get_Attachment_Format
-     (Format : GL.Pixels.Internal_Format) return Attachment_Format is
-   begin
-      if PE.Depth_Stencil_Format (Format) then
-         return Depth_Stencil;
-      elsif PE.Depth_Format (Format) then
-         return Depth;
-      elsif PE.Stencil_Format (Format) then
-         return Stencil;
-      else
-         return Color;
-      end if;
-   end Get_Attachment_Format;
+     (Format : GL.Pixels.Internal_Format) return Attachment_Format
+   renames Orka.Rendering.Textures.Get_Format_Kind;
 
-   procedure Execute_Present (Pass : Render_Pass_Data) is null;
+   -----------------------------------------------------------------------------
 
    use type GL.Objects.Textures.Texture;
 
@@ -131,7 +202,8 @@ package body Orka.Frame_Graphs is
 
    Textures : Texture_Maps.Map;
 
-   function Get_Texture (Subject : Resource) return GL.Objects.Textures.Texture is
+   function Get_Texture (Subject : Resource) return GL.Objects.Textures.Texture
+     with Post => Get_Texture'Result.Allocated is
    begin
       return Textures.Element (+Subject.Name);
    exception
@@ -170,19 +242,19 @@ package body Orka.Frame_Graphs is
      (Object   : Render_Pass;
       Subject  : Resource;
       Read     : Read_Mode;
+      Binding  : Binding_Point;
       Handle   : out Handle_Type;
       Implicit : Boolean);
 
    function Add_Pass
      (Object  : in out Builder;
       Name    : String;
-      Execute : not null Execute_Callback;
       Side_Effect, Present : Boolean) return Render_Pass'Class is
    begin
       Object.Passes.Append
         ((Name        => +Name,
-          Execute     => Execute,
           Side_Effect => Side_Effect,
+          Present     => Present,
           others      => <>));
       return Render_Pass'
         (Frame_Graph => Object'Access,
@@ -192,9 +264,8 @@ package body Orka.Frame_Graphs is
    function Add_Pass
      (Object  : in out Builder;
       Name    : String;
-      Execute : not null Execute_Callback;
       Side_Effect : Boolean := False) return Render_Pass'Class
-   is (Object.Add_Pass (Name, Execute, Side_Effect => Side_Effect, Present => False));
+   is (Object.Add_Pass (Name, Side_Effect => Side_Effect, Present => False));
 
    procedure Add_Present
      (Object  : in out Builder;
@@ -211,14 +282,14 @@ package body Orka.Frame_Graphs is
 
       declare
          Pass : constant Render_Pass'Class := Object.Add_Pass
-           ("Present", Execute_Present'Access, Side_Effect => True, Present => True);
+           ("Present", Side_Effect => True, Present => True);
          Resource : Resource_Data renames Object.Resources (Handle);
       begin
-         --  The present pass does not actually read the resource: the previous
+         --  The present pass does not always read the resource: the previous
          --  render pass will use the default framebuffer to write to the
-         --  resource or the present pass will blit or render the resource to
-         --  the default framebuffer
-         Render_Pass (Pass).Add_Input (Subject, Resource.Input_Mode, Handle, Implicit => False);
+         --  resource (mode 1), or the present pass will blit (mode 2) or
+         --  render (mode 3) the resource to the default framebuffer
+         Render_Pass (Pass).Add_Input (Subject, Texture_Read, 0, Handle, Implicit => False);
 
          Object.Present_Pass := Pass.Index;
       end;
@@ -230,6 +301,7 @@ package body Orka.Frame_Graphs is
      (Object   : Render_Pass;
       Subject  : Resource;
       Write    : Write_Mode;
+      Binding  : Binding_Point;
       Handle   : out Handle_Type;
       Implicit : Boolean)
    is
@@ -251,7 +323,8 @@ package body Orka.Frame_Graphs is
             Prev_Subject : Resource := Subject;
          begin
             Prev_Subject.Version.Version := Subject.Version.Version - 1;
-            Object.Add_Input (Prev_Subject, Framebuffer_Attachment, Handle, Implicit => False);
+            Object.Add_Input
+              (Prev_Subject, Framebuffer_Attachment, Binding, Handle, Implicit => False);
             Graph.Resources (Handle).Implicit := True;
          end;
       end if;
@@ -268,8 +341,9 @@ package body Orka.Frame_Graphs is
 
          pragma Assert (Resource.Output_Mode = Not_Used);
 
-         Resource.Render_Pass := Object.Index;
-         Resource.Output_Mode := Write;
+         Resource.Render_Pass    := Object.Index;
+         Resource.Output_Mode    := Write;
+         Resource.Output_Binding := Binding;
       end;
 
       --  Register resource as 'written' by the render pass
@@ -286,23 +360,27 @@ package body Orka.Frame_Graphs is
    procedure Add_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Write   : Write_Mode)
+      Write   : Write_Mode;
+      Binding : Binding_Point)
    is
       Handle : Handle_Type;
    begin
-      Object.Add_Output (Subject, Write, Handle, Implicit => True);
+      Object.Add_Output (Subject, Write, Binding, Handle, Implicit => True);
       pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Mode = Write);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Binding = Binding);
    end Add_Output;
 
    procedure Add_Input
      (Object   : Render_Pass;
       Subject  : Resource;
       Read     : Read_Mode;
+      Binding  : Binding_Point;
       Handle   : out Handle_Type;
       Implicit : Boolean)
    is
       Graph : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
+
       Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Format);
    begin
       if Pass.Read_Count > 0 and then
@@ -323,7 +401,8 @@ package body Orka.Frame_Graphs is
             Next_Subject : Resource := Subject;
          begin
             Next_Subject.Version.Version := Subject.Version.Version + 1;
-            Object.Add_Output (Next_Subject, Framebuffer_Attachment, Handle, Implicit => False);
+            Object.Add_Output
+              (Next_Subject, Framebuffer_Attachment, Binding, Handle, Implicit => False);
             Graph.Resources (Handle).Implicit := True;
          end;
       end if;
@@ -347,8 +426,9 @@ package body Orka.Frame_Graphs is
               "Resource '" & Name (Resource) & "' must be read as " & Resource.Input_Mode'Image;
          end if;
 
-         Resource.Read_Count := Resource.Read_Count + 1;
-         Resource.Input_Mode := Read;
+         Resource.Read_Count    := Resource.Read_Count + 1;
+         Resource.Input_Mode    := Read;
+         Resource.Input_Binding := Binding;
       end;
 
       --  Register resource as 'read' by the render pass
@@ -365,26 +445,29 @@ package body Orka.Frame_Graphs is
    procedure Add_Input
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode)
+      Read    : Read_Mode;
+      Binding : Binding_Point)
    is
       Handle : Handle_Type;
    begin
-      Object.Add_Input (Subject, Read, Handle, Implicit => True);
+      Object.Add_Input (Subject, Read, Binding, Handle, Implicit => True);
       pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Mode = Read);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Binding = Binding);
    end Add_Input;
 
    function Add_Input_Output
      (Object  : Render_Pass;
       Subject : Resource;
       Read    : Read_Mode;
-      Write   : Write_Mode) return Resource
+      Write   : Write_Mode;
+      Binding : Binding_Point) return Resource
    is
       Graph  : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
       Handle : Handle_Type;
 
       Next_Subject : Resource := Subject;
    begin
-      Object.Add_Input (Subject, Read, Handle, Implicit => False);
+      Object.Add_Input (Subject, Read, Binding, Handle, Implicit => False);
       declare
          Resource : Resource_Data renames Graph.Resources (Handle);
       begin
@@ -392,7 +475,7 @@ package body Orka.Frame_Graphs is
       end;
 
       Next_Subject.Version.Version := Subject.Version.Version + 1;
-      Object.Add_Output (Next_Subject, Write, Handle, Implicit => False);
+      Object.Add_Output (Next_Subject, Write, Binding, Handle, Implicit => False);
       return Next_Subject;
    end Add_Input_Output;
 
@@ -492,85 +575,182 @@ package body Orka.Frame_Graphs is
       end return;
    end Cull;
 
+   function Input_Resources
+     (Object : Graph;
+      Pass   : Render_Pass_Data) return Input_Resource_Array is
+   begin
+      return Result : Input_Resource_Array (1 .. Pass.Read_Count) do
+         for Index in 1 .. Pass.Read_Count loop
+            declare
+               Data : Resource_Data renames Object.Graph.Resources
+                 (Object.Graph.Read_Handles (Pass.Read_Offset + Index - 1));
+            begin
+               Result (Index) := (Mode     => Data.Input_Mode,
+                                  Data     => Data.Description,
+                                  Binding  => Data.Input_Binding,
+                                  Written  => Data.Render_Pass /= 0,
+                                  Implicit => Data.Implicit);
+            end;
+         end loop;
+      end return;
+   end Input_Resources;
+
+   function Output_Resources
+     (Object : Graph;
+      Pass   : Render_Pass_Data) return Output_Resource_Array is
+   begin
+      return Result : Output_Resource_Array (1 .. Pass.Write_Count) do
+         for Index in 1 .. Pass.Write_Count loop
+            declare
+               Data : Resource_Data renames Object.Graph.Resources
+                 (Object.Graph.Write_Handles (Pass.Write_Offset + Index - 1));
+            begin
+               Result (Index) := (Mode     => Data.Output_Mode,
+                                  Data     => Data.Description,
+                                  Binding  => Data.Output_Binding,
+                                  Read     => Data.References > 0,
+                                  Implicit => Data.Implicit);
+            end;
+         end loop;
+      end return;
+   end Output_Resources;
+
    procedure Initialize
-     (Object  : in out Graph;
-      Default : Rendering.Framebuffers.Framebuffer)
+     (Object   : in out Graph;
+      Location : Resources.Locations.Location_Ptr;
+      Default  : Rendering.Framebuffers.Framebuffer)
    is
       subtype Selector_Type is GL.Buffers.Explicit_Color_Buffer_Selector;
       subtype Buffer_Type   is GL.Buffers.Draw_Buffer_Index;
       subtype Point_Type    is Rendering.Framebuffers.Color_Attachment_Point;
 
-      use type GL.Low_Level.Enums.Texture_Kind;
+      function To_Color_Buffer (Value : Attachment_Point) return Selector_Type is
+        (Selector_Type'Val (Selector_Type'Pos (Selector_Type'First) + Value));
 
-      type Present_Mode_Type is (Use_Default, Blit_To_Default, Render_To_Default);
+      function To_Attachment_Point (Value : Attachment_Point) return Point_Type is
+        (Point_Type'Val (Point_Type'Pos (Point_Type'First) + Value));
+
+      use type LE.Texture_Kind;
 
       Present_Pass : Render_Pass_Data renames Object.Graph.Passes (Object.Graph.Present_Pass);
       pragma Assert (Present_Pass.Read_Count = 1);
 
+      --  Look up the resource that is going to be presented to the screen
+      Present_Resource_Handle : constant Handle_Type
+        := Object.Graph.Read_Handles (Present_Pass.Read_Offset);
+      Present_Resource : Resource_Data renames Object.Graph.Resources (Present_Resource_Handle);
+
       Default_Extent : constant Extent_3D :=
         (Natural (Default.Width), Natural (Default.Height), 1);
 
-      Last_Pass_Index : Positive;
-      Present_Mode    : Present_Mode_Type;
+      Last_Pass_Index : constant Positive := Present_Resource.Render_Pass;
    begin
       declare
-         --  Look up the resource that is going to be presented to the screen
-         Resource_Handle : constant Handle_Type
-           := Object.Graph.Read_Handles (Present_Pass.Read_Offset);
-         Resource : Resource_Data renames Object.Graph.Resources (Resource_Handle);
+         package Programs renames Orka.Rendering.Programs;
+
+         Resource : Resource_Data renames Present_Resource;
+
+         Format : constant Attachment_Format :=
+           Get_Attachment_Format (Resource.Description.Format);
 
          --  Look up the last render pass *before* the present pass
-         Last_Render_Pass : Render_Pass_Data renames Object.Graph.Passes (Resource.Render_Pass);
+         Last_Render_Pass : Render_Pass_Data renames Object.Graph.Passes (Last_Pass_Index);
 
          Attachments : Natural := 0;
-         Current_Point, Color_Attachment : Point_Type := Point_Type'First;
+         Has_Non_Color_Attachment : Boolean := False;
       begin
-         Last_Pass_Index := Resource.Render_Pass;
-
          --  Mode 1: Previous render pass has one FB color attachment (this resource)
          --    Action: Previous render pass can use the default framebuffer
          --
          --  Mode 2: Previous render pass has multiple FB color attachments
-         --          or resource is a depth and/or stencil attachment
+         --          or other non-color FB attachments
          --    Action: Blit the resource to the default framebuffer
          --
          --  Mode 3: Resource is not written as a FB color attachment
+         --          or resource is a depth and/or stencil attachment
          --    Action: Bind the resource as a texture and render to the
          --            default framebuffer
-         if Resource.Output_Mode /= Framebuffer_Attachment then
-            --  Mode 3
-            --  TODO Bind resource as texture and render to default framebuffer
-            Present_Mode := Render_To_Default;
-            raise Program_Error with "Not implemented mode 3 yet";
+         if Resource.Output_Mode /= Framebuffer_Attachment or Format /= Color then
+            --  Mode 3: Bind resource as texture and render to default framebuffer
+            --  (Presented resource is added as input to present pass in procedure Add_Present)
+            Object.Present_Mode := Render_To_Default;
+
+            Object.Present_Program := Programs.Create_Program (Programs.Modules.Create_Module
+              (Location,
+               VS => "oversized-triangle.vert",
+               FS => "frame-graph-present.frag"));
+
+            Object.Present_Program.Uniform ("screenResolution").Set_Vector
+              (Orka.Types.Singles.Vector4'
+                (Orka.Float_32 (Default.Width), Orka.Float_32 (Default.Height), 0.0, 0.0));
+
+            Log (Warning, "Presenting " & Name (Resource) & " using extra render pass");
+
+            if Resource.Output_Mode /= Framebuffer_Attachment then
+               Log (Warning, "  output mode: " & Resource.Output_Mode'Image &
+                 " (/= " & Read_Mode'Image (Framebuffer_Attachment) & ")");
+            end if;
+
+            if Format /= Color then
+               Log (Warning, "  format: " & Format'Image &
+                 " (/= " & Color'Image & ")");
+            end if;
          else
             for Last_Resource of Object.Output_Resources (Last_Render_Pass) loop
-               if Last_Resource.Mode = Framebuffer_Attachment and then
-                  Get_Attachment_Format (Last_Resource.Data.Format) = Color
-               then
-                  Attachments := Attachments + 1;
-
-                  --  TODO Handle depth/stencil resources for mode 2
-                  --  TODO Getting the attachment point is only needed for mode 2
-                  if Last_Resource.Data = Resource.Description then
-                     Color_Attachment := Current_Point;
-                  end if;
-                  Current_Point := Point_Type'Succ (Current_Point);
+               if Last_Resource.Mode = Framebuffer_Attachment then
+                  case Get_Attachment_Format (Last_Resource.Data.Format) is
+                     when Color =>
+                        Attachments := Attachments + 1;
+                     when Depth | Depth_Stencil | Stencil =>
+                        --  Cannot use mode 1, because we have no control over the format
+                        --  of the depth/stencil buffer of the default framebuffer
+                        Has_Non_Color_Attachment := True;
+                  end case;
                end if;
             end loop;
 
-            if Attachments = 1 and Get_Attachment_Format (Resource.Description.Format) = Color
-              and Resource.Description.Kind = GL.Low_Level.Enums.Texture_2D
+            if Attachments = 1 and not Has_Non_Color_Attachment
+              and Resource.Description.Kind = LE.Texture_2D
               and Resource.Description.Extent = Default_Extent
               and Resource.Description.Samples = Natural (Default.Samples)
             then
                --  Mode 1: Use Default as the framebuffer of Last_Render_Pass
-               Present_Mode := Use_Default;
-            else
+               Object.Present_Mode := Use_Default;
+
+               Log (Debug, "Presenting " & Name (Resource) & " using default framebuffer");
+            elsif Resource.Description.Kind in LE.Texture_2D | LE.Texture_2D_Multisample then
                --  Mode 2
-               --  TODO Last_Render_Pass.Framebuffer.Set_Read_Buffer (Color_Attachment);
-               --  TODO Last_Render_Pass.Framebuffer.Resolve_To (Default);
-               Present_Mode := Blit_To_Default;
-               raise Program_Error with "Not implemented mode 2 yet";
+               Object.Present_Mode := Blit_To_Default;
+
+               Log (Warning, "Presenting " & Name (Resource) & " by blitting");
+
+               if Attachments /= 1 or Has_Non_Color_Attachment then
+                  Log (Warning, "  last render pass:");
+                  Log (Warning, "    name:        " & Name (Last_Render_Pass));
+                  if Attachments /= 1 then
+                     Log (Warning, "    attachments: " & Trim_Image (Attachments) & " (/= 1)");
+                  end if;
+                  if Has_Non_Color_Attachment then
+                     Log (Warning, "    has depth or stencil attachments");
+                  end if;
+               end if;
+
+               if Resource.Description.Kind /= LE.Texture_2D then
+                  Log (Warning, "  kind: " & Resource.Description.Kind'Image &
+                    " (/= " & LE.Texture_2D'Image & ")");
+               end if;
+
+               if Resource.Description.Extent /= Default_Extent then
+                  Log (Warning, "  scaling: from " &
+                    Trim_Image (Resource.Description.Extent) & " to " &
+                    Trim_Image (Default_Extent));
+               end if;
+
+               if Resource.Description.Samples /= Natural (Default.Samples) then
+                  Log (Warning, "  samples: " &
+                    Trim_Image (Resource.Description.Samples) & " (/= " &
+                    Trim_Image (Natural (Default.Samples)) & ")");
+               end if;
             end if;
          end if;
       end;
@@ -578,7 +758,7 @@ package body Orka.Frame_Graphs is
       for Index in 1 .. Object.Graph.Passes.Length loop
          declare
             Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
-            Width, Height : Natural := Natural'First;
+            Width, Height, Samples_Attachments : Natural := Natural'First;
 
             Clear_Mask      : GL.Buffers.Buffer_Bits := (others => False);
             Invalidate_Mask : GL.Buffers.Buffer_Bits := (others => False);
@@ -593,13 +773,6 @@ package body Orka.Frame_Graphs is
 
             Invalidate_Points : Rendering.Framebuffers.Use_Point_Array := (others => False);
 
-            --  For draw buffers
-            Current_Selector : Selector_Type := Selector_Type'First;
-            Current_Buffer   : Buffer_Type   := Buffer_Type'First;
-
-            --  For invalidating color attachments
-            Current_Point    : Point_Type    := Point_Type'First;
-
             Depth_Writes, Stencil_Writes : Boolean := True;
 
             Clear_Buffer, Invalidate_Buffer : Boolean;
@@ -611,29 +784,32 @@ package body Orka.Frame_Graphs is
                   if Resource.Mode = Framebuffer_Attachment then
                      Clear_Buffer := not Resource.Written;
 
-                     if PE.Depth_Stencil_Format (Resource.Data.Format) then
-                        Clear_Mask.Depth   := Clear_Buffer;
-                        Clear_Mask.Stencil := Clear_Buffer;
-                     elsif PE.Depth_Format (Resource.Data.Format) then
-                        Clear_Mask.Depth   := Clear_Buffer;
-                     elsif PE.Stencil_Format (Resource.Data.Format) then
-                        Clear_Mask.Stencil := Clear_Buffer;
-                     else
-                        --  Clear the color buffers, but only those that
-                        --  do not have a render pass that writes to it
-                        if Clear_Buffer then
-                           Clear_Buffers (Current_Buffer) := Current_Selector;
-                           Clear_Mask.Color := True;
-                        end if;
-
-                        Current_Selector := Selector_Type'Succ (Current_Selector);
-                        Current_Buffer   := Buffer_Type'Succ (Current_Buffer);
-                     end if;
+                     case Get_Attachment_Format (Resource.Data.Format) is
+                        when Depth_Stencil =>
+                           Clear_Mask.Depth   := Clear_Buffer;
+                           Clear_Mask.Stencil := Clear_Buffer;
+                        when Depth =>
+                           Clear_Mask.Depth   := Clear_Buffer;
+                        when Stencil =>
+                           Clear_Mask.Stencil := Clear_Buffer;
+                        when Color =>
+                           --  Clear the color buffers, but only those that
+                           --  do not have a render pass that writes to it
+                           if Clear_Buffer then
+                              Clear_Buffers (Buffer_Type (Resource.Binding)) :=
+                                To_Color_Buffer (Resource.Binding);
+                              Clear_Mask.Color := True;
+                           end if;
+                     end case;
                   end if;
                end loop;
 
-               Current_Selector := Selector_Type'First;
-               Current_Buffer   := Buffer_Type'First;
+               --  Present pass is always the default framebuffer. Make sure
+               --  the color buffer of the default framebuffer is cleared when
+               --  we manually need to blit or render some texture to the screen
+               if Pass.Present then
+                  Clear_Mask.Color := True;
+               end if;
 
                --  Invalidate output attachments that are transcient
                --  (not read by a subsequent render pass)
@@ -641,38 +817,38 @@ package body Orka.Frame_Graphs is
                   if Resource.Mode = Framebuffer_Attachment then
                      Invalidate_Buffer := not Resource.Read;
 
-                     if PE.Depth_Stencil_Format (Resource.Data.Format) then
-                        Invalidate_Mask.Depth   := Invalidate_Buffer;
-                        Invalidate_Mask.Stencil := Invalidate_Buffer;
+                     Samples_Attachments :=
+                       Natural'Max (Samples_Attachments, Resource.Data.Samples);
 
-                        Depth_Writes   := not Resource.Implicit;
-                        Stencil_Writes := not Resource.Implicit;
-                     elsif PE.Depth_Format (Resource.Data.Format) then
-                        Invalidate_Mask.Depth   := Invalidate_Buffer;
+                     case Get_Attachment_Format (Resource.Data.Format) is
+                        when Depth_Stencil =>
+                           Invalidate_Mask.Depth   := Invalidate_Buffer;
+                           Invalidate_Mask.Stencil := Invalidate_Buffer;
 
-                        Depth_Writes   := not Resource.Implicit;
-                     elsif PE.Stencil_Format (Resource.Data.Format) then
-                        Invalidate_Mask.Stencil := Invalidate_Buffer;
+                           Depth_Writes   := not Resource.Implicit;
+                           Stencil_Writes := not Resource.Implicit;
+                        when Depth =>
+                           Invalidate_Mask.Depth   := Invalidate_Buffer;
 
-                        Stencil_Writes := not Resource.Implicit;
-                     else
-                        --  Invalidate the color buffers, but only those that
-                        --  are not read by a subsequent render pass
-                        if Invalidate_Buffer then
-                           Invalidate_Points (Current_Point) := True;
-                           Invalidate_Mask.Color := True;
-                        end if;
+                           Depth_Writes   := not Resource.Implicit;
+                        when Stencil =>
+                           Invalidate_Mask.Stencil := Invalidate_Buffer;
 
-                        --  Even if the resource is not read, the buffer is
-                        --  still used as a draw buffer because the shader
-                        --  will probably render to it
-                        Render_Buffers (Current_Buffer) := Current_Selector;
+                           Stencil_Writes := not Resource.Implicit;
+                        when Color =>
+                           --  Invalidate the color buffers, but only those that
+                           --  are not read by a subsequent render pass
+                           if Invalidate_Buffer then
+                              Invalidate_Points (To_Attachment_Point (Resource.Binding)) := True;
+                              Invalidate_Mask.Color := True;
+                           end if;
 
-                        Current_Selector := Selector_Type'Succ (Current_Selector);
-                        Current_Buffer   := Buffer_Type'Succ (Current_Buffer);
-
-                        Current_Point := Point_Type'Succ (Current_Point);
-                     end if;
+                           --  Even if the resource is not read, the buffer is
+                           --  still used as a draw buffer because the shader
+                           --  will probably render to it
+                           Render_Buffers (Buffer_Type (Resource.Binding)) :=
+                             To_Color_Buffer (Resource.Binding);
+                     end case;
                   end if;
 
                   --  Compute maximum width and height over all the output
@@ -705,89 +881,205 @@ package body Orka.Frame_Graphs is
                   Buffers_Equal := Clear_Buffers = Render_Buffers;
                end;
 
-               Object.Framebuffers.Append
-                 ((Index       => Index,
-                   Framebuffer => Framebuffer_Holders.To_Holder
-                     (if Present_Mode = Use_Default and Last_Pass_Index = Index then
-                        Default
-                      else
-                        Rendering.Framebuffers.Create_Framebuffer
-                          (Width  => Size (Width),
-                           Height => Size (Height))),
+               --  Skip present pass if last normal render pass already uses default framebuffer
+               if Object.Present_Mode /= Use_Default or not Pass.Present then
+                  Object.Framebuffers.Append
+                    ((Index       => Index,
+                      Framebuffer => Framebuffer_Holders.To_Holder
+                        (if Object.Present_Mode = Use_Default and Last_Pass_Index = Index then
+                           Default
+                         elsif Object.Present_Mode /= Use_Default and Pass.Present then
+                           Default
+                         else
+                           Rendering.Framebuffers.Create_Framebuffer
+                             (Width   => Size (Width),
+                              Height  => Size (Height),
+                              Samples => Size (Samples_Attachments))),
 
-                   Clear_Mask        => Clear_Mask,
-                   Invalidate_Mask   => Invalidate_Mask,
+                      Clear_Mask        => Clear_Mask,
+                      Invalidate_Mask   => Invalidate_Mask,
 
-                   Clear_Buffers     => Clear_Buffers,
-                   Render_Buffers    => Render_Buffers,
-                   Buffers_Equal     => Buffers_Equal,
+                      Clear_Buffers     => Clear_Buffers,
+                      Render_Buffers    => Render_Buffers,
+                      Buffers_Equal     => Buffers_Equal,
 
-                   Invalidate_Points => Invalidate_Points,
+                      Invalidate_Points => Invalidate_Points,
 
-                   Depth_Writes      => Depth_Writes,
-                   Stencil_Writes    => Stencil_Writes));
+                      Depth_Writes      => Depth_Writes,
+                      Stencil_Writes    => Stencil_Writes));
 
-               declare
-                  procedure Set_Buffers
-                    (Framebuffer : in out Rendering.Framebuffers.Framebuffer)
-                  is
-                     use type GL.Buffers.Color_Buffer_Selector;
-                  begin
-                     --  Clear color to black and depth to 0.0 (because of reversed Z)
-                     Framebuffer.Set_Default_Values
-                       ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
+                  if Object.Present_Mode = Use_Default and Last_Pass_Index = Index then
+                     Pass.Side_Effect := True;
+                     Pass.Present     := True;
+                  elsif Object.Present_Mode = Blit_To_Default and Last_Pass_Index = Index then
+                     Object.Last_Pass_Index := Object.Framebuffers.Length;
+                  end if;
 
-                     if Framebuffer.Default then
-                        --  The resource is 'read' by the present pass
-                        pragma Assert (not Invalidate_Mask.Color);
+                  declare
+                     procedure Set_Buffers
+                       (Framebuffer : in out Rendering.Framebuffers.Framebuffer)
+                     is
+                        use type GL.Buffers.Color_Buffer_Selector;
+                     begin
+                        --  Clear color to black and depth to 0.0 (because of reversed Z)
+                        Framebuffer.Set_Default_Values
+                          ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
 
-                        if not Buffers_Equal then
-                           pragma Assert
-                             (for all Buffer of Clear_Buffers => Buffer = GL.Buffers.None);
-                        end if;
+                        if Framebuffer.Default then
+                           --  The resource is 'read' by the present pass
+                           pragma Assert (not Invalidate_Mask.Color);
 
-                        if Present_Mode = Use_Default then
-                           pragma Assert (Render_Buffers
-                             (Render_Buffers'First) = GL.Buffers.Color_Attachment0);
-                           pragma Assert
-                             (for all Index in Render_Buffers'First + 1 .. Render_Buffers'Last =>
-                                Render_Buffers (Index) = GL.Buffers.None);
-                           --  Not calling Set_Draw_Buffers because the default
-                           --  framebuffer already has an initial draw buffer
-                           --  (GL.Buffers.Back_Left for double-buffered context)
-                        end if;
-                     else
-                        if Buffers_Equal then
-                           Framebuffer.Set_Draw_Buffers (Render_Buffers);
-                        end if;
-
-                        Current_Point := Point_Type'First;
-
-                        for Resource of Object.Input_Resources (Pass) loop
-                           if Resource.Mode = Framebuffer_Attachment then
-                              --  TODO Use Resource.Data.Extent.Depth if resource is layered
-                              if Get_Attachment_Format (Resource.Data.Format) /= Color then
-                                 Framebuffer.Attach (Get_Texture (Resource.Data));
-                              else
-                                 Framebuffer.Attach
-                                   (Current_Point, Get_Texture (Resource.Data));
-                                 Current_Point := Point_Type'Succ (Current_Point);
-                              end if;
+                           if not Buffers_Equal then
+                              pragma Assert
+                                (for all Buffer of Clear_Buffers => Buffer = GL.Buffers.None);
                            end if;
-                        end loop;
-                     end if;
-                  end Set_Buffers;
-               begin
-                  Object.Framebuffers
-                    (Object.Framebuffers.Length).Framebuffer.Update_Element
+
+                           if Object.Present_Mode = Use_Default then
+                              pragma Assert (Render_Buffers
+                                (Render_Buffers'First) = GL.Buffers.Color_Attachment0);
+                              pragma Assert
+                                (for all Index in Render_Buffers'First + 1 .. Render_Buffers'Last
+                                   => Render_Buffers (Index) = GL.Buffers.None);
+                              --  Not calling Set_Draw_Buffers because the default
+                              --  framebuffer already has an initial draw buffer
+                              --  (GL.Buffers.Back_Left for double-buffered context)
+                           end if;
+                        else
+                           if Object.Present_Mode = Blit_To_Default
+                             and Last_Pass_Index = Index
+                           then
+                              --  Compute the point of the resource read by the present pass
+                              for Resource of Object.Output_Resources (Pass) loop
+                                 if Resource.Mode = Framebuffer_Attachment
+                                    and Get_Attachment_Format (Resource.Data.Format) = Color
+                                    and Resource.Data = Present_Resource.Description
+                                 then
+                                    Framebuffer.Set_Read_Buffer
+                                      (To_Color_Buffer (Resource.Binding));
+                                 end if;
+                              end loop;
+                           end if;
+
+                           if Buffers_Equal then
+                              Framebuffer.Set_Draw_Buffers (Render_Buffers);
+                           end if;
+
+                           for Resource of Object.Input_Resources (Pass) loop
+                              if Resource.Mode = Framebuffer_Attachment then
+                                 --  TODO Support attaching layer of resource
+                                 --       using value in 1 .. Resource.Data.Extent.Depth
+                                 if Get_Attachment_Format (Resource.Data.Format) /= Color then
+                                    Framebuffer.Attach (Get_Texture (Resource.Data));
+                                 else
+                                    Framebuffer.Attach
+                                      (Texture    => Get_Texture (Resource.Data),
+                                       Attachment => To_Attachment_Point (Resource.Binding));
+                                 end if;
+                              end if;
+                           end loop;
+                        end if;
+                     end Set_Buffers;
+                  begin
+                     Object.Framebuffers (Object.Framebuffers.Length).Framebuffer.Update_Element
                        (Set_Buffers'Access);
-               end;
+                  end;
+               end if;
             end if;
          end;
       end loop;
    end Initialize;
 
-   procedure Render (Object : in out Graph) is
+   procedure Log_Graph (Object : in out Graph) is
+   begin
+      for Data of Object.Framebuffers loop
+         declare
+            Pass : Render_Pass_Data renames Object.Graph.Passes (Data.Index);
+            pragma Assert (Pass.Side_Effect or else Pass.References > 0);
+
+            procedure Execute_Pass (Framebuffer : Rendering.Framebuffers.Framebuffer) is
+               use type GL.Buffers.Explicit_Color_Buffer_Selector;
+            begin
+               Log (Debug, "Pass " & (+Pass.Name) & " (" & Trim_Image (Data.Index) & ")");
+               Log (Debug, "  count:");
+               Log (Debug, "    read:  " & Pass.Read_Count'Image);
+               Log (Debug, "    write: " & Pass.Write_Count'Image);
+               Log (Debug, "  references:   " & Pass.References'Image);
+               Log (Debug, "  side effects: " & Pass.Side_Effect'Image);
+               Log (Debug, "  present:      " & Pass.Present'Image);
+
+               Log (Debug, "  framebuffer: " & Framebuffer.Image);
+               Log (Debug, "    writes:");
+               Log (Debug, "      depth:   " & Data.Depth_Writes'Image);
+               Log (Debug, "      stencil: " & Data.Stencil_Writes'Image);
+               Log (Debug, "    masks:");
+               Log (Debug, "      clear:      " & Trim_Image (Data.Clear_Mask));
+               Log (Debug, "      invalidate: " & Trim_Image (Data.Invalidate_Mask));
+
+               if not Framebuffer.Default then
+                  Log (Debug, "    invalidate:");
+                  for I in Data.Invalidate_Points'Range loop
+                     if Data.Invalidate_Points (I) then
+                        Log (Debug, "    - " & I'Image);
+                     end if;
+                  end loop;
+                  Log (Debug, "    buffers:");
+                  Log (Debug, "      clear:");
+                  for I in Data.Clear_Buffers'Range loop
+                     if Data.Clear_Buffers (I) /= GL.Buffers.None then
+                        Log (Debug, "        - " & Data.Clear_Buffers (I)'Image);
+                     end if;
+                  end loop;
+                  if not Data.Buffers_Equal then
+                     Log (Debug, "      render:");
+                     for I in Data.Render_Buffers'Range loop
+                        if Data.Clear_Buffers (I) /= GL.Buffers.None then
+                           Log (Debug, "        - " & Data.Render_Buffers (I)'Image);
+                        end if;
+                     end loop;
+                  end if;
+               end if;
+
+               Log (Debug, "  inputs:");
+               for Resource of Object.Input_Resources (Pass) loop
+                  Log_Resource (Resource.Data);
+                  Log (Debug, "      mode:     " & Resource.Mode'Image);
+                  Log (Debug, "      binding:  " & Trim_Image (Natural (Resource.Binding)));
+                  Log (Debug, "      implicit: " & Resource.Implicit'Image);
+                  Log (Debug, "      written:  " & Resource.Written'Image);
+               end loop;
+
+               Log (Debug, "  outputs:");
+               for Resource of Object.Output_Resources (Pass) loop
+                  Log_Resource (Resource.Data);
+                  Log (Debug, "      mode:     " & Resource.Mode'Image);
+                  Log (Debug, "      binding:  " & Trim_Image (Natural (Resource.Binding)));
+                  Log (Debug, "      implicit: " & Resource.Implicit'Image);
+                  Log (Debug, "      read:     " & Resource.Read'Image);
+               end loop;
+
+               if Pass.Present then
+                  Log (Debug, "Present pass mode: " & Object.Present_Mode'Image);
+
+                  case Object.Present_Mode is
+                     when Blit_To_Default =>
+                        Log (Debug, "Blitting to default framebuffer from pass " &
+                          Trim_Image (Object.Framebuffers (Object.Last_Pass_Index).Index));
+                     when Use_Default | Render_To_Default =>
+                        null;
+                  end case;
+               end if;
+            end Execute_Pass;
+         begin
+            Data.Framebuffer.Query_Element (Execute_Pass'Access);
+         end;
+      end loop;
+   end Log_Graph;
+
+   procedure Render
+     (Object  : in out Graph;
+      Execute : access procedure (Pass : Render_Pass_Data))
+   is
+      package Textures renames Orka.Rendering.Textures;
    begin
       for Data of Object.Framebuffers loop
          declare
@@ -806,9 +1098,6 @@ package body Orka.Frame_Graphs is
                end if;
                Framebuffer.Clear (Data.Clear_Mask);
 
-               --  TODO Bind textures and images (or in procedure Cull?)
-               --  (for Resource of Object.Input_Resources (Pass))
-
                if not Data.Buffers_Equal then
                   Framebuffer.Set_Draw_Buffers (Data.Render_Buffers);
                end if;
@@ -817,7 +1106,64 @@ package body Orka.Frame_Graphs is
                GL.Buffers.Set_Depth_Mask (Data.Depth_Writes);
                GL.Buffers.Set_Stencil_Mask (if Data.Stencil_Writes then 2#1111_1111# else 0);
 
-               Pass.Execute (Pass);
+               --  TODO Enable depth/stencil test iff pass has depth/stencil input resource?
+               --  TODO Apply more pipeline state updates
+
+               --  Bind textures and images
+               for Resource of Object.Input_Resources (Pass) loop
+                  case Resource.Mode is
+                     when Texture_Read =>
+                        Textures.Bind (Get_Texture (Resource.Data),
+                          Textures.Texture, Natural (Resource.Binding));
+                     when Image_Load =>
+                        Textures.Bind (Get_Texture (Resource.Data),
+                          Textures.Image, Natural (Resource.Binding));
+                     when Not_Used | Framebuffer_Attachment =>
+                        null;
+                  end case;
+               end loop;
+
+               for Resource of Object.Output_Resources (Pass) loop
+                  --  Resource has already been attached in procedure Initialize
+                  --  if mode is Framebuffer_Attachment
+                  if Resource.Mode = Image_Store then
+                     Textures.Bind (Get_Texture (Resource.Data), Textures.Image,
+                       Natural (Resource.Binding));
+                  end if;
+               end loop;
+
+               if Execute /= null then
+                  Execute (Pass);
+               end if;
+
+               pragma Assert (Framebuffer.Default = Pass.Present);
+
+               if Pass.Present then
+                  case Object.Present_Mode is
+                     when Use_Default =>
+                        --  User-defined program will use default framebuffer to render to screen
+                        null;
+                     when Blit_To_Default =>
+                        declare
+                           procedure Resolve_From_Pass
+                             (Other_Framebuffer : Rendering.Framebuffers.Framebuffer) is
+                           begin
+                              Other_Framebuffer.Resolve_To (Framebuffer);
+                           end Resolve_From_Pass;
+                        begin
+                           --  Blit input texture to screen
+                           Object.Framebuffers (Object.Last_Pass_Index).Framebuffer.Query_Element
+                             (Resolve_From_Pass'Access);
+                        end;
+                     when Render_To_Default =>
+                        --  Render input texture to screen
+                        Object.Present_Program.Use_Program;
+
+                        GL.Buffers.Set_Depth_Function (GL.Types.Always);
+                        Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+                        GL.Buffers.Set_Depth_Function (GL.Types.Greater);
+                  end case;
+               end if;
 
                --  Invalidate attachments that are transcient
                --  (not read by a subsequent render pass)
@@ -829,44 +1175,6 @@ package body Orka.Frame_Graphs is
          end;
       end loop;
    end Render;
-
-   function Input_Resources
-     (Object : Graph;
-      Pass   : Render_Pass_Data) return Input_Resource_Array is
-   begin
-      return Result : Input_Resource_Array (1 .. Pass.Read_Count) do
-         for Index in 1 .. Pass.Read_Count loop
-            declare
-               Data : Resource_Data renames Object.Graph.Resources
-                 (Object.Graph.Read_Handles (Pass.Read_Offset + Index - 1));
-            begin
-               Result (Index) := (Mode     => Data.Input_Mode,
-                                  Data     => Data.Description,
-                                  Written  => Data.Render_Pass /= 0,
-                                  Implicit => Data.Implicit);
-            end;
-         end loop;
-      end return;
-   end Input_Resources;
-
-   function Output_Resources
-     (Object : Graph;
-      Pass   : Render_Pass_Data) return Output_Resource_Array is
-   begin
-      return Result : Output_Resource_Array (1 .. Pass.Write_Count) do
-         for Index in 1 .. Pass.Write_Count loop
-            declare
-               Data : Resource_Data renames Object.Graph.Resources
-                 (Object.Graph.Write_Handles (Pass.Write_Offset + Index - 1));
-            begin
-               Result (Index) := (Mode     => Data.Output_Mode,
-                                  Data     => Data.Description,
-                                  Read     => Data.References > 0,
-                                  Implicit => Data.Implicit);
-            end;
-         end loop;
-      end return;
-   end Output_Resources;
 
    ----------------------------------------------------------------------
 
