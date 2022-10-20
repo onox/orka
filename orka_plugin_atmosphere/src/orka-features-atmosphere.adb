@@ -71,8 +71,8 @@ package body Orka.Features.Atmosphere is
    function Create_Sampler return GL.Objects.Samplers.Sampler is
       Result : GL.Objects.Samplers.Sampler;
 
-      use all type Textures.Wrapping_Mode;
-      use all type Textures.Minifying_Function;
+      use all type GL.Objects.Samplers.Wrapping_Mode;
+      use all type GL.Objects.Samplers.Minifying_Function;
    begin
       Result.Set_X_Wrapping (Clamp_To_Edge);
       Result.Set_Y_Wrapping (Clamp_To_Edge);
@@ -550,7 +550,7 @@ package body Orka.Features.Atmosphere is
 
       --  Compute the transmittance and store it in Transmittance_Texture
       FBO_Transmittance.Use_Framebuffer;
-      FBO_Transmittance.Attach (Color_Attachment_0, Result.Transmittance_Texture);
+      FBO_Transmittance.Attach (Result.Transmittance_Texture, Color_Attachment_0);
       FBO_Transmittance.Set_Draw_Buffers
         ((0 => GL.Buffers.Color_Attachment0));
 
@@ -564,8 +564,8 @@ package body Orka.Features.Atmosphere is
       --  zeros or leave it unchanged (we don't want the irradiance in
       --  Irradiance_Texture, but only the irradiance from the sky
       FBO_Irradiance.Use_Framebuffer;
-      FBO_Irradiance.Attach (Color_Attachment_0, Delta_Irradiance_Texture);
-      FBO_Irradiance.Attach (Color_Attachment_1, Result.Irradiance_Texture);
+      FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
+      FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
       FBO_Irradiance.Set_Draw_Buffers
         ((0 => GL.Buffers.Color_Attachment0,
           1 => GL.Buffers.Color_Attachment1));
@@ -580,13 +580,12 @@ package body Orka.Features.Atmosphere is
       --  and either them or accumulate them in Scattering_Texture and
       --  Optional_Single_Mie_Scattering_Texture
       FBO_Scattering.Use_Framebuffer;
-      FBO_Scattering.Attach (Color_Attachment_0, Delta_Rayleigh_Scattering_Texture);
-      FBO_Scattering.Attach (Color_Attachment_1, Delta_Mie_Scattering_Texture);
-      FBO_Scattering.Attach (Color_Attachment_2, Result.Scattering_Texture);
+      FBO_Scattering.Attach (Delta_Rayleigh_Scattering_Texture, Color_Attachment_0);
+      FBO_Scattering.Attach (Delta_Mie_Scattering_Texture, Color_Attachment_1);
+      FBO_Scattering.Attach (Result.Scattering_Texture, Color_Attachment_2);
 
       if not Object.Data.Combine_Scattering_Textures then
-         FBO_Scattering.Attach (Color_Attachment_3,
-           Result.Optional_Single_Mie_Scattering_Texture);
+         FBO_Scattering.Attach (Result.Optional_Single_Mie_Scattering_Texture, Color_Attachment_3);
          FBO_Scattering.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1,
@@ -614,7 +613,7 @@ package body Orka.Features.Atmosphere is
          --  Compute the scattering density, and store it in
          --  Delta_Scattering_Density_Texture
          FBO_Scattering.Use_Framebuffer;
-         FBO_Scattering.Attach (Color_Attachment_0, Delta_Scattering_Density_Texture);
+         FBO_Scattering.Attach (Delta_Scattering_Density_Texture, Color_Attachment_0);
          FBO_Scattering.Detach (Color_Attachment_1);
          FBO_Scattering.Detach (Color_Attachment_2);
          FBO_Scattering.Detach (Color_Attachment_3);
@@ -631,8 +630,8 @@ package body Orka.Features.Atmosphere is
          --  Compute the indirect irradiance, store it in Delta_Irradiance_Texture
          --  and accumulate it in Irradiance_Texture
          FBO_Irradiance.Use_Framebuffer;
-         FBO_Irradiance.Attach (Color_Attachment_0, Delta_Irradiance_Texture);
-         FBO_Irradiance.Attach (Color_Attachment_1, Result.Irradiance_Texture);
+         FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
+         FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
          FBO_Irradiance.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1));
@@ -647,8 +646,8 @@ package body Orka.Features.Atmosphere is
          --  Delta_Multiple_Scattering_Texture, and accumulate it in
          --  Scattering_Texture
          FBO_Scattering.Use_Framebuffer;
-         FBO_Scattering.Attach (Color_Attachment_0, Delta_Multiple_Scattering_Texture);
-         FBO_Scattering.Attach (Color_Attachment_1, Result.Scattering_Texture);
+         FBO_Scattering.Attach (Delta_Multiple_Scattering_Texture, Color_Attachment_0);
+         FBO_Scattering.Attach (Result.Scattering_Texture, Color_Attachment_1);
          FBO_Scattering.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1));
