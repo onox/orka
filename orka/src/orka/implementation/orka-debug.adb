@@ -108,8 +108,7 @@ package body Orka.Debug is
             end if;
          end;
 
-         GL.Toggles.Set (GL.Toggles.Debug_Output_Synchronous,
-           (if Raise_API_Error then GL.Toggles.Enabled else GL.Toggles.Disabled));
+         GL.Toggles.Set (GL.Toggles.Debug_Output_Synchronous, Raise_API_Error);
       else
          GL.Toggles.Disable (GL.Toggles.Debug_Output);
          GL.Debug.Disable_Message_Callback;

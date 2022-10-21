@@ -82,8 +82,7 @@ package body Orka.Rendering.Debug.Spheres is
 
       Original_Blend_Func  : constant GL.Blending.Blend_Factors   := GL.Blending.Blend_Func;
       Original_Blend_Eq    : constant GL.Blending.Blend_Equations := GL.Blending.Blend_Equation;
-      Original_Blend_State : constant GL.Toggles.Toggle_State
-        := GL.Toggles.State (GL.Toggles.Blend, 0);
+      Original_Blend_State : constant Boolean := GL.Toggles.Is_Enabled (GL.Toggles.Blend, 0);
 
       Vertex_Count : constant Positive :=
         (Object.Cells_Horizontal + 1) * Object.Cells_Vertical * 6 - 2;

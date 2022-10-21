@@ -20,8 +20,6 @@ with GL.Types;
 package GL.Toggles is
    pragma Preelaborate;
 
-   type Toggle_State is (Disabled, Enabled);
-
    type Toggle is (Cull_Face, Depth_Test,
                    Stencil_Test, Dither, Blend, Color_Logic_Op, Scissor_Test,
                    Polygon_Offset_Point, Polygon_Offset_Line,
@@ -39,16 +37,18 @@ package GL.Toggles is
    procedure Enable  (Subject : Toggle);
    procedure Disable (Subject : Toggle);
 
-   procedure Set (Subject : Toggle; Value : Toggle_State);
-   function State (Subject : Toggle) return Toggle_State;
+   procedure Set (Subject : Toggle; Enable : Boolean);
+
+   function Is_Enabled (Subject : Toggle) return Boolean;
 
    type Toggle_Indexed is (Blend, Scissor_Test);
 
    procedure Enable  (Subject : Toggle_Indexed; Index : Types.UInt);
    procedure Disable (Subject : Toggle_Indexed; Index : Types.UInt);
 
-   procedure Set (Subject : Toggle_Indexed; Index : Types.UInt; Value : Toggle_State);
-   function State (Subject : Toggle_Indexed; Index : Types.UInt) return Toggle_State;
+   procedure Set (Subject : Toggle_Indexed; Index : Types.UInt; Enable : Boolean);
+
+   function Is_Enabled (Subject : Toggle_Indexed; Index : Types.UInt) return Boolean;
 
 private
 
