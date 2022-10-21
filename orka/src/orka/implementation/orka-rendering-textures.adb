@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.Low_Level.Enums;
-with GL.Objects.Samplers;
 with GL.Pixels.Extensions;
 with GL.Types;
 

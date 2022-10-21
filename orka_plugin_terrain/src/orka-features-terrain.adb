@@ -25,7 +25,6 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with GL.Barriers;
 with GL.Compute;
-with GL.Objects.Samplers;
 with GL.Types.Indirect;
 
 with Orka.Rendering.Drawing;
