@@ -161,14 +161,9 @@ package body GL.Buffers is
       return Value;
    end Stencil_Operation_Depth_Pass;
 
-   procedure Set_Stencil_Mask (Value : UInt) is
-      Face : constant Rasterization.Face_Selector := Rasterization.Front_And_Back;
-   begin
-      Set_Stencil_Mask (Face, Value);
-   end Set_Stencil_Mask;
-
-   procedure Set_Stencil_Mask (Face  : Rasterization.Face_Selector;
-                               Value : UInt) is
+   procedure Set_Stencil_Mask
+     (Value : UInt;
+      Face  : Rasterization.Face_Selector := Rasterization.Front_And_Back) is
    begin
       API.Stencil_Mask_Separate.Ref (Face, Value);
    end Set_Stencil_Mask;

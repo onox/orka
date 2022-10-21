@@ -153,10 +153,9 @@ package GL.Buffers is
    function Stencil_Operation_Depth_Pass
      (Face : Single_Face_Selector) return Buffers.Stencil_Action;
 
-   procedure Set_Stencil_Mask (Value : UInt);
-
-   procedure Set_Stencil_Mask (Face  : Rasterization.Face_Selector;
-                               Value : UInt);
+   procedure Set_Stencil_Mask
+     (Value : UInt;
+      Face  : Rasterization.Face_Selector := Rasterization.Front_And_Back);
 
    function Stencil_Mask (Face : Single_Face_Selector) return UInt;
 
