@@ -86,7 +86,9 @@ package GL.Buffers is
                                   Color_Attachment15 => 16#8CEF#);
    for Color_Buffer_Selector'Size use Low_Level.Enum'Size;
 
-   subtype Draw_Buffer_Index is UInt range 0 .. 15;
+   subtype Draw_Buffer_Index is UInt range 0 .. 7;
+   --  OpenGL specification defines 16, but no GPU supports more than 8
+
    type Color_Buffer_List is array (Draw_Buffer_Index range <>)
      of Color_Buffer_Selector;
 

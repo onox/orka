@@ -166,35 +166,37 @@ package body Orka.Rendering.Framebuffers is
                package PE renames GL.Pixels.Extensions;
 
                use all type GL.Buffers.Color_Buffer_Selector;
-
-               Index : GL.Buffers.Draw_Buffer_Index := GL.Buffers.Draw_Buffer_Index'First;
             begin
-               for Buffer of List loop
-                  if Buffer /= None then
-                     if Object.Default then
-                        Object.GL_Framebuffer.Clear_Color_Buffer
-                          (Index, PE.Float_Or_Normalized_Type, Object.Defaults.Color);
-                     else
-                        declare
-                           Point : constant FB.Attachment_Point := Color_Attachment_Point'Val
-                             (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
-                                - GL.Buffers.Color_Buffer_Selector'Pos
-                                    (GL.Buffers.Color_Attachment0)
-                                + Color_Attachment_Point'Pos (Color_Attachment_Point'First));
-                        begin
-                           if Object.Has_Attachment (Point) then
-                              declare
-                                 Format : constant GL.Pixels.Internal_Format
-                                   := Object.Attachments (Point).Element.Internal_Format;
-                              begin
-                                 Object.GL_Framebuffer.Clear_Color_Buffer
-                                   (Index, PE.Texture_Format_Type (Format), Object.Defaults.Color);
-                              end;
-                           end if;
-                        end;
+               for Index in List'Range loop
+                  declare
+                     Buffer : GL.Buffers.Color_Buffer_Selector renames List (Index);
+                  begin
+                     if Buffer /= None then
+                        if Object.Default then
+                           Object.GL_Framebuffer.Clear_Color_Buffer
+                             (Index, PE.Float_Or_Normalized_Type, Object.Defaults.Color);
+                        else
+                           declare
+                              Point : constant FB.Attachment_Point := Color_Attachment_Point'Val
+                                (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
+                                   - GL.Buffers.Color_Buffer_Selector'Pos
+                                       (GL.Buffers.Color_Attachment0)
+                                   + Color_Attachment_Point'Pos (Color_Attachment_Point'First));
+                           begin
+                              if Object.Has_Attachment (Point) then
+                                 declare
+                                    Format : constant GL.Pixels.Internal_Format
+                                      := Object.Attachments (Point).Element.Internal_Format;
+                                 begin
+                                    Object.GL_Framebuffer.Clear_Color_Buffer
+                                      (Index, PE.Texture_Format_Type (Format),
+                                       Object.Defaults.Color);
+                                 end;
+                              end if;
+                           end;
+                        end if;
                      end if;
-                  end if;
-                  Index := Index + 1;
+                  end;
                end loop;
             end Clear_Attachments;
          begin

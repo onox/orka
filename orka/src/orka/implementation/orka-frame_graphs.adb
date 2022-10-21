@@ -773,7 +773,6 @@ package body Orka.Frame_Graphs is
             Clear_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
             Render_Buffers : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
             Buffers_Equal  : Boolean := False;
-            --  TODO Use Draw_Buffer_Index as index type and drop some in Set_Draw_Buffers
 
             Invalidate_Points : Rendering.Framebuffers.Use_Point_Array := (others => False);
 
