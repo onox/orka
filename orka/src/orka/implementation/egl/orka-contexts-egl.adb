@@ -93,8 +93,9 @@ package body Orka.Contexts.EGL is
       GL.Buffers.Set_Depth_Function (GL.Types.Greater);
       --  Note: When clearing the depth buffer, the value 0.0 instead of 1.0 must be used
 
-      --  Enable MSAA
+      --  Enable MSAA and face culling
       GL.Toggles.Enable (GL.Toggles.Multisample);
+      GL.Toggles.Enable (GL.Toggles.Cull_Face);
 
       Object.Vertex_Array.Create;
    end Post_Initialize;
@@ -159,6 +160,13 @@ package body Orka.Contexts.EGL is
 
       Object.Vertex_Array.Delete;
    end Finalize;
+
+   overriding
+   procedure Update_State (Object : in out EGL_Context; State : Orka.Rendering.States.State) is
+   begin
+      Orka.Rendering.States.Apply_Changes (Object.Previous_State, State);
+      Object.Previous_State := State;
+   end Update_State;
 
    overriding
    procedure Make_Current (Object : Device_EGL_Context) is

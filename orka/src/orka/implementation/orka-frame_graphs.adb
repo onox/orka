@@ -24,6 +24,7 @@ with Ada.Unchecked_Conversion;
 with GL.Pixels;
 with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
+with GL.Toggles;
 with GL.Types;
 
 with Orka.Logging.Default;
@@ -247,14 +248,16 @@ package body Orka.Frame_Graphs is
       Implicit : Boolean);
 
    function Add_Pass
-     (Object  : in out Builder;
-      Name    : String;
+     (Object : in out Builder;
+      Name   : String;
+      State  : Rendering.States.State;
       Side_Effect, Present : Boolean) return Render_Pass'Class is
    begin
       Object.Passes.Append
         ((Name        => +Name,
           Side_Effect => Side_Effect,
           Present     => Present,
+          State       => State,
           others      => <>));
       return Render_Pass'
         (Frame_Graph => Object'Access,
@@ -262,10 +265,11 @@ package body Orka.Frame_Graphs is
    end Add_Pass;
 
    function Add_Pass
-     (Object  : in out Builder;
-      Name    : String;
+     (Object : in out Builder;
+      Name   : String;
+      State  : Rendering.States.State;
       Side_Effect : Boolean := False) return Render_Pass'Class
-   is (Object.Add_Pass (Name, Side_Effect => Side_Effect, Present => False));
+   is (Object.Add_Pass (Name, State, Side_Effect => Side_Effect, Present => False));
 
    procedure Add_Present
      (Object  : in out Builder;
@@ -282,7 +286,7 @@ package body Orka.Frame_Graphs is
 
       declare
          Pass : constant Render_Pass'Class := Object.Add_Pass
-           ("Present", Side_Effect => True, Present => True);
+           ("Present", (others => <>), Side_Effect => True, Present => True);
          Resource : Resource_Data renames Object.Resources (Handle);
       begin
          --  The present pass does not always read the resource: the previous
@@ -1077,6 +1081,7 @@ package body Orka.Frame_Graphs is
 
    procedure Render
      (Object  : in out Graph;
+      Context : in out Contexts.Context'Class;
       Execute : access procedure (Pass : Render_Pass_Data))
    is
       package Textures renames Orka.Rendering.Textures;
@@ -1090,7 +1095,6 @@ package body Orka.Frame_Graphs is
             begin
                Framebuffer.Use_Framebuffer;
 
-               --  TODO Only change pipeline state if different w.r.t. previous pass
                GL.Buffers.Set_Depth_Mask (True);
                GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
                if not Data.Buffers_Equal then
@@ -1102,12 +1106,18 @@ package body Orka.Frame_Graphs is
                   Framebuffer.Set_Draw_Buffers (Data.Render_Buffers);
                end if;
 
-               --  TODO Only change pipeline state if different w.r.t. previous pass
                GL.Buffers.Set_Depth_Mask (Data.Depth_Writes);
                GL.Buffers.Set_Stencil_Mask (if Data.Stencil_Writes then 2#1111_1111# else 0);
 
-               --  TODO Enable depth/stencil test iff pass has depth/stencil input resource?
-               --  TODO Apply more pipeline state updates
+               GL.Toggles.Set (GL.Toggles.Depth_Test, Pass.Has_Depth);
+               GL.Toggles.Set (GL.Toggles.Stencil_Test, Pass.Has_Stencil);
+               --  Note: unconditional writing (write + no test) would require
+               --  enable testing + GL.Buffers.Set_Depth_Function (GL.Types.Always),
+               --  but is not supported because otherwise a user would need to call
+               --  Add_Input_Output instead of just Add_Output for a depth resource
+
+               --  Apply GL state updates
+               Context.Update_State (Pass.State);
 
                --  Bind textures and images
                for Resource of Object.Input_Resources (Pass) loop

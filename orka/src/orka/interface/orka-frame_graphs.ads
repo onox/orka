@@ -19,8 +19,10 @@ with Ada.Strings.Bounded;
 with GL.Low_Level.Enums;
 with GL.Pixels;
 
+with Orka.Contexts;
 with Orka.Resources.Locations;
 with Orka.Rendering.Framebuffers;
+with Orka.Rendering.States;
 with Orka.Resources.Locations;
 
 private with Ada.Containers.Indefinite_Holders;
@@ -124,6 +126,7 @@ package Orka.Frame_Graphs is
    function Add_Pass
      (Object  : in out Builder;
       Name    : String;
+      State   : Rendering.States.State;
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
 
@@ -141,6 +144,7 @@ package Orka.Frame_Graphs is
 
    procedure Render
      (Object  : in out Graph;
+      Context : in out Contexts.Context'Class;
       Execute : access procedure (Pass : Render_Pass_Data));
 
    procedure Log_Graph (Object : in out Graph);
@@ -167,6 +171,8 @@ private
 
       Side_Effect : Boolean;
       Present     : Boolean;
+
+      State : Rendering.States.State;
 
       References  : Natural := 0;
       Read_Offset, Write_Offset : Positive := 1;

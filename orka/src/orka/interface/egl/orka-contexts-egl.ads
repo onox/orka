@@ -50,6 +50,7 @@ private
       Version : Context_Version;
       Flags   : Context_Flags;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+      Previous_State : Orka.Rendering.States.State;
    end record;
 
    overriding
@@ -60,6 +61,9 @@ private
 
    overriding
    function Flags (Object : EGL_Context) return Context_Flags is (Object.Flags);
+
+   overriding
+   procedure Update_State (Object : in out EGL_Context; State : Orka.Rendering.States.State);
 
    type Device_EGL_Context is limited new EGL_Context with record
       Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);

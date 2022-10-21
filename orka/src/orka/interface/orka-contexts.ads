@@ -14,6 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Rendering.States;
 with Orka.Windows;
 
 package Orka.Contexts is
@@ -46,6 +47,12 @@ package Orka.Contexts is
    function Version (Object : Context) return Context_Version is abstract;
 
    function Flags (Object : Context) return Context_Flags is abstract;
+
+   procedure Update_State
+     (Object : in out Context;
+      State  : Orka.Rendering.States.State) is abstract;
+   --  Update those parts of the rendering state which have changed
+   --  compared to the previous state
 
    type Task_Kind is (Current_Task, Any_Task);
 
