@@ -16,11 +16,6 @@
 
 with Ada.Strings.Unbounded;
 
-with GL.Buffers;
-with GL.Shading;
-with GL.Toggles;
-with GL.Types;
-
 with Orka.Strings;
 
 package body Orka.Contexts is
@@ -44,34 +39,5 @@ package body Orka.Contexts is
       end if;
       return Strings.Trim (SU.To_String (Result));
    end Image;
-
-   procedure Enable (Features : in out Feature_Array; Subject : Feature) is
-   begin
-      case Subject is
-         when Reversed_Z =>
-            --  Enable reversed Z for better depth precision at great distances
-            --  See https://developer.nvidia.com/content/depth-precision-visualized
-            --  for a visualization
-            GL.Buffers.Set_Depth_Function (GL.Types.Greater);
-            --  When clearing the depth buffer, the value 0.0 instead of 1.0 must be used
-         when Multisample =>
-            --  Enable MSAA
-            GL.Toggles.Enable (GL.Toggles.Multisample);
-         when Sample_Shading =>
-            if not Enabled (Features, Multisample) then
-               raise Program_Error with "MSAA not enabled";
-            end if;
-
-            --  Enable shading per-sample. Applies if MSAA is enabled.
-            --  Provides better anti-aliasing for certain cases like
-            --  alpha-tested transparency
-            GL.Shading.Set_Minimum_Sample_Shading (1.0);
-            GL.Toggles.Enable (GL.Toggles.Sample_Shading);
-      end case;
-      Features (Subject) := True;
-   end Enable;
-
-   function Enabled (Features : Feature_Array; Subject : Feature) return Boolean is
-     (Features (Subject));
 
 end Orka.Contexts;

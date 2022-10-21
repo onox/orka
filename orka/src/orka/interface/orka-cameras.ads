@@ -42,15 +42,13 @@ package Orka.Cameras is
    type Camera_Lens is record
       Width, Height : Positive;
       FOV           : Float_32;
-      Reversed_Z    : Boolean;
    end record;
 
    function Projection_Matrix (Object : Camera_Lens) return Transforms.Matrix4;
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV           : Float_32;
-      Context       : Contexts.Context'Class) return Camera_Lens;
+      FOV           : Float_32) return Camera_Lens;
 
    -----------------------------------------------------------------------------
 

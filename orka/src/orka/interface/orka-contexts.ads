@@ -60,26 +60,6 @@ package Orka.Contexts is
           Post'Class => not Object.Is_Current (Any_Task);
 
    -----------------------------------------------------------------------------
-
-   type Feature is (Reversed_Z, Multisample, Sample_Shading);
-
-   procedure Enable (Object : in out Context; Subject : Feature) is abstract;
-   --  Note: If enabling Reversed_Z, the depth must be cleared with the
-   --  value 0.0
-
-   function Enabled (Object : Context; Subject : Feature) return Boolean is abstract;
-
-   -----------------------------------------------------------------------------
-   --                             Helper utilities                            --
-   -----------------------------------------------------------------------------
-
-   type Feature_Array is array (Feature) of Boolean;
-
-   procedure Enable (Features : in out Feature_Array; Subject : Feature);
-
-   function Enabled (Features : Feature_Array; Subject : Feature) return Boolean;
-
-   -----------------------------------------------------------------------------
    --                         Contexts with a surface                         --
    -----------------------------------------------------------------------------
 

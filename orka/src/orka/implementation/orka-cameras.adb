@@ -22,11 +22,7 @@ package body Orka.Cameras is
       Width  : constant Float_32 := Float_32 (Object.Width);
       Height : constant Float_32 := Float_32 (Object.Height);
    begin
-      if Object.Reversed_Z then
-         return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
-      else
-         return Transforms.Infinite_Perspective (Object.FOV, Width / Height, 0.1);
-      end if;
+      return Transforms.Infinite_Perspective_Reversed_Z (Object.FOV, Width / Height, 0.1);
    end Projection_Matrix;
 
    -----------------------------------------------------------------------------
@@ -81,14 +77,12 @@ package body Orka.Cameras is
 
    function Create_Lens
      (Width, Height : Positive;
-      FOV           : Float_32;
-      Context       : Contexts.Context'Class) return Camera_Lens is
+      FOV           : Float_32) return Camera_Lens is
    begin
       return
-        (Width      => Width,
-         Height     => Height,
-         FOV        => FOV,
-         Reversed_Z => Context.Enabled (Contexts.Reversed_Z));
+        (Width  => Width,
+         Height => Height,
+         FOV    => FOV);
    end Create_Lens;
 
    function Projection_Matrix (Object : Camera) return Transforms.Matrix4 is

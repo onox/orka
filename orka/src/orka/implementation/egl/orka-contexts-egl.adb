@@ -14,8 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Buffers;
 with GL.Context;
 with GL.Rasterization;
+with GL.Toggles;
+with GL.Types;
 with GL.Viewports;
 
 with Orka.Loggers;
@@ -83,6 +86,16 @@ package body Orka.Contexts.EGL is
 
       GL.Rasterization.Set_Provoking_Vertex (GL.Rasterization.First_Vertex);
       GL.Viewports.Set_Clipping (GL.Viewports.Upper_Left, GL.Viewports.Zero_To_One);
+
+      --  Enable reversed Z for better depth precision at great distances
+      --  See https://developer.nvidia.com/content/depth-precision-visualized
+      --  for a visualization
+      GL.Buffers.Set_Depth_Function (GL.Types.Greater);
+      --  Note: When clearing the depth buffer, the value 0.0 instead of 1.0 must be used
+
+      --  Enable MSAA
+      GL.Toggles.Enable (GL.Toggles.Multisample);
+
       Object.Vertex_Array.Create;
    end Post_Initialize;
 
@@ -146,16 +159,6 @@ package body Orka.Contexts.EGL is
 
       Object.Vertex_Array.Delete;
    end Finalize;
-
-   overriding
-   procedure Enable (Object : in out EGL_Context; Subject : Feature) is
-   begin
-      Contexts.Enable (Object.Features, Subject);
-   end Enable;
-
-   overriding
-   function Enabled (Object : EGL_Context; Subject : Feature) return Boolean
-     is (Contexts.Enabled (Object.Features, Subject));
 
    overriding
    procedure Make_Current (Object : Device_EGL_Context) is

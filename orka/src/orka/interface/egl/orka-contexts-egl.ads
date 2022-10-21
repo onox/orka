@@ -47,20 +47,13 @@ private
    type EGL_Context is abstract
      limited new Ada.Finalization.Limited_Controlled and Context with
    record
-      Version  : Context_Version;
-      Flags    : Context_Flags;
-      Features : Feature_Array := (others => False);
+      Version : Context_Version;
+      Flags   : Context_Flags;
       Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
    end record;
 
    overriding
    procedure Finalize (Object : in out EGL_Context);
-
-   overriding
-   procedure Enable (Object : in out EGL_Context; Subject : Feature);
-
-   overriding
-   function Enabled (Object : EGL_Context; Subject : Feature) return Boolean;
 
    overriding
    function Version (Object : EGL_Context) return Context_Version is (Object.Version);
