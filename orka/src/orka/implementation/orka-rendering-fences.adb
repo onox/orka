@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Debug;
+with Orka.Logging.Default;
 
 package body Orka.Rendering.Fences is
 
-   use GL.Debug;
-   procedure Log is new GL.Debug.Log (Third_Party, Performance);
+   use all type Orka.Logging.Default_Module;
+   use all type Orka.Logging.Severity;
+
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Create_Buffer_Fence return Buffer_Fence is
    begin
@@ -38,10 +40,10 @@ package body Orka.Rendering.Fences is
 
       case Object.Fences (Object.Index).Client_Wait (Maximum_Wait) is
          when Condition_Satisfied =>
-            Log (Medium, "Fence not already signalled");
+            Log (Warning, "Fence not already signalled");
             Status := Signaled;
          when Timeout_Expired | Wait_Failed =>
-            Log (High, "Fence timed out or failed");
+            Log (Error, "Fence timed out or failed");
             Status := Not_Signaled;
          when Already_Signaled =>
             Status := Signaled;
