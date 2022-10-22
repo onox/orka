@@ -144,7 +144,7 @@ begin
 
          use Orka.Cameras;
          Lens : constant Camera_Lens :=
-           Create_Lens (Width, Height, Transforms.FOV (36.0, 50.0), Context);
+           Create_Lens (Width, Height, Transforms.FOV (36.0, 50.0));
          Current_Camera : aliased Rotate_Around_Cameras.Rotate_Around_Camera :=
            Rotate_Around_Cameras.Create_Camera (Lens);
 
@@ -265,11 +265,9 @@ begin
 
          P_1 : Program;
       begin
-         --  Clear color to black and depth to 0.0 (if using reversed Z)
+         --  Clear color to black and depth to 0.0 (because of reversed Z)
          FB_D.Set_Default_Values
-           ((Color => (0.0, 0.0, 0.0, 1.0),
-             Depth => (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0),
-             others => <>));
+           ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
 
          FB_D.Use_Framebuffer;
 
@@ -281,7 +279,7 @@ begin
 
          Sampler_1.Bind (0);
 
-         GL.Toggles.Enable (GL.Toggles.Depth_Test);
+         GL.Toggles.Disable (GL.Toggles.Depth_Test);
          GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
          declare
