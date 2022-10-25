@@ -20,6 +20,7 @@ with GL.Pixels.Extensions;
 with GL.Viewports;
 
 with Orka.Containers.Bounded_Vectors;
+with Orka.Strings;
 
 package body Orka.Rendering.Framebuffers is
 
@@ -83,7 +84,7 @@ package body Orka.Rendering.Framebuffers is
 
       Default : constant String := (if Object.Default then " default" else "");
    begin
-      return Width & " × " & Height & Default & " framebuffer";
+      return Width & Orka.Strings.Unicode (" × ") & Height & Default & " framebuffer";
    end Image;
 
    procedure Use_Framebuffer (Object : Framebuffer) is

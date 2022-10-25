@@ -97,9 +97,11 @@ package body Orka.Rendering.Textures is
       Width  : constant String := Orka.Strings.Trim (Texture.Width  (Level)'Image);
       Height : constant String := Orka.Strings.Trim (Texture.Height (Level)'Image);
       Depth  : constant String := Orka.Strings.Trim (Texture.Depth  (Level)'Image);
+
+      function U (Value : Wide_Wide_String) return String renames Orka.Strings.Unicode;
    begin
       return (if Texture.Allocated then "" else "unallocated ") &
-        Width & " × " & Height & " × " & Depth & " " & Texture.Kind'Image &
+        Width & U (" × ") & Height & U (" × ") & Depth & " " & Texture.Kind'Image &
         " with " &
         (if Texture.Compressed then
            Texture.Compressed_Format'Image

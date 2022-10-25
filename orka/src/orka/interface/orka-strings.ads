@@ -28,6 +28,9 @@ package Orka.Strings is
    function Lines (Value : String) return Positive;
    --  Return the number of lines that the string contains
 
+   function Unicode (Value : Wide_Wide_String) return String;
+   --  Return a UTF-8 encoded string
+
    package SU renames Ada.Strings.Unbounded;
 
    function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;

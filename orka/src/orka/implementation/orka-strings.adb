@@ -16,11 +16,17 @@
 
 with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
+with Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 
 package body Orka.Strings is
 
    package L1 renames Ada.Characters.Latin_1;
    package SF renames Ada.Strings.Fixed;
+
+   package UTF renames Ada.Strings.UTF_Encoding;
+
+   function Unicode (Value : Wide_Wide_String) return UTF.UTF_8_String is
+     (UTF.Wide_Wide_Strings.Encode (Value));
 
    function Trim (Value : String) return String is (SF.Trim (Value, Ada.Strings.Both));
 

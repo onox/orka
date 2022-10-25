@@ -44,8 +44,8 @@ package body Orka.Frame_Graphs is
      (Orka.Strings.Trim (Integer'Image (Value)));
 
    function Trim_Image (Value : Extent_3D) return String is
-     (Trim_Image (Value.Width) & " × " &
-            Trim_Image (Value.Height) & " × " &
+     (Trim_Image (Value.Width) & Orka.Strings.Unicode (" × ") &
+            Trim_Image (Value.Height) & Orka.Strings.Unicode (" × ") &
             Trim_Image (Value.Depth));
 
    function Trim_Image (Value : GL.Buffers.Buffer_Bits) return String is

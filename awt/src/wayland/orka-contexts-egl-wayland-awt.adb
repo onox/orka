@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Orka.Logging.Default;
+with Orka.Strings;
 with Orka.Terminals;
 
 with EGL.Objects.Configs;
@@ -38,7 +39,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       Log (Debug, "  offset:     " &
         Trim (State.X'Image) & ", " & Trim (State.Y'Image));
       Log (Debug, "  size:       " &
-        Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
+        Trim (State.Width'Image) & Orka.Strings.Unicode (" × ") & Trim (State.Height'Image));
       Log (Debug, "  refresh: " & Orka.Terminals.Image (State.Refresh));
    end Print_Monitor;
 
@@ -73,7 +74,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
       State  : Standard.AWT.Windows.Window_State) is
    begin
       Log (Debug, "Configured window surface of " &
-        Trim (State.Width'Image) & " × " & Trim (State.Height'Image));
+        Trim (State.Width'Image) & Orka.Strings.Unicode (" × ") & Trim (State.Height'Image));
       if State.Margin > 0 then
          Log (Debug, "  margin: " & Trim (State.Margin'Image));
       end if;
@@ -187,7 +188,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
             pragma Assert (Object.Context.Buffer = Back);
 
             Log (Info,  "Created window of " &
-              Trim (Width'Image) & " × " & Trim (Height'Image));
+              Trim (Width'Image) & Orka.Strings.Unicode (" × ") & Trim (Height'Image));
             Log (Info,  "  flags:       " & Flags);
 
             Log (Debug, "  framebuffer:");
