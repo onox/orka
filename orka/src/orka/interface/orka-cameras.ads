@@ -17,7 +17,6 @@
 with Ada.Numerics;
 
 with Orka.Behaviors;
-with Orka.Contexts;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Transforms.Doubles.Vectors;
 

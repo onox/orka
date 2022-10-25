@@ -21,8 +21,6 @@ with Ada.Strings.Unbounded;
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
-with GL.Pixels;
-with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
 with GL.Toggles;
 with GL.Types;
@@ -287,7 +285,6 @@ package body Orka.Frame_Graphs is
       declare
          Pass : constant Render_Pass'Class := Object.Add_Pass
            ("Present", (others => <>), Side_Effect => True, Present => True);
-         Resource : Resource_Data renames Object.Resources (Handle);
       begin
          --  The present pass does not always read the resource: the previous
          --  render pass will use the default framebuffer to write to the

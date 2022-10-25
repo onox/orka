@@ -20,7 +20,6 @@ with GL.Low_Level.Enums;
 with GL.Pixels;
 
 with Orka.Contexts;
-with Orka.Resources.Locations;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.States;
 with Orka.Resources.Locations;

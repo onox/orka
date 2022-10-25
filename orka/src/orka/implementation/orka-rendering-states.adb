@@ -25,7 +25,6 @@ package body Orka.Rendering.States is
 
       use type GL.Blending.Blend_Equations;
       use type GL.Blending.Blend_Factors;
-      use type GL.Blending.Logic_Op;
       use type GL.Rasterization.Polygon_Mode_Type;
       use type GL.Types.Colors.Color;
       use type GL.Types.Colors.Enabled_Color;

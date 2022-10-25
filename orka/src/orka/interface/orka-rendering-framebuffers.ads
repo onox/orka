@@ -21,8 +21,6 @@ with GL.Objects.Framebuffers;
 with GL.Objects.Textures;
 with GL.Types.Colors;
 
-with Orka.Contexts;
-with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
 
 package Orka.Rendering.Framebuffers is
