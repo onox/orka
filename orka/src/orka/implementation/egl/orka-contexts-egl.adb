@@ -21,6 +21,7 @@ with GL.Toggles;
 with GL.Types;
 with GL.Viewports;
 
+with Orka.Debug;
 with Orka.Loggers;
 with Orka.Logging.Default;
 
@@ -61,12 +62,12 @@ package body Orka.Contexts.EGL is
       begin
          Log (Info, "  device:   " & (if Name /= "" then Name else "unknown"));
       end;
-      Log (Debug, "  vendor:   " & Display.Vendor);
-      Log (Debug, "  version:  " & Display.Version);
-      Log (Info,  "  context:");
-      Log (Info,  "    flags:    " & Image (Flags));
-      Log (Info,  "    version:  " & GL.Context.Version_String);
-      Log (Info,  "    renderer: " & GL.Context.Renderer);
+      Log (Loggers.Debug, "  vendor:   " & Display.Vendor);
+      Log (Loggers.Debug, "  version:  " & Display.Version);
+      Log (Loggers.Info,  "  context:");
+      Log (Loggers.Info,  "    flags:    " & Image (Flags));
+      Log (Loggers.Info,  "    version:  " & GL.Context.Version_String);
+      Log (Loggers.Info,  "    renderer: " & GL.Context.Renderer);
    end Print_Debug;
 
    procedure Post_Initialize (Object : in out EGL_Context'Class) is
@@ -83,6 +84,8 @@ package body Orka.Contexts.EGL is
       Object.Flags.No_Error := Flags.No_Error;
       --  Other information about context can be read back as well with
       --  GL.Context.Reset_Notification and GL.Context.Release_Behavior
+
+      Orka.Debug.Set_Log_Messages (Enable => Flags.Debug);
 
       GL.Rasterization.Set_Provoking_Vertex (GL.Rasterization.First_Vertex);
       GL.Viewports.Set_Clipping (GL.Viewports.Upper_Left, GL.Viewports.Zero_To_One);
@@ -139,12 +142,12 @@ package body Orka.Contexts.EGL is
 
       Devices : constant EGL_Devices.Device_List := EGL_Devices.Devices;
    begin
-      Log (Debug, "EGL devices:");
+      Log (Loggers.Debug, "EGL devices:");
       for Device of Devices loop
          declare
             Name : constant String := Device.Name;
          begin
-            Log (Debug, "  - " & (if Name /= "" then Name else "unknown"));
+            Log (Loggers.Debug, "  - " & (if Name /= "" then Name else "unknown"));
          end;
       end loop;
 
@@ -155,7 +158,7 @@ package body Orka.Contexts.EGL is
    procedure Finalize (Object : in out EGL_Context) is
    begin
       if Object.Flags.Debug then
-         Log (Debug, "Shutting down EGL");
+         Log (Loggers.Debug, "Shutting down EGL");
       end if;
 
       Object.Vertex_Array.Delete;
