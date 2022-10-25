@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Text_IO;
+with Ada.Numerics;
 
 with GL.Types;
 with GL.Toggles;
@@ -32,7 +32,7 @@ with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 with Orka.Windows;
 
-with AWT;
+with AWT.Inputs;
 
 --  In this example we render many instances of a cube, each at a different
 --  position.
@@ -137,14 +137,13 @@ procedure Orka_11_Instancing is
    Current_Camera : Rotate_Around_Cameras.Rotate_Around_Camera :=
      Rotate_Around_Cameras.Create_Camera (Lens);
 begin
-   Ada.Text_IO.Put_Line ("Instances of cube: " & Positive'Image (Matrices'Length));
-
    declare
       Distance_Center : Double := Double (Instances_Dimension);
    begin
       Distance_Center := Distance_Center + (Distance_Center - 1.0) * Space_Between_Cubes;
 
-      Current_Camera.Set_Orientation ((0.0, 0.0, 1.5 * Distance_Center, 0.0));
+      Current_Camera.Set_Orientation ((0.0, 0.0, -1.5 * Distance_Center, 0.0));
+      Current_Camera.Update (0.0);
    end;
 
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
@@ -162,6 +161,33 @@ begin
 
    while not Window.Should_Close loop
       AWT.Process_Events (0.001);
+
+      declare
+         Pointer  : constant AWT.Inputs.Pointer_State  := Window.State;
+
+         use all type AWT.Inputs.Button_State;
+         use all type AWT.Inputs.Pointer_Button;
+         use all type AWT.Inputs.Pointer_Mode;
+         use all type AWT.Inputs.Dimension;
+
+         Rotate_Camera : constant Boolean :=
+           Pointer.Focused and Pointer.Buttons (Right) = Pressed;
+      begin
+         declare
+            New_Mode : constant AWT.Inputs.Pointer_Mode :=
+              (if Rotate_Camera then Locked else Visible);
+         begin
+            if Pointer.Mode /= New_Mode then
+               Window.Set_Pointer_Mode (New_Mode);
+            end if;
+         end;
+
+         Current_Camera.Change_Orientation
+           (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
+             (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
+             Orka.Float_64 (Pointer.Scroll (Y)),
+             0.0));
+      end;
 
       Current_Camera.Update (0.01666);
       declare

@@ -219,6 +219,7 @@ procedure Orka_12_Stencil is
    Effect : Effect_Type := Effect_Type'First;
 begin
    Current_Camera.Set_Orientation ((-Deg_45, 0.5 * Deg_45, Default_Distance, 0.0));
+   Current_Camera.Update (0.0);
 
    FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 0.0, others => <>));
    FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
@@ -260,9 +261,17 @@ begin
          AWT.Process_Events (0.001);
 
          declare
+            Pointer  : constant AWT.Inputs.Pointer_State  := Window.State;
             Keyboard : constant AWT.Inputs.Keyboard_State := Window.State;
 
+            use all type AWT.Inputs.Button_State;
             use all type AWT.Inputs.Keyboard_Button;
+            use all type AWT.Inputs.Pointer_Button;
+            use all type AWT.Inputs.Pointer_Mode;
+            use all type AWT.Inputs.Dimension;
+
+            Rotate_Camera : constant Boolean :=
+              Pointer.Focused and Pointer.Buttons (Right) = Pressed;
          begin
             if Keyboard.Pressed (Key_Escape) then
                Window.Close;
@@ -272,6 +281,21 @@ begin
                Effect := Effect + 1;
                Uni_Effect.Set_Int (Integer_32 (Effect));
             end if;
+
+            declare
+               New_Mode : constant AWT.Inputs.Pointer_Mode :=
+                 (if Rotate_Camera then Locked else Visible);
+            begin
+               if Pointer.Mode /= New_Mode then
+                  Window.Set_Pointer_Mode (New_Mode);
+               end if;
+            end;
+
+            Current_Camera.Change_Orientation
+              (((if Rotate_Camera then Orka.Float_64 (Pointer.Relative (X)) else 0.0),
+                (if Rotate_Camera then Orka.Float_64 (Pointer.Relative (Y)) else 0.0),
+                Orka.Float_64 (Pointer.Scroll (Y)),
+                0.0));
          end;
 
          Current_Camera.Update (0.01666);
