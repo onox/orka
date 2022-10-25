@@ -15,12 +15,18 @@
 --  limitations under the License.
 
 with Ada.Strings.Fixed;
+with Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 
 with Orka.Terminals;
 
 package body Orka.Loggers.Formatting is
 
    package SF renames Ada.Strings.Fixed;
+
+   package UTF renames Ada.Strings.UTF_Encoding;
+
+   function Unicode (Number : Long_Integer) return UTF.UTF_8_String is
+     (UTF.Wide_Wide_Strings.Encode ("" & Wide_Wide_Character'Val (Number)));
 
    Length_Level  : constant := 7;
 
@@ -39,14 +45,15 @@ package body Orka.Loggers.Formatting is
               when Info    => Terminals.Blue,
               when Debug   => Terminals.Default);
 
-      Level_Icon : constant String
+      Level_Icon : constant UTF.UTF_8_String
         := (case Level is
-              when Error   => "",
-              when Warning => "",
-              when Failure => "",
-              when Success => "",
-              when Info    => "",
+              when Error   => Unicode (16#F06A#),  --  
+              when Warning => Unicode (16#F071#),  --  
+              when Failure => Unicode (16#F05C#),  --  
+              when Success => Unicode (16#F05D#),  --  
+              when Info    => Unicode (16#F05A#),  --  
               when Debug   => " ");
+              --  Symbols from font FontAwesome
 
       Level_Image  : String (1 .. Length_Level);
 
