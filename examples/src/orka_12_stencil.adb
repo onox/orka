@@ -59,17 +59,6 @@ procedure Orka_12_Stencil is
    Window : constant Orka.Windows.Window'Class
      := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
 
-   function Enable_Features return Boolean is
-   begin
-      Context.Enable (Orka.Contexts.Reversed_Z);
-      Context.Enable (Orka.Contexts.Multisample);
-      return True;
-   end Enable_Features;
-
-   Features_Enabled : constant Boolean := Enable_Features;
-   pragma Assert (Features_Enabled);
-   --  Simple hack to enable features (including MS) before Create_Framebuffer is called
-
    use GL.Buffers;
    use all type GL.Types.Connection_Mode;
    use all type GL.Types.Compare_Function;
@@ -206,35 +195,33 @@ procedure Orka_12_Stencil is
 
    Uni_Effect : constant Uniforms.Uniform := Program_Screen.Uniform ("effect");
 
-   FB_1 : Framebuffer := Create_Framebuffer (Width, Height, Samples, Context);
+   FB_1 : Framebuffer := Create_Framebuffer (Width, Height, Samples);
    FB_2 : Framebuffer := Create_Framebuffer (Width, Height);
    FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
    use Orka.Cameras;
-   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0, Context);
+   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0);
    Current_Camera : Rotate_Around_Cameras.Rotate_Around_Camera :=
      Rotate_Around_Cameras.Create_Camera (Lens);
 
-   use all type Textures.Minifying_Function;
-   use all type Textures.Wrapping_Mode;
+   use all type GL.Objects.Samplers.Minifying_Function;
+   use all type GL.Objects.Samplers.Wrapping_Mode;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
    World_TM : constant Transforms.Matrix4 := Transforms.Rx (-0.5 * Ada.Numerics.Pi);
 
-   Default_Distance : constant := 3.0;
+   Default_Distance : constant := -3.0;
    Deg_45           : constant := 0.25 * Ada.Numerics.Pi;
 
    type Effect_Type is mod 4;
 
    Effect : Effect_Type := Effect_Type'First;
-   Default_Depth : constant Orka.Float_32 :=
-     (if Context.Enabled (Orka.Contexts.Reversed_Z) then 0.0 else 1.0);
 begin
    Current_Camera.Set_Orientation ((-Deg_45, 0.5 * Deg_45, Default_Distance, 0.0));
 
-   FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => Default_Depth, others => <>));
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => Default_Depth, others => <>));
+   FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 0.0, others => <>));
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
 
    GL.Toggles.Enable (GL.Toggles.Cull_Face);
 
@@ -327,7 +314,7 @@ begin
          --  Set any stencil to 1
          Set_Stencil_Function (GL.Rasterization.Front_And_Back, Always, 1, 16#FF#);
          Set_Stencil_Operation (GL.Rasterization.Front_And_Back, Keep, Keep, Replace);
-         Set_Stencil_Mask (16#FF#);  -- Allow writing to stencil buffer
+         Set_Stencil_Mask (16#FF#);  --  Allow writing to stencil buffer
 
          --  Disable writing to the depth buffer in order to prevent the
          --  floor from hiding the reflection cube
@@ -342,7 +329,7 @@ begin
 
          --  Pass test if stencil value is 1
          Set_Stencil_Function (GL.Rasterization.Front_And_Back, Equal, 1, 16#FF#);
-         Set_Stencil_Mask (16#00#);  -- Don't write anything to stencil buffer
+         Set_Stencil_Mask (16#00#);  --  Don't write anything to stencil buffer
          Set_Depth_Mask (True);
 
          --  Start drawing reflection cube
@@ -373,9 +360,9 @@ begin
 
          Uni_Model.Set_Matrix (World_TM);
 
-         GL.Rasterization.Set_Front_Face (GL.Rasterization.Clockwise);
+         GL.Rasterization.Set_Cull_Face (GL.Rasterization.Front);
          Orka.Rendering.Drawing.Draw (Triangles, 30, 6);
-         GL.Rasterization.Set_Front_Face (GL.Rasterization.Counter_Clockwise);
+         GL.Rasterization.Set_Cull_Face (GL.Rasterization.Back);
 
          ---------------------------------------------------------------
          --                      Post-processing                      --

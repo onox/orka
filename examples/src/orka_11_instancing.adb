@@ -133,7 +133,7 @@ procedure Orka_11_Instancing is
    FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
 
    use Orka.Cameras;
-   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0, Context);
+   Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0);
    Current_Camera : Rotate_Around_Cameras.Rotate_Around_Camera :=
      Rotate_Around_Cameras.Create_Camera (Lens);
 begin
@@ -147,7 +147,7 @@ begin
       Current_Camera.Set_Orientation ((0.0, 0.0, 1.5 * Distance_Center, 0.0));
    end;
 
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 1.0, others => <>));
+   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
 
    Program_1.Use_Program;
 

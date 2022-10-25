@@ -9,5 +9,4 @@ layout(std430, binding = 0) readonly restrict buffer vertexBuffer {
 
 void main(void) {
     gl_Position = vec4(in_vertices[gl_VertexID], 0.0, 1.0);
-    gl_Position.y *= -1;
 }
