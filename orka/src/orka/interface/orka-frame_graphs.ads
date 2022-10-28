@@ -110,12 +110,6 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
-   type Render_Pass_Data is private;
-
-   function Name (Pass : Render_Pass_Data) return String;
-
-   ----------------------------------------------------------------------
-
    type Handle_Type is new Positive;
 
    type Builder
@@ -135,6 +129,11 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
+   type Render_Pass_Cursor is private;
+
+   function "=" (Left : Render_Pass; Right : Render_Pass_Cursor) return Boolean;
+   function "=" (Left : Render_Pass_Cursor; Right : Render_Pass) return Boolean is (Right = Left);
+
    procedure Initialize
      (Object   : in out Graph;
       Location : Resources.Locations.Location_Ptr;
@@ -144,7 +143,7 @@ package Orka.Frame_Graphs is
    procedure Render
      (Object  : in out Graph;
       Context : in out Contexts.Context'Class;
-      Execute : access procedure (Pass : Render_Pass_Data));
+      Execute : access procedure (Pass : Render_Pass_Cursor));
 
    procedure Log_Graph (Object : in out Graph);
 
@@ -164,6 +163,11 @@ private
    type Render_Pass (Frame_Graph : access Builder) is tagged limited record
       Index : Positive;
    end record;
+
+   type Render_Pass_Cursor is new Positive;
+
+   function "=" (Left : Render_Pass; Right : Render_Pass_Cursor) return Boolean is
+     (Left.Index = Positive (Right));
 
    type Render_Pass_Data is record
       Name        : Name_Strings.Bounded_String;

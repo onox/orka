@@ -75,9 +75,20 @@ package body Orka.Frame_Graphs is
       Log (Debug, "      version:  " & Trim_Image (Value.Version.Version));
    end Log_Resource;
 
-   package LE renames GL.Low_Level.Enums;
-
    function Name (Object : Resource_Data) return String is (+Object.Description.Name);
+
+   function "+" (Value : Name_Strings.Bounded_String) return String is
+     (Name_Strings.To_String (Value));
+
+   function "+" (Value : String) return Name_Strings.Bounded_String is
+     (Name_Strings.To_Bounded_String (Value));
+
+   function Name (Object : Render_Pass) return String is
+     (+Object.Frame_Graph.Passes (Object.Index).Name);
+
+   function Name (Pass : Render_Pass_Data) return String is (+Pass.Name);
+
+   -----------------------------------------------------------------------------
 
    procedure Find_Resource
      (Object  : in out Builder;
@@ -221,19 +232,6 @@ package body Orka.Frame_Graphs is
             return Result;
          end;
    end Get_Texture;
-
-   -----------------------------------------------------------------------------
-
-   function "+" (Value : Name_Strings.Bounded_String) return String is
-     (Name_Strings.To_String (Value));
-
-   function "+" (Value : String) return Name_Strings.Bounded_String is
-     (Name_Strings.To_Bounded_String (Value));
-
-   function Name (Object : Render_Pass) return String is
-     (+Object.Frame_Graph.Passes (Object.Index).Name);
-
-   function Name (Pass : Render_Pass_Data) return String is (+Pass.Name);
 
    -----------------------------------------------------------------------------
 
@@ -630,6 +628,8 @@ package body Orka.Frame_Graphs is
 
       function To_Attachment_Point (Value : Attachment_Point) return Point_Type is
         (Point_Type'Val (Point_Type'Pos (Point_Type'First) + Value));
+
+      package LE renames GL.Low_Level.Enums;
 
       use type LE.Texture_Kind;
 
@@ -1078,7 +1078,7 @@ package body Orka.Frame_Graphs is
    procedure Render
      (Object  : in out Graph;
       Context : in out Contexts.Context'Class;
-      Execute : access procedure (Pass : Render_Pass_Data))
+      Execute : access procedure (Pass : Render_Pass_Cursor))
    is
       package Textures renames Orka.Rendering.Textures;
    begin
@@ -1139,7 +1139,7 @@ package body Orka.Frame_Graphs is
                end loop;
 
                if Execute /= null then
-                  Execute (Pass);
+                  Execute (Render_Pass_Cursor (Data.Index));
                end if;
 
                pragma Assert (Framebuffer.Default = Pass.Present);
