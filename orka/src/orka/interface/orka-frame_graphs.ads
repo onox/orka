@@ -110,10 +110,12 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
+   type Render_Pass_Index is new Positive;
    type Handle_Type is new Positive;
 
    type Builder
-     (Maximum_Passes, Maximum_Handles : Positive;
+     (Maximum_Passes    : Render_Pass_Index;
+      Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited private;
 
    function Add_Pass
@@ -160,14 +162,16 @@ package Orka.Frame_Graphs is
 
 private
 
+   No_Render_Pass : constant Render_Pass_Index := Render_Pass_Index'Last;
+
    type Render_Pass (Frame_Graph : access Builder) is tagged limited record
-      Index : Positive;
+      Index : Render_Pass_Index;
    end record;
 
-   type Render_Pass_Cursor is new Positive;
+   type Render_Pass_Cursor is new Render_Pass_Index;
 
    function "=" (Left : Render_Pass; Right : Render_Pass_Cursor) return Boolean is
-     (Left.Index = Positive (Right));
+     (Left.Index = Render_Pass_Index (Right));
 
    type Render_Pass_Data is record
       Name        : Name_Strings.Bounded_String;
@@ -197,17 +201,19 @@ private
       Output_Mode    : Write_Mode := Not_Used;
       Input_Binding  : Binding_Point := 0;
       Output_Binding : Binding_Point := 0;
-      Render_Pass    : Natural := 0;  --  The render pass that writes to this resource, 0 if none
+      Render_Pass    : Render_Pass_Index := No_Render_Pass;
+      --  The render pass that writes to this resource, No_Render_Pass if none
       Read_Count     : Natural := 0;
       References     : Natural := 0;
    end record;
 
-   package Pass_Vectors     is new Containers.Bounded_Vectors (Positive, Render_Pass_Data);
+   package Pass_Vectors     is new Containers.Bounded_Vectors (Render_Pass_Index, Render_Pass_Data);
    package Resource_Vectors is new Containers.Bounded_Vectors (Handle_Type, Resource_Data);
    package Handle_Vectors   is new Containers.Bounded_Vectors (Positive, Handle_Type);
 
    type Builder
-     (Maximum_Passes, Maximum_Handles : Positive;
+     (Maximum_Passes    : Render_Pass_Index;
+      Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited
    record
       Passes        : Pass_Vectors.Vector (Maximum_Passes);
@@ -234,7 +240,7 @@ private
       --  This restriction allows the graph to be implemented using just
       --  four simple arrays and the arrays should provide good data locality.
 
-      Present_Pass : Natural := 0;
+      Present_Pass : Render_Pass_Index := No_Render_Pass;
    end record;
 
    -----------------------------------------------------------------------------
@@ -243,7 +249,7 @@ private
      (Element_Type => Rendering.Framebuffers.Framebuffer, "=" => Rendering.Framebuffers."=");
 
    type Framebuffer_Pass is record
-      Index       : Positive;
+      Index       : Render_Pass_Index;
       Framebuffer : Framebuffer_Holders.Holder;
 
       Clear_Mask      : GL.Buffers.Buffer_Bits;
@@ -260,19 +266,20 @@ private
    end record;
 
    package Framebuffer_Pass_Vectors is new Containers.Bounded_Vectors
-     (Positive, Framebuffer_Pass);
+     (Render_Pass_Index, Framebuffer_Pass);
 
    type Present_Mode_Type is (Use_Default, Blit_To_Default, Render_To_Default);
 
    type Graph
-     (Maximum_Passes, Maximum_Handles : Positive;
+     (Maximum_Passes    : Render_Pass_Index;
+      Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited
    record
       Graph           : Builder (Maximum_Passes, Maximum_Handles, Maximum_Resources);
       Framebuffers    : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
       Present_Mode    : Present_Mode_Type;
       Present_Program : Rendering.Programs.Program;
-      Last_Pass_Index : Positive;
+      Last_Pass_Index : Render_Pass_Index;
    end record;
 
 end Orka.Frame_Graphs;

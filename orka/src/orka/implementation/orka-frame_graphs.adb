@@ -43,6 +43,9 @@ package body Orka.Frame_Graphs is
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
 
+   function Trim_Image (Value : Render_Pass_Index) return String is
+     (Trim_Image (Positive (Value)));
+
    function Trim_Image (Value : Extent_3D) return String is
      (Trim_Image (Value.Width) & Orka.Strings.Unicode (" × ") &
             Trim_Image (Value.Height) & Orka.Strings.Unicode (" × ") &
@@ -333,9 +336,9 @@ package body Orka.Frame_Graphs is
       declare
          Resource : Resource_Data renames Graph.Resources (Handle);
       begin
-         if Resource.Render_Pass /= 0 then
+         if Resource.Render_Pass /= No_Render_Pass then
             raise Constraint_Error with "Resource '" & Name (Resource) & "'" &
-              " already written by pass '" & (+Graph.Passes (Resource.Render_Pass).Name) & "'";
+              " already written by pass '" & Name (Graph.Passes (Resource.Render_Pass)) & "'";
          end if;
 
          pragma Assert (Resource.Output_Mode = Not_Used);
@@ -497,7 +500,7 @@ package body Orka.Frame_Graphs is
          declare
             Resource : Resource_Data renames Result.Graph.Resources (Index);
          begin
-            if Resource.Render_Pass = 0 then
+            if Resource.Render_Pass = No_Render_Pass then
                raise Constraint_Error with "Presented resource not written by a pass";
             end if;
          end;
@@ -521,7 +524,7 @@ package body Orka.Frame_Graphs is
                Resource.References := Resource.Read_Count;
 
                if Resource.References = 0 then
-                  if Resource.Render_Pass = 0 then
+                  if Resource.Render_Pass = No_Render_Pass then
                      raise Constraint_Error with
                        "Resource '" & Name (Resource) & " not connected";
                   end if;
@@ -559,7 +562,7 @@ package body Orka.Frame_Graphs is
                      begin
                         Resource.References := Resource.References - 1;
 
-                        if Resource.References = 0 and Resource.Render_Pass /= 0 then
+                        if Resource.References = 0 and Resource.Render_Pass /= No_Render_Pass then
                            Stack.Append (Resource_Handle);
                         end if;
                      end;
@@ -587,7 +590,7 @@ package body Orka.Frame_Graphs is
                Result (Index) := (Mode     => Data.Input_Mode,
                                   Data     => Data.Description,
                                   Binding  => Data.Input_Binding,
-                                  Written  => Data.Render_Pass /= 0,
+                                  Written  => Data.Render_Pass /= No_Render_Pass,
                                   Implicit => Data.Implicit);
             end;
          end loop;
@@ -644,7 +647,7 @@ package body Orka.Frame_Graphs is
       Default_Extent : constant Extent_3D :=
         (Natural (Default.Width), Natural (Default.Height), 1);
 
-      Last_Pass_Index : constant Positive := Present_Resource.Render_Pass;
+      Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
    begin
       declare
          package Programs renames Orka.Rendering.Programs;
@@ -999,7 +1002,7 @@ package body Orka.Frame_Graphs is
             procedure Execute_Pass (Framebuffer : Rendering.Framebuffers.Framebuffer) is
                use type GL.Buffers.Explicit_Color_Buffer_Selector;
             begin
-               Log (Debug, "Pass " & (+Pass.Name) & " (" & Trim_Image (Data.Index) & ")");
+               Log (Debug, "Pass " & Name (Pass) & " (" & Trim_Image (Data.Index) & ")");
                Log (Debug, "  count:");
                Log (Debug, "    read:  " & Pass.Read_Count'Image);
                Log (Debug, "    write: " & Pass.Write_Count'Image);
@@ -1267,7 +1270,7 @@ package body Orka.Frame_Graphs is
                   Append_Comma;
                   SU.Append (Result, '{');
                   Append ("source", Image (Positive (Handle) - 1), True);
-                  Append ("target", Image (Index  - 1));
+                  Append ("target", Image (Positive (Index  - 1)));
                   SU.Append (Result, '}');
                end;
             end loop;
@@ -1290,7 +1293,7 @@ package body Orka.Frame_Graphs is
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
-                  Append ("source", Image (Index  - 1), True);
+                  Append ("source", Image (Positive (Index  - 1)), True);
                   Append ("target", Image (Positive (Handle) - 1));
                   SU.Append (Result, '}');
                end;
