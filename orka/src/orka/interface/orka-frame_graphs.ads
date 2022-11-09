@@ -189,9 +189,9 @@ private
       Has_Stencil : Boolean := False;
    end record;
 
-   type Resource_Version is record
-      Version : Natural := 1;  --  Version will be 0 if added as implicit input
-   end record;
+   type Resource_Version is new Natural
+     with Default_Value => 1;
+   --  Version will be 0 if added as implicit input
 
    type Resource_Data is record
       Description    : Resource;

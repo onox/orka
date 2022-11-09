@@ -75,7 +75,7 @@ package body Orka.Frame_Graphs is
       Log (Debug, "      format:   " & Value.Format'Image);
       Log (Debug, "      extent:   " & Trim_Image (Value.Extent));
       Log (Debug, "      samples:  " & Trim_Image (Value.Samples));
-      Log (Debug, "      version:  " & Trim_Image (Value.Version.Version));
+      Log (Debug, "      version:  " & Trim_Image (Natural (Value.Version)));
    end Log_Resource;
 
    function Name (Object : Resource_Data) return String is (+Object.Description.Name);
@@ -324,7 +324,7 @@ package body Orka.Frame_Graphs is
             Handle : Handle_Type;
             Prev_Subject : Resource := Subject;
          begin
-            Prev_Subject.Version.Version := Subject.Version.Version - 1;
+            Prev_Subject.Version := Subject.Version - 1;
             Object.Add_Input
               (Prev_Subject, Framebuffer_Attachment, Binding, Handle, Implicit => False);
             Graph.Resources (Handle).Implicit := True;
@@ -402,7 +402,7 @@ package body Orka.Frame_Graphs is
             Handle : Handle_Type;
             Next_Subject : Resource := Subject;
          begin
-            Next_Subject.Version.Version := Subject.Version.Version + 1;
+            Next_Subject.Version := Subject.Version + 1;
             Object.Add_Output
               (Next_Subject, Framebuffer_Attachment, Binding, Handle, Implicit => False);
             Graph.Resources (Handle).Implicit := True;
@@ -476,7 +476,7 @@ package body Orka.Frame_Graphs is
          Resource.Modified := True;
       end;
 
-      Next_Subject.Version.Version := Subject.Version.Version + 1;
+      Next_Subject.Version := Subject.Version + 1;
       Object.Add_Output (Next_Subject, Write, Binding, Handle, Implicit => False);
       return Next_Subject;
    end Add_Input_Output;
@@ -1096,12 +1096,12 @@ package body Orka.Frame_Graphs is
 
                GL.Buffers.Set_Depth_Mask (True);
                GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
-               if not Data.Buffers_Equal then
-                  Framebuffer.Set_Draw_Buffers (Data.Clear_Buffers);
-               end if;
-               Framebuffer.Clear (Data.Clear_Mask);
 
-               if not Data.Buffers_Equal then
+               if Data.Buffers_Equal then
+                  Framebuffer.Clear (Data.Clear_Mask);
+               else
+                  Framebuffer.Set_Draw_Buffers (Data.Clear_Buffers);
+                  Framebuffer.Clear (Data.Clear_Mask);
                   Framebuffer.Set_Draw_Buffers (Data.Render_Buffers);
                end if;
 
@@ -1245,7 +1245,7 @@ package body Orka.Frame_Graphs is
          Append ("name", Image (+Resource.Description.Name), True);
          Append ("kind", Image (Resource.Description.Kind'Image), True);
          Append ("format", Image (Resource.Description.Format'Image), True);
-         Append ("version", Image (Resource.Description.Version.Version), True);
+         Append ("version", Image (Natural (Resource.Description.Version)), True);
          Append ("implicit", Image (Resource.Implicit), True);
          Append ("readMode", Image (Resource.Input_Mode'Image), True);
          Append ("writeMode", Image (Resource.Output_Mode'Image), True);
