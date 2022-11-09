@@ -28,16 +28,7 @@ package GL.Objects.Samplers is
                                Linear_Mipmap_Nearest, Nearest_Mipmap_Linear,
                                Linear_Mipmap_Linear);
 
-   --  Has to be defined here because of following subtype declaration.
-   for Minifying_Function use (Nearest                => 16#2600#,
-                               Linear                 => 16#2601#,
-                               Nearest_Mipmap_Nearest => 16#2700#,
-                               Linear_Mipmap_Nearest  => 16#2701#,
-                               Nearest_Mipmap_Linear  => 16#2702#,
-                               Linear_Mipmap_Linear   => 16#2703#);
-   for Minifying_Function'Size use Int'Size;
-
-   subtype Magnifying_Function is Minifying_Function range Nearest .. Linear;
+   type Magnifying_Function is (Nearest, Linear);
 
    type Wrapping_Mode is (Repeat, Clamp_To_Border, Clamp_To_Edge,
                           Mirrored_Repeat, Mirror_Clamp_To_Edge);
@@ -100,63 +91,30 @@ package GL.Objects.Samplers is
    --  a Linear_Mipmap_Linear minification filter and a Linear maxification
    --  filter.
 
-   -----------------------------------------------------------------------------
-
-   function Minifying_Filter (Object : Sampler) return Minifying_Function;
-   --  Return the minification function (default is Nearest_Mipmap_Linear)
-
-   function Magnifying_Filter (Object : Sampler) return Magnifying_Function;
-   --  Return the magnification function (default is Linear)
-
-   function Minimum_LoD (Object : Sampler) return Double;
-   --  Return the minimum LOD (default is -1000)
-
-   function Maximum_LoD (Object : Sampler) return Double;
-   --  Return the maximum LOD (default is 1000)
-
-   function LoD_Bias (Object : Sampler) return Double;
-   --  Return the LOD bias for the selection of a mipmap (default is 0.0)
-
-   function Seamless_Filtering (Object : Sampler) return Boolean;
-   --  Return whether seamless filtering is enabled for cube map
-   --  textures (default is False)
-
-   function Max_Anisotropy (Object : Sampler) return Double
-     with Post => Max_Anisotropy'Result >= 1.0;
-
-   -----------------------------------------------------------------------------
-
    procedure Set_X_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
    procedure Set_Y_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
    procedure Set_Z_Wrapping (Object : Sampler; Mode : Wrapping_Mode);
 
-   function X_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the X direction (default is Repeat)
-
-   function Y_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the Y direction (default is Repeat)
-
-   function Z_Wrapping (Object : Sampler) return Wrapping_Mode;
-   --  Return the wrapping mode for the Z direction (default is Repeat)
-
-   -----------------------------------------------------------------------------
-
    procedure Set_Border_Color (Object : Sampler; Color : Colors.Border_Color);
 
    procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean);
-
-   procedure Set_Compare_Function (Object : Sampler;
-                                   Func   : Compare_Function);
-
-   function Border_Color (Object : Sampler) return Colors.Border_Color;
-
-   function Compare_X_To_Texture_Enabled (Object : Sampler) return Boolean;
-   --  Return whether to enable comparing (default is False)
-
-   function Current_Compare_Function (Object : Sampler) return Compare_Function;
-   --  Return the comparison function (default is LEqual)
+   procedure Set_Compare_Function     (Object : Sampler; Func    : Compare_Function);
 
 private
+
+   for Minifying_Function use
+     (Nearest                => 16#2600#,
+      Linear                 => 16#2601#,
+      Nearest_Mipmap_Nearest => 16#2700#,
+      Linear_Mipmap_Nearest  => 16#2701#,
+      Nearest_Mipmap_Linear  => 16#2702#,
+      Linear_Mipmap_Linear   => 16#2703#);
+   for Minifying_Function'Size use Int'Size;
+
+   for Magnifying_Function use
+     (Nearest                => 16#2600#,
+      Linear                 => 16#2601#);
+   for Magnifying_Function'Size use Int'Size;
 
    for Wrapping_Mode use
      (Repeat               => 16#2901#,

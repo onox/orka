@@ -37,6 +37,7 @@ package body Orka.Rendering.Textures is
 
    function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler is
       use all type GL.Objects.Samplers.Minifying_Function;
+      use all type GL.Objects.Samplers.Magnifying_Function;
       use all type GL.Objects.Samplers.Wrapping_Mode;
    begin
       return Result : GL.Objects.Samplers.Sampler do

@@ -820,29 +820,6 @@ private package GL.API is
    package Sampler_Parameter_Compare_Function is new Loader.Procedure_With_3_Params
      ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Compare_Function);
 
-   package Get_Sampler_Parameter_Bool is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Low_Level.Bool);
-
-   package Get_Sampler_Parameter_Floats is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameterfv", UInt, Enums.Textures.Parameter, Low_Level.Single_Array);
-
-   package Get_Sampler_Parameter_Minifying_Function is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
-      Objects.Samplers.Minifying_Function);
-
-   package Get_Sampler_Parameter_Magnifying_Function is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter,
-      Objects.Samplers.Magnifying_Function);
-
-   package Get_Sampler_Parameter_Wrapping_Mode is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Objects.Samplers.Wrapping_Mode);
-
-   package Get_Sampler_Parameter_Compare_Kind is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Enums.Textures.Compare_Kind);
-
-   package Get_Sampler_Parameter_Compare_Function is new Loader.Getter_With_3_Params
-     ("glGetSamplerParameteriv", UInt, Enums.Textures.Parameter, Compare_Function);
-
    -----------------------------------------------------------------------------
    --                                Barriers                                 --
    -----------------------------------------------------------------------------
