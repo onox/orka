@@ -569,12 +569,6 @@ private package GL.API is
    package Named_Framebuffer_Parameter_Bool is new Loader.Procedure_With_3_Params
      ("glNamedFramebufferParameteri", UInt, Enums.Framebuffer_Param, Low_Level.Bool);
 
-   package Get_Named_Framebuffer_Parameter_Size is new Loader.Getter_With_3_Params
-     ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Size);
-
-   package Get_Named_Framebuffer_Parameter_Bool is new Loader.Getter_With_3_Params
-     ("glGetNamedFramebufferParameteriv", UInt, Enums.Framebuffer_Param, Low_Level.Bool);
-
    package Clear_Named_Framebuffer_Color_Real is new Loader.Procedure_With_4_Params
      ("glClearNamedFramebufferfv", UInt, Enums.Only_Color_Buffer,
       Buffers.Draw_Buffer_Index, Colors.Color);

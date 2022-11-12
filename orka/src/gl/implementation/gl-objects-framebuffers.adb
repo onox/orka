@@ -159,14 +159,6 @@ package body GL.Objects.Framebuffers is
                                             Enums.Default_Width, Value);
    end Set_Default_Width;
 
-   function Default_Width (Object : Framebuffer) return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Width, Ret);
-      return Ret;
-   end Default_Width;
-
    function Max_Framebuffer_Width return Size is
       Ret : Size := 16_384;
    begin
@@ -181,14 +173,6 @@ package body GL.Objects.Framebuffers is
                                             Value);
    end Set_Default_Height;
 
-   function Default_Height (Object : Framebuffer) return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Height, Ret);
-      return Ret;
-   end Default_Height;
-
    function Max_Framebuffer_Height return Size is
       Ret : Size := 16_384;
    begin
@@ -201,14 +185,6 @@ package body GL.Objects.Framebuffers is
       API.Named_Framebuffer_Parameter_Size.Ref (Object.Reference.GL_Id,
                                             Enums.Default_Layers, Value);
    end Set_Default_Layers;
-
-   function Default_Layers (Object : Framebuffer) return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Layers, Ret);
-      return Ret;
-   end Default_Layers;
 
    function Max_Framebuffer_Layers return Size is
       Ret : Size := 2_048;
@@ -224,14 +200,6 @@ package body GL.Objects.Framebuffers is
                                             Value);
    end Set_Default_Samples;
 
-   function Default_Samples (Object : Framebuffer) return Size is
-      Ret : Size := 0;
-   begin
-      API.Get_Named_Framebuffer_Parameter_Size.Ref
-        (Object.Reference.GL_Id, Enums.Default_Samples, Ret);
-      return Ret;
-   end Default_Samples;
-
    function Max_Framebuffer_Samples return Size is
       Ret : Size := 4;
    begin
@@ -245,14 +213,6 @@ package body GL.Objects.Framebuffers is
                                             Enums.Default_Fixed_Sample_Locations,
                                             Low_Level.Bool (Value));
    end Set_Default_Fixed_Sample_Locations;
-
-   function Default_Fixed_Sample_Locations (Object : Framebuffer) return Boolean is
-      Ret : Low_Level.Bool := Low_Level.Bool (False);
-   begin
-      API.Get_Named_Framebuffer_Parameter_Bool.Ref
-        (Object.Reference.GL_Id, Enums.Default_Fixed_Sample_Locations, Ret);
-      return Boolean (Ret);
-   end Default_Fixed_Sample_Locations;
 
    overriding
    procedure Initialize_Id (Object : in out Framebuffer) is
