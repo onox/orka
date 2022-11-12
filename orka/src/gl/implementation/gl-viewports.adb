@@ -57,46 +57,15 @@ package body GL.Viewports is
       API.Viewport_Array.Ref (List'First, List'Length, List);
    end Set_Viewports;
 
-   function Get_Viewport (Index : UInt) return Viewport is
-      Result : Singles.Vector4;
-   begin
-      API.Get_Single_Vec4_I.Ref (Enums.Getter.Viewport, Index, Result);
-      return
-        (X      => Result (X),
-         Y      => Result (Y),
-         Width  => Result (Z),
-         Height => Result (W));
-   end Get_Viewport;
-
    procedure Set_Depth_Ranges (List : Depth_Range_List) is
    begin
       API.Depth_Range_Array.Ref (List'First, List'Length, List);
    end Set_Depth_Ranges;
 
-   function Get_Depth_Range (Index : UInt) return Depth_Range is
-      Result : Doubles.Vector2;
-   begin
-      API.Get_Double_Vec2_I.Ref (Enums.Getter.Depth_Range, Index, Result);
-      return
-        (Near => Result (X),
-         Far  => Result (Y));
-   end Get_Depth_Range;
-
    procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List) is
    begin
       API.Scissor_Array.Ref (List'First, List'Length, List);
    end Set_Scissor_Rectangles;
-
-   function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle is
-      Result : Ints.Vector4;
-   begin
-      API.Get_Int_Vec4_I.Ref (Enums.Getter.Scissor_Box, Index, Result);
-      return
-        (Left   => Result (X),
-         Bottom => Result (Y),
-         Width  => Result (Z),
-         Height => Result (W));
-   end Get_Scissor_Rectangle;
 
    -----------------------------------------------------------------------------
    --                                 Clipping                                --
@@ -106,19 +75,5 @@ package body GL.Viewports is
    begin
       API.Clip_Control.Ref (Origin, Depth);
    end Set_Clipping;
-
-   function Origin return Viewport_Origin is
-      Result : Viewport_Origin := Viewport_Origin'First;
-   begin
-      API.Get_Clip_Origin.Ref (Enums.Getter.Clip_Origin, Result);
-      return Result;
-   end Origin;
-
-   function Depth return Depth_Mode is
-      Result : Depth_Mode := Depth_Mode'First;
-   begin
-      API.Get_Clip_Depth_Mode.Ref (Enums.Getter.Clip_Depth_Mode, Result);
-      return Result;
-   end Depth;
 
 end GL.Viewports;

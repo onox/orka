@@ -63,13 +63,10 @@ package GL.Viewports is
    --  Return the maximum width and height of a viewport
 
    procedure Set_Viewports (List : Viewport_List);
-   function Get_Viewport (Index : UInt) return Viewport;
 
    procedure Set_Depth_Ranges (List : Depth_Range_List);
-   function Get_Depth_Range (Index : UInt) return Depth_Range;
 
    procedure Set_Scissor_Rectangles (List : Scissor_Rectangle_List);
-   function Get_Scissor_Rectangle (Index : UInt) return Scissor_Rectangle;
 
    -----------------------------------------------------------------------------
    --                                 Clipping                                --
@@ -89,10 +86,6 @@ package GL.Viewports is
    --  Direct3D expects the UV coordinate of (0, 0) to correspond to the
    --  upper-left corner of a randered image, while OpenGL expects it in
    --  the lower-left corner.
-
-   function Origin return Viewport_Origin;
-
-   function Depth return Depth_Mode;
 
 private
 

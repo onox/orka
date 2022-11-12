@@ -82,17 +82,11 @@ private package GL.API is
    package Get_Boolean is new Loader.Getter_With_2_Params
      ("glGetBooleanv", Enums.Getter.Parameter, Low_Level.Bool);
 
-   package Get_Double_Vec2_I is new Loader.Getter_With_3_Params
-     ("glGetDoublei_v", Enums.Getter.Parameter, UInt, Doubles.Vector2);
-
    package Get_Single is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Single);
 
    package Get_Single_Vec2 is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
-
-   package Get_Single_Vec4_I is new Loader.Getter_With_3_Params
-     ("glGetFloati_v", Enums.Getter.Parameter, UInt, Singles.Vector4);
 
    package Get_Color is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Colors.Color);
@@ -116,9 +110,6 @@ private package GL.API is
    package Get_Size_I is new Loader.Getter_With_3_Params
      ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Size);
 
-   package Get_Int_Vec4_I is new Loader.Getter_With_3_Params
-     ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Ints.Vector4);
-
    package Get_Blend_Factor is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Blend_Factor);
 
@@ -127,12 +118,6 @@ private package GL.API is
 
    package Get_Blend_Equation is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Blending.Equation);
-
-   package Get_Clip_Origin is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Viewport_Origin);
-
-   package Get_Clip_Depth_Mode is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Viewports.Depth_Mode);
 
    package Get_Compare_Function is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
