@@ -88,18 +88,11 @@ private package GL.API is
    package Get_Single_Vec2 is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
 
-   package Get_Enabled_Color is new Loader.Getter_With_3_Params
-     ("glGetBooleani_v", Enums.Getter.Parameter, Buffers.Draw_Buffer_Index,
-      Colors.Enabled_Color);
-
    package Get_Long is new Loader.Getter_With_2_Params
      ("glGetInteger64v", Enums.Getter.Parameter, Long);
 
    package Get_Integer is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Int);
-
-   package Get_Unsigned_Integer is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, UInt);
 
    package Get_Size is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Size);
@@ -115,9 +108,6 @@ private package GL.API is
 
    package Get_Polygon_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
-
-   package Get_Stencil_Action is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Stencil_Action);
 
    package Get_String is new Loader.Function_With_1_Param
      ("glGetString", Enums.Getter.String_Parameter, C.Strings.chars_ptr);
