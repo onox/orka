@@ -44,27 +44,6 @@ package body GL.Rasterization is
       API.Polygon_Offset_Clamp.Ref (Factor, Units, Clamp);
    end Set_Polygon_Offset;
 
-   function Polygon_Offset_Factor return Single is
-      Result : Single := 0.0;
-   begin
-      API.Get_Single.Ref (Enums.Getter.Polygon_Offset_Factor, Result);
-      return Result;
-   end Polygon_Offset_Factor;
-
-   function Polygon_Offset_Units return Single is
-      Result : Single := 0.0;
-   begin
-      API.Get_Single.Ref (Enums.Getter.Polygon_Offset_Units, Result);
-      return Result;
-   end Polygon_Offset_Units;
-
-   function Polygon_Offset_Clamp return Single is
-      Result : Single := 0.0;
-   begin
-      API.Get_Single.Ref (Enums.Getter.Polygon_Offset_Clamp, Result);
-      return Result;
-   end Polygon_Offset_Clamp;
-
    -----------------------------------------------------------------------------
 
    procedure Set_Front_Face (Face : Orientation) is
@@ -72,23 +51,9 @@ package body GL.Rasterization is
       API.Front_Face.Ref (Face);
    end Set_Front_Face;
 
-   function Front_Face return Orientation is
-      Ret : Orientation := Orientation'First;
-   begin
-      API.Get_Orientation.Ref (Enums.Getter.Cull_Face, Ret);
-      return Ret;
-   end Front_Face;
-
    procedure Set_Cull_Face (Selector : Face_Selector) is
    begin
       API.Cull_Face.Ref (Selector);
    end Set_Cull_Face;
-
-   function Cull_Face return Face_Selector is
-      Ret : Face_Selector := Face_Selector'First;
-   begin
-      API.Get_Face_Selector.Ref (Enums.Getter.Cull_Face_Mode, Ret);
-      return Ret;
-   end Cull_Face;
 
 end GL.Rasterization;

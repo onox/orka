@@ -137,12 +137,6 @@ private package GL.API is
    package Get_Compare_Function is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
 
-   package Get_Orientation is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Orientation);
-
-   package Get_Face_Selector is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Face_Selector);
-
    package Get_Polygon_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
 

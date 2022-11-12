@@ -37,10 +37,6 @@ package GL.Rasterization is
    --
    --  If Clamp /= 0.0 then the resulting offset is clamped.
 
-   function Polygon_Offset_Factor return Single;
-   function Polygon_Offset_Units return Single;
-   function Polygon_Offset_Clamp return Single;
-
    -----------------------------------------------------------------------------
    --                                 Culling                                 --
    -----------------------------------------------------------------------------
@@ -52,10 +48,8 @@ package GL.Rasterization is
    type Face_Selector is (Front, Back, Front_And_Back);
 
    procedure Set_Front_Face (Face : Orientation);
-   function Front_Face return Orientation;
 
    procedure Set_Cull_Face (Selector : Face_Selector);
-   function Cull_Face return Face_Selector;
 
 private
 
