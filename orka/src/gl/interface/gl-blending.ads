@@ -52,17 +52,12 @@ package GL.Blending is
      (Draw_Buffer : Buffers.Draw_Buffer_Index;
       Factors     : Blend_Factors);
 
-   function Blend_Func return Blend_Factors;
-
    procedure Set_Blend_Color (Value : Types.Colors.Color);
-   function Blend_Color return Types.Colors.Color;
 
    procedure Set_Blend_Equation (Equations : Blend_Equations);
    procedure Set_Blend_Equation
      (Draw_Buffer : Buffers.Draw_Buffer_Index;
       Equations   : Blend_Equations);
-
-   function Blend_Equation return Blend_Equations;
 
    -----------------------------------------------------------------------------
    --                            Logical Operation                            --
@@ -82,8 +77,6 @@ package GL.Blending is
    --  Set the logical operation to be applied to the color of the
    --  fragment and the current colors in the color buffers which
    --  are enabled for writing
-
-   function Logic_Op_Mode return Logic_Op;
 
 private
 

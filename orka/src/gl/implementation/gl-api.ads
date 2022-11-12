@@ -88,9 +88,6 @@ private package GL.API is
    package Get_Single_Vec2 is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
 
-   package Get_Color is new Loader.Getter_With_2_Params
-     ("glGetFloatv", Enums.Getter.Parameter, Colors.Color);
-
    package Get_Enabled_Color is new Loader.Getter_With_3_Params
      ("glGetBooleani_v", Enums.Getter.Parameter, Buffers.Draw_Buffer_Index,
       Colors.Enabled_Color);
@@ -110,23 +107,14 @@ private package GL.API is
    package Get_Size_I is new Loader.Getter_With_3_Params
      ("glGetIntegeri_v", Enums.Getter.Parameter, UInt, Size);
 
-   package Get_Blend_Factor is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Blending.Blend_Factor);
-
    package Get_Alignment is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Pixels.Alignment);
-
-   package Get_Blend_Equation is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Blending.Equation);
 
    package Get_Compare_Function is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
 
    package Get_Polygon_Mode is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
-
-   package Get_Logic_Op is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Blending.Logic_Op);
 
    package Get_Stencil_Action is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Buffers.Stencil_Action);
