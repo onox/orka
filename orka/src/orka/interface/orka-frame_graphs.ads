@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2019 onox <denkpadje@gmail.com>
+--  Copyright (c) 2019 - 2022 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ with GL.Pixels;
 
 with Orka.Contexts;
 with Orka.Rendering.Framebuffers;
+with Orka.Rendering.Programs;
 with Orka.Rendering.States;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
@@ -86,8 +87,6 @@ package Orka.Frame_Graphs is
 
    function Name (Object : Render_Pass) return String;
 
-   --  TODO Does it make sense to add non-depth/stencil textures as FBO attachment?
-   --  TODO Support adding a layer of a resource as an input?
    procedure Add_Input
      (Object  : Render_Pass;
       Subject : Resource;
@@ -120,47 +119,60 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
+   type Program_Callback is access procedure (Program : in out Rendering.Programs.Program);
+
    type Render_Pass_Index is new Positive;
    type Handle_Type is new Positive;
 
-   type Builder
+   type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited private;
 
    function Add_Pass
-     (Object  : in out Builder;
-      Name    : String;
-      State   : Rendering.States.State;
+     (Object   : in out Frame_Graph;
+      Name     : String;
+      State    : Rendering.States.State;
+      Program  : Rendering.Programs.Program;
+      Callback : not null Program_Callback;
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
+   --  TODO Or make Program a constructor which returns a Programs.Program? (for lazy-loading)
 
-   type Graph (<>) is tagged limited private;
+   type Resource_Array is array (Positive range <>) of Resource;
 
-   function Cull (Object : Builder; Present : Resource) return Graph'Class;
+
+
+   type Renderable_Graph (<>) is tagged limited private;
+
+   function Cull
+     (Object  : Frame_Graph;
+      Present : Resource) return Renderable_Graph'Class;
+   --  Cull render passes in the frame graph which do not contribute to
+   --  the resource which must be presented
+
+   function Is_Initialized (Object : Renderable_Graph) return Boolean;
+
+   procedure Initialize
+     (Object   : in out Renderable_Graph;
+      Location : Resources.Locations.Location_Ptr;
+      Default  : Rendering.Framebuffers.Framebuffer)
+   with Pre  => not Object.Is_Initialized and Default.Default,
+        Post =>     Object.Is_Initialized;
+
+   procedure Render
+     (Object  : in out Renderable_Graph;
+      Context : in out Contexts.Context'Class)
+   with Pre => Object.Is_Initialized;
+   --  Render the resource which must be presented to the window of the given context
 
    ----------------------------------------------------------------------
 
-   type Render_Pass_Cursor is private;
-
-   function "=" (Left : Render_Pass; Right : Render_Pass_Cursor) return Boolean;
-   function "=" (Left : Render_Pass_Cursor; Right : Render_Pass) return Boolean is (Right = Left);
-
-   procedure Initialize
-     (Object   : in out Graph;
-      Location : Resources.Locations.Location_Ptr;
-      Default  : Rendering.Framebuffers.Framebuffer)
-   with Pre => Default.Default;
-
-   procedure Render
-     (Object  : in out Graph;
-      Context : in out Contexts.Context'Class;
-      Execute : access procedure (Pass : Render_Pass_Cursor));
-
-   procedure Log_Graph (Object : in out Graph);
+   procedure Log_Graph (Object : in out Renderable_Graph)
+     with Pre => Object.Is_Initialized;
 
    procedure Write_Graph
-     (Object   : in out Graph;
+     (Object   : in out Renderable_Graph;
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String);
    --  Write the frame graph as JSON to a file at the given path in the
@@ -174,14 +186,11 @@ private
 
    No_Render_Pass : constant Render_Pass_Index := Render_Pass_Index'Last;
 
-   type Render_Pass (Frame_Graph : access Builder) is tagged limited record
+   type Render_Pass
+     (Frame_Graph : not null access Frame_Graphs.Frame_Graph) is tagged limited
+   record
       Index : Render_Pass_Index;
    end record;
-
-   type Render_Pass_Cursor is new Render_Pass_Index;
-
-   function "=" (Left : Render_Pass; Right : Render_Pass_Cursor) return Boolean is
-     (Left.Index = Render_Pass_Index (Right));
 
    type Render_Pass_Data is record
       Name        : Name_Strings.Bounded_String;
@@ -189,7 +198,9 @@ private
       Side_Effect : Boolean;
       Present     : Boolean;
 
-      State : Rendering.States.State;
+      State    : Rendering.States.State;
+      Program  : Rendering.Programs.Program;
+      Callback : Program_Callback;
 
       References  : Natural := 0;
       Read_Offset, Write_Offset : Positive := 1;
@@ -221,7 +232,7 @@ private
    package Resource_Vectors is new Containers.Bounded_Vectors (Handle_Type, Resource_Data);
    package Handle_Vectors   is new Containers.Bounded_Vectors (Positive, Handle_Type);
 
-   type Builder
+   type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited
@@ -280,16 +291,17 @@ private
 
    type Present_Mode_Type is (Use_Default, Blit_To_Default, Render_To_Default);
 
-   type Graph
+   type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Handles   : Positive;
       Maximum_Resources : Handle_Type) is tagged limited
    record
-      Graph           : Builder (Maximum_Passes, Maximum_Handles, Maximum_Resources);
+      Graph           : Frame_Graph (Maximum_Passes, Maximum_Handles, Maximum_Resources);
       Framebuffers    : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
       Present_Mode    : Present_Mode_Type;
       Present_Program : Rendering.Programs.Program;
       Last_Pass_Index : Render_Pass_Index;
+      Initialized     : Boolean;
    end record;
 
 end Orka.Frame_Graphs;

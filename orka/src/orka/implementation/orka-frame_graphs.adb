@@ -97,7 +97,7 @@ package body Orka.Frame_Graphs is
    -----------------------------------------------------------------------------
 
    procedure Find_Resource
-     (Object  : in out Builder;
+     (Object  : in out Frame_Graph;
       Subject : Resource;
       Handle  : out Handle_Type;
       Found   : out Boolean)
@@ -127,7 +127,7 @@ package body Orka.Frame_Graphs is
    end Find_Resource;
 
    procedure Add_Resource
-     (Object  : in out Builder;
+     (Object  : in out Frame_Graph;
       Subject : Resource;
       Handle  : out Handle_Type)
    is
@@ -250,9 +250,11 @@ package body Orka.Frame_Graphs is
       Implicit : Boolean);
 
    function Add_Pass
-     (Object : in out Builder;
-      Name   : String;
-      State  : Rendering.States.State;
+     (Object   : in out Frame_Graph;
+      Name     : String;
+      State    : Rendering.States.State;
+      Program  : Rendering.Programs.Program;
+      Callback : not null Program_Callback;
       Side_Effect, Present : Boolean) return Render_Pass'Class is
    begin
       Object.Passes.Append
@@ -260,6 +262,8 @@ package body Orka.Frame_Graphs is
           Side_Effect => Side_Effect,
           Present     => Present,
           State       => State,
+          Program     => Program,
+          Callback    => Callback,
           others      => <>));
       return Render_Pass'
         (Frame_Graph => Object'Access,
@@ -267,14 +271,19 @@ package body Orka.Frame_Graphs is
    end Add_Pass;
 
    function Add_Pass
-     (Object : in out Builder;
-      Name   : String;
-      State  : Rendering.States.State;
+     (Object      : in out Frame_Graph;
+      Name        : String;
+      State       : Rendering.States.State;
+      Program     : Rendering.Programs.Program;
+      Callback    : not null Program_Callback;
       Side_Effect : Boolean := False) return Render_Pass'Class
-   is (Object.Add_Pass (Name, State, Side_Effect => Side_Effect, Present => False));
+   is (Object.Add_Pass
+         (Name, State, Program, Callback, Side_Effect => Side_Effect, Present => False));
+
+   procedure Unused_Callback (Program : in out Rendering.Programs.Program) is null;
 
    procedure Add_Present
-     (Object  : in out Builder;
+     (Object  : in out Frame_Graph;
       Subject : Resource;
       Handle  : out Handle_Type)
    is
@@ -287,8 +296,11 @@ package body Orka.Frame_Graphs is
       end if;
 
       declare
+         Unused_Program : Rendering.Programs.Program;
+
          Pass : constant Render_Pass'Class := Object.Add_Pass
-           ("Present", (others => <>), Side_Effect => True, Present => True);
+           ("Present", (others => <>), Unused_Program, Unused_Callback'Access,
+            Side_Effect => True, Present => True);
       begin
          --  The present pass does not always read the resource: the previous
          --  render pass will use the default framebuffer to write to the
@@ -310,7 +322,7 @@ package body Orka.Frame_Graphs is
       Handle   : out Handle_Type;
       Implicit : Boolean)
    is
-      Graph : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
+      Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
       Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Format);
    begin
@@ -383,7 +395,7 @@ package body Orka.Frame_Graphs is
       Handle   : out Handle_Type;
       Implicit : Boolean)
    is
-      Graph : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
+      Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
 
       Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Format);
@@ -466,7 +478,7 @@ package body Orka.Frame_Graphs is
       Mode    : Read_Write_Mode;
       Binding : Binding_Point) return Resource
    is
-      Graph  : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
+      Graph  : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Handle : Handle_Type;
 
       Read : constant Read_Mode :=
@@ -495,11 +507,14 @@ package body Orka.Frame_Graphs is
       return Next_Subject;
    end Add_Input_Output;
 
-   function Cull (Object : Builder; Present : Resource) return Graph'Class is
+   function Cull
+     (Object  : Frame_Graph;
+      Present : Resource) return Renderable_Graph'Class
+   is
       Stack : Handle_Vectors.Vector (Positive (Object.Resources.Length));
       Index : Handle_Type;
    begin
-      return Result : Graph
+      return Result : Renderable_Graph
         (Maximum_Passes    => Object.Maximum_Passes,
          Maximum_Handles   => Object.Maximum_Handles,
          Maximum_Resources => Object.Maximum_Resources)
@@ -509,6 +524,8 @@ package body Orka.Frame_Graphs is
          Result.Graph.Resources     := Object.Resources;
          Result.Graph.Read_Handles  := Object.Read_Handles;
          Result.Graph.Write_Handles := Object.Write_Handles;
+
+         Result.Initialized := False;
 
          Add_Present (Result.Graph, Present, Index);
          declare
@@ -592,7 +609,7 @@ package body Orka.Frame_Graphs is
    end Cull;
 
    function Input_Resources
-     (Object : Graph;
+     (Object : Renderable_Graph;
       Pass   : Render_Pass_Data) return Input_Resource_Array is
    begin
       return Result : Input_Resource_Array (1 .. Pass.Read_Count) do
@@ -612,7 +629,7 @@ package body Orka.Frame_Graphs is
    end Input_Resources;
 
    function Output_Resources
-     (Object : Graph;
+     (Object : Renderable_Graph;
       Pass   : Render_Pass_Data) return Output_Resource_Array is
    begin
       return Result : Output_Resource_Array (1 .. Pass.Write_Count) do
@@ -631,8 +648,10 @@ package body Orka.Frame_Graphs is
       end return;
    end Output_Resources;
 
+   function Is_Initialized (Object : Renderable_Graph) return Boolean is (Object.Initialized);
+
    procedure Initialize
-     (Object   : in out Graph;
+     (Object   : in out Renderable_Graph;
       Location : Resources.Locations.Location_Ptr;
       Default  : Rendering.Framebuffers.Framebuffer)
    is
@@ -1000,9 +1019,11 @@ package body Orka.Frame_Graphs is
             end if;
          end;
       end loop;
+
+      Object.Initialized := True;
    end Initialize;
 
-   procedure Log_Graph (Object : in out Graph) is
+   procedure Log_Graph (Object : in out Renderable_Graph) is
    begin
       for Data of Object.Framebuffers loop
          declare
@@ -1089,9 +1110,8 @@ package body Orka.Frame_Graphs is
    end Log_Graph;
 
    procedure Render
-     (Object  : in out Graph;
-      Context : in out Contexts.Context'Class;
-      Execute : access procedure (Pass : Render_Pass_Cursor))
+     (Object   : in out Renderable_Graph;
+      Context  : in out Contexts.Context'Class)
    is
       package Textures renames Orka.Rendering.Textures;
    begin
@@ -1151,17 +1171,14 @@ package body Orka.Frame_Graphs is
                   end if;
                end loop;
 
-               if Execute /= null then
-                  Execute (Render_Pass_Cursor (Data.Index));
-               end if;
-
                pragma Assert (Framebuffer.Default = Pass.Present);
 
                if Pass.Present then
                   case Object.Present_Mode is
                      when Use_Default =>
                         --  User-defined program will use default framebuffer to render to screen
-                        null;
+                        Pass.Program.Use_Program;
+                        Pass.Callback (Pass.Program);
                      when Blit_To_Default =>
                         declare
                            procedure Resolve_From_Pass
@@ -1181,7 +1198,11 @@ package body Orka.Frame_Graphs is
                         GL.Buffers.Set_Depth_Function (GL.Types.Always);
                         Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
                         GL.Buffers.Set_Depth_Function (GL.Types.Greater);
+                        --  FIXME Need to know depth func of previous state
                   end case;
+               else
+                  Pass.Program.Use_Program;
+                  Pass.Callback (Pass.Program);
                end if;
 
                --  Invalidate attachments that are transcient
@@ -1198,7 +1219,7 @@ package body Orka.Frame_Graphs is
    ----------------------------------------------------------------------
 
    procedure Write_Graph
-     (Object   : in out Graph;
+     (Object   : in out Renderable_Graph;
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String)
    is
