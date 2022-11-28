@@ -43,13 +43,16 @@ package body Orka.Frame_Graphs is
    function Trim_Image (Value : Integer) return String is
      (Orka.Strings.Trim (Integer'Image (Value)));
 
+   function Trim_Image (Value : Size) return String is
+     (Orka.Strings.Trim (Value'Image));
+
    function Trim_Image (Value : Render_Pass_Index) return String is
      (Trim_Image (Positive (Value)));
 
-   function Trim_Image (Value : Extent_3D) return String is
-     (Trim_Image (Value.Width) & Orka.Strings.Unicode (" × ") &
-            Trim_Image (Value.Height) & Orka.Strings.Unicode (" × ") &
-            Trim_Image (Value.Depth));
+   function Trim_Image (Value : Size_3D) return String is
+     (Trim_Image (Value (X)) & Orka.Strings.Unicode (" × ") &
+      Trim_Image (Value (Y)) & Orka.Strings.Unicode (" × ") &
+      Trim_Image (Value (Z)));
 
    function Trim_Image (Value : GL.Buffers.Buffer_Bits) return String is
       package SU renames Ada.Strings.Unbounded;
@@ -73,7 +76,7 @@ package body Orka.Frame_Graphs is
       Log (Debug, "    " & (+Value.Name) & ":");
       Log (Debug, "      kind:     " & Value.Kind'Image);
       Log (Debug, "      format:   " & Value.Format'Image);
-      Log (Debug, "      extent:   " & Trim_Image (Value.Extent));
+      Log (Debug, "      size:     " & Trim_Image (Value.Size));
       Log (Debug, "      samples:  " & Trim_Image (Value.Samples));
       Log (Debug, "      version:  " & Trim_Image (Natural (Value.Version)));
    end Log_Resource;
@@ -228,9 +231,9 @@ package body Orka.Frame_Graphs is
               (Levels  => Size (Subject.Levels),
                Samples => Size (Subject.Samples),
                Format  => Subject.Format,
-               Width   => Size (Subject.Extent.Width),
-               Height  => Size (Subject.Extent.Height),
-               Depth   => Size (Subject.Extent.Depth));
+               Width   => Size (Subject.Size (X)),
+               Height  => Size (Subject.Size (Y)),
+               Depth   => Size (Subject.Size (Z)));
             Textures.Insert (+Subject.Name, Result);
             return Result;
          end;
@@ -241,7 +244,7 @@ package body Orka.Frame_Graphs is
    procedure Add_Input
      (Object   : Render_Pass;
       Subject  : Resource;
-      Read     : Read_Mode;
+      Mode     : Read_Mode;
       Binding  : Binding_Point;
       Handle   : out Handle_Type;
       Implicit : Boolean);
@@ -362,20 +365,20 @@ package body Orka.Frame_Graphs is
    procedure Add_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Write   : Write_Mode;
+      Mode    : Write_Mode;
       Binding : Binding_Point)
    is
       Handle : Handle_Type;
    begin
-      Object.Add_Output (Subject, Write, Binding, Handle, Implicit => True);
-      pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Mode = Write);
+      Object.Add_Output (Subject, Mode, Binding, Handle, Implicit => True);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Mode = Mode);
       pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Binding = Binding);
    end Add_Output;
 
    procedure Add_Input
      (Object   : Render_Pass;
       Subject  : Resource;
-      Read     : Read_Mode;
+      Mode     : Read_Mode;
       Binding  : Binding_Point;
       Handle   : out Handle_Type;
       Implicit : Boolean)
@@ -391,7 +394,7 @@ package body Orka.Frame_Graphs is
          raise Program_Error with "Cannot interleave Add_Input calls for different passes";
       end if;
 
-      if Implicit and Read = Framebuffer_Attachment then
+      if Implicit and Mode = Framebuffer_Attachment then
          if Attachment = Color then
             raise Program_Error with "Use Add_Output or Add_Input_Output for color resource";
          end if;
@@ -423,13 +426,13 @@ package body Orka.Frame_Graphs is
          --  Because a resource records only one input mode, verify this
          --  resource is read by multiple render passes using only one
          --  particular method
-         if Resource.Input_Mode /= Not_Used and Resource.Input_Mode /= Read then
+         if Resource.Input_Mode /= Not_Used and Resource.Input_Mode /= Mode then
             raise Constraint_Error with
               "Resource '" & Name (Resource) & "' must be read as " & Resource.Input_Mode'Image;
          end if;
 
          Resource.Read_Count    := Resource.Read_Count + 1;
-         Resource.Input_Mode    := Read;
+         Resource.Input_Mode    := Mode;
          Resource.Input_Binding := Binding;
       end;
 
@@ -447,25 +450,36 @@ package body Orka.Frame_Graphs is
    procedure Add_Input
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode;
+      Mode    : Read_Mode;
       Binding : Binding_Point)
    is
       Handle : Handle_Type;
    begin
-      Object.Add_Input (Subject, Read, Binding, Handle, Implicit => True);
-      pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Mode = Read);
+      Object.Add_Input (Subject, Mode, Binding, Handle, Implicit => True);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Mode = Mode);
       pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Binding = Binding);
    end Add_Input;
 
    function Add_Input_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode;
-      Write   : Write_Mode;
+      Mode    : Read_Write_Mode;
       Binding : Binding_Point) return Resource
    is
       Graph  : Orka.Frame_Graphs.Builder renames Object.Frame_Graph.all;
       Handle : Handle_Type;
+
+      Read : constant Read_Mode :=
+        (case Mode is
+           when Not_Used               => Not_Used,
+           when Framebuffer_Attachment => Framebuffer_Attachment,
+           when Image_Load_Store       => Image_Load);
+
+      Write : constant Write_Mode :=
+        (case Mode is
+           when Not_Used               => Not_Used,
+           when Framebuffer_Attachment => Framebuffer_Attachment,
+           when Image_Load_Store       => Image_Store);
 
       Next_Subject : Resource := Subject;
    begin
@@ -632,10 +646,6 @@ package body Orka.Frame_Graphs is
       function To_Attachment_Point (Value : Attachment_Point) return Point_Type is
         (Point_Type'Val (Point_Type'Pos (Point_Type'First) + Value));
 
-      package LE renames GL.Low_Level.Enums;
-
-      use type LE.Texture_Kind;
-
       Present_Pass : Render_Pass_Data renames Object.Graph.Passes (Object.Graph.Present_Pass);
       pragma Assert (Present_Pass.Read_Count = 1);
 
@@ -644,8 +654,7 @@ package body Orka.Frame_Graphs is
         := Object.Graph.Read_Handles (Present_Pass.Read_Offset);
       Present_Resource : Resource_Data renames Object.Graph.Resources (Present_Resource_Handle);
 
-      Default_Extent : constant Extent_3D :=
-        (Natural (Default.Width), Natural (Default.Height), 1);
+      Default_Size : constant Size_3D := (Default.Width, Default.Height, 1);
 
       Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
    begin
@@ -714,15 +723,15 @@ package body Orka.Frame_Graphs is
             end loop;
 
             if Attachments = 1 and not Has_Non_Color_Attachment
-              and Resource.Description.Kind = LE.Texture_2D
-              and Resource.Description.Extent = Default_Extent
+              and Resource.Description.Kind = Texture_2D
+              and Resource.Description.Size = Default_Size
               and Resource.Description.Samples = Natural (Default.Samples)
             then
                --  Mode 1: Use Default as the framebuffer of Last_Render_Pass
                Object.Present_Mode := Use_Default;
 
                Log (Debug, "Presenting " & Name (Resource) & " using default framebuffer");
-            elsif Resource.Description.Kind in LE.Texture_2D | LE.Texture_2D_Multisample then
+            elsif Resource.Description.Kind in Texture_2D | Texture_2D_Multisample then
                --  Mode 2
                Object.Present_Mode := Blit_To_Default;
 
@@ -739,15 +748,15 @@ package body Orka.Frame_Graphs is
                   end if;
                end if;
 
-               if Resource.Description.Kind /= LE.Texture_2D then
+               if Resource.Description.Kind /= Texture_2D then
                   Log (Warning, "  kind: " & Resource.Description.Kind'Image &
-                    " (/= " & LE.Texture_2D'Image & ")");
+                    " (/= " & Texture_2D'Image & ")");
                end if;
 
-               if Resource.Description.Extent /= Default_Extent then
+               if Resource.Description.Size /= Default_Size then
                   Log (Warning, "  scaling: from " &
-                    Trim_Image (Resource.Description.Extent) & " to " &
-                    Trim_Image (Default_Extent));
+                    Trim_Image (Resource.Description.Size) & " to " &
+                    Trim_Image (Default_Size));
                end if;
 
                if Resource.Description.Samples /= Natural (Default.Samples) then
@@ -762,7 +771,8 @@ package body Orka.Frame_Graphs is
       for Index in 1 .. Object.Graph.Passes.Length loop
          declare
             Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
-            Width, Height, Samples_Attachments : Natural := Natural'First;
+            Width, Height       : Size    := Size'First;
+            Samples_Attachments : Natural := Natural'First;
 
             Clear_Mask      : GL.Buffers.Buffer_Bits := (others => False);
             Invalidate_Mask : GL.Buffers.Buffer_Bits := (others => False);
@@ -856,20 +866,20 @@ package body Orka.Frame_Graphs is
 
                   --  Compute maximum width and height over all the output
                   --  resources (which may be attached to the framebuffer).
-                  --  Ideally all attachments have the same extent, but the
+                  --  Ideally all attachments have the same size, but the
                   --  GL spec allows for them to be different. Furthermore,
                   --  a framebuffer may have zero attachments, so iterate over
                   --  all resources irrespective of their write mode.
-                  Width  := Natural'Max (Width, Resource.Data.Extent.Width);
-                  Height := Natural'Max (Height, Resource.Data.Extent.Height);
+                  Width  := Size'Max (Width, Resource.Data.Size (X));
+                  Height := Size'Max (Height, Resource.Data.Size (Y));
                end loop;
 
                if Pass.Write_Count = 0 then
                   pragma Assert (Pass.Side_Effect);
 
                   --  Use width and height from default framebuffer
-                  Width  := Natural (Default.Width);
-                  Height := Natural (Default.Height);
+                  Width  := Size (Default.Width);
+                  Height := Size (Default.Height);
                else
                   pragma Assert (Width > 0 and Height > 0);
                end if;
@@ -970,7 +980,7 @@ package body Orka.Frame_Graphs is
                            for Resource of Object.Input_Resources (Pass) loop
                               if Resource.Mode = Framebuffer_Attachment then
                                  --  TODO Support attaching layer of resource
-                                 --       using value in 1 .. Resource.Data.Extent.Depth
+                                 --       using value in 1 .. Resource.Data.Size (Z)
                                  if Get_Attachment_Format (Resource.Data.Format) /= Color then
                                     Framebuffer.Attach (Get_Texture (Resource.Data));
                                  else

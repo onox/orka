@@ -39,6 +39,8 @@ package Orka is
 
    subtype Size is Integer_32 range 0 .. Integer_32'Last;
 
+   type Size_3D is array (Index_3D) of Size;
+
    type Integer_32_Array is array (Size range <>) of aliased Integer_32 with Convention => C;
 
    ----------------------------------------------------------------------------

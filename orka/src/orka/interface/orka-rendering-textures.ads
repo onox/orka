@@ -14,6 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with GL.Low_Level.Enums;
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
@@ -21,6 +22,9 @@ with GL.Pixels;
 package Orka.Rendering.Textures is
    pragma Preelaborate;
 
+   package LE renames GL.Low_Level.Enums;
+
+   use all type LE.Texture_Kind;
    use all type GL.Objects.Textures.Dimension_Count;
 
    type Indexed_Texture_Target is (Texture, Image);
@@ -53,5 +57,9 @@ package Orka.Rendering.Textures is
      (Texture : GL.Objects.Textures.Texture;
       Level   : GL.Objects.Textures.Mipmap_Level := 0) return String;
    --  Return a description of the texture
+
+   function Has_Layers (Kind : LE.Texture_Kind) return Boolean is
+     (Kind in Texture_1D_Array | Texture_2D_Array |
+              Texture_2D_Multisample_Array | Texture_Cube_Map_Array);
 
 end Orka.Rendering.Textures;

@@ -16,12 +16,12 @@
 
 with Ada.Strings.Bounded;
 
-with GL.Low_Level.Enums;
 with GL.Pixels;
 
 with Orka.Contexts;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.States;
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 
 private with Ada.Containers.Indefinite_Holders;
@@ -39,25 +39,32 @@ package Orka.Frame_Graphs is
    package Name_Strings is new Ada.Strings.Bounded.Generic_Bounded_Length
      (Max => Maximum_Name_Length);
 
+   function "+" (Value : String) return Name_Strings.Bounded_String;
+   function "+" (Value : Name_Strings.Bounded_String) return String;
+
+   use all type Rendering.Textures.LE.Texture_Kind;
+
+   function Has_Layers (Kind : Rendering.Textures.LE.Texture_Kind) return Boolean
+     renames Rendering.Textures.Has_Layers;
+
+   ----------------------------------------------------------------------
+
+   type Face_Kind is range 0 .. 5;
+
    type Resource_Version is private;
 
-   type Extent_3D is record
-      Width, Height, Depth : Positive := 1;
-   end record;
-
    type Resource is record
-      Name       : Name_Strings.Bounded_String;
-      Kind       : GL.Low_Level.Enums.Texture_Kind;
-      Format     : GL.Pixels.Internal_Format;
-      Extent     : Extent_3D;
-      Levels     : Positive := 1;
-      Samples    : Natural  := 0;
-      Version    : Resource_Version;
-   end record;
+      Name    : Name_Strings.Bounded_String;
+      Kind    : Rendering.Textures.LE.Texture_Kind;
+      Format  : GL.Pixels.Internal_Format;
+      Size    : Size_3D  := (others => 1);
+      Levels  : Positive := 1;
+      Layers  : Positive := 1;
+      Samples : Natural  := 0;
+      Version : Resource_Version;
+   end record
+     with Dynamic_Predicate => (if not Has_Layers (Resource.Kind) then Resource.Layers = 1);
 
-   function "+" (Value : String) return Name_Strings.Bounded_String;
-
-   function "+" (Value : Name_Strings.Bounded_String) return String;
 
    ----------------------------------------------------------------------
 
@@ -65,11 +72,15 @@ package Orka.Frame_Graphs is
 
    type Write_Mode is (Not_Used, Framebuffer_Attachment, Image_Store);
 
+   type Read_Write_Mode is (Not_Used, Framebuffer_Attachment, Image_Load_Store);
+
    type Binding_Point is new Natural;
 
    subtype Attachment_Point is Binding_Point range 0 .. 7;
 
    ----------------------------------------------------------------------
+
+   use all type Rendering.Textures.Format_Kind;
 
    type Render_Pass (<>) is tagged limited private;
 
@@ -80,30 +91,29 @@ package Orka.Frame_Graphs is
    procedure Add_Input
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode;
+      Mode    : Read_Mode;
       Binding : Binding_Point)
-   with Pre => (if Read = Framebuffer_Attachment then Binding in Attachment_Point);
+   with Pre => (if Mode = Framebuffer_Attachment then
+                  Binding in Attachment_Point
+                    and Rendering.Textures.Get_Format_Kind (Subject.Format) /= Color);
    --  Add the given resource as an input to the render pass, so that it
-   --  can be read as a texture, an image texture, or attached to the
-   --  framebuffer
+   --  can be read as a texture, an image, or used as an attachment of a framebuffer
 
    procedure Add_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Write   : Write_Mode;
+      Mode    : Write_Mode;
       Binding : Binding_Point)
-   with Pre => (if Write = Framebuffer_Attachment then Binding in Attachment_Point);
+   with Pre => (if Mode = Framebuffer_Attachment then Binding in Attachment_Point);
    --  Add the given resource as an output to the render pass, so that it
-   --  can be written as an image texture or attached to the framebuffer
+   --  can be written as an image or used as an attachment of a framebuffer
 
    function Add_Input_Output
      (Object  : Render_Pass;
       Subject : Resource;
-      Read    : Read_Mode;
-      Write   : Write_Mode;
+      Mode    : Read_Write_Mode;
       Binding : Binding_Point) return Resource
-   with Pre => not (Read = Framebuffer_Attachment xor Write = Framebuffer_Attachment)
-                 and (if Write = Framebuffer_Attachment then Binding in Attachment_Point);
+   with Pre => (if Mode = Framebuffer_Attachment then Binding in Attachment_Point);
    --  Add the given resource as an input and an output to the render pass,
    --  indicating that the resource will be modified by the pass. The modified
    --  resource is returned and may be used as an input for other render passes.
