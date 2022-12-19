@@ -144,6 +144,9 @@ package GL.Objects.Textures is
      with Pre  => Object.Allocated,
           Post => Mipmap_Levels'Result >= 1;
 
+   --  TODO Add procedure Set_Texture_Mode (Mode : Depth (default) | Stencil)
+   --  (for Depth_Stencil textures)
+
    -----------------------------------------------------------------------------
 
    function Internal_Format (Object : Texture) return Pixels.Internal_Format

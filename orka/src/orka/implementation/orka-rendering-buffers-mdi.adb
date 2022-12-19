@@ -115,6 +115,7 @@ package body Orka.Rendering.Buffers.MDI is
       end Write_Vertices;
 
       procedure Write_Indices (Index_Offset, Index_Count : Natural) is
+         pragma Assert (Indices'Length = Index_Count);
       begin
          Object.Indices.Write_Data (Indices.all, Offset => Index_Offset);
       end Write_Indices;

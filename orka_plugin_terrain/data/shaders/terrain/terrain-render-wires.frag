@@ -40,6 +40,9 @@ void main()
         const float wireScale = 1.0; // scale of the wire in pixel
         vec4 wireColor = vec4(0.0, 0.75, 1.0, 1.0);
         vec3 distanceSquared = i_Distance * i_Distance;
+        // TODO or vec3 distanceSquared = gl_BaryCoordEXT; when using
+        // GL_EXT_fragment_shader_barycentric
+        // See https://wunkolo.github.io/post/2022/07/gl_ext_fragment_shader_barycentric-wireframe
         float nearestDistance = min(min(distanceSquared.x, distanceSquared.y), distanceSquared.z);
         float blendFactor = exp2(-nearestDistance / wireScale);
 
