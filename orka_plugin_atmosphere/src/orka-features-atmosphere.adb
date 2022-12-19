@@ -73,6 +73,7 @@ package body Orka.Features.Atmosphere is
 
       use all type GL.Objects.Samplers.Wrapping_Mode;
       use all type GL.Objects.Samplers.Minifying_Function;
+      use all type GL.Objects.Samplers.Magnifying_Function;
    begin
       Result.Set_X_Wrapping (Clamp_To_Edge);
       Result.Set_Y_Wrapping (Clamp_To_Edge);
