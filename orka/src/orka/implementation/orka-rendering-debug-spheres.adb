@@ -80,8 +80,10 @@ package body Orka.Rendering.Debug.Spheres is
       Original_Polygon_Mode : constant GL.Rasterization.Polygon_Mode_Type
         := GL.Rasterization.Polygon_Mode;
 
-      Original_Blend_Func  : constant GL.Blending.Blend_Factors   := GL.Blending.Blend_Func;
-      Original_Blend_Eq    : constant GL.Blending.Blend_Equations := GL.Blending.Blend_Equation;
+      --  FIXME Most getters for GL state have been removed. Rewrite this whole procedure
+      --  to return a frame graph that the user can insert into a bigger graph
+      Original_Blend_Func  : constant GL.Blending.Blend_Factors   := (One, Zero, One, Zero);
+      Original_Blend_Eq    : constant GL.Blending.Blend_Equations := (Func_Add, Func_Add);
       Original_Blend_State : constant Boolean := GL.Toggles.Is_Enabled (GL.Toggles.Blend, 0);
 
       Vertex_Count : constant Positive :=
