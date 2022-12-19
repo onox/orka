@@ -1,5 +1,5 @@
 ALR_CLEAN = alr clean -- -p
-ALR_BUILD = alr build --validation
+ALR_BUILD = alr build --validation --profiles="*=validation"
 
 .PHONY: build examples tools tests coverage docs clean
 
