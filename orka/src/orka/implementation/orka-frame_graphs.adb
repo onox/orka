@@ -1300,8 +1300,8 @@ package body Orka.Frame_Graphs is
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
-                  Append ("source", Image (Positive (Handle) - 1), True);
-                  Append ("target", Image (Positive (Index  - 1)));
+                  Append ("source", Image (Natural (Handle) - 1), True);
+                  Append ("target", Image (Natural (Index  - 1)));
                   SU.Append (Result, '}');
                end;
             end loop;
@@ -1324,8 +1324,8 @@ package body Orka.Frame_Graphs is
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
-                  Append ("source", Image (Positive (Index  - 1)), True);
-                  Append ("target", Image (Positive (Handle) - 1));
+                  Append ("source", Image (Natural (Index  - 1)), True);
+                  Append ("target", Image (Natural (Handle) - 1));
                   SU.Append (Result, '}');
                end;
             end loop;
