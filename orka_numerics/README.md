@@ -5,11 +5,12 @@
 
 This crate provides:
 
-- Runge-Kutta 4th order numerical integrators.
+- Runge-Kutta 4th order [numerical integrators][url-docs-integrators].
 
-- Sigma-point Kalman filters (UKF and SR-CDKF) for state and parameter estimation.
+- Sigma-point [Kalman filters][url-docs-kalman] (UKF and SR-CDKF) for
+  state and parameter estimation.
 
-- Tensor interface with the following features:
+- [Tensor][url-docs-tensors] interface with the following features:
 
   * Constant indexing using a number, range, or another (boolean) tensor
   * Matrix multiplication, power, inverse, transpose, outer product
@@ -25,12 +26,12 @@ This crate provides:
   * Statistics (operations and generating statistical distributions)
   * Logical operations on boolean tensors
 
-- Implementation of tensors using SIMD instructions provided by
-  the [orka_simd][url-simd-crate] crate.
+An implementation of tensors using SIMD instructions on the CPU is provided by
+the [orka_tensors_cpu][url-tensors-cpu-crate] crate.
 
 ## License
 
 This crate is distributed under the terms of the [Apache License 2.0][url-apache].
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
-  [url-simd-crate]: https://github.com/onox/orka/tree/master/orka_simd
+  [url-tensors-cpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_cpu
