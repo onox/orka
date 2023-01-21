@@ -693,6 +693,8 @@ package Orka.Numerics.Tensors is
    function X return Expression is abstract;
    function Y return Expression is abstract;
 
+   function Number (Value : Element) return Expression is abstract;
+
    --  TODO Add function Cumulative
 
    function Reduce_Associative

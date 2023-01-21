@@ -18,7 +18,89 @@ with Ada.Characters.Latin_1;
 with Ada.Strings.Unbounded;
 with Ada.Unchecked_Conversion;
 
+with Orka.Numerics.Tensors.Operations;
+
 package body Orka.Numerics.Tensors.SIMD_CPU is
+
+   procedure Swap_Rows (Ab : in out CPU_Tensor; I, J : Index_Type) is
+   begin
+      if I /= J then
+         declare
+            Row_I : constant CPU_Tensor := Ab (I);
+            Old_J : constant CPU_Tensor := Ab (J);
+         begin
+            Set (Ab, J, Row_I);
+            Set (Ab, I, Old_J);
+         end;
+      end if;
+   end Swap_Rows;
+
+   procedure Scale_Row (Ab : in out CPU_Tensor; I : Index_Type; Scale : Element) is
+      Row_I : constant CPU_Tensor := Ab (I);
+   begin
+      if Scale /= 1.0 then
+         Set (Ab, I, Scale * Row_I);
+      end if;
+   end Scale_Row;
+
+   procedure Replace_Row (Ab : in out CPU_Tensor; Scale : Element; I, J : Index_Type) is
+      Row_I : constant CPU_Tensor := Ab (I);
+      Row_J : constant CPU_Tensor := Ab (J);
+   begin
+      if Scale /= 0.0 then
+         Set (Ab, J, Row_J - Scale * Row_I);
+      end if;
+   end Replace_Row;
+
+   procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
+      Rows        : constant Natural := Ab.Shape (1);
+      Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
+   begin
+      --  Create zeros below the pivot position
+      for Row_Index in Index + 1 .. Rows loop
+         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
+      end loop;
+   end Forward_Substitute;
+
+   procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
+   begin
+      Scale_Row (Ab, Index, 1.0 / Ab ((Index, Pivot_Index)));
+
+      --  Create zeros above the pivot position
+      for Row_Index in 1 .. Index - 1 loop
+         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
+      end loop;
+   end Back_Substitute;
+
+   function Create_QR
+     (Q, R         : CPU_Tensor;
+      Determinancy : Matrix_Determinancy) return CPU_QR_Factorization
+   is (Q_Size       => Q.Size,
+       R_Size       => R.Size,
+       Q            => Q,
+       R            => R,
+       Determinancy => Determinancy);
+
+   procedure Make_Upper_Triangular (Object : in out CPU_Tensor; Offset : Integer := 0) is
+      Rows    : constant Natural := Object.Shape (1);
+      Columns : constant Natural := Object.Shape (2);
+   begin
+      if Offset >= -(Rows - 2) then
+         --  Make matrix upper triangular by zeroing out the elements in the
+         --  lower triangular part
+         for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
+            for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
+               Object.Set ((Row_Index, Column_Index), 0.0);
+            end loop;
+         end loop;
+      end if;
+   end Make_Upper_Triangular;
+
+   package Operations is new Orka.Numerics.Tensors.Operations
+     (CPU_Tensor, Make_Upper_Triangular, Scale_Row, Swap_Rows, Forward_Substitute, Back_Substitute,
+      CPU_Expression, CPU_QR_Factorization, Create_QR, Q, R);
+
+   ----------------------------------------------------------------------------
 
    function Convert is new Ada.Unchecked_Conversion (Vector_Type, Integer_Vector_Type);
    function Convert is new Ada.Unchecked_Conversion (Integer_Vector_Type, Vector_Type);
@@ -297,11 +379,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function Kind (Object : CPU_Tensor) return Data_Type is (Object.Kind);
 
-   overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Element is
-     (Object.Get ((1 => Index)));
+   overriding
+   function Get (Object : CPU_Tensor; Index : Index_Type) return Element renames Operations.Get;
 
-   overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Boolean is
-     (Object.Get ((1 => Index)));
+   overriding
+   function Get (Object : CPU_Tensor; Index : Index_Type) return Boolean renames Operations.Get;
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
       Count : constant Positive := Object.Columns;
@@ -331,28 +413,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding procedure Set
      (Object : in out CPU_Tensor;
       Index  : Index_Type;
-      Value  : CPU_Tensor) is
-   begin
-      case Object.Dimensions is
-         when 1 =>
-            raise Program_Error;
-         when 2 =>
-            Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
-      end case;
-   end Set;
+      Value  : CPU_Tensor) renames Operations.Set;
 
    overriding procedure Set
      (Object : in out CPU_Tensor;
       Index  : Range_Type;
-      Value  : CPU_Tensor) is
-   begin
-      case Object.Dimensions is
-         when 1 =>
-            Object.Set (Tensor_Range'(1 => Index), Value);
-         when 2 =>
-            Object.Set (Tensor_Range'(Index, (1, Object.Shape (2))), Value);
-      end case;
-   end Set;
+      Value  : CPU_Tensor) renames Operations.Set;
 
    overriding
    procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Value : CPU_Tensor) is
@@ -428,15 +494,15 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return To_Index (Index, Object.Shape);
    end Flattened_Index;
 
-   overriding procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Value : Element) is
-   begin
-      Object.Set ((1 => Index), Value);
-   end Set;
+   overriding procedure Set
+     (Object : in out CPU_Tensor;
+      Index  : Index_Type;
+      Value  : Element) renames Operations.Set;
 
-   overriding procedure Set (Object : in out CPU_Tensor; Index : Index_Type; Value : Boolean) is
-   begin
-      Object.Set ((1 => Index), Value);
-   end Set;
+   overriding procedure Set
+     (Object : in out CPU_Tensor;
+      Index  : Index_Type;
+      Value  : Boolean) renames Operations.Set;
 
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Element) is
       Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
@@ -476,10 +542,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Ones_Zeros (Data_Offset (Index_Flattened)) = 1;
    end Get;
 
-   overriding function Get (Object : CPU_Tensor; Index : Range_Type) return CPU_Tensor is
-     (case Object.Dimensions is
-        when 1 => Object.Get (Tensor_Range'(1 => Index)),
-        when 2 => Object.Get (Tensor_Range'(Index, (1, Object.Columns))));
+   overriding
+   function Get (Object : CPU_Tensor; Index : Range_Type) return CPU_Tensor renames Operations.Get;
 
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Range) return CPU_Tensor is
       Rows : constant Natural := Object.Rows;
@@ -741,17 +805,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Fill;
 
-   overriding
-   function Zeros (Shape : Tensor_Shape) return CPU_Tensor is (Fill (Shape, 0.0));
+   overriding function Zeros (Shape : Tensor_Shape) return CPU_Tensor renames Operations.Zeros;
+   overriding function Zeros (Elements : Positive)  return CPU_Tensor renames Operations.Zeros;
 
-   overriding
-   function Zeros (Elements : Positive) return CPU_Tensor is (Zeros ((1 => Elements)));
-
-   overriding
-   function Ones (Shape : Tensor_Shape) return CPU_Tensor is (Fill (Shape, 1.0));
-
-   overriding
-   function Ones (Elements : Positive) return CPU_Tensor is (Ones ((1 => Elements)));
+   overriding function Ones (Shape : Tensor_Shape) return CPU_Tensor renames Operations.Ones;
+   overriding function Ones (Elements : Positive)  return CPU_Tensor renames Operations.Ones;
 
    overriding
    function To_Tensor (Elements : Element_Array; Shape : Tensor_Shape) return CPU_Tensor is
@@ -767,8 +825,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end To_Tensor;
 
    overriding
-   function To_Tensor (Elements : Element_Array) return CPU_Tensor is
-     (To_Tensor (Elements, (1 => Elements'Length)));
+   function To_Tensor (Elements : Element_Array) return CPU_Tensor renames Operations.To_Tensor;
 
    overriding
    function To_Boolean_Tensor
@@ -785,8 +842,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end To_Boolean_Tensor;
 
    overriding
-   function To_Boolean_Tensor (Booleans : Boolean_Array) return CPU_Tensor is
-     (To_Boolean_Tensor (Booleans, (1 => Booleans'Length)));
+   function To_Boolean_Tensor (Booleans : Boolean_Array) return CPU_Tensor
+     renames Operations.To_Boolean_Tensor;
 
    overriding
    function Linear_Space
@@ -848,27 +905,18 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Start, Stop : Element;
       Count       : Positive;
       Interval    : Interval_Kind := Closed;
-      Base        : Element := 10.0) return CPU_Tensor
-   is (Log_Space (Start    => EF.Log (Start) / EF.Log (Base),
-                  Stop     => EF.Log (Stop) / EF.Log (Base),
-                  Count    => Count,
-                  Interval => Interval,
-                  Base     => Base));
+      Base        : Element := 10.0) return CPU_Tensor renames Operations.Geometric_Space;
 
    overriding
-   function Array_Range (Start, Stop : Element; Step : Element := 1.0) return CPU_Tensor is
-     (Linear_Space (Start => Start,
-                    Stop  => Stop,
-                    Count => Positive'Max (1, Integer (Element'Ceiling ((Stop - Start) / Step))),
-                    Interval => Half_Open));
+   function Array_Range (Start, Stop : Element; Step : Element := 1.0) return CPU_Tensor
+     renames Operations.Array_Range;
 
    overriding
-   function Array_Range (Stop : Element) return CPU_Tensor is
-     (Array_Range (Start => 0.0, Stop => Stop));
+   function Array_Range (Stop : Element) return CPU_Tensor renames Operations.Array_Range;
 
    overriding
-   function Identity (Size : Positive; Offset : Integer := 0) return CPU_Tensor is
-     (Identity (Rows => Size, Columns => Size, Offset => Offset));
+   function Identity (Size : Positive; Offset : Integer := 0) return CPU_Tensor
+     renames Operations.Identity;
 
    overriding
    function Identity (Rows, Columns : Positive; Offset : Integer := 0) return CPU_Tensor is
@@ -903,28 +951,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Identity;
 
-   procedure Make_Upper_Triangular (Object : in out CPU_Tensor; Offset : Integer := 0) is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
-   begin
-      if Offset >= -(Rows - 2) then
-         --  Make matrix upper triangular by zeroing out the elements in the
-         --  lower triangular part
-         for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
-            for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
-               Object.Set ((Row_Index, Column_Index), 0.0);
-            end loop;
-         end loop;
-      end if;
-   end Make_Upper_Triangular;
-
    overriding
-   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
-   begin
-      return Result : CPU_Tensor := Object do
-         Make_Upper_Triangular (Result, Offset => Offset);
-      end return;
-   end Upper_Triangular;
+   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor
+     renames Operations.Upper_Triangular;
 
    overriding
    function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
@@ -997,8 +1026,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Diagonal;
 
    overriding
-   function Trace (Object : CPU_Tensor; Offset : Integer := 0) return Element is
-     (Object.Main_Diagonal (Offset => Offset).Sum);
+   function Trace (Object : CPU_Tensor; Offset : Integer := 0) return Element
+     renames Operations.Trace;
 
    overriding
    function Reshape (Object : CPU_Tensor; Shape : Tensor_Shape) return CPU_Tensor is
@@ -1021,7 +1050,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Reshape;
 
    overriding
-   function Flatten (Object : CPU_Tensor) return CPU_Tensor is (Object.Reshape (Object.Elements));
+   function Flatten (Object : CPU_Tensor) return CPU_Tensor renames Operations.Flatten;
 
    overriding
    function Concatenate
@@ -1074,7 +1103,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Concatenate;
 
    overriding
-   function "&" (Left, Right : CPU_Tensor) return CPU_Tensor is (Concatenate (Left, Right, 1));
+   function "&" (Left, Right : CPU_Tensor) return CPU_Tensor renames Operations."&";
 
    ----------------------------------------------------------------------------
    --                            Matrix operations                           --
@@ -1216,44 +1245,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Element (Result);
    end "*";
 
-   overriding function "**" (Left : CPU_Tensor; Right : Integer) return CPU_Tensor is
-      function Matrix_Power (Left : CPU_Tensor; Right : Natural) return CPU_Tensor is
-         Result : CPU_Tensor := Identity (Size => Left.Shape (1));
-
-         Log_2 : constant Element := EF.Log (2.0);
-
-         Remaining : Natural := Right;
-      begin
-         while Remaining > 0 loop
-            declare
-               Doubling : CPU_Tensor := Left;
-               Count : constant Integer :=
-                 Integer (Element'Floor (EF.Log (Element (Remaining)) / Log_2));
-            begin
-               for I in 1 .. Count loop
-                  Doubling := Doubling * Doubling;
-               end loop;
-               Result    := Result * Doubling;
-               Remaining := Remaining - 2 ** Count;
-            end;
-         end loop;
-
-         return Result;
-      end Matrix_Power;
-   begin
-      case Right is
-         when 2 .. Integer'Last =>
-            return Matrix_Power (Left, Right);
-         when 1 =>
-            return Left;
-         when 0 =>
-            return Identity (Size => Left.Shape (1));
-         when -1 =>
-            return Left.Inverse;
-         when Integer'First .. -2 =>
-            return Matrix_Power (Left.Inverse, abs Right);
-      end case;
-   end "**";
+   overriding function "**" (Left : CPU_Tensor; Right : Integer) return CPU_Tensor
+     renames Operations."**";
 
    overriding
    function Outer (Left, Right : CPU_Tensor) return CPU_Tensor is
@@ -1286,17 +1279,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Outer;
 
    overriding
-   function Inverse (Object : CPU_Tensor) return CPU_Tensor is
-      Size : constant Natural := Object.Shape (1);
-
-      Solution : Solution_Kind := None;
-   begin
-      return Result : constant CPU_Tensor := Solve (Object, Identity (Size), Solution) do
-         if Solution /= Unique then
-            raise Singular_Matrix;
-         end if;
-      end return;
-   end Inverse;
+   function Inverse (Object : CPU_Tensor) return CPU_Tensor renames Operations.Inverse;
 
    overriding
    function Transpose (Object : CPU_Tensor) return CPU_Tensor is
@@ -1329,570 +1312,71 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
-   procedure Swap_Rows (Ab : in out CPU_Tensor; I, J : Index_Type) is
-   begin
-      if I /= J then
-         declare
-            Row_I : constant CPU_Tensor := Ab (I);
-            Old_J : constant CPU_Tensor := Ab (J);
-         begin
-            Set (Ab, J, Row_I);
-            Set (Ab, I, Old_J);
-         end;
-      end if;
-   end Swap_Rows;
-
-   procedure Scale_Row (Ab : in out CPU_Tensor; I : Index_Type; Scale : Element) is
-      Row_I : constant CPU_Tensor := Ab (I);
-   begin
-      if Scale /= 1.0 then
-         Set (Ab, I, Scale * Row_I);
-      end if;
-   end Scale_Row;
-
-   procedure Replace_Row (Ab : in out CPU_Tensor; Scale : Element; I, J : Index_Type) is
-      Row_I : constant CPU_Tensor := Ab (I);
-      Row_J : constant CPU_Tensor := Ab (J);
-   begin
-      if Scale /= 0.0 then
-         Set (Ab, J, Row_J - Scale * Row_I);
-      end if;
-   end Replace_Row;
-
-   procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-      Rows        : constant Natural := Ab.Shape (1);
-      Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
-   begin
-      --  Create zeros below the pivot position
-      for Row_Index in Index + 1 .. Rows loop
-         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
-      end loop;
-   end Forward_Substitute;
-
-   procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-   begin
-      Scale_Row (Ab, Index, 1.0 / Ab ((Index, Pivot_Index)));
-
-      --  Create zeros above the pivot position
-      for Row_Index in 1 .. Index - 1 loop
-         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
-      end loop;
-   end Back_Substitute;
-
-   ----------------------------------------------------------------------------
-
-   function Matrix_Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is
-      Ab : CPU_Tensor := Concatenate (A, B, Dimension => 2);
-
-      Rows    : constant Natural := A.Shape (1);
-      Columns : constant Natural := A.Shape (2);
-
-      Columns_Ab : constant Natural := Ab.Shape (2);
-
-      function Find_Largest_Pivot (Row_Index, Column_Index : Index_Type) return Index_Type is
-         Pivot_Value : Element    := abs Ab ((Row_Index, Column_Index));
-         Pivot_Index : Index_Type := Row_Index;
-      begin
-         for Index in Row_Index .. Rows loop
-            declare
-               Value : constant Element := abs Ab ((Index, Column_Index));
-            begin
-               if Value > Pivot_Value then
-                  Pivot_Value := Value;
-                  Pivot_Index := Index;
-               end if;
-            end;
-         end loop;
-
-         return Pivot_Index;
-      end Find_Largest_Pivot;
-
-      Pivots : array (0 .. Rows) of Natural := (others => 0);
-   begin
-      --  Forward phase: row reduce augmented matrix to echelon form
-
-      --  Iterate over the columns and rows and find the row with the
-      --  largest absolute pivot
-      for Index in 1 .. Rows loop
-         --  The pivot of the previous row is in the column to the left
-         Pivots (Index) := Pivots (Index - 1) + 1;
-         pragma Assert (Pivots (Index) <= Columns);
-
-         declare
-            Pivot_Index : Index_Type renames Pivots (Index);
-            Row_Index   : Positive := Find_Largest_Pivot (Index, Pivot_Index);
-         begin
-            while Pivot_Index < Columns and then Ab ((Row_Index, Pivot_Index)) = 0.0 loop
-               Pivot_Index := Pivot_Index + 1;
-               Row_Index   := Find_Largest_Pivot (Index, Pivot_Index);
-            end loop;
-
-            if Ab ((Row_Index, Pivot_Index)) = 0.0 then
-               Pivot_Index := 0;
-               exit;
-            end if;
-
-            Swap_Rows (Ab, Index, Row_Index);
-
-            Forward_Substitute (Ab, Index, Pivot_Index);
-
-            --  Current pivot position is in the last column, all rows below it must be zero
-            exit when Pivot_Index = Columns;
-         end;
-      end loop;
-
-      --  Backward phase: row reduce augmented matrix to reduced echelon form
-
-      for Index in reverse 1 .. Rows loop
-         declare
-            Pivot_Index : Index_Type renames Pivots (Index);
-         begin
-            if Pivot_Index > 0 then
-               Back_Substitute (Ab, Index, Pivot_Index);
-            else
-               --  Row contains only zeros; no pivot
-               null;
-            end if;
-         end;
-      end loop;
-
-      if (for some I in 1 .. Rows => Pivots (I) = 0 and Any_True (CPU_Tensor'(B (I) /= 0.0))) then
-         Solution := None;
-      elsif Columns > Rows or else (for some I in 1 .. Columns => Pivots (I) /= I) then
-         Solution := Infinite;
-      else
-         Solution := Unique;
-      end if;
-
-      return Ab (Tensor_Range'((1, Rows), (Columns + 1, Columns_Ab)));
-   end Matrix_Solve;
+   overriding
+   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor
+     renames Operations.Solve;
 
    overriding
-   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor is
-   begin
-      case B.Dimensions is
-         when 1 =>
-            return Matrix_Solve (A, B.Reshape ((B.Elements, 1)), Solution).Flatten;
-         when 2 =>
-            return Matrix_Solve (A, B, Solution);
-      end case;
-   end Solve;
-
-   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor
-     with Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
+   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor
+     renames Operations.Solve;
 
    overriding
-   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor is
-      Determinancy : constant Matrix_Determinancy :=
-        (case Form is
-           when Upper => Overdetermined,
-           when Lower => Underdetermined);
-   begin
-      case B.Dimensions is
-         when 1 =>
-            return QR_Solve (A, B.Reshape ((B.Elements, 1)), Determinancy).Flatten;
-         when 2 =>
-            return QR_Solve (A, B, Determinancy);
-      end case;
-   end Solve;
+   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor
+     renames Operations.Divide_By;
 
    overriding
-   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor is
-      QR_A : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (A));
-   begin
-      --  Let A = QR:
-      --              x * (Q * R) = B
-      --  Multiply sides with inverses of QR and B:
-      --                B^-1 * x  = R^-1 * Q^T
-      --           R * (B^-1 * x) = Q^T
-      --
-      --  Solve R * y = Q^T for y (= B^-1 * x) and then multiply the result with B to get x
-
-      return B * Solve (QR_A.R, QR_A.Q.Transpose, Upper);
-   end Divide_By;
+   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor
+     renames Operations.Divide_By;
 
    overriding
-   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor is
-     (B * Solve (A, Identity (Size => A.Rows), Form));
-
-   function Householder_Matrix
-     (R, I  : CPU_Tensor;
-      Index : Index_Type;
-      Size  : Natural) return CPU_Tensor
-   is
-      U : CPU_Tensor :=
-        R (Tensor_Range'((Index, Size), (Index, Index))).Reshape (Size - Index + 1);
-      U1 : constant Element := U (1);
-
-      --  Alpha must have the opposite sign of R ((Index, Index)) (or U (1))
-      Alpha : constant Element := -Element'Copy_Sign (1.0, U1) * U.Norm;
-   begin
-      U.Set (Tensor_Index'(1 => 1), U1 - Alpha);
-
-      declare
-         --  V = Normalize (X - Alpha * E) where X is column vector R (Index)
-         --        and X (1 .. Index - 1) is set to 0.0
-         --        and Alpha is X.Norm with opposite sign of X (Index)
-         --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
-         V : constant CPU_Tensor := Zeros ((1 => Index - 1)) & U.Normalize;
-      begin
-         return I - 2.0 * Outer (V, V);
-      end;
-   end Householder_Matrix;
+   function QR (Object : CPU_Tensor) return CPU_Tensor
+     renames Operations.QR;
 
    overriding
-   function QR (Object : CPU_Tensor) return CPU_Tensor is
-      Rows    : constant Natural := Object.Rows;
-      Columns : constant Natural := Object.Columns;
-
-      K : constant Natural := Natural'Min (Rows, Columns);
-
-      Size : Natural renames Rows;
-      I : constant CPU_Tensor := Identity (Size => Size);
-
-      R : CPU_Tensor := Object;
-   begin
-      --  QR decomposition using householder reflections
-
-      for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
-         --  Compute householder matrix using column R (Index)
-         R := Householder_Matrix (R, I, Index, Size) * R;
-      end loop;
-
-      Make_Upper_Triangular (R);
-
-      return R (Tensor_Range'((1, K), (1, Columns)));
-   end QR;
-
-   function QR
-     (Object       : CPU_Tensor;
-      Determinancy : Matrix_Determinancy;
-      Mode         : QR_Mode) return QR_Factorization'Class
-   is
-      Rows    : constant Natural := Object.Rows;
-      Columns : constant Natural := Object.Columns;
-
-      Size : Natural renames Rows;
-      I : constant CPU_Tensor := Identity (Size => Size);
-
-      Q : CPU_Tensor := I;
-      R : CPU_Tensor := Object;
-   begin
-      --  QR decomposition using householder reflections
-
-      for Index in 1 .. Natural'Min (Rows - 1, Columns) loop
-         --  Compute householder matrix using column R (Index)
-         declare
-            Householder : constant CPU_Tensor := Householder_Matrix (R, I, Index, Size);
-         begin
-            Q := Q * Householder;
-            R := Householder * R;
-         end;
-      end loop;
-
-      Make_Upper_Triangular (R);
-
-      case Mode is
-         when Complete =>
-            return CPU_QR_Factorization'
-              (Q_Size       => Q.Size,
-               R_Size       => R.Size,
-               Q            => Q,
-               R            => R,
-               Determinancy => Determinancy);
-         when Reduced =>
-            declare
-               K : constant Natural := Natural'Min (Rows, Columns);
-
-               Q1 : constant CPU_Tensor := Q (Tensor_Range'((1, Rows), (1, K)));
-               R1 : constant CPU_Tensor := R (Tensor_Range'((1, K), (1, Columns)));
-            begin
-               return CPU_QR_Factorization'
-                 (Q_Size       => Q1.Size,
-                  R_Size       => R1.Size,
-                  Q            => Q1,
-                  R            => R1,
-                  Determinancy => Determinancy);
-            end;
-      end case;
-   end QR;
+   function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class
+     renames Operations.QR;
 
    overriding
-   function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class is
-     (QR (Object, Unknown, Mode));
+   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class
+     renames Operations.QR_For_Least_Squares;
 
    overriding
-   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
-   begin
-      if Rows >= Columns then
-         return QR (Object, Overdetermined, Reduced);
-      else
-         return QR (Object.Transpose, Underdetermined, Reduced);
-      end if;
-   end QR_For_Least_Squares;
-
-   function QR_Solve (R, Y : CPU_Tensor; Determinancy : Matrix_Determinancy) return CPU_Tensor is
-      Ry : CPU_Tensor := Concatenate (R, Y, Dimension => 2);
-
-      Columns : constant Natural := R.Shape (2);
-      Size    : constant Natural := Natural'Min (R.Shape (1), R.Shape (2));
-      --  Use the smallest dimension of R for the size of the reduced (square) version R1
-      --  without needing to extract it
-      --
-      --  R = [R1] (A is overdetermined) or R = [R1 0] (A is underdetermined)
-      --      [ 0]
-
-      Columns_Ry : constant Natural := Ry.Shape (2);
-   begin
-      case Determinancy is
-         when Overdetermined =>
-            --  Backward phase: row reduce augmented matrix of R * x = (Q^T * b = y) to
-            --  reduced echelon form by performing back-substitution on Ry
-            --  (since R is upper triangular no forward phase is needed)
-            for Index in reverse 1 .. Size loop
-               Back_Substitute (Ry, Index, Index);
-            end loop;
-         when Underdetermined =>
-            --  Forward phase: row reduce augmented matrix of R^T * y = b
-            --  to reduced echelon form by performing forward-substitution on Ry
-            --  (R is actually R^T) (reduced because R^T is lower triangular)
-            for Index in 1 .. Size loop
-               Scale_Row (Ry, Index, 1.0 / Ry ((Index, Index)));
-               Forward_Substitute (Ry, Index, Index);
-            end loop;
-         when Unknown => raise Program_Error;
-      end case;
-
-      return Ry (Tensor_Range'((1, Size), (Columns + 1, Columns_Ry)));
-   end QR_Solve;
+   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor
+     renames Operations.Least_Squares;
 
    overriding
-   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor is
-      QR : CPU_QR_Factorization renames CPU_QR_Factorization (Object);
-
-      --  The least-squares solution is computed differently based on
-      --  whether the QR decomposition was based on A or A^T:
-      --
-      --  Let A.Shape = (m, n), then:
-      --
-      --  if m >= n (overdetermined):
-      --    - Solve R * x = Q^T * b for x with back-substitution
-      --  if m < n (underdetermined):
-      --    - Assume QR was solved for A^T = Q * R
-      --    - Compute x = Q * y where R^T * y = b is solved for y with forward-substitution
-
-      D : constant Matrix_Determinancy := Object.Determinancy;
-   begin
-      case D is
-         when Overdetermined =>
-            declare
-               Y : constant CPU_Tensor := QR.Q.Transpose * B;
-            begin
-               case Y.Dimensions is
-                  when 1 =>
-                     return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1)), D).Flatten;
-                  when 2 =>
-                     return QR_Solve (QR.R, Y, D);
-               end case;
-            end;
-         when Underdetermined =>
-            case B.Dimensions is
-               when 1 =>
-                  return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
-               when 2 =>
-                  return QR.Q * QR_Solve (QR.R.Transpose, B, D);
-            end case;
-         when Unknown => raise Program_Error;
-      end case;
-   end Least_Squares;
+   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor
+     renames Operations.Least_Squares;
 
    overriding
-   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor is
-     (Least_Squares (QR_For_Least_Squares (A), B));
+   function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor
+     renames Operations.Constrained_Least_Squares;
 
    overriding
-   function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor is
-      AC : constant CPU_Tensor := Concatenate (A, C, Dimension => 1);
-
-      QR_AC : constant CPU_QR_Factorization := CPU_QR_Factorization (QR_For_Least_Squares (AC));
-
-      QR_AC_Q1_T : constant CPU_Tensor := QR_AC.Q (Range_Type'(1, A.Shape (1))).Transpose;
-      QR_AC_Q2   : constant CPU_Tensor := QR_AC.Q (Range_Type'(A.Shape (1) + 1, AC.Shape (1)));
-
-      QR_Q2 : constant CPU_QR_Factorization :=
-        CPU_QR_Factorization (QR_For_Least_Squares (QR_AC_Q2));
-      pragma Assert (QR_Q2.Determinancy = Underdetermined);
-
-      RQ2_IT_D : constant CPU_Tensor :=
-        (case D.Dimensions is
-            when 1 =>
-               QR_Solve (QR_Q2.R.Transpose, D.Reshape ((D.Elements, 1)), Underdetermined),
-            when 2 =>
-               QR_Solve (QR_Q2.R.Transpose, D, Underdetermined));
-
-      B_Matrix : constant CPU_Tensor :=
-        (case B.Dimensions is
-            when 1 => B.Reshape ((B.Elements, 1)),
-            when 2 => B);
-
-      Rw : constant CPU_Tensor :=
-        CPU_Tensor'(CPU_Tensor'(2.0 * QR_Q2.Q.Transpose * QR_AC_Q1_T) * B_Matrix) - 2.0 * RQ2_IT_D;
-
-      W : constant CPU_Tensor := QR_Solve (QR_Q2.R, Rw, Overdetermined);
-
-      Rx : constant CPU_Tensor :=
-        CPU_Tensor'(QR_AC_Q1_T * B_Matrix) - CPU_Tensor'(0.5 * QR_AC_Q2.Transpose * W);
-
-      Result : constant CPU_Tensor := QR_Solve (QR_AC.R, Rx, Overdetermined);
-   begin
-      return (if B.Dimensions = 1 then Result.Flatten else Result);
-   end Constrained_Least_Squares;
-
-   function Cholesky_Lower (Object : CPU_Tensor) return CPU_Tensor is
-      Rows  : constant Natural      := Object.Rows;
-      Shape : constant Tensor_Shape := (1 .. 2 => Rows);
-
-      Empty : constant CPU_Tensor := Zeros ((1 => 0));
-   begin
-      return Result : CPU_Tensor := Zeros (Shape) do
-         for J in 1 .. Rows loop
-            declare
-               Row_J_Before_J : constant CPU_Tensor :=
-                  (if J = 1 then Empty else Result (Tensor_Range'((J, J), (1, J - 1))));
-
-               Ljj_Squared : constant Element :=
-                 Object ((J, J)) - Power (Row_J_Before_J, 2).Sum;
-            begin
-               --  If = 0.0 then matrix is positive semi-definite and singular
-               --  If < 0.0 then matrix is negative semi-definite or indefinite
-               if Ljj_Squared <= 0.0 then
-                  raise Not_Positive_Definite_Matrix with
-                    Ljj_Squared'Image & " at row " & J'Image;
-               end if;
-
-               declare
-                  Ljj : constant Element := EF.Sqrt (Ljj_Squared);
-               begin
-                  --  Compute the jth value on the diagonal
-                  Result.Set ((J, J), Ljj);
-
-                  --  Compute the values below the jth value on the diagonal
-                  for I in J + 1 .. Rows loop
-                     declare
-                        Row_I_Before_J : constant CPU_Tensor :=
-                          (if J = 1 then Empty else Result (Tensor_Range'((I, I), (1, J - 1))));
-
-                        Lij : constant Element :=
-                          (Object ((I, J)) - Multiply (Row_I_Before_J, Row_J_Before_J).Sum) / Ljj;
-                     begin
-                        Result.Set (Tensor_Index'(I, J), Lij);
-                     end;
-                  end loop;
-               end;
-            end;
-         end loop;
-      end return;
-   end Cholesky_Lower;
-
-   overriding
-   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor is
-     (case Form is
-        when Lower => Cholesky_Lower (Object),
-        when Upper => Cholesky_Lower (Object.Transpose).Transpose);
+   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor
+     renames Operations.Cholesky;
 
    overriding
    function Cholesky_Update
      (R, V : CPU_Tensor;
-      Mode : Update_Mode) return CPU_Tensor
-   is
-      Rows : constant Natural := R.Rows;
-   begin
-      case Mode is
-         when Update =>
-            raise Program_Error with "Not implemented yet";
-         when Downdate =>
-            --  Implementation of Algorithm B from [1]
-            --
-            --  [1] "A modification to the LINPACK downdating algorithm", Pan C.T.,
-            --      BIT Numerical Mathematics, 1990, 30.4: 707-722, DOI:10.1007/BF01933218
-            return Result : CPU_Tensor := Zeros (R.Shape) do
-               declare
-                  Alpha : Element := 1.0;
-                  Beta  : Element := 1.0;
-
-                  Z : CPU_Tensor := V;
-               begin
-                  for I in 1 .. Rows loop
-                     declare
-                        Rii : constant Element := R ((I, I));
-
-                        A : constant Element := Element'(Z (I)) / Rii;
-                     begin
-                        Alpha := Alpha - A**2;
-
-                        --  If = 0.0 then matrix is positive semi-definite and singular
-                        --  If < 0.0 then matrix is negative semi-definite or indefinite
-                        if Alpha <= 0.0 then
-                           raise Not_Positive_Definite_Matrix with
-                             Alpha'Image & " at row " & I'Image;
-                        end if;
-
-                        declare
-                           Previous_Beta : constant Element := Beta;
-                        begin
-                           Beta := EF.Sqrt (Alpha);
-
-                           --  Compute the jth value on the diagonal
-                           Result.Set ((I, I), Beta / Previous_Beta * Rii);
-
-                           exit when I = Rows;
-
-                           declare
-                              C1 : constant Element := Beta / Previous_Beta;
-                              C2 : constant Element := A / (Previous_Beta * Beta);
-
-                              Column_Indices : constant Range_Type   := (I + 1, Rows);
-                              Row_Indices    : constant Tensor_Range := ((I, I), Column_Indices);
-
-                              Rik_Old : constant CPU_Tensor := R (Row_Indices);
-                              Zk_Old  : constant CPU_Tensor := Z (Column_Indices);
-                              Zk_New  : constant CPU_Tensor := Zk_Old - A * Rik_Old;
-                              Rik_New : constant CPU_Tensor := C1 * Rik_Old - C2 * Zk_New;
-                           begin
-                              Z.Set (Column_Indices, Zk_New);
-                              Result.Set (Row_Indices, Rik_New.Reshape ((1, Rik_New.Elements)));
-                              --  Reshape only needed because of Pre condition on Set
-                           end;
-                        end;
-                     end;
-                  end loop;
-               end;
-            end return;
-      end case;
-   end Cholesky_Update;
+      Mode : Update_Mode) return CPU_Tensor renames Operations.Cholesky_Update;
 
    ----------------------------------------------------------------------------
    --                            Vector operations                           --
    ----------------------------------------------------------------------------
 
    overriding
-   function Norm (Object : CPU_Tensor) return Element is (EF.Sqrt (Object * Object));
+   function Norm (Object : CPU_Tensor) return Element renames Operations.Norm;
 
    overriding
-   function Normalize (Object : CPU_Tensor) return CPU_Tensor is (Object / Object.Norm);
+   function Normalize (Object : CPU_Tensor) return CPU_Tensor renames Operations.Normalize;
 
    overriding
-   function Standardize (Object : CPU_Tensor) return CPU_Tensor is
-      Std_Dev : constant Element := Object.Standard_Deviation;
-   begin
-      return (Object - Object.Mean) / (if Std_Dev /= 0.0 then Std_Dev else 1.0);
-   end Standardize;
+   function Standardize (Object : CPU_Tensor) return CPU_Tensor renames Operations.Standardize;
 
    overriding
-   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element is
-     (Element'(Left.Standardize * Right.Standardize) / Element (Left.Elements));
+   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element
+     renames Operations.Correlation_Coefficient;
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
@@ -2025,9 +1509,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end if;
    end "**";
 
-   overriding function "*" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right * Left);
-
    overriding function "*" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
       Right_Vector : constant Vector_Type := (others => Right);
    begin
@@ -2058,9 +1539,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end "/";
 
-   overriding function "+" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right + Left);
-
    overriding function "+" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
       Right_Vector : constant Vector_Type := (others => Right);
    begin
@@ -2081,9 +1559,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end "-";
 
-   overriding function "-" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-     (Left + (-Right));
-
    overriding function "-" (Object : CPU_Tensor) return CPU_Tensor is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
@@ -2093,17 +1568,26 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end "-";
 
-   overriding function "mod" (Left, Right : CPU_Tensor) return CPU_Tensor is
-     (((Left rem Right) + Right) rem Right);
+   overriding
+   function "*" (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."*";
 
-   overriding function "rem" (Left, Right : CPU_Tensor) return CPU_Tensor is
-     (Left - Multiply (Truncate (Left / Right), Right));
+   overriding
+   function "+" (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."+";
 
-   overriding function "mod" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-     (((Left rem Right) + Right) rem Right);
+   overriding
+   function "-" (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."-";
 
-   overriding function "rem" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-     (Left - Truncate (Left / Right) * Right);
+   overriding
+   function "mod" (Left, Right : CPU_Tensor) return CPU_Tensor renames Operations."mod";
+
+   overriding
+   function "rem" (Left, Right : CPU_Tensor) return CPU_Tensor renames Operations."rem";
+
+   overriding
+   function "mod" (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."mod";
+
+   overriding
+   function "rem" (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."rem";
 
    overriding function "abs" (Object : CPU_Tensor) return CPU_Tensor is
    begin
@@ -2123,44 +1607,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Multiply;
 
-   overriding function Power (Left : CPU_Tensor; Right : Integer) return CPU_Tensor is
-      function Vector_Power (Left : CPU_Tensor; Right : Natural) return CPU_Tensor is
-         Result : CPU_Tensor := Ones (Left.Shape);
+   overriding
+   function Power (Left : CPU_Tensor; Right : Integer) return CPU_Tensor renames Operations.Power;
 
-         Log_2 : constant Element := EF.Log (2.0);
+   overriding
+   function Min (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations.Min;
 
-         Remaining : Natural := Right;
-      begin
-         while Remaining > 0 loop
-            declare
-               Doubling : CPU_Tensor := Left;
-               Count : constant Integer :=
-                 Integer (Element'Floor (EF.Log (Element (Remaining)) / Log_2));
-            begin
-               for I in 1 .. Count loop
-                  Doubling := Multiply (Doubling, Doubling);
-               end loop;
-               Result    := Multiply (Result, Doubling);
-               Remaining := Remaining - 2 ** Count;
-            end;
-         end loop;
-
-         return Result;
-      end Vector_Power;
-   begin
-      if Right = 2 then
-         return Multiply (Left, Left);
-      elsif Right > 0 then
-         return Vector_Power (Left, Right);
-      elsif Right < 0 then
-         return 1.0 / Vector_Power (Left, abs Right);
-      else
-         return Ones (Elements => Left.Shape (1));
-      end if;
-   end Power;
-
-   overriding function Min (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Min (Right, Left));
+   overriding
+   function Max (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations.Max;
 
    overriding function Min (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
       Right_Vector : constant Vector_Type := (others => Right);
@@ -2171,9 +1625,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          end loop;
       end return;
    end Min;
-
-   overriding function Max (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Max (Right, Left));
 
    overriding function Max (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
       Right_Vector : constant Vector_Type := (others => Right);
@@ -2252,11 +1703,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Log;
 
-   overriding function Log10 (Object : CPU_Tensor) return CPU_Tensor is
-     (Log (Object) / EF.Log (10.0));
+   overriding function Log10 (Object : CPU_Tensor) return CPU_Tensor renames Operations.Log10;
 
-   overriding function Log2 (Object : CPU_Tensor) return CPU_Tensor is
-     (Log (Object) / EF.Log (2.0));
+   overriding function Log2 (Object : CPU_Tensor) return CPU_Tensor renames Operations.Log2;
 
    ----------------------------------------------------------------------------
    --                              Trigonometry                              --
@@ -2329,12 +1778,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Arctan;
 
-   overriding function Degrees (Object : CPU_Tensor) return CPU_Tensor is
-     (Object / Ada.Numerics.Pi * 180.0);
+   overriding function Degrees (Object : CPU_Tensor) return CPU_Tensor renames Operations.Degrees;
 
-   overriding function Radians (Object : CPU_Tensor) return CPU_Tensor is
-     (Object / 180.0 * Ada.Numerics.Pi);
+   overriding function Radians (Object : CPU_Tensor) return CPU_Tensor renames Operations.Radians;
 
+   ----------------------------------------------------------------------------
+   --                               Reductions                               --
    ----------------------------------------------------------------------------
 
    overriding
@@ -2438,125 +1887,34 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       return Zeros ((1 => 1));  --  FIXME
    end Reduce;
 
-   overriding function Sum (Object : CPU_Tensor) return Element is
-      Expression_Sum : constant CPU_Expression := X + Y;
-   begin
-      return Object.Reduce_Associative (Expression_Sum, 0.0);
-   end Sum;
+   overriding function Sum (Object : CPU_Tensor) return Element renames Operations.Sum;
 
-   overriding function Product (Object : CPU_Tensor) return Element is
-      Expression_Product : constant CPU_Expression := X * Y;
-   begin
-      return Object.Reduce_Associative (Expression_Product, 1.0);
-   end Product;
+   overriding function Product (Object : CPU_Tensor) return Element renames Operations.Product;
 
    ----------------------------------------------------------------------------
    --                               Statistics                               --
    ----------------------------------------------------------------------------
 
-   overriding function Min (Object : CPU_Tensor) return Element is
-      Expression_Min : constant CPU_Expression := Min (X, Y);
-   begin
-      return Object.Reduce_Associative (Expression_Min, Element'Last);
-   end Min;
+   overriding function Min (Object : CPU_Tensor) return Element renames Operations.Min;
 
-   overriding function Max (Object : CPU_Tensor) return Element is
-      Expression_Max : constant CPU_Expression := Max (X, Y);
-   begin
-      return Object.Reduce_Associative (Expression_Max, Element'First);
-   end Max;
+   overriding function Max (Object : CPU_Tensor) return Element renames Operations.Max;
 
-   function Median_Of_Three (A, B, C : Element) return Element is
-   begin
-      if A in B .. C | C .. B then
-         return A;
-      elsif B in A .. C | C .. A then
-         return B;
-      else
-         return C;
-      end if;
-   end Median_Of_Three;
+   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element
+     renames Operations.Quantile;
 
-   function Quick_Select (Object : CPU_Tensor; K : Positive) return Element
-     with Pre => K <= Object.Elements
-   is
-      N : constant Positive := Object.Elements;
+   overriding function Median (Object : CPU_Tensor) return Element
+     renames Operations.Median;
 
-      Object_Data : Element_Array (1 .. N)
-        with Import, Convention => Ada, Address => Object.Data'Address;
-
-      Splitter : constant Element :=
-        (if N > 1 then
-           Median_Of_Three (Object_Data (1), Object_Data (N / 2), Object_Data (N))
-         else
-           Object_Data (1));
-
-      Less : constant CPU_Tensor := Object (Object < Splitter);
-      L    : constant Natural    := Less.Elements;
-   begin
-      if L >= K then
-         --  Kth element in Less
-         return Quick_Select (Less, K);
-      else
-         declare
-            More : constant CPU_Tensor := Object (Object > Splitter);
-            M    : constant Natural    := More.Elements;
-
-            pragma Assert (L + M < N);
-         begin
-            if L < K and K <= N - M then
-               --  Kth element not in Less or More
-               return Splitter;
-            else
-               --  Kth element in More
-               return Quick_Select (More, K - (N - M));
-            end if;
-         end;
-      end if;
-   end Quick_Select;
-
-   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element is
-      function Internal_Quantile (Object : CPU_Tensor; P : Probability) return Element is
-         Last_Index : constant Element := Element (Object.Elements - 1);
-
-         K_Lower : constant Positive := Natural (Element'Floor (Last_Index * Element (P))) + 1;
-         K_Upper : constant Positive := Positive'Min (Object.Elements, K_Lower + 1);
-
-         P_Lower : constant Probability := Probability (Element (K_Lower - 1) / Last_Index);
-         --  Convert K_Lower back to a probability so that the difference
-         --  with P can be computed (needed for interpolation when P would
-         --  map to an element that is between two indices)
-
-         Element_Lower : constant Element := Quick_Select (Object, K_Lower);
-         Element_Upper : constant Element :=
-           (if P_Lower < P then Quick_Select (Object, K_Upper) else Element_Lower);
-
-         Probability_Per_Index : constant Probability := Probability (1.0 / Last_Index);
-         Probability_Ratio     : constant Probability := (P - P_Lower) / Probability_Per_Index;
-      begin
-         return (Element_Upper - Element_Lower) * Element (Probability_Ratio) + Element_Lower;
-      end Internal_Quantile;
-   begin
-      case Object.Elements is
-         when 0      => raise Constraint_Error with "Tensor is empty";
-         when 1      => return Object (1);
-         when others => return Internal_Quantile (Object, P);
-      end case;
-   end Quantile;
-
-   overriding function Median (Object : CPU_Tensor) return Element is
-     (Object.Quantile (0.5));
-
-   overriding function Mean (Object : CPU_Tensor) return Element is
-     (Object.Sum / Element (Object.Elements));
+   overriding function Mean (Object : CPU_Tensor) return Element
+     renames Operations.Mean;
 
    overriding
-   function Variance (Object : CPU_Tensor; Offset : Natural := 0) return Element is
-     (Sum (Power (Object - Object.Mean, 2)) / (Element (Object.Elements - Offset)));
+   function Variance (Object : CPU_Tensor; Offset : Natural := 0) return Element
+     renames Operations.Variance;
 
    overriding
-   function Standard_Deviation (Object : CPU_Tensor; Offset : Natural := 0) return Element is
-     (EF.Sqrt (Object.Variance (Offset)));
+   function Standard_Deviation (Object : CPU_Tensor; Offset : Natural := 0) return Element
+     renames Operations.Standard_Deviation;
 
    overriding
    function Min (Left, Right : CPU_Tensor) return CPU_Tensor is
@@ -2603,10 +1961,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Quantile;
 
    overriding
-   function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
-     (Object.Quantile (0.5, Dimension));
-
-   overriding
    function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
    begin
       raise Program_Error;
@@ -2624,11 +1978,15 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Variance;
 
    overriding
+   function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Median;
+
+   overriding
    function Standard_Deviation
      (Object    : CPU_Tensor;
       Dimension : Tensor_Dimension;
       Offset    : Natural := 0) return CPU_Tensor
-   is (Sqrt (Object.Variance (Dimension, Offset)));
+   renames Operations.Standard_Deviation;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -2702,25 +2060,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    --                              Comparisons                               --
    ----------------------------------------------------------------------------
 
-   overriding function "="  (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-   begin
-      case Left.Kind is
-         when Float_Type =>
-            return (abs (Left - Right) <= Element_Type'Model_Epsilon);
-         when Int_Type | Bool_Type =>
-            raise Program_Error;
-      end case;
-   end "=";
+   overriding
+   function "="  (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."=";
 
-   overriding function "/=" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-   begin
-      case Left.Kind is
-         when Float_Type =>
-            return (abs (Left - Right) > Element_Type'Model_Epsilon);
-         when Int_Type | Bool_Type =>
-            raise Program_Error;
-      end case;
-   end "/=";
+   overriding
+   function "/=" (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."/=";
 
    overriding function ">"  (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
       Right_Vector : constant Vector_Type := (others => Right);
@@ -2768,28 +2112,27 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
-   overriding function "="  (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right = Left);
+   overriding
+   function "="  (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."=";
 
-   overriding function "/=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right /= Left);
+   overriding
+   function "/=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."/=";
 
-   overriding function ">"  (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right < Left);
+   overriding
+   function ">"  (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations.">";
 
-   overriding function "<"  (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right > Left);
+   overriding
+   function "<"  (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."<";
 
-   overriding function ">=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right <= Left);
+   overriding
+   function ">=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations.">=";
 
-   overriding function "<=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-     (Right >= Left);
+   overriding
+   function "<=" (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations."<=";
 
    ----------------------------------------------------------------------------
 
-   overriding function "=" (Left, Right : CPU_Tensor) return Boolean is
-     (All_True (Left = Right));
+   overriding function "=" (Left, Right : CPU_Tensor) return Boolean renames Operations."=";
 
    overriding function "="  (Left, Right : CPU_Tensor) return CPU_Tensor is
       Zero_Vector : constant Vector_Type := (others => 0.0);
@@ -2872,7 +2215,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Left, Right        : CPU_Tensor;
       Relative_Tolerance : Element := 1.0e-05;
       Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean
-   is (All_True (abs (Left - Right) <= Absolute_Tolerance + Relative_Tolerance * abs Right));
+   renames Operations.All_Close;
 
    overriding
    function Any_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is

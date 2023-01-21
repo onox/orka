@@ -582,6 +582,8 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding function X return CPU_Expression;
    overriding function Y return CPU_Expression;
 
+   overriding function Number (Value : Element) return CPU_Expression;
+
    ----------------------------------------------------------------------------
 
    procedure Reset_Random (Seed : Duration);
