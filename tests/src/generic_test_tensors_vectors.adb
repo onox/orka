@@ -914,10 +914,10 @@ package body Generic_Test_Tensors_Vectors is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
       Tensor_2 : constant CPU_Tensor := To_Tensor ((0.1, 0.2, 0.4, 0.2, 0.5));
 
-      Expression_Sum     : constant CPU_Expression := X + Y;
-      Expression_Diff    : constant CPU_Expression := X - Y;
-      Expression_Product : constant CPU_Expression := X * Y;
-      Expression_Divide  : constant CPU_Expression := X / Y;
+      Expression_Sum     : constant Expression_Type := X + Y;
+      Expression_Diff    : constant Expression_Type := X - Y;
+      Expression_Product : constant Expression_Type := X * Y;
+      Expression_Divide  : constant Expression_Type := X / Y;
 
       Expected_1 : constant Element := 15.0;
       Expected_2 : constant Element := -15.0;
@@ -938,8 +938,8 @@ package body Generic_Test_Tensors_Vectors is
    procedure Test_Reduction_Associative_Binary_Operator (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
 
-      Expression_Sum     : constant CPU_Expression := X + Y;
-      Expression_Product : constant CPU_Expression := X * Y;
+      Expression_Sum     : constant Expression_Type := X + Y;
+      Expression_Product : constant Expression_Type := X * Y;
 
       Expected_1 : constant Element := 15.0;
       Expected_3 : constant Element := 120.0;
@@ -955,9 +955,9 @@ package body Generic_Test_Tensors_Vectors is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((-1.0, -2.0, -3.0, -4.0, -5.0));
       Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 9.0, 16.0, 25.0, 36.0));
 
-      Expression_Minus    : constant CPU_Expression := X + (-Y);
-      Expression_Absolute : constant CPU_Expression := X + abs Y;
-      Expression_Sqrt     : constant CPU_Expression := X + Sqrt (Y);
+      Expression_Minus    : constant Expression_Type := X + (-Y);
+      Expression_Absolute : constant Expression_Type := X + abs Y;
+      Expression_Sqrt     : constant Expression_Type := X + Sqrt (Y);
 
       Expected_1 : constant Element := 15.0;
       Expected_2 : constant Element := 15.0;
@@ -975,16 +975,16 @@ package body Generic_Test_Tensors_Vectors is
    procedure Test_Reduction_Number (Object : in out Test) is
       Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
 
-      Expression_1 : constant CPU_Expression := X + Y + 1.0;
-      Expression_2 : constant CPU_Expression := X + Y - 1.0;
-      Expression_3 : constant CPU_Expression := 2.0 * (X + Y) + 1.0;
-      Expression_4 : constant CPU_Expression := (X + Y) * 2.0 + 2.0;
-      Expression_5 : constant CPU_Expression := 1.0 + X + Y;
-      Expression_6 : constant CPU_Expression := 1.0 - X + Y;
-      Expression_7 : constant CPU_Expression := X + Y / 2.0;
-      Expression_8 : constant CPU_Expression := X + 18.0 / Y;
-      Expression_9 : constant CPU_Expression := X + Max (1.0, Min (Y, 2.0));
-      Expression_0 : constant CPU_Expression := X + Max (Min (2.0, Y), 1.0);
+      Expression_1 : constant Expression_Type := X + Y + 1.0;
+      Expression_2 : constant Expression_Type := X + Y - 1.0;
+      Expression_3 : constant Expression_Type := 2.0 * (X + Y) + 1.0;
+      Expression_4 : constant Expression_Type := (X + Y) * 2.0 + 2.0;
+      Expression_5 : constant Expression_Type := 1.0 + X + Y;
+      Expression_6 : constant Expression_Type := 1.0 - X + Y;
+      Expression_7 : constant Expression_Type := X + Y / 2.0;
+      Expression_8 : constant Expression_Type := X + 18.0 / Y;
+      Expression_9 : constant Expression_Type := X + Max (1.0, Min (Y, 2.0));
+      Expression_0 : constant Expression_Type := X + Max (Min (2.0, Y), 1.0);
 
       Expected_1 : constant Element := 20.0;
       Expected_2 : constant Element := 11.0;

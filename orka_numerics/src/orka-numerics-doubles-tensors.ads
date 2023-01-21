@@ -17,4 +17,4 @@
 with Orka.Numerics.Tensors;
 
 package Orka.Numerics.Doubles.Tensors is new Orka.Numerics.Tensors (Float_64);
-pragma Pure (Orka.Numerics.Doubles.Tensors);
+pragma Preelaborate (Orka.Numerics.Doubles.Tensors);

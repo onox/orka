@@ -251,4 +251,157 @@ package body Orka.Numerics.Tensors is
 
    end Generic_Random;
 
+   ----------------------------------------------------------------------------
+   --                              Expressions                               --
+   ----------------------------------------------------------------------------
+
+   overriding
+   function "+" (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Add,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function "-" (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Subtract,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function "*" (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Multiply,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function "/" (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Divide,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function Min (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Min,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function Max (Left, Right : Expression_Type) return Expression_Type is
+     (Kind     => Binary_Operation,
+      Operator => Max,
+      Left     => Expression_Holders.To_Holder (Left),
+      Right    => Expression_Holders.To_Holder (Right));
+
+   overriding
+   function "-" (Value : Expression_Type) return Expression_Type is
+     (Kind           => Unary_Operation,
+      Unary_Operator => Minus,
+      Expression     => Expression_Holders.To_Holder (Value));
+
+   overriding
+   function "abs" (Value : Expression_Type) return Expression_Type is
+     (Kind           => Unary_Operation,
+      Unary_Operator => Absolute,
+      Expression     => Expression_Holders.To_Holder (Value));
+
+   overriding
+   function Sqrt (Value : Expression_Type) return Expression_Type is
+     (Kind           => Unary_Operation,
+      Unary_Operator => Sqrt,
+      Expression     => Expression_Holders.To_Holder (Value));
+
+   overriding function X return Expression_Type is (Kind => Argument, Argument => X);
+   overriding function Y return Expression_Type is (Kind => Argument, Argument => Y);
+
+   overriding function Number (Value : Element) return Expression_Type is
+     (Kind => Number, Number => Value);
+
+   overriding function "+" (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Number (Left) + Right);
+   overriding function "+" (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Left + Number (Right));
+
+   overriding function "-" (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Number (Left) - Right);
+   overriding function "-" (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Left - Number (Right));
+
+   overriding function "*" (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Number (Left) * Right);
+   overriding function "*" (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Left * Number (Right));
+
+   overriding function "/" (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Number (Left) / Right);
+   overriding function "/" (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Left / Number (Right));
+
+   overriding function Min (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Min (Number (Left), Right));
+   overriding function Min (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Min (Left, Number (Right)));
+
+   overriding function Max (Left : Element; Right : Expression_Type) return Expression_Type is
+     (Max (Number (Left), Right));
+   overriding function Max (Left : Expression_Type; Right : Element) return Expression_Type is
+     (Max (Left, Number (Right)));
+
+   function Generic_Apply
+     (Object      : Expression_Type;
+      Left, Right : Data_Type) return Data_Type is
+   begin
+      case Object.Kind is
+         when Argument =>
+            case Object.Argument is
+               when X =>
+                  return Left;
+               when Y =>
+                  return Right;
+            end case;
+         when Number =>
+            return Identity (Object.Number);
+         when Binary_Operation =>
+            declare
+               Result_Left : constant Data_Type :=
+                  Generic_Apply (Expression_Type (Object.Left.Element), Left, Right);
+               Result_Right : constant Data_Type :=
+                  Generic_Apply (Expression_Type (Object.Right.Element), Left, Right);
+            begin
+               case Object.Operator is
+                  when Add =>
+                     return Result_Left + Result_Right;
+                  when Subtract =>
+                     return Result_Left - Result_Right;
+                  when Multiply =>
+                     return Result_Left * Result_Right;
+                  when Divide =>
+                     return Result_Left / Result_Right;
+                  when Min =>
+                     return Min (Result_Left, Result_Right);
+                  when Max =>
+                     return Max (Result_Left, Result_Right);
+               end case;
+            end;
+         when Unary_Operation =>
+            declare
+               Result : constant Data_Type :=
+                 Generic_Apply (Expression_Type (Object.Expression.Element), Left, Right);
+            begin
+               case Object.Unary_Operator is
+                  when Minus =>
+                     return -Result;
+                  when Absolute =>
+                     return abs Result;
+                  when Sqrt =>
+                     return Sqrt (Result);
+               end case;
+            end;
+      end case;
+   end Generic_Apply;
+
 end Orka.Numerics.Tensors;

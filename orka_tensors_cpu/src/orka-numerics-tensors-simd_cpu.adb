@@ -98,7 +98,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    package Operations is new Orka.Numerics.Tensors.Operations
      (CPU_Tensor, Make_Upper_Triangular, Scale_Row, Swap_Rows, Forward_Substitute, Back_Substitute,
-      CPU_Expression, CPU_QR_Factorization, Create_QR, Q, R);
+      Expression_Type, CPU_QR_Factorization, Create_QR, Q, R);
 
    ----------------------------------------------------------------------------
 
@@ -173,207 +173,16 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
        Data       => <>));
 
    ----------------------------------------------------------------------------
+   --                              Expressions                               --
+   ----------------------------------------------------------------------------
 
-   overriding
-   function "+" (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Add,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
+   function Identity_Vector_Type (Value : Element) return Vector_Type is (others => Value);
+   function Identity_Element     (Value : Element) return Element     is (Value);
 
-   overriding
-   function "-" (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Subtract,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
+   function Apply is new Generic_Apply (Vector_Type, Identity_Vector_Type);
 
-   overriding
-   function "*" (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Multiply,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
-
-   overriding
-   function "/" (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Divide,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
-
-   overriding
-   function Min (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Min,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
-
-   overriding
-   function Max (Left, Right : CPU_Expression) return CPU_Expression is
-     (Kind     => Binary_Operation,
-      Operator => Max,
-      Left     => Expression_Holders.To_Holder (Left),
-      Right    => Expression_Holders.To_Holder (Right));
-
-   overriding
-   function "-" (Value : CPU_Expression) return CPU_Expression is
-     (Kind           => Unary_Operation,
-      Unary_Operator => Minus,
-      Expression     => Expression_Holders.To_Holder (Value));
-
-   overriding
-   function "abs" (Value : CPU_Expression) return CPU_Expression is
-     (Kind           => Unary_Operation,
-      Unary_Operator => Absolute,
-      Expression     => Expression_Holders.To_Holder (Value));
-
-   overriding
-   function Sqrt (Value : CPU_Expression) return CPU_Expression is
-     (Kind           => Unary_Operation,
-      Unary_Operator => Sqrt,
-      Expression     => Expression_Holders.To_Holder (Value));
-
-   overriding function X return CPU_Expression is (Kind => Argument, Argument => X);
-   overriding function Y return CPU_Expression is (Kind => Argument, Argument => Y);
-
-   function Number (Value : Element) return CPU_Expression is (Kind => Number, Number => Value);
-
-   overriding function "+" (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Number (Left) + Right);
-   overriding function "+" (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Left + Number (Right));
-
-   overriding function "-" (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Number (Left) - Right);
-   overriding function "-" (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Left - Number (Right));
-
-   overriding function "*" (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Number (Left) * Right);
-   overriding function "*" (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Left * Number (Right));
-
-   overriding function "/" (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Number (Left) / Right);
-   overriding function "/" (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Left / Number (Right));
-
-   overriding function Min (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Min (Number (Left), Right));
-   overriding function Min (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Min (Left, Number (Right)));
-
-   overriding function Max (Left : Element; Right : CPU_Expression) return CPU_Expression is
-     (Max (Number (Left), Right));
-   overriding function Max (Left : CPU_Expression; Right : Element) return CPU_Expression is
-     (Max (Left, Number (Right)));
-
-   function Apply
-     (Object      : CPU_Expression;
-      Left, Right : Vector_Type) return Vector_Type is
-   begin
-      case Object.Kind is
-         when Argument =>
-            case Object.Argument is
-               when X =>
-                  return Left;
-               when Y =>
-                  return Right;
-            end case;
-         when Number =>
-            return (others => Object.Number);
-         when Binary_Operation =>
-            declare
-               Result_Left : constant Vector_Type :=
-                 CPU_Expression (Object.Left.Element).Apply (Left, Right);
-               Result_Right : constant Vector_Type :=
-                 CPU_Expression (Object.Right.Element).Apply (Left, Right);
-            begin
-               case Object.Operator is
-                  when Add =>
-                     return Result_Left + Result_Right;
-                  when Subtract =>
-                     return Result_Left - Result_Right;
-                  when Multiply =>
-                     return Result_Left * Result_Right;
-                  when Divide =>
-                     return Result_Left / Result_Right;
-                  when Min =>
-                     return Min (Result_Left, Result_Right);
-                  when Max =>
-                     return Max (Result_Left, Result_Right);
-               end case;
-            end;
-         when Unary_Operation =>
-            declare
-               Result : constant Vector_Type :=
-                 CPU_Expression (Object.Expression.Element).Apply (Left, Right);
-            begin
-               case Object.Unary_Operator is
-                  when Minus =>
-                     return -Result;
-                  when Absolute =>
-                     return abs Result;
-                  when Sqrt =>
-                     return Sqrt (Result);
-               end case;
-            end;
-      end case;
-   end Apply;
-
-   function Apply
-     (Object      : CPU_Expression;
-      Left, Right : Element) return Element is
-   begin
-      case Object.Kind is
-         when Argument =>
-            case Object.Argument is
-               when X =>
-                  return Left;
-               when Y =>
-                  return Right;
-            end case;
-         when Number =>
-            return Object.Number;
-         when Binary_Operation =>
-            declare
-               Result_Left : constant Element :=
-                 CPU_Expression (Object.Left.Element).Apply (Left, Right);
-               Result_Right : constant Element :=
-                 CPU_Expression (Object.Right.Element).Apply (Left, Right);
-            begin
-               case Object.Operator is
-                  when Add =>
-                     return Result_Left + Result_Right;
-                  when Subtract =>
-                     return Result_Left - Result_Right;
-                  when Multiply =>
-                     return Result_Left * Result_Right;
-                  when Divide =>
-                     return Result_Left / Result_Right;
-                  when Min =>
-                     return Element'Min (Result_Left, Result_Right);
-                  when Max =>
-                     return Element'Max (Result_Left, Result_Right);
-               end case;
-            end;
-         when Unary_Operation =>
-            declare
-               Result : constant Element :=
-                 CPU_Expression (Object.Expression.Element).Apply (Left, Right);
-            begin
-               case Object.Unary_Operator is
-                  when Minus =>
-                     return -Result;
-                  when Absolute =>
-                     return abs Result;
-                  when Sqrt =>
-                     return EF.Sqrt (Result);
-               end case;
-            end;
-      end case;
-   end Apply;
+   function Apply is new Generic_Apply (Element, Identity_Element,
+     Min => Element'Min, Max => Element'Max, Sqrt => EF.Sqrt);
 
    ----------------------------------------------------------------------------
 
@@ -1792,7 +1601,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Subject   : Expression'Class;
       Initial   : Element) return Element
    is
-      CPU_Subject : constant CPU_Expression := CPU_Expression (Subject);
+      CPU_Subject : constant Expression_Type := Expression_Type (Subject);
 
       Max_Length_Sequential : constant Positive := 128 / Vector_Type'Length;
 
@@ -1804,7 +1613,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                Result : Vector_Type := Object.Data (Lower);
             begin
                for Index in Lower + 1 .. Upper loop
-                  Result := CPU_Subject.Apply (Result, Object.Data (Index));
+                  Result := Apply (CPU_Subject, Result, Object.Data (Index));
                end loop;
                return Result;
             end;
@@ -1812,8 +1621,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             declare
                Half_Index : constant Positive := Lower + Length / 2;
             begin
-               return CPU_Subject.Apply
-                 (Pairwise (Lower, Half_Index - 1),
+               return Apply
+                 (CPU_Subject,
+                  Pairwise (Lower, Half_Index - 1),
                   Pairwise (Half_Index, Upper));
             end;
          end if;
@@ -1830,7 +1640,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       if Object.Elements > Vector_Type'Length then
          for Element of Pairwise (Object.Data'First, Object.Data'Last - 1) loop
-            Result := CPU_Subject.Apply (Result, Element);
+            Result := Apply (CPU_Subject, Result, Element);
          end loop;
       else
          --  Do not perform pairwise applying of expression because Object.Data has only 1 vector,
@@ -1839,7 +1649,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end if;
 
       for Index in Vector_Index_Type'First .. From_Last (Padding) loop
-         Result := CPU_Subject.Apply (Result, Object.Data (Object.Data'Last) (Index));
+         Result := Apply (CPU_Subject, Result, Object.Data (Object.Data'Last) (Index));
       end loop;
 
       return Result;
@@ -1862,7 +1672,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Subject   : Expression'Class;
       Initial   : Element) return Element
    is
-      CPU_Subject : constant CPU_Expression := CPU_Expression (Subject);
+      CPU_Subject : constant Expression_Type := Expression_Type (Subject);
 
       Data : Element_Array (1 .. Object.Elements)
         with Import, Convention => Ada, Address => Object.Data'Address;
@@ -1870,7 +1680,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Result : Element_Type := Initial;
    begin
       for Value of Data loop
-         Result := CPU_Subject.Apply (Result, Value);
+         Result := Apply (CPU_Subject, Result, Value);
       end loop;
 
       return Result;

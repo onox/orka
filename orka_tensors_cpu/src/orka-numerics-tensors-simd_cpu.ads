@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with Ada.Containers.Indefinite_Holders;
-
 generic
    type Vector_Index_Type is (<>);
 
@@ -545,47 +543,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    ----------------------------------------------------------------------------
 
-   type CPU_Expression (<>) is new Expression with private;
-
-   overriding function "+" (Left, Right : CPU_Expression) return CPU_Expression;
-   overriding function "-" (Left, Right : CPU_Expression) return CPU_Expression;
-   overriding function "*" (Left, Right : CPU_Expression) return CPU_Expression;
-   overriding function "/" (Left, Right : CPU_Expression) return CPU_Expression;
-
-   overriding function Min (Left, Right : CPU_Expression) return CPU_Expression;
-   overriding function Max (Left, Right : CPU_Expression) return CPU_Expression;
-
-   overriding function "+" (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function "+" (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function "-" (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function "-" (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function "*" (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function "*" (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function "/" (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function "/" (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function "-" (Value : CPU_Expression) return CPU_Expression;
-
-   overriding function "abs" (Value : CPU_Expression) return CPU_Expression;
-
-   overriding function Sqrt (Value : CPU_Expression) return CPU_Expression;
-
-   overriding function Min (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function Min (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function Max (Left : Element; Right : CPU_Expression) return CPU_Expression;
-   overriding function Max (Left : CPU_Expression; Right : Element) return CPU_Expression;
-
-   overriding function X return CPU_Expression;
-   overriding function Y return CPU_Expression;
-
-   overriding function Number (Value : Element) return CPU_Expression;
-
-   ----------------------------------------------------------------------------
-
    procedure Reset_Random (Seed : Duration);
 
    overriding function Random_Uniform (Shape : Tensor_Shape) return CPU_Tensor;
@@ -616,40 +573,5 @@ private
      (Object.Determinancy);
 
    Random_State : Random_Number_State;
-
-   ----------------------------------------------------------------------------
-
-   type Argument_Kind is (X, Y);
-
-   type Binary_Operation_Kind is (Add, Subtract, Multiply, Divide, Min, Max);
-
-   type Unary_Operation_Kind is (Minus, Absolute, Sqrt);
-
-   type CPU_Expression_Kind is (Argument, Number, Binary_Operation, Unary_Operation);
-
-   package Expression_Holders is new Ada.Containers.Indefinite_Holders (Expression'Class);
-
-   type CPU_Expression (Kind : CPU_Expression_Kind) is new Expression with record
-      case Kind is
-         when Argument =>
-            Argument : Argument_Kind;
-         when Number =>
-            Number : Element;
-         when Binary_Operation =>
-            Operator : Binary_Operation_Kind;
-            Left, Right : Expression_Holders.Holder;
-         when Unary_Operation =>
-            Unary_Operator : Unary_Operation_Kind;
-            Expression : Expression_Holders.Holder;
-      end case;
-   end record;
-
-   function Apply
-     (Object      : CPU_Expression;
-      Left, Right : Vector_Type) return Vector_Type;
-
-   function Apply
-     (Object      : CPU_Expression;
-      Left, Right : Element) return Element;
 
 end Orka.Numerics.Tensors.SIMD_CPU;

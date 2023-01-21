@@ -14,6 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+private with Ada.Containers.Indefinite_Holders;
 private with Ada.Numerics.Generic_Elementary_Functions;
 
 with Ada.Numerics;
@@ -21,7 +22,7 @@ with Ada.Numerics;
 generic
    type Element_Type is digits <>;
 package Orka.Numerics.Tensors is
-   pragma Pure;
+   pragma Preelaborate;
 
    subtype Element is Element_Type;
 
@@ -1079,6 +1080,47 @@ package Orka.Numerics.Tensors is
 
    end Generic_Random;
 
+   ----------------------------------------------------------------------------
+
+   type Expression_Type (<>) is new Expression with private;
+
+   overriding function "+" (Left, Right : Expression_Type) return Expression_Type;
+   overriding function "-" (Left, Right : Expression_Type) return Expression_Type;
+   overriding function "*" (Left, Right : Expression_Type) return Expression_Type;
+   overriding function "/" (Left, Right : Expression_Type) return Expression_Type;
+
+   overriding function Min (Left, Right : Expression_Type) return Expression_Type;
+   overriding function Max (Left, Right : Expression_Type) return Expression_Type;
+
+   overriding function "+" (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function "+" (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function "-" (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function "-" (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function "*" (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function "*" (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function "/" (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function "/" (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function "-" (Value : Expression_Type) return Expression_Type;
+
+   overriding function "abs" (Value : Expression_Type) return Expression_Type;
+
+   overriding function Sqrt (Value : Expression_Type) return Expression_Type;
+
+   overriding function Min (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function Min (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function Max (Left : Element; Right : Expression_Type) return Expression_Type;
+   overriding function Max (Left : Expression_Type; Right : Element) return Expression_Type;
+
+   overriding function X return Expression_Type;
+   overriding function Y return Expression_Type;
+
+   overriding function Number (Value : Element) return Expression_Type;
+
 private
 
    function Add (Left, Right : Tensor_Shape; Dimension : Tensor_Dimension) return Tensor_Shape;
@@ -1109,5 +1151,51 @@ private
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 
    function Square_Root (Value : Element) return Element renames EF.Sqrt;
+
+   ----------------------------------------------------------------------------
+
+   type Argument_Kind is (X, Y);
+
+   type Binary_Operation_Kind is (Add, Subtract, Multiply, Divide, Min, Max);
+
+   type Unary_Operation_Kind is (Minus, Absolute, Sqrt);
+
+   type Expression_Type_Kind is (Argument, Number, Binary_Operation, Unary_Operation);
+
+   package Expression_Holders is new Ada.Containers.Indefinite_Holders (Expression'Class);
+
+   type Expression_Type (Kind : Expression_Type_Kind) is new Expression with record
+      case Kind is
+         when Argument =>
+            Argument : Argument_Kind;
+         when Number =>
+            Number : Element;
+         when Binary_Operation =>
+            Operator : Binary_Operation_Kind;
+            Left, Right : Expression_Holders.Holder;
+         when Unary_Operation =>
+            Unary_Operator : Unary_Operation_Kind;
+            Expression : Expression_Holders.Holder;
+      end case;
+   end record;
+
+   generic
+      type Data_Type is private;
+
+      with function Identity (Value : Element) return Data_Type;
+
+      with function "+" (Left, Right : Data_Type) return Data_Type is <>;
+      with function "-" (Left, Right : Data_Type) return Data_Type is <>;
+      with function "*" (Left, Right : Data_Type) return Data_Type is <>;
+      with function "/" (Left, Right : Data_Type) return Data_Type is <>;
+      with function Min (Left, Right : Data_Type) return Data_Type is <>;
+      with function Max (Left, Right : Data_Type) return Data_Type is <>;
+
+      with function "-"   (Value : Data_Type) return Data_Type is <>;
+      with function "abs" (Value : Data_Type) return Data_Type is <>;
+      with function Sqrt  (Value : Data_Type) return Data_Type is <>;
+   function Generic_Apply
+     (Object      : Expression_Type;
+      Left, Right : Data_Type) return Data_Type;
 
 end Orka.Numerics.Tensors;

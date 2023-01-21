@@ -17,4 +17,4 @@
 with Orka.Numerics.Tensors;
 
 package Orka.Numerics.Singles.Tensors is new Orka.Numerics.Tensors (Float_32);
-pragma Pure (Orka.Numerics.Singles.Tensors);
+pragma Preelaborate (Orka.Numerics.Singles.Tensors);
