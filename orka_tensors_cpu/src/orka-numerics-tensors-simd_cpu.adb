@@ -1263,13 +1263,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function "**" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
 --     (Exp (Right * Log (Left)));
       use EF;
-
-      One_Vector : constant Vector_Type := (others => 1.0);
    begin
       if Right = 0.0 then
-         return Result : CPU_Tensor := Without_Data (Left) do
-            Result.Data := (others => One_Vector);
-         end return;
+         return Ones (Left.Shape);
       elsif Right = 1.0 then
          return Left;
       else
@@ -1292,13 +1288,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --  EF."**" raises Constraint_Error if Left = 0.0 and element
       --  in the padding happens to be < 0.0
       Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, 1.0);
-
-      One_Vector : constant Vector_Type := (others => 1.0);
    begin
       if Left = 1.0 then
-         return Result : CPU_Tensor := Without_Data (Right) do
-            Result.Data := (others => One_Vector);
-         end return;
+         return Ones (Right.Shape);
       else
          return Result : CPU_Tensor := Without_Data (Right) do
             for Index in Result.Data'First .. Result.Data'Last - 1 loop
