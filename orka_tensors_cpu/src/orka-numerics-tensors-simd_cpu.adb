@@ -847,16 +847,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Data       => Object.Data);
 
    overriding
-   function Reshape (Object : CPU_Tensor; Elements : Positive) return CPU_Tensor is
-      Shape : constant Tensor_Shape := (1 => Elements);
-   begin
-      return
-        (Dimensions => Shape'Length,
-         Size       => Object.Size,
-         Kind       => Object.Kind,
-         Shape      => Shape,
-         Data       => Object.Data);
-   end Reshape;
+   function Reshape (Object : CPU_Tensor; Elements : Positive) return CPU_Tensor
+     renames Operations.Reshape;
 
    overriding
    function Flatten (Object : CPU_Tensor) return CPU_Tensor renames Operations.Flatten;

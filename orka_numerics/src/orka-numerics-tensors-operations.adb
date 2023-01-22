@@ -130,6 +130,10 @@ package body Orka.Numerics.Tensors.Operations is
    function Flatten (Object : Tensor_Type) return Tensor_Type is (Object.Reshape (Object.Elements));
 
    overriding
+   function Reshape (Object : Tensor_Type; Elements : Positive) return Tensor_Type is
+     (Object.Reshape ((1 => Elements)));
+
+   overriding
    function "&" (Left, Right : Tensor_Type) return Tensor_Type is (Concatenate (Left, Right, 1));
 
    ----------------------------------------------------------------------------
