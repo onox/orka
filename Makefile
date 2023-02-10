@@ -11,7 +11,6 @@ build:
 	cd orka_numerics && $(ALR_BUILD)
 	cd orka_tensors_cpu && $(ALR_BUILD)
 	cd orka && $(ALR_BUILD)
-#	cd orka_plugin_sdl && $(ALR_BUILD)
 	cd orka_plugin_archives && $(ALR_BUILD)
 	cd orka_plugin_gltf && $(ALR_BUILD)
 	cd orka_plugin_terrain && $(ALR_BUILD)
@@ -25,7 +24,7 @@ tools:
 	cd orka_tools && $(ALR_BUILD)
 
 tests:
-	cd tests && ADA_FLAGS="--coverage" $(ALR_BUILD)
+	cd tests && ADAFLAGS="--coverage -gnata" $(ALR_BUILD)
 	cd tests && alr run -s
 
 coverage:
