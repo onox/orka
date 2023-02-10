@@ -31,6 +31,27 @@ package body GL.Objects.Buffers is
       return Ret;
    end Minimum_Alignment;
 
+   function Max_Shader_Storage_Buffer_Bindings return Size is
+      Value : Size := 0;
+   begin
+      API.Get_Size.Ref (Enums.Getter.Max_Shader_Storage_Buffer_Bindings, Value);
+      return Value;
+   end Max_Shader_Storage_Buffer_Bindings;
+
+   function Max_Shader_Storage_Block_Size return Size is
+      Value : Size := 0;
+   begin
+      API.Get_Size.Ref (Enums.Getter.Max_Shader_Storage_Block_Size, Value);
+      return Value;
+   end Max_Shader_Storage_Block_Size;
+
+   function Max_Compute_Shader_Storage_Blocks return Size is
+      Value : Size := 0;
+   begin
+      API.Get_Size.Ref (Enums.Getter.Max_Compute_Shader_Storage_Blocks, Value);
+      return Value;
+   end Max_Compute_Shader_Storage_Blocks;
+
    use type Enums.Buffer_Kind;
 
    type Format_Data is record

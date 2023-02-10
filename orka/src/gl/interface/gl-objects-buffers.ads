@@ -27,6 +27,18 @@ package GL.Objects.Buffers is
    --  Minimum byte alignment of pointers returned by Map_Range
    --  (at least 64 bytes to support SIMD CPU instructions)
 
+   function Max_Shader_Storage_Buffer_Bindings return Size
+     with Post => Max_Shader_Storage_Buffer_Bindings'Result >= 8;
+   --  Maximum number of SSBO buffer bindings
+
+   function Max_Shader_Storage_Block_Size return Size
+     with Post => Max_Shader_Storage_Block_Size'Result >= 2 ** 27;
+   --  Maximum total storage size of an SSBO in bytes
+
+   function Max_Compute_Shader_Storage_Blocks return Size
+     with Post => Max_Compute_Shader_Storage_Blocks'Result >= 8;
+   --  Maximum number of SSBO blocks in a compute shader
+
    type Access_Bits is record
       Read              : Boolean := False;
       Write             : Boolean := False;
