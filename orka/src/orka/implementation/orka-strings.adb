@@ -43,6 +43,22 @@ package body Orka.Strings is
    function Lines (Value : String) return Positive is
      (SF.Count (Strip_Line_Term (Value), "" & L1.LF) + 1);
 
+   procedure Replace
+     (Source  : in out SU.Unbounded_String;
+      Pattern : String;
+      By      : String)
+   is
+      Index : Natural := SU.Length (Source);
+   begin
+      loop
+         Index := SU.Index (Source, Pattern, Index, Ada.Strings.Backward);
+
+         exit when Index = 0;
+
+         SU.Replace_Slice (Source, Index, Index + Pattern'Length - 1, By);
+      end loop;
+   end Replace;
+
    function Split
      (Value     : String;
       Separator : String  := " ";

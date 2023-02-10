@@ -36,6 +36,12 @@ package Orka.Strings is
    function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
    function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
 
+   procedure Replace
+     (Source  : in out SU.Unbounded_String;
+      Pattern : String;
+      By      : String)
+   with Pre => SU.Length (Source) > 0 and Pattern'Length > 0 and By'Length > 0;
+
    type String_List is array (Positive range <>) of SU.Unbounded_String;
 
    function Split
