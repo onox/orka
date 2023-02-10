@@ -133,15 +133,11 @@ package body GL.Objects.Samplers is
    end Set_Border_Color;
 
    procedure Set_Compare_X_To_Texture (Object : Sampler; Enabled : Boolean) is
-      Value : Enums.Textures.Compare_Kind;
+      use all type Enums.Textures.Compare_Kind;
    begin
-      if Enabled then
-         Value := Enums.Textures.Compare_R_To_Texture;
-      else
-         Value := Enums.Textures.None;
-      end if;
       API.Sampler_Parameter_Compare_Kind.Ref
-        (Object.Reference.GL_Id, Enums.Textures.Compare_Mode, Value);
+        (Object.Reference.GL_Id, Enums.Textures.Compare_Mode,
+         (if Enabled then Compare_R_To_Texture else None));
    end Set_Compare_X_To_Texture;
 
    procedure Set_Compare_Function (Object : Sampler; Func : Compare_Function) is

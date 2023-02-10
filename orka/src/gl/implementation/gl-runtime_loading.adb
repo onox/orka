@@ -146,11 +146,7 @@ package body GL.Runtime_Loading is
          Result : Array_Type (1 .. Max_Size);
       begin
          Internal_Ref (Param1, Param2, Max_Size, Actual_Size, Result);
-         if Actual_Size /= Max_Size then
-            return Result (1 .. Actual_Size);
-         else
-            return Result;
-         end if;
+         return (if Actual_Size /= Max_Size then Result (1 .. Actual_Size) else Result);
       end Ref;
    end Array_Getter_With_5_Params;
 
@@ -208,11 +204,7 @@ package body GL.Runtime_Loading is
          Result : Array_Type (1 .. Max_Size);
       begin
          Internal_Ref (Param1, Param2, Param3, Param4, Param5, Max_Size, Actual_Size, Result);
-         if Actual_Size /= Max_Size then
-            return Result (1 .. Actual_Size);
-         else
-            return Result;
-         end if;
+         return (if Actual_Size /= Max_Size then Result (1 .. Actual_Size) else Result);
       end Ref;
    end Array_Getter_With_8_Params;
 
