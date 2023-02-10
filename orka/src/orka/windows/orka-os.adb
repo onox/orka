@@ -14,21 +14,43 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Interfaces.C.Strings;
+
 with System;
 
 with Ada.Characters.Latin_1;
 
 package body Orka.OS is
 
-   procedure Set_Task_Name (Name : in String) is
-   begin
-      null;
-   end Set_Task_Name;
+   procedure Set_Task_Name (Name : in String) is null;
+
+   ----------------------------------------------------------------------------
+
+   type Clock_Kind is (Realtime, Monotonic);
+
+   for Clock_Kind use
+     (Realtime  => 0,
+      Monotonic => 1);
+   for Clock_Kind'Size use Interfaces.C.int'Size;
+
+   type Timespec is record
+      Seconds     : aliased Interfaces.C.long;
+      Nanoseconds : aliased Interfaces.C.long;
+   end record
+     with Convention => C;
+
+   function C_Clock_Gettime
+     (Kind : Clock_Kind;
+      Time : access Timespec) return Interfaces.C.int
+   with Import, Convention => C, External_Name => "clock_gettime";
 
    function Monotonic_Clock return Duration is
+      Value  : aliased Timespec;
+      Unused_Result : Interfaces.C.int;
    begin
-      raise Program_Error with "BUG: Monotonic_Clock not implemented yet on Windows";
-      return 0.0;
+      Unused_Result := C_Clock_Gettime (Monotonic, Value'Access);
+
+      return Duration (Value.Seconds) + Duration (Value.Nanoseconds) / 1e9;
    end Monotonic_Clock;
 
    function Monotonic_Clock return Time is (Time (Duration'(Monotonic_Clock)));
