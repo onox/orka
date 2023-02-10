@@ -35,9 +35,9 @@ package Orka.Numerics.Tensors is
 
    type Data_Type is (Float_Type, Int_Type, Bool_Type);
 
-   type Tensor_Dimension is range 1 .. 2;
+   type Tensor_Axis is range 1 .. 2;
 
-   type Tensor_Shape is array (Tensor_Dimension range <>) of Natural
+   type Tensor_Shape is array (Tensor_Axis range <>) of Natural
      with Default_Component_Value => 0;
    --  1 = rows
    --  2 = columns
@@ -50,12 +50,12 @@ package Orka.Numerics.Tensors is
 
    function Is_Equal
      (Left, Right : Tensor_Shape;
-      Except      : Tensor_Dimension) return Boolean
+      Except      : Tensor_Axis) return Boolean
    is (for all D in Left'Range => D = Except or Left (D) = Right (D));
 
    subtype Index_Type is Positive;
 
-   type Tensor_Index is array (Tensor_Dimension range <>) of Index_Type
+   type Tensor_Index is array (Tensor_Axis range <>) of Index_Type
      with Default_Component_Value => Index_Type'First;
 
    function Image (Index : Tensor_Index) return String;
@@ -67,7 +67,7 @@ package Orka.Numerics.Tensors is
        or else raise Constraint_Error with
          "Range start (" & Trim (Range_Type.Start) & ") > stop (" & Trim (Range_Type.Stop) & ")";
 
-   type Tensor_Range is array (Tensor_Dimension range <>) of Range_Type;
+   type Tensor_Range is array (Tensor_Axis range <>) of Range_Type;
 
    function Shape (Index : Tensor_Range) return Tensor_Shape
      with Post => Index'Length = Shape'Result'Length
@@ -87,44 +87,44 @@ package Orka.Numerics.Tensors is
    function Kind (Object : Tensor) return Data_Type is abstract;
 
    function Get (Object : Tensor; Index : Index_Type) return Element is abstract
-     with Pre'Class => Object.Kind = Float_Type and Object.Dimensions = 1;
+     with Pre'Class => Object.Kind = Float_Type and Object.Axes = 1;
    --  Return the value of a vector
 
    function Get (Object : Tensor; Index : Index_Type) return Boolean is abstract
-     with Pre'Class => Object.Kind = Bool_Type and Object.Dimensions = 1;
+     with Pre'Class => Object.Kind = Bool_Type and Object.Axes = 1;
    --  Return the value of a boolean vector
 
    function Get (Object : Tensor; Index : Index_Type) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2,
-          Post'Class => Get'Result.Dimensions = 1 and Get'Result.Rows = Object.Columns;
+     with Pre'Class  => Object.Axes = 2,
+          Post'Class => Get'Result.Axes = 1 and Get'Result.Rows = Object.Columns;
    --  Return the row of a matrix as a vector
 
    function Get (Object : Tensor; Index : Tensor_Index) return Element is abstract
-     with Pre'Class => Object.Kind = Float_Type and Object.Dimensions = Index'Length;
+     with Pre'Class => Object.Kind = Float_Type and Object.Axes = Index'Length;
    --  Return the value of a matrix
 
    function Get (Object : Tensor; Index : Tensor_Index) return Boolean is abstract
-     with Pre'Class => Object.Kind = Bool_Type and Object.Dimensions = Index'Length;
+     with Pre'Class => Object.Kind = Bool_Type and Object.Axes = Index'Length;
    --  Return the value of a boolean matrix
 
    function Get (Object : Tensor; Index : Range_Type) return Tensor is abstract
-     with Post'Class => Object.Dimensions = Get'Result.Dimensions;
+     with Post'Class => Object.Axes = Get'Result.Axes;
 
    function Get (Object : Tensor; Index : Tensor_Range) return Tensor is abstract
-     with Pre'Class  => Index'Length <= Object.Dimensions,
-          Post'Class => Get'Result.Dimensions in 1 | Index'Length;
+     with Pre'Class  => Index'Length <= Object.Axes,
+          Post'Class => Get'Result.Axes in 1 | Index'Length;
 
    function Get (Object : Tensor; Index : Tensor) return Tensor is abstract
-     with Pre'Class  => Index.Kind = Bool_Type and Index.Dimensions in 1 .. Object.Dimensions,
-          Post'Class => Get'Result.Dimensions = 1 and Get'Result.Kind = Object.Kind;
+     with Pre'Class  => Index.Kind = Bool_Type and Index.Axes in 1 .. Object.Axes,
+          Post'Class => Get'Result.Axes = 1 and Get'Result.Kind = Object.Kind;
 
    ----------------------------------------------------------------------------
 
    procedure Set (Object : in out Tensor; Index : Index_Type; Value : Element) is abstract
-     with Pre'Class => Object.Dimensions = 1 and Object.Kind = Float_Type;
+     with Pre'Class => Object.Axes = 1 and Object.Kind = Float_Type;
 
    procedure Set (Object : in out Tensor; Index : Index_Type; Value : Boolean) is abstract
-     with Pre'Class => Object.Dimensions = 1 and Object.Kind = Bool_Type;
+     with Pre'Class => Object.Axes = 1 and Object.Kind = Bool_Type;
 
    procedure Set (Object : in out Tensor; Index : Tensor_Index; Value : Element) is abstract
      with Pre'Class => Object.Kind = Float_Type;
@@ -136,21 +136,21 @@ package Orka.Numerics.Tensors is
      (Object : in out Tensor;
       Index  : Index_Type;
       Value  : Tensor) is abstract
-   with Pre'Class => (Object.Dimensions = 2 and Value.Dimensions = 1)
+   with Pre'Class => (Object.Axes = 2 and Value.Axes = 1)
                        and then Value.Rows = Object.Columns;
 
    procedure Set
      (Object : in out Tensor;
       Index  : Range_Type;
       Value  : Tensor) is abstract
-   with Pre'Class => Object.Dimensions = Value.Dimensions;
+   with Pre'Class => Object.Axes = Value.Axes;
 
    procedure Set
      (Object : in out Tensor;
       Index  : Tensor_Range;
       Value  : Tensor) is abstract
-   with Pre'Class => Index'Length <= Object.Dimensions
-                       and Index'Length = Value.Dimensions;
+   with Pre'Class => Index'Length <= Object.Axes
+                       and Index'Length = Value.Axes;
 
    ----------------------------------------------------------------------------
 
@@ -163,10 +163,10 @@ package Orka.Numerics.Tensors is
 
    function Elements (Object : Tensor) return Natural is abstract;
 
-   function Dimensions (Object : Tensor) return Tensor_Dimension is abstract;
+   function Axes (Object : Tensor) return Tensor_Axis is abstract;
 
    function Is_Square (Object : Tensor'Class) return Boolean is
-     (Object.Dimensions = 2 and then Object.Rows = Object.Columns);
+     (Object.Axes = 2 and then Object.Rows = Object.Columns);
 
    ----------------------------------------------------------------------------
 
@@ -191,7 +191,7 @@ package Orka.Numerics.Tensors is
 
    function Zeros (Elements : Positive) return Tensor is abstract
      with Post'Class => Zeros'Result.Kind = Float_Type and
-                        Zeros'Result.Dimensions = 1 and
+                        Zeros'Result.Axes = 1 and
                         Zeros'Result.Elements = Elements;
    --  Return a tensor filled with zeros
 
@@ -202,7 +202,7 @@ package Orka.Numerics.Tensors is
 
    function Ones (Elements : Positive) return Tensor is abstract
      with Post'Class => Ones'Result.Kind = Float_Type and
-                        Ones'Result.Dimensions = 1 and
+                        Ones'Result.Axes = 1 and
                         Ones'Result.Elements = Elements;
    --  Return a tensor filled with ones
 
@@ -219,7 +219,7 @@ package Orka.Numerics.Tensors is
 
    function To_Tensor (Elements : Element_Array) return Tensor is abstract
      with Post'Class => To_Tensor'Result.Kind = Float_Type and
-                        To_Tensor'Result.Dimensions = 1 and
+                        To_Tensor'Result.Axes = 1 and
                         To_Tensor'Result.Elements = Elements'Length;
 
    function To_Boolean_Tensor
@@ -236,12 +236,12 @@ package Orka.Numerics.Tensors is
 
    function Array_Range (Stop : Element) return Tensor is abstract
      with Post'Class => Array_Range'Result.Kind = Float_Type and
-                        Array_Range'Result.Dimensions = 1;
+                        Array_Range'Result.Axes = 1;
 
    function Array_Range (Start, Stop : Element; Step : Element := 1.0) return Tensor is abstract
      with Pre'Class  => Start < Stop and Step > 0.0,
           Post'Class => Array_Range'Result.Kind = Float_Type and
-                        Array_Range'Result.Dimensions = 1;
+                        Array_Range'Result.Axes = 1;
 
    type Interval_Kind is (Closed, Half_Open);
 
@@ -249,7 +249,7 @@ package Orka.Numerics.Tensors is
      (Start, Stop : Element;
       Count       : Positive;
       Interval    : Interval_Kind := Closed) return Tensor is abstract
-   with Post'Class => Linear_Space'Result.Dimensions = 1
+   with Post'Class => Linear_Space'Result.Axes = 1
                         and Linear_Space'Result.Kind = Float_Type
                         and Linear_Space'Result.Elements = Count;
    --  Return a 1D tensor containing numbers in a linear scale in the
@@ -260,7 +260,7 @@ package Orka.Numerics.Tensors is
       Count       : Positive;
       Interval    : Interval_Kind := Closed;
       Base        : Element := 10.0) return Tensor is abstract
-   with Post'Class => Log_Space'Result.Dimensions = 1
+   with Post'Class => Log_Space'Result.Axes = 1
                         and Log_Space'Result.Kind = Float_Type
                         and Log_Space'Result.Elements = Count;
    --  Return a 1D tensor containing numbers in a logarithmic scale in
@@ -272,7 +272,7 @@ package Orka.Numerics.Tensors is
       Count       : Positive;
       Interval    : Interval_Kind := Closed;
       Base        : Element := 10.0) return Tensor is abstract
-   with Post'Class => Geometric_Space'Result.Dimensions = 1
+   with Post'Class => Geometric_Space'Result.Axes = 1
                         and Geometric_Space'Result.Kind = Float_Type
                         and Geometric_Space'Result.Elements = Count;
    --  Return a 1D tensor containing numbers in a logarithmic scale in
@@ -282,7 +282,7 @@ package Orka.Numerics.Tensors is
    ----------------------------------------------------------------------------
 
    function Identity (Size : Positive; Offset : Integer := 0) return Tensor is abstract
-     with Post'Class => Identity'Result.Dimensions = 2
+     with Post'Class => Identity'Result.Axes = 2
                           and Identity'Result.Kind = Float_Type
                           and Identity'Result.Rows = Size
                           and Identity'Result.Columns = Size;
@@ -290,7 +290,7 @@ package Orka.Numerics.Tensors is
    --  and zeros everywhere else
 
    function Identity (Rows, Columns : Positive; Offset : Integer := 0) return Tensor is abstract
-     with Post'Class => Identity'Result.Dimensions = 2
+     with Post'Class => Identity'Result.Axes = 2
                           and Identity'Result.Kind = Float_Type
                           and Identity'Result.Rows = Rows
                           and Identity'Result.Columns = Columns;
@@ -298,9 +298,9 @@ package Orka.Numerics.Tensors is
    --  and zeros everywhere else
 
    function Upper_Triangular (Object : Tensor; Offset : Integer := 0) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2,
+     with Pre'Class  => Object.Axes = 2,
           Post'Class => Upper_Triangular'Result.Kind = Object.Kind and
-                        Upper_Triangular'Result.Dimensions = 2;
+                        Upper_Triangular'Result.Axes = 2;
    --  Return the upper triangular part of the matrix with zeros in the
    --  lower triangular part
    --
@@ -312,9 +312,9 @@ package Orka.Numerics.Tensors is
    --  Thus the main diagonal will be zeroes when Offset > 0.
 
    function Main_Diagonal (Object : Tensor; Offset : Integer := 0) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2,
+     with Pre'Class  => Object.Axes = 2,
           Post'Class => Main_Diagonal'Result.Kind = Object.Kind and
-                        Main_Diagonal'Result.Dimensions = 1;
+                        Main_Diagonal'Result.Axes = 1;
    --  Return a 1D tensor filled with the elements of the diagonal (main
    --  when Offset = 0) of the given tensor
 
@@ -326,7 +326,7 @@ package Orka.Numerics.Tensors is
    --  (main when Offset = 0) and zeros everywhere else
 
    function Diagonal (Elements : Tensor; Offset : Integer := 0) return Tensor is abstract
-     with Pre'Class  => Elements.Dimensions = 1,
+     with Pre'Class  => Elements.Axes = 1,
           Post'Class => Is_Square (Diagonal'Result)
                           and Diagonal'Result.Kind = Elements.Kind
                           and Diagonal'Result.Elements = Elements.Elements ** 2;
@@ -334,7 +334,7 @@ package Orka.Numerics.Tensors is
    --  (main when Offset = 0) and zeros everywhere else
 
    function Trace (Object : Tensor; Offset : Integer := 0) return Element is abstract
-     with Pre'Class => Object.Dimensions = 2;
+     with Pre'Class => Object.Axes = 2;
    --  Return the trace of a 2D tensor
    --
    --  The trace is a linear mapping:
@@ -352,46 +352,46 @@ package Orka.Numerics.Tensors is
 
    function Reshape (Object : Tensor; Elements : Positive) return Tensor is abstract
      with Pre'Class  => Object.Elements = Elements,
-          Post'Class => Reshape'Result.Kind = Object.Kind and Reshape'Result.Dimensions = 1;
+          Post'Class => Reshape'Result.Kind = Object.Kind and Reshape'Result.Axes = 1;
 
    function Flatten (Object : Tensor) return Tensor is abstract
-     with Post'Class => Flatten'Result.Kind = Object.Kind and Flatten'Result.Dimensions = 1;
+     with Post'Class => Flatten'Result.Kind = Object.Kind and Flatten'Result.Axes = 1;
 
    function Concatenate
      (Left, Right : Tensor;
-      Dimension   : Tensor_Dimension) return Tensor is abstract
-   with Pre'Class  => Left.Dimensions = Right.Dimensions and
+      Axis   : Tensor_Axis) return Tensor is abstract
+   with Pre'Class  => Left.Axes = Right.Axes and
                       Left.Kind = Right.Kind and
-                      Dimension <= Left.Dimensions and
-                      Is_Equal (Left.Shape, Right.Shape, Dimension) and
+                      Axis <= Left.Axes and
+                      Is_Equal (Left.Shape, Right.Shape, Axis) and
                       (Left.Elements > 0 or Right.Elements > 0),
-        Post'Class => Left.Dimensions = Concatenate'Result.Dimensions;
-   --  Return the concatenation of the two tensors in the given dimension
+        Post'Class => Left.Axes = Concatenate'Result.Axes;
+   --  Return the concatenation of the two tensors in the given Axis
 
    function "&" (Left, Right : Tensor) return Tensor is abstract;
-   --  Return the concatenation of the two tensors in the first dimension
+   --  Return the concatenation of the two tensors in the first Axis
 
    ----------------------------------------------------------------------------
    --                            Matrix operations                           --
    ----------------------------------------------------------------------------
 
    function "*" (Left, Right : Tensor) return Tensor is abstract
-     with Pre'Class => (if Left.Dimensions > 1 then
+     with Pre'Class => (if Left.Axes > 1 then
                           Left.Columns = Right.Rows
                         else
-                          (Right.Dimensions > 1 and Left.Rows = Right.Rows))
+                          (Right.Axes > 1 and Left.Rows = Right.Rows))
                          or else raise Constraint_Error with
                            "Cannot multiply matrices" &
                            " (left = " & Image (Left.Shape) & " and " &
                            "right = " & Image (Right.Shape) & ")",
-          Post'Class => "*"'Result.Dimensions = Right.Dimensions;
+          Post'Class => "*"'Result.Axes = Right.Axes;
    --  Perform matrix multiplication on two matrices (the right matrix
    --  can be a column vector) or a row vector and a matrix
    --
    --  Left is a row vector if it is 1-D.
 
    function "*" (Left, Right : Tensor) return Element is abstract
-     with Pre'Class => (Left.Dimensions = 1 and Right.Dimensions = 1 and
+     with Pre'Class => (Left.Axes = 1 and Right.Axes = 1 and
                        Left.Shape = Right.Shape) or else
                          raise Constraint_Error with
                            "Tensors must be vectors with same shape" &
@@ -403,27 +403,27 @@ package Orka.Numerics.Tensors is
      with Pre'Class => Is_Square (Left);
 
    function Outer (Left, Right : Tensor) return Tensor is abstract
-     with Pre'Class  => Left.Dimensions = 1 and Right.Dimensions = 1,
-          Post'Class => Outer'Result.Dimensions = 2
+     with Pre'Class  => Left.Axes = 1 and Right.Axes = 1,
+          Post'Class => Outer'Result.Axes = 2
                           and Outer'Result.Shape = (Left.Elements, Right.Elements);
 
    function Inverse (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
-          Post'Class => Inverse'Result.Dimensions = 2;
+          Post'Class => Inverse'Result.Axes = 2;
    --  Return the inverse of a nonsingular matrix
    --
    --  Raises a Singular_Matrix exception if the matrix is singular / noninvertible.
 
    function Transpose (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2,
-          Post'Class => Transpose'Result.Dimensions = 2
+     with Pre'Class  => Object.Axes = 2,
+          Post'Class => Transpose'Result.Axes = 2
                           and Transpose'Result.Rows = Object.Columns
                           and Transpose'Result.Columns = Object.Rows;
 
    type Solution_Kind is (None, Unique, Infinite);
 
    function Solve (A, B : Tensor; Solution : out Solution_Kind) return Tensor is abstract
-     with Pre'Class  => A.Dimensions = 2 and A.Rows = B.Rows,
+     with Pre'Class  => A.Axes = 2 and A.Rows = B.Rows,
           Post'Class => Solve'Result.Shape = B.Shape;
    --  Solve Ax = b for x for each column b in B by applying
    --  Gauss-Jordan elimination to convert A to its reduced row echelon form
@@ -444,14 +444,14 @@ package Orka.Numerics.Tensors is
    --  Solution or the function Least_Squares must be called.
 
    function Divide_By (B, A : Tensor) return Tensor is abstract
-     with Pre'Class  => A.Dimensions = 2 and A.Rows >= A.Columns and
-                        B.Dimensions = 2 and A.Columns = B.Columns,
+     with Pre'Class  => A.Axes = 2 and A.Rows >= A.Columns and
+                        B.Axes = 2 and A.Columns = B.Columns,
           Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
    --  Solve xA = B for x and return x = B / A
 
    function Divide_By (B, A : Tensor; Form : Triangular_Form) return Tensor is abstract
      with Pre'Class  => Is_Square (A) and
-                        B.Dimensions = 2 and A.Columns = B.Columns,
+                        B.Axes = 2 and A.Columns = B.Columns,
           Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
 
    --  TODO Verify behavior of Divide_By when A is underdetermined
@@ -466,20 +466,20 @@ package Orka.Numerics.Tensors is
    function Determinancy (Object : QR_Factorization) return Matrix_Determinancy is abstract;
 
    function QR (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 2;
+     with Pre'Class  => Object.Axes = 2;
    --  Return the reduced upper triangular matrix R of the QR decomposition (A = Q * R)
 
    function QR
      (Object : Tensor;
       Mode   : QR_Mode := Reduced) return QR_Factorization'Class is abstract
-   with Pre'Class  => Object.Dimensions = 2,
+   with Pre'Class  => Object.Axes = 2,
         Post'Class => QR'Result.Determinancy = Unknown;
    --  Return the Q and R matrices of the QR decomposition (A = Q * R)
    --
    --  Q is orthogonal (Q^T * Q = I) and R is upper triangular.
 
    function QR_For_Least_Squares (Object : Tensor) return QR_Factorization'Class is abstract
-     with Pre'Class => Object.Dimensions = 2,
+     with Pre'Class => Object.Axes = 2,
           Post'Class => QR_For_Least_Squares'Result.Determinancy /= Unknown;
    --  Return the QR decomposition of A if A is overdetermined (rows >= columns)
    --  or the decomposition of A^T if A is underdetermined (rows < columns)
@@ -493,7 +493,7 @@ package Orka.Numerics.Tensors is
    --  (if A is underdetermined)
 
    function Least_Squares (A, B : Tensor) return Tensor is abstract
-     with Pre'Class  => A.Dimensions = 2 and A.Rows = B.Rows,
+     with Pre'Class  => A.Axes = 2 and A.Rows = B.Rows,
           Post'Class => A.Columns = Least_Squares'Result.Rows
                           and Is_Equal (Least_Squares'Result.Shape, B.Shape, 1);
    --  Solve Ax' = b' for x' for each b' that is the orthogonal projection of
@@ -501,7 +501,7 @@ package Orka.Numerics.Tensors is
    --  and then the least-squares solution x
 
    function Constrained_Least_Squares (A, B, C, D : Tensor) return Tensor is abstract
-     with Pre'Class => (A.Dimensions = 2 and C.Dimensions = 2) and then
+     with Pre'Class => (A.Axes = 2 and C.Axes = 2) and then
                          (A.Columns = C.Columns and
                           A.Rows = B.Rows and
                           C.Rows = D.Rows and
@@ -530,7 +530,7 @@ package Orka.Numerics.Tensors is
    function Cholesky_Update
      (R, V : Tensor;
       Mode : Update_Mode) return Tensor is abstract
-   with Pre'Class  => Is_Square (R) and V.Dimensions = 1,
+   with Pre'Class  => Is_Square (R) and V.Axes = 1,
         Post'Class => Is_Square (Cholesky_Update'Result);
    --  Return the rank 1 update or downdate of the given upper triangular matrix R
    --
@@ -552,20 +552,20 @@ package Orka.Numerics.Tensors is
    ----------------------------------------------------------------------------
 
    function Norm (Object : Tensor) return Element is abstract
-     with Pre'Class  => Object.Dimensions = 1,
+     with Pre'Class  => Object.Axes = 1,
           Post'Class => Norm'Result >= 0.0;
    --  Return the norm or magnitude of the vector
 
    function Normalize (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 1,
-          Post'Class => Normalize'Result.Dimensions = 1;
+     with Pre'Class  => Object.Axes = 1,
+          Post'Class => Normalize'Result.Axes = 1;
    --  Return the normalized vector
    --
    --  The magnitude or norm of a unit vector is 1.0.
 
    function Standardize (Object : Tensor) return Tensor is abstract
-     with Pre'Class  => Object.Dimensions = 1,
-          Post'Class => Standardize'Result.Dimensions = 1;
+     with Pre'Class  => Object.Axes = 1,
+          Post'Class => Standardize'Result.Axes = 1;
    --  Return the standardized version of the vector
    --
    --  A standardized vector has a mean of 0.0 and a standard deviation
@@ -575,7 +575,7 @@ package Orka.Numerics.Tensors is
    subtype Correlation_Element is Element range -1.0 .. 1.0;
 
    function Correlation_Coefficient (Left, Right : Tensor) return Correlation_Element is abstract
-     with Pre'Class  => Left.Dimensions = 1 and Right.Dimensions = 1
+     with Pre'Class  => Left.Axes = 1 and Right.Axes = 1
                           and Left.Shape = Right.Shape;
    --  Return the correlation coefficient of two vectors
    --
@@ -775,12 +775,12 @@ package Orka.Numerics.Tensors is
    with Pre'Class => Object.Kind /= Bool_Type;
 
    function Reduce_Associative
-     (Object    : Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return Tensor is abstract
-   with Pre'Class  => Object.Kind /= Bool_Type and Dimension <= Object.Dimensions,
-        Post'Class => Reduce_Associative'Result.Dimensions = Object.Dimensions - 1;
+     (Object  : Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return Tensor is abstract
+   with Pre'Class  => Object.Kind /= Bool_Type and Axis <= Object.Axes,
+        Post'Class => Reduce_Associative'Result.Axes = Object.Axes - 1;
 
    function Reduce
      (Object    : Tensor;
@@ -789,20 +789,20 @@ package Orka.Numerics.Tensors is
    with Pre'Class => Object.Kind /= Bool_Type;
 
    function Reduce
-     (Object    : Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return Tensor is abstract
-   with Pre'Class  => Object.Kind /= Bool_Type and Dimension <= Object.Dimensions,
-        Post'Class => Reduce'Result.Dimensions = Object.Dimensions - 1;
+     (Object  : Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return Tensor is abstract
+   with Pre'Class  => Object.Kind /= Bool_Type and Axis <= Object.Axes,
+        Post'Class => Reduce'Result.Axes = Object.Axes - 1;
 
    function Sum (Object : Tensor) return Element is abstract;
 
-   function Sum (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract;
+   function Sum (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract;
 
    function Product (Object : Tensor) return Element is abstract;
 
-   function Product (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract;
+   function Product (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract;
 
    ----------------------------------------------------------------------------
    --                               Statistics                               --
@@ -828,42 +828,42 @@ package Orka.Numerics.Tensors is
    --
    --  The returned value is biased because of the square root, even when Offset = 1.
 
-   function Min (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
-     with Pre'Class  => Dimension <= Object.Dimensions,
-          Post'Class => Min'Result.Dimensions = Object.Dimensions - 1;
+   function Min (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
+     with Pre'Class  => Axis <= Object.Axes,
+          Post'Class => Min'Result.Axes = Object.Axes - 1;
 
-   function Max (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
-     with Pre'Class  => Dimension <= Object.Dimensions,
-          Post'Class => Max'Result.Dimensions = Object.Dimensions - 1;
+   function Max (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
+     with Pre'Class  => Axis <= Object.Axes,
+          Post'Class => Max'Result.Axes = Object.Axes - 1;
 
    function Quantile
-     (Object    : Tensor;
-      P         : Probability;
-      Dimension : Tensor_Dimension) return Tensor is abstract
-   with Pre'Class  => Dimension <= Object.Dimensions,
-        Post'Class => Quantile'Result.Dimensions = Object.Dimensions - 1;
+     (Object : Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return Tensor is abstract
+   with Pre'Class  => Axis <= Object.Axes,
+        Post'Class => Quantile'Result.Axes = Object.Axes - 1;
 
-   function Median (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
-     with Pre'Class  => Dimension <= Object.Dimensions,
-          Post'Class => Median'Result.Dimensions = Object.Dimensions - 1;
+   function Median (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
+     with Pre'Class  => Axis <= Object.Axes,
+          Post'Class => Median'Result.Axes = Object.Axes - 1;
 
-   function Mean (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
-     with Pre'Class  => Dimension <= Object.Dimensions,
-          Post'Class => Mean'Result.Dimensions = Object.Dimensions - 1;
+   function Mean (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
+     with Pre'Class  => Axis <= Object.Axes,
+          Post'Class => Mean'Result.Axes = Object.Axes - 1;
 
    function Variance
-     (Object    : Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return Tensor is abstract
-   with Pre'Class  => Dimension <= Object.Dimensions,
-        Post'Class => Variance'Result.Dimensions = Object.Dimensions - 1;
+     (Object : Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Tensor is abstract
+   with Pre'Class  => Axis <= Object.Axes,
+        Post'Class => Variance'Result.Axes = Object.Axes - 1;
 
    function Standard_Deviation
-     (Object    : Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return Tensor is abstract
-   with Pre'Class  => Dimension <= Object.Dimensions,
-        Post'Class => Standard_Deviation'Result.Dimensions = Object.Dimensions - 1;
+     (Object : Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Tensor is abstract
+   with Pre'Class  => Axis <= Object.Axes,
+        Post'Class => Standard_Deviation'Result.Axes = Object.Axes - 1;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -981,20 +981,20 @@ package Orka.Numerics.Tensors is
       Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean is abstract
    with Pre'Class => Left.Shape = Right.Shape and Left.Kind = Right.Kind;
 
-   function Any_True (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
+   function Any_True (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
      with Pre'Class  => Object.Kind = Bool_Type
-                          and Dimension <= Object.Dimensions
-                          and Object.Dimensions > 1,
-          Post'Class => Any_True'Result.Dimensions = Object.Dimensions - 1;
+                          and Axis <= Object.Axes
+                          and Object.Axes > 1,
+          Post'Class => Any_True'Result.Axes = Object.Axes - 1;
 
    function Any_True (Object : Tensor) return Boolean is abstract
      with Pre'Class => Object.Kind = Bool_Type;
 
-   function All_True (Object : Tensor; Dimension : Tensor_Dimension) return Tensor is abstract
+   function All_True (Object : Tensor; Axis : Tensor_Axis) return Tensor is abstract
      with Pre'Class  => Object.Kind = Bool_Type
-                          and Dimension <= Object.Dimensions
-                          and Object.Dimensions > 1,
-          Post'Class => All_True'Result.Dimensions = Object.Dimensions - 1;
+                          and Axis <= Object.Axes
+                          and Object.Axes > 1,
+          Post'Class => All_True'Result.Axes = Object.Axes - 1;
 
    function All_True (Object : Tensor) return Boolean is abstract
      with Pre'Class => Object.Kind = Bool_Type;
@@ -1209,29 +1209,29 @@ package Orka.Numerics.Tensors is
 
 private
 
-   function Add (Left, Right : Tensor_Shape; Dimension : Tensor_Dimension) return Tensor_Shape;
+   function Add (Left, Right : Tensor_Shape; Axis : Tensor_Axis) return Tensor_Shape;
 
    function To_Index (Index : Tensor_Index; Shape : Tensor_Shape) return Index_Type
      with Pre => Index'Length = Shape'Length
                    and then (for all D in Index'Range => Index (D) <= Shape (D));
 
    function Full_Range (Shape : Tensor_Shape; Index : Tensor_Range) return Tensor_Range;
-   --  Return a copy of the given index with the missing dimensions added
+   --  Return a copy of the given index with the missing Axes added
    --  from the given shape
    --
    --  For example, if Shape is 2-D and Index is 1-D, then 1 .. Shape (2)
-   --  is used for the second dimension in the result.
+   --  is used for the second Axis in the result.
 
    type Alignment is (Left, Right);
 
    function Full_Shape
-     (Dimensions : Tensor_Dimension;
+     (Axes : Tensor_Axis;
       Shape      : Tensor_Shape;
       Justify    : Alignment) return Tensor_Shape;
-   --  Return a shape padded at the beginning or end with 1's for missing dimensions
+   --  Return a shape padded at the beginning or end with 1's for missing Axes
    --
-   --  For example, if Dimensions = 3 and Alignment = Right and Shape has 2 dimensions,
-   --  then the first dimension of the result is 1 and the last two dimensions
+   --  For example, if Axes = 3 and Alignment = Right and Shape has 2 Axes,
+   --  then the first Axis of the result is 1 and the last two Axes
    --  equal to the given shape.
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);

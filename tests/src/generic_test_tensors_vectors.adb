@@ -57,8 +57,8 @@ package body Generic_Test_Tensors_Vectors is
    begin
       Assert (Tensor.Elements = Size,
         "Unexpected size: " & Tensor.Elements'Image & " for size " & Size'Image);
-      Assert (Tensor.Dimensions = 1,
-        "Expected dimensions: " & Tensor.Dimensions'Image & " for size " & Size'Image);
+      Assert (Tensor.Axes = 1,
+        "Expected axes: " & Tensor.Axes'Image & " for size " & Size'Image);
       Assert (Tensor.Shape = Shape,
         "Unexpected shape: " & Image (Tensor.Shape) & " for size " & Size'Image);
 

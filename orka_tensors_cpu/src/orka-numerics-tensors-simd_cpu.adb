@@ -156,21 +156,21 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Object : CPU_Tensor;
       Kind   : Data_Type := Float_Type) return CPU_Tensor
    is
-     ((Dimensions => Object.Dimensions,
-       Size       => Object.Size,
-       Kind       => Kind,
-       Shape      => Object.Shape,
-       Data       => <>));
+     ((Axes  => Object.Axes,
+       Size  => Object.Size,
+       Kind  => Kind,
+       Shape => Object.Shape,
+       Data  => <>));
 
    function Without_Data
      (Shape : Tensor_Shape;
       Kind  : Data_Type := Float_Type) return CPU_Tensor
    is
-     ((Dimensions => Shape'Length,
-       Size       => Data_Vectors (Shape),
-       Kind       => Kind,
-       Shape      => Shape,
-       Data       => <>));
+     ((Axes  => Shape'Length,
+       Size  => Data_Vectors (Shape),
+       Kind  => Kind,
+       Shape => Shape,
+       Data  => <>));
 
    ----------------------------------------------------------------------------
    --                              Expressions                               --
@@ -232,12 +232,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    procedure Set (Object : in out CPU_Tensor; Index : Tensor_Range; Value : CPU_Tensor) is
       Full_Index : constant Tensor_Range := Full_Range (Object.Shape, Index);
-      Full_Value : constant Tensor_Shape := Full_Shape (Object.Dimensions, Value.Shape, Right);
+      Full_Value : constant Tensor_Shape := Full_Shape (Object.Axes, Value.Shape, Right);
 
       pragma Assert (Full_Value = Shape (Full_Index));
    begin
       --  If the value (and shape of index) has the full depth/height/width except
-      --  for the first dimension, then the memory to which the data will be written
+      --  for the first axis, then the memory to which the data will be written
       --  is contiguous, which means it has no gaps.
       --
       --  For example, if shape of Value is (2, 3) and you have the following
@@ -251,7 +251,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --  of Value is (2, 5) (with a matching Index) then there are no gaps.
       --
       --  Another case in which there are are no gaps is when all but the last
-      --  dimension have a shape equal to 1. For example if the index is
+      --  axis have a shape equal to 1. For example if the index is
       --  ((2, 2), (7, 9)), which has the shape (1, 3).
       if Is_Equal (Object.Shape, Full_Value, 1)
         or else (for all D in Full_Value'First .. Full_Value'Last - 1 => Full_Value (D) = 1)
@@ -260,9 +260,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             Start_Index : Tensor_Index (Full_Index'Range);
             Stop_Index  : Tensor_Index (Full_Index'Range);
          begin
-            for Dimension in Full_Index'Range loop
-               Start_Index (Dimension) := Full_Index (Dimension).Start;
-               Stop_Index (Dimension)  := Full_Index (Dimension).Stop;
+            for Axis in Full_Index'Range loop
+               Start_Index (Axis) := Full_Index (Axis).Start;
+               Stop_Index (Axis)  := Full_Index (Axis).Stop;
             end loop;
 
             declare
@@ -288,10 +288,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    function Flattened_Index (Object : CPU_Tensor; Index : Tensor_Index) return Index_Type is
    begin
-      for Dimension in Index'Range loop
+      for Axis in Index'Range loop
          declare
-            Index_Dim : constant Natural := Index (Dimension);
-            Shape_Dim : constant Natural := Object.Shape (Dimension);
+            Index_Dim : constant Natural := Index (Axis);
+            Shape_Dim : constant Natural := Object.Shape (Axis);
          begin
             if Index_Dim > Shape_Dim then
                raise Constraint_Error with
@@ -362,7 +362,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Result_Rows : constant Positive := Row_Stop - Row_Start + 1;
    begin
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             declare
                Count : constant Positive := Result_Rows;
@@ -522,7 +522,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Result : SU.Unbounded_String;
    begin
       SU.Append (Result, "tensor([");
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             for I in 1 .. Count loop
                declare
@@ -600,7 +600,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Elements (Object : CPU_Tensor) return Natural is (Elements (Object.Shape));
 
    overriding
-   function Dimensions (Object : CPU_Tensor) return Tensor_Dimension is (Object.Dimensions);
+   function Axes (Object : CPU_Tensor) return Tensor_Axis is (Object.Axes);
 
    overriding
    function Empty (Shape : Tensor_Shape) return CPU_Tensor is (Without_Data (Shape));
@@ -736,7 +736,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Zero_Vector : constant Vector_Type := (others => 0.0);
    begin
       return Result : CPU_Tensor :=
-        (Dimensions => Shape'Length,
+        (Axes => Shape'Length,
          Size       => Data_Vectors (Shape),
          Kind       => Float_Type,
          Shape      => Shape,
@@ -802,7 +802,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Zero_Vector : constant Vector_Type := (others => 0.0);
    begin
       return Result : CPU_Tensor :=
-        (Dimensions => Shape'Length,
+        (Axes => Shape'Length,
          Size       => Data_Vectors (Shape),
          Kind       => Float_Type,
          Shape      => Shape,
@@ -840,7 +840,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reshape (Object : CPU_Tensor; Shape : Tensor_Shape) return CPU_Tensor is
-     (Dimensions => Shape'Length,
+     (Axes => Shape'Length,
       Size       => Object.Size,
       Kind       => Object.Kind,
       Shape      => Shape,
@@ -856,9 +856,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Concatenate
      (Left, Right : CPU_Tensor;
-      Dimension   : Tensor_Dimension) return CPU_Tensor
+      Axis   : Tensor_Axis) return CPU_Tensor
    is
-      Shape : constant Tensor_Shape := Add (Left.Shape, Right.Shape, Dimension);
+      Shape : constant Tensor_Shape := Add (Left.Shape, Right.Shape, Axis);
       pragma Assert (Elements (Shape) = Left.Elements + Right.Elements);
    begin
       return Result : CPU_Tensor := Without_Data (Shape, Left.Kind) do
@@ -872,7 +872,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             Right_Data : Element_Array (1 .. Right.Elements)
               with Import, Convention => Ada, Address => Right.Data'Address;
          begin
-            case Dimension is
+            case Axis is
                when 1 =>
                   Result_Data (1 .. Left.Elements) := Left_Data;
                   Result_Data (Left.Elements + 1 .. Result_Data'Last) := Right_Data;
@@ -967,12 +967,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --      ^   ^
       --      |___|
       --     (Count)
-      Left_Rows     : constant Natural := (if Left.Dimensions = 2 then Left.Shape (1) else 1);
+      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Shape (1) else 1);
       Count         : constant Natural := Right.Shape (1);
-      Right_Columns : constant Natural := (if Right.Dimensions = 2 then Right.Shape (2) else 1);
+      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Shape (2) else 1);
 
       Shape : constant Tensor_Shape :=
-         (case Right.Dimensions is
+         (case Right.Axes is
             when 1 => (1 => Left_Rows),
             when 2 => (1 => Left_Rows, 2 => Right_Columns));
    begin
@@ -1641,10 +1641,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reduce_Associative
-     (Object    : CPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return CPU_Tensor is
+     (Object  : CPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
@@ -1672,10 +1672,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reduce
-     (Object    : CPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return CPU_Tensor is
+     (Object  : CPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
@@ -1686,11 +1686,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Product (Object : CPU_Tensor) return Element renames Operations.Product;
 
    overriding
-   function Sum (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Sum (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Sum;
 
    overriding
-   function Product (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Product (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Product;
 
    ----------------------------------------------------------------------------
@@ -1739,43 +1739,43 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Max;
 
    overriding
-   function Min (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Min (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Min;
 
    overriding
-   function Max (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Max (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Max;
 
    overriding
    function Quantile
-     (Object    : CPU_Tensor;
-      P         : Probability;
-      Dimension : Tensor_Dimension) return CPU_Tensor is
+     (Object : CPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
    end Quantile;
 
    overriding
-   function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Mean (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Mean;
 
    overriding
    function Variance
-     (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return CPU_Tensor
+     (Object : CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return CPU_Tensor
    renames Operations.Variance;
 
    overriding
-   function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+   function Median (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Median;
 
    overriding
    function Standard_Deviation
-     (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return CPU_Tensor
+     (Object : CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return CPU_Tensor
    renames Operations.Standard_Deviation;
 
    ----------------------------------------------------------------------------
@@ -2008,7 +2008,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    renames Operations.All_Close;
 
    overriding
-   function Any_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
+   function Any_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME
@@ -2035,7 +2035,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Any_True;
 
    overriding
-   function All_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
+   function All_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
       return Zeros ((1 => 1));  --  FIXME

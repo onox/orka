@@ -67,8 +67,8 @@ package body Generic_Test_Tensors_Matrices is
       Tensor_1 : constant CPU_Tensor := Identity (3);
       Tensor_2 : constant CPU_Tensor := Tensor_1.Flatten;
    begin
-      Assert (Tensor_1.Dimensions = 2, "Unexpected dimensions:" & Tensor_1.Dimensions'Image);
-      Assert (Tensor_2.Dimensions = 1, "Unexpected dimensions:" & Tensor_2.Dimensions'Image);
+      Assert (Tensor_1.Axes = 2, "Unexpected axes:" & Tensor_1.Axes'Image);
+      Assert (Tensor_2.Axes = 1, "Unexpected axes:" & Tensor_2.Axes'Image);
 
       Assert (Tensor_1.Shape = (3, 3), "Unexpected shape:" & Image (Tensor_1.Shape));
       Assert (Tensor_2.Shape = (1 => 9), "Unexpected shape:" & Image (Tensor_2.Shape));
@@ -162,14 +162,14 @@ package body Generic_Test_Tensors_Matrices is
       Expected_2 : constant Element_Array :=
         (1.0, 0.0, 0.0, 4.0, 5.0, 0.0, 2.0, 0.0, 6.0, 7.0, 0.0, 0.0, 3.0, 8.0, 9.0);
 
-      Actual_1 : constant CPU_Tensor := Left_1.Concatenate (Right_1, Dimension => 1);
+      Actual_1 : constant CPU_Tensor := Left_1.Concatenate (Right_1, Axis => 1);
       --  1 0 0
       --  0 2 0
       --  0 0 3
       --  4 5 6
       --  7 8 9
 
-      Actual_2 : constant CPU_Tensor := Left_1.Concatenate (Right_2, Dimension => 2);
+      Actual_2 : constant CPU_Tensor := Left_1.Concatenate (Right_2, Axis => 2);
       --  1 0 0 4 5
       --  0 2 0 6 7
       --  0 0 3 8 9
@@ -743,7 +743,7 @@ package body Generic_Test_Tensors_Matrices is
       B2 : constant CPU_Tensor := To_Tensor ((459.014, 25.146, 195.0, 0.12), Shape => (4, 1));
 
       B_1D : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34));
-      B_2D : constant CPU_Tensor := Concatenate (B1, B2, Dimension => 2);
+      B_2D : constant CPU_Tensor := Concatenate (B1, B2, Axis => 2);
 
       --  Test matrices with 1-D and 2-D B's
       procedure Test_Shape_Least_Squares (A : CPU_Tensor) is
@@ -755,8 +755,8 @@ package body Generic_Test_Tensors_Matrices is
          Y_1D : constant CPU_Tensor := Least_Squares (A, B_1D);
          Y_2D : constant CPU_Tensor := Least_Squares (A, B_2D);
       begin
-         Assert (X_1D.Dimensions = B_1D.Dimensions, "Unexpected number of dimensions of X");
-         Assert (X_2D.Dimensions = B_2D.Dimensions, "Unexpected number of dimensions of X");
+         Assert (X_1D.Axes = B_1D.Axes, "Unexpected number of axes of X");
+         Assert (X_2D.Axes = B_2D.Axes, "Unexpected number of axes of X");
 
          Assert (X_2D.Shape (2) = B_2D.Shape (2), "Columns of X /= columns B");
 
@@ -926,7 +926,7 @@ package body Generic_Test_Tensors_Matrices is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Constrained_Least_Squares", Test_Constrained_Least_Squares'Access));
 
-      --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Dimension parameter)
+      --  TODO Statistics: Min, Max, Quantile, Median, Mean, Variance (with Axis parameter)
 
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Any_True", Test_Any_True'Access));
@@ -939,7 +939,7 @@ package body Generic_Test_Tensors_Matrices is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test reduction number", Test_Reduction_Number'Access));
 
-      --  TODO Cumulative, Reduce (with Dimension parameter)
+      --  TODO Cumulative, Reduce (with Axis parameter)
 
       return Test_Suite'Access;
    end Suite;

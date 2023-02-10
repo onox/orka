@@ -18,7 +18,7 @@ generic
 package Orka.Numerics.Kalman.CDKF is
    pragma Preelaborate;
 
-   use type Tensors.Tensor_Dimension;
+   use type Tensors.Tensor_Axis;
    use type Tensors.Element_Type;
 
    --  This package implements the state estimation form with additive noise
@@ -39,7 +39,7 @@ package Orka.Numerics.Kalman.CDKF is
      (X       : Vector;
       P, Q, R : Matrix;
       Weights : Weights_Type) return Filter
-   with Pre => X.Dimensions = 1
+   with Pre => X.Axes = 1
                  and X.Rows = P.Rows
                  and X.Rows = Weights.N
                  and Q.Is_Square and P.Shape = Q.Shape

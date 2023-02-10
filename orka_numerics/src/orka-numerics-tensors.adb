@@ -26,10 +26,10 @@ package body Orka.Numerics.Tensors is
       return Result;
    end Elements;
 
-   function Add (Left, Right : Tensor_Shape; Dimension : Tensor_Dimension) return Tensor_Shape is
+   function Add (Left, Right : Tensor_Shape; Axis : Tensor_Axis) return Tensor_Shape is
       Result : Tensor_Shape := Left;
    begin
-      Result (Dimension) := Result (Dimension) + Right (Dimension);
+      Result (Axis) := Result (Axis) + Right (Axis);
 
       return Result;
    end Add;
@@ -38,9 +38,9 @@ package body Orka.Numerics.Tensors is
       Result : Index_Type := Index (Index'Last);
       Size   : Natural    := Shape (Index'Last);
    begin
-      for Dimension in reverse 1 .. Index'Last - 1 loop
-         Result := (Index (Dimension) - 1) * Size + Result;
-         Size   := Size * Shape (Dimension);
+      for Axis in reverse 1 .. Index'Last - 1 loop
+         Result := (Index (Axis) - 1) * Size + Result;
+         Size   := Size * Shape (Axis);
       end loop;
 
       return Result;
@@ -49,8 +49,8 @@ package body Orka.Numerics.Tensors is
    function Shape (Index : Tensor_Range) return Tensor_Shape is
    begin
       return Result : Tensor_Shape (Index'Range) do
-         for Dimension in Result'Range loop
-            Result (Dimension) := Index (Dimension).Stop - Index (Dimension).Start + 1;
+         for Axis in Result'Range loop
+            Result (Axis) := Index (Axis).Stop - Index (Axis).Start + 1;
          end loop;
       end return;
    end Shape;
@@ -58,11 +58,11 @@ package body Orka.Numerics.Tensors is
    function Full_Range (Shape : Tensor_Shape; Index : Tensor_Range) return Tensor_Range is
       Result : Tensor_Range (Shape'Range);
    begin
-      for Dimension in Result'Range loop
-         if Dimension in Index'Range then
-            Result (Dimension) := Index (Dimension);
+      for Axis in Result'Range loop
+         if Axis in Index'Range then
+            Result (Axis) := Index (Axis);
          else
-            Result (Dimension) := (Start => 1, Stop => Shape (Dimension));
+            Result (Axis) := (Start => 1, Stop => Shape (Axis));
          end if;
       end loop;
 
@@ -70,18 +70,18 @@ package body Orka.Numerics.Tensors is
    end Full_Range;
 
    function Full_Shape
-     (Dimensions : Tensor_Dimension;
+     (Axes : Tensor_Axis;
       Shape      : Tensor_Shape;
       Justify    : Alignment) return Tensor_Shape
    is
-      Result : Tensor_Shape (1 .. Dimensions) := (others => 1);
-      Offset : constant Tensor_Dimension'Base :=
+      Result : Tensor_Shape (1 .. Axes) := (others => 1);
+      Offset : constant Tensor_Axis'Base :=
         (case Justify is
            when Left  => 0,
            when Right => Result'Last - Shape'Last);
    begin
-      for Dimension in Shape'Range loop
-         Result (Offset + Dimension) := Shape (Dimension);
+      for Axis in Shape'Range loop
+         Result (Offset + Axis) := Shape (Axis);
       end loop;
 
       return Result;

@@ -23,7 +23,7 @@ package body Orka.Numerics.Tensors.Operations is
      (Object.Get ((1 => Index)));
 
    overriding function Get (Object : Tensor_Type; Index : Range_Type) return Tensor_Type is
-     (case Object.Dimensions is
+     (case Object.Axes is
         when 1 => Object.Get (Tensor_Range'(1 => Index)),
         when 2 => Object.Get (Tensor_Range'(Index, (1, Object.Columns))));
 
@@ -32,7 +32,7 @@ package body Orka.Numerics.Tensors.Operations is
       Index  : Index_Type;
       Value  : Tensor_Type) is
    begin
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             raise Program_Error;
          when 2 =>
@@ -45,7 +45,7 @@ package body Orka.Numerics.Tensors.Operations is
       Index  : Range_Type;
       Value  : Tensor_Type) is
    begin
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             Object.Set (Tensor_Range'(1 => Index), Value);
          when 2 =>
@@ -194,7 +194,7 @@ package body Orka.Numerics.Tensors.Operations is
    end Inverse;
 
    function Matrix_Solve (A, B : Tensor_Type; Solution : out Solution_Kind) return Tensor_Type is
-      Ab : Tensor_Type := Concatenate (A, B, Dimension => 2);
+      Ab : Tensor_Type := Concatenate (A, B, Axis => 2);
 
       Rows    : constant Natural := A.Shape (1);
       Columns : constant Natural := A.Shape (2);
@@ -284,7 +284,7 @@ package body Orka.Numerics.Tensors.Operations is
    overriding
    function Solve (A, B : Tensor_Type; Solution : out Solution_Kind) return Tensor_Type is
    begin
-      case B.Dimensions is
+      case B.Axes is
          when 1 =>
             return Matrix_Solve (A, B.Reshape ((B.Elements, 1)), Solution).Flatten;
          when 2 =>
@@ -407,11 +407,11 @@ package body Orka.Numerics.Tensors.Operations is
      (R, Y         : Tensor_Type;
       Determinancy : Matrix_Determinancy) return Tensor_Type
    is
-      Ry : Tensor_Type := Concatenate (R, Y, Dimension => 2);
+      Ry : Tensor_Type := Concatenate (R, Y, Axis => 2);
 
       Columns : constant Positive := R.Shape (2);
       Size    : constant Positive := Natural'Min (R.Shape (1), R.Shape (2));
-      --  Use the smallest dimension of R for the size of the reduced (square) version R1
+      --  Use the smallest Axis of R for the size of the reduced (square) version R1
       --  without needing to extract it
       --
       --  R = [R1] (A is overdetermined) or R = [R1 0] (A is underdetermined)
@@ -463,7 +463,7 @@ package body Orka.Numerics.Tensors.Operations is
             declare
                Y : constant Tensor_Type := QR.Q.Transpose * B;
             begin
-               case Y.Dimensions is
+               case Y.Axes is
                   when 1 =>
                      return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1)), D).Flatten;
                   when 2 =>
@@ -471,7 +471,7 @@ package body Orka.Numerics.Tensors.Operations is
                end case;
             end;
          when Underdetermined =>
-            case B.Dimensions is
+            case B.Axes is
                when 1 =>
                   return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
                when 2 =>
@@ -487,7 +487,7 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding
    function Constrained_Least_Squares (A, B, C, D : Tensor_Type) return Tensor_Type is
-      AC : constant Tensor_Type := Concatenate (A, C, Dimension => 1);
+      AC : constant Tensor_Type := Concatenate (A, C, Axis => 1);
 
       QR_AC : constant QR_Factorization_Type := QR_Factorization_Type (QR_For_Least_Squares (AC));
 
@@ -499,14 +499,14 @@ package body Orka.Numerics.Tensors.Operations is
       pragma Assert (QR_Q2.Determinancy = Underdetermined);
 
       RQ2_IT_D : constant Tensor_Type :=
-        (case D.Dimensions is
+        (case D.Axes is
             when 1 =>
                QR_Solve (QR_Q2.R.Transpose, D.Reshape ((D.Elements, 1)), Underdetermined),
             when 2 =>
                QR_Solve (QR_Q2.R.Transpose, D, Underdetermined));
 
       B_Matrix : constant Tensor_Type :=
-        (case B.Dimensions is
+        (case B.Axes is
             when 1 => B.Reshape ((B.Elements, 1)),
             when 2 => B);
 
@@ -521,7 +521,7 @@ package body Orka.Numerics.Tensors.Operations is
 
       Result : constant Tensor_Type := QR_Solve (QR_AC.R, Rx, Overdetermined);
    begin
-      return (if B.Dimensions = 1 then Result.Flatten else Result);
+      return (if B.Axes = 1 then Result.Flatten else Result);
    end Constrained_Least_Squares;
 
    function Cholesky_Lower (Object : Tensor_Type) return Tensor_Type is
@@ -656,7 +656,7 @@ package body Orka.Numerics.Tensors.Operations is
            when Upper => Overdetermined,
            when Lower => Underdetermined);
    begin
-      case B.Dimensions is
+      case B.Axes is
          when 1 =>
             return QR_Solve (A, B.Reshape ((B.Elements, 1)), Determinancy).Flatten;
          when 2 =>
@@ -798,17 +798,17 @@ package body Orka.Numerics.Tensors.Operations is
    end Product;
 
    overriding
-   function Sum (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
+   function Sum (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
       Expression_Sum : constant Expression_Type := X + Y;
    begin
-      return Object.Reduce_Associative (Expression_Sum, 0.0, Dimension);
+      return Object.Reduce_Associative (Expression_Sum, 0.0, Axis);
    end Sum;
 
    overriding
-   function Product (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
+   function Product (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
       Expression_Product : constant Expression_Type := X * Y;
    begin
-      return Object.Reduce_Associative (Expression_Product, 1.0, Dimension);
+      return Object.Reduce_Associative (Expression_Product, 1.0, Axis);
    end Product;
 
    ----------------------------------------------------------------------------
@@ -828,17 +828,17 @@ package body Orka.Numerics.Tensors.Operations is
    end Max;
 
    overriding
-   function Min (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
+   function Min (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
       Expression_Min : constant Expression_Type := Min (X, Y);
    begin
-      return Object.Reduce_Associative (Expression_Min, Element'Last, Dimension);
+      return Object.Reduce_Associative (Expression_Min, Element'Last, Axis);
    end Min;
 
    overriding
-   function Max (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
+   function Max (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
       Expression_Max : constant Expression_Type := Max (X, Y);
    begin
-      return Object.Reduce_Associative (Expression_Max, Element'First, Dimension);
+      return Object.Reduce_Associative (Expression_Max, Element'First, Axis);
    end Max;
 
    function Median_Of_Three (A, B, C : Element) return Element is
@@ -933,37 +933,37 @@ package body Orka.Numerics.Tensors.Operations is
    ----------------------------------------------------------------------------
 
    overriding
-   function Mean (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
-     (Object.Sum (Dimension) / Element (Object.Shape (Dimension)));
+   function Mean (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
+     (Object.Sum (Axis) / Element (Object.Shape (Axis)));
 
    overriding
    function Variance
-     (Object    : Tensor_Type;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return Tensor_Type
+     (Object : Tensor_Type;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Tensor_Type
    is
-      Repeat : constant Positive := Object.Shape (Dimension);
-      Mean : Tensor_Type := Object.Mean (Dimension);
+      Repeat : constant Positive := Object.Shape (Axis);
+      Mean : Tensor_Type := Object.Mean (Axis);
       Repeated_Mean : Tensor_Type := Mean;
    begin
       for Index in 1 .. Repeat - 1 loop
-         Repeated_Mean := Concatenate (Repeated_Mean, Mean, Dimension);
+         Repeated_Mean := Concatenate (Repeated_Mean, Mean, Axis);
       end loop;
 
-      return Sum (Power (Object - Mean, 2), Dimension)
-               / (Element (Object.Shape (Dimension) - Offset));
+      return Sum (Power (Object - Mean, 2), Axis)
+               / (Element (Object.Shape (Axis) - Offset));
    end Variance;
 
    overriding
-   function Median (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type is
-     (Object.Quantile (0.5, Dimension));
+   function Median (Object : Tensor_Type; Axis : Tensor_Axis) return Tensor_Type is
+     (Object.Quantile (0.5, Axis));
 
    overriding
    function Standard_Deviation
-     (Object    : Tensor_Type;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return Tensor_Type
-   is (Sqrt (Object.Variance (Dimension, Offset)));
+     (Object : Tensor_Type;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Tensor_Type
+   is (Sqrt (Object.Variance (Axis, Offset)));
 
    ----------------------------------------------------------------------------
    --                              Comparisons                               --

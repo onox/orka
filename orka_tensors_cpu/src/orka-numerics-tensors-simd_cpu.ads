@@ -118,7 +118,7 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Elements (Object : CPU_Tensor) return Natural;
 
    overriding
-   function Dimensions (Object : CPU_Tensor) return Tensor_Dimension;
+   function Axes (Object : CPU_Tensor) return Tensor_Axis;
 
    ----------------------------------------------------------------------------
 
@@ -213,7 +213,7 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Concatenate
      (Left, Right : CPU_Tensor;
-      Dimension   : Tensor_Dimension) return CPU_Tensor;
+      Axis   : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function "&" (Left, Right : CPU_Tensor) return CPU_Tensor;
@@ -397,10 +397,10 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reduce_Associative
-     (Object    : CPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return CPU_Tensor;
+     (Object  : CPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function Reduce
@@ -410,20 +410,20 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reduce
-     (Object    : CPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return CPU_Tensor;
+     (Object  : CPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return CPU_Tensor;
 
    overriding function Sum (Object : CPU_Tensor) return Element;
 
    overriding function Product (Object : CPU_Tensor) return Element;
 
    overriding
-   function Sum (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Sum (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
-   function Product (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Product (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                               Statistics                               --
@@ -450,34 +450,34 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Max (Left, Right : CPU_Tensor) return CPU_Tensor;
 
    overriding
-   function Min (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Min (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
-   function Max (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Max (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function Quantile
-     (Object    : CPU_Tensor;
-      P         : Probability;
-      Dimension : Tensor_Dimension) return CPU_Tensor;
+     (Object : CPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return CPU_Tensor;
 
    overriding
-   function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Median (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
-   function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Mean (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function Variance
-     (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return CPU_Tensor;
+     (Object : CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return CPU_Tensor;
 
    overriding
    function Standard_Deviation
-     (Object    : CPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return CPU_Tensor;
+     (Object : CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -541,13 +541,13 @@ package Orka.Numerics.Tensors.SIMD_CPU is
       Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean;
 
    overriding
-   function Any_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function Any_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function Any_True (Object : CPU_Tensor) return Boolean;
 
    overriding
-   function All_True (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+   function All_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
    function All_True (Object : CPU_Tensor) return Boolean;
@@ -563,16 +563,16 @@ private
 
    type Vector_Array is array (Index_Type range <>) of Vector_Type;
 
-   type CPU_Tensor (Dimensions : Tensor_Dimension; Size : Natural; Kind : Data_Type)
+   type CPU_Tensor (Axes : Tensor_Axis; Size : Natural; Kind : Data_Type)
      is new Tensor with
    record
-      Shape : Tensor_Shape (1 .. Dimensions);
+      Shape : Tensor_Shape (1 .. Axes);
       Data  : Vector_Array (1 .. Size);
    end record;
 
    type CPU_QR_Factorization (Q_Size, R_Size : Natural) is new QR_Factorization with record
-      Q : CPU_Tensor (Dimensions => 2, Size => Q_Size, Kind => Float_Type);
-      R : CPU_Tensor (Dimensions => 2, Size => R_Size, Kind => Float_Type);
+      Q : CPU_Tensor (Axes => 2, Size => Q_Size, Kind => Float_Type);
+      R : CPU_Tensor (Axes => 2, Size => R_Size, Kind => Float_Type);
       Determinancy : Matrix_Determinancy;
    end record;
 

@@ -922,8 +922,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Set_Shape (Kernel, Source.Shape);
             Kernel.Uniform ("offset").Set_Integer (Object.Operation.Matrix_Operation.Offset);
 
-            pragma Assert (Source.Dimensions = 2);
-            pragma Assert (Object.Dimensions = 1);
+            pragma Assert (Source.Axes = 2);
+            pragma Assert (Object.Axes = 1);
          end Initialize_Main_Diagonal;
 
          procedure Initialize_Diagonal (Kernel : Program) is
@@ -936,8 +936,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Set_Shape (Kernel, Object.Shape);
             Kernel.Uniform ("offset").Set_Integer (Object.Operation.Matrix_Operation.Offset);
 
-            pragma Assert (Source.Dimensions = 1);
-            pragma Assert (Object.Dimensions = 2);
+            pragma Assert (Source.Axes = 1);
+            pragma Assert (Object.Axes = 2);
          end Initialize_Diagonal;
 
          procedure Initialize_Transpose (Kernel : Program) is
@@ -950,8 +950,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Set_Shape (Kernel, Object.Shape);
             Set_Count (Kernel, Object.Elements);
 
-            pragma Assert (Source.Dimensions = 2);
-            pragma Assert (Object.Dimensions = 2);
+            pragma Assert (Source.Axes = 2);
+            pragma Assert (Object.Axes = 2);
          end Initialize_Transpose;
 
          procedure Initialize_Matrix_Matrix (Kernel : Program) is
@@ -964,18 +964,18 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Buffers.Append (Materialize_Tensor (Source_Right));
             Buffers.Append (Object.Reference.Data);
 
-            case Object.Dimensions is
+            case Object.Axes is
                when 1 => Set_Shape (Kernel, (1 => Object.Rows, 2 => 1));
                when 2 => Set_Shape (Kernel, Object.Shape);
             end case;
             Kernel.Uniform ("size").Set_UInt (Unsigned_32 (Source_Left.Columns));
             pragma Assert (Source_Left.Columns = Source_Right.Rows);
-            pragma Assert (Source_Right.Dimensions = Object.Dimensions);
+            pragma Assert (Source_Right.Axes = Object.Axes);
 
-            --  TODO Shouldn't Source_Left also be able to be a row vector, e.g. Dimensions <= 2?
-            pragma Assert (Source_Left.Dimensions = 2);
-            pragma Assert (Source_Right.Dimensions <= 2);
-            pragma Assert (Object.Dimensions <= 2);
+            --  TODO Shouldn't Source_Left also be able to be a row vector, e.g. Axes <= 2?
+            pragma Assert (Source_Left.Axes = 2);
+            pragma Assert (Source_Right.Axes <= 2);
+            pragma Assert (Object.Axes <= 2);
          end Initialize_Matrix_Matrix;
 
          procedure Initialize_Random (Kernel : Program) is
@@ -998,7 +998,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
             pragma Assert (Source.Kind = Bool_Type);
             pragma Assert (Object.Kind = Bool_Type);
-            pragma Assert (Object.Dimensions = 1);
+            pragma Assert (Object.Axes = 1);
          end Initialize_Is_True;
 
          Buffer_Constants : aliased Buffer := Create_Buffer
@@ -1061,7 +1061,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
          if Object.Operation.Kind = Matrix_Operation
            and then Object.Operation.Matrix_Operation.Kind in Diagonal | Matrix_Matrix
-           and then Object.Dimensions = 2
+           and then Object.Axes = 2
          then
             GL.Compute.Dispatch_Compute
               (X => Groups (Elements => Object.Rows,    Group_Size => Size_X),
@@ -1095,11 +1095,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Kind  : Data_Type := Float_Type) return GPU_Tensor
    is
      ((Ada.Finalization.Controlled with
-         Dimensions => Shape'Length,
-         Kind       => Kind,
-         Operation  => (Kind => None),
-         Reference  => Initialize_Reference,
-         Shape      => Shape));
+         Axes      => Shape'Length,
+         Kind      => Kind,
+         Operation => (Kind => None),
+         Reference => Initialize_Reference,
+         Shape     => Shape));
 
    function Without_Data
      (Object : GPU_Tensor;
@@ -1122,11 +1122,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Constructor : Constructor_Type) return GPU_Tensor
    is
      ((Ada.Finalization.Controlled with
-         Dimensions  => Shape'Length,
-         Kind        => Kind,
-         Reference   => Initialize_Reference,
-         Shape       => Shape,
-         Operation   => (Kind => Constructor_Operation, Constructor => Constructor)));
+         Axes      => Shape'Length,
+         Kind      => Kind,
+         Reference => Initialize_Reference,
+         Shape     => Shape,
+         Operation => (Kind => Constructor_Operation, Constructor => Constructor)));
 
    function From_Matrix_Operation
      (Shape     : Tensor_Shape;
@@ -1134,11 +1134,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Operation : Matrix_Operation_Type) return GPU_Tensor
    is
      ((Ada.Finalization.Controlled with
-         Dimensions       => Shape'Length,
-         Kind             => Kind,
-         Reference        => Initialize_Reference,
-         Shape            => Shape,
-         Operation        => (Kind => Matrix_Operation, Matrix_Operation => Operation)));
+         Axes      => Shape'Length,
+         Kind      => Kind,
+         Reference => Initialize_Reference,
+         Shape     => Shape,
+         Operation => (Kind => Matrix_Operation, Matrix_Operation => Operation)));
 
    function From_Unary_Operation
      (Shape    : Tensor_Shape;
@@ -1147,7 +1147,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Value    : Value_Type) return GPU_Tensor
    is
      ((Ada.Finalization.Controlled with
-         Dimensions => Shape'Length,
+         Axes       => Shape'Length,
          Kind       => Kind,
          Reference  => Initialize_Reference,
          Shape      => Shape,
@@ -1162,7 +1162,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Left, Right : Value_Type) return GPU_Tensor
    is
      ((Ada.Finalization.Controlled with
-         Dimensions => Shape'Length,
+         Axes       => Shape'Length,
          Kind       => Kind,
          Reference  => Initialize_Reference,
          Shape      => Shape,
@@ -1220,12 +1220,12 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    procedure Set (Object : in out GPU_Tensor; Index : Tensor_Range; Value : GPU_Tensor) is
       Full_Index : constant Tensor_Range := Full_Range (Object.Shape, Index);
-      Full_Value : constant Tensor_Shape := Full_Shape (Object.Dimensions, Value.Shape, Right);
+      Full_Value : constant Tensor_Shape := Full_Shape (Object.Axes, Value.Shape, Right);
 
       pragma Assert (Full_Value = Shape (Full_Index));
    begin
       --  If the value (and shape of index) has the full depth/height/width except
-      --  for the first dimension, then the memory to which the data will be written
+      --  for the first axis, then the memory to which the data will be written
       --  is contiguous, which means it has no gaps.
       --
       --  For example, if shape of Value is (2, 3) and you have the following
@@ -1239,7 +1239,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       --  of Value is (2, 5) (with a matching Index) then there are no gaps.
       --
       --  Another case in which there are are no gaps is when all but the last
-      --  dimension have a shape equal to 1. For example if the index is
+      --  axis have a shape equal to 1. For example if the index is
       --  ((2, 2), (7, 9)), which has the shape (1, 3).
       if Is_Equal (Object.Shape, Full_Value, 1)
         or else (for all D in Full_Value'First .. Full_Value'Last - 1 => Full_Value (D) = 1)
@@ -1248,9 +1248,9 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Start_Index : Tensor_Index (Full_Index'Range);
             Stop_Index  : Tensor_Index (Full_Index'Range);
          begin
-            for Dimension in Full_Index'Range loop
-               Start_Index (Dimension) := Full_Index (Dimension).Start;
-               Stop_Index (Dimension)  := Full_Index (Dimension).Stop;
+            for Axis in Full_Index'Range loop
+               Start_Index (Axis) := Full_Index (Axis).Start;
+               Stop_Index (Axis)  := Full_Index (Axis).Stop;
             end loop;
 
             declare
@@ -1274,10 +1274,10 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
    function Flattened_Index (Object : GPU_Tensor; Index : Tensor_Index) return Index_Type is
    begin
-      for Dimension in Index'Range loop
+      for Axis in Index'Range loop
          declare
-            Index_Dim : constant Natural := Index (Dimension);
-            Shape_Dim : constant Natural := Object.Shape (Dimension);
+            Index_Dim : constant Natural := Index (Axis);
+            Shape_Dim : constant Natural := Object.Shape (Axis);
          begin
             if Index_Dim > Shape_Dim then
                raise Constraint_Error with
@@ -1385,7 +1385,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
       Result_Rows : constant Positive := Row_Stop - Row_Start + 1;
    begin
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             declare
                Count : constant Positive := Result_Rows;
@@ -1545,7 +1545,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       pragma Assert (Buffer /= null);
 
       SU.Append (Result, "tensor([");
-      case Object.Dimensions is
+      case Object.Axes is
          when 1 =>
             for I in 1 .. Count loop
                declare
@@ -1630,7 +1630,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    function Elements (Object : GPU_Tensor) return Natural is (Elements (Object.Shape));
 
    overriding
-   function Dimensions (Object : GPU_Tensor) return Tensor_Dimension is (Object.Dimensions);
+   function Axes (Object : GPU_Tensor) return Tensor_Axis is (Object.Axes);
 
    overriding
    function Empty (Shape : Tensor_Shape) return GPU_Tensor is (Without_Data (Shape));
@@ -1849,9 +1849,9 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    function Concatenate
      (Left, Right : GPU_Tensor;
-      Dimension   : Tensor_Dimension) return GPU_Tensor
+      Axis   : Tensor_Axis) return GPU_Tensor
    is
-      Shape : constant Tensor_Shape := Add (Left.Shape, Right.Shape, Dimension);
+      Shape : constant Tensor_Shape := Add (Left.Shape, Right.Shape, Axis);
       pragma Assert (Elements (Shape) = Left.Elements + Right.Elements);
    begin
       if Left.Elements > 0 then
@@ -1869,7 +1869,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       end if;
 
       return Result : constant GPU_Tensor := With_Buffer (Shape, Left.Kind) do
-         case Dimension is
+         case Axis is
             when 1 =>
                Left.Reference.Data.Copy_Data
                  (Result.Reference.Data.all, 0, 0, Left.Elements);
@@ -1915,11 +1915,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
       --  m x n * n x p
       --      ^   ^
       --      |___|
-      Left_Rows     : constant Natural := (if Left.Dimensions = 2 then Left.Shape (1) else 1);
-      Right_Columns : constant Natural := (if Right.Dimensions = 2 then Right.Shape (2) else 1);
+      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Shape (1) else 1);
+      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Shape (2) else 1);
 
       Shape : constant Tensor_Shape :=
-         (case Right.Dimensions is
+         (case Right.Axes is
             when 1 => (1 => Left_Rows),
             when 2 => (1 => Left_Rows, 2 => Right_Columns));
    begin
@@ -2465,19 +2465,19 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
    overriding
    function Reduce_Associative
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element) return Element is
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element) return Element is
    begin
       return Apply_Reduction (Object, Subject, Initial, Associative => True);
    end Reduce_Associative;
 
    overriding
    function Reduce_Associative
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return GPU_Tensor is
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return GPU_Tensor is
    begin
       raise Not_Implemented_Yet;
       return Zeros ((1 => 1));  --  FIXME
@@ -2485,19 +2485,19 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
    overriding
    function Reduce
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element) return Element is
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element) return Element is
    begin
       return Apply_Reduction (Object, Subject, Initial, Associative => False);
    end Reduce;
 
    overriding
    function Reduce
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return GPU_Tensor is
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return GPU_Tensor is
    begin
       raise Not_Implemented_Yet;
       return Zeros ((1 => 1));  --  FIXME
@@ -2508,11 +2508,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding function Product (Object : GPU_Tensor) return Element renames Operations.Product;
 
    overriding
-   function Sum (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Sum (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Sum;
 
    overriding
-   function Product (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Product (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Product;
 
    ----------------------------------------------------------------------------
@@ -2557,43 +2557,43 @@ package body Orka.Numerics.Tensors.CS_GPU is
          Right    => (Kind => Tensor_Value, Tensor => Tensor_Holders.To_Holder (Right))));
 
    overriding
-   function Min (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Min (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Min;
 
    overriding
-   function Max (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Max (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Max;
 
    overriding
    function Quantile
-     (Object    : GPU_Tensor;
-      P         : Probability;
-      Dimension : Tensor_Dimension) return GPU_Tensor is
+     (Object : GPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return GPU_Tensor is
    begin
       raise Not_Implemented_Yet;
       return Zeros ((1 => 1));  --  FIXME
    end Quantile;
 
    overriding
-   function Mean (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Mean (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Mean;
 
    overriding
    function Variance
-     (Object    : GPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return GPU_Tensor
+     (Object : GPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return GPU_Tensor
    renames Operations.Variance;
 
    overriding
-   function Median (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor
+   function Median (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor
      renames Operations.Median;
 
    overriding
    function Standard_Deviation
-     (Object    : GPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return GPU_Tensor
+     (Object : GPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return GPU_Tensor
    renames Operations.Standard_Deviation;
 
    ----------------------------------------------------------------------------
@@ -2781,7 +2781,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    renames Operations.All_Close;
 
    overriding
-   function Any_True (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor is
+   function Any_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor is
    begin
       raise Not_Implemented_Yet;
       return Zeros ((1 => 1));  --  FIXME
@@ -2801,7 +2801,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    end Any_True;
 
    overriding
-   function All_True (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor is
+   function All_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor is
    begin
       raise Not_Implemented_Yet;
       return Zeros ((1 => 1));  --  FIXME

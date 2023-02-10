@@ -71,7 +71,7 @@ package Orka.Numerics.Tensors.CS_GPU is
    function Elements (Object : GPU_Tensor) return Natural;
 
    overriding
-   function Dimensions (Object : GPU_Tensor) return Tensor_Dimension;
+   function Axes (Object : GPU_Tensor) return Tensor_Axis;
 
    ----------------------------------------------------------------------------
 
@@ -166,7 +166,7 @@ package Orka.Numerics.Tensors.CS_GPU is
    overriding
    function Concatenate
      (Left, Right : GPU_Tensor;
-      Dimension   : Tensor_Dimension) return GPU_Tensor;
+      Axis   : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function "&" (Left, Right : GPU_Tensor) return GPU_Tensor;
@@ -344,39 +344,39 @@ package Orka.Numerics.Tensors.CS_GPU is
 
    overriding
    function Reduce_Associative
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element) return Element;
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element) return Element;
 
    overriding
    function Reduce_Associative
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return GPU_Tensor;
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function Reduce
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element) return Element;
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element) return Element;
 
    overriding
    function Reduce
-     (Object    : GPU_Tensor;
-      Subject   : Expression'Class;
-      Initial   : Element;
-      Dimension : Tensor_Dimension) return GPU_Tensor;
+     (Object  : GPU_Tensor;
+      Subject : Expression'Class;
+      Initial : Element;
+      Axis    : Tensor_Axis) return GPU_Tensor;
 
    overriding function Sum (Object : GPU_Tensor) return Element;
 
    overriding function Product (Object : GPU_Tensor) return Element;
 
    overriding
-   function Sum (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Sum (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
-   function Product (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Product (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                               Statistics                               --
@@ -403,34 +403,34 @@ package Orka.Numerics.Tensors.CS_GPU is
    function Max (Left, Right : GPU_Tensor) return GPU_Tensor;
 
    overriding
-   function Min (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Min (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
-   function Max (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Max (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function Quantile
-     (Object    : GPU_Tensor;
-      P         : Probability;
-      Dimension : Tensor_Dimension) return GPU_Tensor;
+     (Object : GPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return GPU_Tensor;
 
    overriding
-   function Median (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Median (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
-   function Mean (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Mean (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function Variance
-     (Object    : GPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return GPU_Tensor;
+     (Object : GPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return GPU_Tensor;
 
    overriding
    function Standard_Deviation
-     (Object    : GPU_Tensor;
-      Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return GPU_Tensor;
+     (Object : GPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return GPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -494,13 +494,13 @@ package Orka.Numerics.Tensors.CS_GPU is
       Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean;
 
    overriding
-   function Any_True (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function Any_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function Any_True (Object : GPU_Tensor) return Boolean;
 
    overriding
-   function All_True (Object : GPU_Tensor; Dimension : Tensor_Dimension) return GPU_Tensor;
+   function All_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor;
 
    overriding
    function All_True (Object : GPU_Tensor) return Boolean;
@@ -610,11 +610,11 @@ private
    end record;
 
    type GPU_Tensor
-     (Dimensions : Tensor_Dimension;
-      Kind       : Data_Type)
+     (Axes : Tensor_Axis;
+      Kind : Data_Type)
    is new Ada.Finalization.Controlled and Tensor with record
       Reference : GPU_Tensor_Reference_Access;
-      Shape     : Tensor_Shape (1 .. Dimensions);
+      Shape     : Tensor_Shape (1 .. Axes);
       Operation : Operation_Type;
    end record;
 
