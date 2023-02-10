@@ -3,7 +3,7 @@
 
 # orka_tensors_cpu
 
-This create provides an implementation of [tensors][url-docs-tensors] using
+This crate provides an implementation of [tensors][url-docs-tensors] using
 SIMD instructions provided by the [orka_simd][url-simd-crate] crate.
 
 ## License
