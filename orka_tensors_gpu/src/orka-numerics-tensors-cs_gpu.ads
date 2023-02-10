@@ -224,7 +224,7 @@ package Orka.Numerics.Tensors.CS_GPU is
 
    overriding
    function Least_Squares (Object : QR_Factorization'Class; B : GPU_Tensor) return GPU_Tensor;
---     with Pre'Class => GPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+--     with Pre'Class => GPU_QR_Factorization (Object).Q.Rows = B.Rows;
    --  Note: commented to avoid GNAT bug box
 
    overriding

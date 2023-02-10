@@ -643,11 +643,11 @@ package body Generic_Test_Tensors_Matrices is
       Actual_2 : constant CPU_Tensor := QR_2.Q * QR_2.R;
       Actual_3 : constant CPU_Tensor := QR_3.Q * QR_3.R;
    begin
-      Assert (QR_1.Q.Shape = (Tensor_1.Shape (1), Tensor_1.Shape (1)),
+      Assert (QR_1.Q.Shape = (Tensor_1.Rows, Tensor_1.Rows),
         "Unexpected shape " & Image (QR_1.Q.Shape) & " of Q");
-      Assert (QR_2.Q.Shape = (Tensor_2.Shape (1), Tensor_2.Shape (1)),
+      Assert (QR_2.Q.Shape = (Tensor_2.Rows, Tensor_2.Rows),
         "Unexpected shape " & Image (QR_2.Q.Shape) & " of Q");
-      Assert (QR_3.Q.Shape = (Tensor_3.Shape (1), Tensor_3.Shape (1)),
+      Assert (QR_3.Q.Shape = (Tensor_3.Rows, Tensor_3.Rows),
         "Unexpected shape " & Image (QR_3.Q.Shape) & " of Q");
 
       Assert (QR_1.R.Shape = Tensor_1.Shape, "Unexpected shape " & Image (QR_1.R.Shape) & " of R");
@@ -758,10 +758,10 @@ package body Generic_Test_Tensors_Matrices is
          Assert (X_1D.Axes = B_1D.Axes, "Unexpected number of axes of X");
          Assert (X_2D.Axes = B_2D.Axes, "Unexpected number of axes of X");
 
-         Assert (X_2D.Shape (2) = B_2D.Shape (2), "Columns of X /= columns B");
+         Assert (X_2D.Columns = B_2D.Columns, "Columns of X /= columns B");
 
-         Assert (X_1D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
-         Assert (X_2D.Shape (1) = A.Shape (2), "Rows of X /= columns of A");
+         Assert (X_1D.Rows = A.Columns, "Rows of X /= columns of A");
+         Assert (X_2D.Rows = A.Columns, "Rows of X /= columns of A");
 
          Assert (All_Close (X_1D, Y_1D), "Unxpected least-squares solution");
          Assert (All_Close (X_2D, Y_2D), "Unxpected least-squares solution");

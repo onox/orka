@@ -49,7 +49,7 @@ package body Orka.Numerics.Tensors.Operations is
          when 1 =>
             Object.Set (Tensor_Range'(1 => Index), Value);
          when 2 =>
-            Object.Set (Tensor_Range'(Index, (1, Object.Shape (2))), Value);
+            Object.Set (Tensor_Range'(Index, (1, Object.Columns)), Value);
       end case;
    end Set;
 
@@ -143,7 +143,7 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding function "**" (Left : Tensor_Type; Right : Integer) return Tensor_Type is
       function Matrix_Power (Left : Tensor_Type; Right : Natural) return Tensor_Type is
-         Result : Tensor_Type := Identity (Size => Left.Shape (1));
+         Result : Tensor_Type := Identity (Size => Left.Rows);
 
          Log_2 : constant Element := EF.Log (2.0);
 
@@ -172,7 +172,7 @@ package body Orka.Numerics.Tensors.Operations is
          when 1 =>
             return Left;
          when 0 =>
-            return Identity (Size => Left.Shape (1));
+            return Identity (Size => Left.Rows);
          when -1 =>
             return Left.Inverse;
          when Integer'First .. -2 =>
@@ -182,7 +182,7 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding
    function Inverse (Object : Tensor_Type) return Tensor_Type is
-      Size : constant Natural := Object.Shape (1);
+      Size : constant Natural := Object.Rows;
 
       Solution : Solution_Kind := None;
    begin
@@ -196,10 +196,10 @@ package body Orka.Numerics.Tensors.Operations is
    function Matrix_Solve (A, B : Tensor_Type; Solution : out Solution_Kind) return Tensor_Type is
       Ab : Tensor_Type := Concatenate (A, B, Axis => 2);
 
-      Rows    : constant Natural := A.Shape (1);
-      Columns : constant Natural := A.Shape (2);
+      Rows    : constant Natural := A.Rows;
+      Columns : constant Natural := A.Columns;
 
-      Columns_Ab : constant Natural := Ab.Shape (2);
+      Columns_Ab : constant Natural := Ab.Columns;
 
       function Find_Largest_Pivot (Row_Index, Column_Index : Index_Type) return Index_Type is
          Pivot_Value : Element    := abs Ab.Get ((Row_Index, Column_Index));
@@ -390,8 +390,8 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding
    function QR_For_Least_Squares (Object : Tensor_Type) return QR_Factorization'Class is
-      Rows    : constant Positive := Object.Shape (1);
-      Columns : constant Positive := Object.Shape (2);
+      Rows    : constant Positive := Object.Rows;
+      Columns : constant Positive := Object.Columns;
    begin
       if Rows >= Columns then
          return QR (Object, Overdetermined, Reduced);
@@ -409,15 +409,15 @@ package body Orka.Numerics.Tensors.Operations is
    is
       Ry : Tensor_Type := Concatenate (R, Y, Axis => 2);
 
-      Columns : constant Positive := R.Shape (2);
-      Size    : constant Positive := Natural'Min (R.Shape (1), R.Shape (2));
+      Columns : constant Positive := R.Columns;
+      Size    : constant Positive := Natural'Min (R.Rows, R.Columns);
       --  Use the smallest Axis of R for the size of the reduced (square) version R1
       --  without needing to extract it
       --
       --  R = [R1] (A is overdetermined) or R = [R1 0] (A is underdetermined)
       --      [ 0]
 
-      Columns_Ry : constant Positive := Ry.Shape (2);
+      Columns_Ry : constant Positive := Ry.Columns;
    begin
       case Determinancy is
          when Overdetermined =>
@@ -491,8 +491,8 @@ package body Orka.Numerics.Tensors.Operations is
 
       QR_AC : constant QR_Factorization_Type := QR_Factorization_Type (QR_For_Least_Squares (AC));
 
-      QR_AC_Q1_T : constant Tensor_Type := QR_AC.Q.Get (Range_Type'(1, A.Shape (1))).Transpose;
-      QR_AC_Q2 : constant Tensor_Type := QR_AC.Q.Get (Range_Type'(A.Shape (1) + 1, AC.Shape (1)));
+      QR_AC_Q1_T : constant Tensor_Type := QR_AC.Q.Get (Range_Type'(1, A.Rows)).Transpose;
+      QR_AC_Q2 : constant Tensor_Type := QR_AC.Q.Get (Range_Type'(A.Rows + 1, AC.Rows));
 
       QR_Q2 : constant QR_Factorization_Type :=
         QR_Factorization_Type (QR_For_Least_Squares (QR_AC_Q2));
@@ -763,7 +763,7 @@ package body Orka.Numerics.Tensors.Operations is
       elsif Right < 0 then
          return 1.0 / Vector_Power (Left, abs Right);
       else
-         return Ones (Elements => Left.Shape (1));
+         return Ones (Elements => Left.Rows);
       end if;
    end Power;
 

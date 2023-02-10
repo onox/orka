@@ -53,7 +53,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Replace_Row;
 
    procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-      Rows        : constant Natural := Ab.Shape (1);
+      Rows        : constant Natural := Ab.Rows;
       Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
    begin
       --  Create zeros below the pivot position
@@ -82,8 +82,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
        Determinancy => Determinancy);
 
    procedure Make_Upper_Triangular (Object : in out CPU_Tensor; Offset : Integer := 0) is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
+      Rows    : constant Natural := Object.Rows;
+      Columns : constant Natural := Object.Columns;
    begin
       if Offset >= -(Rows - 2) then
          --  Make matrix upper triangular by zeroing out the elements in the
@@ -395,7 +395,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          when 2 =>
             declare
                Columns : constant Natural :=
-                 (if 2 in Object.Shape'Range then Object.Shape (2) else 1);
+                 (if 2 in Object.Shape'Range then Object.Columns else 1);
 
                Index_Shape : constant Tensor_Shape := Shape (Index);
                Result_Columns : constant Positive :=
@@ -551,8 +551,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             end loop;
          when 2 =>
             declare
-               Rows    : constant Natural := Object.Shape (1);
-               Columns : constant Natural := Object.Shape (2);
+               Rows    : constant Natural := Object.Rows;
+               Columns : constant Natural := Object.Columns;
 
                Object_Data : Element_Array (1 .. Count)
                  with Import, Convention => Ada, Address => Object.Data'Address;
@@ -766,8 +766,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
-      Rows    : constant Positive := Object.Shape (1);
-      Columns : constant Positive := Object.Shape (2);
+      Rows    : constant Positive := Object.Rows;
+      Columns : constant Positive := Object.Columns;
 
       Shape : constant Tensor_Shape := (1 => Positive'Min (Rows, Columns));
    begin
@@ -878,10 +878,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   Result_Data (Left.Elements + 1 .. Result_Data'Last) := Right_Data;
                when 2 =>
                   declare
-                     Rows : constant Positive := Left.Shape (1);
+                     Rows : constant Positive := Left.Rows;
 
-                     Columns_Left  : constant Positive := Left.Shape (2);
-                     Columns_Right : constant Positive := Right.Shape (2);
+                     Columns_Left  : constant Positive := Left.Columns;
+                     Columns_Right : constant Positive := Right.Columns;
                   begin
                      for Index in 1 .. Rows loop
                         declare
@@ -967,9 +967,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       --      ^   ^
       --      |___|
       --     (Count)
-      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Shape (1) else 1);
-      Count         : constant Natural := Right.Shape (1);
-      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Shape (2) else 1);
+      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Rows else 1);
+      Count         : constant Natural := Right.Rows;
+      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Columns else 1);
 
       Shape : constant Tensor_Shape :=
          (case Right.Axes is
@@ -1085,8 +1085,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Transpose (Object : CPU_Tensor) return CPU_Tensor is
       Shape : constant Tensor_Shape :=
-        (1 => Object.Shape (2),
-         2 => Object.Shape (1));
+        (1 => Object.Columns,
+         2 => Object.Rows);
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
@@ -1096,8 +1096,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             Object_Data : Element_Array (1 .. Object.Elements)
               with Import, Convention => Ada, Address => Object.Data'Address;
 
-            Rows    : constant Natural := Object.Shape (1);
-            Columns : constant Natural := Object.Shape (2);
+            Rows    : constant Natural := Object.Rows;
+            Columns : constant Natural := Object.Columns;
 
             Result_Columns : Natural renames Rows;
          begin

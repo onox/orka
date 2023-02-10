@@ -181,7 +181,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    end Replace_Row;
 
    procedure Forward_Substitute (Ab : in out GPU_Tensor; Index, Pivot_Index : Index_Type) is
-      Rows        : constant Natural := Ab.Shape (1);
+      Rows        : constant Natural := Ab.Rows;
       Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
    begin
       --  Create zeros below the pivot position
@@ -208,8 +208,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
        Determinancy => Determinancy);
 
    procedure Make_Upper_Triangular (Object : in out GPU_Tensor; Offset : Integer := 0) is
-      Rows    : constant Natural := Object.Shape (1);
-      Columns : constant Natural := Object.Shape (2);
+      Rows    : constant Natural := Object.Rows;
+      Columns : constant Natural := Object.Columns;
    begin
       if Offset >= -(Rows - 2) then
          --  Make matrix upper triangular by zeroing out the elements in the
@@ -1407,7 +1407,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          when 2 =>
             declare
                Columns : constant Natural :=
-                 (if 2 in Object.Shape'Range then Object.Shape (2) else 1);
+                 (if 2 in Object.Shape'Range then Object.Columns else 1);
 
                Index_Shape : constant Tensor_Shape := Shape (Index);
                Result_Columns : constant Positive :=
@@ -1581,8 +1581,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
             end loop;
          when 2 =>
             declare
-               Rows    : constant Natural := Object.Shape (1);
-               Columns : constant Natural := Object.Shape (2);
+               Rows    : constant Natural := Object.Rows;
+               Columns : constant Natural := Object.Columns;
             begin
                for I in 1 .. Rows loop
                   SU.Append (Result, (if I = 1 then "" else "        "));
@@ -1785,8 +1785,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
    overriding
    function Main_Diagonal (Object : GPU_Tensor; Offset : Integer := 0) return GPU_Tensor is
-      Rows    : constant Positive := Object.Shape (1);
-      Columns : constant Positive := Object.Shape (2);
+      Rows    : constant Positive := Object.Rows;
+      Columns : constant Positive := Object.Columns;
 
       Shape : constant Tensor_Shape := (1 => Positive'Min (Rows, Columns));
    begin
@@ -1877,10 +1877,10 @@ package body Orka.Numerics.Tensors.CS_GPU is
                  (Result.Reference.Data.all, 0, Left.Elements, Right.Elements);
             when 2 =>
                declare
-                  Rows : constant Positive := Left.Shape (1);
+                  Rows : constant Positive := Left.Rows;
 
-                  Columns_Left  : constant Positive := Left.Shape (2);
-                  Columns_Right : constant Positive := Right.Shape (2);
+                  Columns_Left  : constant Positive := Left.Columns;
+                  Columns_Right : constant Positive := Right.Columns;
                begin
                   --  TODO It may or may not be faster to use a CS to copy Left and Right
                   for Index in 1 .. Rows loop
@@ -1915,8 +1915,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       --  m x n * n x p
       --      ^   ^
       --      |___|
-      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Shape (1) else 1);
-      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Shape (2) else 1);
+      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Rows else 1);
+      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Columns else 1);
 
       Shape : constant Tensor_Shape :=
          (case Right.Axes is
@@ -1951,8 +1951,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    function Transpose (Object : GPU_Tensor) return GPU_Tensor is
       Shape : constant Tensor_Shape :=
-        (1 => Object.Shape (2),
-         2 => Object.Shape (1));
+        (1 => Object.Columns,
+         2 => Object.Rows);
    begin
       return From_Matrix_Operation
         (Shape     => Shape,

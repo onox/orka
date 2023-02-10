@@ -271,7 +271,7 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor;
---     with Pre'Class => CPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+--     with Pre'Class => CPU_QR_Factorization (Object).Q.Rows = B.Rows;
    --  Note: commented to avoid GNAT bug box
 
    overriding
