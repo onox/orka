@@ -29,7 +29,7 @@ package GL.Types is
    subtype UInt64 is Orka.Unsigned_64;
 
    --  Signed integer types
-   type Byte  is new C.signed_char;
+   subtype Byte  is Orka.Integer_8;
    subtype Short is Orka.Integer_16;
    subtype Int   is Orka.Integer_32;
    subtype Long  is Orka.Integer_64;
@@ -40,9 +40,9 @@ package GL.Types is
    subtype Positive_Size is Size range 1 .. Size'Last;
 
    --  Unsigned integer types
-   type UByte  is new C.unsigned_char;
-   type UShort is new C.unsigned_short;
-   subtype UInt is Orka.Unsigned_32;
+   subtype UByte  is Orka.Unsigned_8;
+   subtype UShort is Orka.Unsigned_16;
+   subtype UInt   is Orka.Unsigned_32;
 
    --  Floating point types ("Single" is used to avoid conflicts with Float)
    subtype Half   is Orka.Float_16;

@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Interfaces.C;
-
 package Orka is
    pragma Pure;
 
@@ -31,27 +29,29 @@ package Orka is
    --
    --  See Table 2.2 of the OpenGL specification.
 
-   type Integer_16 is new Interfaces.C.short;
-   type Integer_32 is new Interfaces.C.int;
+   type Integer_8  is range -(2 **  7) .. +(2 ** 7 - 1)  with Size =>  8;
 
-   type Integer_64 is range -(2 ** 63) .. +(2 ** 63 - 1);
-   --  Based on C99 long long int
+   type Integer_16 is range -(2 ** 15) .. +(2 ** 15 - 1) with Size => 16;
+   type Integer_32 is range -(2 ** 31) .. +(2 ** 31 - 1) with Size => 32;
+   type Integer_64 is range -(2 ** 63) .. +(2 ** 63 - 1) with Size => 64;
 
    subtype Size is Integer_32 range 0 .. Integer_32'Last;
 
    type Size_3D is array (Index_3D) of Size;
 
+   type Integer_8_Array  is array (Size range <>) of aliased Integer_8  with Convention => C;
+   type Integer_16_Array is array (Size range <>) of aliased Integer_16 with Convention => C;
    type Integer_32_Array is array (Size range <>) of aliased Integer_32 with Convention => C;
 
    ----------------------------------------------------------------------------
 
-   type Unsigned_32 is mod 2 ** 32
-     with Size => 32;
+   type Unsigned_8  is mod 2 ** 8  with Size => 8;
+   type Unsigned_16 is mod 2 ** 16 with Size => 16;
+   type Unsigned_32 is mod 2 ** 32 with Size => 32;
+   type Unsigned_64 is mod 2 ** 64 with Size => 64;
 
-   type Unsigned_64 is mod 2 ** 64
-     with Size => 64;
-   --  Based on C99 unsigned long long int
-
+   type Unsigned_8_Array  is array (Size range <>) of aliased Unsigned_8  with Convention => C;
+   type Unsigned_16_Array is array (Size range <>) of aliased Unsigned_16 with Convention => C;
    type Unsigned_32_Array is array (Size range <>) of aliased Unsigned_32 with Convention => C;
 
    ----------------------------------------------------------------------------
@@ -59,8 +59,8 @@ package Orka is
    subtype Float_16 is Integer_16;
    --  F16C extension can be used to convert from/to Float_32
 
-   type Float_32 is new Interfaces.C.C_float;
-   type Float_64 is new Interfaces.C.double;
+   type Float_32 is digits  6 range -16#0.FFFF_FF#E+32 .. 16#0.FFFF_FF#E+32;
+   type Float_64 is digits 15 range -16#0.FFFF_FFFF_FFFF_F8#E+256 .. 16#0.FFFF_FFFF_FFFF_F8#E+256;
 
    overriding
    function "=" (Left, Right : Float_32) return Boolean;

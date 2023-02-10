@@ -23,19 +23,19 @@ package GL.Types.Pointers is
    --  Pointer types (for use with data transfer functions)
 
    package Byte_Pointers is new Interfaces.C.Pointers
-     (Size, Byte, Byte_Array, Byte'Last);
+     (Size, Orka.Integer_8, Orka.Integer_8_Array, Orka.Integer_8'Last);
 
    package Short_Pointers is new Interfaces.C.Pointers
-     (Size, Short, Short_Array, Short'Last);
+     (Size, Orka.Integer_16, Orka.Integer_16_Array, Orka.Integer_16'Last);
 
    package Int_Pointers is new Interfaces.C.Pointers
      (Size, Orka.Integer_32, Orka.Integer_32_Array, Orka.Integer_32'Last);
 
    package UByte_Pointers is new Interfaces.C.Pointers
-     (Size, UByte, UByte_Array, UByte'Last);
+     (Size, Orka.Unsigned_8, Orka.Unsigned_8_Array, Orka.Unsigned_8'Last);
 
    package UShort_Pointers is new Interfaces.C.Pointers
-     (Size, UShort, UShort_Array, UShort'Last);
+     (Size, Orka.Unsigned_16, Orka.Unsigned_16_Array, Orka.Unsigned_16'Last);
 
    package UInt_Pointers is new Interfaces.C.Pointers
      (Size, Orka.Unsigned_32, Orka.Unsigned_32_Array, Orka.Unsigned_32'Last);
