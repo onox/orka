@@ -102,6 +102,15 @@ package body Orka.Numerics.Tensors is
         when others =>
            raise Program_Error);
 
+   function Image (Index : Tensor_Index) return String is
+     (case Index'Length is
+        when 1 =>
+           "(" & Trim (Index (1)) & ")",
+        when 2 =>
+           "(" & Trim (Index (1)) & ", " & Trim (Index (2)) & ")",
+        when others =>
+           raise Program_Error);
+
    ----------------------------------------------------------------------------
 
    package body Generic_Random is
@@ -168,6 +177,7 @@ package body Orka.Numerics.Tensors is
       begin
          for I in 1 .. Integer (Element'Floor (K)) loop
             Result := Result + Log (Uniform (Shape) + Element'Model_Small);
+            Result.Materialize;
          end loop;
 
          --  Marsaglia's transformation-rejection method [1]

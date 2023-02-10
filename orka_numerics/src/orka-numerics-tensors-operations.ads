@@ -204,6 +204,12 @@ package Orka.Numerics.Tensors.Operations is
 
    overriding function Product (Object : Tensor_Type) return Element;
 
+   overriding
+   function Sum (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
+
+   overriding
+   function Product (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
+
    ----------------------------------------------------------------------------
    --                               Statistics                               --
    ----------------------------------------------------------------------------
@@ -211,6 +217,10 @@ package Orka.Numerics.Tensors.Operations is
    overriding function Min (Object : Tensor_Type) return Element;
 
    overriding function Max (Object : Tensor_Type) return Element;
+
+   overriding function Min (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
+
+   overriding function Max (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
 
    overriding function Quantile (Object : Tensor_Type; P : Probability) return Element;
 
@@ -225,6 +235,15 @@ package Orka.Numerics.Tensors.Operations is
    function Standard_Deviation (Object : Tensor_Type; Offset : Natural := 0) return Element;
 
    ----------------------------------------------------------------------------
+
+   overriding
+   function Mean (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
+
+   overriding
+   function Variance
+     (Object    : Tensor_Type;
+      Dimension : Tensor_Dimension;
+      Offset    : Natural := 0) return Tensor_Type;
 
    overriding
    function Median (Object : Tensor_Type; Dimension : Tensor_Dimension) return Tensor_Type;
@@ -258,6 +277,8 @@ package Orka.Numerics.Tensors.Operations is
    overriding function "<=" (Left : Element; Right : Tensor_Type) return Tensor_Type;
 
    ----------------------------------------------------------------------------
+
+   overriding function And_Not (Left, Right : Tensor_Type) return Tensor_Type;
 
    overriding function "=" (Left, Right : Tensor_Type) return Boolean;
 

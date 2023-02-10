@@ -76,6 +76,10 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    type CPU_Tensor (<>) is new Tensor with private;
 
+   overriding function Is_Materialized (Object : CPU_Tensor) return Boolean is (True);
+
+   overriding procedure Materialize (Object : in out CPU_Tensor) is null;
+
    overriding function Kind (Object : CPU_Tensor) return Data_Type;
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return Element;
@@ -266,8 +270,9 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class;
 
    overriding
-   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor
-     with Pre'Class => CPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor;
+--     with Pre'Class => CPU_QR_Factorization (Object).Q.Shape (1) = B.Shape (1);
+   --  Note: commented to avoid GNAT bug box
 
    overriding
    function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor;
@@ -413,6 +418,12 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Sum (Object : CPU_Tensor) return Element;
 
    overriding function Product (Object : CPU_Tensor) return Element;
+
+   overriding
+   function Sum (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
+
+   overriding
+   function Product (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                               Statistics                               --

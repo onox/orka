@@ -1685,6 +1685,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function Product (Object : CPU_Tensor) return Element renames Operations.Product;
 
+   overriding
+   function Sum (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Sum;
+
+   overriding
+   function Product (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Product;
+
    ----------------------------------------------------------------------------
    --                               Statistics                               --
    ----------------------------------------------------------------------------
@@ -1731,18 +1739,12 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Max;
 
    overriding
-   function Min (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Min;
+   function Min (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Min;
 
    overriding
-   function Max (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Max;
+   function Max (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Max;
 
    overriding
    function Quantile
@@ -1755,21 +1757,15 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Quantile;
 
    overriding
-   function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Mean;
+   function Mean (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
+     renames Operations.Mean;
 
    overriding
    function Variance
      (Object    : CPU_Tensor;
       Dimension : Tensor_Dimension;
-      Offset    : Natural := 0) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
-   end Variance;
+      Offset    : Natural := 0) return CPU_Tensor
+   renames Operations.Variance;
 
    overriding
    function Median (Object : CPU_Tensor; Dimension : Tensor_Dimension) return CPU_Tensor
