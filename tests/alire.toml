@@ -24,6 +24,7 @@ orka = "~0.2.0"
 orka_numerics = "^1.0.0"
 orka_simd = "^1.0.0"
 orka_tensors_cpu = "^1.0.0"
+orka_tensors_gpu = "^1.0.0"
 orka_transforms = "^1.0.0"
 
 [[pins]]
@@ -31,4 +32,5 @@ orka = { path = "../orka" }
 orka_numerics = { path = "../orka_numerics" }
 orka_simd = { path = "../orka_simd" }
 orka_tensors_cpu = { path = "../orka_tensors_cpu" }
+orka_tensors_gpu = { path = "../orka_tensors_gpu" }
 orka_transforms = { path = "../orka_transforms" }

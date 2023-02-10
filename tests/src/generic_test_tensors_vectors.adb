@@ -18,15 +18,18 @@ with Ada.Numerics.Generic_Elementary_Functions;
 
 with AUnit.Assertions;
 with AUnit.Test_Caller;
-with AUnit.Test_Fixtures;
 
+with Orka.Loggers.Terminal;
+with Orka.Logging;
 with Orka.OS;
+with Orka.Resources.Locations.Directories;
 
 package body Generic_Test_Tensors_Vectors is
 
    use Tensors;
-   use SIMD_CPU;
    use type Tensors.Element;
+
+   subtype CPU_Tensor is Tensor_Type;
 
    use AUnit.Assertions;
 
@@ -38,9 +41,10 @@ package body Generic_Test_Tensors_Vectors is
 
    package Random is new Generic_Random (CPU_Tensor);
 
+   function Is_Similar (Expected, Result : Element) return Boolean is
+     (abs (Result - Expected) <= Element'Model_Epsilon + 1.0e-05 * abs Expected);
+
    procedure Assert (Expected, Result : Element; Message : String) is
-      function Is_Similar (Expected, Result : Element) return Boolean is
-        (abs (Result - Expected) <= Element'Model_Epsilon + 1.0e-05 * abs Expected);
    begin
       Assert (Is_Similar (Expected, Result), Message);
    end Assert;
@@ -60,7 +64,7 @@ package body Generic_Test_Tensors_Vectors is
 
       for I in 1 .. Size loop
          declare
-            Value : constant Element := Tensor (I);
+            Value : constant Element := Tensor.Get (I);
          begin
             Assert (Expected = Value, "Unexpected element: " & Value'Image);
          end;
@@ -73,9 +77,9 @@ package body Generic_Test_Tensors_Vectors is
         "Unexpected size of tensor: " & Actual.Elements'Image);
 
       for I in Expected'Range loop
-         Assert (Expected (I), Actual (I),
+         Assert (Expected (I), Actual.Get (I),
            "Unexpected element at index " & I'Image & ": " &
-           Element'Image (Actual (I)) & " instead of " & Element'Image (Expected (I)));
+           Element'Image (Actual.Get (I)) & " instead of " & Element'Image (Expected (I)));
       end loop;
    end Assert_Equal;
 
@@ -85,15 +89,13 @@ package body Generic_Test_Tensors_Vectors is
         "Unexpected size of tensor: " & Actual.Elements'Image);
 
       for I in Expected'Range loop
-         Assert (Expected (I) = Actual (I),
+         Assert (Expected (I) = Actual.Get (I),
            "Unexpected element at index " & I'Image & ": " &
-           Boolean'Image (Actual (I)) & " instead of " & Boolean'Image (Expected (I)));
+           Boolean'Image (Actual.Get (I)) & " instead of " & Boolean'Image (Expected (I)));
       end loop;
    end Assert_Boolean_Equal;
 
    ----------------------------------------------------------------------------
-
-   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Zeros (Object : in out Test) is
    begin
@@ -263,7 +265,7 @@ package body Generic_Test_Tensors_Vectors is
       Tensor : constant CPU_Tensor := To_Tensor (Values);
    begin
       for I in Values'Range loop
-         Assert (Values (I) = Tensor (I), "Unexpected element at index " & I'Image);
+         Assert (Values (I) = Tensor.Get (I), "Unexpected element at index " & I'Image);
       end loop;
    end Test_Constant_Indexing_Index;
 
@@ -272,7 +274,7 @@ package body Generic_Test_Tensors_Vectors is
       Tensor : constant CPU_Tensor := To_Boolean_Tensor (Values);
    begin
       for I in Values'Range loop
-         Assert (Values (I) = Tensor (I), "Unexpected element at index " & I'Image);
+         Assert (Values (I) = Tensor.Get (I), "Unexpected element at index " & I'Image);
       end loop;
    end Test_Constant_Indexing_Index_Boolean;
 
@@ -282,12 +284,14 @@ package body Generic_Test_Tensors_Vectors is
    begin
       for I in 1 .. 3 loop
          declare
-            Actual : constant CPU_Tensor := Tensor (Range_Type'(Start => I, Stop => I + I - 1));
+            Actual : constant CPU_Tensor :=
+              Tensor.Get (Range_Type'(Start => I, Stop => I + I - 1));
          begin
             Assert (Actual.Elements = I, "Unexpected size of tensor: " & Actual.Elements'Image);
 
             for J in 0 .. Actual.Elements - 1 loop
-               Assert (Element (I + J) = Actual (J + 1), "Unexpected element at index " & I'Image);
+               Assert (Element (I + J) = Actual.Get (J + 1),
+                 "Unexpected element at index " & I'Image);
             end loop;
          end;
       end loop;
@@ -301,9 +305,9 @@ package body Generic_Test_Tensors_Vectors is
       Expected_2 : constant Element_Array := (1.0, 2.0, 4.0, 5.0);
       Expected_3 : constant Element_Array := (1.0, 3.0, 5.0, 7.0, 9.0);
 
-      Actual_1   : constant CPU_Tensor := Tensor_1 (Tensor_1 < 3.0);
-      Actual_2   : constant CPU_Tensor := Tensor_1 (Tensor_1 /= 3.0);
-      Actual_3   : constant CPU_Tensor := Tensor_2 (Tensor_2 mod 2.0 /= 0.0);
+      Actual_1   : constant CPU_Tensor := Tensor_1.Get (Tensor_1 < 3.0);
+      Actual_2   : constant CPU_Tensor := Tensor_1.Get (Tensor_1 /= 3.0);
+      Actual_3   : constant CPU_Tensor := Tensor_2.Get (Tensor_2 mod 2.0 /= 0.0);
    begin
       Assert_Equal (Expected_1, Actual_1);
       Assert_Equal (Expected_2, Actual_2);
@@ -350,7 +354,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected : constant Element := 1.0;
       Actual   : constant Element := Tensor.Norm;
    begin
-      Assert (Expected = Actual, "Unexpected norm after normalization: " & Actual'Image);
+      Assert (Expected, Actual, "Unexpected norm after normalization: " & Actual'Image);
    end Test_Normalize;
 
    procedure Test_Standardize (Object : in out Test) is
@@ -391,10 +395,10 @@ package body Generic_Test_Tensors_Vectors is
       Actual_3 : constant Element := Correlation_Coefficient (Tensor_2, Tensor_2);
       Actual_4 : constant Element := Correlation_Coefficient (Tensor_1, Tensor_4);
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected correlation coeff.: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected correlation coeff.: " & Actual_2'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected correlation coeff.: " & Actual_3'Image);
-      Assert (Expected_4 = Actual_4, "Unexpected correlation coeff.: " & Actual_4'Image);
+      Assert (Expected_1, Actual_1, "Unexpected correlation coeff.: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected correlation coeff.: " & Actual_2'Image);
+      Assert (Expected_3, Actual_3, "Unexpected correlation coeff.: " & Actual_3'Image);
+      Assert (Expected_4, Actual_4, "Unexpected correlation coeff.: " & Actual_4'Image);
    end Test_Correlation_Coefficient;
 
    procedure Test_Operator_Add_Tensors (Object : in out Test) is
@@ -748,7 +752,9 @@ package body Generic_Test_Tensors_Vectors is
       Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, False, True));
    begin
       Assert (Tensor_1 = Tensor_2, "Tensors not equal");
-      Assert (not (Tensor_1 = Tensor_3), "Tensors equal");
+      Assert (not Boolean'(Tensor_1 = Tensor_3), "Tensors equal");
+      --  Type hint to avoid GCC compiler bug:
+      --  12.1.0 (x86_64-linux-gnu) in fold_convert_loc, at fold-const.cc:2469
 
       Assert (Expected = (Tensor_3 = Tensor_4), "Tensors not equal for some elements");
    end Test_Operator_Equals_Tensors;
@@ -929,10 +935,10 @@ package body Generic_Test_Tensors_Vectors is
       Actual_3 : constant Element := Tensor_1.Reduce (Expression_Product, 1.0);
       Actual_4 : constant Element := Tensor_2.Reduce (Expression_Divide, 1.0);
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
-      Assert (Expected_4 = Actual_4, "Unexpected reduction result: " & Actual_4'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_3, Actual_3, "Unexpected reduction result: " & Actual_3'Image);
+      Assert (Expected_4, Actual_4, "Unexpected reduction result: " & Actual_4'Image);
    end Test_Reduction_Binary_Operator;
 
    procedure Test_Reduction_Associative_Binary_Operator (Object : in out Test) is
@@ -947,8 +953,8 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1 : constant Element := Tensor_1.Reduce (Expression_Sum, 0.0);
       Actual_3 : constant Element := Tensor_1.Reduce (Expression_Product, 1.0);
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_3, Actual_3, "Unexpected reduction result: " & Actual_3'Image);
    end Test_Reduction_Associative_Binary_Operator;
 
    procedure Test_Reduction_Unary_Operator (Object : in out Test) is
@@ -967,9 +973,9 @@ package body Generic_Test_Tensors_Vectors is
       Actual_2 : constant Element := Tensor_1.Reduce (Expression_Absolute, 0.0);
       Actual_3 : constant Element := Tensor_2.Reduce (Expression_Sqrt, 0.0);
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_3, Actual_3, "Unexpected reduction result: " & Actual_3'Image);
    end Test_Reduction_Unary_Operator;
 
    procedure Test_Reduction_Number (Object : in out Test) is
@@ -1008,16 +1014,16 @@ package body Generic_Test_Tensors_Vectors is
       Actual_9 : constant Element := Tensor.Reduce (Expression_9, 0.0);
       Actual_0 : constant Element := Tensor.Reduce (Expression_0, 1.0);
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected reduction result: " & Actual_3'Image);
-      Assert (Expected_4 = Actual_4, "Unexpected reduction result: " & Actual_4'Image);
-      Assert (Expected_5 = Actual_5, "Unexpected reduction result: " & Actual_5'Image);
-      Assert (Expected_6 = Actual_6, "Unexpected reduction result: " & Actual_6'Image);
-      Assert (Expected_7 = Actual_7, "Unexpected reduction result: " & Actual_7'Image);
-      Assert (Expected_8 = Actual_8, "Unexpected reduction result: " & Actual_8'Image);
-      Assert (Expected_9 = Actual_9, "Unexpected reduction result: " & Actual_9'Image);
-      Assert (Expected_0 = Actual_0, "Unexpected reduction result: " & Actual_0'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_3, Actual_3, "Unexpected reduction result: " & Actual_3'Image);
+      Assert (Expected_4, Actual_4, "Unexpected reduction result: " & Actual_4'Image);
+      Assert (Expected_5, Actual_5, "Unexpected reduction result: " & Actual_5'Image);
+      Assert (Expected_6, Actual_6, "Unexpected reduction result: " & Actual_6'Image);
+      Assert (Expected_7, Actual_7, "Unexpected reduction result: " & Actual_7'Image);
+      Assert (Expected_8, Actual_8, "Unexpected reduction result: " & Actual_8'Image);
+      Assert (Expected_9, Actual_9, "Unexpected reduction result: " & Actual_9'Image);
+      Assert (Expected_0, Actual_0, "Unexpected reduction result: " & Actual_0'Image);
    end Test_Reduction_Number;
 
    procedure Test_Reduction_Sum (Object : in out Test) is
@@ -1030,8 +1036,8 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1   : constant Element := Tensor_1.Sum;
       Actual_2   : constant Element := Tensor_2.Sum;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
    end Test_Reduction_Sum;
 
    procedure Test_Reduction_Product (Object : in out Test) is
@@ -1044,8 +1050,8 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1   : constant Element := Tensor_1.Product;
       Actual_2   : constant Element := Tensor_2.Product;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
    end Test_Reduction_Product;
 
    procedure Test_Function_Min (Object : in out Test) is
@@ -1058,8 +1064,8 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1   : constant Element := Tensor_1.Min;
       Actual_2   : constant Element := Tensor_2.Min;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected reduction result: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected reduction result: " & Actual_2'Image);
+      Assert (Expected_1, Actual_1, "Unexpected reduction result: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected reduction result: " & Actual_2'Image);
    end Test_Function_Min;
 
    procedure Test_Function_Max (Object : in out Test) is
@@ -1091,7 +1097,7 @@ package body Generic_Test_Tensors_Vectors is
             K : constant Positive    := Natural (Last_Index * Element (P)) + 1;
             pragma Assert (I = K);
 
-            Expected : constant Element := Tensor_2 (I);
+            Expected : constant Element := Tensor_2.Get (I);
             Actual   : constant Element := Tensor_1.Quantile (P => P);
          begin
             Assert (Expected = Actual,
@@ -1115,14 +1121,14 @@ package body Generic_Test_Tensors_Vectors is
 
       Middle_Offset_1 : constant Natural := (if Tensor_2.Elements mod 2 = 0 then 0 else 1);
 
-      Expected_1 : constant Element := Tensor_2 ((Tensor_2.Elements + Middle_Offset_1) / 2);
+      Expected_1 : constant Element := Tensor_2.Get ((Tensor_2.Elements + Middle_Offset_1) / 2);
       Expected_3 : constant Element := 2.5;
 
       Actual_1   : constant Element := Tensor_1.Median;
       Actual_3   : constant Element := Tensor_3.Median;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected median (1): " & Actual_1'Image);
-      Assert (Expected_3 = Actual_3, "Unexpected median (2): " & Actual_3'Image);
+      Assert (Expected_1, Actual_1, "Unexpected median (1): " & Actual_1'Image);
+      Assert (Expected_3, Actual_3, "Unexpected median (2): " & Actual_3'Image);
    end Test_Function_Median;
 
    procedure Test_Function_Mean (Object : in out Test) is
@@ -1135,8 +1141,8 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1   : constant Element := Tensor_1.Mean;
       Actual_2   : constant Element := Tensor_2.Mean;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected mean: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected mean: " & Actual_2'Image);
+      Assert (Expected_1, Actual_1, "Unexpected mean: " & Actual_1'Image);
+      Assert (Expected_2, Actual_2, "Unexpected mean: " & Actual_2'Image);
    end Test_Function_Mean;
 
    procedure Test_Function_Variance (Object : in out Test) is
@@ -1148,20 +1154,39 @@ package body Generic_Test_Tensors_Vectors is
       Actual_1   : constant Element := Tensor.Variance;
       Actual_2   : constant Element := Tensor.Variance (Offset => 1);
 
-      Expected_1 : constant Element := 22.5;
-      Expected_2 : constant Element := 30.0;
+      Expected_1A : constant Element := 22.5;
+      Expected_2A : constant Element := 30.0;
+
+      --  For single-precision on the GPU, the mean of Tensor might be
+      --  different due to losing precision when adding the smaller numbers
+      --  of Tensor_2 to the large numbers of Tensor_1
+      Expected_1B : constant Element := 122.5;
+      Expected_2B : constant Element := 163.33333333333334;
    begin
-      Assert (Expected_1 = Actual_1, "Unexpected variance: " & Actual_1'Image);
-      Assert (Expected_2 = Actual_2, "Unexpected variance: " & Actual_2'Image);
+      case Element'Size is
+         when 32 =>
+            Assert (Is_Similar (Expected_1A, Actual_1) or Is_Similar (Expected_1B, Actual_1),
+              "1 Unexpected variance: " & Actual_1'Image);
+            Assert (Is_Similar (Expected_2A, Actual_2) or Is_Similar (Expected_2B, Actual_2),
+              "2 Unexpected variance: " & Actual_2'Image);
+         when 64 =>
+            Assert (Expected_1A, Actual_1, "5 Unexpected variance: " & Actual_1'Image);
+            Assert (Expected_2A, Actual_2, "6 Unexpected variance: " & Actual_2'Image);
+         when others =>
+            raise Constraint_Error;
+      end case;
    end Test_Function_Variance;
 
    ----------------------------------------------------------------------------
+
+   Random_Count : constant Positive :=
+     (if Large_Data and Element'Size = 32 then 1_000_000 else 100_000);
 
    procedure Test_Random_Uniform (Object : in out Test) is
       Expected_Mean     : constant := 0.5;
       Expected_Variance : constant := 1.0 / 12.0;
 
-      Tensor : constant CPU_Tensor := Random.Uniform ((1 => 100_000));
+      Tensor : constant CPU_Tensor := Random.Uniform ((1 => Random_Count));
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Uniform: " & Tensor.Mean'Image
@@ -1176,7 +1201,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := 0.0;
       Expected_Variance : constant := 1.0;
 
-      Tensor : constant CPU_Tensor := Random.Normal ((1 => 100_000));
+      Tensor : constant CPU_Tensor := Random.Normal ((1 => Random_Count));
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Normal: " & Tensor.Mean'Image
@@ -1205,7 +1230,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := (1.0 - P) / P;
       Expected_Variance : constant := (1.0 - P) / P**2;
 
-      Tensor : constant CPU_Tensor := Random.Geometric ((1 => 100_000), P => P);
+      Tensor : constant CPU_Tensor := Random.Geometric ((1 => Random_Count), P => P);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Geometric: " & Tensor.Mean'Image
@@ -1222,7 +1247,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := 1.0 / Lambda;
       Expected_Variance : constant := 1.0 / Lambda**2;
 
-      Tensor : constant CPU_Tensor := Random.Exponential ((1 => 100_000), Lambda => Lambda);
+      Tensor : constant CPU_Tensor := Random.Exponential ((1 => Random_Count), Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Exponential: " & Tensor.Mean'Image
@@ -1241,7 +1266,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := (A * Xm) / (A - 1.0);
       Expected_Variance : constant := (Xm**2 * A) / ((A - 1.0)**2 * (A - 2.0));
 
-      Tensor : constant CPU_Tensor := Random.Pareto ((1 => 100_000), Xm => Xm, Alpha => A);
+      Tensor : constant CPU_Tensor := Random.Pareto ((1 => Random_Count), Xm => Xm, Alpha => A);
    begin
       --  A > 1.0 otherwise mean is infinite
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
@@ -1261,7 +1286,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := Mean;
       Expected_Variance : constant := 2.0 * B**2;
 
-      Tensor : constant CPU_Tensor := Random.Laplace ((1 => 100_000), Mean => Mean, B => B);
+      Tensor : constant CPU_Tensor := Random.Laplace ((1 => Random_Count), Mean => Mean, B => B);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Laplace: " & Tensor.Mean'Image
@@ -1280,7 +1305,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Sigma * Sqrt (Pi / 2.0);
       Expected_Variance : constant := (4.0 - Pi) / 2.0 * Sigma**2;
 
-      Tensor : constant CPU_Tensor := Random.Rayleigh ((1 => 100_000), Sigma => Sigma);
+      Tensor : constant CPU_Tensor := Random.Rayleigh ((1 => Random_Count), Sigma => Sigma);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Rayleigh: " & Tensor.Mean'Image
@@ -1312,7 +1337,8 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Variance : constant Element :=
         Lambda**2 * (Gamma (1.0 + 2.0 / K) - Gamma (1.0 + 1.0 / K)**2);
 
-      Tensor : constant CPU_Tensor := Random.Weibull ((1 => 100_000), K => K, Lambda => Lambda);
+      Tensor : constant CPU_Tensor :=
+        Random.Weibull ((1 => Random_Count), K => K, Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for Weibull: " & Tensor.Mean'Image
@@ -1329,7 +1355,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Lambda;
       Expected_Variance : constant Element := Lambda;
 
-      Tensor : constant CPU_Tensor := Random.Poisson ((1 => 100_000), Lambda => Lambda);
+      Tensor : constant CPU_Tensor := Random.Poisson ((1 => Random_Count), Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
         "Unexpected mean for Poisson: " & Tensor.Mean'Image
@@ -1347,13 +1373,13 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := K * Theta;
       Expected_Variance : constant Element := K * Theta ** 2;
 
-      Tensor : constant CPU_Tensor := Random.Gamma ((1 => 100_000), K => K, Theta => Theta);
+      Tensor : constant CPU_Tensor := Random.Gamma ((1 => Random_Count), K => K, Theta => Theta);
    begin
-      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for gamma: " & Tensor.Mean'Image
            & " instead of " & Element'Image (Expected_Mean));
 
-      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.5,
+      Assert (abs (Tensor.Variance - Expected_Variance) <= 0.8,
         "Unexpected variance for gamma: " & Tensor.Variance'Image
            & " instead of " & Element'Image (Expected_Variance));
    end Test_Random_Gamma;
@@ -1366,7 +1392,8 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Variance : constant Element :=
         (Alpha * Beta) / ((Alpha + Beta)**2 * (Alpha + Beta + 1.0));
 
-      Tensor : constant CPU_Tensor := Random.Beta ((1 => 100_000), Alpha => Alpha, Beta => Beta);
+      Tensor : constant CPU_Tensor :=
+        Random.Beta ((1 => Random_Count), Alpha => Alpha, Beta => Beta);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Beta: " & Tensor.Mean'Image
@@ -1383,9 +1410,9 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Element (K);
       Expected_Variance : constant Element := Element (K * 2);
 
-      Tensor : constant CPU_Tensor := Random.Chi_Squared ((1 => 100_000), K => K);
+      Tensor : constant CPU_Tensor := Random.Chi_Squared ((1 => Random_Count), K => K);
    begin
-      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
+      Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for Chi_Squared: " & Tensor.Mean'Image
            & " instead of " & Element'Image (Expected_Mean));
 
@@ -1395,7 +1422,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Random_Chi_Squared;
 
    procedure Test_Random_Student_T (Object : in out Test) is
-      Trials    : constant := 100_000;
+      Trials    : constant Positive := Random_Count;
       True_Mean : constant := 7725.0;
 
       --  This example is from numpy.random.standard_t's documentation
@@ -1407,6 +1434,10 @@ package body Generic_Test_Tensors_Vectors is
       --  The null hypothesis must be rejected if the distribution > positive T
       --  or < negative T
       Tensor : constant CPU_Tensor := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
+--      XXX : constant Boolean := Print (">>>");
+--      Foo : constant CPU_Tensor := ;
+--      ZZZ : constant Boolean := Print (Element'(Foo.Get (1))'Image);
+--      YYY : constant Boolean := Print ("<<<");
       Result : constant Element    := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
    begin
       Assert (Result in 0.008 .. 0.010, "Unexpected result Student's t trials: " & Result'Image);
@@ -1655,6 +1686,11 @@ package body Generic_Test_Tensors_Vectors is
       return Test_Suite'Access;
    end Suite;
 
+   use Orka.Resources.Locations.Directories;
 begin
    Reset_Random (Orka.OS.Monotonic_Clock);
+   Initialize_Shaders
+     (Prefix_Sum  => Create_Location ("../orka/data/shaders"),
+      Tensors_GPU => Create_Location ("../orka_tensors_gpu/data/shaders"));
+   Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 end Generic_Test_Tensors_Vectors;

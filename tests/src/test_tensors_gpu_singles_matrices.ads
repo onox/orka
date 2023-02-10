@@ -14,11 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Numerics.Doubles.Tensors.CPU;
+with Orka.Numerics.Singles.Tensors.GPU;
 
 with Generic_Test_Tensors_Matrices;
+with Test_Fixtures_GPU_Tensors;
 
-package Test_Tensors_Doubles_Matrices is new Generic_Test_Tensors_Matrices
-  ("Doubles",
-   Orka.Numerics.Doubles.Tensors,
-   Orka.Numerics.Doubles.Tensors.CPU);
+use all type Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization;
+
+package Test_Tensors_GPU_Singles_Matrices is new Generic_Test_Tensors_Matrices
+  ("GPU - Singles",
+   Test_Fixtures_GPU_Tensors.Test_Fixture,
+   Orka.Numerics.Singles.Tensors,
+   Orka.Numerics.Singles.Tensors.GPU.GPU_Tensor,
+   Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization,
+   Orka.Numerics.Singles.Tensors.GPU.Initialize_Shaders);

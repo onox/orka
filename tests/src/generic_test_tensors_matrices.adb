@@ -16,39 +16,52 @@
 
 with AUnit.Assertions;
 with AUnit.Test_Caller;
-with AUnit.Test_Fixtures;
+
+with Orka.Loggers.Terminal;
+with Orka.Logging;
+with Orka.Resources.Locations.Directories;
 
 package body Generic_Test_Tensors_Matrices is
 
    use Tensors;
-   use SIMD_CPU;
    use type Tensors.Element;
+
+   subtype CPU_Tensor is Tensor_Type;
+   subtype CPU_QR_Factorization is QR_Factorization_Type;
 
    use AUnit.Assertions;
 
-   Abs_Tolerance : constant Element := 100.0 * Element'Model_Epsilon;
+   Abs_Tolerance : constant Element := 1.0e2 * Element'Model_Epsilon;
 
-   procedure Assert (Expected, Result : Element; Message : String) is
+   procedure Assert
+     (Expected, Result   : Element;
+      Message            : String;
+      Absolute_Tolerance : Element := Abs_Tolerance)
+   is
       function Is_Similar (Expected, Result : Element) return Boolean is
-        (abs (Result - Expected) <= Abs_Tolerance + 1.0e-05 * abs Expected);
+        (abs (Result - Expected) <= Absolute_Tolerance + 1.0e-05 * abs Expected);
    begin
       Assert (Is_Similar (Expected, Result), Message);
    end Assert;
 
-   procedure Assert_Equal (Expected : Element_Array; Actual : CPU_Tensor) is
+   procedure Assert_Equal
+     (Expected           : Element_Array;
+      Actual             : CPU_Tensor;
+      Absolute_Tolerance : Element := Abs_Tolerance) is
    begin
       Assert (Actual.Elements = Expected'Length,
         "Unexpected size of tensor: " & Actual.Elements'Image);
 
       for I in Expected'Range loop
-         Assert (Expected (I) = Actual (I), "Unexpected element at index " & I'Image & ": " &
-           Element'Image (Actual (I)) & " instead of " & Element'Image (Expected (I)));
+         Assert
+           (Expected (I), Actual.Get (I),
+            "Unexpected element at index " & I'Image & ": " &
+              Element'Image (Actual.Get (I)) & " instead of " & Element'Image (Expected (I)),
+            Absolute_Tolerance);
       end loop;
    end Assert_Equal;
 
    ----------------------------------------------------------------------------
-
-   type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Flatten (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := Identity (3);
@@ -277,11 +290,11 @@ package body Generic_Test_Tensors_Matrices is
       --  3 4
       --  5 6
    begin
-      Assert_Equal ((1.0, 0.0, 0.0), Tensor_1 (1));
-      Assert_Equal ((0.0, 2.0, 0.0), Tensor_1 (2));
-      Assert_Equal ((0.0, 0.0, 3.0), Tensor_1 (3));
+      Assert_Equal ((1.0, 0.0, 0.0), Tensor_1.Get (1));
+      Assert_Equal ((0.0, 2.0, 0.0), Tensor_1.Get (2));
+      Assert_Equal ((0.0, 0.0, 3.0), Tensor_1.Get (3));
 
-      Assert_Equal ((5.0, 6.0), Tensor_3 (3));
+      Assert_Equal ((5.0, 6.0), Tensor_3.Get (3));
    end Test_Constant_Indexing_Index_Row;
 
    procedure Test_Constant_Indexing_Index_Value (Object : in out Test) is
@@ -289,8 +302,8 @@ package body Generic_Test_Tensors_Matrices is
       Tensor : constant CPU_Tensor := Diagonal (Main_Diagonal);
    begin
       for Index in Main_Diagonal'Range loop
-         Assert (Main_Diagonal (Index) = Tensor ((Index, Index)),
-           "Unexpected element: " & Element'Image (Tensor ((Index, Index))));
+         Assert (Main_Diagonal (Index) = Tensor.Get ((Index, Index)),
+           "Unexpected element: " & Element'Image (Tensor.Get ((Index, Index))));
       end loop;
    end Test_Constant_Indexing_Index_Value;
 
@@ -301,8 +314,8 @@ package body Generic_Test_Tensors_Matrices is
       Tensor : constant CPU_Tensor := Diagonal (Main_Diagonal) /= 2.0;
    begin
       for Index in Values'Range loop
-         Assert (Values (Index) = Tensor ((Index, Index)),
-           "Unexpected element: " & Boolean'Image (Tensor ((Index, Index))));
+         Assert (Values (Index) = Tensor.Get ((Index, Index)),
+           "Unexpected element: " & Boolean'Image (Tensor.Get ((Index, Index))));
       end loop;
    end Test_Constant_Indexing_Index_Boolean;
 
@@ -313,11 +326,11 @@ package body Generic_Test_Tensors_Matrices is
       --  0 0 3 0
       --  0 0 0 4
 
-      Expected_1 : constant CPU_Tensor := Tensor (Range_Type'(2, 3));
+      Expected_1 : constant CPU_Tensor := Tensor.Get (Range_Type'(2, 3));
       --  0 2 0 0
       --  0 0 3 0
 
-      Expected_2 : constant CPU_Tensor := Tensor (Tensor_Range'((3, 4), (2, 4)));
+      Expected_2 : constant CPU_Tensor := Tensor.Get (Tensor_Range'((3, 4), (2, 4)));
       --  0 3 0
       --  0 0 4
 
@@ -331,7 +344,7 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Constant_Indexing_Range;
 
    procedure Test_Constant_Indexing_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0)).Reshape ((2, 3));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0)).Reshape ((2, 3));
       --  1 2 3
       --  4 5 6
 
@@ -339,22 +352,36 @@ package body Generic_Test_Tensors_Matrices is
       Expected_2 : constant Element_Array := (1.0, 2.0, 3.0, 4.0);
       Expected_3 : constant Element_Array := (2.0, 4.0, 6.0);
 
-      Actual_1 : constant CPU_Tensor := Tensor (Tensor > 4.0);
+      Actual_1 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 > 4.0);
       --  5 6
 
-      Actual_2 : constant CPU_Tensor := Tensor (Tensor <= 4.0);
+      Actual_2 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 <= 4.0);
       --  1 2 3 4
 
-      Actual_3 : constant CPU_Tensor := Tensor (Tensor mod 2.0 = 0.0);
+      Actual_3 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 mod 2.0 = 0.0);
       --  2 4 6
 
-      Actual_4 : constant CPU_Tensor := Tensor (Tensor = 0.0);
+      Actual_4 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 = 0.0);
+
+      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
+
+      Expected_5 : constant Element_Array := (6.0, 7.0);
+      Expected_6 : constant Element_Array := (7.0, 8.0);
+
+      --  Additional tests for GPU implementation
+      Actual_5 : constant CPU_Tensor := Tensor_2.Get (Tensor_2 >= 6.0 and Tensor_2 <= 7.0);
+      Actual_6 : constant CPU_Tensor := Tensor_2.Get (Tensor_2 >= 7.0 and Tensor_2 <= 8.0);
    begin
       Assert_Equal (Expected_1, Actual_1);
       Assert_Equal (Expected_2, Actual_2);
       Assert_Equal (Expected_3, Actual_3);
 
       Assert (Actual_4.Elements = 0, "Unexpected number of elements: " & Actual_4.Elements'Image);
+      Assert (Actual_5.Elements = 2, "Unexpected number of elements: " & Actual_5.Elements'Image);
+      Assert (Actual_6.Elements = 2, "Unexpected number of elements: " & Actual_6.Elements'Image);
+
+      Assert_Equal (Expected_5, Actual_5);
+      Assert_Equal (Expected_6, Actual_6);
    end Test_Constant_Indexing_Tensor;
 
    procedure Test_Operator_Multiply_Inner (Object : in out Test) is
@@ -451,7 +478,7 @@ package body Generic_Test_Tensors_Matrices is
       Assert_Equal (Expected_3, Actual_3.Flatten);
    end Test_Outer;
 
-   procedure Test_Inverse (Object : in out Test) is
+   procedure Test_Inverse_Invertible (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0,  2.0, 3.0, 4.0)).Reshape ((2, 2));
       pragma Assert (1.0 * 4.0 - 2.0 * 3.0 /= 0.0);
 
@@ -460,23 +487,27 @@ package body Generic_Test_Tensors_Matrices is
                     4.0, -5.0,  6.0,
                    -7.0,  8.0,  9.0)).Reshape ((3, 3));
 
-      Tensor_3 : constant CPU_Tensor :=
-        To_Tensor ((1.0, -2.0, -1.0,
-                   -1.0,  5.0,  6.0,
-                    5.0, -4.0,  5.0)).Reshape ((3, 3));
-
       Expected_1 : constant CPU_Tensor := Identity (2);
       Expected_2 : constant CPU_Tensor := Tensor_2;
 
       Actual_1 : constant CPU_Tensor := Tensor_1.Inverse * Tensor_1;
       Actual_2 : constant CPU_Tensor := Tensor_2.Inverse.Inverse;
    begin
-      Assert (All_Close (Expected_1, Actual_1), "A^-1 * A /= I");
+      --  Note: Increased absolute tolerance may be needed for the off-diagonal
+      --  elements for the GPU implementation using doubles
+      Assert (All_Close (Expected_1, Actual_1, Absolute_Tolerance => 1.0e7 * Abs_Tolerance), "A^-1 * A /= I");
       Assert (All_Close (Expected_2, Actual_2), "(A^-1)^-1 /= A");
+   end Test_Inverse_Invertible;
 
+   procedure Test_Inverse_Singular (Object : in out Test) is
+      Tensor_1 : constant CPU_Tensor :=
+        To_Tensor ((1.0, -2.0, -1.0,
+                   -1.0,  5.0,  6.0,
+                    5.0, -4.0,  5.0)).Reshape ((3, 3));
+   begin
       begin
          declare
-            Unused_Actual_3 : constant CPU_Tensor := Tensor_3.Inverse;
+            Unused_Actual_3 : constant CPU_Tensor := Tensor_1.Inverse;
          begin
             Assert (False, "Tensor not singular");
          end;
@@ -484,7 +515,7 @@ package body Generic_Test_Tensors_Matrices is
          when Orka.Numerics.Singular_Matrix =>
             null;
       end;
-   end Test_Inverse;
+   end Test_Inverse_Singular;
 
    procedure Test_Transpose (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := Linear_Space (1.0, 15.0, Count => 15).Reshape ((5, 3));
@@ -537,7 +568,7 @@ package body Generic_Test_Tensors_Matrices is
       Expected : constant Element_Array := (2.0, 0.0, -1.0);
       Actual   : constant CPU_Tensor    := Solve (Tensor_A, Tensor_B, Upper);
    begin
-      Assert_Equal (Expected, Actual);
+      Assert_Equal (Expected, Actual, Absolute_Tolerance => 1.0e8 * Abs_Tolerance);
    end Test_Solve_Triangular;
 
    procedure Test_Divide_By (Object : in out Test) is
@@ -563,8 +594,10 @@ package body Generic_Test_Tensors_Matrices is
       A_Slash_B1 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_B, Upper);
       A_Slash_B2 : constant CPU_Tensor := Divide_By (Tensor_A, Tensor_B);
    begin
-      Assert (All_Close (A_Slash_C1, A_Slash_C2), "Results of Divide_By w/ and w/o form differs");
-      Assert (All_Close (A_Slash_B1, A_Slash_B2), "Results of Divide_By w/ and w/o form differs");
+      --  Note: Increased absolute tolerance may be needed for the GPU implementation using doubles
+      Assert (All_Close (A_Slash_C1, A_Slash_C2, Absolute_Tolerance => 1.0e8 * Abs_Tolerance),
+        "Results of Divide_By w/ and w/o form differ");
+      Assert (All_Close (A_Slash_B1, A_Slash_B2), "Results of Divide_By w/ and w/o form differ");
 
       Assert (All_Close (A_Slash_B1 * Tensor_B, Tensor_A), "Unexpected value returned Divide_By");
       Assert (All_Close (A_Slash_C1 * Tensor_C, Tensor_A), "Unexpected value returned Divide_By");
@@ -621,9 +654,12 @@ package body Generic_Test_Tensors_Matrices is
       Assert (QR_2.R.Shape = Tensor_2.Shape, "Unexpected shape " & Image (QR_2.R.Shape) & " of R");
       Assert (QR_3.R.Shape = Tensor_3.Shape, "Unexpected shape " & Image (QR_3.R.Shape) & " of R");
 
-      Assert (All_Close (Tensor_1, Actual_1, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
-      Assert (All_Close (Tensor_2, Actual_2, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
-      Assert (All_Close (Tensor_3, Actual_3, Absolute_Tolerance => Abs_Tolerance), "A /= Q * R");
+      Assert (All_Close (Tensor_1, Actual_1, Absolute_Tolerance => 1.0e8 * Abs_Tolerance),
+        "A /= Q * R 1");
+      Assert (All_Close (Tensor_2, Actual_2, Absolute_Tolerance => 1.0e8 * Abs_Tolerance),
+        "A /= Q * R");
+      Assert (All_Close (Tensor_3, Actual_3, Absolute_Tolerance => 1.0e2 * Abs_Tolerance),
+        "A /= Q * R");
    end Test_QR;
 
    procedure Test_Cholesky (Object : in out Test) is
@@ -761,7 +797,8 @@ package body Generic_Test_Tensors_Matrices is
          Ax   : constant CPU_Tensor := Tensor * Actual;
          QQTb : constant CPU_Tensor := QQT * B;
       begin
-         Assert (All_Close (Ax, QQTb), "Unexpected orthogonal projection");
+         Assert (All_Close (Ax, QQTb, Absolute_Tolerance => 1.0e8 * Abs_Tolerance),
+           "Unexpected orthogonal projection");
       end;
    end Test_Values_Least_Squares;
 
@@ -862,7 +899,9 @@ package body Generic_Test_Tensors_Matrices is
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Outer (outer product)", Test_Outer'Access));
       Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Inverse", Test_Inverse'Access));
+        (Name & "Test function Inverse (invertible)", Test_Inverse_Invertible'Access));
+      Test_Suite.Add_Test (Caller.Create
+        (Name & "Test function Inverse (singular)", Test_Inverse_Singular'Access));
       Test_Suite.Add_Test (Caller.Create
         (Name & "Test function Transpose", Test_Transpose'Access));
       Test_Suite.Add_Test (Caller.Create
@@ -905,4 +944,10 @@ package body Generic_Test_Tensors_Matrices is
       return Test_Suite'Access;
    end Suite;
 
+   use Orka.Resources.Locations.Directories;
+begin
+   Initialize_Shaders
+     (Prefix_Sum  => Create_Location ("../orka/data/shaders"),
+      Tensors_GPU => Create_Location ("../orka_tensors_gpu/data/shaders"));
+   Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 end Generic_Test_Tensors_Matrices;

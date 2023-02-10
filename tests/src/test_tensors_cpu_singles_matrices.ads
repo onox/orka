@@ -14,11 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Numerics.Doubles.Tensors.CPU;
+with AUnit.Test_Fixtures;
 
-with Generic_Test_Tensors_Vectors;
+with Orka.Numerics.Singles.Tensors.CPU;
 
-package Test_Tensors_Doubles_Vectors is new Generic_Test_Tensors_Vectors
-  ("Doubles",
-   Orka.Numerics.Doubles.Tensors,
-   Orka.Numerics.Doubles.Tensors.CPU);
+with Generic_Test_Tensors_Matrices;
+
+use all type Orka.Numerics.Singles.Tensors.CPU.CPU_QR_Factorization;
+
+package Test_Tensors_CPU_Singles_Matrices is new Generic_Test_Tensors_Matrices
+  ("CPU - Singles",
+   AUnit.Test_Fixtures.Test_Fixture,
+   Orka.Numerics.Singles.Tensors,
+   Orka.Numerics.Singles.Tensors.CPU.CPU_Tensor,
+   Orka.Numerics.Singles.Tensors.CPU.CPU_QR_Factorization);
