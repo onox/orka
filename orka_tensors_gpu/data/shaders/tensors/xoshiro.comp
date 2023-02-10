@@ -1,0 +1,132 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader               : require
+#extension GL_ARB_shader_storage_buffer_object : require
+#extension GL_ARB_shader_clock                 : require
+
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright (c) 2023 onox <denkpadje@gmail.com>
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// This is a GLSL port of the xoshiro128++ and xoshiro256++ random number generators.
+//
+// https://arxiv.org/abs/1805.01407
+// doi:10.1145/3460772
+// https://arxiv.org/abs/1910.06437
+//
+// David Blackman and Sebastiano Vigna.
+// Scrambled linear pseudorandom number generators. ACM Trans. Math. Softw., 47:1−32, 2021.
+//
+// The following comment is from https://prng.di.unimi.it/xoshiro128plusplus.c
+// and https://prng.di.unimi.it/xoshiro256plusplus.c.
+//
+// /*  Written in 2019 by David Blackman and Sebastiano Vigna (vigna@acm.org)
+//
+// To the extent possible under law, the author has dedicated all copyright
+// and related and neighboring rights to this software to the public domain
+// worldwide. This software is distributed without any warranty.
+//
+// See <http://creativecommons.org/publicdomain/zero/1.0/>. */
+//
+// /* This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
+//    generators. It has excellent speed, a state size (128 bits) that is
+//    large enough for mild parallelism, and it passes all tests we are aware
+//    of.
+//
+//    For generating just single-precision (i.e., 32-bit) floating-point
+//    numbers, xoshiro128+ is even faster.
+//
+//    The state must be seeded so that it is not everywhere zero. */
+//
+// /* This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
+//    It has excellent (sub-ns) speed, a state (256 bits) that is large
+//    enough for any parallel application, and it passes all tests we are
+//    aware of.
+//
+//    For generating just floating-point numbers, xoshiro256+ is even faster.
+//
+//    The state must be seeded so that it is not everywhere zero. If you have
+//    a 64-bit seed, we suggest to seed a splitmix64 generator and use its
+//    output to fill s. */
+
+layout(local_size_x = 1) in;
+
+uniform uvec2 seed;
+
+layout(std430, binding = 0) restrict buffer dataBuffer {
+    %DATA_TYPE% data[];
+};
+
+#define ORKA_DATA_TYPE %DATA_TYPE_REPR%
+
+uint rotl(const in uint x, const in int k) {
+    return (x << k) | (x >> (32 - k));
+}
+
+uvec4 s = uvec4(seed, clock2x32ARB());
+
+#if ORKA_DATA_TYPE == 3
+    // (23, 17, 45) for 256++
+    const ivec3 constants = ivec3(23, 17, 45);
+#else
+    // ( 7,  9, 11) for 128++
+    const ivec3 constants = ivec3( 7,  9, 11);
+#endif
+
+uint next(void) {
+    const uint result = rotl(s.x + s.w, constants.x) + s.x; // 7 for 128, 23 for 256
+
+    const uint t = s.y << constants.y; // 9 for 128, 17 for 256
+
+    s.zwyx ^= s;
+
+    s.z ^= t;
+    s.w = rotl(s.w, constants.z); // 11 for 128, 45 for 256
+
+    return result;
+}
+
+void main(void) {
+    const uint gid = gl_GlobalInvocationID.x;
+    const uint count = data.length();
+
+    if (gid == 0) {
+        uint value;
+
+        for (uint i = 0; i < count; i++) {
+            uint value = next();
+
+#if ORKA_DATA_TYPE == 0
+            // int
+            data[i] = int(value);
+#elif ORKA_DATA_TYPE == 1
+            // bool
+            data[i] = value >= 2**16;
+#elif ORKA_DATA_TYPE == 2
+            // float
+            // (8 and 24 for 32-bit value)
+            const float result = float(value >> 8) * exp2(-24);
+            data[i] = result;
+#elif ORKA_DATA_TYPE == 3
+            // double
+            // (11 and 53 for 64-bit value) (Note: value is always uint => 32-bit)
+            const float result = float(value >> 8) * exp2(-24);
+            data[i] = double(result);
+#else
+#error Invalid value for ORKA_DATA_TYPE in shader
+#endif
+        }
+    }
+}

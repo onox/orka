@@ -1,0 +1,33 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader               : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+layout(local_size_x = 16, local_size_y = 16) in;
+// rows and columns of target
+
+uniform uvec4 shape; // target
+uniform int offset;
+
+layout(std430, binding = 0) restrict buffer dataBuffer {
+    %DATA_TYPE% data[];
+} buffers[2];
+// source is 1-D, target is 2-D
+
+void main(void) {
+    const uint row    = gl_GlobalInvocationID.x;
+    const uint column = gl_GlobalInvocationID.y;
+
+    const uint target_column = offset + row;
+
+    if (row < shape.x && column < shape.y) {
+        %DATA_TYPE% value = %VALUE_ZERO%;
+
+        if (column == target_column) {
+            value = buffers[0].data[row];
+        }
+
+        const uint index = row * shape.y + column;
+        buffers[1].data[index] = value;
+    }
+}

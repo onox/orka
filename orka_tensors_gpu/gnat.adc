@@ -1,0 +1,8 @@
+pragma Restrictions (No_Implicit_Aliasing);
+pragma Restrictions (No_Implicit_Dynamic_Code);
+
+pragma Restrictions (No_Abort_Statements);
+pragma Restrictions (Max_Asynchronous_Select_Nesting => 0);
+
+pragma Restrictions (No_Obsolescent_Features);
+pragma Profile (No_Implementation_Extensions);

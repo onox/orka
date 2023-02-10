@@ -1,0 +1,42 @@
+#version 420 core
+
+#extension GL_ARB_compute_shader               : require
+#extension GL_ARB_shader_storage_buffer_object : require
+
+// TODO Could use variable compute size: (A*x=b => local_size_y=1, x*A=b^T => local_size_x=1)
+layout(local_size_x = 16, local_size_y = 16) in;
+// rows and columns of target
+
+uniform uvec4 shape; // (m, p, _, _)
+uniform uint  size;  // n
+// m x n * n x p
+//     ^   ^
+//     |___|
+
+layout(std430, binding = 0) restrict buffer dataBuffer {
+    %DATA_TYPE% data[];
+} buffers[3];
+// Left and right sources are 2-D, target is 2-D
+
+uint to_index(const in uint row, const in uint column, const in uint columns) {
+    return row * columns + column;
+}
+
+void main(void) {
+    const uint row    = gl_GlobalInvocationID.x;
+    const uint column = gl_GlobalInvocationID.y;
+
+    if (row < shape.x && column < shape.y) {
+        %DATA_TYPE% value = %VALUE_ZERO%;
+
+        for (uint i = 0; i < size; i++) {
+            // C[row, column] += A[row, i] * B[i, column]
+            const uint index_a  = to_index(row, i, size);
+            const uint index_b = to_index(i, column, shape.y);
+            value += buffers[0].data[index_a] * buffers[1].data[index_b];
+        }
+
+        const uint index = to_index(row, column, shape.y);
+        buffers[2].data[index] = value;
+    }
+}
