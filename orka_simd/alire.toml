@@ -17,7 +17,7 @@ validation.compile_checks = "warnings"
 ORKA_SIMD_SIMD_TYPE = ["AVX", "AVX2"]
 
 [gpr-set-externals]
-ORKA_SIMD_SIMD_TYPE = "AVX2"
+ORKA_SIMD_SIMD_TYPE = "AVX"
 
 [[depends-on]]
 orka_types = "^1.0.0"
