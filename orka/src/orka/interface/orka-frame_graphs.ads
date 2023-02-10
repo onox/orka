@@ -29,7 +29,6 @@ private with Ada.Containers.Indefinite_Holders;
 
 private with GL.Buffers;
 
-private with Orka.Rendering.Programs;
 private with Orka.Containers.Bounded_Vectors;
 
 package Orka.Frame_Graphs is
@@ -66,6 +65,25 @@ package Orka.Frame_Graphs is
    end record
      with Dynamic_Predicate => (if not Has_Layers (Resource.Kind) then Resource.Layers = 1);
 
+   --  FIXME Implement functions Layer, Face, Level, and Resolve
+--   function Layer (Object : Resource; Layer : Natural) return Resource
+--     with Pre  =>     Has_Layers (Object.Kind) and Layer in 0 .. Object.Layers - 1,
+--          Post => not Has_Layers (Frame_Graphs.Layer'Result.Kind);
+--
+--   function Face (Object : Resource; Face : Face_Kind) return Resource
+--     with Pre  => Object.Kind = Texture_Cube_Map,
+--          Post => Frame_Graphs.Face'Result.Kind = Texture_2D;
+--
+--   function Level (Object : Resource; Level : Natural) return Resource
+--     with Pre  => Level in 0 .. Object.Levels - 1,
+--          Post => Frame_Graphs.Level'Result.Levels = 1;
+--
+--   function Resolve (Object : Resource) return Resource
+--     with Pre  => Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array,
+--          Post => (case Object.Kind is
+--                     when Texture_2D_Multisample       => Resolve'Result.Kind = Texture_2D,
+--                     when Texture_2D_Multisample_Array => Resolve'Result.Kind = Texture_2D_Array,
+--                     when others => raise Program_Error);
 
    ----------------------------------------------------------------------
 
@@ -140,8 +158,21 @@ package Orka.Frame_Graphs is
    --  TODO Or make Program a constructor which returns a Programs.Program? (for lazy-loading)
 
    type Resource_Array is array (Positive range <>) of Resource;
+   --  FIXME Might need to be an array of Exported_Resource
+   --  A new type Exported_Resource should contain a reference to its frame graph
+   --  so that the graph of the exported resource can inserted into the current
+   --  frame graph
 
+   --  FIXME Implement subprograms Import, Export, Imported_Resources, Exported_Resources
+--   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array);
+--   procedure Export (Object : in out Frame_Graph; Subjects : Resource_Array);
+   --  Import and export the given resources
+   --
+   --  Importing and exporting resources is useful if the frame graph is used
+   --  as a sub-graph of a larger graph.
 
+--   function Imported_Resources (Object : Frame_Graph) return Resource_Array;
+--   function Exported_Resources (Object : Frame_Graph) return Resource_Array;
 
    type Renderable_Graph (<>) is tagged limited private;
 
