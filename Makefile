@@ -1,5 +1,5 @@
 ALR_CLEAN = alr clean -- -p
-ALR_BUILD = alr build --validation --profiles="*=validation"
+ALR_BUILD = alr build --validation
 
 .PHONY: build examples tools tests coverage docs clean
 
@@ -11,6 +11,7 @@ build:
 	cd orka_numerics && $(ALR_BUILD)
 	cd orka_tensors_cpu && $(ALR_BUILD)
 	cd orka && $(ALR_BUILD)
+	cd orka_tensors_gpu && $(ALR_BUILD)
 	cd orka_plugin_archives && $(ALR_BUILD)
 	cd orka_plugin_gltf && $(ALR_BUILD)
 	cd orka_plugin_terrain && $(ALR_BUILD)
