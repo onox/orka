@@ -49,71 +49,91 @@ package Orka.Rendering.Buffers is
       Target : Buffer_Target) is abstract;
    --  Bind the buffer object to the target
 
-   function Length (Object : Bindable_Buffer) return Natural is abstract;
+   function Length (Object : Bindable_Buffer) return Positive is abstract;
 
    -----------------------------------------------------------------------------
 
    type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with private;
 
+   overriding function "=" (Left, Right : Buffer) return Boolean;
+
    function Create_Buffer
      (Flags  : Storage_Bits;
       Kind   : Types.Element_Type;
-      Length : Natural) return Buffer;
+      Length : Positive) return Buffer
+   with Post => Create_Buffer'Result.Length = Length;
 
    -----------------------------------------------------------------------------
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Float_16_Array) return Buffer;
+      Data   : Float_16_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Float_32_Array) return Buffer;
+      Data   : Float_32_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Float_64_Array) return Buffer;
+      Data   : Float_64_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Integer_32_Array) return Buffer;
+      Data   : Integer_8_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Unsigned_32_Array) return Buffer;
+      Data   : Integer_32_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Orka.Types.Singles.Vector4_Array) return Buffer;
+      Data   : Unsigned_32_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Orka.Types.Singles.Matrix4_Array) return Buffer;
+      Data   : Orka.Types.Singles.Vector4_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Orka.Types.Doubles.Vector4_Array) return Buffer;
+      Data   : Orka.Types.Singles.Matrix4_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer;
+      Data   : Orka.Types.Doubles.Vector4_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer;
+      Data   : Orka.Types.Doubles.Matrix4_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Indirect.Elements_Indirect_Command_Array) return Buffer;
+      Data   : Indirect.Arrays_Indirect_Command_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    function Create_Buffer
      (Flags  : Storage_Bits;
-      Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer;
+      Data   : Indirect.Elements_Indirect_Command_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
+
+   function Create_Buffer
+     (Flags  : Storage_Bits;
+      Data   : Indirect.Dispatch_Indirect_Command_Array) return Buffer
+   with Post => Create_Buffer'Result.Length = Data'Length;
 
    -----------------------------------------------------------------------------
 
    overriding
-   function Length (Object : Buffer) return Natural
+   function Length (Object : Buffer) return Positive
      with Inline;
 
    overriding
@@ -144,6 +164,12 @@ package Orka.Rendering.Buffers is
       Data   : Float_64_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Double_Type and Offset + Data'Length <= Object.Length;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Integer_8_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Kind = Byte_Type and Offset + Data'Length <= Object.Length;
 
    procedure Set_Data
      (Object : Buffer;
@@ -221,6 +247,12 @@ package Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
+      Data   : in out Integer_8_Array;
+      Offset : Natural := 0)
+   with Pre => Object.Kind = Byte_Type and Offset + Data'Length <= Object.Length;
+
+   procedure Get_Data
+     (Object : Buffer;
       Data   : in out Integer_32_Array;
       Offset : Natural := 0)
    with Pre => Object.Kind = Int_Type and Offset + Data'Length <= Object.Length;
@@ -261,6 +293,13 @@ package Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
+      Data   : Integer_8_Array)
+   with Pre => Object.Kind = Byte_Type
+     and Data'Length in 1 .. 4
+     and Object.Length mod Data'Length = 0;
+
+   procedure Clear_Data
+     (Object : Buffer;
       Data   : Integer_32_Array)
    with Pre => Object.Kind = Int_Type
      and Data'Length in 1 .. 4
@@ -293,11 +332,24 @@ package Orka.Rendering.Buffers is
       Target : Buffer)
    with Pre => Object.Kind = Target.Kind and then Object.Length = Target.Length;
 
+   procedure Copy_Data
+     (Object       : Buffer;
+      Target       : Buffer;
+      Read_Offset  : Natural;
+      Write_Offset : Natural;
+      Length       : Positive)
+   with Pre => Object.Kind = Target.Kind and then
+     (Read_Offset + Length <= Object.Length and Write_Offset + Length <= Target.Length);
+
 private
 
    type Buffer (Kind : Types.Element_Type) is new Bindable_Buffer with record
       Buffer : GL.Objects.Buffers.Buffer;
-      Length : Natural;
+      Length : Positive;
    end record;
+
+   use type GL.Objects.Buffers.Buffer;
+
+   overriding function "=" (Left, Right : Buffer) return Boolean is (Left.Buffer = Right.Buffer);
 
 end Orka.Rendering.Buffers;

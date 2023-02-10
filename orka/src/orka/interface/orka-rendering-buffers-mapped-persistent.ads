@@ -23,7 +23,7 @@ package Orka.Rendering.Buffers.Mapped.Persistent is
 
    function Create_Buffer
      (Kind   : Orka.Types.Element_Type;
-      Length : Natural;
+      Length : Positive;
       Mode   : IO_Mode) return Persistent_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
    --  Create a persistent mapped buffer for only writes or only reads
@@ -42,7 +42,7 @@ package Orka.Rendering.Buffers.Mapped.Persistent is
    --  fence to complete before reading the data.
 
    overriding
-   function Length (Object : Persistent_Mapped_Buffer) return Natural;
+   function Length (Object : Persistent_Mapped_Buffer) return Positive;
    --  Number of elements in the buffer
    --
    --  Will be less than the actual size of the buffer due to the n regions.

@@ -21,7 +21,7 @@ package Orka.Rendering.Buffers.Mapped.Unsynchronized is
 
    function Create_Buffer
      (Kind   : Orka.Types.Element_Type;
-      Length : Natural;
+      Length : Positive;
       Mode   : IO_Mode) return Unsynchronized_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
 

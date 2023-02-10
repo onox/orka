@@ -18,7 +18,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
 
    function Create_Buffer
      (Kind   : Orka.Types.Element_Type;
-      Length : Natural;
+      Length : Positive;
       Mode   : IO_Mode) return Persistent_Mapped_Buffer
    is
       Storage_Flags : constant GL.Objects.Buffers.Storage_Bits :=
@@ -28,7 +28,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
         (Write => Mode = Write, Read => Mode = Read,
          Persistent => True, Coherent => True, others => False);
 
-      Total_Length : constant Natural := Length * Index_Type'Modulus;
+      Total_Length : constant Positive := Length * Index_Type'Modulus;
    begin
       return Result : Persistent_Mapped_Buffer (Kind, Mode) do
          Result.Buffer := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
@@ -40,7 +40,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
    end Create_Buffer;
 
    overriding
-   function Length (Object : Persistent_Mapped_Buffer) return Natural is
+   function Length (Object : Persistent_Mapped_Buffer) return Positive is
      (Object.Buffer.Length / Index_Type'Modulus);
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer) is

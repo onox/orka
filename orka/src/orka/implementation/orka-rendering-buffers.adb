@@ -23,11 +23,11 @@ package body Orka.Rendering.Buffers is
    function Create_Buffer
      (Flags  : Storage_Bits;
       Kind   : Types.Element_Type;
-      Length : Natural) return Buffer
+      Length : Positive) return Buffer
    is
       Bytes : Natural;
 
-      Storage_Length : Natural;
+      Storage_Length : Positive;
       Storage_Kind   : GL.Types.Numeric_Type;
    begin
       return Result : Buffer (Kind => Kind) do
@@ -96,6 +96,16 @@ package body Orka.Rendering.Buffers is
    begin
       return Result : Buffer (Kind => Double_Type) do
          Pointers.Double.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : Storage_Bits;
+      Data   : Integer_8_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => Byte_Type) do
+         Pointers.Byte.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -193,7 +203,7 @@ package body Orka.Rendering.Buffers is
    -----------------------------------------------------------------------------
 
    overriding
-   function Length (Object : Buffer) return Natural is (Object.Length);
+   function Length (Object : Buffer) return Positive is (Object.Length);
 
    overriding
    procedure Bind (Object : Buffer; Target : Indexed_Buffer_Target; Index : Natural) is
@@ -251,6 +261,14 @@ package body Orka.Rendering.Buffers is
       Offset : Natural := 0) is
    begin
       Pointers.Double.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Integer_8_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Byte.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -353,6 +371,14 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
+      Data   : in out Integer_8_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Byte.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
       Data   : in out Integer_32_Array;
       Offset : Natural := 0) is
    begin
@@ -405,6 +431,18 @@ package body Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
+      Data   : Integer_8_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Integer_8_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.Byte.Clear_Sub_Data (Object.Buffer, Byte_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
       Data   : Integer_32_Array)
    is
       Length : constant Size := Size (Object.Length);
@@ -454,49 +492,62 @@ package body Orka.Rendering.Buffers is
    -----------------------------------------------------------------------------
 
    procedure Copy_Data
-     (Object : Buffer;
-      Target : Buffer)
+     (Object       : Buffer;
+      Target       : Buffer;
+      Read_Offset  : Natural;
+      Write_Offset : Natural;
+      Length       : Positive)
    is
+      RO : constant Integer_32 := Integer_32 (Read_Offset);
+      WO : constant Integer_32 := Integer_32 (Write_Offset);
+
       use Orka.Types;
 
-      Length : constant Size := Size (Object.Length);
+      Count : constant Size := Size (Length);
    begin
       case Object.Kind is
          --  Numeric types
          when UByte_Type =>
-            Pointers.UByte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.UByte.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when UShort_Type =>
-            Pointers.UShort.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.UShort.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when UInt_Type =>
-            Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.UInt.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Byte_Type =>
-            Pointers.Byte.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Byte.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Short_Type =>
-            Pointers.Short.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Short.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Int_Type =>
-            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Int.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Half_Type =>
-            Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Half.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Single_Type =>
-            Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Single.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Double_Type =>
-            Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Double.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          --  Composite types
          when Single_Vector_Type =>
-            Pointers.Single_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Single_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Double_Vector_Type =>
-            Pointers.Double_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Double_Vector4.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Single_Matrix_Type =>
-            Pointers.Single_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Single_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Double_Matrix_Type =>
-            Pointers.Double_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Double_Matrix4.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Arrays_Command_Type =>
-            Pointers.Arrays_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Arrays_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Elements_Command_Type =>
-            Pointers.Elements_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Elements_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
          when Dispatch_Command_Type =>
-            Pointers.Dispatch_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, 0, 0, Length);
+            Pointers.Dispatch_Command.Copy_Sub_Data (Object.Buffer, Target.Buffer, RO, WO, Count);
       end case;
+   end Copy_Data;
+
+   procedure Copy_Data
+     (Object : Buffer;
+      Target : Buffer) is
+   begin
+      Object.Copy_Data (Target, 0, 0, Object.Length);
    end Copy_Data;
 
 end Orka.Rendering.Buffers;
