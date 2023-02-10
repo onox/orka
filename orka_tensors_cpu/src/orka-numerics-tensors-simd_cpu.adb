@@ -446,6 +446,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   end;
                end return;
             end;
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
    end Get;
 
@@ -587,6 +589,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   end if;
                end loop;
             end;
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
       SU.Append (Result, "])");
 
@@ -898,6 +902,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                         end;
                      end loop;
                   end;
+               when others =>
+                  raise Not_Implemented_Yet;  --  FIXME
             end case;
          end;
       end return;
@@ -974,7 +980,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Shape : constant Tensor_Shape :=
          (case Right.Axes is
             when 1 => (1 => Left_Rows),
-            when 2 => (1 => Left_Rows, 2 => Right_Columns));
+            when 2 => (1 => Left_Rows, 2 => Right_Columns),
+            when others => raise Not_Implemented_Yet);  --  FIXME
    begin
       --  Matrix-matrix or matrix-vector or vector-matrix multiplication
       return Result : CPU_Tensor := Zeros (Shape) do

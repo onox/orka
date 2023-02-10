@@ -35,12 +35,18 @@ package Orka.Numerics.Tensors is
 
    type Data_Type is (Float_Type, Int_Type, Bool_Type);
 
-   type Tensor_Axis is range 1 .. 2;
+   type Tensor_Axis is range 1 .. 4;
+   --  TODO Fix pre/post-conditions of matrix operations for tensors with 3 or 4 axes
 
    type Tensor_Shape is array (Tensor_Axis range <>) of Natural
      with Default_Component_Value => 0;
-   --  1 = rows
-   --  2 = columns
+   --  The shape of a tensor gives the number of dimensions on each axis
+   --
+   --  Axes:
+   --  1:               (rows)
+   --  2:               (rows, columns)
+   --  3:        (depth, rows, columns)
+   --  4: (other, depth, rows, columns)
 
    function Elements (Shape : Tensor_Shape) return Natural;
 
@@ -136,14 +142,18 @@ package Orka.Numerics.Tensors is
      (Object : in out Tensor;
       Index  : Index_Type;
       Value  : Tensor) is abstract
-   with Pre'Class => (Object.Axes = 2 and Value.Axes = 1)
-                       and then Value.Rows = Object.Columns;
+   with Pre'Class =>
+     (case Object.Axes is
+        when 1 => raise Ada.Assertions.Assertion_Error,
+        when 2 => Value.Axes = 1 and then Value.Rows = Object.Columns,
+        when 3 => Value.Axes = 2 and then Value.Shape = Object.Shape (2 .. 3),
+        when 4 => Value.Axes = 3 and then Value.Shape = Object.Shape (2 .. 4));
 
    procedure Set
      (Object : in out Tensor;
       Index  : Range_Type;
       Value  : Tensor) is abstract
-   with Pre'Class => Object.Axes = Value.Axes;
+   with Pre'Class => Object.Axes = Value.Axes and then Is_Equal (Object.Shape, Value.Shape, 1);
 
    procedure Set
      (Object : in out Tensor;
@@ -158,12 +168,18 @@ package Orka.Numerics.Tensors is
 
    function Shape (Object : Tensor) return Tensor_Shape is abstract;
 
-   function Rows    (Object : Tensor'Class) return Natural is (Object.Shape (1));
-   function Columns (Object : Tensor'Class) return Natural is (Object.Shape (2));
+   function Axes (Object : Tensor) return Tensor_Axis is abstract;
+
+   function Rows    (Object : Tensor'Class) return Natural is
+     (Object.Shape (if Object.Axes = 1 then 1 else Object.Axes - 1));
+
+   function Columns (Object : Tensor'Class) return Natural is (Object.Shape (Object.Axes))
+     with Pre => Object.Axes >= 2;
+
+   function Depth   (Object : Tensor'Class) return Natural is (Object.Shape (Object.Axes - 2))
+     with Pre => Object.Axes >= 3;
 
    function Elements (Object : Tensor) return Natural is abstract;
-
-   function Axes (Object : Tensor) return Tensor_Axis is abstract;
 
    function Is_Square (Object : Tensor'Class) return Boolean is
      (Object.Axes = 2 and then Object.Rows = Object.Columns);
@@ -365,7 +381,8 @@ package Orka.Numerics.Tensors is
                       Axis <= Left.Axes and
                       Is_Equal (Left.Shape, Right.Shape, Axis) and
                       (Left.Elements > 0 or Right.Elements > 0),
-        Post'Class => Left.Axes = Concatenate'Result.Axes;
+        Post'Class => Concatenate'Result.Axes = Left.Axes and then
+                      Concatenate'Result.Shape (Axis) = Left.Shape (Axis) + Right.Shape (Axis);
    --  Return the concatenation of the two tensors in the given Axis
 
    function "&" (Left, Right : Tensor) return Tensor is abstract;
@@ -1283,5 +1300,7 @@ private
    function Generic_Apply
      (Object      : Expression_Type;
       Left, Right : Data_Type) return Data_Type;
+
+   Not_Implemented_Yet : exception;
 
 end Orka.Numerics.Tensors;

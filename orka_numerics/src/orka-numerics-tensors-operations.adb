@@ -25,7 +25,11 @@ package body Orka.Numerics.Tensors.Operations is
    overriding function Get (Object : Tensor_Type; Index : Range_Type) return Tensor_Type is
      (case Object.Axes is
         when 1 => Object.Get (Tensor_Range'(1 => Index)),
-        when 2 => Object.Get (Tensor_Range'(Index, (1, Object.Columns))));
+        when 2 => Object.Get (Tensor_Range'(Index, (1, Object.Columns))),
+        when 3 => Object.Get (Tensor_Range'(Index, (1, Object.Rows), (1, Object.Columns))),
+        when 4 => Object.Get (Tensor_Range'(
+                                Index, (1, Object.Depth), (1, Object.Rows), (1, Object.Columns)
+                              )));
 
    overriding procedure Set
      (Object : in out Tensor_Type;
@@ -35,7 +39,7 @@ package body Orka.Numerics.Tensors.Operations is
       case Object.Axes is
          when 1 =>
             raise Program_Error;
-         when 2 =>
+         when 2 | 3 | 4 =>
             Object.Set (Tensor_Range'(1 => (Index, Index)), Value);
       end case;
    end Set;
@@ -50,6 +54,12 @@ package body Orka.Numerics.Tensors.Operations is
             Object.Set (Tensor_Range'(1 => Index), Value);
          when 2 =>
             Object.Set (Tensor_Range'(Index, (1, Object.Columns)), Value);
+         when 3 =>
+            Object.Set (Tensor_Range'(Index, (1, Object.Rows), (1, Object.Columns)), Value);
+         when 4 =>
+            Object.Set (Tensor_Range'(
+                          Index, (1, Object.Depth), (1, Object.Rows), (1, Object.Columns)
+                        ), Value);
       end case;
    end Set;
 
@@ -289,6 +299,8 @@ package body Orka.Numerics.Tensors.Operations is
             return Matrix_Solve (A, B.Reshape ((B.Elements, 1)), Solution).Flatten;
          when 2 =>
             return Matrix_Solve (A, B, Solution);
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
    end Solve;
 
@@ -468,6 +480,8 @@ package body Orka.Numerics.Tensors.Operations is
                      return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1)), D).Flatten;
                   when 2 =>
                      return QR_Solve (QR.R, Y, D);
+                  when others =>
+                     raise Not_Implemented_Yet;  --  FIXME
                end case;
             end;
          when Underdetermined =>
@@ -476,6 +490,8 @@ package body Orka.Numerics.Tensors.Operations is
                   return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
                when 2 =>
                   return QR.Q * QR_Solve (QR.R.Transpose, B, D);
+               when others =>
+                  raise Not_Implemented_Yet;  --  FIXME
             end case;
          when Unknown => raise Program_Error;
       end case;
@@ -503,12 +519,15 @@ package body Orka.Numerics.Tensors.Operations is
             when 1 =>
                QR_Solve (QR_Q2.R.Transpose, D.Reshape ((D.Elements, 1)), Underdetermined),
             when 2 =>
-               QR_Solve (QR_Q2.R.Transpose, D, Underdetermined));
+               QR_Solve (QR_Q2.R.Transpose, D, Underdetermined),
+            when others =>
+               raise Not_Implemented_Yet);  --  FIXME
 
       B_Matrix : constant Tensor_Type :=
         (case B.Axes is
             when 1 => B.Reshape ((B.Elements, 1)),
-            when 2 => B);
+            when 2 => B,
+            when others => raise Not_Implemented_Yet);  --  FIXME
 
       Rw : constant Tensor_Type :=
         Tensor_Type'(Tensor_Type'(2.0 * QR_Q2.Q.Transpose * QR_AC_Q1_T) * B_Matrix)
@@ -661,6 +680,8 @@ package body Orka.Numerics.Tensors.Operations is
             return QR_Solve (A, B.Reshape ((B.Elements, 1)), Determinancy).Flatten;
          when 2 =>
             return QR_Solve (A, B, Determinancy);
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
    end Solve;
 

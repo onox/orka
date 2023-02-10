@@ -38,8 +38,6 @@ package body Orka.Numerics.Tensors.CS_GPU is
    function "+" (Value : String) return SU.Unbounded_String renames SU.To_Unbounded_String;
    function "+" (Value : SU.Unbounded_String) return String renames SU.To_String;
 
-   Not_Implemented_Yet : exception;
-
    ----------------------------------------------------------------------------
    --                                Constants                               --
    ----------------------------------------------------------------------------
@@ -967,6 +965,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             case Object.Axes is
                when 1 => Set_Shape (Kernel, (1 => Object.Rows, 2 => 1));
                when 2 => Set_Shape (Kernel, Object.Shape);
+               when others => raise Not_Implemented_Yet;  --  FIXME
             end case;
             Kernel.Uniform ("size").Set_UInt (Unsigned_32 (Source_Left.Columns));
             pragma Assert (Source_Left.Columns = Source_Right.Rows);
@@ -1454,6 +1453,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                   end loop;
                end return;
             end;
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
    end Get;
 
@@ -1617,6 +1618,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                   end if;
                end loop;
             end;
+         when others =>
+            raise Not_Implemented_Yet;  --  FIXME
       end case;
       SU.Append (Result, "])");
 
@@ -1849,7 +1852,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    function Concatenate
      (Left, Right : GPU_Tensor;
-      Axis   : Tensor_Axis) return GPU_Tensor
+      Axis        : Tensor_Axis) return GPU_Tensor
    is
       Shape : constant Tensor_Shape := Add (Left.Shape, Right.Shape, Axis);
       pragma Assert (Elements (Shape) = Left.Elements + Right.Elements);
@@ -1899,6 +1902,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                      end;
                   end loop;
                end;
+            when others =>
+               raise Not_Implemented_Yet;  --  FIXME
          end case;
       end return;
    end Concatenate;
@@ -1921,7 +1926,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Shape : constant Tensor_Shape :=
          (case Right.Axes is
             when 1 => (1 => Left_Rows),
-            when 2 => (1 => Left_Rows, 2 => Right_Columns));
+            when 2 => (1 => Left_Rows, 2 => Right_Columns),
+            when others => raise Not_Implemented_Yet);  --  FIXME
    begin
       --  Matrix-matrix, matrix-vector, or vector-matrix multiplication
       return From_Matrix_Operation
@@ -2479,8 +2485,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Initial : Element;
       Axis    : Tensor_Axis) return GPU_Tensor is
    begin
-      raise Not_Implemented_Yet;
-      return Zeros ((1 => 1));  --  FIXME
+      raise Not_Implemented_Yet;  --  FIXME
+      return Zeros ((1 => 1));
    end Reduce_Associative;
 
    overriding
@@ -2499,8 +2505,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Initial : Element;
       Axis    : Tensor_Axis) return GPU_Tensor is
    begin
-      raise Not_Implemented_Yet;
-      return Zeros ((1 => 1));  --  FIXME
+      raise Not_Implemented_Yet;  --  FIXME
+      return Zeros ((1 => 1));
    end Reduce;
 
    overriding function Sum (Object : GPU_Tensor) return Element renames Operations.Sum;
@@ -2570,8 +2576,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       P      : Probability;
       Axis   : Tensor_Axis) return GPU_Tensor is
    begin
-      raise Not_Implemented_Yet;
-      return Zeros ((1 => 1));  --  FIXME
+      raise Not_Implemented_Yet;  --  FIXME
+      return Zeros ((1 => 1));
    end Quantile;
 
    overriding
@@ -2783,8 +2789,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    function Any_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor is
    begin
-      raise Not_Implemented_Yet;
-      return Zeros ((1 => 1));  --  FIXME
+      raise Not_Implemented_Yet;  --  FIXME
+      return Zeros ((1 => 1));
    end Any_True;
 
    overriding
@@ -2803,8 +2809,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
    overriding
    function All_True (Object : GPU_Tensor; Axis : Tensor_Axis) return GPU_Tensor is
    begin
-      raise Not_Implemented_Yet;
-      return Zeros ((1 => 1));  --  FIXME
+      raise Not_Implemented_Yet;  --  FIXME
+      return Zeros ((1 => 1));
    end All_True;
 
    overriding
