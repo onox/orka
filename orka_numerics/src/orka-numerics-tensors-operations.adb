@@ -964,7 +964,7 @@ package body Orka.Numerics.Tensors.Operations is
       Offset : Natural := 0) return Tensor_Type
    is
       Repeat : constant Positive := Object.Shape (Axis);
-      Mean : Tensor_Type := Object.Mean (Axis);
+      Mean : constant Tensor_Type := Object.Mean (Axis);
       Repeated_Mean : Tensor_Type := Mean;
    begin
       for Index in 1 .. Repeat - 1 loop

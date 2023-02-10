@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Low_Level.Enums;
 with GL.Pixels.Extensions;
 with GL.Types;
 

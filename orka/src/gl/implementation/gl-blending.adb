@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Enums.Getter;
 
 package body GL.Blending is
 

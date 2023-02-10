@@ -27,7 +27,6 @@ with GL.Types;
 
 with Orka.Logging.Default;
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Textures;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Strings;
@@ -173,8 +172,6 @@ package body Orka.Frame_Graphs is
 
    subtype Attachment_Format is Orka.Rendering.Textures.Format_Kind;
 
-   use all type Attachment_Format;
-
    procedure Verify_Depth_Stencil
      (Pass   : Render_Pass_Data;
       Format : Attachment_Format) is
@@ -231,9 +228,9 @@ package body Orka.Frame_Graphs is
               (Levels  => Size (Subject.Levels),
                Samples => Size (Subject.Samples),
                Format  => Subject.Format,
-               Width   => Size (Subject.Size (X)),
-               Height  => Size (Subject.Size (Y)),
-               Depth   => Size (Subject.Size (Z)));
+               Width   => Subject.Size (X),
+               Height  => Subject.Size (Y),
+               Depth   => Subject.Size (Z));
             Textures.Insert (+Subject.Name, Result);
             return Result;
          end;
