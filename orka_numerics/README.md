@@ -26,8 +26,14 @@ This crate provides:
   * Statistics (operations and generating statistical distributions)
   * Logical operations on boolean tensors
 
-An implementation of tensors using SIMD instructions on the CPU is provided by
-the [orka_tensors_cpu][url-tensors-cpu-crate] crate.
+Two crates exist which implement the `Tensor` interface: one which uses
+SIMD instructions on the CPU and one which uses buffers and computer shaders
+on the GPU.
+
+| Crate                                     | Implementation           | Evaluation | Tensors |
+|-------------------------------------------|--------------------------|------------|---------|
+| [orka_tensors_cpu][url-tensors-cpu-crate] | SIMD instructions on CPU | Eager      | Small   |
+| [orka_tensors_gpu][url-tensors-gpu-crate] | Compute shaders on GPU   | Lazy       | Large   |
 
 ## License
 
@@ -35,3 +41,4 @@ This crate is distributed under the terms of the [Apache License 2.0][url-apache
 
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-tensors-cpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_cpu
+  [url-tensors-gpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_gpu
