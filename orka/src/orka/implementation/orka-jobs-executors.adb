@@ -93,7 +93,7 @@ package body Orka.Jobs.Executors is
                   declare
                      Root : constant Job_Ptr := Get_Root_Dependent (Job);
                   begin
-                     if not (for some Dependent of Root_Dependents => Root = Dependent) then
+                     if (for all Dependent of Root_Dependents => Root /= Dependent) then
                         Root_Dependents.Append (Root);
                      end if;
                   end;

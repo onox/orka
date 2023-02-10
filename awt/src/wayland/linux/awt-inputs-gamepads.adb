@@ -938,7 +938,7 @@ package body AWT.Inputs.Gamepads is
             Object.Effects.Delete_First;
          end if;
 
-         if not (for some Effect of Object.Effects => Effect.Cursor = Subject.Cursor) then
+         if (for all Effect of Object.Effects => Effect.Cursor /= Subject.Cursor) then
             Object.Effects.Append
               ((Stop_At => 0.0,
                 Cursor  => Subject.Cursor,

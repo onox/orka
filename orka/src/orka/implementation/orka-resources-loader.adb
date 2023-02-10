@@ -50,7 +50,7 @@ package body Orka.Resources.Loader is
    protected body Resource_Loaders is
       procedure Include (Loader : Loaders.Loader_Ptr) is
       begin
-         if not (for some L of Loaders_Vector => L.Extension = Loader.Extension) then
+         if (for all L of Loaders_Vector => L.Extension /= Loader.Extension) then
             Loaders_Vector.Append (Loader);
          end if;
       end Include;
