@@ -662,6 +662,9 @@ private package GL.API is
    package Dispatch_Compute is new Loader.Procedure_With_3_Params
      ("glDispatchCompute", UInt, UInt, UInt);
 
+   package Dispatch_Compute_Group_Size is new Loader.Procedure_With_6_Params
+     ("glDispatchComputeGroupSizeARB", UInt, UInt, UInt, UInt, UInt, UInt);
+
    package Dispatch_Compute_Indirect is new Loader.Procedure_With_1_Param
      ("glDispatchComputeIndirect", Low_Level.IntPtr);
 

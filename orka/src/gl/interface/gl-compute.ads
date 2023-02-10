@@ -23,6 +23,8 @@ package GL.Compute is
    use GL.Types.Compute;
    use type GL.Types.UInt;
 
+   type Work_Group_Kind is (Fixed, Variable);
+
    procedure Dispatch_Compute (X, Y, Z : UInt := 1)
      with Pre => X >= 1 and Y >= 1 and Z >= 1;
    --  Launch a compute shader with the given number of work groups
@@ -33,6 +35,9 @@ package GL.Compute is
    --
    --  The number of groups in each dimension in the command must not
    --  be larger than Max_Compute_Work_Group_Count.
+
+   procedure Dispatch_Compute_Group_Size (Group_Size : Dimension_Size_Array; X, Y, Z : UInt := 1)
+     with Pre => X >= 1 and Y >= 1 and Z >= 1 and (for all Size of Group_Size => Size >= 1);
 
    procedure Dispatch_Compute_Indirect (Offset : Size := 0);
    --  Launch a compute shader using the Dispatch_Indirect_Command at the
@@ -47,7 +52,7 @@ package GL.Compute is
      with Post => Max_Compute_Shared_Memory_Size'Result >= 32_768;
    --  Maximum total storage size in bytes of 'shared' variables
 
-   function Max_Compute_Work_Group_Invocations return Size
+   function Max_Compute_Work_Group_Invocations (Kind : Work_Group_Kind) return Size
      with Post => Max_Compute_Work_Group_Invocations'Result >= 1_024;
    --  Maximum total invocations in a single local work group
 
@@ -55,7 +60,7 @@ package GL.Compute is
      with Post => (for all Size of Max_Compute_Work_Group_Count'Result => Size >= 65_535);
    --  Maximum number of work groups (per dimension)
 
-   function Max_Compute_Work_Group_Size return Dimension_Size_Array
+   function Max_Compute_Work_Group_Size (Kind : Work_Group_Kind) return Dimension_Size_Array
      with Post => (for all Dimension in Dimension_Size_Array'Range =>
        (case Dimension is
           when X | Y => Max_Compute_Work_Group_Size'Result (Dimension) >= 1_024,

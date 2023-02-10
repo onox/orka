@@ -30,6 +30,15 @@ package body GL.Compute is
       API.Dispatch_Compute.Ref (X, Y, Z);
    end Dispatch_Compute;
 
+   procedure Dispatch_Compute_Group_Size
+     (Group_Size : Dimension_Size_Array;
+      X, Y, Z    : UInt := 1) is
+   begin
+      API.Dispatch_Compute_Group_Size.Ref
+        (X, Y, Z,
+         UInt (Group_Size (Orka.X)), UInt (Group_Size (Orka.Y)), UInt (Group_Size (Orka.Z)));
+   end Dispatch_Compute_Group_Size;
+
    procedure Dispatch_Compute_Indirect (Offset : Size := 0) is
       use GL.Types.Indirect;
 
@@ -46,10 +55,15 @@ package body GL.Compute is
       return Value;
    end Max_Compute_Shared_Memory_Size;
 
-   function Max_Compute_Work_Group_Invocations return Size is
+   function Max_Compute_Work_Group_Invocations (Kind : Work_Group_Kind) return Size is
       Value : Size := 0;
    begin
-      API.Get_Size.Ref (Enums.Getter.Max_Compute_Work_Group_Invocations, Value);
+      case Kind is
+         when Fixed =>
+            API.Get_Size.Ref (Enums.Getter.Max_Compute_Fixed_Group_Invocations, Value);
+         when Variable =>
+            API.Get_Size.Ref (Enums.Getter.Max_Compute_Variable_Group_Invocations, Value);
+      end case;
       return Value;
    end Max_Compute_Work_Group_Invocations;
 
@@ -63,13 +77,21 @@ package body GL.Compute is
       return Values;
    end Max_Compute_Work_Group_Count;
 
-   function Max_Compute_Work_Group_Size return Dimension_Size_Array is
+   function Max_Compute_Work_Group_Size (Kind : Work_Group_Kind) return Dimension_Size_Array is
       Values : Dimension_Size_Array := (others => 0);
    begin
-      for Dimension in Values'Range loop
-         API.Get_Size_I.Ref (Enums.Getter.Max_Compute_Work_Group_Size,
-           Indices (Dimension), Values (Dimension));
-      end loop;
+      case Kind is
+         when Fixed =>
+            for Dimension in Values'Range loop
+               API.Get_Size_I.Ref (Enums.Getter.Max_Compute_Fixed_Group_Size,
+                 Indices (Dimension), Values (Dimension));
+            end loop;
+         when Variable =>
+            for Dimension in Values'Range loop
+               API.Get_Size_I.Ref (Enums.Getter.Max_Compute_Variable_Group_Size,
+                 Indices (Dimension), Values (Dimension));
+            end loop;
+      end case;
       return Values;
    end Max_Compute_Work_Group_Size;
 
