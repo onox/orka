@@ -26,6 +26,8 @@ limited with Orka.Rendering.Programs.Uniforms;
 package Orka.Rendering.Programs is
    pragma Preelaborate;
 
+   subtype Dimension_Size_Array is GL.Types.Compute.Dimension_Size_Array;
+
    type Program is tagged private;
 
    function Create_Program (Module    : Programs.Modules.Module;
@@ -38,7 +40,7 @@ package Orka.Rendering.Programs is
    --  Use the program during rendering
 
    function Compute_Work_Group_Size
-     (Object : Program) return GL.Types.Compute.Dimension_Size_Array;
+     (Object : Program) return Dimension_Size_Array;
 
    function Uniform_Sampler (Object : Program; Name : String) return Uniforms.Uniform_Sampler;
    --  Return the uniform sampler that has the given name
@@ -77,8 +79,8 @@ package Orka.Rendering.Programs is
    --  Return the index of the binding point of a shader storage block (SSBO),
    --  uniform block (UBO), or an atomic counter buffer
    --
-   --  Name must be a GLSL shader storage block, uniform block, or atomic
-   --  uniform. A Uniforms.Uniform_Inactive_Error exception is raised if
+   --  Name must be a GLSL shader storage block or uniform block.
+   --  A Uniforms.Uniform_Inactive_Error exception is raised if
    --  the name is not defined in any of the attached shaders.
 
    Program_Link_Error : exception;

@@ -51,7 +51,7 @@ package body Orka.Rendering.Programs is
    end Use_Program;
 
    function Compute_Work_Group_Size
-     (Object : Program) return GL.Types.Compute.Dimension_Size_Array
+     (Object : Program) return Dimension_Size_Array
    is (Object.GL_Program.Compute_Work_Group_Size);
 
    function Uniform_Sampler (Object : Program; Name : String)
