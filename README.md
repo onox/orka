@@ -1,3 +1,6 @@
+<div align="center">
+    <h1>Orka</h1>
+
 [![Build status](https://github.com/onox/orka/actions/workflows/build.yaml/badge.svg)](https://github.com/onox/orka/actions/workflows/build.yaml)
 [![Test status](https://github.com/onox/orka/actions/workflows/test.yml/badge.svg)](https://github.com/onox/orka/actions/workflows/test.yml)
 [![Docs status](https://img.shields.io/netlify/4fa61148-e68f-41e6-b7fa-1785eaf4bcb5?label=docs)](https://app.netlify.com/sites/orka-engine/deploys)
@@ -6,10 +9,12 @@
 [![IRC](https://img.shields.io/badge/IRC-%23ada%20on%20libera.chat-orange.svg)](https://libera.chat)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/ada-lang/Lobby)
 
-# Orka
+</div>
+
+<br />
 
 Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
-the building blocks to easily render 3D graphics or do general-purpose
+the building blocks like a frame graph to render 3D graphics or do general-purpose
 computing on the GPU, and to use input devices like gamepads.
 
 - **Object-oriented rendering API**. Renderer objects like shader programs,
@@ -17,6 +22,9 @@ framebuffers, buffers, and textures can be used via an
 object-oriented API. Objects are automatically created and destroyed by using
 controlled types. Various [AZDO][url-azdo] techniques can be used to allow
 multithreaded buffer updates and batched draw calls for high performance rendering.
+
+- **Frame graph**. Create a graph with render passes and textures to easily
+display a texture or depth buffer on the screen.
 
 - **Debug rendering and logging**. Various packages exist that can be used
 to draw bounding boxes, coordinate axes, lines, and spheres for debugging.
@@ -29,9 +37,10 @@ using compute shaders, or apply a blurring effect to a texture.
 - **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
 tessellated terrain.
 
-- **Windows and input devices**. Use [AWT][url-awt] to manage input devices
-like the pointer, keyboard, and gamepads, and windows that can display 3D graphics.
-It has a similar purpose as GLFW and SDL.
+- **Windows and input devices**. Use the built-in [window toolkit][url-awt]
+to manage input devices like the pointer, keyboard, and gamepads, and windows
+that can display 3D graphics.
+It has a similar purpose as GLFW and SDL, but is fully written in Ada.
 
 - **Gamepads**. Apply mappings from
 [SDL gamecontroller database][url-sdl-gamecontroller-db],
@@ -54,10 +63,14 @@ processing system. Resources can be loaded from directories and archive files.
 - **Transforms**. Apply common transformations to vectors, quaternions, and
 matrices using x86 SIMD instructions.
 
-- **Numerics**. Perform element-wise operations, reductions
+- **Tensors and numerics**. Perform element-wise operations, reductions
 using arbitrary expressions, or matrix operations on tensors using SIMD
-instructions. Generate tensors with statistical distributions, or use
-Runge-Kutta 4th order numerical integrators or sigma-point Kalman filters.
+instructions on the CPU or compute shaders on the GPU.
+Generate tensors with some statistical distribution,
+or use Runge-Kutta 4th order numerical integrators or sigma-point Kalman filters.
+
+- **Surfaceless rendering**. Create a surfaceless rendering context without
+any dependency on a windowing system for using compute shaders on a server.
 
 Additionally, Orka provides several bindings:
 
@@ -105,8 +118,7 @@ If you would like to fix a bug, add a feature, improve the documentation or
 have suggestions or advice about the architecture, APIs, or performance,
 then do not hesitate to open a new [issue][url-issue].
 
-Make sure you have read the [contributing guidelines][url-contributing]
-before opening an issue or pull request.
+See the [contributing guidelines][url-contributing] for more information.
 
 ## License
 

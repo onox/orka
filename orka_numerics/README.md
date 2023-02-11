@@ -27,7 +27,7 @@ This crate provides:
   * Logical operations on boolean tensors
 
 Two crates exist which implement the `Tensor` interface: one which uses
-SIMD instructions on the CPU and one which uses buffers and computer shaders
+SIMD instructions on the CPU and one which uses buffers and compute shaders
 on the GPU.
 
 | Crate                                     | Implementation           | Evaluation | Tensors |
