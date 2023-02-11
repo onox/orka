@@ -112,10 +112,40 @@ package body Orka.Rendering.Buffers is
 
    function Create_Buffer
      (Flags  : Storage_Bits;
+      Data   : Integer_16_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => Short_Type) do
+         Pointers.Short.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : Storage_Bits;
       Data   : Integer_32_Array) return Buffer is
    begin
       return Result : Buffer (Kind => Int_Type) do
          Pointers.Int.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : Storage_Bits;
+      Data   : Unsigned_8_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => UByte_Type) do
+         Pointers.UByte.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
+         Result.Length := Data'Length;
+      end return;
+   end Create_Buffer;
+
+   function Create_Buffer
+     (Flags  : Storage_Bits;
+      Data   : Unsigned_16_Array) return Buffer is
+   begin
+      return Result : Buffer (Kind => UShort_Type) do
+         Pointers.UShort.Allocate_And_Load_From_Data (Result.Buffer, Data, Flags);
          Result.Length := Data'Length;
       end return;
    end Create_Buffer;
@@ -273,10 +303,34 @@ package body Orka.Rendering.Buffers is
 
    procedure Set_Data
      (Object : Buffer;
+      Data   : Integer_16_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Short.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
       Data   : Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Unsigned_8_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UByte.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Set_Data;
+
+   procedure Set_Data
+     (Object : Buffer;
+      Data   : Unsigned_16_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UShort.Set_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Set_Data;
 
    procedure Set_Data
@@ -379,10 +433,34 @@ package body Orka.Rendering.Buffers is
 
    procedure Get_Data
      (Object : Buffer;
+      Data   : in out Integer_16_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.Short.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
       Data   : in out Integer_32_Array;
       Offset : Natural := 0) is
    begin
       Pointers.Int.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Unsigned_8_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UByte.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
+   end Get_Data;
+
+   procedure Get_Data
+     (Object : Buffer;
+      Data   : in out Unsigned_16_Array;
+      Offset : Natural := 0) is
+   begin
+      Pointers.UShort.Get_Sub_Data (Object.Buffer, Int (Offset), Data);
    end Get_Data;
 
    procedure Get_Data
@@ -443,6 +521,18 @@ package body Orka.Rendering.Buffers is
 
    procedure Clear_Data
      (Object : Buffer;
+      Data   : Integer_16_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Integer_16_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.Short.Clear_Sub_Data (Object.Buffer, Short_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
       Data   : Integer_32_Array)
    is
       Length : constant Size := Size (Object.Length);
@@ -451,6 +541,30 @@ package body Orka.Rendering.Buffers is
         (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
    begin
       Pointers.Int.Clear_Sub_Data (Object.Buffer, Int_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Unsigned_8_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Unsigned_8_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.UByte.Clear_Sub_Data (Object.Buffer, UByte_Type, 0, Length, Data_Array);
+   end Clear_Data;
+
+   procedure Clear_Data
+     (Object : Buffer;
+      Data   : Unsigned_16_Array)
+   is
+      Length : constant Size := Size (Object.Length);
+
+      Data_Array : Unsigned_16_Array :=
+        (if Data'Length = 1 and Data (Data'First) = 0 then Data (1 .. 0) else Data);
+   begin
+      Pointers.UShort.Clear_Sub_Data (Object.Buffer, UShort_Type, 0, Length, Data_Array);
    end Clear_Data;
 
    procedure Clear_Data
