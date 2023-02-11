@@ -15,4 +15,8 @@ project Orka_Egl_Info is
    package Compiler renames Orka_Egl.Compiler;
    package Binder   renames Orka_Egl.Binder;
 
+   package Linker is
+      for Switches ("Ada") use ("-lgcov");
+   end Linker;
+
 end Orka_Egl_Info;
