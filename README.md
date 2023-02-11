@@ -1,16 +1,14 @@
 <div align="center">
     <h1>Orka</h1>
-
-[![Build status](https://github.com/onox/orka/actions/workflows/build.yaml/badge.svg)](https://github.com/onox/orka/actions/workflows/build.yaml)
-[![Test status](https://github.com/onox/orka/actions/workflows/test.yml/badge.svg)](https://github.com/onox/orka/actions/workflows/test.yml)
-[![Docs status](https://img.shields.io/netlify/4fa61148-e68f-41e6-b7fa-1785eaf4bcb5?label=docs)](https://app.netlify.com/sites/orka-engine/deploys)
-[![License](https://img.shields.io/github/license/onox/orka.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/onox/orka.svg)](https://github.com/onox/orka/releases/latest)
-[![IRC](https://img.shields.io/badge/IRC-%23ada%20on%20libera.chat-orange.svg)](https://libera.chat)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/ada-lang/Lobby)
-
+    <a href="https://github.com/onox/orka/actions/workflows/build.yaml"><img src="https://github.com/onox/orka/actions/workflows/build.yaml/badge.svg" alt="Build status" /></a>
+    <a href="https://github.com/onox/orka/actions/workflows/test.yml"><img src="https://github.com/onox/orka/actions/workflows/test.yml/badge.svg" alt="Test status" /></a>
+    <a href="https://app.netlify.com/sites/orka-engine/deploys"><img src="https://img.shields.io/netlify/4fa61148-e68f-41e6-b7fa-1785eaf4bcb5?label=docs" alt="Docs status" /></a>
+    <a href="https://github.com/onox/orka/blob/master/LICENSE"><img src="https://img.shields.io/github/license/onox/orka.svg?color=blue" alt="License" /></a>
+    <a href="https://github.com/onox/orka/releases/latest"><img src="https://img.shields.io/github/release/onox/orka.svg" alt="GitHub release" /></a>
+    <a href="https://gitter.im/ada-lang/Lobby"><img src="https://badges.gitter.im/gitterHQ/gitter.svg" alt="Gitter chat" /></a>
 </div>
 
+<br />
 <br />
 
 Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
