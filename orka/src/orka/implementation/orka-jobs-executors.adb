@@ -52,6 +52,15 @@ package body Orka.Jobs.Executors is
       Null_Pair : constant Queues.Pair := (others => <>);
 
       package Vectors is new Orka.Containers.Bounded_Vectors (Positive, Job_Ptr);
+
+      type Executor_Context (Jobs : not null access Vectors.Vector)
+        is new Execution_Context with null record;
+
+      overriding
+      procedure Enqueue (Object : Executor_Context; Element : Job_Ptr) is
+      begin
+         Object.Jobs.Append (Element);
+      end Enqueue;
    begin
       loop
          Queue.Dequeue (Kind) (Pair, Stop);
@@ -63,17 +72,8 @@ package body Orka.Jobs.Executors is
             Future  : Futures.Pointers.Reference renames Pair.Future.Get;
             Promise : Futures.Promise'Class renames Futures.Promise'Class (Future.Value.all);
 
-            Jobs : Vectors.Vector (Capacity => Maximum_Enqueued_By_Job);
-
-            type Executor_Context is new Execution_Context with null record;
-
-            overriding
-            procedure Enqueue (Object : Executor_Context; Element : Job_Ptr) is
-            begin
-               Jobs.Append (Element);
-            end Enqueue;
-
-            Context : Executor_Context;
+            Jobs    : aliased Vectors.Vector (Capacity => Maximum_Enqueued_By_Job);
+            Context : Executor_Context (Jobs'Access);
 
             procedure Set_Root_Dependent (Last_Job : Job_Ptr) is
                Root_Dependents : Vectors.Vector (Capacity => Jobs.Length);
