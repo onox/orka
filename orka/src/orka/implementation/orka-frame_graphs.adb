@@ -894,8 +894,8 @@ package body Orka.Frame_Graphs is
                   pragma Assert (Pass.Side_Effect);
 
                   --  Use width and height from default framebuffer
-                  Width  := Size (Default.Width);
-                  Height := Size (Default.Height);
+                  Width  := Default.Width;
+                  Height := Default.Height;
                else
                   pragma Assert (Width > 0 and Height > 0);
                end if;
@@ -921,8 +921,8 @@ package body Orka.Frame_Graphs is
                            Default
                          else
                            Rendering.Framebuffers.Create_Framebuffer
-                             (Width   => Size (Width),
-                              Height  => Size (Height),
+                             (Width   => Width,
+                              Height  => Height,
                               Samples => Size (Samples_Attachments))),
 
                       Clear_Mask        => Clear_Mask,
