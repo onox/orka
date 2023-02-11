@@ -15,9 +15,7 @@
 --  limitations under the License.
 
 with Ada.Exceptions;
---  with Ada.Real_Time;
 with Ada.Tags;
---  with Ada.Text_IO;
 
 with Orka.Containers.Bounded_Vectors;
 with Orka.Futures;
@@ -45,7 +43,6 @@ package body Orka.Jobs.Executors is
       Kind  : Queues.Executor_Kind;
       Queue : Queues.Queue_Ptr)
    is
---      use type Ada.Real_Time.Time;
       use type Futures.Status;
       use Ada.Exceptions;
 
@@ -55,11 +52,8 @@ package body Orka.Jobs.Executors is
       Null_Pair : constant Queues.Pair := (others => <>);
 
       package Vectors is new Orka.Containers.Bounded_Vectors (Positive, Job_Ptr);
-
---      T0, T1, T2 : Ada.Real_Time.Time;
    begin
       loop
---         T0 := Ada.Real_Time.Clock;
          Queue.Dequeue (Kind) (Pair, Stop);
          exit when Stop;
 
@@ -104,9 +98,6 @@ package body Orka.Jobs.Executors is
 
             Tag : String renames Ada.Tags.Expanded_Name (Job'Tag);
          begin
---            T1 := Ada.Real_Time.Clock;
-
---            Ada.Text_IO.Put_Line (Name & " executing job " & Tag);
             if Future.Current_Status = Futures.Waiting then
                Promise.Set_Status (Futures.Running);
             end if;
@@ -126,15 +117,6 @@ package body Orka.Jobs.Executors is
                  Kind'Image & " job " & Tag & " already " & Future.Current_Status'Image);
             end if;
 
---            T2 := Ada.Real_Time.Clock;
---            declare
---               Waiting_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T1 - T0);
---               Running_Time : constant Duration := 1e3 * Ada.Real_Time.To_Duration (T2 - T1);
---            begin
---               Ada.Text_IO.Put_Line (Name & " (blocked" & Waiting_Time'Image & " ms)" &
---                 " executed job " & Tag & " in" & Running_Time'Image & " ms");
---            end;
-
             if Job.Dependent /= Null_Job then
                --  Make the root dependents of the jobs in Jobs
                --  dependencies of Job.Dependent
@@ -146,13 +128,10 @@ package body Orka.Jobs.Executors is
                --  and if it has reached zero then it can be scheduled
                if Job.Dependent.Decrement_Dependencies then
                   pragma Assert (Jobs.Is_Empty);
---                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing dependent " &
---                    Ada.Tags.Expanded_Name (Job.Dependent'Tag));
                   Queue.Enqueue (Job.Dependent, Pair.Future);
                end if;
             elsif Jobs.Is_Empty then
                Promise.Set_Status (Futures.Done);
---               Ada.Text_IO.Put_Line (Name & " completed graph with job " & Tag);
             else
                --  If the job has enqueued new jobs, we need to create an
                --  empty job which has the root dependents of these new jobs
@@ -163,8 +142,6 @@ package body Orka.Jobs.Executors is
 
             if not Jobs.Is_Empty then
                for Job of Jobs loop
---                  Ada.Text_IO.Put_Line (Name & " job " & Tag & " enqueuing job " &
---                    Ada.Tags.Expanded_Name (Job'Tag));
                   Queue.Enqueue (Job, Pair.Future);
                end loop;
             end if;
