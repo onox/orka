@@ -73,7 +73,8 @@ package GL.Debug is
    --  Enable or disable messages that have one of the given message IDs
 
    procedure Insert_Message (From : Source; Kind : Message_Type; Level : Severity;
-                             Identifier : UInt; Message : String);
+                             Identifier : UInt; Message : String)
+      with Pre => From in Third_Party | Application;
    --  Generate a new debug message
    --
    --  From must be either Third_Party or Application. Instantiate the
@@ -86,7 +87,8 @@ package GL.Debug is
    type Active_Group is limited new Ada.Finalization.Limited_Controlled with private;
 
    function Push_Debug_Group (From : Source; Identifier : UInt; Message : String)
-     return Active_Group'Class;
+     return Active_Group'Class
+   with Pre => From in Third_Party | Application;
    --  Add a new debug group to the stack
    --
    --  From must be either Third_Party or Application.
@@ -114,13 +116,6 @@ package GL.Debug is
 
    function Max_Message_Length return Size
      with Post => Max_Message_Length'Result >= 1;
-
-   generic
-      From : Source;
-      Kind : Message_Type;
-      ID   : UInt := 0;
-   procedure Log (Level : Severity; Message : String);
-   --  Generate a new debug message
 
 private
 

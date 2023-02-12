@@ -92,7 +92,6 @@ package body GL.Debug is
 
    procedure Insert_Message (From : Source; Kind : Message_Type; Level : Severity;
                              Identifier : UInt; Message : String) is
-      pragma Assert (From in Third_Party | Application);
    begin
       API.Debug_Message_Insert.Ref (From, Kind, Identifier, Level,
                                 Types.Size (Message'Length), C.To_C (Message));
@@ -100,7 +99,6 @@ package body GL.Debug is
 
    function Push_Debug_Group (From : Source; Identifier : UInt; Message : String)
      return Active_Group'Class is
-      pragma Assert (From in Third_Party | Application);
    begin
       API.Push_Debug_Group.Ref (From, Identifier,
                             Types.Size (Message'Length), C.To_C (Message));
@@ -156,10 +154,5 @@ package body GL.Debug is
       API.Get_Integer.Ref (Enums.Getter.Max_Debug_Message_Length, Result);
       return Result;
    end Max_Message_Length;
-
-   procedure Log (Level : Severity; Message : String) is
-   begin
-      GL.Debug.Insert_Message (From, Kind, Level, ID, Message);
-   end Log;
 
 end GL.Debug;
