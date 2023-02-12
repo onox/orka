@@ -14,17 +14,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-generic
-   type Index_Type is mod <>;
 package Orka.Rendering.Buffers.Mapped.Persistent is
    pragma Preelaborate;
 
    type Persistent_Mapped_Buffer is new Mapped_Buffer with private;
 
    function Create_Buffer
-     (Kind   : Orka.Types.Element_Type;
-      Length : Positive;
-      Mode   : IO_Mode) return Persistent_Mapped_Buffer
+     (Kind    : Orka.Types.Element_Type;
+      Length  : Positive;
+      Mode    : IO_Mode;
+      Regions : Positive) return Persistent_Mapped_Buffer
    with Post => Create_Buffer'Result.Length = Length;
    --  Create a persistent mapped buffer for only writes or only reads
    --
@@ -52,7 +51,9 @@ package Orka.Rendering.Buffers.Mapped.Persistent is
 private
 
    type Persistent_Mapped_Buffer is new Mapped_Buffer with record
-      Index : Index_Type;
-   end record;
+      Index   : Natural;
+      Regions : Positive;
+   end record
+     with Type_Invariant => Index < Regions;
 
 end Orka.Rendering.Buffers.Mapped.Persistent;

@@ -17,9 +17,10 @@
 package body Orka.Rendering.Buffers.Mapped.Persistent is
 
    function Create_Buffer
-     (Kind   : Orka.Types.Element_Type;
-      Length : Positive;
-      Mode   : IO_Mode) return Persistent_Mapped_Buffer
+     (Kind    : Orka.Types.Element_Type;
+      Length  : Positive;
+      Mode    : IO_Mode;
+      Regions : Positive) return Persistent_Mapped_Buffer
    is
       Storage_Flags : constant GL.Objects.Buffers.Storage_Bits :=
         (Write => Mode = Write, Read => Mode = Read,
@@ -28,12 +29,13 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
         (Write => Mode = Write, Read => Mode = Read,
          Persistent => True, Coherent => True, others => False);
 
-      Total_Length : constant Positive := Length * Index_Type'Modulus;
+      Total_Length : constant Positive := Length * Regions;
    begin
       return Result : Persistent_Mapped_Buffer (Kind, Mode) do
-         Result.Buffer := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
-         Result.Index  := Index_Type'First;
-         Result.Offset := Length * Natural (Result.Index);
+         Result.Buffer  := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
+         Result.Index   := 0;
+         Result.Regions := Regions;
+         Result.Offset  := Length * Natural (Result.Index);
 
          Result.Map (Size (Total_Length), Access_Flags);
       end return;
@@ -41,11 +43,11 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
 
    overriding
    function Length (Object : Persistent_Mapped_Buffer) return Positive is
-     (Object.Buffer.Length / Index_Type'Modulus);
+     (Object.Buffer.Length / Object.Regions);
 
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer) is
    begin
-      Object.Index  := Object.Index + 1;
+      Object.Index  := (Object.Index + 1) mod Object.Regions;
       Object.Offset := Object.Length * Natural (Object.Index);
    end Advance_Index;
 

@@ -16,17 +16,16 @@
 
 private with GL.Fences;
 
-generic
-   type Index_Type is mod <>;
-   Maximum_Wait : Duration := 0.010;
 package Orka.Rendering.Fences is
    pragma Preelaborate;
 
-   type Buffer_Fence is tagged private;
+   type Buffer_Fence (Regions : Positive) is tagged private;
 
    type Fence_Status is (Not_Initialized, Signaled, Not_Signaled);
 
-   function Create_Buffer_Fence return Buffer_Fence;
+   function Create_Buffer_Fence
+     (Regions      : Positive;
+      Maximum_Wait : Duration := 0.010) return Buffer_Fence;
 
    procedure Prepare_Index (Object : in out Buffer_Fence; Status : out Fence_Status);
    --  Perform a client wait sync for the fence corresponding to the
@@ -37,11 +36,12 @@ package Orka.Rendering.Fences is
 
 private
 
-   type Fence_Array is array (Index_Type) of GL.Fences.Fence;
+   type Fence_Array is array (Positive range <>) of GL.Fences.Fence;
 
-   type Buffer_Fence is tagged record
-      Fences : Fence_Array;
-      Index  : Index_Type;
+   type Buffer_Fence (Regions : Positive) is tagged record
+      Fences       : Fence_Array (1 .. Regions);
+      Index        : Natural;
+      Maximum_Wait : Duration;
    end record;
 
 end Orka.Rendering.Fences;

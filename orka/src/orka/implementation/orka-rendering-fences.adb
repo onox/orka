@@ -23,22 +23,25 @@ package body Orka.Rendering.Fences is
 
    procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
-   function Create_Buffer_Fence return Buffer_Fence is
+   function Create_Buffer_Fence
+     (Regions      : Positive;
+      Maximum_Wait : Duration := 0.010) return Buffer_Fence is
    begin
-      return Result : Buffer_Fence do
-         Result.Index := Index_Type'First;
+      return Result : Buffer_Fence (Regions => Regions) do
+         Result.Index := 0;
+         Result.Maximum_Wait := Maximum_Wait;
       end return;
    end Create_Buffer_Fence;
 
    procedure Prepare_Index (Object : in out Buffer_Fence; Status : out Fence_Status) is
       use GL.Fences;
    begin
-      if not Object.Fences (Object.Index).Initialized then
+      if not Object.Fences (Object.Index + 1).Initialized then
          Status := Not_Initialized;
          return;
       end if;
 
-      case Object.Fences (Object.Index).Client_Wait (Maximum_Wait) is
+      case Object.Fences (Object.Index + 1).Client_Wait (Object.Maximum_Wait) is
          when Condition_Satisfied =>
             Log (Warning, "Fence not already signalled");
             Status := Signaled;
@@ -52,8 +55,8 @@ package body Orka.Rendering.Fences is
 
    procedure Advance_Index (Object : in out Buffer_Fence) is
    begin
-      Object.Fences (Object.Index).Set_Fence;
-      Object.Index := Object.Index + 1;
+      Object.Fences (Object.Index + 1).Set_Fence;
+      Object.Index := (Object.Index + 1) mod Object.Regions;
    end Advance_Index;
 
 end Orka.Rendering.Fences;
