@@ -285,7 +285,7 @@ package body Orka.Loops is
         (Scene  : not null Behaviors.Behavior_Array_Access;
          Camera : Cameras.Camera_Ptr))
    is
-      Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence;
+      Fence : aliased SJ.Fences.Buffer_Fence := SJ.Fences.Create_Buffer_Fence (Regions => 4);
    begin
       declare
          --  Create a separate task for the game loop. The current task

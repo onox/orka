@@ -62,7 +62,7 @@ package Orka.Instances is
 
 private
 
-   package PMB is new Orka.Rendering.Buffers.Mapped.Persistent (Partition_Index_Type);
+   package PMB renames Rendering.Buffers.Mapped.Persistent;
 
    type Cursor is new Positive;
 

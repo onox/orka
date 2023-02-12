@@ -27,11 +27,9 @@ private package Orka.Simulation_Jobs is
 
    use Ada.Real_Time;
 
-   type Buffer_Region_Type is mod 4;
-
    package Transforms renames Orka.Transforms.Singles.Vectors;
 
-   package Fences is new Orka.Rendering.Fences (Buffer_Region_Type);
+   package Fences renames Orka.Rendering.Fences;
 
    -----------------------------------------------------------------------------
 
