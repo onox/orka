@@ -40,4 +40,21 @@ package body Orka.Contexts is
       return Strings.Trim (SU.To_String (Result));
    end Image;
 
+   procedure Move_To
+     (Object : aliased Context'Class;
+      Target : in out Task_With_Context'Class) is
+   begin
+      Object.Make_Not_Current;
+      Target.Move_Context (Context_Access'(Object'Unchecked_Access));
+   end Move_To;
+
+   procedure Move_To
+     (Object : aliased Surface_Context'Class;
+      Target : in out Task_With_Surface_Context'Class;
+      Window : in out Orka.Windows.Window'Class) is
+   begin
+      Object.Make_Not_Current;
+      Target.Move_Context (Surface_Context_Access'(Object'Unchecked_Access), Window);
+   end Move_To;
+
 end Orka.Contexts;

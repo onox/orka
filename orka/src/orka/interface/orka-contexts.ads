@@ -78,4 +78,40 @@ package Orka.Contexts is
    with Pre'Class  => Object.Is_Current (Current_Task) or not Object.Is_Current (Any_Task),
         Post'Class => Object.Is_Current (Current_Task);
 
+   -----------------------------------------------------------------------------
+   --                             Moving contexts                             --
+   -----------------------------------------------------------------------------
+
+   type Context_Access is access constant Context'Class;
+
+   type Surface_Context_Access is access constant Surface_Context'Class;
+
+   type Task_With_Context is task interface;
+
+   procedure Move_Context
+     (Object  : in out Task_With_Context;
+      Context : not null Context_Access) is abstract
+   with Synchronization => By_Entry;
+   --  A task implementing this interface *MUST* call Context.Make_Current in its accept block
+
+   type Task_With_Surface_Context is task interface;
+
+   procedure Move_Context
+     (Object  : in out Task_With_Surface_Context;
+      Context : not null Surface_Context_Access;
+      Window  : in out Orka.Windows.Window'Class) is abstract
+   with Synchronization => By_Entry;
+   --  A task implementing this interface *MUST* call Context.Make_Current in its accept block
+
+   procedure Move_To
+     (Object : aliased Context'Class;
+      Target : in out Task_With_Context'Class);
+   --  Make the context not current in the calling task and then current in the target task
+
+   procedure Move_To
+     (Object : aliased Surface_Context'Class;
+      Target : in out Task_With_Surface_Context'Class;
+      Window : in out Orka.Windows.Window'Class);
+   --  Make the context not current in the calling task and then current in the target task
+
 end Orka.Contexts;
