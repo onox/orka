@@ -1056,7 +1056,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          Buffers.Query (Bind_Buffers'Access);
 
          GL.Barriers.Memory_Barrier
-           ((By_Region => False, Shader_Storage => True, others => False));
+           ((Shader_Storage => True, others => False));
 
          if Object.Operation.Kind = Matrix_Operation
            and then Object.Operation.Matrix_Operation.Kind in Diagonal | Matrix_Matrix
@@ -1076,7 +1076,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       end;
 
       GL.Barriers.Memory_Barrier
-        ((By_Region => False, Buffer_Update | Shader_Storage => True, others => False));
+        ((Buffer_Update | Shader_Storage => True, others => False));
 
       Object.Reference.Materialized := True;
    end Materialize_Tensor;
@@ -2435,7 +2435,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                   Buffer_Constants.Bind (Shader_Storage, 2);
 
                   GL.Barriers.Memory_Barrier
-                    ((By_Region => False, Shader_Storage => True, others => False));
+                    ((Shader_Storage => True, others => False));
 
                   if Associative then
                      GL.Compute.Dispatch_Compute_Group_Size
@@ -2456,8 +2456,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                begin
                   if Buffer_Output.Length = 1 then
                      GL.Barriers.Memory_Barrier
-                       ((By_Region => False,
-                         Buffer_Update | Shader_Storage => True, others => False));
+                       ((Buffer_Update | Shader_Storage => True, others => False));
 
                      return Get (Buffer_Output, 0);
                   end if;
