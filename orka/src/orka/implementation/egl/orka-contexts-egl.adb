@@ -96,9 +96,10 @@ package body Orka.Contexts.EGL is
       GL.Buffers.Set_Depth_Function (GL.Types.Greater);
       --  Note: When clearing the depth buffer, the value 0.0 instead of 1.0 must be used
 
-      --  Enable MSAA and face culling
+      --  Enable MSAA, face culling, and seamless cubemaps
       GL.Toggles.Enable (GL.Toggles.Multisample);
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
+      GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
       Object.Vertex_Array.Create;
    end Post_Initialize;
