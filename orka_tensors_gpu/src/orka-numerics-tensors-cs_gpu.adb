@@ -1541,6 +1541,24 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
       Result : SU.Unbounded_String;
       Buffer : Buffer_Access renames Object.Reference.Data;
+
+      procedure Append_Value (Index : Natural) is
+      begin
+         case Object.Kind is
+            when Float_Type =>
+               declare
+                  Value : constant Element_Type := Get (Buffer.all, Index);
+               begin
+                  SU.Append (Result,
+                    (if Value'Valid then Value'Image else "     invalid"));
+               end;
+            when Int_Type =>
+               SU.Append (Result, Integer'(Get (Buffer.all, Index))'Image);
+            when Bool_Type =>
+               SU.Append (Result, "       " &
+                 (if Get (Buffer.all, Index) then " True" else "False"));
+         end case;
+      end Append_Value;
    begin
       Object.Materialize_Tensor;
       pragma Assert (Buffer /= null);
@@ -1552,26 +1570,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
                declare
                   First_Element_Of_Row : constant Boolean := (I - 1) mod Row_Count = 0;
                   Last_Element_Of_Row  : constant Boolean := (I - 0) mod Row_Count = 0;
-
-                  Index : constant Natural := I - 1;
                begin
                   if First_Element_Of_Row then
                      SU.Append (Result, (if I = 1 then "" else "        "));
                   end if;
-                  case Object.Kind is
-                     when Float_Type =>
-                        declare
-                           Value : constant Element_Type := Get (Buffer.all, Index);
-                        begin
-                           SU.Append (Result,
-                             (if Value'Valid then Value'Image else "     invalid"));
-                        end;
-                     when Int_Type =>
-                        SU.Append (Result, Integer'(Get (Buffer.all, Index))'Image);
-                     when Bool_Type =>
-                        SU.Append (Result, "       " &
-                          (if Get (Buffer.all, Index) then " True" else "False"));
-                  end case;
+                  Append_Value (I - 1);
                   if I < Count then
                      SU.Append (Result, ",");
                      if Last_Element_Of_Row then
@@ -1589,24 +1592,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                   SU.Append (Result, (if I = 1 then "" else "        "));
                   SU.Append (Result, "[");
                   for J in 1 .. Columns loop
-                     declare
-                        Index : constant Natural := (I - 1) * Columns + J - 1;
-                     begin
-                        case Object.Kind is
-                           when Float_Type =>
-                              declare
-                                 Value : constant Element_Type := Get (Buffer.all, Index);
-                              begin
-                                 SU.Append (Result,
-                                   (if Value'Valid then Value'Image else "     invalid"));
-                              end;
-                           when Int_Type =>
-                              SU.Append (Result, Integer'(Get (Buffer.all, Index))'Image);
-                           when Bool_Type =>
-                              SU.Append (Result, "       " &
-                                (if Get (Buffer.all, Index) then " True" else "False"));
-                        end case;
-                     end;
+                     Append_Value ((I - 1) * Columns + J - 1);
                      if J < Columns then
                         SU.Append (Result, ",");
                      end if;
