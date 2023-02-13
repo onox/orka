@@ -19,6 +19,7 @@ with System;
 with Ada.Exceptions;
 with Ada.Unchecked_Deallocation;
 
+with GL.Barriers;
 with GL.Low_Level.Enums;
 with GL.Pixels.Extensions;
 with GL.Types.Pointers;
@@ -395,7 +396,8 @@ package body Orka.Resources.Textures.KTX is
          when Texture_3D =>
             Header.Height := Texture.Height (Base_Level);
             Header.Depth  := Texture.Depth (Base_Level);
-         when Texture_2D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array =>
+         when Texture_2D | Texture_2D_Array | Texture_Cube_Map | Texture_Cube_Map_Array
+               | Texture_Rectangle =>
             Header.Height := Texture.Height (Base_Level);
             Header.Depth  := 0;
          when Texture_1D | Texture_1D_Array =>
@@ -412,7 +414,7 @@ package body Orka.Resources.Textures.KTX is
             Header.Array_Elements := Texture.Depth (Base_Level);
          when Texture_Cube_Map_Array =>
             Header.Array_Elements := Texture.Depth (Base_Level) / 6;
-         when Texture_1D | Texture_2D | Texture_3D | Texture_Cube_Map =>
+         when Texture_1D | Texture_2D | Texture_3D | Texture_Cube_Map | Texture_Rectangle =>
             Header.Array_Elements := 0;
          when others =>
             raise Program_Error;
@@ -437,7 +439,16 @@ package body Orka.Resources.Textures.KTX is
          end;
       end if;
 
+      if not Header.Compressed
+        and then Header.Data_Type in GL.Pixels.Extensions.Packed_Data_Type
+      then
+         raise GL.Feature_Not_Supported_Exception with
+           "Packed data type " & Header.Data_Type'Image & " is not supported yet";
+      end if;
+
       T2 := Orka.OS.Monotonic_Clock;
+
+      GL.Barriers.Memory_Barrier ((Texture_Update => True, others => False));
 
       declare
          function Get_Level_Data

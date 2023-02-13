@@ -57,11 +57,12 @@ private package Orka.KTX is
        and (if Header.Compressed then Header.Mipmap_Levels > 0)
        and (case Header.Kind is
               when Texture_1D | Texture_2D | Texture_3D => Header.Array_Elements = 0,
-              when Texture_Cube_Map                     => Header.Array_Elements = 0,
+              when Texture_Cube_Map | Texture_Rectangle => Header.Array_Elements = 0,
               when others                               => Header.Array_Elements > 0)
        and (case Header.Kind is
               when Texture_1D | Texture_1D_Array => Header.Height = 0,
               when Texture_2D | Texture_2D_Array => Header.Height > 0 and Header.Depth = 0,
+              when Texture_Rectangle             => Header.Height > 0 and Header.Depth = 0,
               when Texture_3D                    => Header.Depth > 0,
               when Texture_Cube_Map       => Header.Width = Header.Height and Header.Depth = 0,
               when Texture_Cube_Map_Array => Header.Width = Header.Height and Header.Depth = 0,
