@@ -34,7 +34,7 @@ package Orka.Rendering.Drawing is
       Index_Buffer  : Buffers.Buffer;
       Offset, Count : Natural;
       Instances     : Positive := 1)
-   with Pre => Index_Buffer.Kind in Types.Index_Type;
+   with Pre => Index_Buffer.Kind in Types.Index_Type and Offset + Count <= Index_Buffer.Length;
    --  Draw primitives using an index buffer bound to the active vertex
    --  format
 
@@ -43,7 +43,8 @@ package Orka.Rendering.Drawing is
    procedure Draw_Indirect
      (Mode       : GL.Types.Connection_Mode;
       Buffer     : Buffers.Buffer;
-      Offset, Count : Natural);
+      Offset, Count : Natural)
+   with Pre => Offset + Count <= Buffer.Length;
    --  Draw multiple arrays commands at the given offset in the bound
    --  indirect buffer
 
@@ -65,7 +66,7 @@ package Orka.Rendering.Drawing is
       Index_Buffer  : Buffers.Buffer;
       Buffer        : Buffers.Buffer;
       Offset, Count : Natural)
-   with Pre => Index_Buffer.Kind in Types.Index_Type;
+   with Pre => Index_Buffer.Kind in Types.Index_Type and Offset + Count <= Buffer.Length;
    --  Draw multiple elements commands at the given offset in the bound
    --  indirect buffer
 
