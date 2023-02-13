@@ -39,8 +39,8 @@ package Orka.Rendering.Framebuffers is
    --  TODO Use as formal parameter in procedure Invalidate
 
    type Buffer_Values is record
-      Color   : Colors.Color             := (0.0, 0.0, 0.0, 0.0);
-      Depth   : GL.Buffers.Depth         := 1.0;
+      Color   : Colors.Color             := (0.0, 0.0, 0.0, 1.0);
+      Depth   : GL.Buffers.Depth         := 0.0;
       Stencil : GL.Buffers.Stencil_Index := 0;
    end record;
 
