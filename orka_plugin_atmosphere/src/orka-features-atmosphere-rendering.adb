@@ -28,6 +28,7 @@ with Orka.Transforms.Singles.Vectors;
 
 package body Orka.Features.Atmosphere.Rendering is
 
+   package L1 renames Ada.Characters.Latin_1;
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
    Altitude_Hack_Threshold : constant := 8000.0;
@@ -42,28 +43,27 @@ package body Orka.Features.Atmosphere.Rendering is
       Sky_GLSL : constant String := Resources.Convert
         (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));
 
-      use Ada.Characters.Latin_1;
       use Rendering.Programs;
       use Rendering.Programs.Modules;
 
       Sky_Shader : constant String :=
-        "#version 420 core" & LF &
-        (if Data.Luminance /= None then "#define USE_LUMINANCE" & LF else "") &
-        "const float kLengthUnitInMeters = " & Data.Length_Unit_In_Meters'Image & ";" & LF &
-        Sky_GLSL & LF;
+        "#version 420 core" & L1.LF &
+        (if Data.Luminance /= None then "#define USE_LUMINANCE" & L1.LF else "") &
+        "const float kLengthUnitInMeters = " & Data.Length_Unit_In_Meters'Image & ";" & L1.LF &
+        Sky_GLSL & L1.LF;
 
       Shader_Module : constant Rendering.Programs.Modules.Module := Atmosphere_Model.Get_Shader;
    begin
       return Result : Atmosphere :=
-        (Program => Create_Program (Modules.Module_Array'
-           (Modules.Create_Module (Location, VS => "atmosphere/sky.vert"),
-            Modules.Create_Module_From_Sources (FS => Sky_Shader),
-            Shader_Module)),
-         Module  => Shader_Module,
+        (Program        => Create_Program (Modules.Module_Array'
+                             (Modules.Create_Module (Location, VS => "atmosphere/sky.vert"),
+                              Modules.Create_Module_From_Sources (FS => Sky_Shader),
+                              Shader_Module)),
+         Module         => Shader_Module,
          Parameters     => Parameters,
          Bottom_Radius  => Data.Bottom_Radius,
          Distance_Scale => 1.0 / Data.Length_Unit_In_Meters,
-         others => <>)
+         others         => <>)
       do
          Result.Uniform_Ground_Hack   := Result.Program.Uniform ("ground_hack");
          Result.Uniform_Camera_Offset := Result.Program.Uniform ("camera_offset");
