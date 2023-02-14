@@ -21,7 +21,7 @@ with GL.Barriers;
 with GL.Compute;
 with GL.Types.Compute;
 
-with Orka.Contexts.AWT;
+with Orka.Contexts.EGL;
 with Orka.Debug;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
@@ -30,7 +30,7 @@ with Orka.Resources.Locations.Directories;
 with Orka.Types;
 
 procedure Orka_10_Compute is
-   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
+   Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Context
      (Version => (4, 2), Flags  => (Debug => True, others => False));
 
    ----------------------------------------------------------------------
@@ -65,7 +65,7 @@ begin
       Put_Line ("Maximum shared size:" &
         Size'Image (GL.Compute.Max_Compute_Shared_Memory_Size));
       Put_Line ("Maximum invocations:" &
-        Size'Image (GL.Compute.Max_Compute_Work_Group_Invocations));
+        Size'Image (GL.Compute.Max_Compute_Work_Group_Invocations (GL.Compute.Fixed)));
 
       declare
          R : GL.Types.Compute.Dimension_Size_Array;
@@ -76,7 +76,7 @@ begin
          Put_Line ("Maximum count:" & R (X)'Image & R (Y)'Image & R (Z)'Image);
          Max_Work_Groups := R (X);
 
-         R := GL.Compute.Max_Compute_Work_Group_Size;
+         R := GL.Compute.Max_Compute_Work_Group_Size (GL.Compute.Fixed);
          Put_Line ("Maximum size: " & R (X)'Image & R (Y)'Image & R (Z)'Image);
 
          R := Program_1.Compute_Work_Group_Size;

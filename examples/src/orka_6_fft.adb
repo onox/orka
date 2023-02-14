@@ -20,7 +20,6 @@ with GL.Barriers;
 
 with Orka.Algorithms.FFT;
 with Orka.Contexts.AWT;
-with Orka.Debug;
 with Orka.Logging;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations.Directories;
@@ -36,7 +35,7 @@ procedure Orka_6_FFT is
    Count : constant := 2;
    --  Number of times to repeat the complex numbers
 
-   In_Vertical_Direction : constant Boolean := True;
+   In_Vertical_Direction : constant Boolean := False;
    --  Apply FFT in vertical direction instead of horizontal
 
    ----------------------------------------------------------------------
@@ -115,8 +114,6 @@ procedure Orka_6_FFT is
    FFT_W : Positive;
    FFT_H : Positive;
 begin
-   Orka.Debug.Set_Log_Messages (Enable => True);
-
    declare
       Local_Size_X : constant Size := Size (BO_1.Length / Count) / 2;
    begin
@@ -153,7 +150,12 @@ begin
    Print_Array (Output_Numbers_Small);
 
    Ada.Text_IO.Put_Line ("Vertical direction: " & In_Vertical_Direction'Image);
-   Ada.Text_IO.Put_Line ("Rows:" & Integer'Image (Count));
+   Ada.Text_IO.Put_Line ("Rows:" & Count'Image);
+
+   Ada.Text_IO.Put_Line ("Width: " & FFT_W'Image);
+   Ada.Text_IO.Put_Line ("Height:" & FFT_H'Image);
+
+   GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
 
    Timer_1.Start;
    FFT_CS.Compute_FFT (BO_1, FFT_W, FFT_H, In_Vertical_Direction, Inverse => False);
