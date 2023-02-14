@@ -16,9 +16,11 @@ project Orka_Plugin_Terrain is
      external ("ORKA_PLUGIN_TERRAIN_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
    for Library_Kind use Library_Type;
 
+   Switches := ("-mavx");
+
    package Compiler is
-      for Default_Switches ("Ada") use Orka_Plugin_Terrain_Config.Ada_Compiler_Switches &
-        ("-fno-tree-vrp");
+      for Default_Switches ("Ada") use Orka_Plugin_Terrain_Config.Ada_Compiler_Switches & Switches
+        & ("-fno-tree-vrp");
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
