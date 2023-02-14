@@ -1,0 +1,18 @@
+with "orka_awt";
+with "config/orka_awt_config";
+
+project Orka_Awt.Linux is
+
+   for Source_Dirs use ("src/wayland", "src/wayland/linux", "src/shared");
+
+   for Object_Dir use "build/linux/obj/" & Orka_Awt_Config.Build_Profile;
+   for Library_Dir use "build/linux/lib";
+
+   package Compiler renames Orka_Awt.Compiler;
+   package Binder   renames Orka_Awt.Binder;
+
+   package Install is
+      for Artifacts (".") use ("data");
+   end Install;
+
+end Orka_Awt.Linux;

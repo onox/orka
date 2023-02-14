@@ -18,7 +18,7 @@ linux = true
 '...' = false
 
 [project-files.'case(os)']
-linux = ["awt-linux.gpr", "example/example.gpr"]
+linux = ["orka_awt-linux.gpr", "example/example.gpr"]
 
 [[depends-on]]
 [depends-on.'case(os)'.linux]
