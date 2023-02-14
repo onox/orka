@@ -67,6 +67,10 @@ procedure Orka_GLTF is
 
    procedure Log is new Orka.Logging.Default.Generic_Log (Application);
 
+   type Add_Behavior_Access is access procedure (Object : Orka.Behaviors.Behavior_Ptr);
+   Add_Behavior : Add_Behavior_Access := null;
+   Scene : Orka.Behaviors.Behavior_Array_Access;
+
    ----------------------------------------------------------------------
 
    procedure Load_Texture (Texture : in out GL.Objects.Textures.Texture) is
@@ -162,12 +166,12 @@ begin
          use Orka.Rendering.Programs;
          use Orka.Rendering.Framebuffers;
 
-         P_1 : Program := Create_Program (Modules.Create_Module
+         P_1 : constant Program := Create_Program (Modules.Create_Module
            (Location_Shaders,
             VS => "tools/gltf.vert",
             FS => "tools/gltf.frag"));
 
-         P_2 : Program := Create_Program (Modules.Create_Module
+         P_2 : constant Program := Create_Program (Modules.Create_Module
            (Location_Shaders,
             VS => "oversized-triangle.vert",
             FS => "tools/resolve.frag"));
@@ -181,11 +185,13 @@ begin
 
          Uni_Texture : constant Uniforms.Uniform_Sampler := P_1.Uniform_Sampler ("diffuseTexture");
 
+         Uni_Resolution : constant Uniforms.Uniform := P_2.Uniform ("screenResolution");
+         Uni_Exposure   : constant Uniforms.Uniform := P_2.Uniform ("exposure");
+
          use GL.Objects.Textures;
          use GL.Objects.Samplers;
 
          Texture_1 : Texture (LE.Texture_2D_Array);
-
          Sampler_1 : Sampler;
 
          ----------------------------------------------------------------------
@@ -203,25 +209,82 @@ begin
 
          ----------------------------------------------------------------------
 
+         Group : aliased Orka.Resources.Models.Group_Access := null;
+         use type Orka.Resources.Models.Group_Access;
+         Group_Added : Boolean := False;
+
+         procedure Run_P1 (P : in out Program) is
+            Camera : constant Orka.Cameras.Camera_Ptr := Current_Camera'Unchecked_Access;
+         begin
+            Uni_View.Set_Matrix (Camera.View_Matrix);
+
+            declare
+               use Orka.Cameras.Transforms;
+            begin
+               --  TODO Don't re-compute projection matrix every frame
+               Culler_1.Bind (Camera.Projection_Matrix * Camera.View_Matrix);
+            end;
+
+            if Group /= null then
+               if not Group_Added then
+                  Group_Added := True;
+                  declare
+                     Instance_1 : Orka.Resources.Models.Model_Instance_Ptr :=
+                       new Orka_Package_glTF.No_Behavior'(Orka.Resources.Models.Model_Instance
+                         with Position => (0.0, 0.0, 0.0, 1.0));
+                  begin
+                     Group.Add_Instance (Instance_1);
+                     Add_Behavior (Orka.Behaviors.Behavior_Ptr (Instance_1));
+
+                     --  For Rotate_Around_Camera and Look_At_Camera
+                     if Camera.all in Orka.Cameras.Observing_Camera'Class then
+                        Orka.Cameras.Observing_Camera'Class (Camera.all).Look_At
+                          (Orka.Behaviors.Behavior_Ptr (Instance_1));
+                     end if;
+                  end;
+               end if;
+
+               Group.Cull;
+               P.Use_Program;
+
+               --  Render objects in scene here
+               for Behavior of Scene.all loop
+                  Behavior.Render;
+               end loop;
+               Group.Render;
+            end if;
+         end Run_P1;
+
+         procedure Run_P2 (P : in out Program) is
+         begin
+            Uni_Resolution.Set_Vector (Orka.Types.Singles.Vector4'
+             (Orka.Float_32 (FB_D.Width), Orka.Float_32 (FB_D.Height), 0.0, 0.0));
+            Uni_Exposure.Set_Single (1.0);
+
+            Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+         end Run_P2;
+
          use Orka.Frame_Graphs;
 
-         Graph_Builder : Orka.Frame_Graphs.Builder
+         Graph_Builder : Orka.Frame_Graphs.Frame_Graph
            (Maximum_Passes    => 3,
             Maximum_Handles   => 10,
             Maximum_Resources => 10);
 
-         Default_State    : constant Orka.Rendering.States.State := (others => <>);
+         Default_State : constant Orka.Rendering.States.State := (others => <>);
          Fullscreen_State : constant Orka.Rendering.States.State :=
            (Depth_Func => GL.Types.Always, others => <>);
 
-         Pass_1 : Render_Pass'Class := Graph_Builder.Add_Pass ("P1", Default_State);
-         Pass_2 : Render_Pass'Class := Graph_Builder.Add_Pass ("P2", Fullscreen_State);
+         Pass_1 : Render_Pass'Class :=
+           Graph_Builder.Add_Pass ("P1", Default_State, P_1, Run_P1'Unrestricted_Access);
+         Pass_2 : Render_Pass'Class :=
+           Graph_Builder.Add_Pass ("P2", Fullscreen_State, P_2, Run_P2'Unrestricted_Access);
 
          Resource_1 : constant Orka.Frame_Graphs.Resource :=
            (Name    => +"R1",
             Kind    => LE.Texture_2D_Multisample,
             Format  => GL.Pixels.R11F_G11F_B10F,
-            Extent  => (1280, 720, 1),
+            Size    => (1280, 720, 1),
             Samples => Samples,
             others  => <>);
 
@@ -229,7 +292,7 @@ begin
            (Name    => +"R2",
             Kind    => LE.Texture_2D_Multisample,
             Format  => GL.Pixels.Depth_Component32F,
-            Extent  => (1280, 720, 1),
+            Size    => (1280, 720, 1),
             Samples => Samples,
             others  => <>);
 
@@ -237,7 +300,7 @@ begin
            (Name    => +"R3",
             Kind    => LE.Texture_2D,
             Format  => GL.Pixels.R11F_G11F_B10F,
-            Extent  => (Positive (FB_D.Width), Positive (FB_D.Height), 1),
+            Size    => (FB_D.Width, FB_D.Height, 1),
             Samples => 0,
             others  => <>);
 
@@ -246,9 +309,6 @@ begin
          task Resource_Test;
 
          Manager : constant Managers.Manager_Ptr := Managers.Create_Manager;
-
-         Group : aliased Orka.Resources.Models.Group_Access := null;
-         use type Orka.Resources.Models.Group_Access;
 
          task body Resource_Test is
             use Ada.Real_Time;
@@ -326,74 +386,25 @@ begin
          Window.Set_Title ("glTF viewer - " & Model_Path);
 
          declare
-            Group_Added : Boolean := False;
-
             package Loops is new Orka.Loops
               (Time_Step   => Ada.Real_Time.Microseconds (2_083),
                Frame_Limit => Ada.Real_Time.Microseconds (16_667),
                Camera      => Current_Camera'Unchecked_Access,
                Job_Manager => Job_System);
 
-            procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr);
+            procedure Add_Behavior_Callback (Object : Orka.Behaviors.Behavior_Ptr);
 
-            FG : Orka.Frame_Graphs.Graph'Class := Graph_Builder.Cull (Present => Resource_3);
+            --  Resource_2 is depth buffer
+            --  Resource_3 is color buffer
+            Graph : Orka.Frame_Graphs.Renderable_Graph'Class := Graph_Builder.Cull (Resource_2);
 
             procedure Render_Scene
-              (Scene  : not null Orka.Behaviors.Behavior_Array_Access;
-               Camera : Orka.Cameras.Camera_Ptr)
-            is
-               procedure Run_Frame (Pass : Render_Pass_Data) is
-                  Name : constant String := Orka.Frame_Graphs.Name (Pass);
-               begin
-                  if Name = "P1" then
-                     Uni_View.Set_Matrix (Camera.View_Matrix);
-
-                     declare
-                        use Orka.Cameras.Transforms;
-                     begin
-                        --  TODO Don't re-compute projection matrix every frame
-                        Culler_1.Bind (Camera.Projection_Matrix * Camera.View_Matrix);
-                     end;
-
-                     if Group /= null then
-                        if not Group_Added then
-                           Group_Added := True;
-                           declare
-                              Instance_1 : Orka.Resources.Models.Model_Instance_Ptr :=
-                                new Orka_Package_glTF.No_Behavior'(Orka.Resources.Models.Model_Instance
-                                  with Position => (0.0, 0.0, 0.0, 1.0));
-                           begin
-                              Group.Add_Instance (Instance_1);
-                              Add_Behavior (Orka.Behaviors.Behavior_Ptr (Instance_1));
-
-                              --  For Rotate_Around_Camera and Look_At_Camera
-                              if Camera.all in Orka.Cameras.Observing_Camera'Class then
-                                 Orka.Cameras.Observing_Camera'Class (Camera.all).Look_At
-                                   (Orka.Behaviors.Behavior_Ptr (Instance_1));
-                              end if;
-                           end;
-                        end if;
-
-                        Group.Cull;
-                        P_1.Use_Program;
-
-                        --  Render objects in scene here
-                        for Behavior of Scene.all loop
-                           Behavior.Render;
-                        end loop;
-                        Group.Render;
-                     end if;
-                  elsif Name = "P2" then
-                     P_2.Uniform ("screenResolution").Set_Vector (Orka.Types.Singles.Vector4'
-                      (Orka.Float_32 (FB_D.Width), Orka.Float_32 (FB_D.Height), 0.0, 0.0));
-                     P_2.Uniform ("exposure").Set_Single (1.0);
-                     P_2.Use_Program;
-
-                     Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
-                  end if;
-               end Run_Frame;
+              (Scene_X : not null Orka.Behaviors.Behavior_Array_Access;
+               Camera : Orka.Cameras.Camera_Ptr) is
             begin
-               FG.Render (Context, Run_Frame'Access);
+               Add_Behavior := Add_Behavior_Callback'Unrestricted_Access;
+               Scene := Scene_X;
+               Graph.Render (Context);
 
                if Group /= null then
                   Group.After_Render;
@@ -409,16 +420,15 @@ begin
                end if;
             end Render_Scene;
 
-            procedure Add_Behavior (Object : Orka.Behaviors.Behavior_Ptr) is
+            procedure Add_Behavior_Callback (Object : Orka.Behaviors.Behavior_Ptr) is
             begin
                Loops.Scene.Add (Object);
-            end Add_Behavior;
+            end Add_Behavior_Callback;
          begin
-            Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
-            Loops.Handler.Enable_Limit (False);
+            Graph.Initialize (Location_Shaders, FB_D);
+            Graph.Log_Graph;
 
-            FG.Initialize (Location_Shaders, FB_D);
-            FG.Log_Graph;
+            Loops.Scene.Add (Orka.Behaviors.Null_Behavior);
 
             declare
                task Render_Task is new Orka.Contexts.Task_With_Surface_Context with
@@ -488,9 +498,6 @@ begin
                end loop;
             end;
          end;
-      exception
-         when Error : others =>
-            Log (Orka.Loggers.Error, "Error: " & Exception_Information (Error));
       end;
    end;
 
