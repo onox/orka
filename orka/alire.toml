@@ -27,9 +27,6 @@ orka_types = "~1.0.0"
 orka_simd = "~1.0.0"
 orka_transforms = "~1.0.0"
 orka_opengl = "~1.0.0"
-
-[[depends-on]]
-[depends-on.'case(os)'.linux]
 orka_egl = "~1.0.0"
 
 [[pins]]
