@@ -16,7 +16,7 @@ validation.compile_checks = "warnings"
 [[depends-on]]
 json = "^5.0.3"
 orka_transforms = "^1.0.0"
-orka = "~0.2.0"
+orka = "~1.0.0"
 
 [[pins]]
 orka = { path = "../orka" }

@@ -1,6 +1,6 @@
 name = "orka_tools"
 description = "Tools for the Orka rendering kernel"
-version = "0.2.0"
+version = "1.0.0"
 website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
 tags = ["gltf", "ktx", "opengl", "orka"]
@@ -18,7 +18,7 @@ validation.compile_checks = "warnings"
 [[depends-on]]
 orka_awt = "^1.0.0"
 orka_plugin_gltf = "^1.0.0"
-orka = "~0.2.0"
+orka = "~1.0.0"
 
 [[pins]]
 orka_awt = { path = "../orka_awt" }

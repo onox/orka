@@ -31,7 +31,7 @@ evdev = "^2.0.2"
 inotify = "^2.0.1"
 
 [[depends-on]]
-orka = "~0.2.0"
+orka = "~1.0.0"
 orka_numerics = "^1.0.0"
 orka_tensors_cpu = "^1.0.0"
 orka_transforms = "^1.0.0"

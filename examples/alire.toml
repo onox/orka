@@ -1,6 +1,6 @@
 name = "orka_examples"
 description = "Examples for the Orka rendering kernel"
-version = "0.2.0"
+version = "1.0.0"
 website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
 tags = ["opengl", "orka"]

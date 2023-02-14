@@ -14,7 +14,7 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM100-Is"]
 
 [[depends-on]]
-orka = "~0.2.0"
+orka = "~1.0.0"
 orka_transforms = "^1.0.0"
 orka_plugin_atmosphere = "^1.0.0"
 
