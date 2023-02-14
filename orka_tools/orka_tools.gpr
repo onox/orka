@@ -26,4 +26,8 @@ project Orka_Tools is
       for Linker_Options use ("-Wl,--gc-sections");
    end Linker;
 
+   package Install is
+      for Artifacts (".") use ("data");
+   end Install;
+
 end Orka_Tools;

@@ -11,4 +11,8 @@ project Awt.Linux is
    package Compiler renames Awt.Compiler;
    package Binder   renames Awt.Binder;
 
+   package Install is
+      for Artifacts (".") use ("data");
+   end Install;
+
 end Awt.Linux;

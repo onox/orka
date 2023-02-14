@@ -41,4 +41,8 @@ project Orka is
       for Switches ("Ada") use ("-Es"); --  Symbolic traceback
    end Binder;
 
+   package Install is
+      for Artifacts (".") use ("data");
+   end Install;
+
 end Orka;
