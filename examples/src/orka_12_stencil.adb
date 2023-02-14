@@ -15,23 +15,24 @@
 --  limitations under the License.
 
 with Ada.Numerics;
-with Ada.Text_IO;
 
 with GL.Buffers;
+with GL.Low_Level.Enums;
 with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
-with GL.Rasterization;
 with GL.Types;
-with GL.Toggles;
 
 with Orka.Cameras.Rotate_Around_Cameras;
 with Orka.Contexts.AWT;
+with Orka.Frame_Graphs;
+with Orka.OS;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.States;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations.Directories;
 with Orka.Transforms.Singles.Matrices;
@@ -54,12 +55,11 @@ procedure Orka_12_Stencil is
    Samples : constant := 8;
 
    Context : constant Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
-     (Version => (4, 2), Flags  => (Debug => True, others => False));
+     (Version => (4, 2), Flags => (Debug => True, others => False));
 
    Window : constant Orka.Windows.Window'Class
      := Orka.Contexts.AWT.Create_Window (Context, Width, Height, Resizable => False);
 
-   use GL.Buffers;
    use all type GL.Types.Connection_Mode;
    use all type GL.Types.Compare_Function;
 
@@ -169,11 +169,7 @@ procedure Orka_12_Stencil is
         GL.Pixels.RGB, GL.Pixels.Float, Pixels'Address);
    end Load_Texture;
 
-   Scene_Texture       : Textures.Texture (Textures.LE.Texture_2D);
-   No_MS_Color_Texture : Textures.Texture (Textures.LE.Texture_2D);
-
-   Color_Texture : Textures.Texture (Textures.LE.Texture_2D_Multisample);
-   Depth_Texture : Textures.Texture (Textures.LE.Texture_2D_Multisample);
+   Scene_Texture : Textures.Texture (Textures.LE.Texture_2D);
 
    Sampler_1 : GL.Objects.Samplers.Sampler;
 
@@ -182,10 +178,10 @@ procedure Orka_12_Stencil is
    Location_Shaders : constant Locations.Location_Ptr
      := Locations.Directories.Create_Location ("data/shaders");
 
-   Program_Scene : Program := Create_Program (Modules.Create_Module
+   Program_Scene : constant Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "buffers_scene.vert", FS => "buffers_scene.frag"));
 
-   Program_Screen : Program := Create_Program (Modules.Create_Module
+   Program_Screen : constant Program := Create_Program (Modules.Create_Module
      (Location_Shaders, VS => "buffers_screen.vert", FS => "buffers_screen.frag"));
 
    Uni_Model  : constant Uniforms.Uniform := Program_Scene.Uniform ("model");
@@ -195,9 +191,151 @@ procedure Orka_12_Stencil is
 
    Uni_Effect : constant Uniforms.Uniform := Program_Screen.Uniform ("effect");
 
-   FB_1 : Framebuffer := Create_Framebuffer (Width, Height, Samples);
-   FB_2 : Framebuffer := Create_Framebuffer (Width, Height);
-   FB_D : Framebuffer := Create_Default_Framebuffer (Width, Height);
+   ----------------------------------------------------------------------------
+
+   use Orka.Frame_Graphs;
+   use all type Orka.Rendering.States.Cull_Face_Selector;
+   use all type Orka.Rendering.States.Face;
+   use all type GL.Buffers.Stencil_Action;
+
+   Graph_Builder : Orka.Frame_Graphs.Frame_Graph
+     (Maximum_Passes    => 10,
+      Maximum_Handles   => 30,
+      Maximum_Resources => 30);
+
+   Default_State : constant Orka.Rendering.States.State := (others => <>);
+
+   Floor_State : constant Orka.Rendering.States.State :=
+      --  Set any stencil to 1
+     (Stenciling => (Front | Back =>
+                       (Reference  => 1,
+                        Test_Func  => GL.Types.Always,
+                        Test_Mask  => 16#FF#,
+                        Write_Mask => 16#FF#,  --  Allow writing to stencil buffer
+                        Operations => (Keep, Keep, Replace))),
+      others => <>);
+
+   Reflection_State : constant Orka.Rendering.States.State :=
+      --  Pass test if stencil value is 1
+     (Stenciling => (Front | Back =>
+                       (Reference  => 1,
+                        Test_Func  => GL.Types.Equal,
+                        Test_Mask  => 16#FF#,
+                        Write_Mask => 16#00#,  --  Don't write anything to stencil buffer
+                        Operations => (Keep, Keep, Replace))),
+      Cull_Face => None,  --  Disable face culling because we scaled Z by -1
+      others => <>);
+
+   Backside_Floor_State : constant Orka.Rendering.States.State :=
+     (Cull_Face => Front, others => <>);
+
+   Fullscreen_State : constant Orka.Rendering.States.State :=
+     (Depth_Func => GL.Types.Always, others => <>);
+
+   package Transforms renames Orka.Transforms.Singles.Matrices;
+
+   World_TM : constant Transforms.Matrix4 := Transforms.Rx (-0.5 * Ada.Numerics.Pi);
+
+   procedure Run_P1 (P : in out Program) is
+   begin
+      Uni_Model.Set_Matrix (World_TM);
+
+      Orka.Rendering.Textures.Bind (Scene_Texture, Orka.Rendering.Textures.Texture, 0);
+      Buffer_0.Bind (Shader_Storage, 0);
+
+--            GL.Toggles.Disable (GL.Toggles.Stencil_Test);
+      Orka.Rendering.Drawing.Draw (Triangles, 0, 30);
+--            GL.Toggles.Enable (GL.Toggles.Stencil_Test);
+   end Run_P1;
+
+   procedure Run_P2 (P : in out Program) is
+   begin
+      Orka.Rendering.Drawing.Draw (Triangles, 30, 6);
+   end Run_P2;
+
+   procedure Run_P3 (P : in out Program) is
+      use Transforms;
+
+      Offset : constant Matrix4 :=
+        (0.0, 0.0, -1.0, 0.0) + Transforms.S ((1.0, 1.0, -1.0, 1.0));
+   begin
+      --  Start drawing reflection cube
+      Uni_Model.Set_Matrix (World_TM * Offset);
+      Uni_Color.Set_Vector (Transforms.Vector4'(0.3, 0.3, 0.3, 0.0));
+
+      Orka.Rendering.Drawing.Draw (Triangles, 0, 30);
+   end Run_P3;
+
+   procedure Run_P4 (P : in out Program) is
+   begin
+      Uni_Model.Set_Matrix (World_TM);
+      Uni_Color.Set_Vector (Transforms.Vector4'(1.0, 1.0, 1.0, 0.0));
+
+      Orka.Rendering.Drawing.Draw (Triangles, 30, 6);
+   end Run_P4;
+
+   procedure Run_P5 (P : in out Program) is
+   begin
+      Orka.Rendering.Drawing.Draw_Indexed (Triangles, Buffer_2, 0, Indices_Screen'Length);
+   end Run_P5;
+
+   Pass_1 : Render_Pass'Class :=
+     Graph_Builder.Add_Pass ("P1_Cube", Default_State, Program_Scene, Run_P1'Unrestricted_Access);
+   Pass_2 : Render_Pass'Class :=
+     Graph_Builder.Add_Pass ("P2_Floor", Floor_State, Program_Scene, Run_P2'Unrestricted_Access);
+   Pass_3 : Render_Pass'Class :=
+     Graph_Builder.Add_Pass ("P3_Reflection", Reflection_State, Program_Scene,
+       Run_P3'Unrestricted_Access);
+   Pass_4 : Render_Pass'Class :=
+     Graph_Builder.Add_Pass ("P4_Floor", Backside_Floor_State, Program_Scene,
+       Run_P4'Unrestricted_Access);
+   Pass_5 : Render_Pass'Class :=
+     Graph_Builder.Add_Pass ("P5_Post", Fullscreen_State, Program_Screen,
+       Run_P5'Unrestricted_Access);
+
+   FB_D : constant Framebuffer := Create_Default_Framebuffer (Width, Height);
+
+   package LE renames GL.Low_Level.Enums;
+
+   Resource_1 : constant Orka.Frame_Graphs.Resource :=
+     (Name    => +"R1",
+      Kind    => LE.Texture_2D_Multisample,
+      Format  => GL.Pixels.RGBA8,
+      Size    => (FB_D.Width, FB_D.Height, 1),
+      Samples => Samples,
+      others  => <>);
+   Resource_1B : Orka.Frame_Graphs.Resource;
+   Resource_1C : Orka.Frame_Graphs.Resource;
+   Resource_1D : Orka.Frame_Graphs.Resource;
+
+   Resource_2 : constant Orka.Frame_Graphs.Resource :=
+     (Name    => +"R2",
+      Kind    => LE.Texture_2D_Multisample,
+--      Format  => GL.Pixels.Depth_Component32F,
+      Format  => GL.Pixels.Depth32F_Stencil8,
+      Size    => (FB_D.Width, FB_D.Height, 1),
+      Samples => Samples,
+      others  => <>);
+   Resource_2A : Orka.Frame_Graphs.Resource;  --  TODO Temp
+   Resource_2B : Orka.Frame_Graphs.Resource;
+
+   Resource_3 : constant Orka.Frame_Graphs.Resource :=
+     (Name    => +"R3",
+      Kind    => LE.Texture_2D_Multisample,
+      Format  => GL.Pixels.Stencil_Index8,
+      Size    => (FB_D.Width, FB_D.Height, 1),
+      Samples => Samples,
+      others  => <>);
+
+   Resource_9 : constant Orka.Frame_Graphs.Resource :=
+     (Name    => +"R9",
+      Kind    => LE.Texture_2D,
+      Format  => GL.Pixels.RGBA8,
+      Size    => (FB_D.Width, FB_D.Height, 1),
+      Samples => 0,
+      others  => <>);
+
+   ----------------------------------------------------------------------------
 
    use Orka.Cameras;
    Lens : constant Camera_Lens := Create_Lens (Width, Height, 45.0);
@@ -205,11 +343,8 @@ procedure Orka_12_Stencil is
      Rotate_Around_Cameras.Create_Camera (Lens);
 
    use all type GL.Objects.Samplers.Minifying_Function;
+   use all type GL.Objects.Samplers.Magnifying_Function;
    use all type GL.Objects.Samplers.Wrapping_Mode;
-
-   package Transforms renames Orka.Transforms.Singles.Matrices;
-
-   World_TM : constant Transforms.Matrix4 := Transforms.Rx (-0.5 * Ada.Numerics.Pi);
 
    Default_Distance : constant := -3.0;
    Deg_45           : constant := 0.25 * Ada.Numerics.Pi;
@@ -221,10 +356,39 @@ begin
    Current_Camera.Set_Orientation ((-Deg_45, 0.5 * Deg_45, Default_Distance, 0.0));
    Current_Camera.Update (0.0);
 
-   FB_1.Set_Default_Values ((Color => (1.0, 1.0, 1.0, 1.0), Depth => 0.0, others => <>));
-   FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
+   Pass_1.Add_Output (Resource_1, Framebuffer_Attachment, 0);
+   Pass_1.Add_Output (Resource_2, Framebuffer_Attachment, 0);
 
-   GL.Toggles.Enable (GL.Toggles.Cull_Face);
+   Resource_1B :=
+     Pass_2.Add_Input_Output (Resource_1, Framebuffer_Attachment, 0);
+
+   --  Disable writing to the depth buffer in order to prevent the
+   --  floor from hiding the reflection cube
+   Pass_2.Add_Input (Resource_2, Framebuffer_Attachment, 0);
+--   Pass_2.Add_Output (Resource_3, Framebuffer_Attachment, 0);
+
+   --  TODO Resource_2A is temporary because Gallium doesn't support separate depth+stencil
+   Resource_2A :=
+     Pass_2.Add_Input_Output (Resource_2, Framebuffer_Attachment, 0);
+
+   Resource_1C :=
+     Pass_3.Add_Input_Output (Resource_1B, Framebuffer_Attachment, 0);
+   Resource_2B :=
+     Pass_3.Add_Input_Output (Resource_2A, Framebuffer_Attachment, 0);
+   --  TODO Normally Resource_2 instead of Resource_2A
+
+--   Pass_3.Add_Input (Resource_3, Framebuffer_Attachment, 0);
+
+   Resource_1D :=
+     Pass_4.Add_Input_Output (Resource_1C, Framebuffer_Attachment, 0);
+
+   Pass_4.Add_Input (Resource_2B, Framebuffer_Attachment, 0);
+
+   --  TODO Need to resolve Resource_1D (2D MS) to Resource_1E (2D)
+   Pass_5.Add_Input (Resource_1D, Texture_Read, 0);
+   Pass_5.Add_Output (Resource_9, Framebuffer_Attachment, 0);
+
+   ----------------------------------------------------------------------------
 
    Sampler_1.Set_X_Wrapping (Clamp_To_Edge);
    Sampler_1.Set_Y_Wrapping (Clamp_To_Edge);
@@ -237,26 +401,21 @@ begin
    --  Load checkerboard texture
    Load_Texture (Scene_Texture);
 
-   Color_Texture.Allocate_Storage (1, Samples, GL.Pixels.RGBA8, Width, Height, 1);
-   Depth_Texture.Allocate_Storage (1, Samples, GL.Pixels.Depth32F_Stencil8, Width, Height, 1);
-
-   FB_1.Attach (Color_Texture);
-   FB_1.Attach (Depth_Texture);
-
-   No_MS_Color_Texture.Allocate_Storage (1, 1, GL.Pixels.RGBA8, Width, Height, 1);
-
-   FB_2.Attach (No_MS_Color_Texture);
-
    --  Projection matrix
    Uni_Proj.Set_Matrix (Current_Camera.Projection_Matrix);
 
    Uni_Effect.Set_Int (Integer_32 (Effect));
 
-   Ada.Text_IO.Put_Line ("Usage: Right click and drag mouse to move camera around cube.");
-   Ada.Text_IO.Put_Line ("Usage: Use scroll wheel to zoom in and out.");
-   Ada.Text_IO.Put_Line ("Usage: Press space key to cycle between post-processing effects.");
+   Orka.OS.Put_Line ("Usage: Right click and drag mouse to move camera around cube.");
+   Orka.OS.Put_Line ("Usage: Use scroll wheel to zoom in and out.");
+   Orka.OS.Put_Line ("Usage: Press space key to cycle between post-processing effects.");
 
+   declare
+      Graph : Orka.Frame_Graphs.Renderable_Graph'Class :=
+        Graph_Builder.Cull (Present => Resource_1D);
    begin
+      Graph.Initialize (Location_Shaders, FB_D);
+
       while not Window.Should_Close loop
          AWT.Process_Events (0.001);
 
@@ -311,100 +470,7 @@ begin
             Uni_View.Set_Matrix (Current_Camera.View_Matrix * TM);
          end;
 
-         ---------------------------------------------------------------
-         --                           Cube                            --
-         ---------------------------------------------------------------
-
-         FB_1.Use_Framebuffer;
-         FB_1.Clear;
-
-         --  Model matrix
-         Uni_Model.Set_Matrix (World_TM);
-
-         GL.Toggles.Enable (GL.Toggles.Depth_Test);
-
-         Program_Scene.Use_Program;
-         Orka.Rendering.Textures.Bind (Scene_Texture, Orka.Rendering.Textures.Texture, 0);
-         Buffer_0.Bind (Shader_Storage, 0);
-
-         Orka.Rendering.Drawing.Draw (Triangles, 0, 30);
-
-         ---------------------------------------------------------------
-         --                           Floor                           --
-         ---------------------------------------------------------------
-
-         GL.Toggles.Enable (GL.Toggles.Stencil_Test);
-
-         --  Set any stencil to 1
-         Set_Stencil_Function (GL.Rasterization.Front_And_Back, Always, 1, 16#FF#);
-         Set_Stencil_Operation (GL.Rasterization.Front_And_Back, Keep, Keep, Replace);
-         Set_Stencil_Mask (16#FF#);  --  Allow writing to stencil buffer
-
-         --  Disable writing to the depth buffer in order to prevent the
-         --  floor from hiding the reflection cube
-         Set_Depth_Mask (False);
-         FB_1.Clear ((Stencil => True, others => False));
-
-         Orka.Rendering.Drawing.Draw (Triangles, 30, 6);
-
-         ---------------------------------------------------------------
-         --                      Reflection cube                      --
-         ---------------------------------------------------------------
-
-         --  Pass test if stencil value is 1
-         Set_Stencil_Function (GL.Rasterization.Front_And_Back, Equal, 1, 16#FF#);
-         Set_Stencil_Mask (16#00#);  --  Don't write anything to stencil buffer
-         Set_Depth_Mask (True);
-
-         --  Start drawing reflection cube
-         declare
-            use Transforms;
-
-            Offset : constant Matrix4 :=
-              (0.0, 0.0, -1.0, 0.0) + Transforms.S ((1.0, 1.0, -1.0, 1.0));
-         begin
-            Uni_Model.Set_Matrix (World_TM * Offset);
-         end;
-
-         Uni_Color.Set_Vector (Transforms.Vector4'(0.3, 0.3, 0.3, 0.0));
-
-         --  Disable face culling because we scaled Z by -1
-         GL.Toggles.Disable (GL.Toggles.Cull_Face);
-         Orka.Rendering.Drawing.Draw (Triangles, 0, 30);
-         GL.Toggles.Enable (GL.Toggles.Cull_Face);
-         --  End drawing reflection cube
-
-         Uni_Color.Set_Vector (Transforms.Vector4'(1.0, 1.0, 1.0, 0.0));
-
-         GL.Toggles.Disable (GL.Toggles.Stencil_Test);
-
-         ---------------------------------------------------------------
-         --                     Backside of floor                     --
-         ---------------------------------------------------------------
-
-         Uni_Model.Set_Matrix (World_TM);
-
-         GL.Rasterization.Set_Cull_Face (GL.Rasterization.Front);
-         Orka.Rendering.Drawing.Draw (Triangles, 30, 6);
-         GL.Rasterization.Set_Cull_Face (GL.Rasterization.Back);
-
-         ---------------------------------------------------------------
-         --                      Post-processing                      --
-         ---------------------------------------------------------------
-
-         FB_1.Resolve_To (FB_2);
-
-         FB_D.Use_Framebuffer;
-         FB_D.Clear;
-
-         GL.Toggles.Disable (GL.Toggles.Depth_Test);
-
-         Program_Screen.Use_Program;
-         Orka.Rendering.Textures.Bind (No_MS_Color_Texture, Orka.Rendering.Textures.Texture, 0);
-
-         Orka.Rendering.Drawing.Draw_Indexed (Triangles, Buffer_2, 0, Indices_Screen'Length);
-
-         --  Swap front and back buffers and process events
+         Graph.Render (Context);
          Window.Swap_Buffers;
       end loop;
    end;
