@@ -435,7 +435,7 @@ package body Orka.Frame_Graphs is
          --  Because a resource records only one input mode, verify this
          --  resource is read by multiple render passes using only one
          --  particular method
-         if Resource.Input_Mode /= Not_Used and Resource.Input_Mode /= Mode then
+         if Resource.Input_Mode not in Not_Used | Mode then
             raise Constraint_Error with
               "Resource '" & Name (Resource) & "' must be read as " & Resource.Input_Mode'Image;
          end if;
