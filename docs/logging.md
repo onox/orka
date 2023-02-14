@@ -160,8 +160,10 @@ Context : Orka.Contexts.Context'Class := Orka.Contexts.AWT.Create_Context
 ```
 
 If `Debug` is `False` then the video driver may choose to not enable
-full debug output.
-To enable log messages from the video driver, call from the OpenGL task:
+full debug output. If `Debug` is `True`, log messages are automatically
+enabled.
+To enable log messages from the video driver after having created a context
+without the `Debug` flag, call from the OpenGL task:
 
 ```ada
 Orka.Debug.Set_Log_Messages (Enable => True);
@@ -190,13 +192,5 @@ from the task holding the OpenGL context.
 
 Messages of a specific source, type, level, or ID can be enabled or
 disabled by calling one of the `:::ada GL.Debug.Set` procedures.
-
-### Object labels
-
-!!! note "TODO"
-
-### Groups
-
-!!! note "TODO"
 
   [url-locations]: /resources/locations

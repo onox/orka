@@ -10,17 +10,6 @@ Furthermore, tensors can be created with a specific statistical distribution
 or reduced to a single number with basic arbitrary expressions
 (for example, to compute the sum or product).
 
-Currently there is one implementation which runs on the CPU using x86 SIMD
-intrinsics, but a future different implementation could use GPU buffers
-instead.
-
-The SIMD implementation has a few restrictions:
-
-- Numbers in tensors are always floating-point numbers
-
-- No pointers are used; functions always return a new tensor and
-  do not modify the tensor parameters of a function.
-
 Tensors provide the following features:
 
 - Constant [indexing](/numerics/tensors/indexing/) using a number, range,
@@ -39,24 +28,70 @@ Tensors provide the following features:
 - [Statistics](/numerics/tensors/statistics/) (operations and generating
   statistical distributions)
 
+## Implementations
+
+Two crates exist which implement the `Tensor` interface: one which uses
+SIMD instructions on the CPU and one which uses buffers and compute shaders
+on the GPU:
+
+| Crate                                       | Implementation           | Evaluation | Tensors |
+|---------------------------------------------|--------------------------|------------|---------|
+| [orka\_tensors\_cpu][url-tensors-cpu-crate] | SIMD instructions on CPU | Eager      | Small   |
+| [orka\_tensors\_gpu][url-tensors-gpu-crate] | Compute shaders on GPU   | Lazy       | Large   |
+
+The SIMD implementation uses x86 SIMD instructions and has certain characteristics:
+
+- Numbers in tensors are always floating-point numbers
+
+- No pointers are used; functions always return a new tensor and
+  do not modify the tensor parameters of a function. Thus operations
+  are evaluated immediately and there's little room for additional
+  optimizations besides the use of SIMD instructions.
+
+The GPU implementation uses compute shaders and stores tensors in buffers
+on the GPU. On an integrated GPU these buffers may be as small as 128 MiB,
+but discrete GPUs may support larger buffers of up to 2 GiB.
+
+Furthermore, the GPU implementation builds a directed acyclic graph of operations
+and materializes the data only at the last possible moment,
+such as when one or more elements are retrieved from the tensor with a getter
+function or when you switch from a sequence of element-wise operations to
+a matrix operation, for example.
+
 ??? bug "Limitations of tensors"
     All tensors have the following limitations:
 
-    - Tensors of three dimensions or higher are currently not supported.
-      Element-wise operations do not need modifications, but other functions
-      may need to be modified to handle 3-D tensors.
+    - Tensors of three dimensions or higher are partially supported.
+      Element-wise operations are supported, but some matrix operations
+      need to be modified to handle tensors with 3 or 4 axes.
 
-    - Numbers in tensors are always floating-point numbers because of the
-      generic parameter of the package `:::ada Orka.Numerics.Tensors`.
+    - Most functions operate on tensors containing floating-point numbers
+      because of the generic parameter of the package `:::ada Orka.Numerics.Tensors`.
+      Certain implementations may supports tensors containing boolean or
+      (unsigned) integers.
 
-    - SVD matrix decomposition is not implemented yet.
+## Dependencies
 
-##  Image
+The SIMD implementation in the [orka\_tensors\_cpu][url-tensors-cpu-crate]
+requires one of the following x86 extensions: SSE 4.1, AVX, or AVX2.
 
-The image of a tensor can be obtained with the function `Image`:
+The GPU implementation in [orka\_tensors\_gpu][url-tensors-gpu-crate]
+requires OpenGL extensions for SSBOs and compute shaders, plus a few others:
 
-```ada
-Orka.OS.Put_Line (Tensor.Image);
-```
+!!! summary "Required OpenGL extensions for the GPU implementation"
+
+    | Extension                            | OpenGL |
+    |--------------------------------------|--------|
+    | ARB\_compute\_shader                 | 4.3    |
+    | ARB\_compute\_variable\_group\_size  |        |
+    | ARB\_shader\_storage\_buffer\_object | 4.3    |
+    | ARB\_shader\_clock                   |        |
+
+    Most GPUs from 2012 or later should have these extensions if you use
+    a video driver provided by your Linux distribution.
+
+  [url-tensors-cpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_cpu
+  [url-tensors-gpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_gpu
 
 *[SIMD]: Single Instruction Multiple Data
+*[SSBO]: Shader Storage Buffer Object

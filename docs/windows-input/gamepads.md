@@ -36,14 +36,10 @@ values `Disconnected`, `Wired`, or `Wireless`.
 ## Initialization
 
 To initialize the currently connected gamepads and to make sure that gamepads
-that are connected by the user later on get initialized as well, call
-procedure `Initialize`:
-
-```ada
-AWT.Inputs.Gamepads.Initialize;
-```
-
-Before calling this procedure, however, load button and axis mappings first.
+that are connected by the user later on get initialized as well,
+the procedure `Initialize` must be called.
+However, before calling this procedure, the button and axis mappings should
+be loaded first.
 
 ### Mappings
 
@@ -75,7 +71,11 @@ end if;
 ### Initialize gamepads
 
 After having loaded the mappings, procedure `Initialize` must be called to
-make sure that current and future connected gamepads get initialized.
+make sure that current and future connected gamepads get initialized:
+
+```ada
+AWT.Inputs.Gamepads.Initialize;
+```
 
 ## Updating state
 

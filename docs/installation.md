@@ -5,7 +5,7 @@
 In order to build and use Orka you need to have:
 
  * Ada 2012 compiler ([GNAT FSF][url-fsf] from
-   your Linux distribution or [GNAT CE][url-ce])
+   your Linux distribution or installed by Alire)
 
  * [Alire][url-alire]
 
@@ -89,14 +89,17 @@ Optional dependencies:
 
 === ":material-ubuntu: Ubuntu"
 
+    Install the [Alire][url-alire] package manager and then either
+    run `alr toolchain --select` or install the compiler from your distribution:
+
     ```sh
     $ apt install gnat gprbuild make
     ```
 
-    After having installed the compiler, install the [Alire][url-alire]
-    package manager.
-
 === ":material-arch: Arch Linux"
+
+    Install the [Alire][url-alire] package manager and then either
+    run `alr toolchain --select` or install the compiler from your distribution:
 
     ```sh
     $ pacman -S gcc-ada make
@@ -104,12 +107,10 @@ Optional dependencies:
 
     Compile and install `gprbuild-bootstrap`, `xmlada`, `libgpr`, and then `gprbuild`
     from the AUR.
-    After having installed the compiler, install the [Alire][url-alire]
-    package manager.
 
 === ":material-microsoft-windows: Windows 10"
 
-    Install [GNAT CE][url-ce] and [Alire][url-alire] package manager.
+    Install [Alire][url-alire] package manager and then run `alr toolchain --select`.
 
 ## Using Orka and AWT in your application
 
@@ -170,7 +171,6 @@ and learn how you can render your first triangle on the screen.
 
   [url-alire]: https://alire.ada.dev/
   [url-awt]: https://github.com/onox/orka/tree/master/awt
-  [url-ce]: http://libre.adacore.com/
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview

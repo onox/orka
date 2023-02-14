@@ -103,7 +103,7 @@ Location_Resources : constant Locations.Location_Ptr
 
 !!! note
     To use package `:::ada Orka.Resources.Locations.Archives` add
-    Alire crate `orka_plugins_archives` to your list of dependencies:
+    Alire crate orka\_plugins\_archives to your list of dependencies:
 
     ```sh
     $ alr with orka_plugins_archives

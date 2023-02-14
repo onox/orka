@@ -81,7 +81,7 @@ Loader_glTF : constant Loaders.Loader_Ptr := Models.glTF.Create_Loader
 
 !!! note
     To use package `:::ada Orka.Resources.Models.glTF` add
-    Alire crate `orka_plugins_gltf` to your list of dependencies:
+    Alire crate orka\_plugins\_gltf to your list of dependencies:
 
     ```sh
     $ alr with orka_plugins_gltf

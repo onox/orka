@@ -1,21 +1,29 @@
-# Shape and dimensions
+# Shape and axes
 
-Each tensor has a shape, the number of elements in each dimension,
+Each tensor has a shape, the number of elements in each axis,
 of the type `Tensor_Shape`; an indefinite array of natural numbers.
 For example, the shape of a 2 × 3 matrix is `:::ada (2, 3)` and the shape
 of a vector of 100 elements is `:::ada (1 => 100)`.
 
 The shape of a tensor can be retrieved using the function `Shape` and
-the dimensions with the function `Dimensions`. The total number of
+the axes with the function `Axes`. The total number of
 elements in the tensor is queried with the function `Elements`.
 
 The functions `Rows` returns the number of elements for a 1-D tensor (vector)
 or rows of a 2-D tensor (matrix). `Columns` requires a tensor with at
-least two dimensions and returns the number of columns.
+least two axes and returns the number of columns.
 
 !!! summary
-    It is true that `:::ada T.Shape'Length = T.Dimensions` and
+    It is true that `:::ada T.Shape'Length = T.Axes` and
     `:::ada Elements (T.Shape) = T.Elements` for a tensor `T`.
+
+##  Image
+
+The image of a tensor can be obtained with the function `Image`:
+
+```ada
+Orka.OS.Put_Line (Tensor.Image);
+```
 
 ## Changing the shape
 
@@ -42,10 +50,10 @@ same thing.
 ## Concatenating
 
 Concatenating tensors is possible with the operator `&`. This will concatenate
-two tensors in the first dimension, increasing the number of rows to the sum of
+two tensors in the first axis, increasing the number of rows to the sum of
 the rows of the two tensors. For multidimensional tensors, the size of the first
-dimension (the number of rows) can be different, but the size of the other
-dimensions must be equal.
+axis (the number of rows) can be different, but the size of the other
+axes must be equal.
 
 The result of concatenating two vectors with the `&` operator is another vector:
 
@@ -62,8 +70,8 @@ The image of `Tensor_3` will be:
 tensor([ 1.0, 2.0, 3.0, 4.0, 5.0])
 ```
 
-The function `Concatenate` can be used to concatenate tensors in dimensions
-other than the first dimension by specifying the parameter `Dimension`.
+The function `Concatenate` can be used to concatenate tensors in axes
+other than the first axis by specifying the parameter `Dimension`.
 For example, given the following two tensors:
 
 ```ada

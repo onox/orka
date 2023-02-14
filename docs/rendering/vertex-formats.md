@@ -65,7 +65,7 @@ for only specific vertices.
 
 ## Binding vertex data
 
-In order to pull data from the buffer, we need to create a buffer
+To pull data from the buffer, we need to create a buffer
 containing the attributes of the vertices:
 
 ```ada

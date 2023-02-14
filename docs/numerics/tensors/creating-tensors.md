@@ -1,7 +1,8 @@
 # Creating tensors
 
 Tensors can be created using other tensors by applying the various operations
-mentioned above. If there is no previous tensor that can be used to create a
+on previous tensors using binary or unary operators.
+If there is no previous tensor that can be used to create a
 new tensor, a tensor can also be created from scratch using either an array
 of elements or booleans, or by calling certain functions that create tensor
 with certain values or properties:

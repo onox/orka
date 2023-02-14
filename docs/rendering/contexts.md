@@ -41,6 +41,25 @@ The following flags can be used:
   a bit, but should only be enabled after having verified that errors do not
   occur.
 
+!!! warning "AWT is currently not available on Windows"
+    Currently, AWT has a backend for Wayland only. If you are on Windows, there
+    are several options:
+
+    1. Use [WSLg][url-wslg] with the d3d12 Gallium driver from Mesa.
+       See [Mesamatrix][url-mesamatrix] for a list of extensions supported
+       by the d3d12 driver.
+
+    2. Write a backend for AWT using the win32ada Alire crate for Windows.
+       If and once it has been made open source under the Apache-2.0 license,
+       you could use code from [aglw][url-aglw].
+
+    3. Create a context and window using SDL through the [sdlada][url-sdlada] crate.
+
+    4. Use a surfaceless context with EGL, assuming you can install and link
+       with the EGL library from the `mingw-w64-x86_64-mesa` package on msys2.
+       The mentioned package should be installed automatically by Alire as a
+       dependency of the Alire crate orka\_egl.
+
 ### AWT
 
 When using AWT, an OpenGL context must be created first:
@@ -73,14 +92,17 @@ Context : constant Orka.Contexts.Context'Class := Orka.Contexts.EGL.Create_Conte
 ```
 
 This will create a context using the 'device' platform of EGL.
+The context is created and made current on the calling task by the `Create_Context`
+function.
 
 !!! note
     A context that uses the Wayland platform can be created using the function
     `Create_Context` in package `:::ada Orka.Contexts.EGL.Wayland`.
     The Wayland platform is also used when creating a context on Linux via AWT.
 
-The context is created and made current on the calling task by the `Create_Context`
-function.
+!!! tip "Listing supported EGL extensions"
+    The Alire crate orka\_egl provides the executable orka\_egl\_info, which will print
+    the supported client and platforms extensions.
 
 #### Enumerating devices
 
@@ -129,7 +151,7 @@ that would be returned by function `Devices` is used.
 !!! summary
     An EGL context can be created using different platforms:
 
-    - The Wayland platform, created using `:::ada Orka.Contexts.EGL.Wayland`
+    - The Wayland platform, created using `:::ada Orka.Contexts.EGL.Wayland`,
       allows you to render things on the screen in a window, but rendering
       is done using the same GPU as the one used by the Wayland compositor.
 
@@ -147,18 +169,56 @@ and the first task must then subsequently signal to the second task that
 it can make the context current by performing a rendezvous:
 
 ```ada
-Context.Make_Not_Current;
-Second_Task.Start_Rendering;
+Context.Move_To (Render_Task, Window);
 ```
 
-The second task can then make the context current after accepting the `Start_Rendering`
+The second task must implement the task interface `Task_With_Surface_Context`:
+
+```ada
+task Render_Task is new Orka.Contexts.Task_With_Surface_Context with
+   entry Move_Context
+     (Context : not null Orka.Contexts.Surface_Context_Access;
+      Window  : in out Orka.Windows.Window'Class);
+end Render_Task;
+```
+
+This  task can then make the context current after accepting the `Move_Context`
 call:
 
 ```ada
-accept Start_Rendering;
-Context.Make_Current (Window);
+accept Move_Context
+  (Context : not null Orka.Contexts.Surface_Context_Access;
+   Window  : in out Orka.Windows.Window'Class)
+do
+   Context.Make_Current (Window);
+end Move_Context;
 ```
 
 It is recommended that the task on which the context is current calls
 `:::ada Context.Make_Not_Current` after completing its execution or when
-some exception is raised.
+some exception is raised. To do this, the task can declare a variable
+containing a pointer to a context:
+
+```ada
+Context : Orka.Contexts.Surface_Context_Access;
+```
+
+And then set it inside the `accept` block:
+
+```ada
+Render_Task.Context := Context;
+```
+
+!!! tip "Moving a surfaceless context"
+    A surfaceless context implementing the interface `Context` can be
+    moved to a task implementing the task interface `Task_With_Context`.
+    It must implement the following entry:
+
+    ```ada
+    entry Move_Context (Context : not null Orka.Contexts.Context_Access;
+    ```
+
+  [url-aglw]: https://github.com/ohenley/aglw
+  [url-wslg]: https://github.com/microsoft/wslg
+  [url-mesamatrix]: https://mesamatrix.net/
+  [url-sdlada]: https://alire.ada.dev/crates/sdlada

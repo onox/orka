@@ -2,7 +2,8 @@
 
 AWT is used to create windows that can display 3D graphics
 and to manage input devices like the pointer, keyboard, and
-gamepads. It has a similar purpose as GLFW and SDL.
+gamepads. It has a similar purpose as GLFW and SDL, but is fully
+written in Ada.
 
 ### Initialization
 
@@ -35,3 +36,4 @@ end;
 It is not needed to keep the rendering context current in the task
 in which the AWT event loop resides. The context can be moved to a
 separate render task before entering the event loop.
+See [Moving a context](/rendering/contexts/#moving-a-context).
