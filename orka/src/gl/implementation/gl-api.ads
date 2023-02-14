@@ -750,9 +750,6 @@ private package GL.API is
    package Bind_Samplers is new Loader.Array_Proc_With_3_Params
      ("glBindSamplers", UInt, Size, UInt, Low_Level.UInt_Array);
 
-   package Sampler_Parameter_Bool is new Loader.Procedure_With_3_Params
-     ("glSamplerParameteri", UInt, Enums.Textures.Parameter, Low_Level.Bool);
-
    package Sampler_Parameter_Float is new Loader.Procedure_With_3_Params
      ("glSamplerParameterf", UInt, Enums.Textures.Parameter, Single);
 

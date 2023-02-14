@@ -85,13 +85,6 @@ package body GL.Objects.Samplers is
         (Object.Reference.GL_Id, Enums.Textures.LoD_Bias, Single (Level));
    end Set_LoD_Bias;
 
-   procedure Set_Seamless_Filtering (Object : Sampler; Enable : Boolean) is
-   begin
-      API.Sampler_Parameter_Bool.Ref
-        (Object.Reference.GL_Id, Enums.Textures.Cube_Map_Seamless,
-         Low_Level.Bool (Enable));
-   end Set_Seamless_Filtering;
-
    procedure Set_Max_Anisotropy (Object : Sampler; Degree : Double) is
    begin
       API.Sampler_Parameter_Float.Ref
