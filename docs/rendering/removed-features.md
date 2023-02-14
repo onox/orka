@@ -40,6 +40,9 @@ removed in the OpenGL backend:
   See [section 16.3.3 Texel Replacement][url-vulkans-spec-border-colors]
   of the Vulkan specification.
 
+- **Non-seamless cube maps**.
+  Only seamless cube maps are supported.
+
 Some conventions have changed to Vulkan's:
 
 - **First vertex is the provoking vertex**.
