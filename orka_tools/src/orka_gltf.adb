@@ -421,15 +421,23 @@ begin
             FG.Log_Graph;
 
             declare
-               task Render_Task is
-                  entry Start_Rendering;
+               task Render_Task is new Orka.Contexts.Task_With_Surface_Context with
+                  entry Move_Context
+                    (Context : not null Orka.Contexts.Surface_Context_Access;
+                     Window  : in out Orka.Windows.Window'Class);
                end Render_Task;
 
                task body Render_Task is
+                  Context : Orka.Contexts.Surface_Context_Access;
                begin
-                  accept Start_Rendering;
+                  accept Move_Context
+                    (Context : not null Orka.Contexts.Surface_Context_Access;
+                     Window  : in out Orka.Windows.Window'Class)
+                  do
+                     Context.Make_Current (Window);
+                     Render_Task.Context := Context;
+                  end Move_Context;
 
-                  Context.Make_Current (Window);
                   Loops.Run_Loop (Render_Scene'Access);
                   Context.Make_Not_Current;
                exception
@@ -439,8 +447,7 @@ begin
                      raise;
                end Render_Task;
             begin
-               Context.Make_Not_Current;
-               Render_Task.Start_Rendering;
+               Context.Move_To (Render_Task, Window);
 
                while not Window.Should_Close loop
                   AWT.Process_Events (0.016667);
