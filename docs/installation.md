@@ -120,13 +120,13 @@ Add Orka to your application:
 $ alr with orka --use=path/to/orka
 ```
 
-To create an OpenGL context and window, add `awt`:
+To create an OpenGL context and window, add `orka_awt`:
 
 ```sh
-$ alr with awt --use=path/to/awt
+$ alr with orka_awt --use=path/to/orka_awt
 ```
 
-On Linux you need to copy the awt/data/99-leds.rules file to /etc/udev/rules.d/
+On Linux you need to copy the orka\_awt/data/99-leds.rules file to /etc/udev/rules.d/
 in order to be able to set the LED color of a gamepad.
 
 ###  Tools and examples
@@ -170,7 +170,7 @@ and jump to [Rendering](/rendering) to get an introduction to rendering
 and learn how you can render your first triangle on the screen.
 
   [url-alire]: https://alire.ada.dev/
-  [url-awt]: https://github.com/onox/orka/tree/master/awt
+  [url-awt]: https://github.com/onox/orka/tree/master/orka_awt
   [url-fsf]: https://gcc.gnu.org/wiki/GNAT
   [url-egl]: https://www.khronos.org/egl
   [url-gcn]: https://en.wikipedia.org/wiki/Radeon#Feature_overview

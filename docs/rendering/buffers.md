@@ -392,9 +392,9 @@ in package `:::ada Orka.Rendering.Buffers.Mapped.Unsynchronized`:
 
 ```ada
 Buffer_5 : Unsynchronized_Mapped_Buffer := Create_Buffer
-  (Kind => Orka.Types.Int_Type,
+  (Kind   => Orka.Types.Int_Type,
    Length => 16,
-   Mode => Orka.Rendering.Buffers.Mapped.Write);
+   Mode   => Orka.Rendering.Buffers.Mapped.Write);
 ```
 
 After the buffer has been created, it can be mapped:
@@ -504,7 +504,7 @@ It is not harmful to use `Memory_Barrier` other than that
 The following barriers can be inserted:
 
 | Name                  | Usable with `By_Region` | Usage                             |
-+-----------------------+-------------------------|-----------------------------------|
+|-----------------------|-------------------------|-----------------------------------|
 | `Uniform`             | Yes                     | UBOs                              |
 | `Texture_Fetch`       | Yes                     | `texture*()`                      |
 | `Shader_Image_Access` | Yes                     | `image*()`                        |

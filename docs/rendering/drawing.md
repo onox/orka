@@ -10,7 +10,7 @@ There are several ways to draw geometry:
 For each of the possible combinations are different procedure is used:
 
 |                 | Direct         | Indirect                |
-+-----------------+----------------+-------------------------+
+|-----------------|----------------|-------------------------|
 | Without indices | `Draw`         | `Draw_Indirect`         |
 | With indices    | `Draw_Indexed` | `Draw_Indexed_Indirect` |
 
@@ -162,9 +162,9 @@ should be used to write a position to `:::glsl gl_Position`.
 
 In the fragment shader, the parts and instances can be drawn using the:
 
-- Draw ID with `:::glsl gl_DrawIDARB`
-- Instance ID with `:::glsl gl_InstanceID`
-- Object ID with `:::glsl gl_BaseInstanceARB + gl_InstanceID`
+- Draw ID (with `:::glsl gl_DrawIDARB`)
+- Instance ID (with `:::glsl gl_InstanceID`)
+- Object ID (with `:::glsl gl_BaseInstanceARB + gl_InstanceID`)
 
 `:::glsl gl_DrawIDARB` and `:::glsl gl_BaseInstanceARB` require the extension
 `ARB_shader_draw_parameters`:

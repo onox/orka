@@ -157,7 +157,7 @@ depending on the write mode and the format of the resource:
 
    ```mermaid
    graph LR
-     P1[Pass 1] -->[Attachment] R1[Resource 1]
+     P1[Pass 1] -->|Attachment| R1[Resource 1]
      R1 --> PR[Present]
    ```
 
@@ -176,8 +176,8 @@ depending on the write mode and the format of the resource:
 
    ```mermaid
    graph LR
-     P1[Pass 1] -->[Attachment] R1[Resource 1]
-     P1[Pass 1] -->[Attachment] R2[Resource 2]
+     P1[Pass 1] -->|Attachment| R1[Resource 1]
+     P1[Pass 1] -->|Attachment| R2[Resource 2]
      R1 --> PR[Present]
    ```
 
@@ -188,7 +188,7 @@ depending on the write mode and the format of the resource:
      F1[Framebuffer 1] --> R1[Resource 1]
      F1 --> R2[Resource 2]
      DF[Default framebuffer] --> R3[Resource 3]
-     F1 -->[Blit] DF
+     F1 -->|Blit| DF
    ```
 
 3. **Rendering** the texture of the resource to the default framebuffer.
@@ -198,7 +198,7 @@ depending on the write mode and the format of the resource:
 
    ```mermaid
    graph LR
-     P1[Pass 1] -->[Image write] R1[Resource 1]
+     P1[Pass 1] -->|Image write| R1[Resource 1]
      R1 --> PR[Present]
    ```
 

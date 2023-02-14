@@ -215,7 +215,7 @@ Render_Task.Context := Context;
     It must implement the following entry:
 
     ```ada
-    entry Move_Context (Context : not null Orka.Contexts.Context_Access;
+    entry Move_Context (Context : not null Orka.Contexts.Context_Access);
     ```
 
   [url-aglw]: https://github.com/ohenley/aglw
