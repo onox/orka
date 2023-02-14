@@ -73,7 +73,12 @@ markdown_extensions:
       user: onox
       repo: orka
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.smartsymbols:
       copyright: false
   - pymdownx.tabbed:
@@ -107,8 +112,10 @@ nav:
           - Programs: rendering/programs.md
           - Textures: rendering/textures.md
           - Framebuffers: rendering/framebuffers.md
-          - Cameras: rendering/cameras.md
+          - Frame graph: rendering/frame-graph.md
+          - Drawing: rendering/drawing.md
           - Effects: rendering/effects.md
+          - Timers: rendering/timers.md
           - Removed features: rendering/removed-features.md
       - Computing:
           - Introduction: computing/index.md
