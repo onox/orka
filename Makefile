@@ -47,7 +47,6 @@ clean:
 	cd orka_tensors_cpu && $(ALR_CLEAN)
 	cd orka && $(ALR_CLEAN)
 	cd orka_tools && $(ALR_CLEAN)
-#	cd orka_plugin_sdl && $(ALR_CLEAN)
 	cd orka_plugin_archives && $(ALR_CLEAN)
 	cd orka_plugin_gltf && $(ALR_CLEAN)
 	cd orka_plugin_terrain && $(ALR_CLEAN)
