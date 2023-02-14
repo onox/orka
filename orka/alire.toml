@@ -1,6 +1,6 @@
 name = "orka"
 description = "OpenGL 4.6 rendering kernel written in Ada 2012"
-version = "0.2.0"
+version = "1.0.0"
 website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
 tags = ["azdo", "egl", "opengl", "orka", "rendering", "graphics", "game", "engine", "ktx", "gltf"]
@@ -26,6 +26,7 @@ windows = true
 orka_types = "^1.0.0"
 orka_simd = "^1.0.0"
 orka_transforms = "^1.0.0"
+orka_opengl = "^1.0.0"
 
 [[depends-on]]
 [depends-on.'case(os)'.linux]
@@ -33,6 +34,7 @@ orka_egl = "^1.0.0"
 
 [[pins]]
 orka_egl = { path = "../orka_egl" }
+orka_opengl = { path = "../orka_opengl" }
 orka_simd = { path = "../orka_simd" }
 orka_transforms = { path = "../orka_transforms" }
 orka_types = { path = "../orka_types" }

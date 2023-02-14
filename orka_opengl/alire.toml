@@ -1,0 +1,26 @@
+name = "orka_opengl"
+description = "OpenGL 4.6 backend for the Orka rendering engine"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["azdo", "egl", "opengl", "orka", "rendering", "graphics"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAOM99-Is"]
+
+[available.'case(os)']
+'linux|windows' = true
+'...' = false
+
+[[depends-on]]
+orka_types = "^1.0.0"
+orka_egl = "^1.0.0"
+
+[[pins]]
+orka_egl = { path = "../orka_egl" }
+orka_types = { path = "../orka_types" }

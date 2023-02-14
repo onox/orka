@@ -9,9 +9,6 @@ project Orka is
 
    Switches := ("-mavx", "-mf16c");
 
-   OpenGL_Sources := ("src/gl/interface",
-                      "src/gl/implementation");
-
    Orka_Sources := ("src/orka/interface",
                     "src/orka/implementation");
 
@@ -20,12 +17,12 @@ project Orka is
 
    case OS is
       when "linux"     =>
-         OpenGL_Sources := OpenGL_Sources & "src/gl/egl" & "src/orka/linux";
+         Orka_Sources := Orka_Sources & "src/orka/linux";
       when "windows" =>
-         OpenGL_Sources := OpenGL_Sources & "src/gl/windows" & "src/orka/windows";
+         Orka_Sources := Orka_Sources & "src/orka/windows";
    end case;
 
-   for Source_Dirs use OpenGL_Sources & Orka_Sources;
+   for Source_Dirs use Orka_Sources;
 
    for Object_Dir use "build/obj/" & Orka_Config.Build_Profile;
    for Library_Dir use "build/lib";
