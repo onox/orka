@@ -16,11 +16,11 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
 
 [[depends-on]]
-awt = "^1.0.0"
+orka_awt = "^1.0.0"
 orka_plugin_gltf = "^1.0.0"
 orka = "~0.2.0"
 
 [[pins]]
-awt = { path = "../awt" }
+orka_awt = { path = "../orka_awt" }
 orka = { path = "../orka" }
 orka_plugin_gltf = { path = "../orka_plugin_gltf" }

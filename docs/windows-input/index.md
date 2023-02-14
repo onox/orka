@@ -1,9 +1,9 @@
 # Windows and input devices
 
-AWT is used to create windows that can display 3D graphics
-and to manage input devices like the pointer, keyboard, and
-gamepads. It has a similar purpose as GLFW and SDL, but is fully
-written in Ada.
+AWT, Orka's built-in window toolkit, is used to create windows
+that can display 3D graphics and to manage input devices like
+the pointer, keyboard, and gamepads.
+It has a similar purpose as GLFW and SDL, but is fully written in Ada.
 
 ### Initialization
 

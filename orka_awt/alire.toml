@@ -1,7 +1,7 @@
-name = "awt"
+name = "orka_awt"
 description = "Ada Window Toolkit"
 version = "1.0.0"
-website = "https://github.com/onox/awt"
+website = "https://github.com/onox/orka"
 licenses = "Apache-2.0"
 tags = ["egl", "wayland", "windows", "graphics", "opengl", "input", "gamepad"]
 
