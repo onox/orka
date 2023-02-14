@@ -20,7 +20,7 @@ ORKA_SIMD_SIMD_TYPE = ["AVX", "AVX2"]
 ORKA_SIMD_SIMD_TYPE = "AVX"
 
 [[depends-on]]
-orka_types = "^1.0.0"
+orka_types = "~1.0.0"
 
 [[pins]]
 orka_types = { path = "../orka_types" }

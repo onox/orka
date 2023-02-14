@@ -21,11 +21,11 @@ ORKA_TESTS_SIMD_TYPE = "AVX"
 [[depends-on]]
 aunit = "^21.0.0"
 orka = "~1.0.0"
-orka_numerics = "^1.0.0"
-orka_simd = "^1.0.0"
-orka_tensors_cpu = "^1.0.0"
-orka_tensors_gpu = "^1.0.0"
-orka_transforms = "^1.0.0"
+orka_numerics = "~1.0.0"
+orka_simd = "~1.0.0"
+orka_tensors_cpu = "~1.0.0"
+orka_tensors_gpu = "~1.0.0"
+orka_transforms = "~1.0.0"
 
 [[pins]]
 orka = { path = "../orka" }

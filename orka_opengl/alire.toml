@@ -18,8 +18,8 @@ validation.compile_checks = "warnings"
 '...' = false
 
 [[depends-on]]
-orka_types = "^1.0.0"
-orka_egl = "^1.0.0"
+orka_types = "~1.0.0"
+orka_egl = "~1.0.0"
 
 [[pins]]
 orka_egl = { path = "../orka_egl" }

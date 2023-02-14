@@ -14,9 +14,9 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
 
 [[depends-on]]
-orka = "^1.0.0"
-orka_numerics = "^1.0.0"
-orka_types = "^1.0.0"
+orka = "~1.0.0"
+orka_numerics = "~1.0.0"
+orka_types = "~1.0.0"
 
 [[pins]]
 orka_numerics = { path = "../orka_numerics" }

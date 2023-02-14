@@ -14,7 +14,7 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
 
 [[depends-on]]
-orka_transforms = "^1.0.0"
+orka_transforms = "~1.0.0"
 orka = "~1.0.0"
 
 [[pins]]

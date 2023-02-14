@@ -28,7 +28,7 @@ validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
 
 [[depends-on]]
-orka_awt = "^1.0.0"
+orka_awt = "~1.0.0"
 
 [[pins]]
 orka_awt = { path = "../orka_awt" }
