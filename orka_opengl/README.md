@@ -1,5 +1,5 @@
 [![Alire](https://img.shields.io/endpoint?url=https://alire.ada.dev/badges/orka_opengl.json)](https://alire.ada.dev/crates/orka_opengl.html)
-[![License](https://img.shields.io/github/license/onox/orka_opengl.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/onox/orka.svg?color=blue)](https://github.com/onox/orka/blob/master/LICENSE)
 
 # orka_opengl
 
