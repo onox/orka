@@ -379,6 +379,9 @@ package body Orka.Numerics.Tensors.Operations is
          end;
       end loop;
 
+      Q.Materialize;
+      R.Materialize;
+
       Make_Upper_Triangular (R);
 
       case Mode is
