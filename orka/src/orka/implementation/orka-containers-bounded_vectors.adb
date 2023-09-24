@@ -34,8 +34,10 @@ package body Orka.Containers.Bounded_Vectors is
          Container.Elements (Start_Index .. Stop_Index) := Elements;
       end Copy_Elements;
    begin
-      Elements.Query (Copy_Elements'Access);
-      Container.Length := Container.Length + Elements.Length;
+      if not Elements.Is_Empty then
+         Elements.Query (Copy_Elements'Access);
+         Container.Length := Container.Length + Elements.Length;
+      end if;
    end Append;
 
    procedure Append (Container : in out Vector; Element : Element_Type) is
