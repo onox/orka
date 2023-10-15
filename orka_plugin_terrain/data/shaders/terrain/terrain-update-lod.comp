@@ -138,7 +138,7 @@ bool DisplacementVarianceTest(in const vec4[3] patchVertices)
 #endif
 
 // FrustumCullingTest -- Checks if the triangle lies inside the view frutsum
-bool FrustumCullingTest(in const int lebID, in const vec4[3] eyespaceVertices)
+bool FrustumCullingTest(in const vec4[3] eyespaceVertices)
 {
     const vec4 clipspaceVertices[3] = vec4[3](
         u_ProjMatrix * eyespaceVertices[0],
@@ -158,22 +158,13 @@ bool FrustumCullingTest(in const int lebID, in const vec4[3] eyespaceVertices)
     return !any(bvec3(resultLt | resultGt));
 }
 
-bool FaceCullingTest(in const int lebID,
-    in const vec4[3] patchVertices, in const vec4[3] eyespaceVertices)
+bool FaceCullingTest(in const vec4[3] eyespaceVertices)
 {
-    vec4 vc_bar = BarycentricInterpolation(patchVertices, vec2(0.5));
-    vec3 vc = (u_ViewMatrix * planeToSphere(lebID, vc_bar)).xyz;
-    // vector from camera to center of triangle
+    const vec3 e1 = (eyespaceVertices[1] - eyespaceVertices[0]).xyz;
+    const vec3 e2 = (eyespaceVertices[2] - eyespaceVertices[0]).xyz;
+    const vec3 n = cross(e1, e2);
 
-    vec3 e0 = eyespaceVertices[0].xyz - vc;
-    vec3 e1 = eyespaceVertices[1].xyz - vc;
-    vec3 e2 = eyespaceVertices[2].xyz - vc;
-
-    vec3 na = cross(e0, e2);
-    vec3 nb = cross(e2, e1);
-    vec3 nc = cross(e1, e0);
-
-    return dot(na, vc) >= 0.0 || dot(nb, vc) >= 0.0 || dot(nc, vc) >= 0.0;
+    return dot(n, eyespaceVertices[0].xyz) < 0;
 }
 
 // LevelOfDetail -- Computes the level of detail of associated to a triangle
@@ -192,21 +183,21 @@ vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const 
         u_ViewMatrix * planeToSphere(lebID, v2)
     );
 
-#if FLAG_FRUSTUM_CULL
-    // culling test
-    if (!FrustumCullingTest(lebID, eyespaceVertices)) {
-        return vec2(0.0f, 0.0f);
-    }
-#endif
-
-#if FLAG_FACE_CULL
     if (invert) {
         vec4 tmp = eyespaceVertices[0];
         eyespaceVertices[0] = eyespaceVertices[2];
         eyespaceVertices[2] = tmp;
     }
 
-    if (!FaceCullingTest(lebID, vec4[3](v0, v1, v2), eyespaceVertices)) {
+#if FLAG_FACE_CULL
+    if (!FaceCullingTest(eyespaceVertices)) {
+        return vec2(0.0f, 0.0f);
+    }
+#endif
+
+#if FLAG_FRUSTUM_CULL
+    // culling test
+    if (!FrustumCullingTest(eyespaceVertices)) {
         return vec2(0.0f, 0.0f);
     }
 #endif
