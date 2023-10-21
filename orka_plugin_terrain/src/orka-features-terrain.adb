@@ -297,13 +297,15 @@ package body Orka.Features.Terrain is
       Subdivision  : constant Size     := Size (Parameters.Meshlet_Subdivision);
       Height_Scale : constant Float_32 := Float_32 (Object.Scale);
 
+      Meshlet_Subdivision : constant := 0;
+
       LoD_Variance : constant Float_32 :=
         (if Height_Scale > 0.0 then
            (Float_32 (Parameters.Min_LoD_Standard_Dev) / 64.0 / Height_Scale) ** 2
          else 0.0);
       LoD_Factor   : constant Float_32 :=
         -2.0 * EF.Log (2.0 * EF.Tan (Camera.Lens.FOV / 2.0)
-          / Float_32 (Camera.Lens.Height) * 2.0 ** Natural (Parameters.Meshlet_Subdivision)
+          / Float_32 (Camera.Lens.Height) * 2.0 ** Meshlet_Subdivision
           * Float_32 (Parameters.Edge_Length_Target), 2.0) + 2.0;
       --  For perspective projection
 
