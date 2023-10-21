@@ -35,7 +35,28 @@ package body Orka.Rendering.Programs.Modules is
 
    use Orka.Strings;
 
-   procedure Log_Error_With_Source (Text, Info_Log : String) is
+   type Row_Data is record
+      Line, Column   : Positive;
+      Severity, Text : SU.Unbounded_String;
+   end record;
+
+   function Get_Row_Data (Info_Log : String) return Row_Data is
+      Log_Parts     : constant Orka.Strings.String_List := Split (Info_Log, ":", 3);
+      Message_Parts : constant String_List := Split (Trim (+Log_Parts (3)), ": ", 2);
+
+      Line : constant Positive :=
+        Positive'Value (+Split (+Log_Parts (2), "(", 2) (1));
+      Column : constant Positive :=
+        Positive'Value (+Split (+Split (+Log_Parts (2), "(", 2) (2), ")", 2) (1));
+   begin
+      return (Line => Line, Column => Column, Severity => Message_Parts (1), Text => Message_Parts (2));
+   exception
+      when others =>
+         --  Continue if parsing Info_Log fails
+         return (Line => -1, others => <>);
+   end Get_Row_Data;
+
+   procedure Log_Error_With_Source (Text : String; Data : Row_Data; Print_Prefix, Print_Suffix : Boolean) is
       package SF renames Ada.Strings.Fixed;
 
       Extra_Rows          : constant := 1;
@@ -48,44 +69,42 @@ package body Orka.Rendering.Programs.Modules is
       use all type Orka.Terminals.Color;
       use all type Orka.Terminals.Style;
    begin
+      if Data.Line = -1 then
+         return;
+      end if;
+
       declare
-         Log_Parts : constant Orka.Strings.String_List := Split (Info_Log, ":", 3);
-
-         Message_Parts : constant String_List := Split (Trim (+Log_Parts (3)), ": ", 2);
-
          Message_Kind_Color : constant Orka.Terminals.Color :=
-           (if +Message_Parts (1) = "error" then
+           (if +Data.Severity = "error" then
               Red
-            elsif +Message_Parts (1) = "warning" then
+            elsif +Data.Severity = "warning" then
               Yellow
-            elsif +Message_Parts (1) = "note" then
+            elsif +Data.Severity = "note" then
               Cyan
             else
               Default);
 
          Log_Severity : constant Orka.Logging.Severity :=
-           (if +Message_Parts (1) = "error" then
+           (if +Data.Severity = "error" then
               Error
-            elsif +Message_Parts (1) = "warning" then
+            elsif +Data.Severity = "warning" then
               Warning
-            elsif +Message_Parts (1) = "note" then
+            elsif +Data.Severity = "note" then
               Info
             else
               Error);
 
          Message_Kind : constant String :=
-           Orka.Terminals.Colorize (+Message_Parts (1) & ":", Foreground => Message_Kind_Color);
+           Orka.Terminals.Colorize (+Data.Severity & ":", Foreground => Message_Kind_Color);
          Message_Value : constant String :=
-           Orka.Terminals.Colorize (+Message_Parts (2), Attribute => Bold);
+           Orka.Terminals.Colorize (+Data.Text, Attribute => Bold);
 
          -------------------------------------------------------------------------
 
          Lines : constant Orka.Strings.String_List := Split (Text, "" & L1.LF);
 
-         Error_Row : constant Positive :=
-           Positive'Value (+Split (+Log_Parts (2), "(", 2) (1));
-         First_Row : constant Positive := Positive'Max (Lines'First, Error_Row - Extra_Rows);
-         Last_Row  : constant Positive := Positive'Min (Lines'Last, Error_Row + Extra_Rows);
+         First_Row : constant Positive := Positive'Max (Lines'First, Data.Line - (if Print_Prefix then Extra_Rows else 0));
+         Last_Row  : constant Positive := Positive'Min (Lines'Last, Data.Line + (if Print_Suffix then Extra_Rows else 0));
 
          Line_Digits : constant Positive := Trim (Last_Row'Image)'Length + Line_Number_Padding;
       begin
@@ -97,34 +116,30 @@ package body Orka.Rendering.Programs.Modules is
                   Orka.Terminals.Colorize (Row_Image, Attribute => Dark);
 
                Line_Image : constant String := +Lines (Row_Index);
-
-               First_Index_Line : constant Natural :=
-                 SF.Index_Non_Blank (Line_Image, Going => Ada.Strings.Forward);
-               Last_Index_Line : constant Natural :=
-                 SF.Index_Non_Blank (Line_Image, Going => Ada.Strings.Backward);
+               Line_Image_Colorized : constant String :=
+                  Orka.Terminals.Colorize (Line_Image, Attribute => (if Row_Index = Data.Line then Default else Dark));
 
                Error_Indicator : constant String :=
                  Orka.Terminals.Colorize
-                   (Natural'Max (0, First_Index_Line - 1) * " " &
-                    (Last_Index_Line - First_Index_Line + 1) * "^",
+                   ((Data.Column - 1 + Separator'Length) * " " & "^",
                     Foreground => Green,
                     Attribute  => Bold);
 
                Prefix_Image : constant String :=
                  (Row_Image'Length + Separator'Length) * " ";
             begin
-               Log (Log_Severity, Row_Image_Colorized  & Separator & Line_Image);
-               if Row_Index = Error_Row then
-                  Log (Log_Severity, Prefix_Image  & Error_Indicator);
+               if (Print_Prefix and Row_Index <= Data.Line) or (Print_Suffix and Row_Index > Data.Line) then
+                  Log (Log_Severity, Row_Image_Colorized  & Separator & Line_Image_Colorized);
+               end if;
+               if Row_Index = Data.Line then
+                  if Print_Prefix then
+                     Log (Log_Severity, Prefix_Image  & Error_Indicator);
+                  end if;
                   Log (Log_Severity, Prefix_Image & ">>> " & Message_Kind & " " & Message_Value);
                end if;
             end;
          end loop;
       end;
-   exception
-      when others =>
-         --  Continue if parsing Info_Log fails
-         null;
    end Log_Error_With_Source;
 
    use all type GL.Objects.Shaders.Shader_Type;
@@ -137,6 +152,29 @@ package body Orka.Rendering.Programs.Modules is
         when Tess_Evaluation_Shader => "tesselation evaluation shader",
         when Tess_Control_Shader    => "tesselation control shader",
         when Compute_Shader         => "compute shader");
+
+   procedure Print_Log (Text, Shader_Log : String) is
+      Log_Parts : constant Orka.Strings.String_List := Split (Shader_Log, "" & L1.LF);
+
+      Parts : array (Log_Parts'Range) of Row_Data;
+   begin
+      for Index in Log_Parts'Range loop
+         Parts (Index) := Get_Row_Data (+Log_Parts (Index));
+      end loop;
+
+      for Index in Parts'Range loop
+         Log_Error_With_Source
+            (Text,
+            Parts (Index),
+            Index = Parts'First
+            or else Parts (Index - 1).Line /= Parts (Index).Line
+            or else Parts (Index - 1).Column /= Parts (Index).Column,
+            Index = Parts'Last
+            or else Parts (Index).Line /= Parts (Index + 1).Line
+            or else Parts (Index).Column /= Parts (Index + 1).Column);
+      end loop;
+
+   end Print_Log;
 
    procedure Load_And_Compile
      (Object      : in out Module;
@@ -159,13 +197,9 @@ package body Orka.Rendering.Programs.Modules is
             if not Shader.Compile_Status then
                declare
                   Shader_Log : constant String := Shader.Info_Log;
-
-                  Log_Parts : constant Orka.Strings.String_List := Split (Shader_Log, "" & L1.LF);
                begin
                   Log (Error, "Compiling shader " & Path & " failed:");
-                  for Part of Log_Parts loop
-                     Log_Error_With_Source (Text, +Part);
-                  end loop;
+                  Print_Log (Text, Shader_Log);
 
                   raise Shader_Compile_Error with Path & ":" & Shader_Log;
                end;
@@ -195,13 +229,9 @@ package body Orka.Rendering.Programs.Modules is
             if not Shader.Compile_Status then
                declare
                   Shader_Log : constant String := Shader.Info_Log;
-
-                  Log_Parts : constant Orka.Strings.String_List := Split (Shader_Log, "" & L1.LF);
                begin
                   Log (Error, "Compiling " & Shader_Kind'Image & " shader failed:");
-                  for Part of Log_Parts loop
-                     Log_Error_With_Source (Source, +Part);
-                  end loop;
+                  Print_Log (Source, Shader_Log);
 
                   raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader_Log;
                end;
