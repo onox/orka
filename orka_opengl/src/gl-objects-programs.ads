@@ -45,6 +45,9 @@ package GL.Objects.Programs is
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array;
    --  Size (per dimension) of a local work group in the linked compute stage
 
+   function Unused_Uniform_Location (Subject : Program)
+     return Programs.Uniforms.Uniform;
+
    function Uniform_Location (Subject : Program; Name : String)
      return Programs.Uniforms.Uniform;
    --  Return a Uniform given its name

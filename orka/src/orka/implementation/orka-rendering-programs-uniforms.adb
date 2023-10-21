@@ -15,10 +15,18 @@
 --  limitations under the License.
 
 with Ada.Unchecked_Conversion;
+with Ada.Exceptions;
 
 with GL.Types;
 
+with Orka.Logging.Default;
+
 package body Orka.Rendering.Programs.Uniforms is
+
+   use all type Orka.Logging.Default_Module;
+   use all type Orka.Logging.Severity;
+
+   procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Texture_Kind (Sampler : LE.Resource_Type) return LE.Texture_Kind is
       use LE;
@@ -320,13 +328,15 @@ package body Orka.Rendering.Programs.Uniforms is
 
    function Create_Uniform_Variable
      (Object : Program;
-      Name   : String) return Uniform
-   is
-      Uniform_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
+      Name   : String) return Uniform is
    begin
       return Uniform'
-        (Kind       => Uniform_Kind,
+        (Kind       => Object.GL_Program.Uniform_Type (Name),
          GL_Uniform => Object.GL_Program.Uniform_Location (Name));
+   exception
+      when E : Uniform_Inactive_Error =>
+         Log (Warning, Ada.Exceptions.Exception_Message (E));
+         return Uniform'(Kind => LE.Resource_Type'First, GL_Uniform => Object.GL_Program.Unused_Uniform_Location);
    end Create_Uniform_Variable;
 
 end Orka.Rendering.Programs.Uniforms;

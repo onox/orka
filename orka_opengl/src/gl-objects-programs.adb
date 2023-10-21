@@ -122,6 +122,9 @@ package body GL.Objects.Programs is
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 
+   function Unused_Uniform_Location (Subject : Program) return Programs.Uniforms.Uniform is
+     (Uniforms.Create_Uniform (Subject, -1));
+
    function Uniform_Location (Subject : Program; Name : String)
      return Uniforms.Uniform is
       Result : constant Int := API.Get_Uniform_Location.Ref
