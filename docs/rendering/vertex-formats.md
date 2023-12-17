@@ -7,7 +7,7 @@ and the normalized pixel coordinate of some texture.
 Traditionally the vertex format is described in OpenGL by something called
 a Vertex Array Object. The vertex format of the VAO needs to correspond
 with the attributes in the vertex shader. Every time a different vertex
-format is used (hopefully no more than a few), a VAO object needs to binded,
+format is used (hopefully no more than a few), a VAO object needs to be binded,
 and then the buffers containing the vertex data needs to be binded to this
 object.
 

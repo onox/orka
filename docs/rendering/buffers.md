@@ -423,7 +423,7 @@ See [Binding Buffers](#binding-buffers) on how to bind a `Buffer` object.
 
 ### Fences
 
-A fence is needed when using persistent mapped buffers or asynchronously
+A fence is needed when using persistent mapped buffers or when asynchronously
 downloading data. The fence is retired after the previous rendering commands
 have been completed.
 
@@ -511,7 +511,7 @@ The following barriers can be inserted:
 | `Framebuffer`         | Yes                     | Textures attached to framebuffers |
 | `Shader_Storage`      | Yes                     | SSBOs                             |
 | `Element_Array`       | No                      | Buffers binded to `Index`         |
-| `Command`             | No                      | Buffers binded to `Query_Buffer`  |
+| `Command`             | No                      | Buffers binded to `Draw_Indirect` |
 | `Pixel_Buffer`        | No                      | Buffers binded to `Pixel_Pack` or `Pixel_Unpack` |
 | `Texture_Update`      | No                      | Textures                          |
 | `Buffer_Update`       | No                      | Buffers and mapped buffers        |
