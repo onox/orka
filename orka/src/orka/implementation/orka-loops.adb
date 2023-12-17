@@ -226,14 +226,6 @@ package body Orka.Loops is
                end if;
 
                if Total_Elapsed > One_Second then
-                  declare
-                     Frame_Time : constant Time_Span := Total_Elapsed / Frame_Counter;
-                     FPS        : constant Integer   := Integer (1.0 / To_Duration (Frame_Time));
-                  begin
-                     Log (Debug, Trim (FPS'Image) & " FPS, frame time: " &
-                       Trim (Image (+Frame_Time)));
-                  end;
-
                   if Exceeded_Frame_Counter > 0 then
                      declare
                         Stat_Avg : constant Duration := +(Stat_Sum / Exceeded_Frame_Counter);
