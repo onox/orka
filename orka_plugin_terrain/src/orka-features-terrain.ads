@@ -24,8 +24,9 @@
 --    * Avoid C implementation of LEB library and reuse the LEB GLSL code
 --      to create a static meshlet on the GPU when rendering the terrain
 --
---    * Update and render multiple terrain tiles. Use heuristics to
---      determine on the CPU which tiles need to be updated and rendered.
+--    * Update and render multiple terrain tiles. Read back from the GPU
+--      which tiles had visible nodes last frame to determine which tiles
+--      need to be updated and rendered.
 --
 --    * Support flattened spheroids with warping to reduce RMSE when
 --      projecting cubes on spheres.
@@ -43,6 +44,8 @@ with Orka.Timers;
 private with GL.Low_Level.Enums;
 private with GL.Objects.Samplers;
 
+private with Orka.Rendering.Buffers.Mapped.Persistent;
+private with Orka.Rendering.Fences;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Types;
 
@@ -101,7 +104,7 @@ package Orka.Features.Terrain is
       Center        : Cameras.Transforms.Matrix4;
       Camera        : Cameras.Camera_Ptr;
       Parameters    : Subdivision_Parameters;
-      Visible_Tiles : Visible_Tile_Array;
+      Visible_Tiles : out Visible_Tile_Array;
       Update_Render : access procedure (Program : Rendering.Programs.Program);
       Height_Map    : GL.Objects.Textures.Texture;
       Freeze, Wires : Boolean;
@@ -151,6 +154,8 @@ package Orka.Features.Terrain is
 
 private
 
+   Regions_Counted_Nodes : constant := 3;
+
    package LE renames GL.Low_Level.Enums;
 
    type UInt_Buffer_Array is array (Positive range <>) of
@@ -162,6 +167,8 @@ private
 
       Split_Update : Boolean;
       Wireframe    : Boolean;
+
+      Visible_Tiles : Visible_Tile_Array (1 .. Count);
 
       --  Update and reduction of LEB
       Program_Leb_Update    : Rendering.Programs.Program;
@@ -198,6 +205,10 @@ private
       Buffer_Leb              : UInt_Buffer_Array (1 .. Count);
       Buffer_Leb_Nodes        : UInt_Buffer_Array (1 .. Count);
       Buffer_Leb_Node_Counter : Rendering.Buffers.Buffer (Types.UInt_Type);
+
+      Buffer_Counted_Nodes : Rendering.Buffers.Mapped.Persistent.Persistent_Mapped_Buffer
+        (Types.UInt_Type, Rendering.Buffers.Mapped.Read);
+      Fence_Counted_Nodes  : Rendering.Fences.Buffer_Fence (Regions => Regions_Counted_Nodes);
 
       --  UBO
       Buffer_Matrices : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);

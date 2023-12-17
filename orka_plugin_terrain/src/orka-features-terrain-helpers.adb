@@ -19,7 +19,6 @@ with Ada.Numerics;
 
 with Orka.Rendering.Textures;
 with Orka.Resources.Textures.KTX;
-with Orka.Features.Terrain.Spheres;
 with Orka.Transforms.Doubles.Matrices;
 with Orka.Transforms.Doubles.Matrix_Conversions;
 with Orka.Transforms.Doubles.Quaternions;
@@ -167,7 +166,7 @@ package body Orka.Features.Terrain.Helpers is
      (Object        : in out Terrain_Planet;
       Terrain       : in out Orka.Features.Terrain.Terrain;
       Parameters    : Orka.Features.Terrain.Subdivision_Parameters;
-      Visible_Tiles : out Natural;
+      Visible_Tiles : out Visible_Tile_Array;
       Camera        : Orka.Cameras.Camera_Ptr;
       Planet, Star  : Orka.Behaviors.Behavior_Ptr;
       Rotation      : Orka.Types.Singles.Matrix4;
@@ -211,23 +210,7 @@ package body Orka.Features.Terrain.Helpers is
          4 => Rotation * Object.Rotate_270,
          5 => Rotation * Object.Rotate_90_Up,
          6 => Rotation * Object.Rotate_90_Down);
-
-      Sphere_Visibilities : constant Orka.Float_32_Array :=
-        Orka.Features.Terrain.Spheres.Get_Sphere_Visibilities
-          (Object.Terrain_Spheroid_Parameters,
-           Tile_Transforms (1), Tile_Transforms (3), Center, Camera.View_Matrix);
-
-      Visible_Buffers : constant Orka.Features.Terrain.Visible_Tile_Array :=
-        Orka.Features.Terrain.Spheres.Get_Visible_Tiles (Sphere_Visibilities);
-      pragma Assert (Visible_Buffers'Length = Terrain.Count);
    begin
-      Visible_Tiles := 0;
-      for Visible of Visible_Buffers loop
-         if Visible then
-            Visible_Tiles := Visible_Tiles + 1;
-         end if;
-      end loop;
-
       Object.Terrain_Transforms.Set_Data (Tile_Transforms);
 
       Terrain.Render
@@ -236,7 +219,7 @@ package body Orka.Features.Terrain.Helpers is
          Center        => Center,
          Camera        => Camera,
          Parameters    => Parameters,
-         Visible_Tiles => Visible_Buffers,
+         Visible_Tiles => Visible_Tiles,
          Update_Render => Update_Atmosphere_Terrain'Access,
          Height_Map    => Object.DMap,
          Freeze        => Freeze,

@@ -51,7 +51,7 @@ package Orka.Features.Terrain.Helpers is
      (Object        : in out Terrain_Planet;
       Terrain       : in out Features.Terrain.Terrain;
       Parameters    : Features.Terrain.Subdivision_Parameters;
-      Visible_Tiles : out Natural;
+      Visible_Tiles : out Visible_Tile_Array;
       Camera        : Cameras.Camera_Ptr;
       Planet, Star  : Behaviors.Behavior_Ptr;
       Rotation      : Types.Singles.Matrix4;

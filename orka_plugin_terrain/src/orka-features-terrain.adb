@@ -48,6 +48,7 @@ package body Orka.Features.Terrain is
    Binding_Buffer_Spheres          : constant := 4;
    Binding_Buffer_Draw             : constant := 5;
    Binding_Buffer_Dispatch         : constant := 6;
+   Binding_Buffer_Counted_Nodes    : constant := 7;
 
    --  UBOs
    Binding_Buffer_Matrices : constant := 0;
@@ -79,6 +80,7 @@ package body Orka.Features.Terrain is
    is
       use Rendering.Buffers;
       use Rendering.Programs;
+      use Rendering.Fences;
 
       use GL.Types.Indirect;
 
@@ -144,6 +146,9 @@ package body Orka.Features.Terrain is
          Buffer_Dispatch         => Create_Buffer ((others => False), Dispatch_Commands),
          Buffer_Matrices         => Create_Buffer
            ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 2),
+         Buffer_Counted_Nodes    => Mapped.Persistent.Create_Buffer
+           (Orka.Types.UInt_Type, Integer (Number_Of_Buffers), Mapped.Read, Regions => Regions_Counted_Nodes),
+         Fence_Counted_Nodes     => Create_Buffer_Fence (Regions => Regions_Counted_Nodes, Maximum_Wait => 0.01),
          others => <>)
       do
          Result.Uniform_Prepass_Pass_ID   := Result.Program_Leb_Prepass.Uniform   ("u_PassID");
@@ -191,9 +196,7 @@ package body Orka.Features.Terrain is
    use all type Rendering.Buffers.Buffer_Target;
    use all type Rendering.Buffers.Indexed_Buffer_Target;
 
-   procedure Update
-     (Object  : in out Terrain;
-      Visible : Visible_Tile_Array) is
+   procedure Update (Object : in out Terrain) is
    begin
       Object.Program_Leb_Update.Use_Program;
       Object.Uniform_Update_Split.Set_Boolean (Object.Split_Update);
@@ -201,37 +204,33 @@ package body Orka.Features.Terrain is
 
       Object.Buffer_Dispatch.Bind (Dispatch_Indirect);
       Object.Buffer_Leb_Node_Counter.Bind (Shader_Storage, Binding_Buffer_Leb_Node_Counter);
+
       for ID in Object.Buffer_Leb'Range loop
          declare
             Offset : constant Size := Size (ID - 1);
          begin
-            if Visible (ID) then
-               Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
-               Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
+            Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
+            Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
 
-               Object.Uniform_Update_Leb_ID.Set_Int (Offset);
-               GL.Compute.Dispatch_Compute_Indirect (Offset => Offset);
-            end if;
+            Object.Uniform_Update_Leb_ID.Set_Int (Offset);
+            GL.Compute.Dispatch_Compute_Indirect (Offset => Offset);
          end;
       end loop;
       GL.Barriers.Memory_Barrier ((Shader_Storage => True, others => False));
    end Update;
 
-   procedure Reduce
-     (Object  : in out Terrain;
-      Visible : Visible_Tile_Array)
-   is
+   procedure Reduce (Object : in out Terrain) is
       Depth : Integer := Integer (Object.Max_Depth);
 
       Count     : constant Integer := 2 ** Depth / 2 ** 5;
-      Num_Group : constant Integer := (if Count >= 256 then Count / 2 ** 8 else 1);
+      Num_Group : constant Integer := (if Count >= 256 then Count / 256 else 1);
    begin
       --  Reduction prepass
       Object.Program_Leb_Prepass.Use_Program;
       Object.Uniform_Prepass_Pass_ID.Set_Int (Integer_32 (Depth));
 
       for ID in Object.Buffer_Leb'Range loop
-         if Visible (ID) then
+         if Object.Visible_Tiles (ID) then
             Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
             GL.Compute.Dispatch_Compute (X => Unsigned_32 (Num_Group));
          end if;
@@ -247,11 +246,11 @@ package body Orka.Features.Terrain is
 
          declare
             Count     : constant Integer := 2 ** Depth;
-            Num_Group : constant Integer := (if Count >= 256 then Count / 2 ** 8 else 1);
+            Num_Group : constant Integer := (if Count >= 256 then Count / 256 else 1);
          begin
             Object.Uniform_Reduction_Pass_ID.Set_Int (Integer_32 (Depth));
             for ID in Object.Buffer_Leb'Range loop
-               if Visible (ID) then
+               if Object.Visible_Tiles (ID) then
                   Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
                   GL.Compute.Dispatch_Compute (X => Unsigned_32 (Num_Group));
                end if;
@@ -269,12 +268,14 @@ package body Orka.Features.Terrain is
       Object.Buffer_Draw.Bind (Shader_Storage, Binding_Buffer_Draw);
       Object.Buffer_Dispatch.Bind (Shader_Storage, Binding_Buffer_Dispatch);
 
+      Object.Buffer_Counted_Nodes.Bind (Shader_Storage, Binding_Buffer_Counted_Nodes);
+
       for ID in Object.Buffer_Leb'Range loop
          Object.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
          Object.Uniform_Indirect_Leb_ID.Set_Int (Size (ID - 1));
          GL.Compute.Dispatch_Compute (X => 1, Y => 1, Z => 1);
       end loop;
-      GL.Barriers.Memory_Barrier ((By_Region => False, others => True));
+      GL.Barriers.Memory_Barrier ((By_Region => False, Shader_Storage | Command => True, others => False));
    end Prepare_Indirect;
 
    procedure Render
@@ -283,7 +284,7 @@ package body Orka.Features.Terrain is
       Center        : Cameras.Transforms.Matrix4;
       Camera        : Cameras.Camera_Ptr;
       Parameters    : Subdivision_Parameters;
-      Visible_Tiles : Visible_Tile_Array;
+      Visible_Tiles : out Visible_Tile_Array;
       Update_Render : access procedure
         (Program : Rendering.Programs.Program);
       Height_Map    : GL.Objects.Textures.Texture;
@@ -345,9 +346,33 @@ package body Orka.Features.Terrain is
       Transforms.Bind (Shader_Storage, Binding_Buffer_Transform);
       Spheres.Bind (Shader_Storage, Binding_Buffer_Spheres);
 
-      Object.Update (Visible_Tiles);
-      Object.Reduce (Visible_Tiles);
+      Object.Update;
+      Object.Reduce;
+
+      declare
+         Status : Rendering.Fences.Fence_Status;
+      begin
+         Object.Fence_Counted_Nodes.Prepare_Index (Status);
+      end;
+
+      if not Freeze then
+         declare
+            Data : Unsigned_32_Array (1 .. Integer_32 (Object.Count));
+         begin
+            GL.Barriers.Memory_Barrier ((By_Region => False, Buffer_Update => True, others => False));
+            Object.Buffer_Counted_Nodes.Read_Data (Data);
+
+            for Index in Data'Range loop
+               Object.Visible_Tiles (Index) := Data (Index) > 0;
+            end loop;
+         end;
+      end if;
+      Visible_Tiles := Object.Visible_Tiles;
+
       Object.Prepare_Indirect;
+
+      Object.Buffer_Counted_Nodes.Advance_Index;
+      Object.Fence_Counted_Nodes.Advance_Index;
 
       Timer_Update.Stop;
       Timer_Render.Start;
@@ -358,7 +383,7 @@ package body Orka.Features.Terrain is
       end if;
 
       for ID in Object.Buffer_Leb_Nodes'Range loop
-         if Visible_Tiles (ID) then
+         if Object.Visible_Tiles (ID) then
             Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
             Object.Uniform_Render_Leb_ID.Set_Int (Size (ID - 1));
             Orka.Rendering.Drawing.Draw_Indirect (Triangles, Object.Buffer_Draw, ID - 1, 1);

@@ -56,6 +56,10 @@ layout(std430, binding = 6) writeonly restrict buffer DispatchIndirectCommandBuf
    DispatchIndirectCommand u_DispatchIndirectCommand[];
 };
 
+layout(std430, binding = 7) writeonly restrict buffer CountedNodesBuffer {
+    uint u_CountedNodes[];
+};
+
 uniform int u_LebID;
 
 void main()
@@ -70,5 +74,5 @@ void main()
     u_DrawArraysIndirectCommand[lebID].count = 3; // Vertices per meshlet
     u_DrawArraysIndirectCommand[lebID].instanceCount = u_LebNodeCounter[lebID];
 
-    atomicExchange(u_LebNodeCounter[lebID], 0u);
+    u_CountedNodes[lebID] = atomicExchange(u_LebNodeCounter[lebID], 0u);
 }
