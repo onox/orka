@@ -53,7 +53,7 @@ package body Orka.Rendering.Programs.Modules is
    exception
       when others =>
          --  Continue if parsing Info_Log fails
-         return (Line => -1, others => <>);
+         return (Line => Positive'Last, others => <>);
    end Get_Row_Data;
 
    procedure Log_Error_With_Source (Text : String; Data : Row_Data; Print_Prefix, Print_Suffix : Boolean) is
@@ -69,7 +69,7 @@ package body Orka.Rendering.Programs.Modules is
       use all type Orka.Terminals.Color;
       use all type Orka.Terminals.Style;
    begin
-      if Data.Line = -1 then
+      if Data.Line = Positive'Last then
          return;
       end if;
 
@@ -119,9 +119,12 @@ package body Orka.Rendering.Programs.Modules is
                Line_Image_Colorized : constant String :=
                   Orka.Terminals.Colorize (Line_Image, Attribute => (if Row_Index = Data.Line then Default else Dark));
 
+               First_Index_Line : constant Natural :=
+                 SF.Index_Non_Blank (Line_Image, Going => Ada.Strings.Forward);
+
                Error_Indicator : constant String :=
                  Orka.Terminals.Colorize
-                   ((Data.Column - 1 + Separator'Length) * " " & "^",
+                   ((Data.Column - 1 + First_Index_Line - 2) * " " & "^",
                     Foreground => Green,
                     Attribute  => Bold);
 
@@ -204,9 +207,7 @@ package body Orka.Rendering.Programs.Modules is
                   raise Shader_Compile_Error with Path & ":" & Shader_Log;
                end;
             end if;
-            Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path);
-            Log (Debug, "  size: " & Trim_Image (Orka.Strings.Lines (Text)) &
-              " lines (" & Trim_Image (Source.Get.Value'Length) & " bytes)");
+            Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path & " (" & Trim_Image (Orka.Strings.Lines (Text)) & " lines)");
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
@@ -236,10 +237,8 @@ package body Orka.Rendering.Programs.Modules is
                   raise Shader_Compile_Error with Shader_Kind'Image & ":" & Shader_Log;
                end;
             end if;
-            Log (Debug, "Compiled " & Image (Shader_Kind) & " text with " &
-              Trim_Image (Source'Length) & " characters");
-            Log (Debug, "  size: " &
-              Trim_Image (Orka.Strings.Lines (Source)) & " lines");
+            Log (Info, "Compiled " & Image (Shader_Kind) & " text (" &
+              Trim_Image (Source'Length) & " characters)");
 
             Object.Shaders (Shader_Kind).Replace_Element (Shader);
          end;
