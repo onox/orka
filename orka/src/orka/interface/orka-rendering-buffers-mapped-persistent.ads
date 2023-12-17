@@ -51,8 +51,8 @@ package Orka.Rendering.Buffers.Mapped.Persistent is
 private
 
    type Persistent_Mapped_Buffer is new Mapped_Buffer with record
-      Index   : Natural;
-      Regions : Positive;
+      Index   : Natural  := 0;
+      Regions : Positive := 1;
    end record
      with Type_Invariant => Index < Regions;
 
