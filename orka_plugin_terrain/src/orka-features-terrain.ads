@@ -187,7 +187,6 @@ private
       Uniform_Prepass_Pass_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Reduction_Pass_ID : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
 
-      Uniform_Indirect_Subdiv   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Render_Subdiv     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
 
       --  Sampler for height and slope maps

@@ -159,7 +159,6 @@ package body Orka.Features.Terrain is
          Result.Uniform_Update_DMap_Factor := Result.Program_Leb_Update.Uniform ("u_DmapFactor");
 
          Result.Uniform_Indirect_Leb_ID := Result.Program_Indirect.Uniform ("u_LebID");
-         Result.Uniform_Indirect_Subdiv := Result.Program_Indirect.Uniform ("u_MeshletSubdivision");
 
          Result.Uniform_Render_Leb_ID := Result.Program_Render.Uniform ("u_LebID");
          Result.Uniform_Render_Subdiv := Result.Program_Render.Uniform ("u_MeshletSubdivision");
@@ -321,7 +320,6 @@ package body Orka.Features.Terrain is
       Object.Uniform_Update_DMap_Factor.Set_Single (Height_Scale);
       Object.Uniform_Render_DMap_Factor.Set_Single (Height_Scale);
 
-      Object.Uniform_Indirect_Subdiv.Set_Int (Subdivision);
       Object.Uniform_Render_Subdiv.Set_Int (Subdivision);
 
       if Object.Wireframe then
