@@ -32,12 +32,9 @@
 //   * Added face culling test
 
 #define PROJECTION_RECTILINEAR 1
-#define FLAG_FRUSTUM_CULL 1
-#define FLAG_FACE_CULL 1
-#define FLAG_DISPLACE 1
 
 vec4 BarycentricInterpolation(in vec4 v[3], in vec2 u);
-vec4 planeToSphere(const int lebID, const vec4 v);
+vec4 planeToSphere(const int lebID, const vec2 v);
 
 layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ViewMatrix;
@@ -46,10 +43,8 @@ layout(std140, binding = 0) uniform MatrixBuffer {
 
 uniform float u_LodFactor;
 
-#if FLAG_DISPLACE
 layout(binding = 4) uniform sampler2D u_DmapSampler;
 uniform float u_MinLodVariance;
-#endif
 
 // TriangleLevelOfDetail -- Computes the LoD associated to a triangle
 //
@@ -113,7 +108,6 @@ float TriangleLevelOfDetail(in const int lebID, in const vec4[3] eyespaceVertice
 #endif
 }
 
-#if FLAG_DISPLACE
 // DisplacementVarianceTest -- Checks if the height variance criteria is met
 //
 // Terrains tend to have locally flat regions, which don't need large amounts
@@ -135,7 +129,6 @@ bool DisplacementVarianceTest(in const vec4[3] patchVertices)
 #undef P1
 #undef P2
 }
-#endif
 
 // FrustumCullingTest -- Checks if the triangle lies inside the view frutsum
 bool FrustumCullingTest(in const vec4[3] eyespaceVertices)
@@ -173,14 +166,10 @@ bool FaceCullingTest(in const vec4[3] eyespaceVertices)
 // triangle is culled, and one otherwise.
 vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const bool invert)
 {
-    vec4 v0 = vec4(patchVertices[0].xy, 1.0, 1.0);
-    vec4 v1 = vec4(patchVertices[1].xy, 1.0, 1.0);
-    vec4 v2 = vec4(patchVertices[2].xy, 1.0, 1.0);
-
     vec4 eyespaceVertices[3] = vec4[3](
-        u_ViewMatrix * planeToSphere(lebID, v0),
-        u_ViewMatrix * planeToSphere(lebID, v1),
-        u_ViewMatrix * planeToSphere(lebID, v2)
+        u_ViewMatrix * planeToSphere(lebID, patchVertices[0].xy),
+        u_ViewMatrix * planeToSphere(lebID, patchVertices[1].xy),
+        u_ViewMatrix * planeToSphere(lebID, patchVertices[2].xy)
     );
 
     if (invert) {
@@ -189,25 +178,19 @@ vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const 
         eyespaceVertices[2] = tmp;
     }
 
-#if FLAG_FACE_CULL
     if (!FaceCullingTest(eyespaceVertices)) {
         return vec2(0.0f, 0.0f);
     }
-#endif
 
-#if FLAG_FRUSTUM_CULL
     // culling test
     if (!FrustumCullingTest(eyespaceVertices)) {
         return vec2(0.0f, 0.0f);
     }
-#endif
 
-#if FLAG_DISPLACE
     // variance test
     if (!DisplacementVarianceTest(patchVertices)) {
         return vec2(0.0f, 1.0f);
     }
-#endif
 
     // compute triangle LOD
     return vec2(TriangleLevelOfDetail(lebID, eyespaceVertices), 1.0f);
