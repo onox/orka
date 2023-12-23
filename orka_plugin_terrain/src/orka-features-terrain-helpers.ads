@@ -70,15 +70,7 @@ private
       Terrain_Transforms    : Rendering.Buffers.Buffer (Orka.Types.Single_Matrix_Type);
       Terrain_Sphere_Params : Rendering.Buffers.Buffer (Orka.Types.Single_Type);
 
-      Terrain_Spheroid_Parameters : Features.Terrain.Spheroid_Parameters;
-
       Modules_Terrain_Render : Rendering.Programs.Modules.Module_Array (1 .. 2);
-
-      Rotate_90      : Transforms.Matrix4;
-      Rotate_180     : Transforms.Matrix4;
-      Rotate_270     : Transforms.Matrix4;
-      Rotate_90_Up   : Transforms.Matrix4;
-      Rotate_90_Down : Transforms.Matrix4;
 
       Planet_Radius      : Float_64;
       Planet_Unit_Length : Float_64;

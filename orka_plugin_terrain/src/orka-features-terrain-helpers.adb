@@ -19,11 +19,9 @@ with Ada.Numerics;
 
 with Orka.Rendering.Textures;
 with Orka.Resources.Textures.KTX;
-with Orka.Transforms.Doubles.Matrices;
-with Orka.Transforms.Doubles.Matrix_Conversions;
-with Orka.Transforms.Doubles.Quaternions;
 with Orka.Transforms.Doubles.Vectors;
 with Orka.Transforms.Doubles.Vector_Conversions;
+with Orka.Transforms.Singles.Matrices;
 
 package body Orka.Features.Terrain.Helpers is
 
@@ -66,45 +64,15 @@ package body Orka.Features.Terrain.Helpers is
         Terrain_Sphere_Top &
         Terrain_Sphere_Top;
 
-      -------------------------------------------------------------------------
+      package Matrices renames Orka.Transforms.Singles.Matrices;
 
-      package MC renames Orka.Transforms.Doubles.Matrix_Conversions;
-      package Quaternions renames Orka.Transforms.Doubles.Quaternions;
-
-      Q_Rotate_90 : constant Quaternions.Quaternion :=
-        Quaternions.R (Orka.Transforms.Doubles.Vectors.Normalize ((0.0, 0.0, 1.0, 0.0)),
-        -2.0 * Ada.Numerics.Pi * 0.25);
-
-      Q_Rotate_180 : constant Quaternions.Quaternion :=
-        Quaternions.R (Orka.Transforms.Doubles.Vectors.Normalize ((0.0, 0.0, 1.0, 0.0)),
-        -2.0 * Ada.Numerics.Pi * 0.50);
-
-      Q_Rotate_270 : constant Quaternions.Quaternion :=
-        Quaternions.R (Orka.Transforms.Doubles.Vectors.Normalize ((0.0, 0.0, 1.0, 0.0)),
-        -2.0 * Ada.Numerics.Pi * 0.75);
-
-      Q_Rotate_90_Up : constant Quaternions.Quaternion :=
-        Quaternions.R (Orka.Transforms.Doubles.Vectors.Normalize ((0.0, 1.0, 0.0, 0.0)),
-        2.0 * Ada.Numerics.Pi * 0.25);
-
-      Q_Rotate_90_Down : constant Quaternions.Quaternion :=
-        Quaternions.R (Orka.Transforms.Doubles.Vectors.Normalize ((0.0, 1.0, 0.0, 0.0)),
-        -2.0 * Ada.Numerics.Pi * 0.25);
-
-      package Matrices renames Orka.Transforms.Doubles.Matrices;
-      package Transforms renames Orka.Cameras.Transforms;
-
-      Rotate_90 : constant Transforms.Matrix4 :=
-        MC.Convert (Matrices.R (Matrices.Vector4 (Q_Rotate_90)));
-      Rotate_180 : constant Transforms.Matrix4 :=
-        MC.Convert (Matrices.R (Matrices.Vector4 (Q_Rotate_180)));
-      Rotate_270 : constant Transforms.Matrix4 :=
-        MC.Convert (Matrices.R (Matrices.Vector4 (Q_Rotate_270)));
-
-      Rotate_90_Up : constant Transforms.Matrix4 :=
-        MC.Convert (Matrices.R (Matrices.Vector4 (Q_Rotate_90_Up)));
-      Rotate_90_Down : constant Transforms.Matrix4 :=
-        MC.Convert (Matrices.R (Matrices.Vector4 (Q_Rotate_90_Down)));
+      Terrain_Transforms : constant Orka.Types.Singles.Matrix4_Array :=
+        (Matrices.Identity_Matrix,
+         Matrices.Ry (+0.5 * Ada.Numerics.Pi),
+         Matrices.Ry (+1.0 * Ada.Numerics.Pi),
+         Matrices.Ry (+1.5 * Ada.Numerics.Pi),
+         Matrices.Rx (-0.5 * Ada.Numerics.Pi),
+         Matrices.Rx (+0.5 * Ada.Numerics.Pi));
 
       -------------------------------------------------------------------------
 
@@ -135,19 +103,8 @@ package body Orka.Features.Terrain.Helpers is
          Modules.Create_Module_From_Sources (FS => Terrain_FS_Shader));
    begin
       return
-        (Terrain_Transforms =>
-          Create_Buffer
-            ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type,
-             Length => Count),
-         Terrain_Sphere_Params =>
-           Create_Buffer ((others => False), Terrain_Spheres),
-         Terrain_Spheroid_Parameters => Terrain_Sphere_Side,
-
-         Rotate_90      => Rotate_90,
-         Rotate_180     => Rotate_180,
-         Rotate_270     => Rotate_270,
-         Rotate_90_Up   => Rotate_90_Up,
-         Rotate_90_Down => Rotate_90_Down,
+        (Terrain_Transforms    => Create_Buffer ((others => False), Terrain_Transforms),
+         Terrain_Sphere_Params => Create_Buffer ((others => False), Terrain_Spheres),
 
          Planet_Radius      => Planet_Radius,
          Planet_Unit_Length => Data.Length_Unit_In_Meters,
@@ -188,19 +145,7 @@ package body Orka.Features.Terrain.Helpers is
            (Orka.Types.Singles.Vector4'(VC.Convert
               (Normalize (Star.Position - Planet.Position))));
       end Update_Atmosphere_Terrain;
-
-      use Orka.Cameras.Transforms;
-
-      Tile_Transforms : constant Orka.Types.Singles.Matrix4_Array :=
-        (1 => Rotation,
-         2 => Rotation * Object.Rotate_90,
-         3 => Rotation * Object.Rotate_180,
-         4 => Rotation * Object.Rotate_270,
-         5 => Rotation * Object.Rotate_90_Up,
-         6 => Rotation * Object.Rotate_90_Down);
    begin
-      Object.Terrain_Transforms.Set_Data (Tile_Transforms);
-
       Terrain.Render
         (Transforms    => Object.Terrain_Transforms,
          Spheres       => Object.Terrain_Sphere_Params,

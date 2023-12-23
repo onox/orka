@@ -84,18 +84,6 @@ vec4 planeToSphere(const int lebID, vec4 v)
     v.xy = v.xy * 2.0 - 1.0;
     v.xy = warp_everitt(v.xy);
 
-    // World matrix assumes ECEF, meaning:
-    //
-    //   z
-    //   |
-    //   o--y
-    //  /
-    // x
-    //
-    // So the 3rd element (1.0) must be moved to the 'x' position,
-    // and the first two elements (H and V) must be moved to 'y' and 'z'.
-    v.xyz = v.zxy;
-
     const vec4 unit = vec4(normalize(v.xyz), 1.0);
 
     // Take the last size in spheres[] if there are not enough in the buffer

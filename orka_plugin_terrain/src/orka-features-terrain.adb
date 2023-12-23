@@ -43,7 +43,7 @@ package body Orka.Features.Terrain is
    Binding_Buffer_Leb              : constant := 0;
    Binding_Buffer_Leb_Nodes        : constant := 1;
    Binding_Buffer_Leb_Node_Counter : constant := 2;
-   Binding_Buffer_Transform        : constant := 3;
+   Binding_Buffer_Transforms       : constant := 3;
    Binding_Buffer_Spheres          : constant := 4;
    Binding_Buffer_Draw             : constant := 5;
    Binding_Buffer_Dispatch         : constant := 6;
@@ -342,7 +342,7 @@ package body Orka.Features.Terrain is
       Object.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
 
       --  SSBOs
-      Transforms.Bind (Shader_Storage, Binding_Buffer_Transform);
+      Transforms.Bind (Shader_Storage, Binding_Buffer_Transforms);
       Spheres.Bind (Shader_Storage, Binding_Buffer_Spheres);
 
       Object.Update;
