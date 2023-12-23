@@ -6,11 +6,12 @@
 This crate provides packages to render adaptively tessellated terrain on
 the GPU based on the [LEB library][url-leb].
 
-- Updates and renders multiple terrain tiles and uses heuristics to
-determine on the CPU which tiles need to be updated and rendered.
+- Updates and renders multiple terrain tiles and reads back from the GPU
+  which tiles had visible nodes last frame to determine on the CPU which
+  tiles need to be updated and rendered.
 
 - Supports flattened spheroids with warping to reduce RMSE when
-projecting cubes on spheres.
+  projecting cubes on spheres.
 
 - Can optionally display a wireframe on top of the rendered terrain.
 
