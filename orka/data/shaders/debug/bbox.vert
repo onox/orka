@@ -39,6 +39,8 @@ layout(std430, binding = 1) readonly restrict buffer bboxBuffer {
 out vec4  vs_color;
 out float vs_weight;
 
+// For each vertex, choose bboxMax if true and bboxMin if false
+//
 //      6----7
 //     /|   /|
 //    / |  / |
@@ -48,16 +50,16 @@ out float vs_weight;
 // | /  | /
 // |/   |/
 // 0----1
-const vec3 vertices[] = {
-    vec3(-1.0, -1.0, 1.0),
-    vec3( 1.0, -1.0, 1.0),
-    vec3(-1.0,  1.0, 1.0),
-    vec3( 1.0,  1.0, 1.0),
+const bvec3 vertices[] = {
+    bvec3(false, false, true),
+    bvec3( true, false, true),
+    bvec3(false,  true, true),
+    bvec3( true,  true, true),
 
-    vec3(-1.0, -1.0, -1.0),
-    vec3( 1.0, -1.0, -1.0),
-    vec3(-1.0,  1.0, -1.0),
-    vec3( 1.0,  1.0, -1.0),
+    bvec3(false, false, false),
+    bvec3( true, false, false),
+    bvec3(false,  true, false),
+    bvec3( true,  true, false),
 };
 
 const int indices[] = {
@@ -85,13 +87,12 @@ const int indices[] = {
 void main() {
     const int instanceID = gl_InstanceID;
 
-    const vec4 bboxMin = bboxes[instanceID].minimum;
-    const vec4 bboxMax = bboxes[instanceID].maximum;
+    const vec3 bboxMin = bboxes[instanceID].minimum.xyz;
+    const vec3 bboxMax = bboxes[instanceID].maximum.xyz;
 
-    vec4 vertex = vec4(vertices[indices[gl_VertexID]], 1.0);
-    vertex.xyz *= 0.5 * (bboxMax.xyz - bboxMin.xyz);
+    const vec3 vertex = mix(bboxMin, bboxMax, vertices[indices[gl_VertexID]]);
 
-    gl_Position = proj * (view * (matrices[instanceID] * vertex));
+    gl_Position = proj * (view * (matrices[instanceID] * vec4(vertex, 1.0)));
 
     vs_color  = color;
     vs_weight = float(gl_VertexID % 2 != 0);
