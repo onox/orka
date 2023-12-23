@@ -29,12 +29,10 @@ Location_Terrain : constant Locations.Location_Ptr :=
 ```
 
 `Location_Data` should point to a location containing the `terrain/` directory,
-which should contain the height and slope map textures.
+which should contain the height texture.
 
 - The height map is `RG16` (2x `Unsigned_16`) (about 86 MiB) or
   `COMPRESSED_RG_RGTC2` (about 17 MiB).
-- The slope smap is `RG32F` (2x `Float_32`) (about 171 MiB) or
-  `Compressed_RGB_BPTC_Signed_Float` (about 22 MiB).
 
 ### Configuration
 
@@ -86,8 +84,6 @@ procedure Initialize_Atmosphere_Terrain_Program
 begin
    Program.Uniform_Sampler ("u_DmapSampler").Verify_Compatibility
      (Terrain_1_Planet.Height_Map);
-   Program.Uniform_Sampler ("u_SmapSampler").Verify_Compatibility
-     (Terrain_1_Planet.Slope_Map);
 end Initialize_Atmosphere_Terrain_Program;
 
 Terrain_1 : Terrain := Create_Terrain
@@ -178,12 +174,11 @@ implement the function `:::glsl vec4 ShadeFragment(vec2 texCoord, vec4 worldPos)
     might need to be fixed when terrain is displaced.
 
 !!! bug "All tiles use a single height and slope map"
-    All tiles currently use two textures in `data/terrain/texture-4k-dmap.ktx`
-    (height map) and `data/terrain/texture-4k-smap.ktx` (slope map), accessed
-    through the location object `Location_Data`.
+    All tiles currently use a texture in `data/terrain/terrain-dmap.ktx`,
+    accessed through the location object `Location_Data`.
     To get the actual terrain of the Earth rendered, NASA SRTM DEM data is
-    needed, converted to an `Unsigned_16_Array` (for the height map)
-    and `Float_32_Array` for the slope map, and then written to .ktx textures.
+    needed, converted to an `Unsigned_16_Array` (for the height map),
+    and then written to a .ktx texture.
     See `data/shaders/terrain/terrain-render-sphere.glsl` for how a point on a
     plane or tile is changed to a point on a sphere.
 

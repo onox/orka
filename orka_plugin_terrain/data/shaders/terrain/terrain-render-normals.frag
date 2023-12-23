@@ -2,7 +2,7 @@
 
 // SPDX-License-Identifier: MIT
 //
-// Copyright (c) 2019 Jonathan Dupuy
+// Copyright (c) 2023 onox <denkpadje@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -22,21 +22,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#define FLAG_DISPLACE 1
+layout(binding = 4) uniform sampler2D u_DmapSampler;
 
-vec2 get_slope(vec2 texCoord);
+vec2 get_slope(vec2 texCoord) {
+    const float lod = textureQueryLod(u_DmapSampler, texCoord).y;
 
-uniform float u_DmapFactor;
+    const float l = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2(-1,  0)).r;
+    const float r = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 1,  0)).r;
+    const float b = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 0, -1)).r;
+    const float t = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 0,  1)).r;
 
-vec4 ShadeFragment(vec2 texCoord, vec4 worldPos)
-{
-#if FLAG_DISPLACE
-    vec2 smap = u_DmapFactor * get_slope(texCoord);
-    vec3 n = normalize(vec3(-smap, 1));
-#else
-    vec3 n = vec3(0, 0, 1);
-#endif
+    const vec2 size = textureSize(u_DmapSampler, int(max(0.0, lod)));
+    const float x = size.x * 0.5 * (r - l);
+    const float y = size.y * 0.5 * (t - b);
 
-    float d = clamp(n.z, 0.0, 1.0);
-    return vec4(vec3(d / 3.14159), 1);
+    return vec2(x, y);
 }

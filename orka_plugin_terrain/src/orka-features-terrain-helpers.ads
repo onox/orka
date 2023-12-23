@@ -35,7 +35,6 @@ package Orka.Features.Terrain.Helpers is
    type Terrain_Planet is tagged limited private;
 
    function Height_Map (Object : Terrain_Planet) return GL.Objects.Textures.Texture;
-   function Slope_Map  (Object : Terrain_Planet) return GL.Objects.Textures.Texture;
 
    function Render_Modules (Object : Terrain_Planet)
      return Rendering.Programs.Modules.Module_Array;
@@ -85,7 +84,6 @@ private
       Planet_Unit_Length : Float_64;
 
       DMap : GL.Objects.Textures.Texture (LE.Texture_2D);
-      SMap : GL.Objects.Textures.Texture (LE.Texture_2D);
    end record;
 
 end Orka.Features.Terrain.Helpers;

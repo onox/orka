@@ -38,7 +38,6 @@ package body Orka.Features.Terrain is
    --  Textures
    --  (Lower bindings points used for atmosphere textures)
    Binding_Texture_DMap : constant := 4;
-   Binding_Texture_SMap : constant := 5;
 
    --  SSBOs
    Binding_Buffer_Leb              : constant := 0;
@@ -117,6 +116,7 @@ package body Orka.Features.Terrain is
            (Modules.Create_Module (Location, VS => "terrain/leb.comp"),
             Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl"),
             Modules.Create_Module (Location, VS => "terrain/terrain-render-sphere.glsl"),
+            Modules.Create_Module (Location, FS => "terrain/terrain-render-normals.frag"),
             (if Wireframe then
                Modules.Create_Module (Location,
                  VS => "terrain/terrain-render.vert",
@@ -331,7 +331,6 @@ package body Orka.Features.Terrain is
       end if;
 
       Object.Sampler.Bind (Binding_Texture_DMap);
-      Object.Sampler.Bind (Binding_Texture_SMap);
 
       --  Textures
       Orka.Rendering.Textures.Bind

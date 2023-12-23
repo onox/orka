@@ -36,9 +36,6 @@ package body Orka.Features.Terrain.Helpers is
    function Height_Map (Object : Terrain_Planet) return GL.Objects.Textures.Texture is
      (Object.DMap);
 
-   function Slope_Map (Object : Terrain_Planet) return GL.Objects.Textures.Texture is
-     (Object.SMap);
-
    function Create_Terrain_Planet
      (Data             : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters       : Features.Atmosphere.Rendering.Model_Parameters;
@@ -112,9 +109,7 @@ package body Orka.Features.Terrain.Helpers is
       -------------------------------------------------------------------------
 
       DMap : constant GL.Objects.Textures.Texture :=
-        Orka.Resources.Textures.KTX.Read_Texture (Location_Data, "terrain/texture4k-dmap.ktx");
-      SMap : constant GL.Objects.Textures.Texture :=
-        Orka.Resources.Textures.KTX.Read_Texture (Location_Data, "terrain/texture4k-smap.ktx");
+        Orka.Resources.Textures.KTX.Read_Texture (Location_Data, "terrain/terrain-dmap.ktx");
       --  FIXME Should be separate textures for each tile
 
       Terrain_GLSL : constant String
@@ -158,8 +153,7 @@ package body Orka.Features.Terrain.Helpers is
          Planet_Unit_Length => Data.Length_Unit_In_Meters,
 
          Modules_Terrain_Render => Modules_Terrain_Render,
-         DMap => DMap,
-         SMap => SMap);
+         DMap => DMap);
    end Create_Terrain_Planet;
 
    procedure Render
@@ -185,8 +179,6 @@ package body Orka.Features.Terrain.Helpers is
 
          CP : constant Orka.Types.Singles.Vector4 :=
            VC.Convert (Camera.View_Position * (1.0 / Object.Planet_Unit_Length));
-
-         Binding_Texture_SMap : constant := 5;
       begin
          Program.Uniform ("camera_pos").Set_Vector (CP);
          Program.Uniform ("earth_radius").Set_Single
@@ -195,10 +187,6 @@ package body Orka.Features.Terrain.Helpers is
          Program.Uniform ("sun_direction").Set_Vector
            (Orka.Types.Singles.Vector4'(VC.Convert
               (Normalize (Star.Position - Planet.Position))));
-
-         Orka.Rendering.Textures.Bind
-           (Object.SMap,
-            Orka.Rendering.Textures.Texture, Binding_Texture_SMap);
       end Update_Atmosphere_Terrain;
 
       use Orka.Cameras.Transforms;
