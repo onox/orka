@@ -246,6 +246,12 @@ package GL.Pixels.Extensions is
 
    function Block_Bytes (Format : Pixels.Compressed_Format) return Compressed_Byte_Count is
      (case Format is
+        --  S3TC
+        when Compressed_RGB_S3TC_DXT1                  => 8,
+        when Compressed_RGBA_S3TC_DXT1                 => 8,
+        when Compressed_RGBA_S3TC_DXT3                 => 16,
+        when Compressed_RGBA_S3TC_DXT5                 => 16,
+
         --  RGTC
         when Compressed_Red_RGTC1                      => 8,
         when Compressed_Signed_Red_RGTC1               => 8,

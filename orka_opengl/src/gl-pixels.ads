@@ -48,16 +48,25 @@ package GL.Pixels is
    --  Table 8.12 of the OpenGL specification
 
    type Compressed_Format is
-     (Compressed_Red_RGTC1,
+      --  S3TC
+     (Compressed_RGB_S3TC_DXT1,
+      Compressed_RGBA_S3TC_DXT1,
+      Compressed_RGBA_S3TC_DXT3,
+      Compressed_RGBA_S3TC_DXT5,
+
+      --  RGTC
+      Compressed_Red_RGTC1,
       Compressed_Signed_Red_RGTC1,
       Compressed_RG_RGTC2,
       Compressed_Signed_RG_RGTC2,
 
+      --  BPTC
       Compressed_RGBA_BPTC_Unorm,
       Compressed_SRGB_Alpha_BPTC_UNorm,
       Compressed_RGB_BPTC_Signed_Float,
       Compressed_RGB_BPTC_Unsigned_Float,
 
+      --  ETC
       Compressed_R11_EAC,
       Compressed_Signed_R11_EAC,
       Compressed_RG11_EAC,
@@ -281,7 +290,12 @@ private
    for Internal_Format'Size use Low_Level.Enum'Size;
 
    for Compressed_Format use
-     (Compressed_Red_RGTC1                      => 16#8DBB#,
+     (Compressed_RGB_S3TC_DXT1                  => 16#83F0#,
+      Compressed_RGBA_S3TC_DXT1                 => 16#83F1#,
+      Compressed_RGBA_S3TC_DXT3                 => 16#83F2#,
+      Compressed_RGBA_S3TC_DXT5                 => 16#83F3#,
+
+      Compressed_Red_RGTC1                      => 16#8DBB#,
       Compressed_Signed_Red_RGTC1               => 16#8DBC#,
       Compressed_RG_RGTC2                       => 16#8DBD#,
       Compressed_Signed_RG_RGTC2                => 16#8DBE#,
