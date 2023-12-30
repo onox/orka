@@ -55,9 +55,9 @@ package body Orka.Resources.Locations.Directories is
 
    function Read_File (Object : Byte_Array_File) return not null Byte_Array_Access is
       File_Stream : Stream_IO.Stream_Access;
-      File_Size   : constant Integer := Integer (Stream_IO.Size (Object.File));
+      File_Size   : constant Stream_Element_Offset := Stream_Element_Offset (Stream_IO.Size (Object.File));
 
-      subtype File_Byte_Array is Byte_Array (1 .. Stream_Element_Offset (File_Size));
+      subtype File_Byte_Array is Byte_Array (1 .. File_Size);
       Raw_Contents : Byte_Array_Access := new File_Byte_Array;
    begin
       File_Stream := Stream_IO.Stream (Object.File);
