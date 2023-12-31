@@ -25,6 +25,10 @@ package Orka.Rendering.Samplers is
    use all type GL.Types.Compare_Function;
    use all type GL.Types.Colors.Border_Color;
 
+   subtype Wrapping_Mode       is GL.Objects.Samplers.Wrapping_Mode;
+   subtype Minifying_Function  is GL.Objects.Samplers.Minifying_Function;
+   subtype Magnifying_Function is GL.Objects.Samplers.Magnifying_Function;
+
    type Wrapping_Mode_3D is array (Index_3D) of Wrapping_Mode;
 
    type Sampler_State is record
@@ -43,5 +47,18 @@ package Orka.Rendering.Samplers is
       Current_Compare_Function : Compare_Function    := LEqual;
    end record
      with Dynamic_Predicate => Sampler_State.Max_Anisotropy >= 1.0;
+
+   type Sampler is tagged private;
+
+   function Create_Sampler (State : Sampler_State) return Sampler;
+
+   procedure Bind (Object : Sampler; Index : Natural);
+   --  Bind the sampler to the binding point at the given index
+
+private
+
+   type Sampler is tagged record
+      Sampler : GL.Objects.Samplers.Sampler;
+   end record;
 
 end Orka.Rendering.Samplers;

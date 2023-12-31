@@ -42,11 +42,11 @@ with Orka.Resources.Locations;
 with Orka.Timers;
 
 private with GL.Low_Level.Enums;
-private with GL.Objects.Samplers;
 
 private with Orka.Rendering.Buffers.Mapped.Persistent;
 private with Orka.Rendering.Fences;
 private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Samplers;
 private with Orka.Types;
 
 package Orka.Features.Terrain is
@@ -197,7 +197,7 @@ private
       Uniform_Render_Subdiv     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
 
       --  Sampler for height map
-      Sampler : GL.Objects.Samplers.Sampler;
+      Sampler : Rendering.Samplers.Sampler;
 
       --  SSBO
       Buffer_Draw             : Rendering.Buffers.Buffer (Types.Arrays_Command_Type);

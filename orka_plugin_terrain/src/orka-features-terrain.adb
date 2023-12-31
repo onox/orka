@@ -52,21 +52,6 @@ package body Orka.Features.Terrain is
    --  UBOs
    Binding_Buffer_Matrices : constant := 0;
 
-   --  Used for displacement and slope map textures
-   function Create_Sampler return GL.Objects.Samplers.Sampler is
-      Result : GL.Objects.Samplers.Sampler;
-
-      use all type GL.Objects.Samplers.Wrapping_Mode;
-      use all type GL.Objects.Samplers.Minifying_Function;
-   begin
-      Result.Set_X_Wrapping (Clamp_To_Edge);
-      Result.Set_Y_Wrapping (Clamp_To_Edge);
-
-      Result.Set_Minifying_Filter (Linear_Mipmap_Linear);
-
-      return Result;
-   end Create_Sampler;
-
    function Create_Terrain
      (Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
@@ -79,9 +64,13 @@ package body Orka.Features.Terrain is
    is
       use Rendering.Buffers;
       use Rendering.Programs;
+      use Rendering.Samplers;
       use Rendering.Fences;
 
       use GL.Types.Indirect;
+
+      use all type Wrapping_Mode;
+      use all type Minifying_Function;
 
       Number_Of_Buffers : constant Size := Size (Count);
 
@@ -137,7 +126,10 @@ package body Orka.Features.Terrain is
          Program_Indirect      => Create_Program (Modules.Module_Array'
            (Module_LEB,
             Modules.Create_Module (Location, CS => "terrain/terrain-prepare-indirect.comp"))),
-         Sampler                 => Create_Sampler,
+         Sampler                 => Create_Sampler
+           ((Wrapping         => (Clamp_To_Edge, Clamp_To_Edge, Repeat),
+             Minifying_Filter => Linear_Mipmap_Linear,
+             others           => <>)),
          Buffer_Leb              => (others => Create_Buffer
            ((others => False), Orka.Types.UInt_Type, Heap_Elements)),
          Buffer_Leb_Nodes        => (others => Create_Buffer
