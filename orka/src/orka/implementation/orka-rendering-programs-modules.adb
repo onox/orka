@@ -124,7 +124,7 @@ package body Orka.Rendering.Programs.Modules is
 
                Error_Indicator : constant String :=
                  Orka.Terminals.Colorize
-                   ((Data.Column - 1 + First_Index_Line - 2) * " " & "^",
+                   ((Data.Column - 1 + Natural'Max (0, First_Index_Line - 2)) * " " & "^",
                     Foreground => Green,
                     Attribute  => Bold);
 
