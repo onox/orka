@@ -53,3 +53,29 @@ vec4 BarycentricInterpolation(in vec4 v[3], in vec2 u)
 {
     return v[1] + u.x * (v[2] - v[1]) + u.y * (v[0] - v[1]);
 }
+
+vec2 to_origin_upper_left(in const vec2 value) {
+    return vec2(value.x, 1.0 - value.y);
+}
+
+const float RPI = 1.0 / 3.141592653589793;
+
+// Return the UV mapping of the longitude and latitude of the given point
+// (relative to the center of the planet)
+//
+// U = 0.0 .. 1.0 for longitude between -180.0 deg .. +180.0 deg
+// V = 0.0 .. 1.0 for latitude  between  -90.0 deg ..  +90.0 deg
+vec2 get_normalized_lonlat(in const vec3 point) {
+    const float dotY = dot(point, vec3(0, 1, 0));
+    const float coordLat = 1.0 - acos(dotY) * RPI;
+
+    const vec3 pointEquator = normalize(vec3(point.x, 0.0, point.z));
+
+    const float dotZ = dot(pointEquator, vec3(0, 0, 1));
+    const float dotX = dot(pointEquator, vec3(1, 0, 0));
+
+    const float halfAngle = acos(dotZ) * RPI;
+    const float coordLon = ((dotX > 0.0 ? halfAngle : -halfAngle) + 1.0) * 0.5;
+
+    return vec2(coordLon, coordLat);
+}

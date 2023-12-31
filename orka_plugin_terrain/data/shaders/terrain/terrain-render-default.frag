@@ -25,13 +25,14 @@
 #define FLAG_DISPLACE 1
 
 vec2 get_slope(vec2 texCoord);
+vec2 to_origin_upper_left(in const vec2 value);
 
 uniform float u_DmapFactor;
 
 vec4 ShadeFragment(vec2 texCoord, vec4 worldPos)
 {
 #if FLAG_DISPLACE
-    vec2 smap = u_DmapFactor * get_slope(texCoord);
+    vec2 smap = u_DmapFactor * get_slope(to_origin_upper_left(texCoord));
     vec3 n = normalize(vec3(-smap, 1));
 #else
     vec3 n = vec3(0, 0, 1);

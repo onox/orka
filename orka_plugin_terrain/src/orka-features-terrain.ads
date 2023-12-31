@@ -60,7 +60,7 @@ package Orka.Features.Terrain is
 
    type LoD_Deviation is digits 4 range 0.0 .. 1.0;
 
-   type Height_Scale is digits 4 range 0.0 .. 1.0;
+   type Height_Scale is digits 4 range 0.0 .. Float'Last;
 
    type Subdivision_Parameters is record
       Meshlet_Subdivision  : Meshlet_Subdivision_Depth;
@@ -196,7 +196,7 @@ private
 
       Uniform_Render_Subdiv     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
 
-      --  Sampler for height and slope maps
+      --  Sampler for height map
       Sampler : GL.Objects.Samplers.Sampler;
 
       --  SSBO

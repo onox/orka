@@ -114,8 +114,9 @@ package body Orka.Features.Terrain is
             Modules.Create_Module (Location, CS => "terrain/terrain-update.comp"))),
          Program_Render        => Create_Program (Modules.Module_Array'(Render_Modules &
            (Modules.Create_Module (Location, VS => "terrain/leb.comp"),
-            Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl"),
             Modules.Create_Module (Location, VS => "terrain/terrain-render-sphere.glsl"),
+            Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl",
+              FS  => "terrain/terrain-render-common.glsl"),
             Modules.Create_Module (Location, FS => "terrain/terrain-render-normals.frag"),
             (if Wireframe then
                Modules.Create_Module (Location,
@@ -362,7 +363,7 @@ package body Orka.Features.Terrain is
             Object.Buffer_Counted_Nodes.Read_Data (Data);
 
             for Index in Data'Range loop
-               Object.Visible_Tiles (Index) := Data (Index) > 0;
+               Object.Visible_Tiles (Integer (Index)) := Data (Index) > 0;
             end loop;
          end;
       end if;
