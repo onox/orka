@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.Low_Level.Enums;
-with GL.Objects.Samplers;
 with GL.Objects.Textures;
 with GL.Pixels;
 
@@ -34,19 +33,6 @@ package Orka.Rendering.Textures is
       Target : Indexed_Texture_Target;
       Index  : Natural);
    --  Bind the texture or image to the binding point at the given index
-
-   function Bayer_Dithering_Pattern return GL.Objects.Samplers.Sampler;
-   --  Return a sampler for sampling a texture containing the Bayer ordered
-   --  dithering pattern
-
-   function Bayer_Dithering_Pattern return GL.Objects.Textures.Texture
-     with Post => Bayer_Dithering_Pattern'Result.Dimensions = Two;
-   --  Return a texture that contains the Bayer ordered dithering pattern
-   --
-   --  The texture can be used in a fragment shader as follows:
-   --
-   --  uniform sampler2D dither;
-   --  color.xyz += vec3(texture(dither, gl_FragCoord.xy / 8.0).r / 64.0 - (1.0 / 128.0));
 
    type Format_Kind is (Depth_Stencil, Depth, Stencil, Color);
 
