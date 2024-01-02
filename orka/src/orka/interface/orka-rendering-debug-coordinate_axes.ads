@@ -33,17 +33,17 @@ package Orka.Rendering.Debug.Coordinate_Axes is
      (Location : Resources.Locations.Location_Ptr) return Coordinate_Axes;
 
    procedure Render
-     (Object     : in out Coordinate_Axes;
-      View, Proj : Transforms.Matrix4;
-      Transforms, Sizes : Rendering.Buffers.Bindable_Buffer'Class)
-   with Pre => Transforms.Length > 0 and Sizes.Length in 1 | Transforms.Length;
+     (Object        : in out Coordinate_Axes;
+      Width, Height : Positive;
+      Axis_Size     : Transforms.Vector4 := (4.0, 100.0, 16.0, 32.0);
+      View, Proj    : Transforms.Matrix4;
+      Transforms    : Rendering.Buffers.Bindable_Buffer'Class)
+   with Pre => Transforms.Length > 0;
    --  Render three coordinates axes for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
    --  contain n matrices for n coordinate axes. This buffer controls how
    --  many coordinate axes are rendered.
-   --
-   --  The buffer Sizes must contain one or n singles.
 
 private
 
@@ -52,10 +52,10 @@ private
    type Coordinate_Axes is tagged record
       Program : Rendering.Programs.Program;
 
-      Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
-
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_Size    : Programs.Uniforms.Uniform (LE.UInt_Vec2);
+      Uniform_Axis    : Programs.Uniforms.Uniform (LE.Single_Vec4);
    end record;
 
 end Orka.Rendering.Debug.Coordinate_Axes;

@@ -20,17 +20,14 @@
 
 uniform mat4 view;
 uniform mat4 proj;
+uniform uvec2 size;
+uniform vec4 axisLength;
 
 layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 world[];
 };
 
-layout(std430, binding = 1) readonly restrict buffer sizeBuffer {
-    float sizes[];
-};
-
-out vec4  vs_color;
-out float vs_weight;
+out vec4 vs_color;
 
 const vec3 vertices[] = {
     vec3(0.0, 0.0, 0.0),
@@ -56,13 +53,28 @@ void main() {
 
     // Take the last matrix in world[] if there are not enough in the buffer
     const int transformID = min(instanceID, world.length() - 1);
-    const int sizeID      = min(instanceID, sizes.length() - 1);
 
-    vec4 vertex = vec4(vertices[indices[gl_VertexID]], 1.0);
-    vertex.xyz *= sizes[sizeID];
+    const mat4 modelViewProj = proj * (view * world[transformID]);
+    vec4[] positions = {
+        modelViewProj * vec4(vertices[0], 1.0),
+        modelViewProj * vec4(vertices[1], 1.0),
+        modelViewProj * vec4(vertices[2], 1.0),
+        modelViewProj * vec4(vertices[3], 1.0),
+    };
 
-    gl_Position = proj * (view * (world[transformID] * vertex));
+    const float[] lengths = {
+        0.0,
+        length(size * (positions[1].xy - positions[0].xy)),
+        length(size * (positions[2].xy - positions[0].xy)),
+        length(size * (positions[3].xy - positions[0].xy)),
+    };
 
-    vs_color  = vec4(colors[gl_VertexID / 2], 1.0);
-    vs_weight = float(gl_VertexID % 2 != 0);
+    // Multiply by 0.5 because origin of object can be in the center of the screen
+    const float maxLength = 0.5 * max(max(lengths[1], lengths[2]), lengths[3]);
+
+    const float lengthFactor = axisLength.y / maxLength;
+    const vec4 localPos = vec4(lengthFactor * vertices[indices[gl_VertexID]], 1.0);
+    gl_Position = (view * (world[transformID] * localPos));
+
+    vs_color = vec4(colors[gl_VertexID / 2], 1.0);
 }
