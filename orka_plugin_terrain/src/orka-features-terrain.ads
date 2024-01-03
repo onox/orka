@@ -54,7 +54,7 @@ package Orka.Features.Terrain is
 
    type Subdivision_Depth is range 0 .. 29;
 
-   type Meshlet_Subdivision_Depth is range 0 .. 3;
+   type Meshlet_Subdivision_Depth is range 0 .. 6;
 
    type Length_Target is range 2 .. 32;
 
@@ -101,6 +101,7 @@ package Orka.Features.Terrain is
    procedure Render
      (Object        : in out Terrain;
       Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class;
+      Rotation      : Cameras.Transforms.Matrix4;
       Center        : Cameras.Transforms.Matrix4;
       Camera        : Cameras.Camera_Ptr;
       Parameters    : Subdivision_Parameters;

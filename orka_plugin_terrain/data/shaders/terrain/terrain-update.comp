@@ -43,7 +43,7 @@ void leb_MergeNodeConforming_Quad(const int lebID,
                                   in const leb_DiamondParent diamond);
 
 vec4[3] DecodeTriangleVertices(in const leb_Node node);
-vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const bool invert);
+vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const int depth);
 
 uniform bool u_Split;
 uniform bool u_Freeze;
@@ -79,7 +79,7 @@ void main(void)
         vec4 triangleVertices[3] = DecodeTriangleVertices(node);
 
         // compute target LoD
-        vec2 targetLod = LevelOfDetail(lebID, triangleVertices, (node.depth & 1) == 0);
+        vec2 targetLod = LevelOfDetail(lebID, triangleVertices, node.depth);
 
 if (!u_Freeze) {
         // splitting update
@@ -90,8 +90,8 @@ if (!u_Freeze) {
         }
         else {
             leb_DiamondParent diamond = leb_DecodeDiamondParent_Quad(node);
-            bool mergeBase = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.base), (diamond.base.depth & 1) == 0).x < 1.0;
-            bool mergeTop = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.top), (diamond.top.depth & 1) == 0).x < 1.0;
+            bool mergeBase = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.base), diamond.base.depth).x < 1.0;
+            bool mergeTop = LevelOfDetail(lebID, DecodeTriangleVertices(diamond.top), diamond.top.depth).x < 1.0;
 
             if (mergeBase && mergeTop) {
                 leb_MergeNodeConforming_Quad(lebIDBuffer, node, diamond);

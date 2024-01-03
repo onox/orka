@@ -17,15 +17,12 @@
 with Ada.Characters.Latin_1;
 with Ada.Numerics;
 
-with Orka.Rendering.Textures;
 with Orka.Resources.Textures.KTX;
 with Orka.Transforms.Doubles.Vectors;
 with Orka.Transforms.Doubles.Vector_Conversions;
 with Orka.Transforms.Singles.Matrices;
 
 package body Orka.Features.Terrain.Helpers is
-
-   Count : constant := 6;
 
    function Render_Modules (Object : Terrain_Planet)
      return Rendering.Programs.Modules.Module_Array
@@ -150,6 +147,7 @@ package body Orka.Features.Terrain.Helpers is
         (Transforms    => Object.Terrain_Transforms,
          Spheres       => Object.Terrain_Sphere_Params,
          Center        => Center,
+         Rotation      => Rotation,
          Camera        => Camera,
          Parameters    => Parameters,
          Visible_Tiles => Visible_Tiles,

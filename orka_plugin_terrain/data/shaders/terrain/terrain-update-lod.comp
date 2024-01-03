@@ -36,8 +36,10 @@
 vec4 BarycentricInterpolation(in vec4 v[3], in vec2 u);
 vec4 planeToSphere(const int lebID, const vec2 v);
 vec2 to_origin_upper_left(in const vec2 value);
+int leb_MaxDepth(const int lebID);
 
 layout(std140, binding = 0) uniform MatrixBuffer {
+    mat4 u_ModelMatrix;
     mat4 u_ViewMatrix;
     mat4 u_ProjMatrix;
 };
@@ -46,6 +48,13 @@ uniform float u_LodFactor;
 
 layout(binding = 4) uniform sampler2D u_DmapSampler;
 uniform float u_MinLodVariance;
+
+// Number of depth levels below maximum depth for which face culling is
+// enabled if depth is below that threshold. Face culling is disabled for
+// higher depths because some triangles which are considered to be not
+// visible by the LEB algorithm, may become visible after applying additional
+// tesselation in the TCS and TES shaders.
+const int FACE_CULLING_DEPTH_SAFETY_MARGIN = 2;
 
 // TriangleLevelOfDetail -- Computes the LoD associated to a triangle
 //
@@ -165,12 +174,14 @@ bool FaceCullingTest(in const vec4[3] eyespaceVertices)
 //
 // The first component is the actual LoD value. The second value is 0 if the
 // triangle is culled, and one otherwise.
-vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const bool invert)
+vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const int depth)
 {
+    const bool invert = (depth & 1) == 0;
+
     vec4 eyespaceVertices[3] = vec4[3](
-        u_ViewMatrix * planeToSphere(lebID, patchVertices[0].xy),
-        u_ViewMatrix * planeToSphere(lebID, patchVertices[1].xy),
-        u_ViewMatrix * planeToSphere(lebID, patchVertices[2].xy)
+        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[0].xy)),
+        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[1].xy)),
+        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[2].xy))
     );
 
     if (invert) {
@@ -179,7 +190,7 @@ vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const 
         eyespaceVertices[2] = tmp;
     }
 
-    if (!FaceCullingTest(eyespaceVertices)) {
+    if (!FaceCullingTest(eyespaceVertices) && depth < (leb_MaxDepth(lebID) - FACE_CULLING_DEPTH_SAFETY_MARGIN)) {
         return vec2(0.0f, 0.0f);
     }
 

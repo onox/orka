@@ -95,6 +95,7 @@ package body Orka.Features.Terrain is
          Scale        => Scale,
          Wireframe    => Wireframe,
          Split_Update => True,
+         Visible_Tiles => (others => True),
          Program_Leb_Update    => Create_Program (Modules.Module_Array'
            (Module_LEB,
             Modules.Create_Module (Location, CS => "terrain/terrain-render-common.glsl"),
@@ -102,20 +103,28 @@ package body Orka.Features.Terrain is
             Modules.Create_Module (Location, CS => "terrain/terrain-update-lod.comp"),
             Modules.Create_Module (Location, CS => "terrain/terrain-update.comp"))),
          Program_Render        => Create_Program (Modules.Module_Array'(Render_Modules &
-           (Modules.Create_Module (Location, VS => "terrain/leb.comp"),
-            Modules.Create_Module (Location, VS => "terrain/terrain-render-sphere.glsl"),
+           (Modules.Create_Module (Location, VS => "terrain/leb.comp", TCS => "terrain/leb.comp"),
             Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl",
+              TCS => "terrain/terrain-render-common.glsl",
+              TES => "terrain/terrain-render-common.glsl",
               FS  => "terrain/terrain-render-common.glsl"),
+            Modules.Create_Module (Location,
+              TCS => "terrain/terrain-render-sphere.glsl",
+              TES => "terrain/terrain-render-sphere.glsl"),
             Modules.Create_Module (Location, FS => "terrain/terrain-render-normals.frag"),
             (if Wireframe then
                Modules.Create_Module (Location,
-                 VS => "terrain/terrain-render.vert",
-                 GS => "terrain/terrain-render-wires.geom",
-                 FS => "terrain/terrain-render-wires.frag")
+                 VS  => "terrain/terrain-render.vert",
+                 TCS => "terrain/terrain-render.tesc",
+                 TES => "terrain/terrain-render.tese",
+                 GS  => "terrain/terrain-render-wires.geom",
+                 FS  => "terrain/terrain-render-wires.frag")
              else
                Modules.Create_Module (Location,
-                 VS => "terrain/terrain-render.vert",
-                 FS => "terrain/terrain-render.frag")
+                 VS  => "terrain/terrain-render.vert",
+                 TCS => "terrain/terrain-render.tesc",
+                 TES => "terrain/terrain-render.tese",
+                 FS  => "terrain/terrain-render.frag")
             )))),
          Program_Leb_Prepass   => Create_Program (Modules.Module_Array'
            (Module_LEB,
@@ -138,7 +147,7 @@ package body Orka.Features.Terrain is
          Buffer_Draw             => Create_Buffer ((others => False), Draw_Commands),
          Buffer_Dispatch         => Create_Buffer ((others => False), Dispatch_Commands),
          Buffer_Matrices         => Create_Buffer
-           ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 2),
+           ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 3),
          Buffer_Counted_Nodes    => Mapped.Persistent.Create_Buffer
            (Orka.Types.UInt_Type, Integer (Number_Of_Buffers), Mapped.Read, Regions => Regions_Counted_Nodes),
          Fence_Counted_Nodes     => Create_Buffer_Fence (Regions => Regions_Counted_Nodes, Maximum_Wait => 0.01),
@@ -274,6 +283,7 @@ package body Orka.Features.Terrain is
    procedure Render
      (Object        : in out Terrain;
       Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class;
+      Rotation      : Cameras.Transforms.Matrix4;
       Center        : Cameras.Transforms.Matrix4;
       Camera        : Cameras.Camera_Ptr;
       Parameters    : Subdivision_Parameters;
@@ -331,7 +341,7 @@ package body Orka.Features.Terrain is
 
       --  UBOs
       Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
-        (Camera.View_Matrix * Center, Camera.Projection_Matrix));
+        (Rotation, Camera.View_Matrix * Center, Camera.Projection_Matrix));
       Object.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
 
       --  SSBOs
@@ -378,7 +388,7 @@ package body Orka.Features.Terrain is
          if Object.Visible_Tiles (ID) then
             Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
             Object.Uniform_Render_Leb_ID.Set_Int (Size (ID - 1));
-            Orka.Rendering.Drawing.Draw_Indirect (Triangles, Object.Buffer_Draw, ID - 1, 1);
+            Orka.Rendering.Drawing.Draw_Indirect (Patches, Object.Buffer_Draw, ID - 1, 1);
          end if;
       end loop;
 

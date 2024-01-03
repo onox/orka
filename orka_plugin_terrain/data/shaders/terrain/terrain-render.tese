@@ -1,11 +1,8 @@
 #version 420 core
 
-#extension GL_ARB_shader_storage_buffer_object : require
-
 // SPDX-License-Identifier: MIT
 //
-// Copyright (c) 2019 Jonathan Dupuy
-// Copyright (c) 2020 onox <denkpadje@gmail.com>
+// Copyright (c) 2024 onox <denkpadje@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -25,40 +22,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-struct leb_Node {
-    uint id;    // binary code
-    int depth;  // subdivision depth
+vec4 planeToSphere(const int lebID, const vec2 v);
+
+layout(std140, binding = 0) uniform MatrixBuffer {
+    mat4 u_ModelMatrix;
+    mat4 u_ViewMatrix;
+    mat4 u_ProjMatrix;
 };
 
-vec4[3] DecodeTriangleVertices(in const leb_Node node);
+layout(triangles, equal_spacing, ccw) in;
 
-layout(std430, binding = 1) readonly restrict buffer NodeBuffer {
-    uint u_LebNodeBuffer[];
-};
+layout(location = 0) out vec2 o_TexCoord;
+layout(location = 1) out vec4 o_WorldPos;
 
-flat out uint vs_NodeDepth;
+uniform int u_LebID;
 
 void main()
 {
-    const uint nodeID = u_LebNodeBuffer[gl_InstanceID];
-    const leb_Node node = leb_Node(nodeID, findMSB(nodeID));
-    const vec4 triangleVertices[3] = DecodeTriangleVertices(node);
+    // Barycentric interpolation
+    const vec2 position =
+        gl_in[0].gl_Position.xy * gl_TessCoord.x +
+        gl_in[1].gl_Position.xy * gl_TessCoord.y +
+        gl_in[2].gl_Position.xy * gl_TessCoord.z;
 
-    vec2 trianglePositions[3] = vec2[3](
-        triangleVertices[0].xy,
-        triangleVertices[1].xy,
-        triangleVertices[2].xy
-    );
+    const vec4 worldPosition = planeToSphere(u_LebID, position);
 
-    // change winding depending on node level
-    if ((node.depth & 1) == 0) {
-        vec2 tmp1 = trianglePositions[0];
-
-        trianglePositions[0] = trianglePositions[2];
-        trianglePositions[2] = tmp1;
-    }
-
-    const vec2 position = trianglePositions[gl_VertexID];
-    gl_Position = vec4(position, 1.0, 1.0);
-    vs_NodeDepth = node.depth;
+    gl_Position = u_ProjMatrix * (u_ViewMatrix * (u_ModelMatrix * worldPosition));
+    o_TexCoord = position;
+    o_WorldPos = worldPosition;
 }

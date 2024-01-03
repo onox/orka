@@ -25,14 +25,15 @@
 layout(binding = 4) uniform sampler2D u_DmapSampler;
 
 vec2 get_slope(vec2 texCoord) {
-    const float lod = textureQueryLod(u_DmapSampler, texCoord).y;
+    const float queriedLod = textureQueryLod(u_DmapSampler, texCoord).y;
+    const float lod = floor(queriedLod);
 
-    const float l = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2(-1,  0)).r;
-    const float r = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 1,  0)).r;
-    const float b = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 0, -1)).r;
-    const float t = textureLodOffset(u_DmapSampler, texCoord, floor(lod), ivec2( 0,  1)).r;
+    const float l = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2(-1,  0)).r;
+    const float r = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2( 1,  0)).r;
+    const float b = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2( 0, -1)).r;
+    const float t = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2( 0,  1)).r;
 
-    const vec2 size = textureSize(u_DmapSampler, int(max(0.0, lod)));
+    const vec2 size = textureSize(u_DmapSampler, int(max(0.0, queriedLod)));
     const float x = size.x * 0.5 * (r - l);
     const float y = size.y * 0.5 * (t - b);
 
