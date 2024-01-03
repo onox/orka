@@ -53,7 +53,7 @@ uniform float u_MinLodVariance;
 // enabled if depth is below that threshold. Face culling is disabled for
 // higher depths because some triangles which are considered to be not
 // visible by the LEB algorithm, may become visible after applying additional
-// tesselation in the TCS and TES shaders.
+// tessellation in the TCS and TES shaders.
 const int FACE_CULLING_DEPTH_SAFETY_MARGIN = 2;
 
 // TriangleLevelOfDetail -- Computes the LoD associated to a triangle

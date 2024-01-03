@@ -61,7 +61,7 @@ slightly flattened and the `Flattening` component of the parameters is greater t
 The precomputed atmosphere assumes the planet has no flattening (for space/time
 complexity reasons), but in reality the semi-minor axis of the Earth (center to
 northpole) is 0.3 % of the semi-major axis (center to equator).
-This gives a difference of about 20 km. The tesselated terrain can handle flattening,
+This gives a difference of about 20 km. The tessellated terrain can handle flattening,
 so a hack is applied when the camera is near the surface to partially fix the
 atmosphere near the horizon.
 

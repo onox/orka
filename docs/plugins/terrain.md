@@ -36,8 +36,8 @@ which should contain the height texture.
 
 ### Configuration
 
-To adaptively tesselate terrain, some parameters are needed which specify
-how much the terrain should be tesselated:
+To adaptively tessellate terrain, some parameters are needed which specify
+how much the terrain should be tessellated:
 
 ```ada
 Terrain_Parameters : Subdivision_Parameters :=
@@ -51,7 +51,7 @@ Terrain_Max_Depth : constant := 20;
 Displace_Terrain : constant Boolean := False;
 ```
 
-The maximum tesselation is controlled by the constant `Terrain_Max_Depth`.
+The maximum tessellation is controlled by the constant `Terrain_Max_Depth`.
 Increase this constant to further subdivide the terrain.
 However, older GPUs might not be able to handle values greater than 20.
 

@@ -281,13 +281,13 @@ package GL.Pixels.Queries is
      (Format : Internal_Format;
       Kind   : LE.Texture_Kind) return Support;
    --  Return support for using the resource for texture sampling in
-   --  a tesselation control shader
+   --  a tessellation control shader
 
    function Tess_Evaluation_Texture
      (Format : Internal_Format;
       Kind   : LE.Texture_Kind) return Support;
    --  Return support for using the resource for texture sampling in
-   --  a tesselation evaluation shader
+   --  a tessellation evaluation shader
 
    function Geometry_Texture
      (Format : Internal_Format;

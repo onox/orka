@@ -32,7 +32,7 @@ vertices can be interpretated as:
 
 - **Triangle strip**. *n* - 2 triangles requiring *n* vertices.
 
-- **Patches**. A special primitive used in tesselation.
+- **Patches**. A special primitive used in tessellation.
 
 3D models are usually rendered using triangles or triangle strips.
 

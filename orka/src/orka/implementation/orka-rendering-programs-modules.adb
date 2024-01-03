@@ -152,8 +152,8 @@ package body Orka.Rendering.Programs.Modules is
         when Vertex_Shader          => "vertex shader",
         when Fragment_Shader        => "fragment shader",
         when Geometry_Shader        => "geometry shader",
-        when Tess_Evaluation_Shader => "tesselation evaluation shader",
-        when Tess_Control_Shader    => "tesselation control shader",
+        when Tess_Evaluation_Shader => "tessellation evaluation shader",
+        when Tess_Control_Shader    => "tessellation control shader",
         when Compute_Shader         => "compute shader");
 
    procedure Print_Log (Text, Shader_Log : String) is
