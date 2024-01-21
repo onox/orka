@@ -23,7 +23,7 @@
 // SOFTWARE.
 
 vec2 BarycentricInterpolation(in vec2 v[3], in vec2 u);
-vec4 planeToSphere(const int lebID, const vec2 v);
+vec4 planeToSphere(const int lebID, vec2 vertex, out vec2 lonLatUV);
 int leb_MaxDepth(const int lebID);
 
 layout(vertices = 3) out;
@@ -32,7 +32,7 @@ flat in uint vs_NodeDepth[];
 
 layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ModelMatrix;
-    mat4 u_ViewMatrix;
+    mat4 u_ModelViewMatrix;
     mat4 u_ProjMatrix;
 };
 
@@ -53,7 +53,8 @@ void main()
         };
         const vec2 position = BarycentricInterpolation(triangleVertices, vec2(0.5));
 
-        const vec4 eyespacePosition = u_ViewMatrix * (u_ModelMatrix * planeToSphere(u_LebID, position));
+        vec2 lonLatUV;
+        const vec4 eyespacePosition = u_ModelViewMatrix * planeToSphere(u_LebID, position, lonLatUV);
 
         int level = 1;
 

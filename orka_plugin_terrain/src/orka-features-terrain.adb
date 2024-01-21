@@ -340,7 +340,7 @@ package body Orka.Features.Terrain is
 
       --  UBOs
       Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
-        (Rotation, Camera.View_Matrix * Center, Camera.Projection_Matrix));
+        (Rotation, Camera.View_Matrix * (Center * Rotation), Camera.Projection_Matrix));
       Object.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
 
       --  SSBOs

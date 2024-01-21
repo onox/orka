@@ -22,11 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-vec4 planeToSphere(const int lebID, const vec2 v);
+vec4 planeToSphere(const int lebID, const vec2 v, out vec2 lonLatUV);
 
 layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ModelMatrix;
-    mat4 u_ViewMatrix;
+    mat4 u_ModelViewMatrix;
     mat4 u_ProjMatrix;
 };
 
@@ -45,9 +45,10 @@ void main()
         gl_in[1].gl_Position.xy * gl_TessCoord.y +
         gl_in[2].gl_Position.xy * gl_TessCoord.z;
 
-    const vec4 worldPosition = planeToSphere(u_LebID, position);
+    vec2 lonLatUV;
+    const vec4 worldPosition = planeToSphere(u_LebID, position, lonLatUV);
 
-    gl_Position = u_ProjMatrix * (u_ViewMatrix * (u_ModelMatrix * worldPosition));
+    gl_Position = u_ProjMatrix * (u_ModelViewMatrix * worldPosition);
     o_TexCoord = position;
     o_WorldPos = worldPosition;
 }

@@ -107,7 +107,7 @@ vec4 get_world_pos(const in int lebID, const in Spheroid sphere, const in vec4 l
     return modelMatrix[lebID] * (vec4(scaleFactor + heightAboveSurface, 1.0) * localDirection);
 }
 
-vec4 planeToSphere(const int lebID, vec2 vertex) {
+vec4 planeToSphere(const int lebID, vec2 vertex, out vec2 lonLatUV) {
     // Take the last size in spheres[] if there are not enough in the buffer
     const int sizeID = min(lebID, spheres.length() - 1);
     const Spheroid sphere = spheres[sizeID];
@@ -118,5 +118,6 @@ vec4 planeToSphere(const int lebID, vec2 vertex) {
     const vec2 uv = get_normalized_lonlat(normalize(worldPos.xyz), spheres[0].eccentricitySquared);
     const float height = u_DmapFactor.x * texture(u_DmapSampler, to_origin_upper_left(uv)).r - u_DmapFactor.y;
 
+    lonLatUV = uv;
     return get_world_pos(lebID, sphere, localDirection, height);
 }

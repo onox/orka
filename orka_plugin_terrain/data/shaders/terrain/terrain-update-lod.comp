@@ -34,13 +34,13 @@
 #define PROJECTION_RECTILINEAR 1
 
 vec4 BarycentricInterpolation(in vec4 v[3], in vec2 u);
-vec4 planeToSphere(const int lebID, const vec2 v);
+vec4 planeToSphere(const int lebID, vec2 vertex, out vec2 lonLatUV);
 vec2 to_origin_upper_left(in const vec2 value);
 int leb_MaxDepth(const int lebID);
 
 layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ModelMatrix;
-    mat4 u_ViewMatrix;
+    mat4 u_ModelViewMatrix;
     mat4 u_ProjMatrix;
 };
 
@@ -123,7 +123,7 @@ float TriangleLevelOfDetail(in const int lebID, in const vec4[3] eyespaceVertice
 // Terrains tend to have locally flat regions, which don't need large amounts
 // of polygons to be represented faithfully. This function checks the
 // local flatness of the terrain.
-bool DisplacementVarianceTest(in const vec4[3] patchVertices)
+bool DisplacementVarianceTest(in const vec4[3] patchVertices, in const vec2[3] lonLatUVs)
 {
 #define P0 patchVertices[0].xy
 #define P1 patchVertices[1].xy
@@ -131,7 +131,8 @@ bool DisplacementVarianceTest(in const vec4[3] patchVertices)
     vec2 P = (P0 + P1 + P2) / 3.0;
     vec2 dx = (P0 - P1);
     vec2 dy = (P2 - P1);
-    vec2 dmap = textureGrad(u_DmapSampler, to_origin_upper_left(P), dx, dy).rg;
+    vec2 UV = (lonLatUVs[0] + lonLatUVs[1] + lonLatUVs[2]) / 3.0;
+    vec2 dmap = textureGrad(u_DmapSampler, to_origin_upper_left(UV), dx, dy).rg;
     float dmapVariance = clamp(dmap.y - dmap.x * dmap.x, 0.0, 1.0);
 
     return (dmapVariance >= u_MinLodVariance);
@@ -178,10 +179,11 @@ vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const 
 {
     const bool invert = (depth & 1) == 0;
 
+    vec2[3] lonLatUVs;
     vec4 eyespaceVertices[3] = vec4[3](
-        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[0].xy)),
-        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[1].xy)),
-        u_ViewMatrix * (u_ModelMatrix * planeToSphere(lebID, patchVertices[2].xy))
+        u_ModelViewMatrix * planeToSphere(lebID, patchVertices[0].xy, lonLatUVs[0]),
+        u_ModelViewMatrix * planeToSphere(lebID, patchVertices[1].xy, lonLatUVs[1]),
+        u_ModelViewMatrix * planeToSphere(lebID, patchVertices[2].xy, lonLatUVs[2])
     );
 
     if (invert) {
@@ -200,7 +202,7 @@ vec2 LevelOfDetail(in const int lebID, in const vec4[3] patchVertices, in const 
     }
 
     // variance test
-    if (!DisplacementVarianceTest(patchVertices)) {
+    if (!DisplacementVarianceTest(patchVertices, lonLatUVs)) {
         return vec2(0.0f, 1.0f);
     }
 
