@@ -1,0 +1,23 @@
+name = "orka_celestial"
+description = "Packages related to celestial mechanics"
+version = "1.0.0"
+website = "https://github.com/onox/orka"
+licenses = "Apache-2.0"
+tags = ["orka", "celestial", "astronomy", "geodesy", "geodetic", "geocentric", "coordinates"]
+
+authors = ["onox"]
+maintainers = ["onox <denkpadje@gmail.com>"]
+maintainers-logins = ["onox"]
+
+[build-switches]
+validation.compile_checks = "warnings"
+"*".style_checks = ["-gnatygAOM120-Is"]
+"*".ada_version = "Ada2022"
+
+[[depends-on]]
+orka_types = "~1.0.0"
+orka_transforms = "~1.0.0"
+
+[[pins]]
+orka_types = { path = "../orka_types" }
+orka_transforms = { path = "../orka_transforms" }

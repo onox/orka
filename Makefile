@@ -18,6 +18,7 @@ build:
 	cd orka_plugin_terrain && $(ALR_BUILD)
 	cd orka_plugin_atmosphere && $(ALR_BUILD)
 	cd orka_awt && $(ALR_BUILD)
+	cd orka_celestial && $(ALR_BUILD)
 
 examples:
 	cd examples && $(ALR_BUILD)
@@ -54,6 +55,7 @@ clean:
 	cd orka_plugin_terrain && $(ALR_CLEAN)
 	cd orka_plugin_atmosphere && $(ALR_CLEAN)
 	cd orka_awt && $(ALR_CLEAN)
+	cd orka_celestial && $(ALR_CLEAN)
 	cd examples && $(ALR_CLEAN)
 	cd tests && $(ALR_CLEAN)
 	rm -rf orka*/build examples/build tests/build orka*/config examples/config tests/config tests/cov
