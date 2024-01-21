@@ -33,9 +33,8 @@ vec2 get_slope(vec2 texCoord) {
     const float b = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2( 0, -1)).r;
     const float t = textureLodOffset(u_DmapSampler, texCoord, lod, ivec2( 0,  1)).r;
 
-    const vec2 size = textureSize(u_DmapSampler, int(max(0.0, queriedLod)));
-    const float x = size.x * 0.5 * (r - l);
-    const float y = size.y * 0.5 * (t - b);
+    const float x = 0.5 * (r - l);
+    const float y = 0.5 * (t - b);
 
     return vec2(x, y);
 }
