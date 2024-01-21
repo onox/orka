@@ -26,7 +26,7 @@
 // SOFTWARE.
 
 vec2 to_origin_upper_left(in const vec2 value);
-vec2 get_normalized_lonlat(in const vec3 point);
+vec2 get_normalized_lonlat(in const vec3 point, in const float e2);
 
 struct Spheroid {
     float axis;
@@ -43,7 +43,7 @@ layout(std430, binding = 4) readonly restrict buffer SphereBuffer {
 };
 
 layout(binding = 4) uniform sampler2D u_DmapSampler;
-uniform float u_DmapFactor;
+uniform vec2 u_DmapFactor;
 
 // Return the scale factor to convert geodetic coordinates to geocentric (ECEF)
 //
@@ -101,21 +101,22 @@ vec4 get_local_direction(vec2 vertex) {
     return vec4(normalize(v), 1.0);
 }
 
-vec4 get_world_pos(const in int lebID, vec4 localDirection, const in float heightAboveSurface) {
-    // Take the last size in spheres[] if there are not enough in the buffer
-    const int sizeID = min(lebID, spheres.length() - 1);
-    const Spheroid sphere = spheres[sizeID];
-
+vec4 get_world_pos(const in int lebID, const in Spheroid sphere, const in vec4 localDirection, const in float heightAboveSurface) {
     const float heightAboveEquator = length(localDirection.xy * sphere.xyMask);
     const vec3 scaleFactor = geodetic_to_geocentric_scale_factor(sphere, heightAboveEquator);
     return modelMatrix[lebID] * (vec4(scaleFactor + heightAboveSurface, 1.0) * localDirection);
 }
 
 vec4 planeToSphere(const int lebID, vec2 vertex) {
-    const vec4 localDirection = get_local_direction(vertex);
-    const vec4 worldPos = modelMatrix[lebID] * localDirection;
+    // Take the last size in spheres[] if there are not enough in the buffer
+    const int sizeID = min(lebID, spheres.length() - 1);
+    const Spheroid sphere = spheres[sizeID];
 
-    const vec2 uv = get_normalized_lonlat(worldPos.xyz);
-    const float height = u_DmapFactor * texture(u_DmapSampler, to_origin_upper_left(uv)).r;
-    return get_world_pos(lebID, localDirection, height);
+    const vec4 localDirection = get_local_direction(vertex);
+    const vec4 worldPos = get_world_pos(lebID, sphere, localDirection, 0);
+
+    const vec2 uv = get_normalized_lonlat(normalize(worldPos.xyz), spheres[0].eccentricitySquared);
+    const float height = u_DmapFactor.x * texture(u_DmapSampler, to_origin_upper_left(uv)).r - u_DmapFactor.y;
+
+    return get_world_pos(lebID, sphere, localDirection, height);
 }

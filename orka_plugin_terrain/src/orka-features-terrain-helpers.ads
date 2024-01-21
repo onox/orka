@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Behaviors;
 with Orka.Cameras;
 with Orka.Features.Atmosphere;
 with Orka.Resources.Locations;
@@ -40,19 +39,20 @@ package Orka.Features.Terrain.Helpers is
      return Rendering.Programs.Modules.Module_Array;
 
    function Create_Terrain_Planet
-     (Data             : aliased Orka.Features.Atmosphere.Model_Data;
-      Parameters       : Features.Atmosphere.Rendering.Model_Parameters;
-      Atmosphere       : Features.Atmosphere.Cache.Cached_Atmosphere;
-      Location_Data    : Resources.Locations.Location_Ptr;
-      Location_Shaders : Resources.Locations.Location_Ptr) return Terrain_Planet;
+     (Data          : aliased Orka.Features.Atmosphere.Model_Data;
+      Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
+      Atmosphere    : Features.Atmosphere.Cache.Cached_Atmosphere;
+      Location_Data : Resources.Locations.Location_Ptr) return Terrain_Planet;
 
    procedure Render
      (Object        : in out Terrain_Planet;
       Terrain       : in out Features.Terrain.Terrain;
       Parameters    : Features.Terrain.Subdivision_Parameters;
+      Height_Scale  : Orka.Float_32;
+      Height_Offset : Orka.Float_32;
       Visible_Tiles : out Visible_Tile_Array;
       Camera        : Cameras.Camera_Ptr;
-      Planet, Star  : Behaviors.Behavior_Ptr;
+      Star          : Orka.Types.Singles.Vector4;
       Rotation      : Types.Singles.Matrix4;
       Center        : Cameras.Transforms.Matrix4;
       Freeze        : Boolean;
@@ -72,8 +72,8 @@ private
 
       Modules_Terrain_Render : Rendering.Programs.Modules.Module_Array (1 .. 2);
 
-      Planet_Radius      : Float_64;
-      Planet_Unit_Length : Float_64;
+      Planet_Radius      : Orka.Float_32;
+      Planet_Unit_Length : Orka.Float_32;
 
       DMap : GL.Objects.Textures.Texture (LE.Texture_2D);
    end record;

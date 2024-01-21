@@ -58,16 +58,23 @@ vec2 to_origin_upper_left(in const vec2 value) {
     return vec2(value.x, 1.0 - value.y);
 }
 
-const float RPI = 1.0 / 3.141592653589793;
+const float PI = 3.141592653589793;
+const float RPI = 1.0 / PI;
 
-// Return the UV mapping of the longitude and latitude of the given point
-// (relative to the center of the planet)
+// Return the UV mapping of the geodetic longitude and latitude of the
+// given normalized point (relative to the center of the planet)
 //
 // U = 0.0 .. 1.0 for longitude between -180.0 deg .. +180.0 deg
 // V = 0.0 .. 1.0 for latitude  between  -90.0 deg ..  +90.0 deg
-vec2 get_normalized_lonlat(in const vec3 point) {
+vec2 get_normalized_lonlat(in const vec3 point, in const float e2) {
     const float dotY = dot(point, vec3(0, 1, 0));
-    const float coordLat = 1.0 - acos(dotY) * RPI;
+    float coordLat = acos(dotY);
+
+    // Convert geocentric latitude to geodetic latitude
+    coordLat = atan(tan(coordLat - 0.5 * PI) / (1.0 - e2));
+    coordLat += 0.5 * PI;
+
+    coordLat = 1.0 - coordLat * RPI;
 
     const vec3 pointEquator = normalize(vec3(point.x, 0.0, point.z));
 

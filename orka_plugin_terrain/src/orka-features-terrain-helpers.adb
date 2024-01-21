@@ -32,25 +32,24 @@ package body Orka.Features.Terrain.Helpers is
      (Object.DMap);
 
    function Create_Terrain_Planet
-     (Data             : aliased Orka.Features.Atmosphere.Model_Data;
-      Parameters       : Features.Atmosphere.Rendering.Model_Parameters;
-      Atmosphere       : Orka.Features.Atmosphere.Cache.Cached_Atmosphere;
-      Location_Data    : Orka.Resources.Locations.Location_Ptr;
-      Location_Shaders : Orka.Resources.Locations.Location_Ptr) return Terrain_Planet
+     (Data          : aliased Orka.Features.Atmosphere.Model_Data;
+      Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
+      Atmosphere    : Orka.Features.Atmosphere.Cache.Cached_Atmosphere;
+      Location_Data : Orka.Resources.Locations.Location_Ptr) return Terrain_Planet
    is
       use Orka.Rendering.Buffers;
 
-      Planet_Radius : constant Orka.Float_64 :=
-        Parameters.Semi_Major_Axis / Data.Length_Unit_In_Meters;
+      Planet_Radius : constant Orka.Float_32 :=
+        Orka.Float_32 (Parameters.Semi_Major_Axis / Data.Length_Unit_In_Meters);
 
       Terrain_Sphere_Side : constant Orka.Features.Terrain.Spheroid_Parameters :=
         Orka.Features.Terrain.Get_Spheroid_Parameters
-          (Orka.Float_32 (Planet_Radius),
+          (Planet_Radius,
            Orka.Float_32 (Parameters.Flattening), True);
 
       Terrain_Sphere_Top : constant Orka.Features.Terrain.Spheroid_Parameters :=
         Orka.Features.Terrain.Get_Spheroid_Parameters
-          (Orka.Float_32 (Planet_Radius),
+          (Planet_Radius,
            Orka.Float_32 (Parameters.Flattening), False);
 
       Terrain_Spheres : constant Orka.Float_32_Array :=
@@ -104,7 +103,7 @@ package body Orka.Features.Terrain.Helpers is
          Terrain_Sphere_Params => Create_Buffer ((others => False), Terrain_Spheres),
 
          Planet_Radius      => Planet_Radius,
-         Planet_Unit_Length => Data.Length_Unit_In_Meters,
+         Planet_Unit_Length => Orka.Float_32 (Data.Length_Unit_In_Meters),
 
          Modules_Terrain_Render => Modules_Terrain_Render,
          DMap => DMap);
@@ -114,9 +113,11 @@ package body Orka.Features.Terrain.Helpers is
      (Object        : in out Terrain_Planet;
       Terrain       : in out Orka.Features.Terrain.Terrain;
       Parameters    : Orka.Features.Terrain.Subdivision_Parameters;
+      Height_Scale  : Orka.Float_32;
+      Height_Offset : Orka.Float_32;
       Visible_Tiles : out Visible_Tile_Array;
       Camera        : Orka.Cameras.Camera_Ptr;
-      Planet, Star  : Orka.Behaviors.Behavior_Ptr;
+      Star          : Orka.Types.Singles.Vector4;
       Rotation      : Orka.Types.Singles.Matrix4;
       Center        : Orka.Cameras.Transforms.Matrix4;
       Freeze        : Boolean;
@@ -132,15 +133,11 @@ package body Orka.Features.Terrain.Helpers is
          package VC renames Orka.Transforms.Doubles.Vector_Conversions;
 
          CP : constant Orka.Types.Singles.Vector4 :=
-           VC.Convert (Camera.View_Position * (1.0 / Object.Planet_Unit_Length));
+           VC.Convert (Camera.View_Position * (1.0 / Orka.Float_64 (Object.Planet_Unit_Length)));
       begin
          Program.Uniform ("camera_pos").Set_Vector (CP);
-         Program.Uniform ("earth_radius").Set_Single
-           (Orka.Float_32 (Object.Planet_Radius));
-
-         Program.Uniform ("sun_direction").Set_Vector
-           (Orka.Types.Singles.Vector4'(VC.Convert
-              (Normalize (Star.Position - Planet.Position))));
+         Program.Uniform ("earth_radius").Set_Single (Object.Planet_Radius);
+         Program.Uniform ("sun_direction").Set_Vector (Star);
       end Update_Atmosphere_Terrain;
    begin
       Terrain.Render
@@ -153,6 +150,8 @@ package body Orka.Features.Terrain.Helpers is
          Visible_Tiles => Visible_Tiles,
          Update_Render => Update_Atmosphere_Terrain'Access,
          Height_Map    => Object.DMap,
+         Height_Scale  => Height_Scale / Object.Planet_Unit_Length,
+         Height_Offset => Height_Offset / Object.Planet_Unit_Length,
          Freeze        => Freeze,
          Wires         => Wires,
          Timer_Update  => Timer_Update,

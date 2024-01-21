@@ -55,7 +55,6 @@ package body Orka.Features.Terrain is
    function Create_Terrain
      (Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
-      Scale                : Height_Scale;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Programs.Modules.Module_Array;
@@ -92,7 +91,6 @@ package body Orka.Features.Terrain is
       return Result : Terrain :=
         (Count        => Count,
          Max_Depth    => Max_Depth,
-         Scale        => Scale,
          Wireframe    => Wireframe,
          Split_Update => True,
          Visible_Tiles => (others => True),
@@ -164,12 +162,12 @@ package body Orka.Features.Terrain is
          Result.Uniform_Update_LoD_Factor := Result.Program_Leb_Update.Uniform ("u_LodFactor");
 
          Result.Uniform_Update_DMap_Factor := Result.Program_Leb_Update.Uniform ("u_DmapFactor");
+         Result.Uniform_Render_DMap_Factor := Result.Program_Render.Uniform ("u_DmapFactor");
 
          Result.Uniform_Indirect_Leb_ID := Result.Program_Indirect.Uniform ("u_LebID");
 
          Result.Uniform_Render_Leb_ID := Result.Program_Render.Uniform ("u_LebID");
          Result.Uniform_Render_Subdiv := Result.Program_Render.Uniform ("u_MeshletSubdivision");
-         Result.Uniform_Render_DMap_Factor := Result.Program_Render.Uniform ("u_DmapFactor");
 
          declare
             Program_Init : Program := Create_Program (Modules.Module_Array'
@@ -291,14 +289,15 @@ package body Orka.Features.Terrain is
       Update_Render : access procedure
         (Program : Rendering.Programs.Program);
       Height_Map    : GL.Objects.Textures.Texture;
+      Height_Scale  : Float_32;
+      Height_Offset : Float_32;
       Freeze, Wires : Boolean;
       Timer_Update, Timer_Render : in out Orka.Timers.Timer)
    is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
       use all type GL.Types.Connection_Mode;
 
-      Subdivision  : constant Size     := Size (Parameters.Meshlet_Subdivision);
-      Height_Scale : constant Float_32 := Float_32 (Object.Scale);
+      Subdivision  : constant Size := Size (Parameters.Meshlet_Subdivision);
 
       Meshlet_Subdivision : constant := 0;
 
@@ -321,8 +320,8 @@ package body Orka.Features.Terrain is
 
       Object.Uniform_Update_Freeze.Set_Boolean (Freeze);
 
-      Object.Uniform_Update_DMap_Factor.Set_Single (Height_Scale);
-      Object.Uniform_Render_DMap_Factor.Set_Single (Height_Scale);
+      Object.Uniform_Update_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Uniform_Render_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
 
       Object.Uniform_Render_Subdiv.Set_Int (Subdivision);
 

@@ -60,8 +60,6 @@ package Orka.Features.Terrain is
 
    type LoD_Deviation is digits 4 range 0.0 .. 1.0;
 
-   type Height_Scale is digits 4 range 0.0 .. Float'Last;
-
    type Subdivision_Parameters is record
       Meshlet_Subdivision  : Meshlet_Subdivision_Depth;
       Edge_Length_Target   : Length_Target;
@@ -79,7 +77,6 @@ package Orka.Features.Terrain is
    function Create_Terrain
      (Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
-      Scale                : Height_Scale;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Programs.Modules.Module_Array;
@@ -108,6 +105,8 @@ package Orka.Features.Terrain is
       Visible_Tiles : out Visible_Tile_Array;
       Update_Render : access procedure (Program : Rendering.Programs.Program);
       Height_Map    : GL.Objects.Textures.Texture;
+      Height_Scale  : Float_32;
+      Height_Offset : Float_32;
       Freeze, Wires : Boolean;
       Timer_Update, Timer_Render : in out Orka.Timers.Timer)
    with Pre => Transforms.Length = Object.Count
@@ -164,7 +163,6 @@ private
 
    type Terrain (Count : Positive) is tagged limited record
       Max_Depth    : Subdivision_Depth;
-      Scale        : Height_Scale;
 
       Split_Update : Boolean;
       Wireframe    : Boolean;
@@ -185,8 +183,8 @@ private
 
       Uniform_Update_LoD_Var     : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
       Uniform_Update_LoD_Factor  : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
-      Uniform_Update_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
-      Uniform_Render_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
+      Uniform_Update_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+      Uniform_Render_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
 
       Uniform_Update_Leb_ID     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Indirect_Leb_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
