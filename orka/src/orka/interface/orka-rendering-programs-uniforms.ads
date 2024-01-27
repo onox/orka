@@ -63,7 +63,7 @@ package Orka.Rendering.Programs.Uniforms is
                   when LE.Int_Vec2 => Data'Length = 2,
                   when LE.Int_Vec3 => Data'Length = 3,
                   when LE.Int_Vec4 => Data'Length = 4,
-                  when others => raise Constraint_Error);
+                  when others => raise Constraint_Error with "Unexpected vector type " & Object.Kind'Image);
 
    procedure Set_Vector
      (Object : Uniform;
@@ -72,7 +72,7 @@ package Orka.Rendering.Programs.Uniforms is
                   when LE.UInt_Vec2 => Data'Length = 2,
                   when LE.UInt_Vec3 => Data'Length = 3,
                   when LE.UInt_Vec4 => Data'Length = 4,
-                  when others => raise Constraint_Error);
+                  when others => raise Constraint_Error with "Unexpected vector type " & Object.Kind'Image);
 
    procedure Set_Vector
      (Object : Uniform;
@@ -81,7 +81,7 @@ package Orka.Rendering.Programs.Uniforms is
                   when LE.Single_Vec2 => Data'Length = 2,
                   when LE.Single_Vec3 => Data'Length = 3,
                   when LE.Single_Vec4 => Data'Length = 4,
-                  when others => raise Constraint_Error);
+                  when others => raise Constraint_Error with "Unexpected vector type " & Object.Kind'Image);
 
    procedure Set_Vector
      (Object : Uniform;
@@ -90,7 +90,7 @@ package Orka.Rendering.Programs.Uniforms is
                   when LE.Double_Vec2 => Data'Length = 2,
                   when LE.Double_Vec3 => Data'Length = 3,
                   when LE.Double_Vec4 => Data'Length = 4,
-                  when others => raise Constraint_Error);
+                  when others => raise Constraint_Error with "Unexpected vector type " & Object.Kind'Image);
 
    -----------------------------------------------------------------------------
 
