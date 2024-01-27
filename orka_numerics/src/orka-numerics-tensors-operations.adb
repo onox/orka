@@ -867,9 +867,9 @@ package body Orka.Numerics.Tensors.Operations is
 
    function Median_Of_Three (A, B, C : Element) return Element is
    begin
-      if A in B .. C | C .. B then
+      if (B <= A and A <= C) or (C <= A and A <= B) then
          return A;
-      elsif B in A .. C | C .. A then
+      elsif (A <= B and B <= C) or (C <= B and B <= A) then
          return B;
       else
          return C;
