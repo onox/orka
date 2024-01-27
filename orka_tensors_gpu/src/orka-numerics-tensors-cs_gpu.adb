@@ -323,7 +323,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Buffers          : in out Buffer_Vectors.Vector;
       Variable         : in out Positive;
       Constants        : aliased Rendering.Buffers.Buffer;
-      Offset_Constants : in out Natural) return Kernel_Type;
+      Offset_Constants : in out Natural;
+      Needs_Shape      : in out Boolean) return Kernel_Type;
 
    function Name (Variable : Positive) return String is
       Name : constant String := Variable'Image;
@@ -396,7 +397,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Buffers          : in out Buffer_Vectors.Vector;
       Variable         : in out Positive;
       Constants        : aliased Rendering.Buffers.Buffer;
-      Offset_Constants : in out Natural) return SU.Unbounded_String
+      Offset_Constants : in out Natural;
+      Needs_Shape      : in out Boolean) return SU.Unbounded_String
    is
       Type_String : constant String := Data_Type_Image (Object.Kind);
 
@@ -435,7 +437,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
       procedure Prepend_Variable_Text (Expression : in out Tensor'Class) is
          Kernel : constant Kernel_Type :=
-           Build_Kernel (GPU_Tensor (Expression), Buffers, Variable, Constants, Offset_Constants);
+           Build_Kernel (GPU_Tensor (Expression), Buffers, Variable, Constants, Offset_Constants, Needs_Shape);
       begin
          case Kernel.Materialized is
             when True  =>
@@ -575,6 +577,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                      SU.Append (Result,
                        "const uint index = " & Offset'Image & " + row * (shape.y + 1);" & L1.LF);
                      SU.Append (Result, Initialize (Type_String & "(index == gid)"));
+
+                     Needs_Shape := True;
                   end;
                when Fill =>
                   SU.Append (Result, Initialize
@@ -628,7 +632,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Buffers          : in out Buffer_Vectors.Vector;
       Variable         : in out Positive;
       Constants        : aliased Rendering.Buffers.Buffer;
-      Offset_Constants : in out Natural) return Kernel_Type is
+      Offset_Constants : in out Natural;
+      Needs_Shape      : in out Boolean) return Kernel_Type is
    begin
       if Object.Reference.Materialized then
          return (Materialized => True, Buffer => Object.Reference.Data);
@@ -637,7 +642,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
       else
          return
            (Materialized => False,
-            Text         => Get_Shader (Object, Buffers, Variable, Constants, Offset_Constants));
+            Text         => Get_Shader (Object, Buffers, Variable, Constants, Offset_Constants, Needs_Shape));
       end if;
    end Build_Kernel;
 
@@ -792,14 +797,15 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
          function Get_Kernel_Element_Wise
            (Programs  : in out Element_Wise_Program_Vectors.Vector;
-            Constants : aliased Buffer) return Program
+            Constants : aliased Buffer;
+            Needs_Shape : in out Boolean) return Program
          is
             Variable : Positive := 1;
 
             Offset_Constants : Natural := 0;
 
             Text : constant SU.Unbounded_String :=
-              Get_Shader (Copy, Buffers, Variable, Constants, Offset_Constants) &
+              Get_Shader (Copy, Buffers, Variable, Constants, Offset_Constants, Needs_Shape) &
               Name_Buffer (Buffers, Object.Reference.Data) & "[gid] = " & Name (1) & ";";
 
             Source : SU.Unbounded_String := Kernels.Source_Element_Wise;
@@ -898,11 +904,16 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
          procedure Initialize_Element_Wise
            (Kernel    : Program;
-            Constants : aliased in out Buffer)
+            Constants : aliased in out Buffer;
+            Needs_Shape : Boolean)
          is
             Elements : constant Positive := Object.Elements;
          begin
-            Set_Shape (Kernel, Object.Shape);
+            --  Uniform 'shape' is needed only when the identity constructor
+            --  is used, otherwise it is optimized out by the GLSL compiler
+            if Needs_Shape then
+               Set_Shape (Kernel, Object.Shape);
+            end if;
             Set_Count (Kernel, Elements);
 
             pragma Assert (for all Buffer of Buffers => Buffer.all.Length = Elements);
@@ -1012,6 +1023,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                        else
                          Max_Element_Wise_Constants));
 
+         Needs_Shape : Boolean := False;
+
          Kernel : Program :=
            (if Object.Operation.Kind = Matrix_Operation then
               (case Object.Operation.Matrix_Operation.Kind is
@@ -1022,7 +1035,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                  when Random              => Kernels.Program_Random (Object.Kind),
                  when Any_True | All_True => Kernels.Program_Is_True)
             else
-              Get_Kernel_Element_Wise (Kernels.Element_Wise_Programs, Buffer_Constants));
+              Get_Kernel_Element_Wise (Kernels.Element_Wise_Programs, Buffer_Constants, Needs_Shape));
 
          Work_Group_Size : constant Dimension_Size_Array := Kernel.Compute_Work_Group_Size;
 
@@ -1048,7 +1061,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                when All_True      => Initialize_Is_True (Kernel, True);
             end case;
          else
-            Initialize_Element_Wise (Kernel, Buffer_Constants);
+            Initialize_Element_Wise (Kernel, Buffer_Constants, Needs_Shape);
          end if;
 
          Kernel.Use_Program;
