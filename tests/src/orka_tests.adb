@@ -43,6 +43,8 @@ with Test_Tensors_GPU_Doubles_Matrices;
 
 with Test_Kalman_Filters;
 
+with Test_Celestial_Coordinates;
+
 with Test_Scene_Trees;
 
 procedure Orka_Tests is
@@ -125,6 +127,8 @@ procedure Orka_Tests is
 
       --  Filters (Kalman)
       Result.Add_Test (Test_Kalman_Filters.Suite);
+
+      Result.Add_Test (Test_Celestial_Coordinates.Suite);
 
       return Result;
    end Suite;

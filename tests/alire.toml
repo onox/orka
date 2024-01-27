@@ -11,6 +11,7 @@ executables = ["orka_tests"]
 [build-switches]
 validation.compile_checks = "warnings"
 "*".style_checks = ["-gnatygAOM99-Is"]
+"*".ada_version = "Ada2022"
 
 [gpr-externals]
 ORKA_TESTS_SIMD_TYPE = ["AVX", "AVX2"]
@@ -19,13 +20,14 @@ ORKA_TESTS_SIMD_TYPE = ["AVX", "AVX2"]
 ORKA_TESTS_SIMD_TYPE = "AVX"
 
 [[depends-on]]
-aunit = "^21.0.0"
+aunit = "^24.0.0"
 orka = "~1.0.0"
 orka_numerics = "~1.0.0"
 orka_simd = "~1.0.0"
 orka_tensors_cpu = "~1.0.0"
 orka_tensors_gpu = "~1.0.0"
 orka_transforms = "~1.0.0"
+orka_celestial = "~1.0.0"
 
 [[pins]]
 orka = { path = "../orka" }
@@ -34,3 +36,4 @@ orka_simd = { path = "../orka_simd" }
 orka_tensors_cpu = { path = "../orka_tensors_cpu" }
 orka_tensors_gpu = { path = "../orka_tensors_gpu" }
 orka_transforms = { path = "../orka_transforms" }
+orka_celestial = { path = "../orka_celestial" }
