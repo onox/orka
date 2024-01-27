@@ -336,7 +336,7 @@ package body Orka.Rendering.Programs.Uniforms is
    exception
       when E : Uniform_Inactive_Error =>
          Log (Warning, Ada.Exceptions.Exception_Message (E));
-         return Uniform'(Kind => LE.Resource_Type'First, GL_Uniform => Object.GL_Program.Unused_Uniform_Location);
+         raise;
    end Create_Uniform_Variable;
 
 end Orka.Rendering.Programs.Uniforms;
