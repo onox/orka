@@ -29,6 +29,10 @@ package Orka.Celestial.Coordinates is
 
    type Geodetic_Coordinate is private;
 
+   function Latitude  (Object : Geodetic_Coordinate) return Latitude_Degrees;
+   function Longitude (Object : Geodetic_Coordinate) return Longitude_Degrees;
+   function Height    (Object : Geodetic_Coordinate) return Float_64;
+
    function From_Degrees
      (Planet    : aliased Planets.Physical_Characteristics;
       Latitude  : Latitude_Degrees;

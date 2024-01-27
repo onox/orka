@@ -24,6 +24,14 @@ package body Orka.Celestial.Coordinates is
 
    package Matrices renames Orka.Transforms.Doubles.Matrices;
 
+   function Latitude (Object : Geodetic_Coordinate) return Latitude_Degrees is
+     (Latitude_Degrees (Vectors.To_Degrees (Float_64 (Object.Latitude))));
+
+   function Longitude (Object : Geodetic_Coordinate) return Longitude_Degrees is
+     (Longitude_Degrees (Vectors.To_Degrees (Float_64 (Object.Longitude))));
+
+   function Height (Object : Geodetic_Coordinate) return Float_64 is (Object.Height);
+
    function From_Degrees
      (Planet    : aliased Planets.Physical_Characteristics;
       Latitude  : Latitude_Degrees;
