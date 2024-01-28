@@ -123,12 +123,13 @@
 
 private with GL.Low_Level.Enums;
 private with GL.Objects.Textures;
-private with GL.Objects.Samplers;
 
 with Ada.Containers.Vectors;
 
 with Orka.Resources.Locations;
 with Orka.Rendering.Programs.Modules;
+
+private with Orka.Rendering.Samplers;
 
 package Orka.Features.Atmosphere is
    pragma Preelaborate;
@@ -310,7 +311,7 @@ private
    package LE renames GL.Low_Level.Enums;
 
    type Precomputed_Textures is record
-      Sampler : GL.Objects.Samplers.Sampler;
+      Sampler : Orka.Rendering.Samplers.Sampler;
       Combine_Scattering : Boolean;
 
       Transmittance_Texture : Textures.Texture (LE.Texture_2D);
@@ -331,7 +332,7 @@ private
       Sun_K_R, Sun_K_G, Sun_K_B : Float_64;
    end record;
 
-   function Create_Sampler return GL.Objects.Samplers.Sampler;
+   function Create_Sampler return Orka.Rendering.Samplers.Sampler;
 
    K_Lambda_Min : constant Float_64 := 360.0;
    K_Lambda_Max : constant Float_64 := 830.0;

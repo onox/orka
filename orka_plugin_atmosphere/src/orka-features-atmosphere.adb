@@ -68,22 +68,16 @@ package body Orka.Features.Atmosphere is
 
    use Orka.Features.Atmosphere.Constants;
 
-   function Create_Sampler return GL.Objects.Samplers.Sampler is
-      Result : GL.Objects.Samplers.Sampler;
+   use all type Orka.Rendering.Samplers.Wrapping_Mode;
+   use all type Orka.Rendering.Samplers.Minifying_Function;
+   use all type Orka.Rendering.Samplers.Magnifying_Function;
 
-      use all type GL.Objects.Samplers.Wrapping_Mode;
-      use all type GL.Objects.Samplers.Minifying_Function;
-      use all type GL.Objects.Samplers.Magnifying_Function;
-   begin
-      Result.Set_X_Wrapping (Clamp_To_Edge);
-      Result.Set_Y_Wrapping (Clamp_To_Edge);
-      Result.Set_Z_Wrapping (Clamp_To_Edge);
-
-      Result.Set_Minifying_Filter  (Linear);
-      Result.Set_Magnifying_Filter (Linear);
-
-      return Result;
-   end Create_Sampler;
+   function Create_Sampler return Orka.Rendering.Samplers.Sampler is
+     (Orka.Rendering.Samplers.Create_Sampler
+        ((Wrapping          => (others => Clamp_To_Edge),
+          Minifying_Filter  => Linear,
+          Magnifying_Filter => Linear,
+          others            => <>)));
 
    function Create_Texture (Width, Height : Size) return Textures.Texture is
       Result : Textures.Texture (LE.Texture_2D);
