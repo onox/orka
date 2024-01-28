@@ -9,17 +9,16 @@ project Orka is
 
    Switches := ("-mavx", "-mf16c");
 
-   Orka_Sources := ("src/orka/interface",
-                    "src/orka/implementation");
+   Orka_Sources := ("src/orka");
 
    type OS_Type is ("windows", "linux");
    OS : OS_Type := Orka_Config.Alire_Host_OS;
 
    case OS is
       when "linux"     =>
-         Orka_Sources := Orka_Sources & "src/orka/linux";
+         Orka_Sources := Orka_Sources & "src/linux";
       when "windows" =>
-         Orka_Sources := Orka_Sources & "src/orka/windows";
+         Orka_Sources := Orka_Sources & "src/windows";
    end case;
 
    for Source_Dirs use Orka_Sources;
