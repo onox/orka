@@ -23,6 +23,7 @@ with GL.Barriers;
 with GL.Low_Level.Enums;
 with GL.Pixels.Extensions;
 with GL.Types.Pointers;
+with GL.Objects.Textures;
 
 with Orka.Jobs;
 with Orka.KTX;
@@ -250,11 +251,12 @@ package body Orka.Resources.Textures.KTX is
 
    function Read_Texture
      (Location : Locations.Location_Ptr;
-      Path     : String) return GL.Objects.Textures.Texture
+      Path     : String) return Rendering.Textures.Texture
    is
       Start_Time : constant Time := Orka.OS.Monotonic_Clock;
    begin
-      return Read_Texture (Location.Read_Data (Path).Get, Path, Start_Time);
+      return Rendering.Textures.From_GL_Texture
+        (Read_Texture (Location.Read_Data (Path).Get, Path, Start_Time));
    end Read_Texture;
 
    overriding
@@ -486,6 +488,14 @@ package body Orka.Resources.Textures.KTX is
          Log (Debug, "    retrieving data: " & Logging.Image (+(T3 - T2)));
          Log (Debug, "    writing file:    " & Logging.Image (+(T4 - T3)));
       end;
+   end Write_Texture;
+
+   procedure Write_Texture
+     (Texture  : Rendering.Textures.Texture;
+      Location : Locations.Writable_Location_Ptr;
+      Path     : String) is
+   begin
+      Write_Texture (Texture.GL_Texture, Location, Path);
    end Write_Texture;
 
 end Orka.Resources.Textures.KTX;

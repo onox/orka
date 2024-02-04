@@ -28,7 +28,6 @@ with GL.Compute;
 with GL.Types.Indirect;
 
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Textures;
 
 package body Orka.Features.Terrain is
 
@@ -288,7 +287,7 @@ package body Orka.Features.Terrain is
       Visible_Tiles : out Visible_Tile_Array;
       Update_Render : access procedure
         (Program : Rendering.Programs.Program);
-      Height_Map    : GL.Objects.Textures.Texture;
+      Height_Map    : Rendering.Textures.Texture;
       Height_Scale  : Float_32;
       Height_Offset : Float_32;
       Freeze, Wires : Boolean;
@@ -335,8 +334,7 @@ package body Orka.Features.Terrain is
       Object.Sampler.Bind (Binding_Texture_DMap);
 
       --  Textures
-      Orka.Rendering.Textures.Bind
-        (Height_Map, Orka.Rendering.Textures.Texture, Binding_Texture_DMap);
+      Height_Map.Bind (Binding_Texture_DMap);
 
       --  UBOs
       Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'

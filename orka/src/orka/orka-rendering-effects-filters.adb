@@ -23,7 +23,6 @@ with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Textures;
 
 package body Orka.Rendering.Effects.Filters is
 
@@ -101,7 +100,7 @@ package body Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : GL.Objects.Textures.Texture;
+      Subject  : Rendering.Textures.Texture;
       Kernel   : Float_32_Array) return Separable_Filter
    is
       use all type LE.Texture_Kind;
@@ -110,26 +109,25 @@ package body Orka.Rendering.Effects.Filters is
       use Rendering.Buffers;
       use Rendering.Framebuffers;
       use Rendering.Programs;
+      use Rendering.Textures;
 
-      Width  : constant Size := Subject.Width  (0);
-      Height : constant Size := Subject.Height (0);
+      Size : constant Size_3D := Subject.Description.Size;
    begin
       return Result : Separable_Filter :=
         (Buffer_Weights => Create_Buffer ((others => False), Kernel),
          Program_Blur   => Create_Program (Modules.Module_Array'
            (Modules.Create_Module (Location, VS => "oversized-triangle.vert"),
             Modules.Create_Module (Location, FS => "effects/blur.frag"))),
-         Framebuffer_H => Create_Framebuffer (Width, Height),
-         Framebuffer_V => Create_Framebuffer (Width, Height),
+         Framebuffer_H => Create_Framebuffer (Size (X), Size (Y)),
+         Framebuffer_V => Create_Framebuffer (Size (X), Size (Y)),
          Texture_H     => Subject,
+         Texture_V     => Create_Texture (Subject.Description),
          others => <>)
       do
          Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
 
-         Result.Texture_V.Allocate_Storage (Subject);
-
-         Result.Framebuffer_H.Attach (Result.Texture_H);
-         Result.Framebuffer_V.Attach (Result.Texture_V);
+         Result.Framebuffer_H.Attach (Result.Texture_H.GL_Texture);
+         Result.Framebuffer_V.Attach (Result.Texture_V.GL_Texture);
       end return;
    end Create_Filter;
 
@@ -144,14 +142,14 @@ package body Orka.Rendering.Effects.Filters is
       for Pass in 1 .. Passes loop
          --  Horizontal pass: Texture_H => Texture_V
          Object.Uniform_Horizontal.Set_Boolean (True);
-         Orka.Rendering.Textures.Bind (Object.Texture_H, Orka.Rendering.Textures.Texture, 0);
+         Object.Texture_H.Bind (0);
 
          Object.Framebuffer_V.Use_Framebuffer;
          Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
 
          --  Vertical pass: Texture_V => Texture_H
          Object.Uniform_Horizontal.Set_Boolean (False);
-         Orka.Rendering.Textures.Bind (Object.Texture_V, Orka.Rendering.Textures.Texture, 0);
+         Object.Texture_V.Bind (0);
 
          Object.Framebuffer_H.Use_Framebuffer;
          Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
@@ -164,36 +162,35 @@ package body Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : GL.Objects.Textures.Texture;
+      Subject  : Rendering.Textures.Texture;
       Radius   : Size) return Moving_Average_Filter
    is
       use all type LE.Texture_Kind;
       pragma Assert (Subject.Kind = LE.Texture_Rectangle);
 
       use Rendering.Programs;
+      use Rendering.Textures;
 
-      Width  : constant Size := Subject.Width  (0);
-      Height : constant Size := Subject.Height (0);
+      Size : constant Size_3D := Subject.Description.Size;
    begin
       return Result : Moving_Average_Filter :=
         (Program_Blur => Create_Program
            (Modules.Create_Module (Location, CS => "effects/moving-average-blur.comp")),
          Texture_H => Subject,
+         Texture_V => Create_Texture (Subject.Description),
          others    => <>)
       do
          Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
          Result.Program_Blur.Uniform ("radius").Set_Int (Radius);
-
-         Result.Texture_V.Allocate_Storage (Subject);
 
          declare
             Work_Group_Size : constant Float_32 :=
              Float_32 (Result.Program_Blur.Compute_Work_Group_Size (X));
          begin
             Result.Columns := Unsigned_32
-              (Float_32'Ceiling (Float_32 (Width) / Work_Group_Size));
+              (Float_32'Ceiling (Float_32 (Size (X)) / Work_Group_Size));
             Result.Rows := Unsigned_32
-              (Float_32'Ceiling (Float_32 (Height) / Work_Group_Size));
+              (Float_32'Ceiling (Float_32 (Size (Y)) / Work_Group_Size));
          end;
       end return;
    end Create_Filter;
@@ -206,8 +203,8 @@ package body Orka.Rendering.Effects.Filters is
          --  Horizontal pass: Texture_H => Texture_V
          Object.Uniform_Horizontal.Set_Boolean (True);
 
-         Orka.Rendering.Textures.Bind (Object.Texture_H, Orka.Rendering.Textures.Texture, 0);
-         Orka.Rendering.Textures.Bind (Object.Texture_V, Orka.Rendering.Textures.Image, 1);
+         Object.Texture_H.Bind (0);
+         Object.Texture_V.Bind_As_Image (1);
          GL.Compute.Dispatch_Compute (X => Object.Rows);
 
          GL.Barriers.Memory_Barrier
@@ -216,8 +213,8 @@ package body Orka.Rendering.Effects.Filters is
          --  Vertical pass: Texture_V => Texture_H
          Object.Uniform_Horizontal.Set_Boolean (False);
 
-         Orka.Rendering.Textures.Bind (Object.Texture_V, Orka.Rendering.Textures.Texture, 0);
-         Orka.Rendering.Textures.Bind (Object.Texture_H, Orka.Rendering.Textures.Image, 1);
+         Object.Texture_V.Bind (0);
+         Object.Texture_H.Bind_As_Image (1);
          GL.Compute.Dispatch_Compute (X => Object.Columns);
 
          GL.Barriers.Memory_Barrier

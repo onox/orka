@@ -121,15 +121,13 @@
 --  [1] https://arxiv.org/pdf/1612.04336.pdf
 --  [2] http://www.oskee.wz.cz/stranka/uploads/SCCG10ElekKmoch.pdf
 
-private with GL.Low_Level.Enums;
-private with GL.Objects.Textures;
-
 with Ada.Containers.Vectors;
 
 with Orka.Resources.Locations;
 with Orka.Rendering.Programs.Modules;
 
 private with Orka.Rendering.Samplers;
+private with Orka.Rendering.Textures;
 
 package Orka.Features.Atmosphere is
    pragma Preelaborate;
@@ -307,18 +305,17 @@ package Orka.Features.Atmosphere is
 
 private
 
-   package Textures renames GL.Objects.Textures;
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
 
    type Precomputed_Textures is record
       Sampler : Orka.Rendering.Samplers.Sampler;
       Combine_Scattering : Boolean;
 
-      Transmittance_Texture : Textures.Texture (LE.Texture_2D);
-      Scattering_Texture    : Textures.Texture (LE.Texture_3D);
-      Irradiance_Texture    : Textures.Texture (LE.Texture_2D);
+      Transmittance_Texture : Rendering.Textures.Texture (LE.Texture_2D);
+      Scattering_Texture    : Rendering.Textures.Texture (LE.Texture_3D);
+      Irradiance_Texture    : Rendering.Textures.Texture (LE.Texture_2D);
 
-      Optional_Single_Mie_Scattering_Texture : Textures.Texture (LE.Texture_3D);
+      Optional_Single_Mie_Scattering_Texture : Rendering.Textures.Texture (LE.Texture_3D);
       --  Unused if Combine_Scattering is True
    end record;
 

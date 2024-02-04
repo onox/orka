@@ -21,18 +21,39 @@ with Orka.Strings;
 
 package body Orka.Rendering.Textures is
 
-   procedure Bind
-     (Object : GL.Objects.Textures.Texture_Base'Class;
-      Target : Indexed_Texture_Target;
-      Index  : Natural) is
+   function Create_Texture (Description : Texture_Description) return Texture is
    begin
-      case Target is
-         when Texture =>
-            Object.Bind_Texture_Unit (GL.Types.UInt (Index));
-         when Image =>
-            Object.Bind_Image_Texture (GL.Types.UInt (Index));
-      end case;
+      return Result : Texture (Description.Kind) do
+         Result.Texture.Allocate_Storage
+           (Levels  => Size (Description.Levels),
+            Samples => Size (Description.Samples),
+            Format  => Description.Format,
+            Width   => Description.Size (X),
+            Height  => Description.Size (Y),
+            Depth   => Description.Size (Z));
+      end return;
+   end Create_Texture;
+
+   function Description (Object : Texture) return Texture_Description is
+   begin
+      return
+        (Kind    => Object.Texture.Kind,
+         Format  => Object.Texture.Internal_Format,
+         Size    => (X => Object.Texture.Width (0), Y => Object.Texture.Height (0), Z => Object.Texture.Depth (0)),
+         Levels  => Positive (Object.Texture.Mipmap_Levels),
+         Layers  => (if Object.Texture.Layered then 1 else 1),  -- FIXME Fix layers if layered
+         Samples => Natural (Object.Texture.Samples));
+   end Description;
+
+   procedure Bind (Object : Texture; Index : Natural) is
+   begin
+      Object.Texture.Bind_Texture_Unit (Unsigned_32 (Index));
    end Bind;
+
+   procedure Bind_As_Image (Object : Texture; Index : Natural) is
+   begin
+      Object.Texture.Bind_Image_Texture (Unsigned_32 (Index));
+   end Bind_As_Image;
 
    function Get_Format_Kind
      (Format : GL.Pixels.Internal_Format) return Format_Kind

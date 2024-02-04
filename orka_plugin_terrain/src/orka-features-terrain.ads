@@ -33,11 +33,10 @@
 --
 --  [1] https://github.com/jdupuy/LongestEdgeBisectionDemos
 
-with GL.Objects.Textures;
-
 with Orka.Cameras;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Timers;
 
@@ -104,7 +103,7 @@ package Orka.Features.Terrain is
       Parameters    : Subdivision_Parameters;
       Visible_Tiles : out Visible_Tile_Array;
       Update_Render : access procedure (Program : Rendering.Programs.Program);
-      Height_Map    : GL.Objects.Textures.Texture;
+      Height_Map    : Rendering.Textures.Texture;
       Height_Scale  : Float_32;
       Height_Offset : Float_32;
       Freeze, Wires : Boolean;

@@ -21,7 +21,6 @@ with Ada.Strings.Unbounded;
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
-with GL.Objects.Textures;
 with GL.Toggles;
 with GL.Types;
 
@@ -215,32 +214,30 @@ package body Orka.Frame_Graphs is
 
    -----------------------------------------------------------------------------
 
-   use type GL.Objects.Textures.Texture;
+   use Orka.Rendering.Textures;
 
    package Texture_Maps is new Ada.Containers.Indefinite_Hashed_Maps
      (Key_Type        => String,
-      Element_Type    => GL.Objects.Textures.Texture,
+      Element_Type    => Orka.Rendering.Textures.Texture,
       Hash            => Ada.Strings.Hash,
       Equivalent_Keys => "=");
 
    Textures : Texture_Maps.Map;
 
-   function Get_Texture (Subject : Resource) return GL.Objects.Textures.Texture
-     with Post => Get_Texture'Result.Allocated is
+   function Get_Texture (Subject : Resource) return Orka.Rendering.Textures.Texture is
    begin
       return Textures.Element (+Subject.Name);
    exception
       when Constraint_Error =>
          declare
-            Result : GL.Objects.Textures.Texture (Subject.Kind);
+            Result : Texture := Create_Texture
+              ((Kind    => Subject.Kind,
+                Format  => Subject.Format,
+                Size    => Subject.Size,
+                Levels  => Subject.Levels,
+                Samples => Subject.Samples,
+                others  => <>));
          begin
-            Result.Allocate_Storage
-              (Levels  => Size (Subject.Levels),
-               Samples => Size (Subject.Samples),
-               Format  => Subject.Format,
-               Width   => Subject.Size (X),
-               Height  => Subject.Size (Y),
-               Depth   => Subject.Size (Z));
             Textures.Insert (+Subject.Name, Result);
             return Result;
          end;
@@ -920,10 +917,10 @@ package body Orka.Frame_Graphs is
                               --  TODO Support attaching layer of resource
                               --       using value in 1 .. Resource.Data.Size (Z)
                               if Get_Attachment_Format (Resource.Data.Format) /= Color then
-                                 Framebuffer.Attach (Get_Texture (Resource.Data));
+                                 Framebuffer.Attach (Get_Texture (Resource.Data).GL_Texture);
                               else
                                  Framebuffer.Attach
-                                   (Texture    => Get_Texture (Resource.Data),
+                                   (Texture    => Get_Texture (Resource.Data).GL_Texture,
                                     Attachment => To_Attachment_Point (Resource.Binding));
                               end if;
                            end if;
@@ -1111,11 +1108,9 @@ package body Orka.Frame_Graphs is
          for Resource of Input_Resources loop
             case Resource.Mode is
                when Texture_Read =>
-                  Textures.Bind (Get_Texture (Resource.Data),
-                    Textures.Texture, Natural (Resource.Binding));
+                  Get_Texture (Resource.Data).Bind (Natural (Resource.Binding));
                when Image_Load =>
-                  Textures.Bind (Get_Texture (Resource.Data),
-                    Textures.Image, Natural (Resource.Binding));
+                  Get_Texture (Resource.Data).Bind_As_Image (Natural (Resource.Binding));
                when Not_Used | Framebuffer_Attachment =>
                   null;
             end case;
@@ -1125,8 +1120,7 @@ package body Orka.Frame_Graphs is
             --  Resource has already been attached in procedure Initialize
             --  if mode is Framebuffer_Attachment
             if Resource.Mode = Image_Store then
-               Textures.Bind (Get_Texture (Resource.Data), Textures.Image,
-                 Natural (Resource.Binding));
+               Get_Texture (Resource.Data).Bind_As_Image (Natural (Resource.Binding));
             end if;
          end loop;
 

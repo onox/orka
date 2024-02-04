@@ -21,8 +21,7 @@ private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Rendering.Framebuffers;
 private with Orka.Types;
 
-with GL.Objects.Textures;
-
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 
 package Orka.Rendering.Effects.Filters is
@@ -35,7 +34,7 @@ package Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : GL.Objects.Textures.Texture;
+      Subject  : Rendering.Textures.Texture;
       Kernel   : Float_32_Array) return Separable_Filter
    with Pre => Kernel'Length mod 2 = 0;
    --  Create a separable filter
@@ -58,7 +57,7 @@ package Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : GL.Objects.Textures.Texture;
+      Subject  : Rendering.Textures.Texture;
       Radius   : Size) return Moving_Average_Filter;
    --  Create a filter that computes the moving average per row in a
    --  compute shader for a O(1) time complexity, giving a consistent
@@ -88,16 +87,16 @@ private
       Framebuffer_H : Rendering.Framebuffers.Framebuffer (Default => False);
       Framebuffer_V : Rendering.Framebuffers.Framebuffer (Default => False);
 
-      Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
-      Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
+      Texture_H : Rendering.Textures.Texture (LE.Texture_Rectangle);
+      Texture_V : Rendering.Textures.Texture (LE.Texture_Rectangle);
    end record;
 
    type Moving_Average_Filter is tagged limited record
       Program_Blur       : Rendering.Programs.Program;
       Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
 
-      Texture_H : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
-      Texture_V : GL.Objects.Textures.Texture (LE.Texture_Rectangle);
+      Texture_H : Rendering.Textures.Texture (LE.Texture_Rectangle);
+      Texture_V : Rendering.Textures.Texture (LE.Texture_Rectangle);
 
       Columns, Rows : Unsigned_32;
    end record;

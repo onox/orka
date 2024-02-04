@@ -52,7 +52,6 @@ with Orka.Features.Atmosphere.Constants;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs.Uniforms;
-with Orka.Rendering.Textures;
 with Orka.Types;
 
 package body Orka.Features.Atmosphere is
@@ -79,25 +78,26 @@ package body Orka.Features.Atmosphere is
           Magnifying_Filter => Linear,
           others            => <>)));
 
-   function Create_Texture (Width, Height : Size) return Textures.Texture is
-      Result : Textures.Texture (LE.Texture_2D);
-   begin
-      --  16F precision for the transmittance gives artifacts
-      Result.Allocate_Storage (1, 1, GL.Pixels.RGBA32F, Width, Height, 1);
-      return Result;
-   end Create_Texture;
+   --  16F precision for the transmittance gives artifacts
+   function Create_Texture (Width, Height : Size) return Rendering.Textures.Texture is
+     (Orka.Rendering.Textures.Create_Texture
+        ((Kind    => LE.Texture_2D,
+          Format  => GL.Pixels.RGBA32F,
+          Size    => (Width, Height, 1),
+          Levels  => 1,
+          Layers  => 1,
+          Samples => 1)));
 
    function Create_Texture
      (Width, Height, Depth : Size;
-      Half_Precision : Boolean) return Textures.Texture
-   is
-      Result : Textures.Texture (LE.Texture_3D);
-      Internal_Format : constant GL.Pixels.Internal_Format
-        := (if Half_Precision then GL.Pixels.RGBA16F else GL.Pixels.RGBA32F);
-   begin
-      Result.Allocate_Storage (1, 1, Internal_Format, Width, Height, Depth);
-      return Result;
-   end Create_Texture;
+      Half_Precision : Boolean) return Rendering.Textures.Texture
+   is (Orka.Rendering.Textures.Create_Texture
+        ((Kind    => LE.Texture_3D,
+          Format  => (if Half_Precision then GL.Pixels.RGBA16F else GL.Pixels.RGBA32F),
+          Size    => (Width, Height, Depth),
+          Levels  => 1,
+          Layers  => 1,
+          Samples => 1)));
 
    -----------------------------------------------------------------------------
 
@@ -432,7 +432,7 @@ package body Orka.Features.Atmosphere is
       Result : Precomputed_Textures;
       Delta_Irradiance_Texture, Delta_Rayleigh_Scattering_Texture,
       Delta_Mie_Scattering_Texture, Delta_Scattering_Density_Texture,
-      Delta_Multiple_Scattering_Texture : Textures.Texture;
+      Delta_Multiple_Scattering_Texture : Rendering.Textures.Texture;
       Lambdas : Float_64_Array;
       Luminance_From_Radiance : Float_32_Array;
       Blend : Boolean;
@@ -522,30 +522,29 @@ package body Orka.Features.Atmosphere is
 
       use all type GL.Blending.Equation;
       use all type GL.Blending.Blend_Factor;
-      use all type Rendering.Textures.Indexed_Texture_Target;
       use all type Framebuffers.Color_Attachment_Point;
    begin
       GL.Blending.Set_Blend_Equation ((Func_Add, Func_Add));
       GL.Blending.Set_Blend_Func ((One, One, One, One));
 
-      Rendering.Textures.Bind (Result.Transmittance_Texture, Texture, 0);
+      Result.Transmittance_Texture.Bind (0);
       --  transmittance_texture
-      Rendering.Textures.Bind (Delta_Rayleigh_Scattering_Texture, Texture, 1);
+      Delta_Rayleigh_Scattering_Texture.Bind (1);
       --  single_rayleigh_scattering_texture
 
-      Rendering.Textures.Bind (Delta_Mie_Scattering_Texture, Texture, 2);
+      Delta_Mie_Scattering_Texture.Bind (2);
       --  single_mie_scattering_texture
-      Rendering.Textures.Bind (Delta_Multiple_Scattering_Texture, Texture, 3);
+      Delta_Multiple_Scattering_Texture.Bind (3);
       --  multiple_scattering_texture
-      Rendering.Textures.Bind (Delta_Irradiance_Texture, Texture, 4);
+      Delta_Irradiance_Texture.Bind (4);
       --  irradiance_texture
 
-      Rendering.Textures.Bind (Delta_Scattering_Density_Texture, Texture, 5);
+      Delta_Scattering_Density_Texture.Bind (5);
       --  scattering_density_texture
 
       --  Compute the transmittance and store it in Transmittance_Texture
       FBO_Transmittance.Use_Framebuffer;
-      FBO_Transmittance.Attach (Result.Transmittance_Texture, Color_Attachment_0);
+      FBO_Transmittance.Attach (Result.Transmittance_Texture.GL_Texture, Color_Attachment_0);
       FBO_Transmittance.Set_Draw_Buffers
         ((0 => GL.Buffers.Color_Attachment0));
 
@@ -559,8 +558,8 @@ package body Orka.Features.Atmosphere is
       --  zeros or leave it unchanged (we don't want the irradiance in
       --  Irradiance_Texture, but only the irradiance from the sky
       FBO_Irradiance.Use_Framebuffer;
-      FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
-      FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
+      FBO_Irradiance.Attach (Delta_Irradiance_Texture.GL_Texture, Color_Attachment_0);
+      FBO_Irradiance.Attach (Result.Irradiance_Texture.GL_Texture, Color_Attachment_1);
       FBO_Irradiance.Set_Draw_Buffers
         ((0 => GL.Buffers.Color_Attachment0,
           1 => GL.Buffers.Color_Attachment1));
@@ -575,12 +574,12 @@ package body Orka.Features.Atmosphere is
       --  and either them or accumulate them in Scattering_Texture and
       --  Optional_Single_Mie_Scattering_Texture
       FBO_Scattering.Use_Framebuffer;
-      FBO_Scattering.Attach (Delta_Rayleigh_Scattering_Texture, Color_Attachment_0);
-      FBO_Scattering.Attach (Delta_Mie_Scattering_Texture, Color_Attachment_1);
-      FBO_Scattering.Attach (Result.Scattering_Texture, Color_Attachment_2);
+      FBO_Scattering.Attach (Delta_Rayleigh_Scattering_Texture.GL_Texture, Color_Attachment_0);
+      FBO_Scattering.Attach (Delta_Mie_Scattering_Texture.GL_Texture, Color_Attachment_1);
+      FBO_Scattering.Attach (Result.Scattering_Texture.GL_Texture, Color_Attachment_2);
 
       if not Object.Data.Combine_Scattering_Textures then
-         FBO_Scattering.Attach (Result.Optional_Single_Mie_Scattering_Texture, Color_Attachment_3);
+         FBO_Scattering.Attach (Result.Optional_Single_Mie_Scattering_Texture.GL_Texture, Color_Attachment_3);
          FBO_Scattering.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1,
@@ -608,7 +607,7 @@ package body Orka.Features.Atmosphere is
          --  Compute the scattering density, and store it in
          --  Delta_Scattering_Density_Texture
          FBO_Scattering.Use_Framebuffer;
-         FBO_Scattering.Attach (Delta_Scattering_Density_Texture, Color_Attachment_0);
+         FBO_Scattering.Attach (Delta_Scattering_Density_Texture.GL_Texture, Color_Attachment_0);
          FBO_Scattering.Detach (Color_Attachment_1);
          FBO_Scattering.Detach (Color_Attachment_2);
          FBO_Scattering.Detach (Color_Attachment_3);
@@ -625,8 +624,8 @@ package body Orka.Features.Atmosphere is
          --  Compute the indirect irradiance, store it in Delta_Irradiance_Texture
          --  and accumulate it in Irradiance_Texture
          FBO_Irradiance.Use_Framebuffer;
-         FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
-         FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
+         FBO_Irradiance.Attach (Delta_Irradiance_Texture.GL_Texture, Color_Attachment_0);
+         FBO_Irradiance.Attach (Result.Irradiance_Texture.GL_Texture, Color_Attachment_1);
          FBO_Irradiance.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1));
@@ -641,8 +640,8 @@ package body Orka.Features.Atmosphere is
          --  Delta_Multiple_Scattering_Texture, and accumulate it in
          --  Scattering_Texture
          FBO_Scattering.Use_Framebuffer;
-         FBO_Scattering.Attach (Delta_Multiple_Scattering_Texture, Color_Attachment_0);
-         FBO_Scattering.Attach (Result.Scattering_Texture, Color_Attachment_1);
+         FBO_Scattering.Attach (Delta_Multiple_Scattering_Texture.GL_Texture, Color_Attachment_0);
+         FBO_Scattering.Attach (Result.Scattering_Texture.GL_Texture, Color_Attachment_1);
          FBO_Scattering.Set_Draw_Buffers
            ((0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1));
@@ -713,20 +712,20 @@ package body Orka.Features.Atmosphere is
       --  contribution of one scattering order, which is needed to compute the next
       --  order of scattering (the final precomputed textures store the sum of all
       --  the scattering orders)
-      Delta_Irradiance_Texture : constant Textures.Texture (LE.Texture_2D)
+      Delta_Irradiance_Texture : constant Rendering.Textures.Texture (LE.Texture_2D)
         := Create_Texture (Constants.Irradiance_Texture_Width,
                            Constants.Irradiance_Texture_Height);
-      Delta_Rayleigh_Scattering_Texture : constant Textures.Texture (LE.Texture_3D)
+      Delta_Rayleigh_Scattering_Texture : constant Rendering.Textures.Texture (LE.Texture_3D)
         := Create_Texture (Constants.Scattering_Texture_Width,
                            Constants.Scattering_Texture_Height,
                            Constants.Scattering_Texture_Depth,
                            Object.Data.Half_Precision);
-      Delta_Mie_Scattering_Texture : constant Textures.Texture (LE.Texture_3D)
+      Delta_Mie_Scattering_Texture : constant Rendering.Textures.Texture (LE.Texture_3D)
         := Create_Texture (Constants.Scattering_Texture_Width,
                            Constants.Scattering_Texture_Height,
                            Constants.Scattering_Texture_Depth,
                            Object.Data.Half_Precision);
-      Delta_Scattering_Density_Texture : constant Textures.Texture (LE.Texture_3D)
+      Delta_Scattering_Density_Texture : constant Rendering.Textures.Texture (LE.Texture_3D)
         := Create_Texture (Constants.Scattering_Texture_Width,
                            Constants.Scattering_Texture_Height,
                            Constants.Scattering_Texture_Depth,
@@ -737,7 +736,7 @@ package body Orka.Features.Atmosphere is
       --  Delta_Mie_Scattering_Texture are only needed to compute double scattering.
       --  Therefore, to save memory, we can store Delta_Rayleigh_Scattering_Texture
       --  and Delta_Multiple_Scattering_Texture in the same GPU texture.
-      Delta_Multiple_Scattering_Texture : constant Textures.Texture (LE.Texture_3D)
+      Delta_Multiple_Scattering_Texture : constant Rendering.Textures.Texture (LE.Texture_3D)
         := Delta_Rayleigh_Scattering_Texture;
 
       --  Allocate the precomputed textures before precomputing them
@@ -847,7 +846,7 @@ package body Orka.Features.Atmosphere is
                Height => Constants.Transmittance_Texture_Height);
          begin
             FBO_Transmittance.Use_Framebuffer;
-            FBO_Transmittance.Attach (Textures.Transmittance_Texture);
+            FBO_Transmittance.Attach (Textures.Transmittance_Texture.GL_Texture);
             FBO_Transmittance.Set_Draw_Buffers
               ((0 => GL.Buffers.Color_Attachment0));
 
@@ -883,22 +882,21 @@ package body Orka.Features.Atmosphere is
    end Get_Shader;
 
    procedure Bind_Textures (Object : Precomputed_Textures) is
-      use all type Rendering.Textures.Indexed_Texture_Target;
    begin
       Object.Sampler.Bind (0);
       Object.Sampler.Bind (1);
       Object.Sampler.Bind (2);
       Object.Sampler.Bind (3);
 
-      Rendering.Textures.Bind (Object.Transmittance_Texture, Texture, 0);
-      Rendering.Textures.Bind (Object.Scattering_Texture, Texture, 1);
+      Object.Transmittance_Texture.Bind (0);
+      Object.Scattering_Texture.Bind (1);
 
       --  Only used by GetSunAndSkyIrradiance to compute radiance
       --  reflected by the ground
-      Rendering.Textures.Bind (Object.Irradiance_Texture, Texture, 2);
+      Object.Irradiance_Texture.Bind (2);
 
       if not Object.Combine_Scattering then
-         Rendering.Textures.Bind (Object.Optional_Single_Mie_Scattering_Texture, Texture, 3);
+         Object.Optional_Single_Mie_Scattering_Texture.Bind (3);
       end if;
    end Bind_Textures;
 

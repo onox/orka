@@ -28,7 +28,7 @@ package body Orka.Features.Terrain.Helpers is
      return Rendering.Programs.Modules.Module_Array
    is (Object.Modules_Terrain_Render);
 
-   function Height_Map (Object : Terrain_Planet) return GL.Objects.Textures.Texture is
+   function Height_Map (Object : Terrain_Planet) return Rendering.Textures.Texture is
      (Object.DMap);
 
    function Create_Terrain_Planet
@@ -72,9 +72,8 @@ package body Orka.Features.Terrain.Helpers is
 
       -------------------------------------------------------------------------
 
-      DMap : constant GL.Objects.Textures.Texture :=
+      DMap : constant Rendering.Textures.Texture :=
         Orka.Resources.Textures.KTX.Read_Texture (Location_Data, "terrain/terrain-dmap.ktx");
-      --  FIXME Should be separate textures for each tile
 
       Terrain_GLSL : constant String
         := Orka.Resources.Convert (Orka.Resources.Byte_Array'(Location_Data.Read_Data

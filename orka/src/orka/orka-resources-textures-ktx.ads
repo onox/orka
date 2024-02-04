@@ -14,8 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Objects.Textures;
-
+with Orka.Rendering.Textures;
 with Orka.Resources.Loaders;
 with Orka.Resources.Locations;
 with Orka.Resources.Managers;
@@ -28,10 +27,10 @@ package Orka.Resources.Textures.KTX is
 
    function Read_Texture
      (Location : Locations.Location_Ptr;
-      Path     : String) return GL.Objects.Textures.Texture;
+      Path     : String) return Rendering.Textures.Texture;
 
    procedure Write_Texture
-     (Texture  : GL.Objects.Textures.Texture;
+     (Texture  : Rendering.Textures.Texture;
       Location : Locations.Writable_Location_Ptr;
       Path     : String);
 

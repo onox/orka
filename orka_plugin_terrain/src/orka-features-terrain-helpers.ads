@@ -22,18 +22,15 @@ with Orka.Types;
 
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Textures;
 with Orka.Features.Atmosphere.Cache;
 with Orka.Features.Atmosphere.Rendering;
-
-with GL.Objects.Textures;
-
-private with GL.Low_Level.Enums;
 
 package Orka.Features.Terrain.Helpers is
 
    type Terrain_Planet is tagged limited private;
 
-   function Height_Map (Object : Terrain_Planet) return GL.Objects.Textures.Texture;
+   function Height_Map (Object : Terrain_Planet) return Rendering.Textures.Texture;
 
    function Render_Modules (Object : Terrain_Planet)
      return Rendering.Programs.Modules.Module_Array;
@@ -64,7 +61,7 @@ private
 
    use Orka.Cameras;
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
 
    type Terrain_Planet is tagged limited record
       Terrain_Transforms    : Rendering.Buffers.Buffer (Orka.Types.Single_Matrix_Type);
@@ -75,7 +72,7 @@ private
       Planet_Radius      : Orka.Float_32;
       Planet_Unit_Length : Orka.Float_32;
 
-      DMap : GL.Objects.Textures.Texture (LE.Texture_2D);
+      DMap : Rendering.Textures.Texture (LE.Texture_2D);
    end record;
 
 end Orka.Features.Terrain.Helpers;
