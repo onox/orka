@@ -170,7 +170,7 @@ package body Orka.Features.Terrain is
          Result.Uniform_Render_Subdiv := Result.Program_Render.Uniform ("u_MeshletSubdivision");
 
          declare
-            Program_Init : Program := Create_Program (Modules.Module_Array'
+            Program_Init : constant Program := Create_Program (Modules.Module_Array'
               (Module_LEB,
                Modules.Create_Module (Location, CS => "terrain/leb-init.comp")));
          begin

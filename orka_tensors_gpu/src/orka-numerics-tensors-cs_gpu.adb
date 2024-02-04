@@ -1025,7 +1025,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
          Needs_Shape : Boolean := False;
 
-         Kernel : Program :=
+         Kernel : constant Program :=
            (if Object.Operation.Kind = Matrix_Operation then
               (case Object.Operation.Matrix_Operation.Kind is
                  when Main_Diagonal       => Kernels.Program_Main_Diagonal (Object.Kind),
@@ -2405,7 +2405,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Kind   => From_Kind (Object.Kind),
             Length => Max_Reduction_Constants);
 
-         Kernel : Program := Get_Kernel (Buffer_Constants, Size_X);
+         Kernel : constant Program := Get_Kernel (Buffer_Constants, Size_X);
          Uniform_Identity : constant Uniforms.Uniform := Kernel.Uniform ("identity_value");
       begin
          case Element'Size is

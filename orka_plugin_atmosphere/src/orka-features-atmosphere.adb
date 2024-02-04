@@ -482,27 +482,27 @@ package body Orka.Features.Atmosphere is
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
              ("atmosphere/compute-scattering-density.frag").Get));
 
-      Program_Transmittance : Program := Create_Program (Modules.Module_Array'
+      Program_Transmittance : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Transmittance)));
 
-      Program_Direct_Irradiance : Program := Create_Program (Modules.Module_Array'
+      Program_Direct_Irradiance : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Direct_Irradiance)));
 
-      Program_Indirect_Irradiance : Program := Create_Program (Modules.Module_Array'
+      Program_Indirect_Irradiance : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Indirect_Irradiance)));
 
-      Program_Single_Scattering : Program := Create_Program (Modules.Module_Array'
+      Program_Single_Scattering : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS, Module_GS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Single_Scattering)));
 
-      Program_Multiple_Scattering : Program := Create_Program (Modules.Module_Array'
+      Program_Multiple_Scattering : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS, Module_GS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Multiple_Scattering)));
 
-      Program_Scattering_Density : Program := Create_Program (Modules.Module_Array'
+      Program_Scattering_Density : constant Program := Create_Program (Modules.Module_Array'
         (Module_VS, Module_GS,
          Modules.Create_Module_From_Sources (FS => Header & FS_Scattering_Density)));
 
@@ -838,7 +838,7 @@ package body Orka.Features.Atmosphere is
               := Convert (Resources.Byte_Array'(Object.Location.Read_Data
                 ("atmosphere/compute-transmittance.frag").Get));
 
-            Program_Transmittance : Program := Create_Program (Modules.Module_Array'
+            Program_Transmittance : constant Program := Create_Program (Modules.Module_Array'
               (Modules.Create_Module (Object.Location, VS => "oversized-triangle.vert"),
                Modules.Create_Module_From_Sources (FS => Header & FS_Transmittance)));
 
