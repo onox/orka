@@ -137,7 +137,7 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
-   type Program_Callback is access procedure (Program : in out Rendering.Programs.Program);
+   type Program_Callback is access procedure (Program : Rendering.Programs.Program);
 
    type Render_Pass_Index is new Positive;
    type Handle_Type is new Positive;
@@ -174,33 +174,24 @@ package Orka.Frame_Graphs is
 --   function Imported_Resources (Object : Frame_Graph) return Resource_Array;
 --   function Exported_Resources (Object : Frame_Graph) return Resource_Array;
 
-   type Renderable_Graph (<>) is tagged limited private;
-
-   function Cull
-     (Object  : Frame_Graph;
-      Present : Resource) return Renderable_Graph'Class;
-   --  Cull render passes in the frame graph which do not contribute to
-   --  the resource which must be presented
-
-   function Is_Initialized (Object : Renderable_Graph) return Boolean;
-
-   procedure Initialize
-     (Object   : in out Renderable_Graph;
-      Location : Resources.Locations.Location_Ptr;
-      Default  : Rendering.Framebuffers.Framebuffer)
-   with Pre  => not Object.Is_Initialized and Default.Default,
-        Post =>     Object.Is_Initialized;
+   type Renderable_Graph
+     (Maximum_Passes    : Render_Pass_Index;
+      Maximum_Resources : Handle_Type;
+      Graph             : not null access constant Frame_Graphs.Frame_Graph) is tagged limited private
+   with Type_Invariant => Renderable_Graph.Maximum_Passes = Renderable_Graph.Graph.Maximum_Passes
+                            and Renderable_Graph.Maximum_Resources = Renderable_Graph.Graph.Maximum_Resources;
 
    procedure Render
      (Object  : in out Renderable_Graph;
-      Context : in out Contexts.Context'Class)
-   with Pre => Object.Is_Initialized;
+      Context : in out Contexts.Context'Class;
+      Location    : Resources.Locations.Location_Ptr;
+      Framebuffer : Rendering.Framebuffers.Framebuffer;
+      Present : Resource);
    --  Render the resource which must be presented to the window of the given context
 
    ----------------------------------------------------------------------
 
-   procedure Log_Graph (Object : in out Renderable_Graph)
-     with Pre => Object.Is_Initialized;
+   procedure Log_Graph (Object : in out Renderable_Graph; Default : Rendering.Framebuffers.Framebuffer);
 
    procedure Write_Graph
      (Object   : in out Renderable_Graph;
@@ -216,6 +207,7 @@ package Orka.Frame_Graphs is
 private
 
    No_Render_Pass : constant Render_Pass_Index := Render_Pass_Index'Last;
+   No_Resource    : constant Handle_Type       := Handle_Type'Last;
 
    type Render_Pass
      (Frame_Graph : not null access Frame_Graphs.Frame_Graph) is tagged limited
@@ -225,15 +217,12 @@ private
 
    type Render_Pass_Data is record
       Name        : Name_Strings.Bounded_String;
-
       Side_Effect : Boolean;
-      Present     : Boolean;
 
       State    : Rendering.States.State;
       Program  : Rendering.Programs.Program;
       Callback : Program_Callback;
 
-      References  : Natural := 0;
       Read_Offset, Write_Offset : Positive := 1;
       Read_Count, Write_Count   : Natural  := 0;
 
@@ -256,7 +245,6 @@ private
       Render_Pass    : Render_Pass_Index := No_Render_Pass;
       --  The render pass that writes to this resource, No_Render_Pass if none
       Read_Count     : Natural := 0;
-      References     : Natural := 0;
    end record;
 
    package Pass_Vectors     is new Containers.Bounded_Vectors (Render_Pass_Index, Render_Pass_Data);
@@ -291,8 +279,6 @@ private
       --
       --  This restriction allows the graph to be implemented using just
       --  four simple arrays and the arrays should provide good data locality.
-
-      Present_Pass : Render_Pass_Index := No_Render_Pass;
    end record;
 
    -----------------------------------------------------------------------------
@@ -300,21 +286,24 @@ private
    package Framebuffer_Holders is new Ada.Containers.Indefinite_Holders
      (Element_Type => Rendering.Framebuffers.Framebuffer, "=" => Rendering.Framebuffers."=");
 
-   type Framebuffer_Pass is record
-      Index       : Render_Pass_Index;
-      Framebuffer : Framebuffer_Holders.Holder;
+   type Framebuffer_State is record
+      Clear_Mask      : GL.Buffers.Buffer_Bits := (others => False);
+      Invalidate_Mask : GL.Buffers.Buffer_Bits := (others => False);
 
-      Clear_Mask      : GL.Buffers.Buffer_Bits;
-      Invalidate_Mask : GL.Buffers.Buffer_Bits;
-
-      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7);
-      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7);
+      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
+      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
       Buffers_Equal   : Boolean;
 
-      Invalidate_Points : Rendering.Framebuffers.Use_Point_Array;
+      Invalidate_Points : Rendering.Framebuffers.Use_Point_Array := (others => False);
 
       Depth_Writes   : Boolean;
       Stencil_Writes : Boolean;
+   end record;
+
+   type Framebuffer_Pass is record
+      Index       : Render_Pass_Index;
+      Framebuffer : Framebuffer_Holders.Holder;
+      State       : Framebuffer_State;
    end record;
 
    package Framebuffer_Pass_Vectors is new Containers.Bounded_Vectors
@@ -322,17 +311,31 @@ private
 
    type Present_Mode_Type is (Use_Default, Blit_To_Default, Render_To_Default);
 
+   type Render_Pass_References_Array is array (Render_Pass_Index range <>) of Natural;
+   type Resource_References_Array    is array (Handle_Type range <>) of Natural;
+
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
-      Maximum_Handles   : Positive;
-      Maximum_Resources : Handle_Type) is tagged limited
+      Maximum_Resources : Handle_Type;
+      Graph             : not null access constant Frame_Graphs.Frame_Graph) is tagged limited
    record
-      Graph           : Frame_Graph (Maximum_Passes, Maximum_Handles, Maximum_Resources);
       Framebuffers    : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
-      Present_Mode    : Present_Mode_Type;
-      Present_Program : Rendering.Programs.Program;
-      Last_Pass_Index : Render_Pass_Index;
-      Initialized     : Boolean;
+      --  Example with 2 passes + present pass:
+      --
+      --  case Present_Mode is         P1  P2      Present
+      --     when Render_To_Default => FB1 FB2     DEFAULT
+      --     when Blit_To_Default   => FB1 FB2     DEFAULT
+      --     when Use_Default       => FB1 DEFAULT n/a
+
+      Present_Mode        : Present_Mode_Type;
+      Present_Render_Pass : Render_Pass_Data;  --  Program used when Present_Mode = Render_To_Default
+
+      Last_FB_Index    : Render_Pass_Index;                    --  Used when Present_Mode = Blit_To_Default
+      Present_Pass     : Render_Pass_Index := No_Render_Pass;  --  Used when Present_Mode = Use_Default
+      Present_Resource : Handle_Type       := No_Resource;
+
+      Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := (others => 0);
+      Resource_References    : Resource_References_Array (1 .. Maximum_Resources) := (others => 0);
    end record;
 
 end Orka.Frame_Graphs;

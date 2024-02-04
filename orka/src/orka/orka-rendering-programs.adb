@@ -45,7 +45,7 @@ package body Orka.Rendering.Programs is
       return Create_Program (Modules.Module_Array'(1 => Module), Separable);
    end Create_Program;
 
-   procedure Use_Program (Object : in out Program) is
+   procedure Use_Program (Object : Program) is
    begin
       Object.GL_Program.Use_Program;
    end Use_Program;

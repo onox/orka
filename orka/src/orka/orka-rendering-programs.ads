@@ -36,7 +36,7 @@ package Orka.Rendering.Programs is
    function Create_Program (Modules   : Programs.Modules.Module_Array;
                             Separable : Boolean := False) return Program;
 
-   procedure Use_Program (Object : in out Program);
+   procedure Use_Program (Object : Program);
    --  Use the program during rendering
 
    function Compute_Work_Group_Size
