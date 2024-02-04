@@ -24,7 +24,6 @@ package Orka.Rendering.Textures is
    package LE renames GL.Low_Level.Enums;
 
    use all type LE.Texture_Kind;
-   use all type GL.Objects.Textures.Dimension_Count;
 
    type Indexed_Texture_Target is (Texture, Image);
 

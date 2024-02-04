@@ -35,7 +35,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
          Result.Buffer  := Buffers.Create_Buffer (Storage_Flags, Kind, Total_Length);
          Result.Index   := 0;
          Result.Regions := Regions;
-         Result.Offset  := Length * Natural (Result.Index);
+         Result.Offset  := Length * Result.Index;
 
          Result.Map (Size (Total_Length), Access_Flags);
       end return;
@@ -48,7 +48,7 @@ package body Orka.Rendering.Buffers.Mapped.Persistent is
    procedure Advance_Index (Object : in out Persistent_Mapped_Buffer) is
    begin
       Object.Index  := (Object.Index + 1) mod Object.Regions;
-      Object.Offset := Object.Length * Natural (Object.Index);
+      Object.Offset := Object.Length * Object.Index;
    end Advance_Index;
 
 end Orka.Rendering.Buffers.Mapped.Persistent;
