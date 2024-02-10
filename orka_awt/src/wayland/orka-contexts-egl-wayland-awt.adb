@@ -129,7 +129,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
    overriding
    function Create_Window
-     (Context            : aliased Orka.Contexts.Surface_Context'Class;
+     (Context            : aliased in out Orka.Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;
@@ -162,7 +162,7 @@ package body Orka.Contexts.EGL.Wayland.AWT is
 
       Object : AWT_Context renames AWT_Context (Context);
    begin
-      return Result : AWT_Window do
+      return Result : AWT_Window (Context => Object'Access) do
          declare
             Configs : constant EGL_Configs.Config_Array :=
               EGL_Configs.Get_Configs

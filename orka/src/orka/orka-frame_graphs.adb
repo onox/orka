@@ -24,6 +24,7 @@ with Ada.Unchecked_Conversion;
 with GL.Toggles;
 with GL.Types;
 
+with Orka.Contexts;
 with Orka.Logging.Default;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
@@ -1212,11 +1213,13 @@ package body Orka.Frame_Graphs is
 
    procedure Render
      (Object  : in out Renderable_Graph;
-      Context : in out Contexts.Context'Class;
-      Location    : Resources.Locations.Location_Ptr;
-      Framebuffer : Rendering.Framebuffers.Framebuffer;
-      Present : Resource)
+      Window  : Orka.Windows.Window'Class;
+      Present : Resource;
+      Location : Resources.Locations.Location_Ptr)
    is
+      Default_Framebuffer : constant Orka.Rendering.Framebuffers.Framebuffer :=
+        Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Window.Width, Window.Height);
+
       Index : Handle_Type;
       Found : Boolean;
    begin
@@ -1235,10 +1238,10 @@ package body Orka.Frame_Graphs is
          Object.Cull;
 
          Object.Framebuffers.Clear;
-         Object.Initialize (Location, Framebuffer);
+         Object.Initialize (Location, Default_Framebuffer);
       end if;
 
-      Object.Render (Context, Framebuffer);
+      Object.Render (Window.Context.all, Default_Framebuffer);
    end Render;
 
    ----------------------------------------------------------------------

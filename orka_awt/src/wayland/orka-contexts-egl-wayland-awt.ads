@@ -29,11 +29,12 @@ package Orka.Contexts.EGL.Wayland.AWT is
      (Version : Orka.Contexts.Context_Version;
       Flags   : Orka.Contexts.Context_Flags := (others => False)) return AWT_Context;
 
-   type AWT_Window is limited new Orka.Windows.Window and Standard.AWT.Windows.Window with private;
+   type AWT_Window (Context : not null access AWT_Context) is
+     limited new Orka.Windows.Window and Standard.AWT.Windows.Window with private;
 
    overriding
    function Create_Window
-     (Context            : aliased Orka.Contexts.Surface_Context'Class;
+     (Context            : aliased in out Orka.Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;
@@ -59,11 +60,16 @@ private
      (Object : AWT_Context;
       Window : in out Orka.Windows.Window'Class);
 
-   type AWT_Window is limited new Standard.AWT.Wayland.Windows.Wayland_Window
-     and Orka.Windows.Window with
+   type AWT_Window (Context : not null access AWT_Context) is
+     limited new Standard.AWT.Wayland.Windows.Wayland_Window and Orka.Windows.Window with
    record
       Resize : Boolean := False with Atomic;
    end record;
+
+   overriding
+   function Context (Object : AWT_Window) return
+     not null access Orka.Contexts.Surface_Context'Class
+   is (Object.Context);
 
    overriding
    function Width (Object : AWT_Window) return Positive;

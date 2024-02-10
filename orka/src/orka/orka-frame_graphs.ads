@@ -18,7 +18,7 @@ with Ada.Strings.Bounded;
 
 with GL.Pixels;
 
-with Orka.Contexts;
+with Orka.Windows;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs;
 with Orka.Rendering.States;
@@ -183,11 +183,10 @@ package Orka.Frame_Graphs is
 
    procedure Render
      (Object  : in out Renderable_Graph;
-      Context : in out Contexts.Context'Class;
-      Location    : Resources.Locations.Location_Ptr;
-      Framebuffer : Rendering.Framebuffers.Framebuffer;
-      Present : Resource);
-   --  Render the resource which must be presented to the window of the given context
+      Window  : Orka.Windows.Window'Class;
+      Present : Resource;
+      Location : Resources.Locations.Location_Ptr);
+   --  Render the resource which must be presented to the given window
 
    ----------------------------------------------------------------------
 

@@ -109,7 +109,7 @@ package body Package_Test is
 
    overriding
    function Create_Window
-     (Context            : aliased Orka.Contexts.Surface_Context'Class;
+     (Context            : aliased in out Orka.Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;
@@ -117,11 +117,13 @@ package body Package_Test is
       Transparent        : Boolean := False) return Test_Window is
    begin
       return Result : constant Test_Window :=
-        (Orka.Contexts.AWT.Create_Window
-          (Context, Width, Height, Title, Samples,
-           Visible     => Visible,
-           Resizable   => Resizable,
-           Transparent => Transparent) with others => <>);
+        (Orka.Contexts.AWT.AWT_Window'
+          (Orka.Contexts.AWT.Create_Window
+             (Context, Width, Height, Title, Samples,
+              Visible     => Visible,
+              Resizable   => Resizable,
+              Transparent => Transparent))
+           with others => <>);
    end Create_Window;
 
 end Package_Test;

@@ -21,8 +21,10 @@ package Orka.Windows is
 
    type Window is limited interface;
 
+   function Context (Object : Window) return not null access Orka.Contexts.Surface_Context'Class is abstract;
+
    function Create_Window
-     (Context            : aliased Contexts.Surface_Context'Class;
+     (Context            : aliased in out Orka.Contexts.Surface_Context'Class;
       Width, Height      : Positive;
       Title              : String  := "";
       Samples            : Natural := 0;
