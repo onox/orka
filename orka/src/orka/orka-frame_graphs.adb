@@ -83,14 +83,14 @@ package body Orka.Frame_Graphs is
    procedure Log_Resource (Value : Resource) is
    begin
       Log (Debug, "    " & (+Value.Name) & ":");
-      Log (Debug, "      kind:     " & Value.Kind'Image);
-      Log (Debug, "      format:   " & Value.Format'Image);
-      Log (Debug, "      size:     " & Trim_Image (Value.Size));
-      Log (Debug, "      samples:  " & Trim_Image (Value.Samples));
+      Log (Debug, "      kind:     " & Value.Description.Kind'Image);
+      Log (Debug, "      format:   " & Value.Description.Format'Image);
+      Log (Debug, "      size:     " & Trim_Image (Value.Description.Size));
+      Log (Debug, "      samples:  " & Trim_Image (Value.Description.Samples));
       Log (Debug, "      version:  " & Trim_Image (Natural (Value.Version)));
    end Log_Resource;
 
-   function Name (Object : Resource_Data) return String is (+Object.Description.Name);
+   function Name (Object : Resource_Data) return String is (+Object.Data.Name);
 
    function "+" (Value : Name_Strings.Bounded_String) return String is
      (Name_Strings.To_String (Value));
@@ -116,13 +116,13 @@ package body Orka.Frame_Graphs is
       Found := False;
       for Index in 1 .. Object.Resources.Length loop
          declare
-            Description : Resource renames Object.Resources (Index).Description;
-            Implicit    : Boolean  renames Object.Resources (Index).Implicit;
+            Data     : Resource renames Object.Resources (Index).Data;
+            Implicit : Boolean  renames Object.Resources (Index).Implicit;
          begin
-            if Subject.Name = Description.Name and Subject.Version = Description.Version
+            if Subject.Name = Data.Name and Subject.Version = Data.Version
               and not Implicit
             then
-               if Description /= Subject then
+               if Data /= Subject then
                   raise Constraint_Error with
                     "Already added different resource '" & (+Subject.Name) & "'";
                end if;
@@ -146,8 +146,8 @@ package body Orka.Frame_Graphs is
 
       if not Found then
          Object.Resources.Append
-           ((Description => Subject,
-             others      => <>));
+           ((Data   => Subject,
+             others => <>));
          Handle := Object.Resources.Length;
       end if;
    end Add_Resource;
@@ -231,13 +231,7 @@ package body Orka.Frame_Graphs is
    exception
       when Constraint_Error =>
          declare
-            Result : Texture := Create_Texture
-              ((Kind    => Subject.Kind,
-                Format  => Subject.Format,
-                Size    => Subject.Size,
-                Levels  => Subject.Levels,
-                Samples => Subject.Samples,
-                others  => <>));
+            Result : Texture := Create_Texture (Subject.Description);
          begin
             Textures.Insert (+Subject.Name, Result);
             return Result;
@@ -286,7 +280,7 @@ package body Orka.Frame_Graphs is
    is
       Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
-      Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Format);
+      Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Description.Format);
    begin
       if Pass.Write_Count > 0 and then
          Pass.Write_Offset + Pass.Write_Count /= Graph.Write_Handles.Length + 1
@@ -360,7 +354,7 @@ package body Orka.Frame_Graphs is
       Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
 
-      Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Format);
+      Attachment : constant Attachment_Format := Get_Attachment_Format (Subject.Description.Format);
    begin
       if Pass.Read_Count > 0 and then
         Pass.Read_Offset + Pass.Read_Count /= Graph.Read_Handles.Length + 1
@@ -566,7 +560,7 @@ package body Orka.Frame_Graphs is
                  (Object.Graph.Read_Handles (Pass.Read_Offset + Index - 1));
             begin
                Result (Index) := (Mode     => Data.Input_Mode,
-                                  Data     => Data.Description,
+                                  Data     => Data.Data,
                                   Binding  => Data.Input_Binding,
                                   Written  => Data.Render_Pass /= No_Render_Pass,
                                   Implicit => Data.Implicit);
@@ -587,7 +581,7 @@ package body Orka.Frame_Graphs is
                References : Natural renames Object.Resource_References (Handle);
             begin
                Result (Index) := (Mode     => Data.Output_Mode,
-                                  Data     => Data.Description,
+                                  Data     => Data.Data,
                                   Binding  => Data.Output_Binding,
                                   Read     => References > 0,
                                   Implicit => Data.Implicit);
@@ -608,7 +602,7 @@ package body Orka.Frame_Graphs is
       Default_Size : constant Size_3D := (Default.Width, Default.Height, 1);
 
       Format : constant Attachment_Format :=
-        Get_Attachment_Format (Resource.Description.Format);
+        Get_Attachment_Format (Resource.Data.Description.Format);
 
       Attachments : Natural := 0;
       Has_Non_Color_Attachment : Boolean := False;
@@ -658,7 +652,7 @@ package body Orka.Frame_Graphs is
       else
          for Last_Resource of Object.Output_Resources (Last_Render_Pass) loop
             if Last_Resource.Mode = Framebuffer_Attachment then
-               case Get_Attachment_Format (Last_Resource.Data.Format) is
+               case Get_Attachment_Format (Last_Resource.Data.Description.Format) is
                   when Color =>
                      Attachments := Attachments + 1;
                   when Depth | Depth_Stencil | Stencil =>
@@ -670,15 +664,15 @@ package body Orka.Frame_Graphs is
          end loop;
 
          if Attachments = 1 and not Has_Non_Color_Attachment
-           and Resource.Description.Kind = Texture_2D
-           and Resource.Description.Size = Default_Size
-           and Resource.Description.Samples = Natural (Default.Samples)
+           and Resource.Data.Description.Kind = Texture_2D
+           and Resource.Data.Description.Size = Default_Size
+           and Resource.Data.Description.Samples = Natural (Default.Samples)
          then
             --  Mode 1: Use Default as the framebuffer of Last_Render_Pass
             Object.Present_Mode := Use_Default;
 
             Log (Debug, "Presenting " & Name (Resource) & " using default framebuffer");
-         elsif Resource.Description.Kind in Texture_2D | Texture_2D_Multisample then
+         elsif Resource.Data.Description.Kind in Texture_2D | Texture_2D_Multisample then
             --  Mode 2
             Object.Present_Mode := Blit_To_Default;
 
@@ -695,20 +689,20 @@ package body Orka.Frame_Graphs is
                end if;
             end if;
 
-            if Resource.Description.Kind /= Texture_2D then
-               Log (Warning, "  kind: " & Resource.Description.Kind'Image &
+            if Resource.Data.Description.Kind /= Texture_2D then
+               Log (Warning, "  kind: " & Resource.Data.Description.Kind'Image &
                  " (/= " & Texture_2D'Image & ")");
             end if;
 
-            if Resource.Description.Size /= Default_Size then
+            if Resource.Data.Description.Size /= Default_Size then
                Log (Warning, "  scaling: from " &
-                 Trim_Image (Resource.Description.Size) & " to " &
+                 Trim_Image (Resource.Data.Description.Size) & " to " &
                  Trim_Image (Default_Size));
             end if;
 
-            if Resource.Description.Samples /= Natural (Default.Samples) then
+            if Resource.Data.Description.Samples /= Natural (Default.Samples) then
                Log (Warning, "  samples: " &
-                 Trim_Image (Resource.Description.Samples) & " (/= " &
+                 Trim_Image (Resource.Data.Description.Samples) & " (/= " &
                  Trim_Image (Natural (Default.Samples)) & ")");
             end if;
          end if;
@@ -730,7 +724,8 @@ package body Orka.Frame_Graphs is
       function To_Attachment_Point (Value : Attachment_Point) return Point_Type is
         (Point_Type'Val (Point_Type'Pos (Point_Type'First) + Value));
 
-      --  Look up the last render pass *before* the present pass (e.g. the pass which writes to the presented resource)
+      --  Look up the last render pass *before* the present pass
+      --  (e.g. the pass which writes to the presented resource)
       Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
       Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
    begin
@@ -758,7 +753,7 @@ package body Orka.Frame_Graphs is
                   if Resource.Mode = Framebuffer_Attachment then
                      Clear_Buffer := not Resource.Written;
 
-                     case Get_Attachment_Format (Resource.Data.Format) is
+                     case Get_Attachment_Format (Resource.Data.Description.Format) is
                         when Depth_Stencil =>
                            State.Clear_Mask.Depth   := Clear_Buffer;
                            State.Clear_Mask.Stencil := Clear_Buffer;
@@ -785,9 +780,9 @@ package body Orka.Frame_Graphs is
                      Invalidate_Buffer := not Resource.Read;
 
                      Samples_Attachments :=
-                       Natural'Max (Samples_Attachments, Resource.Data.Samples);
+                       Natural'Max (Samples_Attachments, Resource.Data.Description.Samples);
 
-                     case Get_Attachment_Format (Resource.Data.Format) is
+                     case Get_Attachment_Format (Resource.Data.Description.Format) is
                         when Depth_Stencil =>
                            State.Invalidate_Mask.Depth   := Invalidate_Buffer;
                            State.Invalidate_Mask.Stencil := Invalidate_Buffer;
@@ -824,8 +819,8 @@ package body Orka.Frame_Graphs is
                   --  GL spec allows for them to be different. Furthermore,
                   --  a framebuffer may have zero attachments, so iterate over
                   --  all resources irrespective of their write mode.
-                  Width  := Size'Max (Width, Resource.Data.Size (X));
-                  Height := Size'Max (Height, Resource.Data.Size (Y));
+                  Width  := Size'Max (Width, Resource.Data.Description.Size (X));
+                  Height := Size'Max (Height, Resource.Data.Description.Size (Y));
                end loop;
 
                if Pass.Write_Count = 0 then
@@ -900,8 +895,8 @@ package body Orka.Frame_Graphs is
                            --  Compute the point of the resource read by the present pass
                            for Resource of Object.Output_Resources (Pass) loop
                               if Resource.Mode = Framebuffer_Attachment
-                                 and Get_Attachment_Format (Resource.Data.Format) = Color
-                                 and Resource.Data = Present_Resource.Description
+                                 and Get_Attachment_Format (Resource.Data.Description.Format) = Color
+                                 and Resource.Data = Present_Resource.Data
                               then
                                  Framebuffer.Set_Read_Buffer
                                    (To_Color_Buffer (Resource.Binding));
@@ -917,7 +912,7 @@ package body Orka.Frame_Graphs is
                            if Resource.Mode = Framebuffer_Attachment then
                               --  TODO Support attaching layer of resource
                               --       using value in 1 .. Resource.Data.Size (Z)
-                              if Get_Attachment_Format (Resource.Data.Format) /= Color then
+                              if Get_Attachment_Format (Resource.Data.Description.Format) /= Color then
                                  Framebuffer.Attach (Get_Texture (Resource.Data).GL_Texture);
                               else
                                  Framebuffer.Attach
@@ -1052,7 +1047,7 @@ package body Orka.Frame_Graphs is
                Input_Resources =>
                  (1 =>
                    (Mode     => Texture_Read,
-                    Data     => Present_Resource.Description,
+                    Data     => Present_Resource.Data,
                     Binding  => 0,
                     Written  => True,
                     Implicit => False)),
@@ -1188,7 +1183,7 @@ package body Orka.Frame_Graphs is
       if Object.Present_Mode /= Use_Default then
          declare
             Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
-            Attachment : constant Attachment_Format := Get_Attachment_Format (Present_Resource.Description.Format);
+            Attachment : constant Attachment_Format := Get_Attachment_Format (Present_Resource.Data.Description.Format);
 
             Default_Framebuffer : Rendering.Framebuffers.Framebuffer := Default;
          begin
@@ -1201,7 +1196,7 @@ package body Orka.Frame_Graphs is
                Input_Resources  =>
                  (1 =>
                    (Mode     => Texture_Read,
-                    Data     => Present_Resource.Description,
+                    Data     => Present_Resource.Data,
                     Binding  => 0,
                     Written  => True,
                     Implicit => False)),
@@ -1310,10 +1305,10 @@ package body Orka.Frame_Graphs is
          begin
             Append_Comma;
             SU.Append (Result, '{');
-            Append ("name", Image (+Resource.Description.Name), True);
-            Append ("kind", Image (Resource.Description.Kind'Image), True);
-            Append ("format", Image (Resource.Description.Format'Image), True);
-            Append ("version", Image (Natural (Resource.Description.Version)), True);
+            Append ("name", Image (+Resource.Data.Name), True);
+            Append ("kind", Image (Resource.Data.Description.Kind'Image), True);
+            Append ("format", Image (Resource.Data.Description.Format'Image), True);
+            Append ("version", Image (Natural (Resource.Data.Version)), True);
             Append ("implicit", Image (Resource.Implicit), True);
             Append ("readMode", Image (Resource.Input_Mode'Image), True);
             Append ("writeMode", Image (Resource.Output_Mode'Image), True);

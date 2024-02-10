@@ -44,7 +44,7 @@ package Orka.Rendering.Textures is
    type Texture_Description is record
       Kind    : LE.Texture_Kind;
       Format  : GL.Pixels.Internal_Format;
-      Size    : Size_3D;
+      Size    : Size_3D  := (others => 1);
       Levels  : Positive := 1;
       Layers  : Positive := 1;
       Samples : Natural  := 0;

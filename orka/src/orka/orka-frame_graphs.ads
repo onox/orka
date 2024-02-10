@@ -49,21 +49,15 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
-   type Face_Kind is range 0 .. 5;
+--   type Face_Kind is range 0 .. 5;
 
    type Resource_Version is private;
 
    type Resource is record
-      Name    : Name_Strings.Bounded_String;
-      Kind    : Rendering.Textures.LE.Texture_Kind;
-      Format  : GL.Pixels.Internal_Format;
-      Size    : Size_3D  := (others => 1);
-      Levels  : Positive := 1;
-      Layers  : Positive := 1;
-      Samples : Natural  := 0;
-      Version : Resource_Version;
-   end record
-     with Dynamic_Predicate => (if not Has_Layers (Resource.Kind) then Resource.Layers = 1);
+      Name        : Name_Strings.Bounded_String;
+      Description : Orka.Rendering.Textures.Texture_Description;
+      Version     : Resource_Version;
+   end record;
 
    --  FIXME Implement functions Layer, Face, Level, and Resolve
 --   function Layer (Object : Resource; Layer : Natural) return Resource
@@ -112,7 +106,7 @@ package Orka.Frame_Graphs is
       Binding : Binding_Point)
    with Pre => (if Mode = Framebuffer_Attachment then
                   Binding in Attachment_Point
-                    and Rendering.Textures.Get_Format_Kind (Subject.Format) /= Color);
+                    and Rendering.Textures.Get_Format_Kind (Subject.Description.Format) /= Color);
    --  Add the given resource as an input to the render pass, so that it
    --  can be read as a texture, an image, or used as an attachment of a framebuffer
 
@@ -234,7 +228,7 @@ private
    --  Version will be 0 if added as implicit input
 
    type Resource_Data is record
-      Description    : Resource;
+      Data           : Resource;
       Modified       : Boolean    := False;  --  True if there is a next version of this resource
       Implicit       : Boolean    := False;  --  Internally added for framebuffer attachments
       Input_Mode     : Read_Mode  := Not_Used;
