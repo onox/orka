@@ -279,7 +279,12 @@ package body Orka.KTX is
       Compressed : Boolean renames KTX_Header.Compressed;
 
       Type_Size : constant Size
-        := (if Compressed then 1 else PE.Bytes (KTX_Header.Data_Type));
+        := (if Compressed then
+              1
+            elsif KTX_Header.Data_Type in PE.Non_Packed_Data_Type then
+              PE.Bytes (KTX_Header.Data_Type)
+            else
+              PE.Packed_Bytes (KTX_Header.Data_Type));
 
       Faces : constant Unsigned_32
         := (if KTX_Header.Kind in Texture_Cube_Map | Texture_Cube_Map_Array then 6 else 1);

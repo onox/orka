@@ -33,6 +33,8 @@ with Orka.Strings;
 
 package body Orka.Resources.Textures.KTX is
 
+   package PE renames GL.Pixels.Extensions;
+
    use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
@@ -76,18 +78,14 @@ package body Orka.Resources.Textures.KTX is
 
          Texture  : GL.Objects.Textures.Texture (Header.Kind);
 
+         Is_Packed  : constant Boolean := Header.Data_Type in PE.Packed_Data_Type;
+         Components : constant Positive := Integer (PE.Components (Header.Format));
+
          Width  : constant Size := Header.Width;
          Height :          Size := Header.Height;
          Depth  :          Size := Header.Depth;
       begin
          T3 := Orka.OS.Monotonic_Clock;
-
-         if not Header.Compressed
-           and then Header.Data_Type in GL.Pixels.Extensions.Packed_Data_Type
-         then
-            raise GL.Feature_Not_Supported_Exception with
-              "Packed data type " & Header.Data_Type'Image & " is not supported yet";
-         end if;
 
          --  Allocate storage
          case Header.Kind is
@@ -192,7 +190,7 @@ package body Orka.Resources.Textures.KTX is
                         Original_Alignment : constant GL.Pixels.Alignment :=
                           GL.Pixels.Unpack_Alignment;
                      begin
-                        GL.Pixels.Set_Unpack_Alignment (GL.Pixels.Words);
+                        GL.Pixels.Set_Unpack_Alignment (if Is_Packed then GL.Pixels.Bytes else GL.Pixels.Words);
                         Texture.Load_From_Data (Level, 0, 0, 0,
                           Level_Width, Level_Height, Level_Depth,
                           Header.Format, Header.Data_Type, Image_Data);
@@ -225,8 +223,11 @@ package body Orka.Resources.Textures.KTX is
             Log (Info, "  format: " & Header.Compressed_Format'Image);
          else
             Log (Info, "  format: " & Header.Internal_Format'Image &
-              " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
-              "x " & Header.Data_Type'Image & ")");
+              (if Is_Packed then
+                 " (packed with " & Trim_Image (Components) & " components)"
+               else
+                 " (" & Trim_Image (Components) &
+                 "x " & Header.Data_Type'Image & ")"));
          end if;
 
          Log (Debug, "  timing:");
@@ -318,10 +319,6 @@ package body Orka.Resources.Textures.KTX is
    is
       package Textures renames GL.Objects.Textures;
 
-      Format    : GL.Pixels.Format    := GL.Pixels.RGBA;
-      Data_Type : GL.Pixels.Data_Type := GL.Pixels.Float;
-      --  Note: unused if texture is compressed
-
       Base_Level : constant := 0;
 
       use Ada.Streams;
@@ -369,10 +366,23 @@ package body Orka.Resources.Textures.KTX is
         (Level : Textures.Mipmap_Level) return Byte_Array_Pointers.Pointer
       is
          Data : Pointers.Element_Array_Access;
+
+         Internal_Format : constant GL.Pixels.Internal_Format
+           := Texture.Internal_Format;
+
+         Format    : constant GL.Pixels.Format    := PE.Texture_Format    (Internal_Format);
+         Data_Type : constant GL.Pixels.Data_Type := PE.Texture_Data_Type (Internal_Format);
+
+         Is_Packed  : constant Boolean := Data_Type in PE.Packed_Data_Type;
+
+         Original_Alignment : constant GL.Pixels.Alignment :=
+           GL.Pixels.Pack_Alignment;
       begin
+         GL.Pixels.Set_Pack_Alignment (if Is_Packed then GL.Pixels.Bytes else GL.Pixels.Words);
          Data := Pointers.Get_Data (Texture, Level, 0, 0, 0,
            Texture.Width (Level), Texture.Height (Level), Texture.Depth (Level),
            Format, Data_Type);
+         GL.Pixels.Set_Pack_Alignment (Original_Alignment);
          return Convert (Data);
       end Get_Data;
 
@@ -431,21 +441,14 @@ package body Orka.Resources.Textures.KTX is
          declare
             Internal_Format : constant GL.Pixels.Internal_Format
               := Texture.Internal_Format;
-         begin
-            Format    := GL.Pixels.Extensions.Texture_Format    (Internal_Format);
-            Data_Type := GL.Pixels.Extensions.Texture_Data_Type (Internal_Format);
 
+            Format    : constant GL.Pixels.Format    := PE.Texture_Format    (Internal_Format);
+            Data_Type : constant GL.Pixels.Data_Type := PE.Texture_Data_Type (Internal_Format);
+         begin
             Header.Internal_Format := Internal_Format;
             Header.Format    := Format;
             Header.Data_Type := Data_Type;
          end;
-      end if;
-
-      if not Header.Compressed
-        and then Header.Data_Type in GL.Pixels.Extensions.Packed_Data_Type
-      then
-         raise GL.Feature_Not_Supported_Exception with
-           "Packed data type " & Header.Data_Type'Image & " is not supported yet";
       end if;
 
       T2 := Orka.OS.Monotonic_Clock;
@@ -459,6 +462,9 @@ package body Orka.Resources.Textures.KTX is
 
          Bytes : constant Byte_Array_Pointers.Pointer
            := Orka.KTX.Create_KTX_Bytes (Header, Get_Level_Data'Access);
+
+         Is_Packed  : constant Boolean := Header.Data_Type in PE.Packed_Data_Type;
+         Components : constant Positive := Integer (PE.Components (Header.Format));
       begin
          T3 := Orka.OS.Monotonic_Clock;
 
@@ -479,8 +485,11 @@ package body Orka.Resources.Textures.KTX is
             Log (Info, "  format: " & Texture.Compressed_Format'Image);
          else
             Log (Info, "  format: " & Texture.Internal_Format'Image &
-              " (" & Trim_Image (Integer (GL.Pixels.Extensions.Components (Header.Format))) &
-              "x " & Header.Data_Type'Image & ")");
+              (if Is_Packed then
+                 " (packed with " & Trim_Image (Components) & " components)"
+               else
+                 " (" & Trim_Image (Components) &
+                 "x " & Header.Data_Type'Image & ")"));
          end if;
 
          Log (Debug, "  timing:");

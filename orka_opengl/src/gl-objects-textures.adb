@@ -607,18 +607,24 @@ package body GL.Objects.Textures is
          X, Y, Z              : Types.Size := 0;
          Width, Height, Depth : Types.Positive_Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
+         Data_Type : Pixels.Data_Type) return not null Element_Array_Access
       is
+         Is_Packed : constant Boolean := Data_Type in PE.Packed_Data_Type;
+
+         Bytes_Data_Type : constant Byte_Count :=
+           (if Is_Packed then PE.Packed_Bytes (Data_Type) else PE.Bytes (Data_Type));
+
          --  Texture data is considered to be unpacked. When retrieving
          --  it from a texture, it will be packed. Therefore, each row
          --  must be a multiple of the current pack alignment. Call
          --  Set_Pack_Alignment if necessary.
          Alignment : constant Byte_Count := PE.Byte_Alignment (Pixels.Pack_Alignment);
-         pragma Assert ((Width * PE.Bytes (Data_Type)) mod Alignment = 0);
+         pragma Assert ((Width * Bytes_Data_Type) mod Alignment = 0);
 
          Bytes_Per_Element : constant Int := Pointers.Element'Size / System.Storage_Unit;
-         Bytes_Per_Texel   : constant Int := PE.Components (Format) * PE.Bytes (Data_Type);
-         --  TODO Handle packed data types and depth/stencil formats (see Table 8.5)
+         Bytes_Per_Texel   : constant Int :=
+           (if Is_Packed then Bytes_Data_Type else PE.Components (Format) * PE.Bytes (Data_Type));
+         --  See packed data types and depth/stencil formats (see Table 8.5)
          pragma Assert (Bytes_Per_Texel rem Bytes_Per_Element = 0);
 
          Texels : constant Size := Width * Height * Depth;

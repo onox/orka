@@ -320,7 +320,7 @@ package GL.Objects.Textures is
          X, Y, Z              : Types.Size := 0;
          Width, Height, Depth : Types.Positive_Size;
          Format    : Pixels.Format;
-         Data_Type : PE.Non_Packed_Data_Type) return not null Element_Array_Access
+         Data_Type : Pixels.Data_Type) return not null Element_Array_Access
       with Pre => Object.Allocated and
                     not Object.Compressed and PE.Compatible (Format, Data_Type);
 
