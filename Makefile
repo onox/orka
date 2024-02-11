@@ -1,5 +1,5 @@
 ALR_CLEAN = alr clean -- -p
-ALR_BUILD = alr build --validation
+ALR_BUILD = alr build --development --profiles="*=development"
 
 .PHONY: build examples tools tests coverage docs clean
 
@@ -21,10 +21,10 @@ build:
 	cd orka_celestial && $(ALR_BUILD)
 
 examples:
-	cd examples && $(ALR_BUILD)
+	cd examples && ADAFLAGS="-gnata" $(ALR_BUILD)
 
 tools:
-	cd orka_tools && $(ALR_BUILD)
+	cd orka_tools && ADAFLAGS="-gnata" $(ALR_BUILD)
 
 tests:
 	cd tests && ADAFLAGS="--coverage -gnata" $(ALR_BUILD)
@@ -41,6 +41,7 @@ docs:
 	docker run --rm -it -p 8000:8000 -v ${PWD}:/docs:ro -u $(shell id -u):$(shell id -g) squidfunk/mkdocs-material
 
 clean:
+	find . -type f -name "*.gcda" -exec rm {} \;
 	cd orka_egl && $(ALR_CLEAN)
 	cd orka_types && $(ALR_CLEAN)
 	cd orka_simd && $(ALR_CLEAN)
