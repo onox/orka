@@ -21,6 +21,7 @@ with Ada.Strings.Unbounded;
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
+with GL.Barriers;
 with GL.Toggles;
 with GL.Types;
 
@@ -861,7 +862,7 @@ package body Orka.Frame_Graphs is
                           (Width   => Width,
                            Height  => Height,
                            Samples => Size (Samples_Attachments))),
-                   State             => State));
+                   State       => State));
 
                if Object.Present_Mode = Use_Default and Last_Pass_Index = Index then
                   Object.Present_Pass := Index;
@@ -874,12 +875,13 @@ package body Orka.Frame_Graphs is
                     (Framebuffer : in out Rendering.Framebuffers.Framebuffer)
                   is
                      use type GL.Buffers.Color_Buffer_Selector;
+                     use type Orka.Rendering.Framebuffers.Framebuffer;
                   begin
                      --  Clear color to black and depth to 0.0 (because of reversed Z)
                      Framebuffer.Set_Default_Values
                        ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
 
-                     if Framebuffer.Default then
+                     if Framebuffer = Default then
                         --  The resource is 'read' by the present pass
                         pragma Assert (not State.Invalidate_Mask.Color);
 
@@ -1202,14 +1204,12 @@ package body Orka.Frame_Graphs is
    end Render;
 
    procedure Render
-     (Object  : in out Renderable_Graph;
-      Window  : Orka.Windows.Window'Class;
-      Present : Resource;
-      Location : Resources.Locations.Location_Ptr)
+     (Object           : in out Renderable_Graph;
+      Context          : in out Orka.Contexts.Context'Class;
+      Last_Framebuffer : Rendering.Framebuffers.Framebuffer;
+      Present          : Resource;
+      Location         : Resources.Locations.Location_Ptr)
    is
-      Default_Framebuffer : constant Orka.Rendering.Framebuffers.Framebuffer :=
-        Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Window.Width, Window.Height);
-
       Index : Handle_Type;
       Found : Boolean;
    begin
@@ -1228,10 +1228,80 @@ package body Orka.Frame_Graphs is
          Object.Cull;
 
          Object.Framebuffers.Clear;
-         Object.Initialize (Location, Default_Framebuffer);
+         Object.Initialize (Location, Last_Framebuffer);
       end if;
 
-      Object.Render (Window.Context.all, Default_Framebuffer);
+      Object.Render (Context, Last_Framebuffer);
+   end Render;
+
+   procedure Render
+     (Object  : in out Renderable_Graph;
+      Window  : Orka.Windows.Window'Class;
+      Present : Resource;
+      Location : Resources.Locations.Location_Ptr)
+   is
+      Default_Framebuffer : constant Rendering.Framebuffers.Framebuffer :=
+        Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Window.Width, Window.Height);
+   begin
+      Object.Render (Window.Context.all, Default_Framebuffer, Present, Location);
+   end Render;
+
+   function Render
+     (Object   : in out Renderable_Graph;
+      Context  : in out Orka.Contexts.Context'Class;
+      Present  : Resource;
+      Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture
+   is
+      Description : Rendering.Textures.Texture_Description := Present.Description;
+
+      Last_Framebuffer : Orka.Rendering.Framebuffers.Framebuffer :=
+         Rendering.Framebuffers.Create_Framebuffer
+           (Width   => Description.Size (X),
+            Height  => Description.Size (Y),
+            Samples => 0);
+
+      use all type GL.Pixels.Internal_Format;
+   begin
+      case Description.Kind is
+         when Texture_2D_Multisample =>
+            Description.Kind := Texture_2D;
+            Description.Samples := 0;
+         when Texture_2D_Multisample_Array =>
+            Description.Kind := Texture_2D_Array;
+            Description.Samples := 0;
+         when Texture_Buffer =>
+            raise Constraint_Error;
+         when others =>
+            null;
+      end case;
+
+      case Description.Format is
+         when Depth24_Stencil8 | Depth32F_Stencil8 =>
+            raise Constraint_Error with "Packed depth-stencil format not supported";
+         when Depth_Component16 =>
+            Description.Format := R16;
+         when Depth_Component24 =>
+            raise Constraint_Error;
+         when Depth_Component32F =>
+            Description.Format := R32F;
+         when Stencil_Index8 =>
+            Description.Format := R8UI;
+         when others =>
+            null;
+      end case;
+
+      return Result : Texture := Create_Texture (Description) do
+         Last_Framebuffer.Attach (Result.GL_Texture);
+
+         --  Force re-initialization due to using non-default framebuffer
+         Object.Present_Resource := No_Resource;
+
+         Object.Render (Context, Last_Framebuffer, Present, Location);
+         GL.Barriers.Memory_Barrier ((Texture_Update => True, others => False));
+
+         --  Force re-initialization next render due to using default framebuffer
+         Object.Present_Resource := No_Resource;
+      end return;
    end Render;
 
    ----------------------------------------------------------------------

@@ -18,6 +18,7 @@ with Ada.Strings.Bounded;
 
 with GL.Pixels;
 
+with Orka.Contexts;
 with Orka.Windows;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Programs;
@@ -181,6 +182,13 @@ package Orka.Frame_Graphs is
       Present : Resource;
       Location : Resources.Locations.Location_Ptr);
    --  Render the resource which must be presented to the given window
+
+   function Render
+     (Object   : in out Renderable_Graph;
+      Context  : in out Orka.Contexts.Context'Class;
+      Present  : Resource;
+      Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture;
+   --  Render the resource which must be presented and return it as a texture
 
    ----------------------------------------------------------------------
 
