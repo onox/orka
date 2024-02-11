@@ -44,6 +44,12 @@ package body Orka.Frame_Graphs is
       Clear_Mask     => (Color => True, others => False),
       others         => <>);
 
+   --  Used when Present_Mode = Render_To_Default
+   procedure Draw_Fullscreen (Program : Rendering.Programs.Program) is
+   begin
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+   end Draw_Fullscreen;
+
    use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
@@ -610,11 +616,13 @@ package body Orka.Frame_Graphs is
       --  Program of present pass is needed when rendering to default framebuffer (mode 3)
       Object.Present_Render_Pass :=
         (Name    => +"Present",
+         State   => (Depth_Func => GL.Types.Always, others => <>),
          Program =>
           Programs.Create_Program (Programs.Modules.Create_Module
             (Location,
              VS => "oversized-triangle.vert",
              FS => "frame-graph-present.frag")),
+         Callback => Draw_Fullscreen'Access,
          Side_Effect => True,
          Read_Count  => 1,
          others      => <>);
@@ -671,7 +679,7 @@ package body Orka.Frame_Graphs is
             --  Mode 1: Use Default as the framebuffer of Last_Render_Pass
             Object.Present_Mode := Use_Default;
 
-            Log (Debug, "Presenting " & Name (Resource) & " using default framebuffer");
+            Log (Success, "Presenting " & Name (Resource) & " using default framebuffer");
          elsif Resource.Data.Description.Kind in Texture_2D | Texture_2D_Multisample then
             --  Mode 2
             Object.Present_Mode := Blit_To_Default;
@@ -1071,7 +1079,7 @@ package body Orka.Frame_Graphs is
          Pass             : Render_Pass_Data;
          Input_Resources  : Input_Resource_Array;
          Output_Resources : Output_Resource_Array;
-         Is_Present       : Boolean) is
+         Present_By_Blit  : Boolean) is
       begin
          Framebuffer.Use_Framebuffer;
 
@@ -1120,35 +1128,22 @@ package body Orka.Frame_Graphs is
             end if;
          end loop;
 
-         pragma Assert (Framebuffer.Default = Is_Present);
-
-         if Is_Present then
-            case Object.Present_Mode is
-               when Use_Default =>
-                  --  User-defined program will use default framebuffer to render to screen
-                  Pass.Program.Use_Program;
-                  Pass.Callback (Pass.Program);
-               when Blit_To_Default =>
-                  declare
-                     procedure Resolve_From_Pass
-                       (Other_Framebuffer : Rendering.Framebuffers.Framebuffer) is
-                     begin
-                        Other_Framebuffer.Resolve_To (Framebuffer);
-                     end Resolve_From_Pass;
-                  begin
-                     --  Blit input texture to screen
-                     Object.Framebuffers (Object.Last_FB_Index).Framebuffer.Query_Element
-                       (Resolve_From_Pass'Access);
-                  end;
-               when Render_To_Default =>
-                  --  Render input texture to screen
-                  Pass.Program.Use_Program;
-
-                  GL.Buffers.Set_Depth_Function (GL.Types.Always);
-                  Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
-                  GL.Buffers.Set_Depth_Function (Pass.State.Depth_Func);
-            end case;
+         if Present_By_Blit then
+            declare
+               procedure Resolve_From_Pass
+                 (Other_Framebuffer : Rendering.Framebuffers.Framebuffer) is
+               begin
+                  Other_Framebuffer.Resolve_To (Framebuffer);
+               end Resolve_From_Pass;
+            begin
+               --  Blit input texture to screen
+               Object.Framebuffers (Object.Last_FB_Index).Framebuffer.Query_Element
+                 (Resolve_From_Pass'Access);
+            end;
          else
+            --  When not presenting by blitting, a user-defined program will use the
+            --  default framebuffer to render to screen or an additional pass is used
+            --  to render the input texture to the screen
             Pass.Program.Use_Program;
             Pass.Callback (Pass.Program);
          end if;
@@ -1173,7 +1168,7 @@ package body Orka.Frame_Graphs is
                   Pass             => Pass,
                   Input_Resources  => Object.Input_Resources (Pass),
                   Output_Resources => Object.Output_Resources (Pass),
-                  Is_Present       => Object.Present_Mode = Use_Default and Object.Present_Pass = Data.Index);
+                  Present_By_Blit  => False);
             end Execute_Pass;
          begin
             Data.Framebuffer.Update_Element (Execute_Pass'Access);
@@ -1201,7 +1196,7 @@ package body Orka.Frame_Graphs is
                     Written  => True,
                     Implicit => False)),
                Output_Resources => (1 .. 0 => <>),
-               Is_Present       => True);
+               Present_By_Blit => Object.Present_Mode = Blit_To_Default);
          end;
       end if;
    end Render;

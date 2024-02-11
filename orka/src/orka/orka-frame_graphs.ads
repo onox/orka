@@ -55,7 +55,7 @@ package Orka.Frame_Graphs is
 
    type Resource is record
       Name        : Name_Strings.Bounded_String;
-      Description : Orka.Rendering.Textures.Texture_Description;
+      Description : Rendering.Textures.Texture_Description;
       Version     : Resource_Version;
    end record;
 
