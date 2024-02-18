@@ -332,7 +332,6 @@ private
       Present_Render_Pass : Render_Pass_Data;  --  Program used when Present_Mode = Render_To_Default
 
       Last_FB_Index    : Render_Pass_Index;                    --  Used when Present_Mode = Blit_To_Default
-      Present_Pass     : Render_Pass_Index := No_Render_Pass;  --  Used when Present_Mode = Use_Default
       Present_Resource : Handle_Type       := No_Resource;
 
       Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := (others => 0);

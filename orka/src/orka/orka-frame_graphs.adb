@@ -864,9 +864,7 @@ package body Orka.Frame_Graphs is
                            Samples => Size (Samples_Attachments))),
                    State       => State));
 
-               if Object.Present_Mode = Use_Default and Last_Pass_Index = Index then
-                  Object.Present_Pass := Index;
-               elsif Object.Present_Mode = Blit_To_Default and Last_Pass_Index = Index then
+               if Object.Present_Mode = Blit_To_Default and Last_Pass_Index = Index then
                   Object.Last_FB_Index := Object.Framebuffers.Length;
                end if;
 
@@ -1021,6 +1019,11 @@ package body Orka.Frame_Graphs is
             Log (Debug, "      read:     " & Resource.Read'Image);
          end loop;
       end Log_Pass;
+
+      --  Look up the last render pass *before* the present pass
+      --  (e.g. the pass which writes to the presented resource)
+      Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
+      Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
    begin
       for Data of Object.Framebuffers loop
          declare
@@ -1038,7 +1041,7 @@ package body Orka.Frame_Graphs is
                   Input_Resources  => Object.Input_Resources (Pass),
                   Output_Resources => Object.Output_Resources (Pass),
                   References       => References,
-                  Is_Present       => Object.Present_Pass = Data.Index);
+                  Is_Present       => Object.Present_Mode = Use_Default and Last_Pass_Index = Data.Index);
             end Log_Pass;
          begin
             Data.Framebuffer.Query_Element (Log_Pass'Access);
