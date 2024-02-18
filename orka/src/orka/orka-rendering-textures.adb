@@ -34,16 +34,20 @@ package body Orka.Rendering.Textures is
       end return;
    end Create_Texture;
 
-   function Description (Object : Texture) return Texture_Description is
+   function Create_View (Object : Texture; Layer : Natural) return Texture is
+      Kind : constant LE.Texture_Kind := Layer_Kind (Object.Kind);
    begin
-      return
-        (Kind    => Object.Texture.Kind,
-         Format  => Object.Texture.Internal_Format,
-         Size    => (X => Object.Texture.Width (0), Y => Object.Texture.Height (0), Z => Object.Texture.Depth (0)),
-         Levels  => Positive (Object.Texture.Mipmap_Levels),
-         Layers  => (if Object.Texture.Layered then 1 else 1),  -- FIXME Fix layers if layered
-         Samples => Natural (Object.Texture.Samples));
-   end Description;
+      return (Kind => Kind, Texture => Object.Texture.Create_View (Kind, Integer_32 (Layer)));
+   end Create_View;
+
+   function Description (Object : Texture) return Texture_Description is
+     (Kind    => Object.Texture.Kind,
+      Format  => Object.Texture.Internal_Format,
+      Size    => (X => Object.Texture.Width (0),
+                  Y => Object.Texture.Height (0),
+                  Z => Object.Texture.Depth (0)),
+      Levels  => Positive (Object.Texture.Mipmap_Levels),
+      Samples => Natural (Object.Texture.Samples));
 
    procedure Bind (Object : Texture; Index : Natural) is
    begin

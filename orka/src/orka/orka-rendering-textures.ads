@@ -36,8 +36,29 @@ package Orka.Rendering.Textures is
    --  Return a description of the texture
 
    function Has_Layers (Kind : LE.Texture_Kind) return Boolean is
-     (Kind in Texture_1D_Array | Texture_2D_Array |
-              Texture_2D_Multisample_Array | Texture_Cube_Map_Array);
+     (Kind in Texture_1D_Array | Texture_2D_Array | Texture_2D_Multisample_Array |
+              Texture_3D | Texture_Cube_Map | Texture_Cube_Map_Array);
+
+   function Layer_Kind (Kind : LE.Texture_Kind) return LE.Texture_Kind is
+     (case Kind is
+        when Texture_1D_Array             => Texture_1D,
+        when Texture_2D_Array             => Texture_2D,
+        when Texture_2D_Multisample_Array => Texture_2D_Multisample,
+        when Texture_3D                   => Texture_3D,
+        when Texture_Cube_Map             => Texture_2D,
+        when Texture_Cube_Map_Array       => Texture_Cube_Map,
+        when others => raise Constraint_Error);
+
+   function Layers (Kind : LE.Texture_Kind; Size : Size_3D) return Natural is
+     (case Kind is
+        when Texture_1D_Array             => Natural (Size (Y)),
+        when Texture_2D_Array             => Natural (Size (Z)),
+        when Texture_2D_Multisample_Array => Natural (Size (Z)),
+        when Texture_3D                   => Natural (Size (Z)),
+        when Texture_Cube_Map             => 6,
+        when Texture_Cube_Map_Array       => Natural (Size (Z)),
+        when Texture_Buffer               => raise Constraint_Error,
+        when others                       => 0);
 
    -----------------------------------------------------------------------------
 
@@ -46,14 +67,18 @@ package Orka.Rendering.Textures is
       Format  : GL.Pixels.Internal_Format;
       Size    : Size_3D  := (others => 1);
       Levels  : Positive := 1;
-      Layers  : Positive := 1;
       Samples : Natural  := 0;
    end record
-     with Dynamic_Predicate => (if not Has_Layers (Texture_Description.Kind) then Texture_Description.Layers = 1);
+     with Dynamic_Predicate =>
+       (if Texture_Description.Kind = Texture_Cube_Map_Array then Texture_Description.Size (Z) mod 6 = 0);
 
    type Texture (Kind : LE.Texture_Kind) is tagged private;
 
    function Create_Texture (Description : Texture_Description) return Texture;
+
+   function Create_View (Object : Texture; Layer : Natural) return Texture
+     with Pre  => Has_Layers (Object.Kind) and then Layer < Layers (Object.Kind, Object.Description.Size),
+          Post => Create_View'Result.Kind = Layer_Kind (Object.Kind);
 
    function Description (Object : Texture) return Texture_Description;
 
@@ -62,6 +87,8 @@ package Orka.Rendering.Textures is
 
    procedure Bind_As_Image (Object : Texture; Index : Natural);
    --  Bind the texture as an image to the binding point at the given index
+
+   -----------------------------------------------------------------------------
 
    function GL_Texture (Object : Texture) return GL.Objects.Textures.Texture;
 

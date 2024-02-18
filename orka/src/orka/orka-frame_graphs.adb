@@ -14,9 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Strings.Fixed;
-with Ada.Strings.Hash;
+with Ada.Containers.Indefinite_Ordered_Maps;
 with Ada.Strings.Unbounded;
 with Ada.Streams;
 with Ada.Unchecked_Conversion;
@@ -165,6 +163,7 @@ package body Orka.Frame_Graphs is
       Mode    : Read_Mode;
       Data    : Resource;
       Binding : Binding_Point;
+      Layer   : Resource_Layer;
 
       Implicit : Boolean;
       Written  : Boolean;
@@ -175,6 +174,7 @@ package body Orka.Frame_Graphs is
       Mode    : Write_Mode;
       Data    : Resource;
       Binding : Binding_Point;
+      Layer   : Resource_Layer;
 
       Implicit : Boolean;
       Read     : Boolean;
@@ -224,23 +224,35 @@ package body Orka.Frame_Graphs is
 
    use Orka.Rendering.Textures;
 
-   package Texture_Maps is new Ada.Containers.Indefinite_Hashed_Maps
-     (Key_Type        => String,
-      Element_Type    => Orka.Rendering.Textures.Texture,
-      Hash            => Ada.Strings.Hash,
-      Equivalent_Keys => "=");
+   type Name_Layer_Tuple is record
+      Name  : Name_Strings.Bounded_String;
+      Layer : Resource_Layer;
+   end record;
+
+   use type Name_Strings.Bounded_String;
+
+   function "<" (Left, Right : Name_Layer_Tuple) return Boolean is
+     (Left.Name < Right.Name or else Left.Layer < Right.Layer);
+
+   package Texture_Maps is new Ada.Containers.Indefinite_Ordered_Maps
+     (Key_Type     => Name_Layer_Tuple,
+      Element_Type => Orka.Rendering.Textures.Texture);
 
    Textures : Texture_Maps.Map;
 
-   function Get_Texture (Subject : Resource) return Orka.Rendering.Textures.Texture is
+   function Get_Texture (Subject : Resource; Layer : Resource_Layer) return Orka.Rendering.Textures.Texture is
    begin
-      return Textures.Element (+Subject.Name);
+      return Textures.Element ((Subject.Name, Layer));
    exception
       when Constraint_Error =>
          declare
-            Result : Texture := Create_Texture (Subject.Description);
+            Result : Texture :=
+              (if Layer > 0 then
+                 Get_Texture (Subject, Layer => 0).Create_View (Layer => Natural (Layer - 1))
+               else
+                 Create_Texture (Subject.Description));
          begin
-            Textures.Insert (+Subject.Name, Result);
+            Textures.Insert ((Subject.Name, Layer), Result);
             return Result;
          end;
    end Get_Texture;
@@ -253,7 +265,8 @@ package body Orka.Frame_Graphs is
       Mode     : Read_Mode;
       Binding  : Binding_Point;
       Handle   : out Handle_Type;
-      Implicit : Boolean);
+      Implicit : Boolean;
+      Layer    : Resource_Layer := 0);
 
    function Add_Pass
      (Object   : in out Frame_Graph;
@@ -283,7 +296,8 @@ package body Orka.Frame_Graphs is
       Write    : Write_Mode;
       Binding  : Binding_Point;
       Handle   : out Handle_Type;
-      Implicit : Boolean)
+      Implicit : Boolean;
+      Layer    : Resource_Layer := 0)
    is
       Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
@@ -327,7 +341,7 @@ package body Orka.Frame_Graphs is
       end;
 
       --  Register resource as 'written' by the render pass
-      Graph.Write_Handles.Append (Handle);
+      Graph.Write_Handles.Append ((Index => Handle, Layer => Layer));
 
       if Pass.Write_Count = 0 then
          Pass.Write_Offset := Graph.Write_Handles.Length;
@@ -356,7 +370,8 @@ package body Orka.Frame_Graphs is
       Mode     : Read_Mode;
       Binding  : Binding_Point;
       Handle   : out Handle_Type;
-      Implicit : Boolean)
+      Implicit : Boolean;
+      Layer    : Resource_Layer := 0)
    is
       Graph : Orka.Frame_Graphs.Frame_Graph renames Object.Frame_Graph.all;
       Pass  : Render_Pass_Data renames Graph.Passes (Object.Index);
@@ -412,7 +427,7 @@ package body Orka.Frame_Graphs is
       end;
 
       --  Register resource as 'read' by the render pass
-      Graph.Read_Handles.Append (Handle);
+      Graph.Read_Handles.Append ((Index => Handle, Layer => Layer));
 
       if Pass.Read_Count = 0 then
          Pass.Read_Offset := Graph.Read_Handles.Length;
@@ -470,8 +485,34 @@ package body Orka.Frame_Graphs is
       return Next_Subject;
    end Add_Input_Output;
 
+   procedure Add_Input
+     (Object  : Render_Pass;
+      View    : Resource_View;
+      Mode    : Read_Mode;
+      Binding : Binding_Point)
+   is
+      Handle : Handle_Type;
+   begin
+      Object.Add_Input (View.Object.all, Mode, Binding, Handle, Implicit => True, Layer => Resource_Layer (View.Layer + 1));
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Mode = Mode);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Input_Binding = Binding);
+   end Add_Input;
+
+   procedure Add_Output
+     (Object  : Render_Pass;
+      View    : Resource_View;
+      Mode    : Write_Mode;
+      Binding : Binding_Point)
+   is
+      Handle : Handle_Type;
+   begin
+      Object.Add_Output (View.Object.all, Mode, Binding, Handle, Implicit => True, Layer => Resource_Layer (View.Layer + 1));
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Mode = Mode);
+      pragma Assert (Object.Frame_Graph.Resources (Handle).Output_Binding = Binding);
+   end Add_Output;
+
    procedure Cull (Object : in out Renderable_Graph) is
-      Stack : Handle_Vectors.Vector (Positive (Object.Graph.Resources.Length));
+      Stack : Resource_Index_Vectors.Vector (Positive (Object.Graph.Resources.Length));
       Index : Handle_Type;
    begin
       --  Raise an error if there is a render pass that will be
@@ -524,7 +565,7 @@ package body Orka.Frame_Graphs is
             Write_Count  : Natural  renames Pass.Write_Count;
             pragma Assert
               (for some Offset in Write_Offset .. Write_Offset + Write_Count - 1 =>
-                 Object.Graph.Write_Handles (Offset) = Index);
+                 Object.Graph.Write_Handles (Offset).Index = Index);
          begin
             Render_Pass_References := Render_Pass_References - 1;
 
@@ -534,7 +575,7 @@ package body Orka.Frame_Graphs is
                for Index in Pass.Read_Offset .. Pass.Read_Offset + Pass.Read_Count - 1 loop
                   declare
                      Resource_Handle : constant Handle_Type :=
-                       Object.Graph.Read_Handles (Index);
+                       Object.Graph.Read_Handles (Index).Index;
                      Resource : Resource_Data renames
                        Object.Graph.Resources (Resource_Handle);
 
@@ -563,12 +604,13 @@ package body Orka.Frame_Graphs is
       return Result : Input_Resource_Array (1 .. Pass.Read_Count) do
          for Index in 1 .. Pass.Read_Count loop
             declare
-               Data : Resource_Data renames Object.Graph.Resources
-                 (Object.Graph.Read_Handles (Pass.Read_Offset + Index - 1));
+               Edge : constant Edge_Type := Object.Graph.Read_Handles (Pass.Read_Offset + Index - 1);
+               Data : Resource_Data renames Object.Graph.Resources (Edge.Index);
             begin
                Result (Index) := (Mode     => Data.Input_Mode,
                                   Data     => Data.Data,
                                   Binding  => Data.Input_Binding,
+                                  Layer    => Edge.Layer,
                                   Written  => Data.Render_Pass /= No_Render_Pass,
                                   Implicit => Data.Implicit);
             end;
@@ -583,13 +625,14 @@ package body Orka.Frame_Graphs is
       return Result : Output_Resource_Array (1 .. Pass.Write_Count) do
          for Index in 1 .. Pass.Write_Count loop
             declare
-               Handle : constant Handle_Type := Object.Graph.Write_Handles (Pass.Write_Offset + Index - 1);
-               Data : Resource_Data renames Object.Graph.Resources (Handle);
-               References : Natural renames Object.Resource_References (Handle);
+               Edge : constant Edge_Type := Object.Graph.Write_Handles (Pass.Write_Offset + Index - 1);
+               Data : Resource_Data renames Object.Graph.Resources (Edge.Index);
+               References : Natural renames Object.Resource_References (Edge.Index);
             begin
                Result (Index) := (Mode     => Data.Output_Mode,
                                   Data     => Data.Data,
                                   Binding  => Data.Output_Binding,
+                                  Layer    => Edge.Layer,
                                   Read     => References > 0,
                                   Implicit => Data.Implicit);
             end;
@@ -918,13 +961,11 @@ package body Orka.Frame_Graphs is
 
                         for Resource of Object.Input_Resources (Pass) loop
                            if Resource.Mode = Framebuffer_Attachment then
-                              --  TODO Support attaching layer of resource
-                              --       using value in 1 .. Resource.Data.Size (Z)
                               if Get_Attachment_Format (Resource.Data.Description.Format) /= Color then
-                                 Framebuffer.Attach (Get_Texture (Resource.Data).GL_Texture);
+                                 Framebuffer.Attach (Get_Texture (Resource.Data, Resource.Layer).GL_Texture);
                               else
                                  Framebuffer.Attach
-                                   (Texture    => Get_Texture (Resource.Data).GL_Texture,
+                                   (Texture    => Get_Texture (Resource.Data, Resource.Layer).GL_Texture,
                                     Attachment => To_Attachment_Point (Resource.Binding));
                               end if;
                            end if;
@@ -1062,6 +1103,7 @@ package body Orka.Frame_Graphs is
                    (Mode     => Texture_Read,
                     Data     => Present_Resource.Data,
                     Binding  => 0,
+                    Layer    => 0,
                     Written  => True,
                     Implicit => False)),
                Output_Resources => (1 .. 0 => <>),
@@ -1076,8 +1118,6 @@ package body Orka.Frame_Graphs is
       Context : in out Contexts.Context'Class;
       Default : Rendering.Framebuffers.Framebuffer)
    is
-      package Textures renames Orka.Rendering.Textures;
-
       procedure Execute_Pass
         (Framebuffer      : in out Rendering.Framebuffers.Framebuffer;
          State            : Framebuffer_State;
@@ -1117,9 +1157,9 @@ package body Orka.Frame_Graphs is
          for Resource of Input_Resources loop
             case Resource.Mode is
                when Texture_Read =>
-                  Get_Texture (Resource.Data).Bind (Natural (Resource.Binding));
+                  Get_Texture (Resource.Data, Resource.Layer).Bind (Natural (Resource.Binding));
                when Image_Load =>
-                  Get_Texture (Resource.Data).Bind_As_Image (Natural (Resource.Binding));
+                  Get_Texture (Resource.Data, Resource.Layer).Bind_As_Image (Natural (Resource.Binding));
                when Not_Used | Framebuffer_Attachment =>
                   null;
             end case;
@@ -1129,7 +1169,7 @@ package body Orka.Frame_Graphs is
             --  Resource has already been attached in procedure Initialize
             --  if mode is Framebuffer_Attachment
             if Resource.Mode = Image_Store then
-               Get_Texture (Resource.Data).Bind_As_Image (Natural (Resource.Binding));
+               Get_Texture (Resource.Data, Resource.Layer).Bind_As_Image (Natural (Resource.Binding));
             end if;
          end loop;
 
@@ -1198,6 +1238,7 @@ package body Orka.Frame_Graphs is
                    (Mode     => Texture_Read,
                     Data     => Present_Resource.Data,
                     Binding  => 0,
+                    Layer    => 0,
                     Written  => True,
                     Implicit => False)),
                Output_Resources => (1 .. 0 => <>),
@@ -1315,12 +1356,9 @@ package body Orka.Frame_Graphs is
       Path     : String)
    is
       package SU renames Ada.Strings.Unbounded;
-      package SF renames Ada.Strings.Fixed;
-
-      function Trim (Value : String) return String is (SF.Trim (Value, Ada.Strings.Both));
 
       function Image (Value : String)  return String is ('"' & Value & '"');
-      function Image (Value : Integer) return String is (Trim (Value'Image));
+      function Image (Value : Integer) return String is (Orka.Strings.Trim (Value'Image));
       function Image (Value : Boolean) return String is (if Value then "true" else "false");
 
       Result : SU.Unbounded_String;
@@ -1397,7 +1435,7 @@ package body Orka.Frame_Graphs is
             --  Passes reading from resources
             for Resource_Index in Pass.Read_Offset .. Pass.Read_Offset + Pass.Read_Count - 1 loop
                declare
-                  Handle : Handle_Type renames Object.Graph.Read_Handles (Resource_Index);
+                  Handle : Handle_Type renames Object.Graph.Read_Handles (Resource_Index).Index;
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
@@ -1421,7 +1459,7 @@ package body Orka.Frame_Graphs is
               Pass.Write_Offset .. Pass.Write_Offset + Pass.Write_Count - 1
             loop
                declare
-                  Handle : Handle_Type renames Object.Graph.Write_Handles (Resource_Index);
+                  Handle : Handle_Type renames Object.Graph.Write_Handles (Resource_Index).Index;
                begin
                   Append_Comma;
                   SU.Append (Result, '{');

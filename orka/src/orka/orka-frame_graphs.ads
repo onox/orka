@@ -45,12 +45,7 @@ package Orka.Frame_Graphs is
 
    use all type Rendering.Textures.LE.Texture_Kind;
 
-   function Has_Layers (Kind : Rendering.Textures.LE.Texture_Kind) return Boolean
-     renames Rendering.Textures.Has_Layers;
-
    ----------------------------------------------------------------------
-
---   type Face_Kind is range 0 .. 5;
 
    type Resource_Version is private;
 
@@ -60,24 +55,23 @@ package Orka.Frame_Graphs is
       Version     : Resource_Version;
    end record;
 
-   --  FIXME Implement functions Layer, Face, Level, and Resolve
---   function Layer (Object : Resource; Layer : Natural) return Resource
---     with Pre  =>     Has_Layers (Object.Kind) and Layer in 0 .. Object.Layers - 1,
---          Post => not Has_Layers (Frame_Graphs.Layer'Result.Kind);
---
---   function Face (Object : Resource; Face : Face_Kind) return Resource
---     with Pre  => Object.Kind = Texture_Cube_Map,
---          Post => Frame_Graphs.Face'Result.Kind = Texture_2D;
---
---   function Level (Object : Resource; Level : Natural) return Resource
---     with Pre  => Level in 0 .. Object.Levels - 1,
---          Post => Frame_Graphs.Level'Result.Levels = 1;
---
+   type Resource_View (Object : not null access constant Resource) is record
+      Layer : Natural;
+   end record
+     with Dynamic_Predicate =>
+       Rendering.Textures.Get_Format_Kind (Object.Description.Format) = Color
+         and (Rendering.Textures.Has_Layers (Object.Description.Kind)
+                and then Layer < Rendering.Textures.Layers (Object.Description.Kind, Object.Description.Size));
+
+--   function Level (Object : aliased Resource; Level : Natural) return Resource
+--     with Pre  => Level in 0 .. Object.Description.Levels - 1,
+--          Post => Frame_Graphs.Level'Result.Description.Levels = 1;
+
 --   function Resolve (Object : Resource) return Resource
 --     with Pre  => Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array,
---          Post => (case Object.Kind is
---                     when Texture_2D_Multisample       => Resolve'Result.Kind = Texture_2D,
---                     when Texture_2D_Multisample_Array => Resolve'Result.Kind = Texture_2D_Array,
+--          Post => (case Object.Description.Kind is
+--                     when Texture_2D_Multisample       => Resolve'Result.Description.Kind = Texture_2D,
+--                     when Texture_2D_Multisample_Array => Resolve'Result.Description.Kind = Texture_2D_Array,
 --                     when others => raise Program_Error);
 
    ----------------------------------------------------------------------
@@ -129,6 +123,26 @@ package Orka.Frame_Graphs is
    --  Add the given resource as an input and an output to the render pass,
    --  indicating that the resource will be modified by the pass. The modified
    --  resource is returned and may be used as an input for other render passes.
+
+   ----------------------------------------------------------------------
+
+   procedure Add_Input
+     (Object  : Render_Pass;
+      View    : Resource_View;
+      Mode    : Read_Mode;
+      Binding : Binding_Point)
+   with Pre => Mode /= Framebuffer_Attachment;
+   --  Add the given view of a resource as an input to the render pass, so that it
+   --  can be read as a texture or an image
+
+   procedure Add_Output
+     (Object  : Render_Pass;
+      View    : Resource_View;
+      Mode    : Write_Mode;
+      Binding : Binding_Point)
+   with Pre => (if Mode = Framebuffer_Attachment then Binding in Attachment_Point);
+   --  Add the given resource as an output to the render pass, so that it
+   --  can be written as an image or used as an attachment of a framebuffer
 
    ----------------------------------------------------------------------
 
@@ -248,9 +262,18 @@ private
       Read_Count     : Natural := 0;
    end record;
 
+   type Resource_Layer is new Natural;
+
+   type Edge_Type is record
+      Index : Handle_Type;
+      Layer : Resource_Layer;
+   end record;
+
    package Pass_Vectors     is new Containers.Bounded_Vectors (Render_Pass_Index, Render_Pass_Data);
    package Resource_Vectors is new Containers.Bounded_Vectors (Handle_Type, Resource_Data);
-   package Handle_Vectors   is new Containers.Bounded_Vectors (Positive, Handle_Type);
+   package Handle_Vectors   is new Containers.Bounded_Vectors (Positive, Edge_Type);
+
+   package Resource_Index_Vectors is new Containers.Bounded_Vectors (Positive, Handle_Type);
 
    type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
@@ -331,8 +354,8 @@ private
       Present_Mode        : Present_Mode_Type;
       Present_Render_Pass : Render_Pass_Data;  --  Program used when Present_Mode = Render_To_Default
 
-      Last_FB_Index    : Render_Pass_Index;                    --  Used when Present_Mode = Blit_To_Default
-      Present_Resource : Handle_Type       := No_Resource;
+      Last_FB_Index    : Render_Pass_Index;  --  Used when Present_Mode = Blit_To_Default
+      Present_Resource : Handle_Type := No_Resource;
 
       Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := (others => 0);
       Resource_References    : Resource_References_Array (1 .. Maximum_Resources) := (others => 0);
