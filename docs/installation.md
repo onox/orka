@@ -11,11 +11,11 @@ In order to build and use Orka you need to have:
 
  * Wayland 1.18 (on Linux)
 
- * Video driver with [EGL][url-egl] 1.5 (or 1.4 + extensions below) or WGL,
-   and OpenGL 4.6 core profile (or 4.0 + extensions below)
+ * Video driver with [EGL][url-egl] 1.5 and OpenGL 4.6 core profile
 
     ??? summary "Required EGL extensions"
-        Following table shows a list of client extensions:
+        Following table shows a list of client extensions. EGL 1.4
+        implementations might still support the extensions listed below.
 
         | Client extension                      |
         |---------------------------------------|

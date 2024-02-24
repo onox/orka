@@ -13,6 +13,12 @@ a stencil buffer.
     The various objects described on this page are declared in
     the package `:::ada Orka.Rendering.Framebuffers`.
 
+!!! tip "Use a frame graph instead"
+    Use a [frame graph](/rendering/frame-graph/) instead to render a texture to
+    the screen using one or more programs.
+    It will manage the needed framebuffers for you and automatically
+    update the state needed for each render pass.
+
 ## Creating a framebuffer
 
 A framebuffer object can be created by calling the function `Create_Framebuffer`:

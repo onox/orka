@@ -23,7 +23,7 @@ A frame graph provides the following features:
 A frame graph can be created by declaring it:
 
 ```ada
-Graph_Builder : Orka.Frame_Graphs.Frame_Graph
+Graph_Builder : aliased Orka.Frame_Graphs.Frame_Graph
   (Maximum_Passes    => 3,
    Maximum_Handles   => 10,
    Maximum_Resources => 10);
@@ -51,18 +51,38 @@ A resource can be written by a render pass as a:
 A resource can be created by declaring it:
 
 ```ada
-Resource_1 : Resource :=
-  (Name    => +"Resource 1",
-   Kind    => LE.Texture_2D_Multisample,
-   Format  => GL.Low_Level.Enum.Pixels.R11F_G11F_B10F,
-   Size    => (1280, 720, 1),
-   Samples => 2,
+Resource_1 : aliased constant Orka.Frame_Graphs.Resource :=
+  (Name        => +"Resource 1",
+   Description =>
+     (Kind    => LE.Texture_2D_Multisample,
+      Format  => GL.Low_Level.Enum.Pixels.R11F_G11F_B10F,
+      Size    => (1280, 720, 1),
+      Samples => 2,
+      others  => <>),
    others  => <>);
 ```
 
 The name must be no longer than 16 characters.
 
-!!! bug "Only resources are currently supported"
+!!! bug "Only textures are currently supported"
+
+### Views
+
+If a resource is layered (e.g. if it is a 3D texture, 1D array, 2D (multisampled) array,
+or a cube map (array)) then one of its layers can be used as the input or output
+of a render pass by creating an object of the type `Resource_View`.
+For example, if `Resource_Cube` has the kind `Texture_Cube_Map`, then the face *-Z* can be
+selected with:
+
+```ada
+Resource_Negative_Z : aliased constant Orka.Frame_Graphs.Resource_View :=
+  (Object => Resource_Cube'Access,
+   Layer  => 5);
+```
+
+with `Layer` being the zero-based index of the selected layer.
+
+!!! note A `Resource_View` cannot be used as the subject in the function `Add_Input_Output`
 
 ## Render passes
 
@@ -76,7 +96,7 @@ Default_State : constant Orka.Rendering.States.State := (others => <>);
 And then call the function `Add_Pass`:
 
 ```ada
-procedure Run_Program_1 (P : in out Program) is
+procedure Run_Program_1 (P : Program) is
 begin
    --  Set uniforms and issue rendering commands here
 end Run_Program_1;
@@ -88,13 +108,14 @@ Pass_1 : Render_Pass'Class := Graph_Builder.Add_Pass
 The name must be no longer than 16 characters and can be queried with the
 function `Name`.
 
-A render pass which performs post-processing on a single fullscreen triangle
-could use a state like the following:
+!!! tip "State for a fullscreen render pass"
+    A render pass which performs post-processing on a single fullscreen triangle
+    could use a state like the following:
 
-```ada
-Fullscreen_State : constant Orka.Rendering.States.State :=
-  (Depth_Func => GL.Types.Always, others => <>);
-```
+    ```ada
+    Fullscreen_State : constant Orka.Rendering.States.State :=
+      (Depth_Func => GL.Types.Always, others => <>);
+    ```
 
 After the passes have been created, they can be connected with the
 resources. In the following example, `Pass_1` is a regular forward
@@ -147,7 +168,7 @@ end;
 After the graph has been defined and the render passes and resources
 are connected to each other, the graph can be rendered to the screen
 by chosing the resource which must be presented.
-The presenting the resource on the screen can happen in one of various ways,
+The presentation of the resource on the screen can happen in one of various ways,
 depending on the write mode and the format of the resource:
 
 1. **Using** the default framebuffer. If the render pass writing to the
@@ -160,9 +181,7 @@ depending on the write mode and the format of the resource:
      P1[Pass 1] -->|Attachment| R1[Resource 1]
      R1 --> PR[Present]
    ```
-
    becomes:
-
    ```mermaid
    graph LR
      DF[Default framebuffer] --> R1[Resource 1]
@@ -180,9 +199,7 @@ depending on the write mode and the format of the resource:
      P1[Pass 1] -->|Attachment| R2[Resource 2]
      R1 --> PR[Present]
    ```
-
    becomes:
-
    ```mermaid
    graph LR
      F1[Framebuffer 1] --> R1[Resource 1]
@@ -201,9 +218,7 @@ depending on the write mode and the format of the resource:
      P1[Pass 1] -->|Image write| R1[Resource 1]
      R1 --> PR[Present]
    ```
-
    becomes:
-
    ```mermaid
    graph LR
      F1[Framebuffer 1] --> R1[Resource 1]
@@ -212,33 +227,53 @@ depending on the write mode and the format of the resource:
    ```
 
 The frame graph automatically chooses the correct way to present the
-requested resource. To choose a resource to present, the graph must be
-culled by calling the function `Cull`, which returns a `Renderable_Graph` object:
+requested resource.
+
+### Creating a renderable graph
+
+To render a frame graph, a `Renderable_Graph` object must be created:
 
 ```ada
-Graph : Renderable_Graph'Class := Graph_Builder.Cull (Resource_3);
+Graph : Orka.Frame_Graphs.Renderable_Graph
+  (Maximum_Passes    => Graph_Builder.Maximum_Passes,
+   Maximum_Resources => Graph_Builder.Maximum_Resources,
+   Graph             => Graph_Builder'Access);
 ```
 
-The `Renderable_Graph` object must subsequently be initialized once:
+The discriminants `Maximum_Passes` and `Maximum_Resources` must have the
+same values as the frame graph to which the discriminant `Graph` points.
+
+The object `Graph` needs to be declared just once. It is not needed to
+redeclare it every frame.
+
+### Rendering a texture to a window
+
+A resource can be presented by rendering it to a given window using the
+procedure `Render`:
 
 ```ada
-Graph.Initialize (Location_Shaders, FB_D);
+Graph.Render (Window, Resource_3, Location_Shaders);
 ```
 
-Variable `FB_D` is the default framebuffer.
-See [Creating a framebuffer](/rendering/framebuffers/#creating-a-framebuffer)
-for more information on how to create the default framebuffer.
-
-After `Graph` has been initialized, it can present the resource to the
-screen by calling procedure `Render`:
-
-```ada
-Graph.Render (Context);
-```
+The `Renderable_Graph` object will be (re-)initialized when needed.
 
 Presenting the resource containing the depth buffer will show:
 
 ![Depth buffer](../images/frame-graph-depth.png)
+
+### Rendering a texture without a window
+
+To present a resource in a frame graph without a window, for example when
+using a surfaceless context, call the function `Render`:
+
+```ada
+Result : constant Orka.Rendering.Textures.Texture :=
+  Graph.Render (Context, Resource_3, Location_Shaders);
+```
+
+This texture may then be written to a KTX file
+(see [Saving to a KTX file](/rendering/textures/#saving-to-a-ktx-file)),
+for example, or used for other purposes.
 
 ### Logging and saving the graph
 
@@ -246,8 +281,12 @@ The `Renderable_Graph` can be logged using the logging system of Orka
 by calling procedure `Log_Graph`:
 
 ```ada
-Graph.Log_Graph;
+Graph.Log_Graph (FB_D);
 ```
+
+Variable `FB_D` is the default framebuffer.
+See [Creating a framebuffer](/rendering/framebuffers/#creating-a-framebuffer)
+for more information on how to create the default framebuffer.
 
 The graph can be saved to a JSON file by calling procedure `Write_Graph`:
 
@@ -257,6 +296,10 @@ Graph.Write_Graph (Location_Graphs, "graph.json");
 
 `Location_Graphs` must be a location object implementing the
 interface `Writable_Location`.
+
+!!! warning "The `Renderable_Graph` must have been initialized"
+    To log a renderable graph, it must have presented a resource
+    at least once in order to initialize various data structures.
 
 ## Exporting and importing resources
 
