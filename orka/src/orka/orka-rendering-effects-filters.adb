@@ -126,8 +126,8 @@ package body Orka.Rendering.Effects.Filters is
       do
          Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
 
-         Result.Framebuffer_H.Attach (Result.Texture_H.GL_Texture);
-         Result.Framebuffer_V.Attach (Result.Texture_V.GL_Texture);
+         Result.Framebuffer_H.Attach (Result.Texture_H);
+         Result.Framebuffer_V.Attach (Result.Texture_V);
       end return;
    end Create_Filter;
 

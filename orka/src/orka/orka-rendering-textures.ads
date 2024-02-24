@@ -25,15 +25,12 @@ package Orka.Rendering.Textures is
 
    use all type LE.Texture_Kind;
 
+   subtype Mipmap_Level is GL.Objects.Textures.Mipmap_Level;
+
    type Format_Kind is (Depth_Stencil, Depth, Stencil, Color);
 
    function Get_Format_Kind
      (Format : GL.Pixels.Internal_Format) return Format_Kind;
-
-   function Image
-     (Texture : GL.Objects.Textures.Texture;
-      Level   : GL.Objects.Textures.Mipmap_Level := 0) return String;
-   --  Return a description of the texture
 
    function Has_Layers (Kind : LE.Texture_Kind) return Boolean is
      (Kind in Texture_1D_Array | Texture_2D_Array | Texture_2D_Multisample_Array |
@@ -82,17 +79,28 @@ package Orka.Rendering.Textures is
 
    function Description (Object : Texture) return Texture_Description;
 
+   function Size
+     (Object : Texture;
+      Level  : Mipmap_Level := 0) return Size_3D;
+
    procedure Bind (Object : Texture; Index : Natural);
    --  Bind the texture to the binding point at the given index
 
    procedure Bind_As_Image (Object : Texture; Index : Natural);
    --  Bind the texture as an image to the binding point at the given index
 
+   function Image
+     (Object : Texture;
+      Level  : Mipmap_Level := 0) return String;
+   --  Return a description of the texture
+
    -----------------------------------------------------------------------------
 
    function GL_Texture (Object : Texture) return GL.Objects.Textures.Texture;
 
    function From_GL_Texture (Object : GL.Objects.Textures.Texture) return Texture;
+
+   function Compressed (Object : Texture) return Boolean;
 
 private
 
@@ -104,5 +112,7 @@ private
 
    function From_GL_Texture (Object : GL.Objects.Textures.Texture) return Texture is
      (Kind => Object.Kind, Texture => Object);
+
+   function Compressed (Object : Texture) return Boolean is (Object.Texture.Compressed);
 
 end Orka.Rendering.Textures;

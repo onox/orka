@@ -18,7 +18,6 @@ private with Ada.Containers.Indefinite_Holders;
 
 with GL.Buffers;
 with GL.Objects.Framebuffers;
-with GL.Objects.Textures;
 with GL.Types.Colors;
 
 with Orka.Rendering.Textures;
@@ -29,11 +28,12 @@ package Orka.Rendering.Framebuffers is
    use GL.Types;
    use all type Rendering.Textures.Format_Kind;
 
-   package FB       renames GL.Objects.Framebuffers;
-   package Textures renames GL.Objects.Textures;
+   subtype Attachment_Point is GL.Objects.Framebuffers.Attachment_Point;
 
-   subtype Color_Attachment_Point is FB.Attachment_Point
-     range FB.Color_Attachment_0 .. FB.Color_Attachment_7;
+   use all type Attachment_Point;
+
+   subtype Color_Attachment_Point is Attachment_Point
+     range Color_Attachment_0 .. Color_Attachment_7;
 
    type Use_Point_Array is array (Rendering.Framebuffers.Color_Attachment_Point) of Boolean;
    --  TODO Use as formal parameter in procedure Invalidate
@@ -139,17 +139,16 @@ package Orka.Rendering.Framebuffers is
 
    procedure Attach
      (Object     : in out Framebuffer;
-      Texture    : Textures.Texture;
-      Attachment : Color_Attachment_Point := FB.Color_Attachment_0;
-      Level      : Textures.Mipmap_Level  := 0)
-   with Pre  => (not Object.Default and Texture.Allocated and
-                  (if Rendering.Textures.Get_Format_Kind (Texture.Internal_Format) = Color then
-                    (Object.Width  = Texture.Width  (Level) and
-                     Object.Height = Texture.Height (Level))))
+      Texture    : Rendering.Textures.Texture;
+      Attachment : Color_Attachment_Point := Color_Attachment_0;
+      Level      : Rendering.Textures.Mipmap_Level  := 0)
+   with Pre  => (not Object.Default and
+                  (if Rendering.Textures.Get_Format_Kind (Texture.Description.Format) = Color then
+                    Texture.Size (Level) (X .. Y) = (Object.Width, Object.Height)))
                 or else raise Constraint_Error with
-                  "Cannot attach " & Rendering.Textures.Image (Texture, Level) &
+                  "Cannot attach " & Texture.Image (Level) &
                   " to " & Object.Image,
-        Post => (if Rendering.Textures.Get_Format_Kind (Texture.Internal_Format) = Color then
+        Post => (if Rendering.Textures.Get_Format_Kind (Texture.Description.Format) = Color then
                    Object.Has_Attachment (Attachment));
    --  Attach the texture to an attachment point based on the internal
    --  format of the texture or to the given attachment point if the
@@ -171,17 +170,16 @@ package Orka.Rendering.Framebuffers is
 
    procedure Attach_Layer
      (Object     : in out Framebuffer;
-      Texture    : Textures.Texture;
-      Attachment : FB.Attachment_Point;
+      Texture    : Rendering.Textures.Texture;
+      Attachment : Attachment_Point;
       Layer      : Natural;
-      Level      : Textures.Mipmap_Level := 0)
-   with Pre  => (not Object.Default and Texture.Allocated and
-                  Texture.Layered and
+      Level      : Rendering.Textures.Mipmap_Level := 0)
+   with Pre  => (not Object.Default and
+                  Rendering.Textures.Has_Layers (Texture.Kind) and
                   (if Attachment in Color_Attachment_Point then
-                    (Object.Width  = Texture.Width  (Level) and
-                     Object.Height = Texture.Height (Level))))
+                    Texture.Size (Level) (X .. Y) = (Object.Width, Object.Height)))
                 or else raise Constraint_Error with
-                  "Cannot attach layer of " & Rendering.Textures.Image (Texture, Level) &
+                  "Cannot attach layer of " & Texture.Image (Level) &
                   " to " & Object.Image,
         Post => Object.Has_Attachment (Attachment);
    --  Attach the selected 1D/2D layer of the texture to the attachment point
@@ -194,30 +192,30 @@ package Orka.Rendering.Framebuffers is
 
    procedure Detach
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point)
+      Attachment : Attachment_Point)
    with Pre  => not Object.Default,
         Post => not Object.Has_Attachment (Attachment);
    --  Detach any texture currently attached to the given attachment point
 
    function Has_Attachment
      (Object     : Framebuffer;
-      Attachment : FB.Attachment_Point) return Boolean;
+      Attachment : Attachment_Point) return Boolean;
 
    Framebuffer_Incomplete_Error : exception;
 
 private
 
    package Attachment_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => Textures.Texture, "=" => Textures."=");
+     (Element_Type => Rendering.Textures.Texture, "=" => Rendering.Textures."=");
 
    package Color_Buffer_List_Holder is new Ada.Containers.Indefinite_Holders
      (Element_Type => GL.Buffers.Color_Buffer_List, "=" => GL.Buffers."=");
 
-   type Attachment_Array is array (FB.Attachment_Point)
+   type Attachment_Array is array (Attachment_Point)
      of Attachment_Holder.Holder;
 
    type Framebuffer (Default : Boolean) is tagged record
-      GL_Framebuffer : FB.Framebuffer;
+      GL_Framebuffer : GL.Objects.Framebuffers.Framebuffer;
       Attachments    : Attachment_Array;
       Defaults       : Buffer_Values;
       Draw_Buffers   : Color_Buffer_List_Holder.Holder;

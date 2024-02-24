@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.Pixels.Extensions;
-with GL.Types;
 
 with Orka.Strings;
 
@@ -25,8 +24,8 @@ package body Orka.Rendering.Textures is
    begin
       return Result : Texture (Description.Kind) do
          Result.Texture.Allocate_Storage
-           (Levels  => Size (Description.Levels),
-            Samples => Size (Description.Samples),
+           (Levels  => Orka.Size (Description.Levels),
+            Samples => Orka.Size (Description.Samples),
             Format  => Description.Format,
             Width   => Description.Size (X),
             Height  => Description.Size (Y),
@@ -43,11 +42,16 @@ package body Orka.Rendering.Textures is
    function Description (Object : Texture) return Texture_Description is
      (Kind    => Object.Texture.Kind,
       Format  => Object.Texture.Internal_Format,
-      Size    => (X => Object.Texture.Width (0),
-                  Y => Object.Texture.Height (0),
-                  Z => Object.Texture.Depth (0)),
+      Size    => Object.Size (0),
       Levels  => Positive (Object.Texture.Mipmap_Levels),
       Samples => Natural (Object.Texture.Samples));
+
+   function Size
+     (Object : Texture;
+      Level  : GL.Objects.Textures.Mipmap_Level := 0) return Size_3D
+   is (X => Object.Texture.Width  (Level),
+       Y => Object.Texture.Height (Level),
+       Z => Object.Texture.Depth  (Level));
 
    procedure Bind (Object : Texture; Index : Natural) is
    begin
@@ -76,22 +80,22 @@ package body Orka.Rendering.Textures is
    end Get_Format_Kind;
 
    function Image
-     (Texture : GL.Objects.Textures.Texture;
-      Level   : GL.Objects.Textures.Mipmap_Level := 0) return String
+     (Object : Texture;
+      Level  : GL.Objects.Textures.Mipmap_Level := 0) return String
    is
-      Width  : constant String := Orka.Strings.Trim (Texture.Width  (Level)'Image);
-      Height : constant String := Orka.Strings.Trim (Texture.Height (Level)'Image);
-      Depth  : constant String := Orka.Strings.Trim (Texture.Depth  (Level)'Image);
+      Width  : constant String := Orka.Strings.Trim (Object.Texture.Width  (Level)'Image);
+      Height : constant String := Orka.Strings.Trim (Object.Texture.Height (Level)'Image);
+      Depth  : constant String := Orka.Strings.Trim (Object.Texture.Depth  (Level)'Image);
 
       function U (Value : Wide_Wide_String) return String renames Orka.Strings.Unicode;
    begin
-      return (if Texture.Allocated then "" else "unallocated ") &
-        Width & U (" × ") & Height & U (" × ") & Depth & " " & Texture.Kind'Image &
+      return (if Object.Texture.Allocated then "" else "unallocated ") &
+        Width & U (" × ") & Height & U (" × ") & Depth & " " & Object.Kind'Image &
         " with " &
-        (if Texture.Compressed then
-           Texture.Compressed_Format'Image
+        (if Object.Texture.Compressed then
+           Object.Texture.Compressed_Format'Image
          else
-           Texture.Internal_Format'Image) & " format";
+           Object.Texture.Internal_Format'Image) & " format";
    end Image;
 
 end Orka.Rendering.Textures;

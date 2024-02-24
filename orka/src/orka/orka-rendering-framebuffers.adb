@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Strings.Fixed;
-
 with GL.Pixels.Extensions;
 with GL.Viewports;
 
@@ -24,7 +22,9 @@ with Orka.Strings;
 
 package body Orka.Rendering.Framebuffers is
 
-   package Attachment_Vectors is new Containers.Bounded_Vectors (Positive, FB.Attachment_Point);
+   package FB renames GL.Objects.Framebuffers;
+
+   package Attachment_Vectors is new Containers.Bounded_Vectors (Positive, Attachment_Point);
 
    package Default_Attachment_Vectors is new Containers.Bounded_Vectors
      (Positive, FB.Default_Attachment_Point);
@@ -76,11 +76,8 @@ package body Orka.Rendering.Framebuffers is
    function Samples (Object : Framebuffer) return Size is (Object.Samples);
 
    function Image (Object : Framebuffer) return String is
-      function Trim (Value : String) return String is
-        (Ada.Strings.Fixed.Trim (Value, Ada.Strings.Both));
-
-      Width  : constant String := Trim (Object.Width'Image);
-      Height : constant String := Trim (Object.Height'Image);
+      Width  : constant String := Orka.Strings.Trim (Object.Width'Image);
+      Height : constant String := Orka.Strings.Trim (Object.Height'Image);
 
       Default : constant String := (if Object.Default then " default" else "");
    begin
@@ -178,7 +175,7 @@ package body Orka.Rendering.Framebuffers is
                              (Index, PE.Float_Or_Normalized_Type, Object.Defaults.Color);
                         else
                            declare
-                              Point : constant FB.Attachment_Point := Color_Attachment_Point'Val
+                              Point : constant Attachment_Point := Color_Attachment_Point'Val
                                 (GL.Buffers.Color_Buffer_Selector'Pos (Buffer)
                                    - GL.Buffers.Color_Buffer_Selector'Pos
                                        (GL.Buffers.Color_Attachment0)
@@ -187,7 +184,7 @@ package body Orka.Rendering.Framebuffers is
                               if Object.Has_Attachment (Point) then
                                  declare
                                     Format : constant GL.Pixels.Internal_Format
-                                      := Object.Attachments (Point).Element.Internal_Format;
+                                      := Object.Attachments (Point).Constant_Reference.Description.Format;
                                  begin
                                     Object.GL_Framebuffer.Clear_Color_Buffer
                                       (Index, PE.Texture_Format_Type (Format),
@@ -306,23 +303,23 @@ package body Orka.Rendering.Framebuffers is
 
    procedure Attach
      (Object     : in out Framebuffer;
-      Texture    : Textures.Texture;
+      Texture    : Rendering.Textures.Texture;
       Attachment : Color_Attachment_Point := FB.Color_Attachment_0;
       Level      : Textures.Mipmap_Level  := 0)
    is
       procedure Attach
         (Object     : in out Framebuffer;
-         Attachment : FB.Attachment_Point;
-         Texture    : Textures.Texture;
+         Attachment : Attachment_Point;
+         Texture    : Rendering.Textures.Texture;
          Level      : Textures.Mipmap_Level) is
       begin
-         Object.GL_Framebuffer.Attach_Texture (Attachment, Texture, Level);
+         Object.GL_Framebuffer.Attach_Texture (Attachment, Texture.GL_Texture, Level);
          Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
       end Attach;
 
       use all type GL.Pixels.Internal_Format;
    begin
-      case Texture.Internal_Format is
+      case Texture.Description.Format is
          when Depth24_Stencil8 | Depth32F_Stencil8 =>
             Attach (Object, FB.Depth_Stencil_Attachment, Texture, Level);
          when Depth_Component16 | Depth_Component24 | Depth_Component32F =>
@@ -336,18 +333,18 @@ package body Orka.Rendering.Framebuffers is
 
    procedure Attach_Layer
      (Object     : in out Framebuffer;
-      Texture    : Textures.Texture;
-      Attachment : FB.Attachment_Point;
+      Texture    : Rendering.Textures.Texture;
+      Attachment : Attachment_Point;
       Layer      : Natural;
       Level      : Textures.Mipmap_Level := 0) is
    begin
-      Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture, Level, Layer => Layer);
+      Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture.GL_Texture, Level, Layer => Layer);
       Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
    end Attach_Layer;
 
    procedure Detach
      (Object     : in out Framebuffer;
-      Attachment : FB.Attachment_Point) is
+      Attachment : Attachment_Point) is
    begin
       Object.GL_Framebuffer.Detach (Attachment);
       Object.Attachments (Attachment).Clear;
@@ -355,7 +352,7 @@ package body Orka.Rendering.Framebuffers is
 
    function Has_Attachment
      (Object     : Framebuffer;
-      Attachment : FB.Attachment_Point) return Boolean
+      Attachment : Attachment_Point) return Boolean
    is (not Object.Attachments (Attachment).Is_Empty);
 
 end Orka.Rendering.Framebuffers;

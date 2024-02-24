@@ -962,10 +962,10 @@ package body Orka.Frame_Graphs is
                         for Resource of Object.Input_Resources (Pass) loop
                            if Resource.Mode = Framebuffer_Attachment then
                               if Get_Attachment_Format (Resource.Data.Description.Format) /= Color then
-                                 Framebuffer.Attach (Get_Texture (Resource.Data, Resource.Layer).GL_Texture);
+                                 Framebuffer.Attach (Get_Texture (Resource.Data, Resource.Layer));
                               else
                                  Framebuffer.Attach
-                                   (Texture    => Get_Texture (Resource.Data, Resource.Layer).GL_Texture,
+                                   (Texture    => Get_Texture (Resource.Data, Resource.Layer),
                                     Attachment => To_Attachment_Point (Resource.Binding));
                               end if;
                            end if;
@@ -1335,7 +1335,7 @@ package body Orka.Frame_Graphs is
       end case;
 
       return Result : Texture := Create_Texture (Description) do
-         Last_Framebuffer.Attach (Result.GL_Texture);
+         Last_Framebuffer.Attach (Result);
 
          --  Force re-initialization due to using non-default framebuffer
          Object.Present_Resource := No_Resource;

@@ -14,7 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Low_Level.Enums;
 with GL.Objects.Programs.Uniforms;
 with GL.Objects.Textures;
 with GL.Pixels.Extensions;
@@ -25,7 +24,7 @@ with Orka.Types;
 package Orka.Rendering.Programs.Uniforms is
    pragma Preelaborate;
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
    package PE renames GL.Pixels.Extensions;
 
    use type LE.Texture_Kind;
@@ -118,7 +117,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Verify_Compatibility
      (Object  : Uniform_Sampler;
-      Texture : GL.Objects.Textures.Texture) is null
+      Texture : Orka.Rendering.Textures.Texture) is null
    with Pre'Class =>
      (Texture.Kind = Texture_Kind (Object.Kind) or else
        raise Constraint_Error with
@@ -130,11 +129,11 @@ package Orka.Rendering.Programs.Uniforms is
        --  shader is a shadow sampler)
        (Texture.Compressed
           or else
-            (if PE.Texture_Format_Type (Texture.Internal_Format) = PE.Depth_Type then
+            (if PE.Texture_Format_Type (Texture.Description.Format) = PE.Depth_Type then
                Sampler_Format_Type (Object.Kind) in PE.Depth_Type | PE.Float_Or_Normalized_Type
              else
                Sampler_Format_Type (Object.Kind) =
-                 PE.Texture_Format_Type (Texture.Internal_Format))
+                 PE.Texture_Format_Type (Texture.Description.Format))
           or else raise Constraint_Error with
             "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
             Object.Kind'Image & " sampler");
@@ -145,7 +144,7 @@ package Orka.Rendering.Programs.Uniforms is
 
    procedure Verify_Compatibility
      (Object  : Uniform_Image;
-      Texture : GL.Objects.Textures.Texture) is null
+      Texture : Orka.Rendering.Textures.Texture) is null
    with Pre'Class =>
      (Texture.Kind = Image_Kind (Object.Kind) or else
        raise Constraint_Error with
@@ -157,7 +156,7 @@ package Orka.Rendering.Programs.Uniforms is
        --  shader is a shadow sampler)
        (Texture.Compressed
           or else
-            Sampler_Format_Type (Object.Kind) = PE.Image_Format_Type (Texture.Internal_Format)
+            Sampler_Format_Type (Object.Kind) = PE.Image_Format_Type (Texture.Description.Format)
           or else raise Constraint_Error with
             "Cannot bind " & Rendering.Textures.Image (Texture) & " to " &
             Object.Kind'Image & " image sampler");
