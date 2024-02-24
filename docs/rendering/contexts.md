@@ -218,6 +218,28 @@ Render_Task.Context := Context;
     entry Move_Context (Context : not null Orka.Contexts.Context_Access);
     ```
 
+### Spawning a render task
+
+To spawn a new task for rendering and move the context to this task,
+create an instance of the task types `Render_To_Window_Task` (for contexts
+with a surface) or `Render_Task` (for contexts without a surface),
+which can be found in the package `:::ada Orka.Contexts.Tasks`:
+
+```ada
+declare
+   procedure Do_Render is
+   begin
+      --  Render to window here
+   end Do_Render;
+
+   Render_Task : Orka.Contexts.Tasks.Render_To_Window_Task (Do_Render'Access);
+begin
+   Context.Move_To (Render_Task, Window);
+
+   --  Handle keyboard and pointer events here while window is not closed
+end;
+```
+
   [url-aglw]: https://github.com/ohenley/aglw
   [url-wslg]: https://github.com/microsoft/wslg
   [url-mesamatrix]: https://mesamatrix.net/
