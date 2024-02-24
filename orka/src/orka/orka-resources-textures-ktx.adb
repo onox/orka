@@ -78,9 +78,6 @@ package body Orka.Resources.Textures.KTX is
 
          Texture  : GL.Objects.Textures.Texture (Header.Kind);
 
-         Is_Packed  : constant Boolean := Header.Data_Type in PE.Packed_Data_Type;
-         Components : constant Positive := Integer (PE.Components (Header.Format));
-
          Width  : constant Size := Header.Width;
          Height :          Size := Header.Height;
          Depth  :          Size := Header.Depth;
@@ -189,6 +186,7 @@ package body Orka.Resources.Textures.KTX is
                      declare
                         Original_Alignment : constant GL.Pixels.Alignment :=
                           GL.Pixels.Unpack_Alignment;
+                        Is_Packed  : constant Boolean := Header.Data_Type in PE.Packed_Data_Type;
                      begin
                         GL.Pixels.Set_Unpack_Alignment (if Is_Packed then GL.Pixels.Bytes else GL.Pixels.Words);
                         Texture.Load_From_Data (Level, 0, 0, 0,
@@ -222,12 +220,17 @@ package body Orka.Resources.Textures.KTX is
          if Header.Compressed then
             Log (Info, "  format: " & Header.Compressed_Format'Image);
          else
-            Log (Info, "  format: " & Header.Internal_Format'Image &
-              (if Is_Packed then
-                 " (packed with " & Trim_Image (Components) & " components)"
-               else
-                 " (" & Trim_Image (Components) &
-                 "x " & Header.Data_Type'Image & ")"));
+            declare
+               Is_Packed  : constant Boolean := Header.Data_Type in PE.Packed_Data_Type;
+               Components : constant Positive := Integer (PE.Components (Header.Format));
+            begin
+               Log (Info, "  format: " & Header.Internal_Format'Image &
+                 (if Is_Packed then
+                    " (packed with " & Trim_Image (Components) & " components)"
+                  else
+                    " (" & Trim_Image (Components) &
+                    "x " & Header.Data_Type'Image & ")"));
+            end;
          end if;
 
          Log (Debug, "  timing:");
