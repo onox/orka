@@ -118,6 +118,18 @@ package body Orka.Types is
       return (Unsigned_32 (Value) and Unsigned_32 (Value - 1)) = 0;
    end Is_Power_Of_Two;
 
+   function Log2 (Value : Natural) return Natural is
+      X : Natural := Value;
+      I : Natural := 0;
+   begin
+      loop
+         X := X / 2;
+         exit when X < 1;
+         I := I + 1;
+      end loop;
+      return I;
+   end Log2;
+
    function Clamp (Value : in Source) return Target is
       A : constant Source := Source'Min (Source (Target'Last), Value);
       B : constant Source := Source'Max (Source (Target'First), A);

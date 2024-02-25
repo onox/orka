@@ -66,6 +66,8 @@ package Orka.Types is
 
    function Is_Power_Of_Two (Value : Positive) return Boolean;
 
+   function Log2 (Value : Natural) return Natural;
+
    generic
       type Source is digits <>;
       type Target is digits <>;

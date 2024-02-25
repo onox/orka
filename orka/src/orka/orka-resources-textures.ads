@@ -16,14 +16,14 @@
 
 with Ada.Containers.Indefinite_Holders;
 
-with GL.Objects.Textures;
+with Orka.Rendering.Textures;
 
 package Orka.Resources.Textures is
    pragma Preelaborate;
 
    type Texture is limited new Resource with private;
 
-   function Element (Object : Texture) return GL.Objects.Textures.Texture;
+   function Element (Object : Texture) return Orka.Rendering.Textures.Texture;
 
    type Texture_Ptr is not null access all Texture;
 
@@ -32,11 +32,14 @@ package Orka.Resources.Textures is
 private
 
    package Texture_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => GL.Objects.Textures.Texture,
-      "=" => GL.Objects.Textures."=");
+     (Element_Type => Orka.Rendering.Textures.Texture,
+      "=" => Orka.Rendering.Textures."=");
 
    type Texture is limited new Resource with record
       Texture : Texture_Holder.Holder;
    end record;
+
+   function Element (Object : Texture) return Orka.Rendering.Textures.Texture is
+     (Object.Texture.Element);
 
 end Orka.Resources.Textures;

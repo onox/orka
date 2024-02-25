@@ -127,7 +127,7 @@ package Orka.Rendering.Programs.Uniforms is
        --  If the texture is a depth texture, the sampler can be a normal or shadow sampler
        --  (The bound Sampler object must have comparison mode enabled iff the sampler in the
        --  shader is a shadow sampler)
-       (Texture.Compressed
+       (Texture.Description.Compressed
           or else
             (if PE.Texture_Format_Type (Texture.Description.Format) = PE.Depth_Type then
                Sampler_Format_Type (Object.Kind) in PE.Depth_Type | PE.Float_Or_Normalized_Type
@@ -154,7 +154,7 @@ package Orka.Rendering.Programs.Uniforms is
        --  If the texture is a depth texture, the sampler can be a normal or shadow sampler
        --  (The bound Sampler object must have comparison mode enabled iff the sampler in the
        --  shader is a shadow sampler)
-       (Texture.Compressed
+       (Texture.Description.Compressed
           or else
             Sampler_Format_Type (Object.Kind) = PE.Image_Format_Type (Texture.Description.Format)
           or else raise Constraint_Error with

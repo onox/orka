@@ -17,41 +17,75 @@
 with GL.Pixels.Extensions;
 
 with Orka.Strings;
+with Orka.Types;
 
 package body Orka.Rendering.Textures is
 
    function Create_Texture (Description : Texture_Description) return Texture is
    begin
-      return Result : Texture (Description.Kind) do
-         Result.Texture.Allocate_Storage
-           (Levels  => Orka.Size (Description.Levels),
-            Samples => Orka.Size (Description.Samples),
-            Format  => Description.Format,
-            Width   => Description.Size (X),
-            Height  => Description.Size (Y),
-            Depth   => Description.Size (Z));
+      return Result : Texture :=
+        (Kind        => Description.Kind,
+         Description => Description,
+         others      => <>)
+      do
+         if Result.Description.Compressed then
+            Result.Texture.Allocate_Storage
+              (Levels  => Orka.Size (Description.Levels),
+               Samples => Orka.Size (Description.Samples),
+               Format  => Description.Compressed_Format,
+               Width   => Description.Size (X),
+               Height  => Description.Size (Y),
+               Depth   => Description.Size (Z));
+         else
+            Result.Texture.Allocate_Storage
+              (Levels  => Orka.Size (Description.Levels),
+               Samples => Orka.Size (Description.Samples),
+               Format  => Description.Format,
+               Width   => Description.Size (X),
+               Height  => Description.Size (Y),
+               Depth   => Description.Size (Z));
+         end if;
       end return;
    end Create_Texture;
 
    function Create_View (Object : Texture; Layer : Natural) return Texture is
       Kind : constant LE.Texture_Kind := Layer_Kind (Object.Kind);
    begin
-      return (Kind => Kind, Texture => Object.Texture.Create_View (Kind, Integer_32 (Layer)));
-   end Create_View;
+      if Object.Description.Compressed then
+         raise Constraint_Error;
+      end if;
 
-   function Description (Object : Texture) return Texture_Description is
-     (Kind    => Object.Texture.Kind,
-      Format  => Object.Texture.Internal_Format,
-      Size    => Object.Size (0),
-      Levels  => Positive (Object.Texture.Mipmap_Levels),
-      Samples => Natural (Object.Texture.Samples));
+      return
+        (Kind        => Kind,
+         Texture     => Object.Texture.Create_View (Kind, Integer_32 (Layer)),
+         Description =>
+           (Kind    => Kind,
+            Compressed => False,
+            Format  => Object.Description.Format,
+            Size    =>
+              (case Kind is
+                 when Texture_1D             => (Object.Description.Size (X), 1, 1),
+                 when Texture_2D             => (Object.Description.Size (X), Object.Description.Size (Y), 1),
+                 when Texture_2D_Multisample => (Object.Description.Size (X), Object.Description.Size (Y), 1),
+                 when Texture_3D             => Object.Description.Size,
+                 when Texture_Cube_Map       => (Object.Description.Size (X), Object.Description.Size (Y), 6),
+                 when others => raise Constraint_Error),
+            Levels  => Object.Description.Levels,
+            Samples => Object.Description.Samples));
+   end Create_View;
 
    function Size
      (Object : Texture;
       Level  : GL.Objects.Textures.Mipmap_Level := 0) return Size_3D
-   is (X => Object.Texture.Width  (Level),
-       Y => Object.Texture.Height (Level),
-       Z => Object.Texture.Depth  (Level));
+   is
+      Has_Height : constant Boolean := Object.Kind not in Texture_1D | Texture_1D_Array;
+      Has_Depth  : constant Boolean := Object.Kind = Texture_3D;
+   begin
+      return
+        (X => Orka.Size'Max (1, Object.Description.Size (X) / 2 ** Natural (Level)),
+         Y => Orka.Size'Max (1, Object.Description.Size (Y) / (if Has_Height then 2 ** Natural (Level) else 1)),
+         Z => Orka.Size'Max (1, Object.Description.Size (Z) / (if Has_Depth then 2 ** Natural (Level) else 1)));
+   end Size;
 
    procedure Bind (Object : Texture; Index : Natural) is
    begin
@@ -79,17 +113,25 @@ package body Orka.Rendering.Textures is
       end if;
    end Get_Format_Kind;
 
+   function Levels (Size : Size_3D) return Positive is
+      Max_Size : constant Orka.Size := Orka.Size'Max (Orka.Size'Max (Size (X), Size (Y)), Size (Z));
+   begin
+      return Orka.Types.Log2 (Natural (Max_Size)) + 1;
+   end Levels;
+
    function Image
      (Object : Texture;
       Level  : GL.Objects.Textures.Mipmap_Level := 0) return String
    is
-      Width  : constant String := Orka.Strings.Trim (Object.Texture.Width  (Level)'Image);
-      Height : constant String := Orka.Strings.Trim (Object.Texture.Height (Level)'Image);
-      Depth  : constant String := Orka.Strings.Trim (Object.Texture.Depth  (Level)'Image);
+      Size : constant Size_3D := Object.Size (Level);
+
+      Width  : constant String := Orka.Strings.Trim (Size (X)'Image);
+      Height : constant String := Orka.Strings.Trim (Size (Y)'Image);
+      Depth  : constant String := Orka.Strings.Trim (Size (Z)'Image);
 
       function U (Value : Wide_Wide_String) return String renames Orka.Strings.Unicode;
    begin
-      return (if Object.Texture.Allocated then "" else "unallocated ") &
+      return
         Width & U (" × ") & Height & U (" × ") & Depth & " " & Object.Kind'Image &
         " with " &
         (if Object.Texture.Compressed then

@@ -57,14 +57,21 @@ package Orka.Rendering.Textures is
         when Texture_Buffer               => raise Constraint_Error,
         when others                       => 0);
 
+   function Levels (Size : Size_3D) return Positive;
+
    -----------------------------------------------------------------------------
 
-   type Texture_Description is record
+   type Texture_Description (Compressed : Boolean := False) is record
       Kind    : LE.Texture_Kind;
-      Format  : GL.Pixels.Internal_Format;
       Size    : Size_3D  := (others => 1);
       Levels  : Positive := 1;
       Samples : Natural  := 0;
+      case Compressed is
+         when True =>
+            Compressed_Format : GL.Pixels.Compressed_Format;
+         when False =>
+            Format  : GL.Pixels.Internal_Format;
+      end case;
    end record
      with Dynamic_Predicate =>
        (if Texture_Description.Kind = Texture_Cube_Map_Array then Texture_Description.Size (Z) mod 6 = 0);
@@ -98,21 +105,15 @@ package Orka.Rendering.Textures is
 
    function GL_Texture (Object : Texture) return GL.Objects.Textures.Texture;
 
-   function From_GL_Texture (Object : GL.Objects.Textures.Texture) return Texture;
-
-   function Compressed (Object : Texture) return Boolean;
-
 private
 
    type Texture (Kind : LE.Texture_Kind) is tagged record
-      Texture : GL.Objects.Textures.Texture (Kind);
+      Texture     : GL.Objects.Textures.Texture (Kind);
+      Description : Texture_Description;
    end record;
 
+   function Description (Object : Texture) return Texture_Description is (Object.Description);
+
    function GL_Texture (Object : Texture) return GL.Objects.Textures.Texture is (Object.Texture);
-
-   function From_GL_Texture (Object : GL.Objects.Textures.Texture) return Texture is
-     (Kind => Object.Kind, Texture => Object);
-
-   function Compressed (Object : Texture) return Boolean is (Object.Texture.Compressed);
 
 end Orka.Rendering.Textures;
