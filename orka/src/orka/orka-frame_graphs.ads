@@ -274,6 +274,7 @@ private
    package Handle_Vectors   is new Containers.Bounded_Vectors (Positive, Edge_Type);
 
    package Resource_Index_Vectors is new Containers.Bounded_Vectors (Positive, Handle_Type);
+   package Pass_Index_Vectors is new Containers.Bounded_Vectors (Positive, Render_Pass_Index);
 
    type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
@@ -338,6 +339,8 @@ private
    type Render_Pass_References_Array is array (Render_Pass_Index range <>) of Natural;
    type Resource_References_Array    is array (Handle_Type range <>) of Natural;
 
+   type Render_Pass_Array is array (Render_Pass_Index range <>) of Render_Pass_Index;
+
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Resources : Handle_Type;
@@ -359,6 +362,11 @@ private
 
       Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := (others => 0);
       Resource_References    : Resource_References_Array (1 .. Maximum_Resources) := (others => 0);
+
+      Pass_Order : Render_Pass_Array (1 .. Maximum_Passes);
+      Pass_Count : Natural := 0;
+      --  The ordering of the render passes depends on which resource is presented,
+      --  with the pass writing to the presented resource being the last pass in the array
    end record;
 
 end Orka.Frame_Graphs;

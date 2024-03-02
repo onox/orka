@@ -761,6 +761,71 @@ package body Orka.Frame_Graphs is
       end if;
    end Determine_Present_Mode;
 
+   procedure Compute_Ordering_Render_Passes (Object : in out Renderable_Graph) is
+      This_Stack : Pass_Index_Vectors.Vector (Positive (Object.Graph.Passes.Length));
+      Next_Stack : Pass_Index_Vectors.Vector (Positive (Object.Graph.Passes.Length));
+
+      Depths : Render_Pass_References_Array (1 .. Object.Graph.Passes.Length) := (others => 0);
+
+      --  Look up the last render pass *before* the present pass
+      --  (e.g. the pass which writes to the presented resource)
+      Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
+      Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
+
+      Index : Render_Pass_Index;
+      Depth : Natural := 0;
+
+      procedure Increase_Depth (Current_Depth, Next_Depth : in out Pass_Index_Vectors.Vector) is
+      begin
+         while not Current_Depth.Is_Empty loop
+            Current_Depth.Remove_Last (Index);
+
+            Depths (Index) := Natural'Max (Depths (Index), Depth + 1);
+
+            declare
+               Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
+            begin
+               for Index in Pass.Read_Offset .. Pass.Read_Offset + Pass.Read_Count - 1 loop
+                  declare
+                     Resource_Handle : constant Handle_Type :=
+                       Object.Graph.Read_Handles (Index).Index;
+                     Resource : Resource_Data renames
+                       Object.Graph.Resources (Resource_Handle);
+                  begin
+                     if Resource.Render_Pass /= No_Render_Pass then
+                        Next_Depth.Append (Resource.Render_Pass);
+                     end if;
+                  end;
+               end loop;
+            end;
+         end loop;
+      end Increase_Depth;
+   begin
+      --  Start with the render pass which writes to the resource that is going to be presented
+      This_Stack.Append (Last_Pass_Index);
+
+      --  Ping pong between the two stacks, containing the indices of the render passes
+      --  at depth i and i + 1
+      while not This_Stack.Is_Empty or not Next_Stack.Is_Empty loop
+         Increase_Depth (This_Stack, Next_Stack);
+         Depth := Depth + 1;
+         Increase_Depth (Next_Stack, This_Stack);
+      end loop;
+
+      Object.Pass_Count := 0;
+      for Depth of Depths loop
+         if Depth > 0 then
+            Object.Pass_Count := Object.Pass_Count + 1;
+         end if;
+      end loop;
+
+      for Index in Depths'Range loop
+         if Depths (Index) > 0 then
+            Object.Pass_Order (Render_Pass_Index (Object.Pass_Count - (Depths (Index) - 1))) := Index;
+         end if;
+      end loop;
+   end Compute_Ordering_Render_Passes;
+
    procedure Initialize
      (Object   : in out Renderable_Graph;
       Location : Resources.Locations.Location_Ptr;
@@ -783,8 +848,11 @@ package body Orka.Frame_Graphs is
    begin
       Object.Determine_Present_Mode (Location, Default, Object.Graph.Passes (Last_Pass_Index), Present_Resource);
 
-      for Index in 1 .. Object.Graph.Passes.Length loop
+      --  Use the ordering of render passes computed in Compute_Ordering_Render_Passes
+      for I in 1 .. Object.Pass_Count loop
          declare
+            Index : constant Render_Pass_Index := Object.Pass_Order (Render_Pass_Index (I));
+
             Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
             References : Natural renames Object.Render_Pass_References (Index);
 
@@ -1272,6 +1340,7 @@ package body Orka.Frame_Graphs is
          Object.Cull;
 
          Object.Framebuffers.Clear;
+         Object.Compute_Ordering_Render_Passes;
          Object.Initialize (Location, Last_Framebuffer);
       end if;
 
