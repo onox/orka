@@ -14,20 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Containers.Indefinite_Holders;
+with Ada.Strings.Unbounded;
 
 package GL.Debug.Logs is
    pragma Preelaborate;
 
-   package String_Holder is new Ada.Containers.Indefinite_Holders
-     (Element_Type => String);
+   package SU renames Ada.Strings.Unbounded;
 
    type Message is record
       From      : Source;
       Kind      : Message_Type;
       Level     : Severity;
       ID        : UInt;
-      Message   : String_Holder.Holder;
+      Message   : SU.Unbounded_String;
    end record;
 
    type Message_Array is array (Size range <>) of Message;

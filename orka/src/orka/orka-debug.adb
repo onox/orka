@@ -98,7 +98,7 @@ package body Orka.Debug is
                      Messages : constant GL.Debug.Logs.Message_Array := GL.Debug.Logs.Message_Log;
                   begin
                      for M of Messages loop
-                        Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, M.Message.Element);
+                        Log_Debug_Message (M.From, M.Kind, M.Level, M.ID, GL.Debug.Logs.SU.To_String (M.Message));
                      end loop;
                      Remaining := Remaining - Messages'Length;
                   end;

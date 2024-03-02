@@ -68,7 +68,7 @@ package body GL.Debug.Logs is
                Kind    => Types (Index),
                Level   => Levels (Index),
                ID      => IDs (Index),
-               Message => String_Holder.To_Holder
+               Message => SU.To_Unbounded_String
                  (Log (Offset .. Offset + Natural (Lengths (Index)) - 1)));
             Offset := Offset + Natural (Lengths (Index));
          end loop;
