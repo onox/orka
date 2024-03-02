@@ -63,5 +63,4 @@ package body Orka.Contexts.Tasks is
          raise;
    end Render_Task;
 
-
 end Orka.Contexts.Tasks;

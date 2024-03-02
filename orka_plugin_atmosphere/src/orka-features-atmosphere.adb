@@ -82,6 +82,7 @@ package body Orka.Features.Atmosphere is
    function Create_Texture (Width, Height : Size) return Rendering.Textures.Texture is
      (Orka.Rendering.Textures.Create_Texture
         ((Kind    => LE.Texture_2D,
+          Compressed => False,
           Format  => GL.Pixels.RGBA32F,
           Size    => (Width, Height, 1),
           Levels  => 1,
@@ -92,6 +93,7 @@ package body Orka.Features.Atmosphere is
       Half_Precision : Boolean) return Rendering.Textures.Texture
    is (Orka.Rendering.Textures.Create_Texture
         ((Kind    => LE.Texture_3D,
+          Compressed => False,
           Format  => (if Half_Precision then GL.Pixels.RGBA16F else GL.Pixels.RGBA32F),
           Size    => (Width, Height, Depth),
           Levels  => 1,
