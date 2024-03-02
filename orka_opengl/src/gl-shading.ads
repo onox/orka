@@ -34,7 +34,4 @@ package GL.Shading is
    --  For example, if you use MSAA 8x and set Value to 0.5, then the
    --  fragment shader will be run for at least 4 samples per pixel.
 
-   function Minimum_Sample_Shading return Normalized_Single;
-   --  Return the current fraction of samples that are shaded
-
 end GL.Shading;

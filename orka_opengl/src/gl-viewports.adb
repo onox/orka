@@ -16,41 +16,12 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Enums.Getter;
 
 package body GL.Viewports is
 
    -----------------------------------------------------------------------------
    --                                Viewports                                --
    -----------------------------------------------------------------------------
-
-   function Maximum_Viewports return Size is
-      Result : Size := 16;
-   begin
-      API.Get_Size.Ref (Enums.Getter.Max_Viewports, Result);
-      return Result;
-   end Maximum_Viewports;
-
-   function Viewport_Subpixel_Bits return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Size.Ref (Enums.Getter.Viewport_Subpixel_Bits, Result);
-      return Result;
-   end Viewport_Subpixel_Bits;
-
-   function Origin_Range return Singles.Vector2 is
-      Result : Singles.Vector2 := (0.0, 0.0);
-   begin
-      API.Get_Single_Vec2.Ref (Enums.Getter.Viewport_Bounds_Range, Result);
-      return Result;
-   end Origin_Range;
-
-   function Maximum_Extent return Singles.Vector2 is
-      Result : Singles.Vector2 := (0.0, 0.0);
-   begin
-      API.Get_Single_Vec2.Ref (Enums.Getter.Max_Viewport_Dims, Result);
-      return Result;
-   end Maximum_Extent;
 
    procedure Set_Viewports (List : Viewport_List) is
    begin

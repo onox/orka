@@ -50,18 +50,6 @@ package GL.Viewports is
    type Scissor_Rectangle_List is array (UInt range <>) of Scissor_Rectangle
      with Convention => C;
 
-   function Maximum_Viewports return Size
-     with Post => Maximum_Viewports'Result >= 16;
-
-   function Viewport_Subpixel_Bits return Size;
-
-   function Origin_Range return Singles.Vector2;
-   --  Return the minimum and maximum X and Y of the origin (lower left
-   --  corner) of a viewport
-
-   function Maximum_Extent return Singles.Vector2;
-   --  Return the maximum width and height of a viewport
-
    procedure Set_Viewports (List : Viewport_List);
 
    procedure Set_Depth_Ranges (List : Depth_Range_List);

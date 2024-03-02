@@ -45,11 +45,7 @@ package GL.Objects.Textures is
    --                            Basic Types                                  --
    -----------------------------------------------------------------------------
 
-   --  Actual range is implementation-defined
-   --
-   --  - OpenGL 2.x: At least 2
-   --  - OpenGL 3.x: At least 48
-   --  - OpenGL 4.x: At least 80
+   --  At least 80 in OpenGL 4.x
    subtype Texture_Unit is UInt;
 
    subtype Image_Unit is UInt;
@@ -117,20 +113,6 @@ package GL.Objects.Textures is
      with Pre => Object.Has_Levels;
 
    -----------------------------------------------------------------------------
-
-   generic
-      Kind : LE.Texture_Kind;
-   package Texture_Bindings is
-      type Texture_Array is array (Texture_Unit range <>) of Texture (Kind);
-
-      type Image_Array is array (Image_Unit range <>) of Texture (Kind);
-
-      procedure Bind_Textures (Textures : Texture_Array);
-
-      procedure Bind_Images (Images : Image_Array);
-   end Texture_Bindings;
-
-   -----------------------------------------------------------------------------
    --                            Texture Parameters                           --
    -----------------------------------------------------------------------------
 
@@ -157,36 +139,12 @@ package GL.Objects.Textures is
 
    function Compressed (Object : Texture) return Boolean;
 
-   function Samples (Object : Texture) return Size;
-
-   function Fixed_Sample_Locations (Object : Texture) return Boolean
-     with Pre => Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array;
-
    -----------------------------------------------------------------------------
    --                         Texture Level Parameters                        --
    -----------------------------------------------------------------------------
 
-   function Width  (Object : Texture; Level : Mipmap_Level) return Size;
-   function Height (Object : Texture; Level : Mipmap_Level) return Size;
-   function Depth  (Object : Texture; Level : Mipmap_Level) return Size;
-
    function Compressed_Image_Size (Object : Texture; Level : Mipmap_Level) return Size
      with Pre => Object.Compressed;
-
-   -----------------------------------------------------------------------------
-   --                            Texture Units                                --
-   -----------------------------------------------------------------------------
-
-   function Texture_Unit_Count return Natural;
-   --  Return the maximum combined number of texture image units available
-   --  to all shaders
-   --
-   --  If a texture image unit is used by multiple shaders, each shader stage
-   --  is counted separately.
-
-   function Texture_Unit_Count (Shader : Shaders.Shader_Type) return Natural;
-   --  Return the maximum number of texture image units available for
-   --  the specified shader
 
    -----------------------------------------------------------------------------
    --                        Buffer Texture Loading                           --
@@ -202,9 +160,6 @@ package GL.Objects.Textures is
                             Internal_Format : Pixels.Internal_Format_Buffer_Texture;
                             Buffer : Objects.Buffers.Buffer;
                             Offset, Size : Types.Size);
-
-   function Buffer_Offset (Object : Buffer_Texture) return Size;
-   function Buffer_Size   (Object : Buffer_Texture) return Size;
 
    -----------------------------------------------------------------------------
    --                           Texture Loading                               --
@@ -227,15 +182,6 @@ package GL.Objects.Textures is
       Fixed_Locations : Boolean := True)
    with Pre  => not Object.Allocated and Object.Kind /= Texture_Rectangle,
         Post => Object.Allocated;
-
-   procedure Allocate_Storage
-     (Object  : in out Texture;
-      Subject : Texture;
-      Fixed_Locations : Boolean := True)
-   with Pre  => not Object.Allocated and Subject.Allocated,
-        Post => Object.Allocated;
-   --  Allocate storage using the same format, mipmap levels, samples, and
-   --  dimensions of the given texture
 
    procedure Load_From_Data
      (Object : Texture;
@@ -261,12 +207,6 @@ package GL.Objects.Textures is
       Image_Size    : Types.Size;
       Source        : System.Address)
    with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed;
-
-   procedure Copy_Data
-     (Object  : Texture;
-      Subject : Texture;
-      Source_Level, Target_Level : Mipmap_Level)
-   with Pre => Object.Allocated and Subject.Allocated;
 
    procedure Copy_Sub_Data
      (Object  : Texture;

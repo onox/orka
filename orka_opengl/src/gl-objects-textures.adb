@@ -116,30 +116,6 @@ package body GL.Objects.Textures is
       end if;
    end Create_View;
 
-   function Width (Object : Texture; Level : Mipmap_Level) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Level, Enums.Textures.Width, Result);
-      return Result;
-   end Width;
-
-   function Height (Object : Texture; Level : Mipmap_Level) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Level, Enums.Textures.Height, Result);
-      return Result;
-   end Height;
-
-   function Depth (Object : Texture; Level : Mipmap_Level) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Level, Enums.Textures.Depth, Result);
-      return Result;
-   end Depth;
-
    function Internal_Format (Object : Texture) return Pixels.Internal_Format is
       Result : Pixels.Internal_Format := Pixels.Internal_Format'First;
    begin
@@ -171,39 +147,6 @@ package body GL.Objects.Textures is
         (Object.Reference.GL_Id, Level, Enums.Textures.Compressed_Image_Size, Ret);
       return Ret;
    end Compressed_Image_Size;
-
-   function Buffer_Offset (Object : Buffer_Texture) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Base_Level, Enums.Textures.Buffer_Offset, Result);
-      return Result;
-   end Buffer_Offset;
-
-   function Buffer_Size (Object : Buffer_Texture) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Base_Level, Enums.Textures.Buffer_Size, Result);
-      return Result;
-   end Buffer_Size;
-
-   function Samples (Object : Texture) return Size is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Base_Level, Enums.Textures.Samples, Result);
-      return Result;
-   end Samples;
-
-   function Fixed_Sample_Locations (Object : Texture) return Boolean is
-      Result : Size := 0;
-   begin
-      API.Get_Texture_Level_Parameter.Ref
-        (Object.Reference.GL_Id, Base_Level,
-         Enums.Textures.Fixed_Sample_Locations, Result);
-      return Result = 1;
-   end Fixed_Sample_Locations;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
       IDs : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
@@ -305,35 +248,6 @@ package body GL.Objects.Textures is
    begin
       API.Generate_Texture_Mipmap.Ref (Object.Reference.GL_Id);
    end Generate_Mipmap;
-
-   function Texture_Unit_Count return Natural is
-      Count : Int := 0;
-   begin
-      API.Get_Integer.Ref (Enums.Getter.Max_Combined_Texture_Image_Units, Count);
-      return Natural (Count);
-   end Texture_Unit_Count;
-
-   function Texture_Unit_Count (Shader : Shaders.Shader_Type) return Natural is
-      Count : Int := 0;
-
-      use all type Shaders.Shader_Type;
-   begin
-      case Shader is
-         when Vertex_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Vertex_Texture_Image_Units, Count);
-         when Fragment_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Texture_Image_Units, Count);
-         when Geometry_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Geometry_Texture_Image_Units, Count);
-         when Tess_Control_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Tess_Control_Texture_Image_Units, Count);
-         when Tess_Evaluation_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Tess_Evaluation_Texture_Image_Units, Count);
-         when Compute_Shader =>
-            API.Get_Integer.Ref (Enums.Getter.Max_Compute_Texture_Image_Units, Count);
-      end case;
-      return Natural (Count);
-   end Texture_Unit_Count;
 
    function Maximum_Anisotropy return Single is
       Ret : Single := 16.0;
@@ -437,32 +351,6 @@ package body GL.Objects.Textures is
       Object.Allocated := True;
    end Allocate_Storage;
 
-   procedure Allocate_Storage
-     (Object  : in out Texture;
-      Subject : Texture;
-      Fixed_Locations : Boolean := True) is
-   begin
-      if Subject.Compressed then
-         Object.Allocate_Storage
-           (Subject.Mipmap_Levels,
-            Subject.Samples,
-            Subject.Compressed_Format,
-            Subject.Width (0),
-            Subject.Height (0),
-            Subject.Depth (0),
-            Fixed_Locations);
-      else
-         Object.Allocate_Storage
-           (Subject.Mipmap_Levels,
-            Subject.Samples,
-            Subject.Internal_Format,
-            Subject.Width (0),
-            Subject.Height (0),
-            Subject.Depth (0),
-            Fixed_Locations);
-      end if;
-   end Allocate_Storage;
-
    procedure Load_From_Data
      (Object : Texture;
       Level  : Mipmap_Level;
@@ -521,17 +409,6 @@ package body GL.Objects.Textures is
       end case;
    end Load_From_Data;
 
-   procedure Copy_Data
-     (Object  : Texture;
-      Subject : Texture;
-      Source_Level, Target_Level : Mipmap_Level) is
-   begin
-      Object.Copy_Sub_Data
-        (Subject, Source_Level, Target_Level, 0, 0, 0, 0, 0, 0,
-         Object.Width (Source_Level), Object.Height (Source_Level),
-         Object.Depth (Source_Level));
-   end Copy_Data;
-
    procedure Copy_Sub_Data
      (Object  : Texture;
       Subject : Texture;
@@ -568,8 +445,8 @@ package body GL.Objects.Textures is
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size) is
    begin
-      API.Clear_Tex_Sub_Image.Ref
-        (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
+      Object.Clear_Using_Data
+        (Level, X, Y, Z, Width, Height, Depth,
          Pixels.Format'First, Pixels.Data_Type'First, System.Null_Address);
    end Clear_Using_Zeros;
 
@@ -646,27 +523,5 @@ package body GL.Objects.Textures is
       end Get_Data;
 
    end Texture_Pointers;
-
-   package body Texture_Bindings is
-
-      procedure Bind_Textures (Textures : Texture_Array) is
-         IDs : Low_Level.UInt_Array (Integer (Textures'First) .. Integer (Textures'Last));
-      begin
-         for Unit in Textures'Range loop
-            IDs (Integer (Unit)) := Textures (Unit).Reference.GL_Id;
-         end loop;
-         API.Bind_Textures.Ref (Textures'First, Textures'Length, IDs);
-      end Bind_Textures;
-
-      procedure Bind_Images (Images : Image_Array) is
-         IDs : Low_Level.UInt_Array (Integer (Images'First) .. Integer (Images'Last));
-      begin
-         for Unit in Images'Range loop
-            IDs (Integer (Unit)) := Images (Unit).Reference.GL_Id;
-         end loop;
-         API.Bind_Image_Textures.Ref (Images'First, Images'Length, IDs);
-      end Bind_Images;
-
-   end Texture_Bindings;
 
 end GL.Objects.Textures;

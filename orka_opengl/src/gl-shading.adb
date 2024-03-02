@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Enums.Getter;
 
 package body GL.Shading is
 
@@ -23,12 +22,5 @@ package body GL.Shading is
    begin
       API.Min_Sample_Shading.Ref (Value);
    end Set_Minimum_Sample_Shading;
-
-   function Minimum_Sample_Shading return Normalized_Single is
-      Result : Single := 0.0;
-   begin
-      API.Get_Single.Ref (Enums.Getter.Min_Sample_Shading_Value, Result);
-      return Normalized_Single (Result);
-   end Minimum_Sample_Shading;
 
 end GL.Shading;
