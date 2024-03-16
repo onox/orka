@@ -19,8 +19,6 @@ package GL.Enums.Getter is
 
    type Parameter is
      (Polygon_Mode,
-      Depth_Writemask,
-      Depth_Func,
       Unpack_Alignment,
       Pack_Alignment,
       Major_Version,
@@ -64,8 +62,6 @@ private
 
    for Parameter use
      (Polygon_Mode                  => 16#0B40#,
-      Depth_Writemask               => 16#0B72#,
-      Depth_Func                    => 16#0B74#,
       Unpack_Alignment              => 16#0CF5#,
       Pack_Alignment                => 16#0D05#,
       Major_Version                 => 16#821B#,

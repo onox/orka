@@ -15,7 +15,7 @@
 --  limitations under the License.
 
 with GL.API;
-with GL.Enums.Getter;
+with GL.Enums;
 
 package body GL.Rasterization is
 
@@ -32,19 +32,10 @@ package body GL.Rasterization is
       API.Polygon_Mode.Ref (Front_And_Back, Value);
    end Set_Polygon_Mode;
 
-   function Polygon_Mode return Polygon_Mode_Type is
-      Ret : Polygon_Mode_Type := Fill;
-   begin
-      API.Get_Polygon_Mode.Ref (Enums.Getter.Polygon_Mode, Ret);
-      return Ret;
-   end Polygon_Mode;
-
    procedure Set_Polygon_Offset (Factor, Units : Single; Clamp : Single := 0.0) is
    begin
       API.Polygon_Offset_Clamp.Ref (Factor, Units, Clamp);
    end Set_Polygon_Offset;
-
-   -----------------------------------------------------------------------------
 
    procedure Set_Front_Face (Face : Orientation) is
    begin

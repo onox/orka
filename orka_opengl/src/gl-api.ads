@@ -79,14 +79,8 @@ private package GL.API is
    --                            Parameter getters                            --
    -----------------------------------------------------------------------------
 
-   package Get_Boolean is new Loader.Getter_With_2_Params
-     ("glGetBooleanv", Enums.Getter.Parameter, Low_Level.Bool);
-
    package Get_Single is new Loader.Getter_With_2_Params
      ("glGetFloatv", Enums.Getter.Parameter, Single);
-
-   package Get_Single_Vec2 is new Loader.Getter_With_2_Params
-     ("glGetFloatv", Enums.Getter.Parameter, Singles.Vector2);
 
    package Get_Long is new Loader.Getter_With_2_Params
      ("glGetInteger64v", Enums.Getter.Parameter, Long);
@@ -102,12 +96,6 @@ private package GL.API is
 
    package Get_Alignment is new Loader.Getter_With_2_Params
      ("glGetIntegerv", Enums.Getter.Parameter, Pixels.Alignment);
-
-   package Get_Compare_Function is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Compare_Function);
-
-   package Get_Polygon_Mode is new Loader.Getter_With_2_Params
-     ("glGetIntegerv", Enums.Getter.Parameter, Rasterization.Polygon_Mode_Type);
 
    package Get_String is new Loader.Function_With_1_Param
      ("glGetString", Enums.Getter.String_Parameter, C.Strings.chars_ptr);

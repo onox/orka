@@ -30,7 +30,6 @@ package GL.Rasterization is
    type Polygon_Mode_Type is (Point, Line, Fill);
 
    procedure Set_Polygon_Mode (Value : Polygon_Mode_Type);
-   function Polygon_Mode return Polygon_Mode_Type;
 
    procedure Set_Polygon_Offset (Factor, Units : Single; Clamp : Single := 0.0);
    --  Offset the depth values of a polygon

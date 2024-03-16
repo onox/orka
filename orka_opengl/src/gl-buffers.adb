@@ -17,7 +17,6 @@
 with Ada.Unchecked_Conversion;
 
 with GL.API;
-with GL.Enums.Getter;
 
 package body GL.Buffers is
 
@@ -45,24 +44,10 @@ package body GL.Buffers is
       API.Depth_Func.Ref (Func);
    end Set_Depth_Function;
 
-   function Depth_Function return Compare_Function is
-      Value : Compare_Function := Compare_Function'First;
-   begin
-      API.Get_Compare_Function.Ref (Enums.Getter.Depth_Func, Value);
-      return Value;
-   end Depth_Function;
-
    procedure Set_Depth_Mask (Enabled : Boolean) is
    begin
       API.Depth_Mask.Ref (Low_Level.Bool (Enabled));
    end Set_Depth_Mask;
-
-   function Depth_Mask return Boolean is
-      Value : Low_Level.Bool := Low_Level.Bool (True);
-   begin
-      API.Get_Boolean.Ref (Enums.Getter.Depth_Writemask, Value);
-      return Boolean (Value);
-   end Depth_Mask;
 
    procedure Set_Stencil_Function
      (Face : Rasterization.Face_Selector;
