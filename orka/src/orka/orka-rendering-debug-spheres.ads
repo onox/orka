@@ -14,20 +14,21 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
-private with GL.Low_Level.Enums;
-
 private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Types;
 
 package Orka.Rendering.Debug.Spheres is
    pragma Preelaborate;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Sphere is tagged private;
+   type Sphere is tagged limited private;
 
    function Create_Sphere
      (Location : Resources.Locations.Location_Ptr;
@@ -36,12 +37,16 @@ package Orka.Rendering.Debug.Spheres is
       Cells_Horizontal : Positive := 36;
       Cells_Vertical   : Positive := 18) return Sphere;
 
-   procedure Render
+   function Create_Graph
+     (Object       : Sphere;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph;
+
+   procedure Set_Data
      (Object     : in out Sphere;
       View, Proj : Transforms.Matrix4;
-      Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class)
+      Transforms, Spheres : Rendering.Buffers.Buffer)
    with Pre => Transforms.Length > 0 and Spheres.Length in 2 | 2 * Transforms.Length;
-   --  Render a sphere for each transform
+   --  Set matrices and buffers to render a sphere for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
    --  contain n matrices for n spheres. This buffer controls how many
@@ -54,9 +59,15 @@ package Orka.Rendering.Debug.Spheres is
 
 private
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
 
-   type Sphere is tagged record
+   type Spheres_Hidden_Program_Callback (Data : not null access Sphere) is limited new Orka.Frame_Graphs.Program_Callback with null record;
+   type Spheres_Visible_Program_Callback (Data : not null access Sphere) is limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+   overriding procedure Run (Object : Spheres_Hidden_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Spheres_Visible_Program_Callback; Program : Rendering.Programs.Program);
+
+   type Sphere is tagged limited record
       Program : Rendering.Programs.Program;
 
       Cells_Horizontal, Cells_Vertical : Positive;
@@ -64,6 +75,12 @@ private
       Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+
+      Callback_Hidden  : aliased Spheres_Hidden_Program_Callback (Sphere'Access);
+      Callback_Visible : aliased Spheres_Visible_Program_Callback (Sphere'Access);
+
+      Transforms : Rendering.Buffers.Buffer (Orka.Types.Single_Matrix_Type);
+      Spheres    : Rendering.Buffers.Buffer (Orka.Types.Single_Type);
    end record;
 
 end Orka.Rendering.Debug.Spheres;

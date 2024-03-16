@@ -14,28 +14,33 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
-private with GL.Low_Level.Enums;
-
 private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Types;
 
 package Orka.Rendering.Debug.Lines is
    pragma Preelaborate;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Line is tagged private;
+   type Line is tagged limited private;
 
    function Create_Line
      (Location : Resources.Locations.Location_Ptr) return Line;
 
-   procedure Render
+   function Create_Graph
+     (Object       : Line;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph;
+
+   procedure Set_Data
      (Object     : in out Line;
       View, Proj : Transforms.Matrix4;
-      Transforms, Colors, Points : Rendering.Buffers.Bindable_Buffer'Class)
+      Transforms, Colors, Points : Rendering.Buffers.Buffer)
    with Pre => Transforms.Length in 1 | Points.Length / 2
                  and Colors.Length in 1 | Points.Length / 2
                  and Points.Length mod 2 = 0;
@@ -52,15 +57,28 @@ package Orka.Rendering.Debug.Lines is
 
 private
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
 
-   type Line is tagged record
+   type Line_Hidden_Program_Callback (Data : not null access Line) is limited new Orka.Frame_Graphs.Program_Callback with null record;
+   type Line_Visible_Program_Callback (Data : not null access Line) is limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+   overriding procedure Run (Object : Line_Hidden_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Line_Visible_Program_Callback; Program : Rendering.Programs.Program);
+
+   type Line is tagged limited record
       Program : Rendering.Programs.Program;
 
       Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
 
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+
+      Callback_Hidden  : aliased Line_Hidden_Program_Callback (Line'Access);
+      Callback_Visible : aliased Line_Visible_Program_Callback (Line'Access);
+
+      Transforms : Rendering.Buffers.Buffer (Orka.Types.Single_Matrix_Type);
+      Colors     : Rendering.Buffers.Buffer (Orka.Types.Single_Vector_Type);
+      Points     : Rendering.Buffers.Buffer (Orka.Types.Single_Vector_Type);
    end record;
 
 end Orka.Rendering.Debug.Lines;

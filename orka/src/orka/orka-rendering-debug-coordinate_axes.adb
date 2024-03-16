@@ -14,11 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Buffers;
 with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.States;
 
 package body Orka.Rendering.Debug.Coordinate_Axes is
 
@@ -42,30 +42,64 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
       end return;
    end Create_Coordinate_Axes;
 
-   procedure Render
+   procedure Set_Data
      (Object        : in out Coordinate_Axes;
       Width, Height : Positive;
       Axis_Size     : Transforms.Vector4 := (4.0, 100.0, 16.0, 32.0);
       View, Proj    : Transforms.Matrix4;
-      Transforms    : Rendering.Buffers.Bindable_Buffer'Class)
-   is
-      use all type GL.Types.Compare_Function;
-      use all type Rendering.Buffers.Indexed_Buffer_Target;
-
-      Original_Function : constant GL.Types.Compare_Function := GL.Buffers.Depth_Function;
+      Transforms    : Rendering.Buffers.Buffer) is
    begin
       Object.Uniform_View.Set_Matrix (View);
       Object.Uniform_Proj.Set_Matrix (Proj);
       Object.Uniform_Size.Set_Vector (Unsigned_32_Array'(Unsigned_32 (Width), Unsigned_32 (Height)));
       Object.Uniform_Axis.Set_Vector (Axis_Size);
 
-      Object.Program.Use_Program;
+      Object.Transforms := Transforms;
+   end Set_Data;
 
-      Transforms.Bind (Shader_Storage, 0);
+   overriding procedure Run (Object : Axes_Program_Callback; Program : Rendering.Programs.Program) is
+      use all type Rendering.Buffers.Indexed_Buffer_Target;
+   begin
+      Object.Data.Transforms.Bind (Shader_Storage, 0);
+      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Object.Data.Transforms.Length);
+   end Run;
 
-      GL.Buffers.Set_Depth_Function (Always);
-      Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Transforms.Length);
-      GL.Buffers.Set_Depth_Function (Original_Function);
-   end Render;
+   function Create_Graph
+     (Object       : Coordinate_Axes;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph
+   is
+      use Orka.Frame_Graphs;
+
+      Graph : aliased Orka.Frame_Graphs.Frame_Graph
+        (Maximum_Passes    => 1,   --  1 pass for axes
+         Maximum_Handles   => 2,   --  Reading/Writing 2x color + depth buffers
+         Maximum_Resources => 4);  --  2 resources for color buffer and 1 for depth buffer (+ 1 for implicit)
+      --  RC1 --> P --> RC2
+      --  RD1 -/
+      --       \------> [RD1]
+
+      State : constant Orka.Rendering.States.State := (Depth_Func => GL.Types.Always, others => <>);
+      Pass  : Render_Pass'Class := Graph.Add_Pass ("axes", State, Object.Program, Object.Callback'Unchecked_Access);
+
+      Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"axes-color",
+         Description => Color,
+         others      => <>);
+
+      Resource_Depth_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"axes-depth",
+         Description => Depth,
+         others      => <>);
+
+      Resource_Color_V2 : constant Orka.Frame_Graphs.Resource :=
+        Pass.Add_Input_Output (Resource_Color_V1, Framebuffer_Attachment, 0);
+   begin
+      Pass.Add_Input (Resource_Depth_V1, Framebuffer_Attachment, 1);
+
+      Graph.Import ([Resource_Color_V1, Resource_Depth_V1]);
+      Graph.Export ([Resource_Color_V2, Resource_Depth_V1]);
+
+      return Graph;
+   end Create_Graph;
 
 end Orka.Rendering.Debug.Coordinate_Axes;
