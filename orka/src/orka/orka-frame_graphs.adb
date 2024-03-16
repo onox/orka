@@ -20,10 +20,10 @@ with Ada.Streams;
 with Ada.Unchecked_Conversion;
 
 with GL.Barriers;
+with GL.Pixels;
 with GL.Toggles;
 with GL.Types;
 
-with Orka.Contexts;
 with Orka.Logging.Default;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
@@ -43,11 +43,16 @@ package body Orka.Frame_Graphs is
       Clear_Mask     => (Color => True, others => False),
       others         => <>);
 
-   --  Used when Present_Mode = Render_To_Default
-   procedure Draw_Fullscreen (Program : Rendering.Programs.Program) is
+   type Fullscreen_Program_Callback is new Program_Callback with null record;
+
+   overriding
+   procedure Run (Object : Fullscreen_Program_Callback; Program : Rendering.Programs.Program) is
    begin
       Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
-   end Draw_Fullscreen;
+   end Run;
+
+   --  Used when Present_Mode = Render_To_Default
+   Draw_Fullscreen : aliased Fullscreen_Program_Callback;
 
    use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
@@ -246,7 +251,7 @@ package body Orka.Frame_Graphs is
    exception
       when Constraint_Error =>
          declare
-            Result : Texture :=
+            Result : constant Texture :=
               (if Layer > 0 then
                  Get_Texture (Subject, Layer => 0).Create_View (Layer => Natural (Layer - 1))
                else
@@ -273,7 +278,7 @@ package body Orka.Frame_Graphs is
       Name     : String;
       State    : Rendering.States.State;
       Program  : Rendering.Programs.Program;
-      Callback : not null Program_Callback;
+      Callback : not null Program_Callback_Access;
       Side_Effect : Boolean := False) return Render_Pass'Class is
    begin
       Object.Passes.Append
@@ -287,6 +292,105 @@ package body Orka.Frame_Graphs is
         (Frame_Graph => Object'Access,
          Index       => Object.Passes.Length);
    end Add_Pass;
+
+   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array) is
+      Indices : Resource_Index_Vectors.Element_Array (Subjects'Range);
+      Found   : Boolean;
+   begin
+      for Index in Subjects'Range loop
+         Object.Find_Resource (Subjects (Index), Indices (Index), Found);
+
+         if not Found then
+            raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
+         end if;
+      end loop;
+
+      Object.Imported_Resources.Clear;
+      Object.Imported_Resources.Append_All (Indices);
+   end Import;
+
+   procedure Export (Object : in out Frame_Graph; Subjects : Resource_Array) is
+      Indices : Resource_Index_Vectors.Element_Array (Subjects'Range);
+      Found   : Boolean;
+   begin
+      for Index in Subjects'Range loop
+         Object.Find_Resource (Subjects (Index), Indices (Index), Found);
+
+         if not Found then
+            raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
+         end if;
+      end loop;
+
+      Object.Exported_Resources.Clear;
+      Object.Exported_Resources.Append_All (Indices);
+   end Export;
+
+   function Add_Graph
+     (Object  : in out Frame_Graph;
+      Subject : Frame_Graph;
+      Prefix  : String) return External_Resources
+   is
+      Other : Frame_Graph := Subject;
+   begin
+      if Object.Passes.Length + Subject.Passes.Length > Object.Passes.Capacity then
+         raise Constraint_Error with "Not enough space to insert render passes";
+      end if;
+
+      if Object.Resources.Length + Subject.Resources.Length > Object.Resources.Capacity then
+         raise Constraint_Error with "Not enough space to insert resources";
+      end if;
+
+      if Object.Read_Handles.Length + Subject.Read_Handles.Length > Object.Read_Handles.Capacity or
+           Object.Write_Handles.Length + Subject.Write_Handles.Length > Object.Write_Handles.Capacity
+      then
+         raise Constraint_Error with "Not enough space to insert handles";
+      end if;
+
+      for Pass of Other.Passes loop
+         Pass.Read_Offset  := Pass.Read_Offset + Object.Read_Handles.Length;
+         Pass.Write_Offset := Pass.Write_Offset + Object.Write_Handles.Length;
+      end loop;
+
+      for Resource of Other.Resources loop
+         if Resource.Render_Pass /= No_Render_Pass then
+            Resource.Render_Pass := Resource.Render_Pass + Object.Passes.Length;
+         end if;
+         Resource.Data.Name := Prefix & Resource.Data.Name;
+      end loop;
+
+      for Handle of Other.Read_Handles loop
+         Handle.Index := Handle.Index + Object.Resources.Length;
+      end loop;
+
+      for Handle of Other.Write_Handles loop
+         Handle.Index := Handle.Index + Object.Resources.Length;
+      end loop;
+
+      for Index of Other.Imported_Resources loop
+         Index := Index + Object.Resources.Length;
+      end loop;
+      for Index of Other.Exported_Resources loop
+         Index := Index + Object.Resources.Length;
+      end loop;
+
+      Object.Passes.Append (Other.Passes);
+      Object.Resources.Append (Other.Resources);
+      Object.Read_Handles.Append (Other.Read_Handles);
+      Object.Write_Handles.Append (Other.Write_Handles);
+
+      return Result : External_Resources :=
+        (Imported_Count => Other.Imported_Resources.Length,
+         Exported_Count => Other.Exported_Resources.Length,
+         others => <>)
+      do
+         for Index in 1 .. Other.Imported_Resources.Length loop
+            Result.Imported (Index) := Object.Resources (Other.Imported_Resources (Index)).Data;
+         end loop;
+         for Index in 1 .. Other.Exported_Resources.Length loop
+            Result.Exported (Index) := Object.Resources (Other.Exported_Resources (Index)).Data;
+         end loop;
+      end return;
+   end Add_Graph;
 
    -----------------------------------------------------------------------------
 
@@ -1258,7 +1362,7 @@ package body Orka.Frame_Graphs is
             --  default framebuffer to render to screen or an additional pass is used
             --  to render the input texture to the screen
             Pass.Program.Use_Program;
-            Pass.Callback (Pass.Program);
+            Pass.Callback.Run (Pass.Program);
          end if;
 
          --  Invalidate attachments that are transcient
@@ -1403,7 +1507,7 @@ package body Orka.Frame_Graphs is
             null;
       end case;
 
-      return Result : Texture := Create_Texture (Description) do
+      return Result : constant Texture := Create_Texture (Description) do
          Last_Framebuffer.Attach (Result);
 
          --  Force re-initialization due to using non-default framebuffer

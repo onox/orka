@@ -31,6 +31,12 @@ package Orka.Containers.Bounded_Vectors is
           Iterator_Element  => Reference_Type;
    pragma Preelaborable_Initialization (Vector);
 
+   type Element_Array is array (Index_Type range <>) of aliased Element_Type;
+
+   procedure Append_All (Container : in out Vector; Elements : Element_Array)
+     with Pre  => Container.Length + Elements'Length <= Container.Capacity,
+          Post => Container.Length = Container'Old.Length + Elements'Length;
+
    procedure Append (Container : in out Vector; Elements : Vector)
      with Pre  => Container.Length + Elements.Length <= Container.Capacity,
           Post => Container.Length = Container'Old.Length + Elements.Length;
@@ -46,8 +52,6 @@ package Orka.Containers.Bounded_Vectors is
 
    procedure Clear (Container : in out Vector)
      with Post => Container.Length = 0;
-
-   type Element_Array is array (Index_Type range <>) of aliased Element_Type;
 
    procedure Query
      (Container : Vector;

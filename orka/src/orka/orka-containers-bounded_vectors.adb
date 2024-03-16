@@ -25,6 +25,14 @@ package body Orka.Containers.Bounded_Vectors is
    function Is_Full (Container : Vector) return Boolean is
      (Length (Container) = Container.Capacity);
 
+   procedure Append_All (Container : in out Vector; Elements : Element_Array) is
+      Start_Index : constant Index_Type := Container.Length + Index_Type'First;
+      Stop_Index  : constant Index_Type'Base := Start_Index + Elements'Length - 1;
+   begin
+      Container.Elements (Start_Index .. Stop_Index) := Elements;
+      Container.Length := Container.Length + Elements'Length;
+   end Append_All;
+
    procedure Append (Container : in out Vector; Elements : Vector) is
       Start_Index : constant Index_Type := Container.Length + Index_Type'First;
       Stop_Index  : constant Index_Type'Base := Start_Index + Elements.Length - 1;

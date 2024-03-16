@@ -16,8 +16,6 @@
 
 with Ada.Strings.Bounded;
 
-with GL.Pixels;
-
 with Orka.Contexts;
 with Orka.Windows;
 with Orka.Rendering.Framebuffers;
@@ -35,7 +33,10 @@ private with Orka.Containers.Bounded_Vectors;
 package Orka.Frame_Graphs is
    pragma Preelaborate;
 
-   Maximum_Name_Length : constant := 16;
+   Maximum_Name_Length : constant := 32;
+
+   Maximum_External_Resources : constant := 8;
+   --  Maximum number of resources which can be imported or exported
 
    package Name_Strings is new Ada.Strings.Bounded.Generic_Bounded_Length
      (Max => Maximum_Name_Length);
@@ -146,7 +147,11 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
-   type Program_Callback is access procedure (Program : Rendering.Programs.Program);
+   type Program_Callback is limited interface;
+
+   procedure Run (Object : Program_Callback; Program : Rendering.Programs.Program) is abstract;
+
+   type Program_Callback_Access is access constant Program_Callback'Class;
 
    type Render_Pass_Index is new Positive;
    type Handle_Type is new Positive;
@@ -154,34 +159,37 @@ package Orka.Frame_Graphs is
    type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Handles   : Positive;
-      Maximum_Resources : Handle_Type) is tagged limited private;
+      Maximum_Resources : Handle_Type) is tagged private;
 
    function Add_Pass
      (Object   : in out Frame_Graph;
       Name     : String;
       State    : Rendering.States.State;
       Program  : Rendering.Programs.Program;
-      Callback : not null Program_Callback;
+      Callback : not null Program_Callback_Access;
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
-   --  TODO Or make Program a constructor which returns a Programs.Program? (for lazy-loading)
 
-   type Resource_Array is array (Positive range <>) of Resource;
-   --  FIXME Might need to be an array of Exported_Resource
-   --  A new type Exported_Resource should contain a reference to its frame graph
-   --  so that the graph of the exported resource can inserted into the current
-   --  frame graph
+   type Resource_Array is array (Positive range <>) of aliased Resource;
 
-   --  FIXME Implement subprograms Import, Export, Imported_Resources, Exported_Resources
---   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array);
---   procedure Export (Object : in out Frame_Graph; Subjects : Resource_Array);
+   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array)
+     with Pre => Subjects'Length <= Maximum_External_Resources;
+   procedure Export (Object : in out Frame_Graph; Subjects : Resource_Array)
+     with Pre => Subjects'Length <= Maximum_External_Resources;
    --  Import and export the given resources
    --
    --  Importing and exporting resources is useful if the frame graph is used
    --  as a sub-graph of a larger graph.
 
---   function Imported_Resources (Object : Frame_Graph) return Resource_Array;
---   function Exported_Resources (Object : Frame_Graph) return Resource_Array;
+   type External_Resources (Imported_Count, Exported_Count : Positive) is record
+      Imported : Resource_Array (1 .. Imported_Count);
+      Exported : Resource_Array (1 .. Exported_Count);
+   end record;
+
+   function Add_Graph
+     (Object  : in out Frame_Graph;
+      Subject : Frame_Graph;
+      Prefix  : String) return External_Resources;
 
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
@@ -236,7 +244,7 @@ private
 
       State    : Rendering.States.State;
       Program  : Rendering.Programs.Program;
-      Callback : Program_Callback;
+      Callback : Program_Callback_Access;
 
       Read_Offset, Write_Offset : Positive := 1;
       Read_Count, Write_Count   : Natural  := 0;
@@ -279,7 +287,7 @@ private
    type Frame_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Handles   : Positive;
-      Maximum_Resources : Handle_Type) is tagged limited
+      Maximum_Resources : Handle_Type) is tagged
    record
       Passes        : Pass_Vectors.Vector (Maximum_Passes);
       Resources     : Resource_Vectors.Vector (Maximum_Resources);
@@ -304,6 +312,9 @@ private
       --
       --  This restriction allows the graph to be implemented using just
       --  four simple arrays and the arrays should provide good data locality.
+
+      Imported_Resources : Resource_Index_Vectors.Vector (Maximum_External_Resources);
+      Exported_Resources : Resource_Index_Vectors.Vector (Maximum_External_Resources);
    end record;
 
    -----------------------------------------------------------------------------
