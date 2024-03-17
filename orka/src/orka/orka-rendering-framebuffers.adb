@@ -240,7 +240,9 @@ package body Orka.Rendering.Framebuffers is
          end loop;
       end if;
 
-      Attachments.Query (Invalidate_Attachments'Access);
+      if not Attachments.Is_Empty then
+         Attachments.Query (Invalidate_Attachments'Access);
+      end if;
    end Invalidate_Non_Default;
 
    procedure Invalidate_Default
@@ -267,7 +269,9 @@ package body Orka.Rendering.Framebuffers is
          Attachments.Append (FB.Back_Left);
       end if;
 
-      Attachments.Query (Invalidate_Attachments'Access);
+      if not Attachments.Is_Empty then
+         Attachments.Query (Invalidate_Attachments'Access);
+      end if;
    end Invalidate_Default;
 
    procedure Invalidate
