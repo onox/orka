@@ -1,7 +1,5 @@
 #version 420 core
 
-#extension GL_ARB_shader_texture_image_samples : require
-
 // SPDX-License-Identifier: Apache-2.0
 //
 // Copyright (c) 2021 onox <denkpadje@gmail.com>
@@ -18,7 +16,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-layout(binding = 0) uniform sampler2DMS colorTexture;
+layout(binding = 0) uniform sampler2DRect colorTexture;
 
 uniform vec4 screenResolution;
 uniform bool applyGammaCorrection;
@@ -32,14 +30,7 @@ void main(void)
 {
     const ivec2 P = ivec2(gl_FragCoord.xy * textureSize(colorTexture) / screenResolution.xy);
 
-    const int samples = textureSamples(colorTexture);
-
-    // Resolve MSAA samples
-    vec4 color = texelFetch(colorTexture, P, 0);
-    for (int i = 1; i < samples; ++i) {
-        vec4 c = texelFetch(colorTexture, P, i);
-        color += vec4(c.a * c.rgb, c.a);
-    }
+    vec4 color = texelFetch(colorTexture, P);
 
     if (color.a > 0.0) {
         color.rgb /= color.a;

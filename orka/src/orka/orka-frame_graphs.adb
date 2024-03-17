@@ -773,7 +773,9 @@ package body Orka.Frame_Graphs is
           Programs.Create_Program (Programs.Modules.Create_Module
             (Location,
              VS => "oversized-triangle.vert",
-             FS => "frame-graph-present.frag")),
+             FS => (case Resource.Data.Description.Kind is
+                      when Texture_Rectangle => "frame-graph-present-rect.frag",
+                      when others => "frame-graph-present.frag"))),
          Callback => Draw_Fullscreen'Access,
          Side_Effect => True,
          Read_Count  => 1,
@@ -782,6 +784,7 @@ package body Orka.Frame_Graphs is
       Object.Present_Render_Pass.Program.Uniform ("screenResolution").Set_Vector
         (Orka.Types.Singles.Vector4'
           (Orka.Float_32 (Default.Width), Orka.Float_32 (Default.Height), 0.0, 0.0));
+      Object.Present_Render_Pass.Program.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
 
       --  Mode 1: Previous render pass has one FB color attachment (this resource)
       --    Action: Previous render pass can use the default framebuffer
