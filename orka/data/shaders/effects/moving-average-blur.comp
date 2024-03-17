@@ -22,7 +22,7 @@ layout(local_size_x = 64) in;
 
 layout(binding = 0) uniform sampler2DRect inputImage;
 
-layout(binding = 1) volatile restrict writeonly uniform image2D outputImage;
+layout(binding = 1) volatile restrict writeonly uniform image2DRect outputImage;
 
 uniform bool horizontal;
 uniform int radius;

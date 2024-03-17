@@ -14,18 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with GL.Low_Level.Enums;
-
-private with Orka.Rendering.Buffers;
-private with Orka.Rendering.Programs.Uniforms;
-private with Orka.Rendering.Framebuffers;
-private with Orka.Types;
-
+with Orka.Frame_Graphs;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 
+private with Orka.Rendering.Buffers;
+private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Types;
+
 package Orka.Rendering.Effects.Filters is
    pragma Preelaborate;
+
+   use type Orka.Rendering.Textures.LE.Texture_Kind;
 
    function Gaussian_Kernel (Radius : Size) return Float_32_Array
      with Pre => Radius mod 2 = 0;
@@ -34,7 +34,6 @@ package Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : Rendering.Textures.Texture;
       Kernel   : Float_32_Array) return Separable_Filter
    with Pre => Kernel'Length mod 2 = 0;
    --  Create a separable filter
@@ -42,9 +41,12 @@ package Orka.Rendering.Effects.Filters is
    --  The kernel must consist of a sequence of offsets, followed by a
    --  sequence of weights.
 
-   procedure Render (Object : in out Separable_Filter; Passes : Positive := 1);
-   --  Apply the filter to the texture given to the constructor of the filter
-   --  in one or more passes
+   function Create_Graph
+     (Object : Separable_Filter;
+      Color  : Orka.Rendering.Textures.Texture_Description;
+      Passes : Positive := 1) return Orka.Frame_Graphs.Frame_Graph
+   with Pre => Color.Kind = Orka.Rendering.Textures.LE.Texture_Rectangle;
+   --  Apply the filter to the given texture in one or more passes
    --
    --  For better performance, it is recommended to first downsample a
    --  texture to half the size (with procedure Resolve_To in the package
@@ -57,15 +59,17 @@ package Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : Rendering.Textures.Texture;
       Radius   : Size) return Moving_Average_Filter;
    --  Create a filter that computes the moving average per row in a
    --  compute shader for a O(1) time complexity, giving a consistent
    --  performance independent of the radius
 
-   procedure Render (Object : in out Moving_Average_Filter; Passes : Positive := 2);
-   --  Apply the filter to the texture given to the constructor of the filter
-   --  in one or more passes
+   function Create_Graph
+     (Object : in out Moving_Average_Filter;
+      Color  : Orka.Rendering.Textures.Texture_Description;
+      Passes : Positive := 2) return Orka.Frame_Graphs.Frame_Graph
+   with Pre => Color.Kind = Orka.Rendering.Textures.LE.Texture_Rectangle;
+   --  Apply the filter to the given texture in one or more passes
    --
    --  Passes is 2 by default to get a Gaussian blur instead of a box blur.
    --
@@ -76,29 +80,36 @@ package Orka.Rendering.Effects.Filters is
 
 private
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
+
+   type Separable_Filter_Program_Callback (Data : not null access Separable_Filter; Horizontal : Boolean) is
+     limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+   overriding procedure Run (Object : Separable_Filter_Program_Callback; Program : Rendering.Programs.Program);
 
    type Separable_Filter is tagged limited record
-      Program_Blur       : Rendering.Programs.Program;
+      Program            : Rendering.Programs.Program;
       Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
 
       Buffer_Weights     : Rendering.Buffers.Buffer (Types.Single_Type);
 
-      Framebuffer_H : Rendering.Framebuffers.Framebuffer (Default => False);
-      Framebuffer_V : Rendering.Framebuffers.Framebuffer (Default => False);
-
-      Texture_H : Rendering.Textures.Texture (LE.Texture_Rectangle);
-      Texture_V : Rendering.Textures.Texture (LE.Texture_Rectangle);
+      Callback_Horizontal : aliased Separable_Filter_Program_Callback (Separable_Filter'Access, True);
+      Callback_Vertical   : aliased Separable_Filter_Program_Callback (Separable_Filter'Access, False);
    end record;
 
+   type Moving_Average_Filter_Program_Callback (Data : not null access Moving_Average_Filter; Horizontal : Boolean) is
+     limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback; Program : Rendering.Programs.Program);
+
    type Moving_Average_Filter is tagged limited record
-      Program_Blur       : Rendering.Programs.Program;
+      Program            : Rendering.Programs.Program;
       Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
 
-      Texture_H : Rendering.Textures.Texture (LE.Texture_Rectangle);
-      Texture_V : Rendering.Textures.Texture (LE.Texture_Rectangle);
-
       Columns, Rows : Unsigned_32;
+
+      Callback_Horizontal : aliased Moving_Average_Filter_Program_Callback (Moving_Average_Filter'Access, True);
+      Callback_Vertical   : aliased Moving_Average_Filter_Program_Callback (Moving_Average_Filter'Access, False);
    end record;
 
 end Orka.Rendering.Effects.Filters;

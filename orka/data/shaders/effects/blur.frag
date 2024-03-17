@@ -20,6 +20,8 @@ layout(origin_upper_left) in vec4 gl_FragCoord;
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
+
 uniform bool horizontal;
 
 layout(binding = 0) uniform sampler2DRect inputImage;

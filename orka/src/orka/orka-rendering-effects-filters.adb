@@ -16,13 +16,12 @@
 
 with Ada.Numerics.Generic_Elementary_Functions;
 
-with GL.Barriers;
 with GL.Compute;
-with GL.Toggles;
 with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.States;
 
 package body Orka.Rendering.Effects.Filters is
 
@@ -100,126 +99,174 @@ package body Orka.Rendering.Effects.Filters is
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : Rendering.Textures.Texture;
       Kernel   : Float_32_Array) return Separable_Filter
    is
-      use all type LE.Texture_Kind;
-      pragma Assert (Subject.Kind = LE.Texture_Rectangle);
-
       use Rendering.Buffers;
-      use Rendering.Framebuffers;
       use Rendering.Programs;
-      use Rendering.Textures;
-
-      Size : constant Size_3D := Subject.Description.Size;
    begin
       return Result : Separable_Filter :=
         (Buffer_Weights => Create_Buffer ((others => False), Kernel),
-         Program_Blur   => Create_Program (Modules.Module_Array'
+         Program        => Create_Program (Modules.Module_Array'
            (Modules.Create_Module (Location, VS => "oversized-triangle.vert"),
             Modules.Create_Module (Location, FS => "effects/blur.frag"))),
-         Framebuffer_H => Create_Framebuffer (Size (X), Size (Y)),
-         Framebuffer_V => Create_Framebuffer (Size (X), Size (Y)),
-         Texture_H     => Subject,
-         Texture_V     => Create_Texture (Subject.Description),
          others => <>)
       do
-         Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
-
-         Result.Framebuffer_H.Attach (Result.Texture_H);
-         Result.Framebuffer_V.Attach (Result.Texture_V);
+         Result.Uniform_Horizontal := Result.Program.Uniform ("horizontal");
       end return;
    end Create_Filter;
 
-   procedure Render (Object : in out Separable_Filter; Passes : Positive := 1) is
+   overriding procedure Run (Object : Separable_Filter_Program_Callback; Program : Rendering.Programs.Program) is
       use all type Orka.Rendering.Buffers.Indexed_Buffer_Target;
    begin
-      GL.Toggles.Disable (GL.Toggles.Depth_Test);
+      Object.Data.Buffer_Weights.Bind (Shader_Storage, 0);
 
-      Object.Program_Blur.Use_Program;
-      Object.Buffer_Weights.Bind (Shader_Storage, 0);
+      Object.Data.Uniform_Horizontal.Set_Boolean (Object.Horizontal);
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+   end Run;
 
-      for Pass in 1 .. Passes loop
-         --  Horizontal pass: Texture_H => Texture_V
-         Object.Uniform_Horizontal.Set_Boolean (True);
-         Object.Texture_H.Bind (0);
+   function Create_Graph
+     (Object : Separable_Filter;
+      Color  : Orka.Rendering.Textures.Texture_Description;
+      Passes : Positive := 1) return Orka.Frame_Graphs.Frame_Graph
+   is
+      use Orka.Frame_Graphs;
 
-         Object.Framebuffer_V.Use_Framebuffer;
-         Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+      Graph : aliased Orka.Frame_Graphs.Frame_Graph
+        (Maximum_Passes    => Render_Pass_Index (Passes) * 2,  --  1 pass for horizontal and 1 pass for vertical
+         Maximum_Handles   => Passes * 4,  --  4x read (because of framebuffer attachment) + 2x write
+         Maximum_Resources => Handle_Type (Passes) * 4 + 1);
+      --  R1 -> PH -> R2 -> PV -> R3
+      --        ^                 |
+      --        |                 v
+      --        +---------------- +
 
-         --  Vertical pass: Texture_V => Texture_H
-         Object.Uniform_Horizontal.Set_Boolean (False);
-         Object.Texture_V.Bind (0);
+      State : constant Orka.Rendering.States.State := (others => <>);
 
-         Object.Framebuffer_H.Use_Framebuffer;
-         Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
+      Resources_Horizontal : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+        [for I in 1 .. Passes =>
+          (Name        => +("sep-filter-horizontal-" & I'Image),
+           Description => Color,
+           others      => <>)];
+
+      Resources_Vertical : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+        [for I in 1 .. Passes =>
+          (Name        => +("sep-filter-vertical-" & I'Image),
+           Description => Color,
+           others      => <>)];
+
+      Resource_Color_Input : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"sep-filter-color",
+         Description => Color,
+         others      => <>);
+   begin
+      for Index in 1 .. Passes loop
+         declare
+            Pass_Horizontal : Render_Pass'Class :=
+              Graph.Add_Pass ("sep-filter-horizontal", State, Object.Program, Object.Callback_Horizontal'Unchecked_Access);
+            Pass_Vertical   : Render_Pass'Class :=
+              Graph.Add_Pass ("sep-filter-vertical", State, Object.Program, Object.Callback_Vertical'Unchecked_Access);
+         begin
+            Pass_Horizontal.Add_Input ((if Index > 1 then Resources_Vertical (Index - 1) else Resource_Color_Input), Texture_Read, 0);
+            Pass_Horizontal.Add_Output (Resources_Horizontal (Index), Framebuffer_Attachment, 0);
+
+            Pass_Vertical.Add_Input (Resources_Horizontal (Index), Texture_Read, 0);
+            Pass_Vertical.Add_Output (Resources_Vertical (Index), Framebuffer_Attachment, 0);
+         end;
       end loop;
 
-      GL.Toggles.Enable (GL.Toggles.Depth_Test);
-   end Render;
+      Graph.Import ([Resource_Color_Input]);
+      Graph.Export ([Resources_Vertical (Resources_Vertical'Last)]);
+
+      return Graph;
+   end Create_Graph;
 
    -----------------------------------------------------------------------------
 
    function Create_Filter
      (Location : Resources.Locations.Location_Ptr;
-      Subject  : Rendering.Textures.Texture;
       Radius   : Size) return Moving_Average_Filter
    is
-      use all type LE.Texture_Kind;
-      pragma Assert (Subject.Kind = LE.Texture_Rectangle);
-
       use Rendering.Programs;
-      use Rendering.Textures;
-
-      Size : constant Size_3D := Subject.Description.Size;
    begin
       return Result : Moving_Average_Filter :=
-        (Program_Blur => Create_Program
-           (Modules.Create_Module (Location, CS => "effects/moving-average-blur.comp")),
-         Texture_H => Subject,
-         Texture_V => Create_Texture (Subject.Description),
-         others    => <>)
+        (Program => Create_Program (Modules.Create_Module (Location, CS => "effects/moving-average-blur.comp")),
+         others  => <>)
       do
-         Result.Uniform_Horizontal := Result.Program_Blur.Uniform ("horizontal");
-         Result.Program_Blur.Uniform ("radius").Set_Int (Radius);
-
-         declare
-            Work_Group_Size : constant Float_32 :=
-             Float_32 (Result.Program_Blur.Compute_Work_Group_Size (X));
-         begin
-            Result.Columns := Unsigned_32
-              (Float_32'Ceiling (Float_32 (Size (X)) / Work_Group_Size));
-            Result.Rows := Unsigned_32
-              (Float_32'Ceiling (Float_32 (Size (Y)) / Work_Group_Size));
-         end;
+         Result.Uniform_Horizontal := Result.Program.Uniform ("horizontal");
+         Result.Program.Uniform ("radius").Set_Int (Radius);
       end return;
    end Create_Filter;
 
-   procedure Render (Object : in out Moving_Average_Filter; Passes : Positive := 2) is
+   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback; Program : Rendering.Programs.Program) is
    begin
-      Object.Program_Blur.Use_Program;
+      Object.Data.Uniform_Horizontal.Set_Boolean (Object.Horizontal);
+      GL.Compute.Dispatch_Compute (X => (if Object.Horizontal then Object.Data.Rows else Object.Data.Columns));
+   end Run;
 
-      for Pass in 1 .. Passes loop
-         --  Horizontal pass: Texture_H => Texture_V
-         Object.Uniform_Horizontal.Set_Boolean (True);
+   function Create_Graph
+     (Object : in out Moving_Average_Filter;
+      Color  : Orka.Rendering.Textures.Texture_Description;
+      Passes : Positive := 2) return Orka.Frame_Graphs.Frame_Graph
+   is
+      Size : constant Size_3D := Color.Size;
 
-         Object.Texture_H.Bind (0);
-         Object.Texture_V.Bind_As_Image (1);
-         GL.Compute.Dispatch_Compute (X => Object.Rows);
+      Work_Group_Size : constant Float_32 :=
+        Float_32 (Object.Program.Compute_Work_Group_Size (X));
 
-         GL.Barriers.Memory_Barrier
-           ((Shader_Image_Access | Texture_Fetch => True, others => False));
+      use Orka.Frame_Graphs;
 
-         --  Vertical pass: Texture_V => Texture_H
-         Object.Uniform_Horizontal.Set_Boolean (False);
+      Graph : aliased Orka.Frame_Graphs.Frame_Graph
+        (Maximum_Passes    => Render_Pass_Index (Passes) * 2,  --  1 pass for horizontal and 1 pass for vertical
+         Maximum_Handles   => Passes * 2,  --  2x read + 2x write
+         Maximum_Resources => Handle_Type (Passes) * 2 + 1);
+      --  R1 -> PH -> R2 -> PV -> R3
+      --        ^                 |
+      --        |                 v
+      --        +---------------- +
 
-         Object.Texture_V.Bind (0);
-         Object.Texture_H.Bind_As_Image (1);
-         GL.Compute.Dispatch_Compute (X => Object.Columns);
+      State : constant Orka.Rendering.States.State := (others => <>);
 
-         GL.Barriers.Memory_Barrier
-           ((Shader_Image_Access | Texture_Fetch => True, others => False));
+      Resources_Horizontal : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+        [for I in 1 .. Passes =>
+          (Name        => +("avg-filter-horizontal-" & I'Image),
+           Description => Color,
+           others      => <>)];
+
+      Resources_Vertical : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+        [for I in 1 .. Passes =>
+          (Name        => +("avg-filter-vertical-" & I'Image),
+           Description => Color,
+           others      => <>)];
+
+      Resource_Color_Input : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"avg-filter-color",
+         Description => Color,
+         others      => <>);
+   begin
+      for Index in 1 .. Passes loop
+         declare
+            Pass_Horizontal : Render_Pass'Class :=
+              Graph.Add_Pass ("avg-filter-horizontal", State, Object.Program, Object.Callback_Horizontal'Unchecked_Access);
+            Pass_Vertical   : Render_Pass'Class :=
+              Graph.Add_Pass ("avg-filter-vertical", State, Object.Program, Object.Callback_Vertical'Unchecked_Access);
+         begin
+            Pass_Horizontal.Add_Input ((if Index > 1 then Resources_Vertical (Index - 1) else Resource_Color_Input), Texture_Read, 0);
+            Pass_Horizontal.Add_Output (Resources_Horizontal (Index), Image_Store, 1);
+
+            Pass_Vertical.Add_Input (Resources_Horizontal (Index), Texture_Read, 0);
+            Pass_Vertical.Add_Output (Resources_Vertical (Index), Image_Store, 1);
+         end;
       end loop;
-   end Render;
+
+      Graph.Import ([Resource_Color_Input]);
+      Graph.Export ([Resources_Vertical (Resources_Vertical'Last)]);
+
+      Object.Columns := Unsigned_32
+        (Float_32'Ceiling (Float_32 (Size (X)) / Work_Group_Size));
+      Object.Rows := Unsigned_32
+        (Float_32'Ceiling (Float_32 (Size (Y)) / Work_Group_Size));
+
+      return Graph;
+   end Create_Graph;
 
 end Orka.Rendering.Effects.Filters;
