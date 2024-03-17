@@ -38,8 +38,8 @@ package body Orka.Frame_Graphs is
    --  we manually need to blit or render some texture to the screen
    Render_Pass_Framebuffer_State : constant Framebuffer_State :=
      (Buffers_Equal  => True,
-      Depth_Writes   => True,
-      Stencil_Writes => True,
+      Depth_Writes   => False,
+      Stencil_Writes => False,
       Clear_Mask     => (Color => True, others => False),
       others         => <>);
 
@@ -452,7 +452,9 @@ package body Orka.Frame_Graphs is
       end if;
       Pass.Write_Count := Pass.Write_Count + 1;
 
-      Set_Depth_Stencil (Pass, Attachment);
+      if Write = Framebuffer_Attachment then
+         Set_Depth_Stencil (Pass, Attachment);
+      end if;
    end Add_Output;
 
    procedure Add_Output
@@ -538,7 +540,9 @@ package body Orka.Frame_Graphs is
       end if;
       Pass.Read_Count := Pass.Read_Count + 1;
 
-      Set_Depth_Stencil (Pass, Attachment);
+      if Mode = Framebuffer_Attachment then
+         Set_Depth_Stencil (Pass, Attachment);
+      end if;
    end Add_Input;
 
    procedure Add_Input
@@ -958,7 +962,7 @@ package body Orka.Frame_Graphs is
             --  If Clear_Buffers = Render_Buffers then we only need to call
             --  Set_Draw_Buffers once after creating the framebuffer, otherwise
             --  buffers need to be set before clearing and rendering
-            State : Framebuffer_State := (Buffers_Equal => False, Depth_Writes | Stencil_Writes => True, others => <>);
+            State : Framebuffer_State := (Buffers_Equal => False, Depth_Writes | Stencil_Writes => False, others => <>);
 
             Clear_Buffer, Invalidate_Buffer : Boolean;
          begin
@@ -1294,8 +1298,12 @@ package body Orka.Frame_Graphs is
       begin
          Framebuffer.Use_Framebuffer;
 
-         GL.Buffers.Set_Depth_Mask (True);
-         GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
+         if State.Clear_Mask.Depth then
+            GL.Buffers.Set_Depth_Mask (True);
+         end if;
+         if State.Clear_Mask.Stencil then
+            GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
+         end if;
 
          if State.Buffers_Equal then
             Framebuffer.Clear (State.Clear_Mask);
