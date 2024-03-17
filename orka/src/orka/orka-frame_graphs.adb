@@ -1286,7 +1286,9 @@ package body Orka.Frame_Graphs is
          Pass             : Render_Pass_Data;
          Input_Resources  : Input_Resource_Array;
          Output_Resources : Output_Resource_Array;
-         Present_By_Blit  : Boolean) is
+         Present_By_Blit  : Boolean)
+      is
+         Texture_Fetch, Image_Access : Boolean := False;
       begin
          Framebuffer.Use_Framebuffer;
 
@@ -1319,8 +1321,10 @@ package body Orka.Frame_Graphs is
          for Resource of Input_Resources loop
             case Resource.Mode is
                when Texture_Read =>
+                  Texture_Fetch := True;
                   Get_Texture (Resource.Data, Resource.Layer).Bind (Natural (Resource.Binding));
                when Image_Load =>
+                  Image_Access := True;
                   Get_Texture (Resource.Data, Resource.Layer).Bind_As_Image (Natural (Resource.Binding));
                when Not_Used | Framebuffer_Attachment =>
                   null;
@@ -1331,9 +1335,17 @@ package body Orka.Frame_Graphs is
             --  Resource has already been attached in procedure Initialize
             --  if mode is Framebuffer_Attachment
             if Resource.Mode = Image_Store then
+               Image_Access := True;
                Get_Texture (Resource.Data, Resource.Layer).Bind_As_Image (Natural (Resource.Binding));
             end if;
          end loop;
+
+         if Texture_Fetch or Image_Access then
+            GL.Barriers.Memory_Barrier
+              ((Texture_Fetch       => Texture_Fetch,
+                Shader_Image_Access => Image_Access,
+                others              => False));
+         end if;
 
          if Present_By_Blit then
             declare
