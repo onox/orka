@@ -820,7 +820,7 @@ package body Orka.Frame_Graphs is
          end loop;
 
          if Attachments = 1 and not Has_Non_Color_Attachment
-           and Resource.Data.Description.Kind = Texture_2D
+           and Resource.Data.Description.Kind in Texture_2D | Texture_Rectangle
            and Resource.Data.Description.Size = Default_Size
            and Resource.Data.Description.Samples = Natural (Default.Samples)
          then
@@ -828,7 +828,7 @@ package body Orka.Frame_Graphs is
             Object.Present_Mode := Use_Default;
 
             Log (Success, "Presenting " & Name (Resource) & " using default framebuffer");
-         elsif Resource.Data.Description.Kind in Texture_2D | Texture_2D_Multisample then
+         elsif Resource.Data.Description.Kind in Texture_2D | Texture_2D_Multisample | Texture_Rectangle then
             --  Mode 2
             Object.Present_Mode := Blit_To_Default;
 
@@ -861,6 +861,8 @@ package body Orka.Frame_Graphs is
                  Trim_Image (Resource.Data.Description.Samples) & " (/= " &
                  Trim_Image (Natural (Default.Samples)) & ")");
             end if;
+         else
+            Log (Error, "Unable to present " & Name (Resource));
          end if;
       end if;
    end Determine_Present_Mode;
