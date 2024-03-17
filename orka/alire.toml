@@ -11,7 +11,8 @@ maintainers-logins = ["onox"]
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAOM110-Is"]
+"*".style_checks = ["-gnatygAOM120-Is"]
+"*".ada_version = "Ada2022"
 
 [project-files.'case(os)']
 linux = ["orka.gpr", "orka-egl.gpr"]

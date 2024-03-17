@@ -11,7 +11,8 @@ maintainers-logins = ["onox"]
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAOM110-Is"]
+"*".style_checks = ["-gnatygAOM120-Is"]
+"*".ada_version = "Ada2022"
 
 [[depends-on]]
 orka = "~1.0.0"

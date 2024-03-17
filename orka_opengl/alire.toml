@@ -11,7 +11,8 @@ maintainers-logins = ["onox"]
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAOM99-Is"]
+"*".style_checks = ["-gnatygAOM120-Is"]
+"*".ada_version = "Ada2022"
 
 [available.'case(os)']
 'linux|windows' = true

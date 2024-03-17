@@ -13,7 +13,8 @@ executables = ["orka_info", "orka_gltf", "orka_ktx"]
 
 [build-switches]
 validation.compile_checks = "warnings"
-"*".style_checks = ["-gnatygAOM99-Is"]
+"*".style_checks = ["-gnatygAOM120-Is"]
+"*".ada_version = "Ada2022"
 
 [[depends-on]]
 orka_awt = "~1.0.0"
