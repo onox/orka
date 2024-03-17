@@ -17,10 +17,10 @@
 with Ada.Characters.Latin_1;
 with Ada.Numerics.Generic_Elementary_Functions;
 
-with GL.Buffers;
 with GL.Types;
 
 with Orka.Rendering.Drawing;
+with Orka.Rendering.States;
 with Orka.Transforms.Doubles.Matrices;
 with Orka.Transforms.Doubles.Vectors;
 with Orka.Transforms.Doubles.Vector_Conversions;
@@ -97,34 +97,24 @@ package body Orka.Features.Atmosphere.Rendering is
         EF.Sqrt (1.0 - E2 * Direction (Orka.Z)**2);
    begin
       return
-        (Direction (Orka.X) * (N + Altitude),
+        [Direction (Orka.X) * (N + Altitude),
          Direction (Orka.Y) * (N + Altitude),
          Direction (Orka.Z) * (N * (1.0 - E2) + Altitude),
-         1.0);
+         1.0];
    end Flattened_Vector;
 
    package Matrices renames Orka.Transforms.Doubles.Matrices;
 
-   procedure Render
+   procedure Set_Data
      (Object : in out Atmosphere;
       Camera : Cameras.Camera_Ptr;
       Planet : Behaviors.Behavior_Ptr;
       Star   : Behaviors.Behavior_Ptr)
    is
-      use all type GL.Types.Compare_Function;
-
       function "*" (Left : Matrices.Matrix4; Right : Matrices.Vector4) return Matrices.Vector4
         renames Matrices."*";
 
       function "*" (Left, Right : Matrices.Matrix4) return Matrices.Matrix4 renames Matrices."*";
-
-      function Far_Plane (Value : GL.Types.Compare_Function) return GL.Types.Compare_Function is
-        (case Value is
-           when Less | LEqual     => LEqual,
-           when Greater | GEqual  => GEqual,
-           when others            => raise Constraint_Error);
-
-      Original_Function : constant GL.Types.Compare_Function := GL.Buffers.Depth_Function;
 
       use Orka.Transforms.Doubles.Vectors;
       use Orka.Transforms.Doubles.Vector_Conversions;
@@ -137,10 +127,10 @@ package body Orka.Features.Atmosphere.Rendering is
 
       procedure Apply_Hacks is
          GL_To_Geo : constant Matrices.Matrix4 := Matrices.R
-           (Matrices.Vectors.Normalize ((1.0, 1.0, 1.0, 0.0)),
+           (Matrices.Vectors.Normalize ([1.0, 1.0, 1.0, 0.0]),
             (2.0 / 3.0) * Ada.Numerics.Pi);
          Earth_Tilt : constant Matrices.Matrix4 := Matrices.R
-           (Matrices.Vectors.Normalize ((1.0, 0.0, 0.0, 0.0)),
+           (Matrices.Vectors.Normalize ([1.0, 0.0, 0.0, 0.0]),
             Object.Parameters.Axial_Tilt);
 
          Inverse_Inertial    : constant Matrices.Matrix4 := Earth_Tilt * GL_To_Geo;
@@ -181,12 +171,51 @@ package body Orka.Features.Atmosphere.Rendering is
 
       Object.Uniform_View.Set_Matrix (Camera.View_Matrix);
       Object.Uniform_Proj.Set_Matrix (Camera.Projection_Matrix);
+   end Set_Data;
 
-      Object.Program.Use_Program;
-
-      GL.Buffers.Set_Depth_Function (Far_Plane (Original_Function));
+   procedure Render (Object : Atmosphere) is
+   begin
       Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
-      GL.Buffers.Set_Depth_Function (Original_Function);
    end Render;
+
+   overriding procedure Run (Object : Atmosphere_Program_Callback; Program : Orka.Rendering.Programs.Program) is
+   begin
+      Object.Data.Render;
+   end Run;
+
+   function Create_Graph
+     (Object       : Atmosphere;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph
+   is
+      use Orka.Frame_Graphs;
+
+      Graph : aliased Orka.Frame_Graphs.Frame_Graph
+        (Maximum_Passes    => 1,
+         Maximum_Handles   => 2,
+         Maximum_Resources => 4);
+
+      State : constant Orka.Rendering.States.State := (Depth_Func => GL.Types.GEqual, others => <>);
+      Pass  : Render_Pass'Class := Graph.Add_Pass ("atmosphere", State, Object.Program, Object.Callback'Unchecked_Access);
+
+      Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"atmosphere-color",
+         Description => Color,
+         others      => <>);
+
+      Resource_Depth_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"atmosphere-depth",
+         Description => Depth,
+         others      => <>);
+
+      Resource_Color_V2 : constant Orka.Frame_Graphs.Resource :=
+        Pass.Add_Input_Output (Resource_Color_V1, Framebuffer_Attachment, 0);
+      Resource_Depth_V2 : constant Orka.Frame_Graphs.Resource :=
+        Pass.Add_Input_Output (Resource_Depth_V1, Framebuffer_Attachment, 1);
+   begin
+      Graph.Import ([Resource_Color_V1, Resource_Depth_V1]);
+      Graph.Export ([Resource_Color_V2, Resource_Depth_V2]);
+
+      return Graph;
+   end Create_Graph;
 
 end Orka.Features.Atmosphere.Rendering;

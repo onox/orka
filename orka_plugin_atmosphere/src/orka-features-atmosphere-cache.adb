@@ -46,22 +46,26 @@ package body Orka.Features.Atmosphere.Cache is
       end if;
 
       return
-        (Atmosphere => Rendering.Create_Atmosphere (Data, Location_Shaders, Parameters),
-         Textures   =>
+        (Rendering.Create_Atmosphere (Data, Location_Shaders, Parameters) with
+         Textures =>
            KTX.Load_Textures (Data, Orka.Resources.Locations.Location_Ptr (Location_Cache)));
    end Create_Atmosphere;
 
-   function Shader_Module (Object : Cached_Atmosphere)
-     return Orka.Rendering.Programs.Modules.Module is (Object.Atmosphere.Shader_Module);
+   overriding
+   function Create_Atmosphere
+     (Data       : aliased Model_Data;
+      Location   : Resources.Locations.Location_Ptr;
+      Parameters : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere is
+   begin
+      --  This function just exists to satisfy the compiler
+      raise Program_Error with "Use the other constructor";
+      return (Rendering.Atmosphere'(Rendering.Create_Atmosphere (Data, Location, Parameters)) with Textures => <>);
+   end Create_Atmosphere;
 
-   procedure Render
-     (Object : in out Cached_Atmosphere;
-      Camera : Cameras.Camera_Ptr;
-      Planet : Behaviors.Behavior_Ptr;
-      Star   : Behaviors.Behavior_Ptr) is
+   overriding procedure Render (Object : Cached_Atmosphere) is
    begin
       Bind_Textures (Object.Textures);
-      Object.Atmosphere.Render (Camera, Planet, Star);
+      Rendering.Atmosphere (Object).Render;
    end Render;
 
 end Orka.Features.Atmosphere.Cache;

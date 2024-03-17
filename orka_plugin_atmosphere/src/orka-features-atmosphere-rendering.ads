@@ -16,10 +16,10 @@
 
 with Orka.Behaviors;
 with Orka.Cameras;
+with Orka.Frame_Graphs;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
-
-private with GL.Low_Level.Enums;
 
 private with Orka.Rendering.Programs.Uniforms;
 
@@ -47,7 +47,11 @@ package Orka.Features.Atmosphere.Rendering is
    --  Return the shader module for use by other features like terrain
    --  rendering
 
-   procedure Render
+   function Create_Graph
+     (Object       : Atmosphere;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph;
+
+   procedure Set_Data
      (Object : in out Atmosphere;
       Camera : Cameras.Camera_Ptr;
       Planet : Behaviors.Behavior_Ptr;
@@ -57,9 +61,17 @@ package Orka.Features.Atmosphere.Rendering is
    --  This procedure assumes that the precomputed textures have been
    --  binded with procedure Orka.Features.Atmosphere.Bind_Textures.
 
+   procedure Render (Object : Atmosphere);
+
 private
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
+
+   type Atmosphere_Program_Callback (Data : not null access Atmosphere'Class) is
+     limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+   overriding procedure Run (Object : Atmosphere_Program_Callback; Program : Orka.Rendering.Programs.Program);
+
    package Programs renames Orka.Rendering.Programs;
 
    type Atmosphere is tagged limited record
@@ -83,6 +95,8 @@ private
 
       Uniform_View : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+
+      Callback : aliased Atmosphere_Program_Callback (Atmosphere'Access);
    end record;
 
 end Orka.Features.Atmosphere.Rendering;

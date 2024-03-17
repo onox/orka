@@ -14,16 +14,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Behaviors;
-with Orka.Cameras;
-with Orka.Rendering.Programs.Modules;
-with Orka.Resources.Locations;
-
 with Orka.Features.Atmosphere.Rendering;
 
 package Orka.Features.Atmosphere.Cache is
 
-   type Cached_Atmosphere is tagged limited private;
+   type Cached_Atmosphere is limited new Rendering.Atmosphere with private;
 
    function Create_Atmosphere
      (Data             : aliased Model_Data;
@@ -31,23 +26,18 @@ package Orka.Features.Atmosphere.Cache is
       Location_Cache   : Resources.Locations.Writable_Location_Ptr;
       Parameters       : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere;
 
-   function Shader_Module (Object : Cached_Atmosphere)
-     return Orka.Rendering.Programs.Modules.Module;
-   --  Return the shader module for use by other features like terrain
-   --  rendering
-
-   procedure Render
-     (Object : in out Cached_Atmosphere;
-      Camera : Cameras.Camera_Ptr;
-      Planet : Behaviors.Behavior_Ptr;
-      Star   : Behaviors.Behavior_Ptr);
-   --  Render the atmosphere on the far plane
+   overriding
+   function Create_Atmosphere
+     (Data       : aliased Model_Data;
+      Location   : Resources.Locations.Location_Ptr;
+      Parameters : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere;
 
 private
 
-   type Cached_Atmosphere is tagged limited record
-      Atmosphere : Rendering.Atmosphere;
-      Textures   : Precomputed_Textures;
+   type Cached_Atmosphere is limited new Rendering.Atmosphere with record
+      Textures : Precomputed_Textures;
    end record;
+
+   overriding procedure Render (Object : Cached_Atmosphere);
 
 end Orka.Features.Atmosphere.Cache;
