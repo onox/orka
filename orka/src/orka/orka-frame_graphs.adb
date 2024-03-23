@@ -310,6 +310,18 @@ package body Orka.Frame_Graphs is
          if not Found then
             raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
          end if;
+
+         declare
+            Resource : Resource_Data renames Object.Resources (Indices (Index));
+         begin
+            if Resource.Data.Version /= 1 then
+               raise Constraint_Error with "Cannot import newer versions of resource " & Name (Resource);
+            end if;
+
+            if Resource.Output_Mode /= Not_Used then
+               raise Constraint_Error with "Cannot import resource " & Name (Resource) & " when it is the output of another render pass";
+            end if;
+         end;
       end loop;
 
       Object.Imported_Resources.Clear;
@@ -326,6 +338,14 @@ package body Orka.Frame_Graphs is
          if not Found then
             raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
          end if;
+
+         declare
+            Resource : Resource_Data renames Object.Resources (Indices (Index));
+         begin
+            if Resource.Modified then
+               raise Constraint_Error with "Cannot export old version of modified resource " & Name (Resource);
+            end if;
+         end;
       end loop;
 
       Object.Exported_Resources.Clear;
