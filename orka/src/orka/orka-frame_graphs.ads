@@ -48,11 +48,14 @@ package Orka.Frame_Graphs is
 
    ----------------------------------------------------------------------
 
+   type Resource_ID is private;
+
    type Resource_Version is private;
 
    type Resource is record
       Name        : Name_Strings.Bounded_String;
       Description : Rendering.Textures.Texture_Description;
+      ID          : Resource_ID;
       Version     : Resource_Version;
    end record;
 
@@ -188,8 +191,7 @@ package Orka.Frame_Graphs is
 
    function Add_Graph
      (Object  : in out Frame_Graph;
-      Subject : Frame_Graph;
-      Prefix  : String) return External_Resources;
+      Subject : Frame_Graph) return External_Resources;
 
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
@@ -251,6 +253,12 @@ private
 
       Has_Depth   : Boolean := False;
       Has_Stencil : Boolean := False;
+   end record;
+
+   function Get_Next_ID return Natural;
+
+   type Resource_ID is record
+      Value : Natural := Get_Next_ID;
    end record;
 
    type Resource_Version is new Natural

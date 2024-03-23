@@ -54,6 +54,15 @@ package body Orka.Frame_Graphs is
    --  Used when Present_Mode = Render_To_Default
    Draw_Fullscreen : aliased Fullscreen_Program_Callback;
 
+   Last_ID : Natural := 0;
+
+   function Get_Next_ID return Natural is
+   begin
+      return Result : Natural := Last_ID do
+         Last_ID := Last_ID + 1;
+      end return;
+   end Get_Next_ID;
+
    use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
 
@@ -92,7 +101,7 @@ package body Orka.Frame_Graphs is
 
    procedure Log_Resource (Value : Resource) is
    begin
-      Log (Debug, "    " & (+Value.Name) & ":");
+      Log (Debug, "    " & (+Value.Name) & " (" & Trim_Image (Value.ID.Value) & "):");
       Log (Debug, "      kind:     " & Value.Description.Kind'Image);
       Log (Debug, "      format:   " & Value.Description.Format'Image);
       Log (Debug, "      size:     " & Trim_Image (Value.Description.Size));
@@ -129,9 +138,7 @@ package body Orka.Frame_Graphs is
             Data     : Resource renames Object.Resources (Index).Data;
             Implicit : Boolean  renames Object.Resources (Index).Implicit;
          begin
-            if Subject.Name = Data.Name and Subject.Version = Data.Version
-              and not Implicit
-            then
+            if Subject.ID = Data.ID and Subject.Version = Data.Version and not Implicit then
                if Data /= Subject then
                   raise Constraint_Error with
                     "Already added different resource '" & (+Subject.Name) & "'";
@@ -327,8 +334,7 @@ package body Orka.Frame_Graphs is
 
    function Add_Graph
      (Object  : in out Frame_Graph;
-      Subject : Frame_Graph;
-      Prefix  : String) return External_Resources
+      Subject : Frame_Graph) return External_Resources
    is
       Other : Frame_Graph := Subject;
    begin
@@ -355,7 +361,6 @@ package body Orka.Frame_Graphs is
          if Resource.Render_Pass /= No_Render_Pass then
             Resource.Render_Pass := Resource.Render_Pass + Object.Passes.Length;
          end if;
-         Resource.Data.Name := Prefix & Resource.Data.Name;
       end loop;
 
       for Handle of Other.Read_Handles loop
@@ -1602,6 +1607,7 @@ package body Orka.Frame_Graphs is
             Append ("name", Image (+Resource.Data.Name), True);
             Append ("kind", Image (Resource.Data.Description.Kind'Image), True);
             Append ("format", Image (Resource.Data.Description.Format'Image), True);
+            Append ("id", Image (Natural (Resource.Data.ID.Value)), True);
             Append ("version", Image (Natural (Resource.Data.Version)), True);
             Append ("implicit", Image (Resource.Implicit), True);
             Append ("readMode", Image (Resource.Input_Mode'Image), True);
