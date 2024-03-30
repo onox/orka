@@ -194,10 +194,10 @@ package Orka.Frame_Graphs is
       Exported : Resource_Array (1 .. Exported_Count);
    end record;
 
-   function Connect
+   procedure Connect
      (Object   : in out Frame_Graph;
       Subject  : Frame_Graph;
-      From, To : Resource_Array) return External_Resources
+      From, To : Resource_Array)
    with Pre => From'Length > 0 and then (for all Resource of From => Object.Exportable (Resource)) and then
                To'Length > 0 and then (for all Resource of To   => Object.Importable (Resource));
 

@@ -597,10 +597,16 @@ package body Orka.Frame_Graphs is
       end return;
    end Connect_Graph;
 
-   function Connect
+   procedure Connect
      (Object   : in out Frame_Graph;
       Subject  : Frame_Graph;
-      From, To : Resource_Array) return External_Resources renames Connect_Graph;
+      From, To : Resource_Array)
+   is
+      Result : constant External_Resources := Object.Connect_Graph (Subject, From, To);
+   begin
+      pragma Assert (Result.Imported_Count = 0);
+      pragma Assert (Result.Exported_Count = 0);
+   end Connect;
 
    function Connect
      (Object  : in out Frame_Graph;
