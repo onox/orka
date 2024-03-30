@@ -78,4 +78,19 @@ package Orka.Types is
       type Target is digits <>;
    function Normalize_Periodic (Value : in Source) return Target;
 
+   generic
+      type Element_Type is private;
+   package Optionals is
+
+      type Optional (Is_Present : Boolean := False) is record
+         case Is_Present is
+            when True =>
+               Value : Element_Type;
+            when False =>
+               null;
+         end case;
+      end record;
+
+   end Optionals;
+
 end Orka.Types;

@@ -300,28 +300,74 @@ package body Orka.Frame_Graphs is
          Index       => Object.Passes.Length);
    end Add_Pass;
 
-   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array) is
-      Indices : Resource_Index_Vectors.Element_Array (Subjects'Range);
-      Found   : Boolean;
+   function Contains (Object : Frame_Graph; Subject : Resource) return Boolean is
+      Index : Handle_Type;
+      Found : Boolean;
    begin
-      for Index in Subjects'Range loop
-         Object.Find_Resource (Subjects (Index), Indices (Index), Found);
+      Object.Find_Resource (Subject, Index, Found);
+      return Found;
+   end Contains;
 
-         if not Found then
-            raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
+   procedure Verify_Importable (Object : Frame_Graph; Subject : Resource; Index : out Handle_Type) is
+      Found : Boolean;
+   begin
+      Object.Find_Resource (Subject, Index, Found);
+
+      if not Found then
+         raise Constraint_Error with "Resource " & (+Subject.Name) & " not found in graph";
+      end if;
+
+      declare
+         Resource : Resource_Data renames Object.Resources (Index);
+      begin
+         if Resource.Data.Version /= 1 then
+            raise Constraint_Error with "Cannot import newer versions of resource " & Name (Resource);
          end if;
 
-         declare
-            Resource : Resource_Data renames Object.Resources (Indices (Index));
-         begin
-            if Resource.Data.Version /= 1 then
-               raise Constraint_Error with "Cannot import newer versions of resource " & Name (Resource);
-            end if;
+         if Resource.Output_Mode /= Not_Used or Resource.Render_Pass /= No_Render_Pass then
+            raise Constraint_Error with
+              "Cannot import resource " & Name (Resource) & " when it is the output of another render pass";
+         end if;
+      end;
+   end Verify_Importable;
 
-            if Resource.Output_Mode /= Not_Used then
-               raise Constraint_Error with "Cannot import resource " & Name (Resource) & " when it is the output of another render pass";
-            end if;
-         end;
+   procedure Verify_Exportable (Object : Frame_Graph; Subject : Resource; Index : out Handle_Type) is
+      Found : Boolean;
+   begin
+      Object.Find_Resource (Subject, Index, Found);
+
+      if not Found then
+         raise Constraint_Error with "Resource " & (+Subject.Name) & " not found in graph";
+      end if;
+
+      declare
+         Resource : Resource_Data renames Object.Resources (Index);
+      begin
+         if Resource.Modified then
+            raise Constraint_Error with "Cannot export old version of modified resource " & Name (Resource);
+         end if;
+      end;
+   end Verify_Exportable;
+
+   function Importable (Object : Frame_Graph; Subject : Resource) return Boolean is
+      Index : Handle_Type;
+   begin
+      Object.Verify_Importable (Subject, Index);
+      return True;
+   end Importable;
+
+   function Exportable (Object : Frame_Graph; Subject : Resource) return Boolean is
+      Index : Handle_Type;
+   begin
+      Object.Verify_Exportable (Subject, Index);
+      return True;
+   end Exportable;
+
+   procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array) is
+      Indices : Resource_Index_Vectors.Element_Array (Subjects'Range);
+   begin
+      for Index in Subjects'Range loop
+         Object.Verify_Importable (Subjects (Index), Indices (Index));
       end loop;
 
       Object.Imported_Resources.Clear;
@@ -330,39 +376,49 @@ package body Orka.Frame_Graphs is
 
    procedure Export (Object : in out Frame_Graph; Subjects : Resource_Array) is
       Indices : Resource_Index_Vectors.Element_Array (Subjects'Range);
-      Found   : Boolean;
    begin
       for Index in Subjects'Range loop
-         Object.Find_Resource (Subjects (Index), Indices (Index), Found);
-
-         if not Found then
-            raise Constraint_Error with "Resource " & (+Subjects (Index).Name) & " not found in graph";
-         end if;
-
-         declare
-            Resource : Resource_Data renames Object.Resources (Indices (Index));
-         begin
-            if Resource.Modified then
-               raise Constraint_Error with "Cannot export old version of modified resource " & Name (Resource);
-            end if;
-         end;
+         Object.Verify_Exportable (Subjects (Index), Indices (Index));
       end loop;
 
       Object.Exported_Resources.Clear;
       Object.Exported_Resources.Append_All (Indices);
    end Export;
 
-   function Add_Graph
-     (Object  : in out Frame_Graph;
-      Subject : Frame_Graph) return External_Resources
+   function Connect_Graph
+     (Object   : in out Frame_Graph;
+      Subject  : Frame_Graph;
+      From, To : Resource_Array) return External_Resources
    is
       Other : Frame_Graph := Subject;
    begin
+      if From'Length > 0 and then From'Length /= Subject.Imported_Resources.Length then
+         raise Constraint_Error with "'From' did not provide enough resources to fully connect to other graph";
+      end if;
+
+      if To'Length > 0 and then To'Length /= Subject.Exported_Resources.Length then
+         raise Constraint_Error with "'To' did not provide enough resources to fully connect to other graph";
+      end if;
+
+      for Index in From'Range loop
+         if From (Index).Description /= Subject.Resources (Subject.Imported_Resources (Index)).Data.Description then
+            raise Constraint_Error with
+              "No matching description of " & (+From (Index).Name) & " and " & (+Subject.Resources (Subject.Imported_Resources (Index)).Data.Name);
+         end if;
+      end loop;
+
+      for Index in To'Range loop
+         if To (Index).Description /= Subject.Resources (Subject.Exported_Resources (Index)).Data.Description then
+            raise Constraint_Error with
+              "No matching description of " & (+To (Index).Name) & " and " & (+Subject.Resources (Subject.Exported_Resources (Index)).Data.Name);
+         end if;
+      end loop;
+
       if Object.Passes.Length + Subject.Passes.Length > Object.Passes.Capacity then
          raise Constraint_Error with "Not enough space to insert render passes";
       end if;
 
-      if Object.Resources.Length + Subject.Resources.Length > Object.Resources.Capacity then
+      if Object.Resources.Length + Subject.Resources.Length - From'Length - To'Length > Object.Resources.Capacity then
          raise Constraint_Error with "Not enough space to insert resources";
       end if;
 
@@ -372,50 +428,187 @@ package body Orka.Frame_Graphs is
          raise Constraint_Error with "Not enough space to insert handles";
       end if;
 
-      for Pass of Other.Passes loop
-         Pass.Read_Offset  := Pass.Read_Offset + Object.Read_Handles.Length;
-         Pass.Write_Offset := Pass.Write_Offset + Object.Write_Handles.Length;
-      end loop;
+      --------------------------------------------------------------------------
 
-      for Resource of Other.Resources loop
-         if Resource.Render_Pass /= No_Render_Pass then
-            Resource.Render_Pass := Resource.Render_Pass + Object.Passes.Length;
-         end if;
-      end loop;
+      declare
+         From_Indices : Resource_Index_Vectors.Element_Array (From'Range);
+         To_Indices   : Resource_Index_Vectors.Element_Array (To'Range);
 
-      for Handle of Other.Read_Handles loop
-         Handle.Index := Handle.Index + Object.Resources.Length;
-      end loop;
+         package Optional_Positives is new Orka.Types.Optionals (Positive);
 
-      for Handle of Other.Write_Handles loop
-         Handle.Index := Handle.Index + Object.Resources.Length;
-      end loop;
+         subtype Optional_Positive is Optional_Positives.Optional;
 
-      for Index of Other.Imported_Resources loop
-         Index := Index + Object.Resources.Length;
-      end loop;
-      for Index of Other.Exported_Resources loop
-         Index := Index + Object.Resources.Length;
-      end loop;
+         function Get_Array_Index
+           (Left  : Resource_Array;
+            Right : Resource_Index_Vectors.Vector;
+            Handle_Index : Handle_Type) return Optional_Positive is
+         begin
+            for Index in Left'Range loop
+               if Right (Index) = Handle_Index then
+                  return (Is_Present => True, Value => Index);
+               end if;
+            end loop;
+
+            return (Is_Present => False);
+         end Get_Array_Index;
+
+         Found   : Boolean;
+      begin
+         --  Create a mapping between From_Indices and Subject.Imported_Resources
+         for Index in From'Range loop
+            Object.Find_Resource (From (Index), From_Indices (Index), Found);
+         end loop;
+
+         --  Create a mapping between To_Indices and Subject.Exported_Resources
+         for Index in To'Range loop
+            Object.Find_Resource (To (Index), To_Indices (Index), Found);
+         end loop;
+
+         for Pass of Other.Passes loop
+            Pass.Read_Offset  := @ + Object.Read_Handles.Length;
+            Pass.Write_Offset := @ + Object.Write_Handles.Length;
+         end loop;
+
+         for Resource of Other.Resources loop
+            if Resource.Render_Pass /= No_Render_Pass then
+               Resource.Render_Pass := @ + Object.Passes.Length;
+            end if;
+         end loop;
+
+         for Index in From'Range loop
+            declare
+               Left_Resource : Resource_Data renames Object.Resources (From_Indices (Index));
+               Right_Resource : Resource_Data renames Other.Resources (Other.Imported_Resources (Index));
+
+               Left  : constant Resource := Left_Resource.Data;
+               Right : constant Resource := Right_Resource.Data;
+               pragma Assert (Right.Version = 1);
+            begin
+               Left_Resource.Read_Count := @ + Right_Resource.Read_Count;
+               Left_Resource.Input_Mode := Right_Resource.Input_Mode;
+               Left_Resource.Input_Binding := Right_Resource.Input_Binding;
+               Left_Resource.Modified := Right_Resource.Modified;
+
+               for Resource of Other.Resources loop
+                  if Resource.Data.ID = Right.ID then
+                     Resource.Data.Name := Left.Name;
+                     Resource.Data.ID := Left.ID;
+                     Resource.Data.Version := @ + (Left.Version - Right.Version);
+                  end if;
+               end loop;
+            end;
+         end loop;
+
+         --  After updating ID and Version of resources in Other.Resources,
+         --  then update ID and Version of resources from To in Object.Resources
+         for Index in To'Range loop
+            declare
+               Left_Resource : Resource_Data renames Object.Resources (To_Indices (Index));
+               Right_Resource : Resource_Data renames Other.Resources (Other.Exported_Resources (Index));
+
+               Left  : constant Resource := Left_Resource.Data;
+               Right : constant Resource := Right_Resource.Data;
+               pragma Assert (Left.Version = 1);
+            begin
+               Right_Resource.Output_Mode := Left_Resource.Output_Mode;
+               Right_Resource.Output_Binding := Left_Resource.Output_Binding;
+               Right_Resource.Render_Pass := Left_Resource.Render_Pass;
+
+               for Resource of Object.Resources loop
+                  if Resource.Data.ID = Left.ID then
+                     Resource.Data.ID := Right.ID;
+                     Resource.Data.Version := @ + (Right.Version - Left.Version);
+                  end if;
+               end loop;
+            end;
+         end loop;
+
+         declare
+            Copyable_Resources : Resource_Vectors.Vector (Handle_Type (Other.Resources.Length - From'Length - To'Length));
+
+            Index_Mapping : array (1 .. Handle_Type (Other.Resources.Length)) of Handle_Type;
+            Next_Index : Handle_Type := Index_Mapping'First;
+         begin
+            for Index in 1 .. Other.Resources.Length loop
+               Index_Mapping (Index) := Next_Index;
+
+               declare
+                  Resource : Resource_Data renames Other.Resources (Index);
+               begin
+                  if not (for some Index of From_Indices =>
+                            Object.Resources (Index).Data.ID = Resource.Data.ID and Object.Resources (Index).Data.Version = Resource.Data.Version)
+                    and not
+                         (for some Index of To_Indices =>
+                            Object.Resources (Index).Data.ID = Resource.Data.ID and Object.Resources (Index).Data.Version = Resource.Data.Version)
+                  then
+                     Copyable_Resources.Append (Resource);
+                     Next_Index := @ + 1;
+                  end if;
+               end;
+            end loop;
+
+            for Handle of Other.Read_Handles loop
+               declare
+                  Result : constant Optional_Positive := Get_Array_Index (From, Other.Imported_Resources, Handle.Index);
+               begin
+                  --  If a handle points to an imported resource, let it point to the corresponding resource in From
+                  if Result.Is_Present then
+                     Handle.Index := From_Indices (Result.Value);
+                  else
+                     --  Current Handle.Index value can be wrong because some of Other.Resources will not be copied over
+                     Handle.Index := Index_Mapping (Handle.Index) + Object.Resources.Length;
+                  end if;
+               end;
+            end loop;
+
+            for Handle of Other.Write_Handles loop
+               declare
+                  Result : constant Optional_Positive := Get_Array_Index (To, Other.Exported_Resources, Handle.Index);
+               begin
+                  --  If a handle points to an exported resource, let it point to the corresponding resource in To
+                  if Result.Is_Present then
+                     Handle.Index := To_Indices (Result.Value);
+                  else
+                     --  Current Handle.Index value can be wrong because some of Other.Resources will not be copied over
+                     Handle.Index := Index_Mapping (Handle.Index) + Object.Resources.Length;
+                  end if;
+               end;
+            end loop;
+
+            Object.Resources.Append (Copyable_Resources);
+         end;
+      end;
 
       Object.Passes.Append (Other.Passes);
-      Object.Resources.Append (Other.Resources);
       Object.Read_Handles.Append (Other.Read_Handles);
       Object.Write_Handles.Append (Other.Write_Handles);
 
       return Result : External_Resources :=
-        (Imported_Count => Other.Imported_Resources.Length,
-         Exported_Count => Other.Exported_Resources.Length,
+        (Imported_Count => Other.Imported_Resources.Length - From'Length,
+         Exported_Count => Other.Exported_Resources.Length - To'Length,
          others => <>)
       do
-         for Index in 1 .. Other.Imported_Resources.Length loop
-            Result.Imported (Index) := Object.Resources (Other.Imported_Resources (Index)).Data;
+         for Index in 1 .. Result.Imported_Count loop
+            Result.Imported (Index) := Other.Resources (Other.Imported_Resources (Index)).Data;
          end loop;
-         for Index in 1 .. Other.Exported_Resources.Length loop
-            Result.Exported (Index) := Object.Resources (Other.Exported_Resources (Index)).Data;
+         for Index in 1 .. Result.Exported_count loop
+            Result.Exported (Index) := Other.Resources (Other.Exported_Resources (Index)).Data;
          end loop;
       end return;
-   end Add_Graph;
+   end Connect_Graph;
+
+   function Connect
+     (Object   : in out Frame_Graph;
+      Subject  : Frame_Graph;
+      From, To : Resource_Array) return External_Resources renames Connect_Graph;
+
+   function Connect
+     (Object  : in out Frame_Graph;
+      Subject : Frame_Graph;
+      From    : Resource_Array) return Resource_Array is
+   begin
+      return Object.Connect_Graph (Subject, From, []).Exported;
+   end Connect;
 
    -----------------------------------------------------------------------------
 

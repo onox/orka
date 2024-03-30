@@ -173,6 +173,11 @@ package Orka.Frame_Graphs is
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
 
+   function Contains (Object : Frame_Graph; Subject : Resource) return Boolean;
+
+   function Importable (Object : Frame_Graph; Subject : Resource) return Boolean;
+   function Exportable (Object : Frame_Graph; Subject : Resource) return Boolean;
+
    type Resource_Array is array (Positive range <>) of aliased Resource;
 
    procedure Import (Object : in out Frame_Graph; Subjects : Resource_Array)
@@ -184,14 +189,23 @@ package Orka.Frame_Graphs is
    --  Importing and exporting resources is useful if the frame graph is used
    --  as a sub-graph of a larger graph.
 
-   type External_Resources (Imported_Count, Exported_Count : Positive) is record
+   type External_Resources (Imported_Count, Exported_Count : Natural) is record
       Imported : Resource_Array (1 .. Imported_Count);
       Exported : Resource_Array (1 .. Exported_Count);
    end record;
 
-   function Add_Graph
+   function Connect
+     (Object   : in out Frame_Graph;
+      Subject  : Frame_Graph;
+      From, To : Resource_Array) return External_Resources
+   with Pre => From'Length > 0 and then (for all Resource of From => Object.Exportable (Resource)) and then
+               To'Length > 0 and then (for all Resource of To   => Object.Importable (Resource));
+
+   function Connect
      (Object  : in out Frame_Graph;
-      Subject : Frame_Graph) return External_Resources;
+      Subject : Frame_Graph;
+      From    : Resource_Array) return Resource_Array
+   with Pre => From'Length > 0 and then (for all Resource of From => Object.Exportable (Resource));
 
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
