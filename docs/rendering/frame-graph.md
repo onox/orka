@@ -1,14 +1,14 @@
 # Frame graph
 
 A frame graph is a directed acyclic graph of render passes and
-resources like textures and buffers.
+resources like textures.
 A frame graph provides the following features:
 
 - Implicit automatic resource management,
   taking care of switching framebuffers, programs, and binding
-  textures and buffers, and possibly providing aliasing of resources.
-- Loose coupling between systems. A function could return a
-  whole frame graph, which can then be inserted in another frame
+  textures, and possibly providing aliasing of resources.
+- Loose coupling between systems. A function can return a
+  frame graph, which can then be inserted in another frame
   graph.
 - Automatic updating of the render state, clearing and invalidating
   framebuffers, and inserting memory barriers when needed.
@@ -35,7 +35,7 @@ Increase the limits if needed.
 
 ## Resources
 
-Resources are objects like textures or buffers.
+Resources are objects like textures.
 Type `Resource` describes a texture, its format, size, etc.
 A resource can be read as a:
 
@@ -64,8 +64,6 @@ Resource_1 : aliased constant Orka.Frame_Graphs.Resource :=
 
 The name must be no longer than 16 characters.
 
-!!! bug "Only textures are currently supported"
-
 ### Views
 
 If a resource is layered (e.g. if it is a 3D texture, 1D array, 2D (multisampled) array,
@@ -82,7 +80,7 @@ Resource_Negative_Z : aliased constant Orka.Frame_Graphs.Resource_View :=
 
 with `Layer` being the zero-based index of the selected layer.
 
-!!! note A `Resource_View` cannot be used as the subject in the function `Add_Input_Output`
+!!! note "A `Resource_View` cannot be used as the subject in the function `Add_Input_Output`"
 
 ## Render passes
 
@@ -96,13 +94,17 @@ Default_State : constant Orka.Rendering.States.State := (others => <>);
 And then call the function `Add_Pass`:
 
 ```ada
-procedure Run_Program_1 (P : Program) is
+type Program_1_Callback is limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+overriding procedure Run (Object : Program_1_Callback; Program : Orka.Rendering.Programs.Program) is
 begin
    --  Set uniforms and issue rendering commands here
-end Run_Program_1;
+end Run;
+
+Program_1_Object : aliased Program_1_Callback;
 
 Pass_1 : Render_Pass'Class := Graph_Builder.Add_Pass
-  ("Pass 1", Default_State, Program_1, Run_Program_1'Unrestricted_Access);
+  ("Pass 1", Default_State, Program_1, Program_1_Object'Unchecked_Access);
 ```
 
 The name must be no longer than 16 characters and can be queried with the
@@ -163,6 +165,17 @@ begin
 end;
 ```
 
+## Saving the graph to a JSON file
+
+The graph can be saved to a JSON file by calling procedure `Write_Graph`:
+
+```ada
+Graph_Builder.Write_Graph (Location_Graphs, "graph.json");
+```
+
+`Location_Graphs` must be a location object implementing the
+interface `Writable_Location`.
+
 ## Presenting a resource
 
 After the graph has been defined and the render passes and resources
@@ -175,7 +188,6 @@ depending on the write mode and the format of the resource:
    resource writes to it as a `Framebuffer_Attachment` and writes to no
    other color renderable resources, then it will use the default framebuffer
    for this pass. This method gives the highest performance.
-
    ```mermaid
    graph LR
      P1[Pass 1] -->|Attachment| R1[Resource 1]
@@ -192,7 +204,6 @@ depending on the write mode and the format of the resource:
    multiple resources and the presented resourse is color renderable, then
    it will use a framebuffer object for the pass and then blit it to the default
    framebuffer.
-
    ```mermaid
    graph LR
      P1[Pass 1] -->|Attachment| R1[Resource 1]
@@ -212,7 +223,6 @@ depending on the write mode and the format of the resource:
    If the resource is written using mode `Image_Store` or if the resource
    has a depth or stencil format, then it will render the texture of the
    resource to the default framebuffer using an extra vertex and fragment shader.
-
    ```mermaid
    graph LR
      P1[Pass 1] -->|Image write| R1[Resource 1]
@@ -288,7 +298,8 @@ Variable `FB_D` is the default framebuffer.
 See [Creating a framebuffer](/rendering/framebuffers/#creating-a-framebuffer)
 for more information on how to create the default framebuffer.
 
-The graph can be saved to a JSON file by calling procedure `Write_Graph`:
+Just like a `Frame_Graph`, a `Renderable_Graph` object can be saved to a
+JSON file as well by calling the procedure `Write_Graph`:
 
 ```ada
 Graph.Write_Graph (Location_Graphs, "graph.json");
@@ -296,17 +307,163 @@ Graph.Write_Graph (Location_Graphs, "graph.json");
 
 `Location_Graphs` must be a location object implementing the
 interface `Writable_Location`.
+Saving a `Renderable_Graph` object instead of a `Frame_Graph` will
+show which render passes and textures will be used and which ones
+will be culled.
 
 !!! warning "The `Renderable_Graph` must have been initialized"
     To log a renderable graph, it must have presented a resource
     at least once in order to initialize various data structures.
 
-## Exporting and importing resources
+## Creating a reusable frame graph
+
+A frame graph can be created by a function and then returned, so that it
+can be inserted into another frame graph. When creating a frame graph that
+will be consumed by other code, it is important to mark which resources
+must be imported and exported.
+
+First create a function which creates a frame graph.
+It is recommended to use a given texture description for the resources which
+are going to be imported. This will give these resources the appropriate size
+and format, among other parameters in the texture description.
+
+```ada
+function Create_Graph
+  (Object       : My_Type;
+   Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph
+is
+   use Orka.Frame_Graphs;
+
+   Graph : aliased Orka.Frame_Graphs.Frame_Graph
+     (Maximum_Passes    => 1,
+      Maximum_Handles   => 4,
+      Maximum_Resources => 4);
+
+   Default_State : constant Orka.Rendering.States.State := (others => <>);
+```
+
+Next create a render pass and the two resources which are going to be imported later:
+
+```ada
+State : constant Orka.Rendering.States.State := (Default_State with delta Depth_Func => GL.Types.Always);
+Pass  : Render_Pass'Class := Graph.Add_Pass ("render pass", State, Object.Program, Object.Callback'Unchecked_Access);
+
+Resource_Color_V1 : constant Resource :=
+  (Name        => +"color",
+   Description => Color,
+   others      => <>);
+
+Resource_Depth_V1 : constant Resource :=
+  (Name        => +"depth",
+   Description => Depth,
+   others      => <>);
+```
+
+Add these two resources as inputs and outputs. For example, the render pass
+may want to overwrite the color resource, but use the depth resource without
+modifying it.
+
+```ada
+declare
+   Resource_Color_V2 : constant Resource :=
+     Pass.Add_Input_Output (Resource_Color_V1, Framebuffer_Attachment, 0);
+begin
+   Pass.Add_Input (Resource_Depth_V1, Framebuffer_Attachment, 1);
+end;
+```
+
+The last thing that needs to be done before returning the graph is marking
+the resources `Resource_Color_V1` and `Resource_Depth_V1` as resources which
+will be imported, and the resources `Resource_Color_V2` and `Resource_Depth_V1`
+as resources which will be exported. See below how to import and export resources.
+
+In this example it is not needed to export the resource `Resource_Depth_V1`
+as well (since it is not modified),
+but it may simplify connecting a chain of graphs to each other if
+each graph imports and exports one color and one depth resource.
+
+### Exporting and importing resources
 
 Resources with only outgoing edges can be marked as imports,
-and resources with only incoming edges can be marked as exports.
+and resources which are not written by a render pass as a framebuffer
+attachment or image can be marked as exports.
 
-The imported and exported resources can be queried so that a frame graph
-can be inserted into a bigger frame graph.
+For example, a frame graph may import a color and a depth resource,
+perform one or more render passes, and then output newer versions of
+these two resources. To do so, the resources must first be added as
+inputs and outputs of these render passes and then marked as imported
+and exported resources:
 
-!!! bug "Not yet implemented"
+```ada
+Graph.Import ([Resource_Color_V1, Resource_Depth_V1]);
+Graph.Export ([Resource_Color_V2, Resource_Depth_V2]);
+```
+
+After some resources have been marked as resources which will be
+imported and exported, the graph can be returned by the function which
+created the graph.
+
+### Executing a render pass
+
+In the example above the object of the type `My_Type` has a `Program`
+and a `Callback`. The declaration of `My_Type` will look as follows:
+
+```ada
+type My_Type_Program_Callback (Data : not null access My_Type) is
+  limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+overriding procedure Run (Object : My_Type_Program_Callback; Program : Orka.Rendering.Programs.Program);
+
+type My_Type is tagged limited record
+   Program  : Orka.Rendering.Programs.Program;
+   Callback : aliased My_Type_Program_Callback (My_Type'Access);
+end record;
+```
+
+If needed `My_Type` may also contain uniforms or buffers.
+
+In the body of procedure `Run` you should bind buffers and samplers, and
+execute draw calls using procedures from package `:::ada Orka.Rendering.Drawing`
+or dispatching compute shaders.
+
+Before running all the render passes by presenting a resource, make sure to
+set uniforms and store buffers or uploading data to these buffers.
+To do this, you probably want to have a function `Create_My_Type` returning an
+object of type `My_Type` and a procedure `Set_Data` which sets any uniforms if
+there are any. The function `Create_My_Type` should explicitly create a program
+using the function `Create_Program` from the package `:::ada Orka.Rendering.Programs`
+and initialize `Callback` by using `others => <>`.
+
+!!! warning "Bind buffers in the procedure `Run`, not any time sooner"
+
+## Connecting a reusable frame graph
+
+Given a frame graph containing one or more resources, other graphs can be connected to it.
+First create one or more graphs that are going to be connected later,
+giving it the descriptions of a color and a depth resource which are the outputs
+of some render pass:
+
+```ada
+Module_A_Graph : constant Frame_Graph :=
+  Modules_A.Create_Graph (Resource_1.Description, Resource_2.Description);
+
+Module_B_Graph : constant Frame_Graph :=
+  Modules_B.Create_Graph (Resource_1.Description, Resource_2.Description);
+```
+
+These graphs can then be connected to the main frame graph `Graph_Builder` by
+calling the function `Connect`:
+
+```ada
+Result_A : constant Resource_Array := Graph_Builder.connect (Module_A_Graph, [Resource_1, Resource_2]);
+Result_B : constant Resource_Array := Graph_Builder.connect (Module_B_Graph, Result_A);
+```
+
+In this case the function `Connect` will return the resources which were
+exported by the given frame graphs.
+If instead of appending a graph, you want to insert it between two sets of resources,
+then use the procedure `Connect`, giving it a third parameter containing an array of resources
+to which the exported resources of the given frame graph must be connected.
+
+The exported color resource of the second graph, `Result_B (1)` can then be added
+as an input of another render pass, or be rendered to the screen by presenting it.
