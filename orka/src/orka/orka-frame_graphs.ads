@@ -207,6 +207,13 @@ package Orka.Frame_Graphs is
       From    : Resource_Array) return Resource_Array
    with Pre => From'Length > 0 and then (for all Resource of From => Object.Exportable (Resource));
 
+   procedure Write_Graph
+     (Object   : Frame_Graph;
+      Location : Resources.Locations.Writable_Location_Ptr;
+      Path     : String);
+
+   ----------------------------------------------------------------------
+
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Resources : Handle_Type;
@@ -228,12 +235,10 @@ package Orka.Frame_Graphs is
       Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture;
    --  Render the resource which must be presented and return it as a texture
 
-   ----------------------------------------------------------------------
-
    procedure Log_Graph (Object : in out Renderable_Graph; Default : Rendering.Framebuffers.Framebuffer);
 
    procedure Write_Graph
-     (Object   : in out Renderable_Graph;
+     (Object   : Renderable_Graph;
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String);
    --  Write the frame graph as JSON to a file at the given path in the

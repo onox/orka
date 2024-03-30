@@ -1757,7 +1757,9 @@ package body Orka.Frame_Graphs is
    ----------------------------------------------------------------------
 
    procedure Write_Graph
-     (Object   : in out Renderable_Graph;
+     (Object   : Frame_Graph;
+      Get_Pass_References     : not null access function (Index : Render_Pass_Index) return Natural;
+      Get_Resource_References : not null access function (Index : Handle_Type) return Natural;
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String)
    is
@@ -1791,10 +1793,10 @@ package body Orka.Frame_Graphs is
       --  Vertices (render passes and resources)
       First := True;
       Append ("passes", "[");
-      for Index in 1 .. Object.Graph.Passes.Length loop
+      for Index in 1 .. Object.Passes.Length loop
          declare
-            Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
-            References : Natural renames Object.Render_Pass_References (Index);
+            Pass : Render_Pass_Data renames Object.Passes (Index);
+            References : constant Natural := Get_Pass_References (Index);
          begin
             Append_Comma;
             SU.Append (Result, '{');
@@ -1810,10 +1812,10 @@ package body Orka.Frame_Graphs is
 
       First := True;
       Append ("resources", "[");
-      for Index in 1 .. Object.Graph.Resources.Length loop
+      for Index in 1 .. Object.Resources.Length loop
          declare
-            Resource : Resource_Data renames Object.Graph.Resources (Index);
-            References : Natural renames Object.Resource_References (Index);
+            Resource : Resource_Data renames Object.Resources (Index);
+            References : constant Natural := Get_Resource_References (Index);
          begin
             Append_Comma;
             SU.Append (Result, '{');
@@ -1835,14 +1837,14 @@ package body Orka.Frame_Graphs is
       --  Edges (reads and writes)
       First := True;
       Append ("reads", "[");
-      for Index in 1 .. Object.Graph.Passes.Length loop
+      for Index in 1 .. Object.Passes.Length loop
          declare
-            Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
+            Pass : Render_Pass_Data renames Object.Passes (Index);
          begin
             --  Passes reading from resources
             for Resource_Index in Pass.Read_Offset .. Pass.Read_Offset + Pass.Read_Count - 1 loop
                declare
-                  Handle : Handle_Type renames Object.Graph.Read_Handles (Resource_Index).Index;
+                  Handle : Handle_Type renames Object.Read_Handles (Resource_Index).Index;
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
@@ -1857,16 +1859,16 @@ package body Orka.Frame_Graphs is
 
       First := True;
       Append ("writes", "[");
-      for Index in 1 .. Object.Graph.Passes.Length loop
+      for Index in 1 .. Object.Passes.Length loop
          declare
-            Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
+            Pass : Render_Pass_Data renames Object.Passes (Index);
          begin
             --  Passes writing to resources
             for Resource_Index in
               Pass.Write_Offset .. Pass.Write_Offset + Pass.Write_Count - 1
             loop
                declare
-                  Handle : Handle_Type renames Object.Graph.Write_Handles (Resource_Index).Index;
+                  Handle : Handle_Type renames Object.Write_Handles (Resource_Index).Index;
                begin
                   Append_Comma;
                   SU.Append (Result, '{');
@@ -1890,6 +1892,30 @@ package body Orka.Frame_Graphs is
       begin
          Location.Write_Data (Path, Convert (SU.To_String (Result)));
       end;
+   end Write_Graph;
+
+   procedure Write_Graph
+     (Object   : Frame_Graph;
+      Location : Resources.Locations.Writable_Location_Ptr;
+      Path     : String)
+   is
+      function Get_Pass_Referenceces (Index : Render_Pass_Index) return Natural is (0);
+
+      function Get_Resource_Referenceces (Index : Handle_Type) return Natural is (0);
+   begin
+      Object.Write_Graph (Get_Pass_Referenceces'Access, Get_Resource_Referenceces'Access, Location, Path);
+   end Write_Graph;
+
+   procedure Write_Graph
+     (Object   : Renderable_Graph;
+      Location : Resources.Locations.Writable_Location_Ptr;
+      Path     : String)
+   is
+      function Get_Pass_References (Index : Render_Pass_Index) return Natural is (Object.Render_Pass_References (Index));
+
+      function Get_Resource_References (Index : Handle_Type) return Natural is (Object.Resource_References (Index));
+   begin
+      Object.Graph.Write_Graph (Get_Pass_References'Access, Get_Resource_References'Access, Location, Path);
    end Write_Graph;
 
 end Orka.Frame_Graphs;
