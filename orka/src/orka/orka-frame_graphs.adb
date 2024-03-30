@@ -388,11 +388,11 @@ package body Orka.Frame_Graphs is
    function Connect_Graph
      (Object   : in out Frame_Graph;
       Subject  : Frame_Graph;
-      From, To : Resource_Array) return External_Resources
+      From, To : Resource_Array) return Resource_Array
    is
       Other : Frame_Graph := Subject;
    begin
-      if From'Length > 0 and then From'Length /= Subject.Imported_Resources.Length then
+      if From'Length /= Subject.Imported_Resources.Length then
          raise Constraint_Error with "'From' did not provide enough resources to fully connect to other graph";
       end if;
 
@@ -583,17 +583,8 @@ package body Orka.Frame_Graphs is
       Object.Read_Handles.Append (Other.Read_Handles);
       Object.Write_Handles.Append (Other.Write_Handles);
 
-      return Result : External_Resources :=
-        (Imported_Count => Other.Imported_Resources.Length - From'Length,
-         Exported_Count => Other.Exported_Resources.Length - To'Length,
-         others => <>)
-      do
-         for Index in 1 .. Result.Imported_Count loop
-            Result.Imported (Index) := Other.Resources (Other.Imported_Resources (Index)).Data;
-         end loop;
-         for Index in 1 .. Result.Exported_count loop
-            Result.Exported (Index) := Other.Resources (Other.Exported_Resources (Index)).Data;
-         end loop;
+      return Result : Resource_Array (1 .. Other.Exported_Resources.Length - To'Length) do
+         Result := [for Index in Result'Range => Other.Resources (Other.Exported_Resources (Index)).Data];
       end return;
    end Connect_Graph;
 
@@ -602,10 +593,9 @@ package body Orka.Frame_Graphs is
       Subject  : Frame_Graph;
       From, To : Resource_Array)
    is
-      Result : constant External_Resources := Object.Connect_Graph (Subject, From, To);
+      Result : constant Resource_Array := Object.Connect_Graph (Subject, From, To);
    begin
-      pragma Assert (Result.Imported_Count = 0);
-      pragma Assert (Result.Exported_Count = 0);
+      pragma Assert (Result'Length = 0);
    end Connect;
 
    function Connect
@@ -613,7 +603,7 @@ package body Orka.Frame_Graphs is
       Subject : Frame_Graph;
       From    : Resource_Array) return Resource_Array is
    begin
-      return Object.Connect_Graph (Subject, From, []).Exported;
+      return Object.Connect_Graph (Subject, From, []);
    end Connect;
 
    -----------------------------------------------------------------------------

@@ -189,11 +189,6 @@ package Orka.Frame_Graphs is
    --  Importing and exporting resources is useful if the frame graph is used
    --  as a sub-graph of a larger graph.
 
-   type External_Resources (Imported_Count, Exported_Count : Natural) is record
-      Imported : Resource_Array (1 .. Imported_Count);
-      Exported : Resource_Array (1 .. Exported_Count);
-   end record;
-
    procedure Connect
      (Object   : in out Frame_Graph;
       Subject  : Frame_Graph;
