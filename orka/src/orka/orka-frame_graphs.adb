@@ -43,16 +43,12 @@ package body Orka.Frame_Graphs is
       Clear_Mask     => (Color => True, others => False),
       others         => <>);
 
-   type Fullscreen_Program_Callback is new Program_Callback with null record;
-
    overriding
-   procedure Run (Object : Fullscreen_Program_Callback; Program : Rendering.Programs.Program) is
+   procedure Run (Object : Present_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
    end Run;
-
-   --  Used when Present_Mode = Render_To_Default
-   Draw_Fullscreen : aliased Fullscreen_Program_Callback;
 
    Last_ID : Natural := 0;
 
@@ -284,7 +280,6 @@ package body Orka.Frame_Graphs is
      (Object   : in out Frame_Graph;
       Name     : String;
       State    : Rendering.States.State;
-      Program  : Rendering.Programs.Program;
       Callback : not null Program_Callback_Access;
       Side_Effect : Boolean := False) return Render_Pass'Class is
    begin
@@ -292,7 +287,6 @@ package body Orka.Frame_Graphs is
         ((Name        => +Name,
           Side_Effect => Side_Effect,
           State       => State,
-          Program     => Program,
           Callback    => Callback,
           others      => <>));
       return Render_Pass'
@@ -979,26 +973,29 @@ package body Orka.Frame_Graphs is
       Attachments : Natural := 0;
       Has_Non_Color_Attachment : Boolean := False;
    begin
-      --  Program of present pass is needed when rendering to default framebuffer (mode 3)
-      Object.Present_Render_Pass :=
-        (Name    => +"Present",
-         State   => (Depth_Func => GL.Types.Always, others => <>),
-         Program =>
-          Programs.Create_Program (Programs.Modules.Create_Module
+      Object.Present_Program :=
+         Programs.Create_Program (Programs.Modules.Create_Module
             (Location,
              VS => "oversized-triangle.vert",
              FS => (case Resource.Data.Description.Kind is
                       when Texture_Rectangle => "frame-graph-present-rect.frag",
-                      when others => "frame-graph-present.frag"))),
-         Callback => Draw_Fullscreen'Access,
+                      when others => "frame-graph-present.frag")));
+
+      Object.Present_Pass.Program := Object.Present_Program'Unchecked_Access;
+
+      --  Program of present pass is needed when rendering to default framebuffer (mode 3)
+      Object.Present_Render_Pass :=
+        (Name    => +"Present",
+         State   => (Depth_Func => GL.Types.Always, others => <>),
+         Callback => Object.Present_Pass.Callback'Unchecked_Access,
          Side_Effect => True,
          Read_Count  => 1,
          others      => <>);
 
-      Object.Present_Render_Pass.Program.Uniform ("screenResolution").Set_Vector
+      Object.Present_Program.Uniform ("screenResolution").Set_Vector
         (Orka.Types.Singles.Vector4'
           (Orka.Float_32 (Default.Width), Orka.Float_32 (Default.Height), 0.0, 0.0));
-      Object.Present_Render_Pass.Program.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
+      Object.Present_Program.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
 
       --  Mode 1: Previous render pass has one FB color attachment (this resource)
       --    Action: Previous render pass can use the default framebuffer
@@ -1590,8 +1587,7 @@ package body Orka.Frame_Graphs is
             --  When not presenting by blitting, a user-defined program will use the
             --  default framebuffer to render to screen or an additional pass is used
             --  to render the input texture to the screen
-            Pass.Program.Use_Program;
-            Pass.Callback.Run (Pass.Program);
+            Pass.Callback.Run;
          end if;
 
          --  Invalidate attachments that are transcient

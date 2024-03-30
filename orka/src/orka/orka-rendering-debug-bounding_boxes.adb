@@ -62,14 +62,16 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
       Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 2 * 12, Instances => Object.Transforms.Length);
    end Render;
 
-   overriding procedure Run (Object : BBox_Hidden_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : BBox_Hidden_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Uniform_Visible.Set_Boolean (False);
       Object.Data.Render;
    end Run;
 
-   overriding procedure Run (Object : BBox_Visible_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : BBox_Visible_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Uniform_Visible.Set_Boolean (True);
       Object.Data.Render;
    end Run;
@@ -91,8 +93,8 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
       State_Hidden  : constant Orka.Rendering.States.State := (Depth_Func => GL.Types.LEqual, others => <>);
       State_Visible : constant Orka.Rendering.States.State := (State_Hidden with delta Depth_Func => GL.Types.Greater);
 
-      Pass_Hidden  : Render_Pass'Class := Graph.Add_Pass ("bbox-hidden", State_Hidden, Object.Program, Object.Callback_Hidden'Unchecked_Access);
-      Pass_Visible : Render_Pass'Class := Graph.Add_Pass ("bbox-visible", State_Visible, Object.Program, Object.Callback_Visible'Unchecked_Access);
+      Pass_Hidden  : Render_Pass'Class := Graph.Add_Pass ("bbox-hidden", State_Hidden, Object.Callback_Hidden'Unchecked_Access);
+      Pass_Visible : Render_Pass'Class := Graph.Add_Pass ("bbox-visible", State_Visible, Object.Callback_Visible'Unchecked_Access);
 
       Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
         (Name        => +"bbox-color",

@@ -115,9 +115,10 @@ package body Orka.Rendering.Effects.Filters is
       end return;
    end Create_Filter;
 
-   overriding procedure Run (Object : Separable_Filter_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : Separable_Filter_Program_Callback) is
       use all type Orka.Rendering.Buffers.Indexed_Buffer_Target;
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Buffer_Weights.Bind (Shader_Storage, 0);
 
       Object.Data.Uniform_Horizontal.Set_Boolean (Object.Horizontal);
@@ -162,9 +163,9 @@ package body Orka.Rendering.Effects.Filters is
       for Index in 1 .. Passes loop
          declare
             Pass_Horizontal : Render_Pass'Class :=
-              Graph.Add_Pass ("sep-filter-horizontal", State, Object.Program, Object.Callback_Horizontal'Unchecked_Access);
+              Graph.Add_Pass ("sep-filter-horizontal", State, Object.Callback_Horizontal'Unchecked_Access);
             Pass_Vertical   : Render_Pass'Class :=
-              Graph.Add_Pass ("sep-filter-vertical", State, Object.Program, Object.Callback_Vertical'Unchecked_Access);
+              Graph.Add_Pass ("sep-filter-vertical", State, Object.Callback_Vertical'Unchecked_Access);
          begin
             Pass_Horizontal.Add_Input ((if Index > 1 then Resources_Vertical (Index - 1) else Resource_Color_Input), Texture_Read, 0);
             Pass_Horizontal.Add_Output (Resources_Horizontal (Index), Framebuffer_Attachment, 0);
@@ -197,8 +198,9 @@ package body Orka.Rendering.Effects.Filters is
       end return;
    end Create_Filter;
 
-   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Uniform_Horizontal.Set_Boolean (Object.Horizontal);
       GL.Compute.Dispatch_Compute (X => (if Object.Horizontal then Object.Data.Rows else Object.Data.Columns));
    end Run;
@@ -246,9 +248,9 @@ package body Orka.Rendering.Effects.Filters is
       for Index in 1 .. Passes loop
          declare
             Pass_Horizontal : Render_Pass'Class :=
-              Graph.Add_Pass ("avg-filter-horizontal", State, Object.Program, Object.Callback_Horizontal'Unchecked_Access);
+              Graph.Add_Pass ("avg-filter-horizontal", State, Object.Callback_Horizontal'Unchecked_Access);
             Pass_Vertical   : Render_Pass'Class :=
-              Graph.Add_Pass ("avg-filter-vertical", State, Object.Program, Object.Callback_Vertical'Unchecked_Access);
+              Graph.Add_Pass ("avg-filter-vertical", State, Object.Callback_Vertical'Unchecked_Access);
          begin
             Pass_Horizontal.Add_Input ((if Index > 1 then Resources_Vertical (Index - 1) else Resource_Color_Input), Texture_Read, 0);
             Pass_Horizontal.Add_Output (Resources_Horizontal (Index), Image_Store, 1);

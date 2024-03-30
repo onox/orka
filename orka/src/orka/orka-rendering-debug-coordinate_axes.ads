@@ -57,7 +57,7 @@ private
    type Axes_Program_Callback (Data : not null access Coordinate_Axes) is
      limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Axes_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Axes_Program_Callback);
 
    type Coordinate_Axes is tagged limited record
       Program : Rendering.Programs.Program;

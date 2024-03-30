@@ -62,8 +62,8 @@ private
    type Line_Hidden_Program_Callback (Data : not null access Line) is limited new Orka.Frame_Graphs.Program_Callback with null record;
    type Line_Visible_Program_Callback (Data : not null access Line) is limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Line_Hidden_Program_Callback; Program : Rendering.Programs.Program);
-   overriding procedure Run (Object : Line_Visible_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Line_Hidden_Program_Callback);
+   overriding procedure Run (Object : Line_Visible_Program_Callback);
 
    type Line is tagged limited record
       Program : Rendering.Programs.Program;

@@ -57,9 +57,10 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
       Object.Transforms := Transforms;
    end Set_Data;
 
-   overriding procedure Run (Object : Axes_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : Axes_Program_Callback) is
       use all type Rendering.Buffers.Indexed_Buffer_Target;
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Transforms.Bind (Shader_Storage, 0);
       Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Object.Data.Transforms.Length);
    end Run;
@@ -79,7 +80,7 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
       --       \------> [RD1]
 
       State : constant Orka.Rendering.States.State := (Depth_Func => GL.Types.Always, others => <>);
-      Pass  : Render_Pass'Class := Graph.Add_Pass ("axes", State, Object.Program, Object.Callback'Unchecked_Access);
+      Pass  : Render_Pass'Class := Graph.Add_Pass ("axes", State, Object.Callback'Unchecked_Access);
 
       Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
         (Name        => +"axes-color",

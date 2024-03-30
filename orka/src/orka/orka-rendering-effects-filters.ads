@@ -85,7 +85,7 @@ private
    type Separable_Filter_Program_Callback (Data : not null access Separable_Filter; Horizontal : Boolean) is
      limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Separable_Filter_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Separable_Filter_Program_Callback);
 
    type Separable_Filter is tagged limited record
       Program            : Rendering.Programs.Program;
@@ -100,7 +100,7 @@ private
    type Moving_Average_Filter_Program_Callback (Data : not null access Moving_Average_Filter; Horizontal : Boolean) is
      limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Moving_Average_Filter_Program_Callback);
 
    type Moving_Average_Filter is tagged limited record
       Program            : Rendering.Programs.Program;

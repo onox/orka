@@ -70,7 +70,7 @@ private
    type Atmosphere_Program_Callback (Data : not null access Atmosphere'Class) is
      limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Atmosphere_Program_Callback; Program : Orka.Rendering.Programs.Program);
+   overriding procedure Run (Object : Atmosphere_Program_Callback);
 
    package Programs renames Orka.Rendering.Programs;
 

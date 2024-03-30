@@ -178,8 +178,9 @@ package body Orka.Features.Atmosphere.Rendering is
       Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
    end Render;
 
-   overriding procedure Run (Object : Atmosphere_Program_Callback; Program : Orka.Rendering.Programs.Program) is
+   overriding procedure Run (Object : Atmosphere_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Render;
    end Run;
 
@@ -195,7 +196,7 @@ package body Orka.Features.Atmosphere.Rendering is
          Maximum_Resources => 4);
 
       State : constant Orka.Rendering.States.State := (Depth_Func => GL.Types.GEqual, others => <>);
-      Pass  : Render_Pass'Class := Graph.Add_Pass ("atmosphere", State, Object.Program, Object.Callback'Unchecked_Access);
+      Pass  : Render_Pass'Class := Graph.Add_Pass ("atmosphere", State, Object.Callback'Unchecked_Access);
 
       Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
         (Name        => +"atmosphere-color",

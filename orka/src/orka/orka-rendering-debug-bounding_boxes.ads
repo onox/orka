@@ -54,8 +54,8 @@ private
    type BBox_Hidden_Program_Callback (Data : not null access Bounding_Box) is limited new Orka.Frame_Graphs.Program_Callback with null record;
    type BBox_Visible_Program_Callback (Data : not null access Bounding_Box) is limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : BBox_Hidden_Program_Callback; Program : Rendering.Programs.Program);
-   overriding procedure Run (Object : BBox_Visible_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : BBox_Hidden_Program_Callback);
+   overriding procedure Run (Object : BBox_Visible_Program_Callback);
 
    type Bounding_Box is tagged limited record
       Program : Rendering.Programs.Program;

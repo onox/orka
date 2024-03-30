@@ -77,14 +77,16 @@ package body Orka.Rendering.Debug.Spheres is
         Vertex_Count, Instances => Object.Transforms.Length);
    end Render;
 
-   overriding procedure Run (Object : Spheres_Hidden_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : Spheres_Hidden_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Uniform_Visible.Set_Boolean (False);
       Object.Data.Render;
    end Run;
 
-   overriding procedure Run (Object : Spheres_Visible_Program_Callback; Program : Rendering.Programs.Program) is
+   overriding procedure Run (Object : Spheres_Visible_Program_Callback) is
    begin
+      Object.Data.Program.Use_Program;
       Object.Data.Uniform_Visible.Set_Boolean (True);
       Object.Data.Render;
    end Run;
@@ -115,8 +117,8 @@ package body Orka.Rendering.Debug.Spheres is
 
       State_Visible : constant Orka.Rendering.States.State := (State_Hidden with delta Depth_Func => GL.Types.Greater);
 
-      Pass_Hidden  : Render_Pass'Class := Graph.Add_Pass ("spheres-hidden", State_Hidden, Object.Program, Object.Callback_Hidden'Unchecked_Access);
-      Pass_Visible : Render_Pass'Class := Graph.Add_Pass ("spheres-visible", State_Visible, Object.Program, Object.Callback_Visible'Unchecked_Access);
+      Pass_Hidden  : Render_Pass'Class := Graph.Add_Pass ("spheres-hidden", State_Hidden, Object.Callback_Hidden'Unchecked_Access);
+      Pass_Visible : Render_Pass'Class := Graph.Add_Pass ("spheres-visible", State_Visible, Object.Callback_Visible'Unchecked_Access);
 
       Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
         (Name        => +"spheres-color",

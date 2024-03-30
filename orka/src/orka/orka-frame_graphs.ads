@@ -19,7 +19,6 @@ with Ada.Strings.Bounded;
 with Orka.Contexts;
 with Orka.Windows;
 with Orka.Rendering.Framebuffers;
-with Orka.Rendering.Programs;
 with Orka.Rendering.States;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
@@ -29,6 +28,7 @@ private with Ada.Containers.Indefinite_Holders;
 private with GL.Buffers;
 
 private with Orka.Containers.Bounded_Vectors;
+private with Orka.Rendering.Programs;
 
 package Orka.Frame_Graphs is
    pragma Preelaborate;
@@ -152,7 +152,7 @@ package Orka.Frame_Graphs is
 
    type Program_Callback is limited interface;
 
-   procedure Run (Object : Program_Callback; Program : Rendering.Programs.Program) is abstract;
+   procedure Run (Object : Program_Callback) is abstract;
 
    type Program_Callback_Access is access constant Program_Callback'Class;
 
@@ -168,7 +168,6 @@ package Orka.Frame_Graphs is
      (Object   : in out Frame_Graph;
       Name     : String;
       State    : Rendering.States.State;
-      Program  : Rendering.Programs.Program;
       Callback : not null Program_Callback_Access;
       Side_Effect : Boolean := False) return Render_Pass'Class
    with Pre => Name'Length <= Maximum_Name_Length;
@@ -259,7 +258,6 @@ private
       Side_Effect : Boolean;
 
       State    : Rendering.States.State;
-      Program  : Rendering.Programs.Program;
       Callback : Program_Callback_Access;
 
       Read_Offset, Write_Offset : Positive := 1;
@@ -374,6 +372,22 @@ private
 
    type Render_Pass_Array is array (Render_Pass_Index range <>) of Render_Pass_Index;
 
+   -----------------------------------------------------------------------------
+
+   type Present_Pass_Type;
+
+   type Present_Program_Callback (Data : not null access Present_Pass_Type) is limited new Program_Callback with null record;
+
+   overriding procedure Run (Object : Present_Program_Callback);
+
+   --  Used when Present_Mode = Render_To_Default
+   type Present_Pass_Type is tagged limited record
+      Program  : access Rendering.Programs.Program;
+      Callback : aliased Present_Program_Callback (Present_Pass_Type'Access);
+   end record;
+
+   -----------------------------------------------------------------------------
+
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Resources : Handle_Type;
@@ -389,6 +403,9 @@ private
 
       Present_Mode        : Present_Mode_Type;
       Present_Render_Pass : Render_Pass_Data;  --  Program used when Present_Mode = Render_To_Default
+
+      Present_Program : aliased Rendering.Programs.Program;
+      Present_Pass    : Present_Pass_Type;
 
       Last_FB_Index    : Render_Pass_Index;  --  Used when Present_Mode = Blit_To_Default
       Present_Resource : Handle_Type := No_Resource;

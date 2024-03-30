@@ -64,8 +64,8 @@ private
    type Spheres_Hidden_Program_Callback (Data : not null access Sphere) is limited new Orka.Frame_Graphs.Program_Callback with null record;
    type Spheres_Visible_Program_Callback (Data : not null access Sphere) is limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-   overriding procedure Run (Object : Spheres_Hidden_Program_Callback; Program : Rendering.Programs.Program);
-   overriding procedure Run (Object : Spheres_Visible_Program_Callback; Program : Rendering.Programs.Program);
+   overriding procedure Run (Object : Spheres_Hidden_Program_Callback);
+   overriding procedure Run (Object : Spheres_Visible_Program_Callback);
 
    type Sphere is tagged limited record
       Program : Rendering.Programs.Program;

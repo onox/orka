@@ -96,16 +96,23 @@ And then call the function `Add_Pass`:
 ```ada
 type Program_1_Callback is limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-overriding procedure Run (Object : Program_1_Callback; Program : Orka.Rendering.Programs.Program) is
+overriding procedure Run (Object : Program_1_Callback) is
 begin
+   --  Make sure to activate the program
+   Program_1.Use_Program;
+
    --  Set uniforms and issue rendering commands here
 end Run;
 
 Program_1_Object : aliased Program_1_Callback;
 
 Pass_1 : Render_Pass'Class := Graph_Builder.Add_Pass
-  ("Pass 1", Default_State, Program_1, Program_1_Object'Unchecked_Access);
+  ("Pass 1", Default_State, Program_1_Object'Unchecked_Access);
 ```
+
+Usually you want to store the program and callback together in a limited record
+and providing an access value to the enclosing record as a discriminant to the callback type.
+See [Executing a render pass](/rendering/frame-graph/#executing-a-render-pass) for an example.
 
 The name must be no longer than 16 characters and can be queried with the
 function `Name`.
@@ -346,7 +353,7 @@ Next create a render pass and the two resources which are going to be imported l
 
 ```ada
 State : constant Orka.Rendering.States.State := (Default_State with delta Depth_Func => GL.Types.Always);
-Pass  : Render_Pass'Class := Graph.Add_Pass ("render pass", State, Object.Program, Object.Callback'Unchecked_Access);
+Pass  : Render_Pass'Class := Graph.Add_Pass ("render pass", State, Object.Callback'Unchecked_Access);
 
 Resource_Color_V1 : constant Resource :=
   (Name        => +"color",
@@ -412,7 +419,7 @@ and a `Callback`. The declaration of `My_Type` will look as follows:
 type My_Type_Program_Callback (Data : not null access My_Type) is
   limited new Orka.Frame_Graphs.Program_Callback with null record;
 
-overriding procedure Run (Object : My_Type_Program_Callback; Program : Orka.Rendering.Programs.Program);
+overriding procedure Run (Object : My_Type_Program_Callback);
 
 type My_Type is tagged limited record
    Program  : Orka.Rendering.Programs.Program;
