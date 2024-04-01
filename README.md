@@ -11,29 +11,17 @@
 <br />
 <br />
 
-Orka is an OpenGL 4.6 rendering kernel written in Ada 2012. It provides
-the building blocks like a frame graph to render 3D graphics or do general-purpose
-computing on the GPU, and to use input devices like gamepads.
+Orka is an OpenGL 4.6 rendering kernel written in Ada 2022. It provides
+the building blocks like a frame graph to render 3D graphics or to do general-purpose
+computing on the GPU.
+It also takes care of displaying a window and manage input devices like gamepads.
 
-- **Object-oriented rendering API**. Renderer objects like shader programs,
-framebuffers, buffers, and textures can be used via an
-object-oriented API. Objects are automatically created and destroyed by using
-controlled types. Various [AZDO][url-azdo] techniques can be used to allow
-multithreaded buffer updates and batched draw calls for high performance rendering.
-
-- **Frame graph**. Create a graph with render passes and textures to easily
-display a texture or depth buffer on the screen.
-
-- **Debug rendering and logging**. Various packages exist that can be used
-to draw bounding boxes, coordinate axes, lines, and spheres for debugging.
-Messages from the rendering API or other parts of your application can be
-logged to the terminal or files.
-
-- **Algorithms and effects**. Compute the prefix sum or Fast Fourier Transform
-using compute shaders, or apply a blurring effect to a texture.
-
-- **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
-tessellated terrain.
+- **Frame graph**. Create a frame graph with render passes and textures to describe
+how a frame should be rendered. Any color or depth texture can be rendered to the
+window of the application or to a KTX file.
+The pipeline state needed for each render pass is updated automatically.
+Multiple small frame graphs can be connected to each other to build a larger frame graph
+with a few lines of code.
 
 - **Windows and input devices**. Use the built-in [window toolkit][url-awt]
 to manage input devices like the pointer, keyboard, and gamepads, and windows
@@ -49,14 +37,16 @@ change the color of the LED,
 and detect chords (groups of buttons), button sequences,
 and rapid button tapping.
 
-- **Job graph processing system**. A job graph processing system provides
-flexible multitasking by allowing work to be split into multiple small jobs
-which are then processed by any available task from a task pool. Jobs can be
-processed in parallel as well as sequentially.
+- **Algorithms and effects**. Compute a prefix sum or a Fast Fourier Transform
+using compute shaders, or apply a blurring effect to a texture.
 
-- **Asynchronous resource loading**. Load resources like [KTX][url-ktx] textures
-and [glTF][url-gltf] models asynchronously using the job graph
-processing system. Resources can be loaded from directories and archive files.
+- **Atmosphere and terrain**. Render a realistic atmosphere or adaptive
+tessellated terrain of planets.
+
+- **Debug rendering and logging**. Various packages exist which can be used
+to draw bounding boxes, coordinate axes, lines, and spheres for debugging.
+Messages from the rendering API or other parts of your application can be
+logged to the terminal or files.
 
 - **Transforms**. Apply common transformations to vectors, quaternions, and
 matrices using x86 SIMD instructions.
@@ -69,6 +59,10 @@ or use Runge-Kutta 4th order numerical integrators or sigma-point Kalman filters
 
 - **Surfaceless rendering**. Create a surfaceless rendering context without
 any dependency on a windowing system for using compute shaders on a server.
+
+- **Asynchronous resource loading**. Load resources like [KTX][url-ktx] textures
+and [glTF][url-gltf] models asynchronously.
+Resources can be loaded from directories and archive files.
 
 Additionally, Orka provides several bindings:
 

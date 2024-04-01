@@ -34,16 +34,29 @@ The `Kernel` must consist of a sequence of offsets, followed by a
 sequence of weights. The function `Gaussian_Kernel` takes care of this.
 Good values for `Radius` for weak, normal, or strong blurs are 6, 24, and 48.
 
-The filter can then be applied to the texture:
+#### Rendering
+
+To apply the filter to a texture, create a frame graph with the function `Create_Graph`
+and connect it to your main frame graph:
 
 ```ada
-Filter_1.Render (Passes => 1);
+Filter_Graph : constant Orka.Frame_Graphs.Frame_Graph :=
+  Filter_1.Create_Graph (Resource_Color.Description, Passes => 1);
+
+Resources_Filter : constant Orka.Frame_Graphs.Resource_Array :=
+  Main_Graph.Connect (Filter_Graph, [Resource_Color]);
 ```
 
+The variable `Resources_Filter` contains one resource to which yet another frame graph can be connected.
+Finally, create a `Renderable_Graph` and call its procedure `Render` to render the whole frame graph.
+
+See [Frame graph](/rendering/frame-graph/) for more information on how to
+build and render a frame graph.
+
 For better performance, it is recommended to first downsample a
-texture to half the size (with procedure `Resolve_To` in the package
-`:::ada Orka.Rendering.Framebuffers`) before applying the filter to it. However,
-this can visibly reduce the quality of the image for very small kernels.
+texture to half the size somewhere in the frame graph before applying the
+filter to it.
+However, this can visibly reduce the quality of the image for very small kernels.
 
 ### Moving average filter
 
@@ -58,10 +71,14 @@ Filter_2 : Moving_Average_Filter := Create_Filter (Location, Texture_1, Radius =
 ```
 
 Good values for `Radius` for weak, normal, or strong blurs are 1, 4, and 8.
+
+#### Rendering
+
 After the filter has been created, it can be applied to the texture:
 
 ```ada
-Filter_2.Render (Passes => 2);
+Filter_Graph : constant Orka.Frame_Graphs.Frame_Graph :=
+  Filter_2.Create_Graph (Resource_Color.Description, Passes => 2);
 ```
 
 With a single pass the moving average filter acts as a box blur.

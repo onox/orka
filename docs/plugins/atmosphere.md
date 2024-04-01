@@ -29,7 +29,7 @@ A second location, one which is writable is needed to cache the precomputed
 textures:
 
 ```ada
-Location_Cache : constant Locations.Writable_Location_Ptr :=
+Location_Atmosphere_Cache : constant Locations.Writable_Location_Ptr :=
   Locations.Directories.Create_Location ("cache/atmosphere");
 ```
 
@@ -51,9 +51,9 @@ After the location objects have been created, create the `Cached_Atmosphere`
 object by calling the function `Create_Atmosphere`:
 
 ```ada
-Atmosphere : Cache.Cached_Atmosphere :=
+Atmosphere_Manager : Cache.Cached_Atmosphere :=
   Cache.Create_Atmosphere
-    (Earth_Data, Location_Atmosphere, Location_Cache);
+    (Earth_Data, Location_Atmosphere, Location_Atmosphere_Cache);
 ```
 
 A fourth parameter, `Parameters`, is optional and only needed if the planet is
@@ -68,20 +68,50 @@ atmosphere near the horizon.
 The parameters can be specified as following:
 
 ```ada
---  Based on WGS 84. See https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
-Earth_Parameters : constant Rendering.Model_Parameters :=
-  (Semi_Major_Axis => 6_378_137.0,
-   Flattening      => 1.0 / 298.257_223_563,
-   Axial_Tilt      => Orka.Transforms.Doubles.Vectors.To_Radians (23.439_2811),
+Planet_Earth : constant Orka.Celestial.Planets.Physical_Characteristics :=
+  (Orka.Celestial.Planets.Earth with delta Flattening => 0.0);
+
+Earth_Parameters : constant Orka.Features.Atmosphere.Rendering.Model_Parameters :=
+  (Semi_Major_Axis => Planet_Earth.Semi_Major_Axis,
+   Flattening      => Planet_Earth.Flattening,
+   Axial_Tilt      => Orka.Transforms.Doubles.Matrices.Vectors.To_Radians
+                        (Planet_Earth.Axial_Tilt_Deg),
    Star_Radius     => <>);
 ```
 
+The physical characteristics of several planets are provided by the crate orka\_celestial.
+
 ## Rendering
 
-To render the atmosphere, call the procedure `Render`:
+To render the atmosphere, create a frame graph with the function `Create_Graph`
+and connect it to your main frame graph:
 
 ```ada
-Atmosphere.Render (Camera, Planet, Sun);
+Atmosphere_Graph : constant Orka.Frame_Graphs.Frame_Graph :=
+  Atmosphere_Manager.Create_Graph (Resource_Color.Description, Resource_Depth.Description);
+
+Resources_Atmosphere : constant Orka.Frame_Graphs.Resource_Array :=
+  Main_Graph.Connect (Atmosphere_Graph, [Resource_Color, Resource_Depth]);
+```
+
+The variable `Resources_Atmosphere` contains two resources to which yet another frame graph can be connected.
+Finally, create a `Renderable_Graph` and call its procedure `Render` to render the whole frame graph.
+
+See [Frame graph](/rendering/frame-graph/) for more information on how to
+build and render a frame graph.
+
+!!! tip "Render the atmosphere after the terrain"
+    If your application render an atmosphere as well as a terrain, render the
+    atmosphere after the terrain. This reduces the number of invocations of the
+    fragment shader.
+
+### Updating the state
+
+Each frame, before presenting one of the resources of the frame graph, update the
+state of the atmosphere by calling the procedure `Set_Data`:
+
+```ada
+Atmosphere_Manager.Set_Data (Camera, Planet, Sun);
 ```
 
 The `Camera` needs to be a `Camera_Ptr` (defined in package `:::ada Orka.Cameras`)
