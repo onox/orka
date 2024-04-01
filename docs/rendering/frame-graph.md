@@ -298,12 +298,8 @@ The `Renderable_Graph` can be logged using the logging system of Orka
 by calling procedure `Log_Graph`:
 
 ```ada
-Graph.Log_Graph (FB_D);
+Graph.Log_Graph (Window);
 ```
-
-Variable `FB_D` is the default framebuffer.
-See [Creating a framebuffer](/rendering/framebuffers/#creating-a-framebuffer)
-for more information on how to create the default framebuffer.
 
 Just like a `Frame_Graph`, a `Renderable_Graph` object can be saved to a
 JSON file as well by calling the procedure `Write_Graph`:

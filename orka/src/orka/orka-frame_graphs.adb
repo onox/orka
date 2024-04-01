@@ -1367,7 +1367,7 @@ package body Orka.Frame_Graphs is
      (Object.Render_Pass_References (Index));
    --  Function expression to avoid a GNAT BUG box
 
-   procedure Log_Graph (Object : in out Renderable_Graph; Default : Rendering.Framebuffers.Framebuffer) is
+   procedure Log_Graph (Object : in out Renderable_Graph; Window : Orka.Windows.Window'Class) is
       procedure Log_Pass
         (Index            : Render_Pass_Index;
          Framebuffer      : Rendering.Framebuffers.Framebuffer;
@@ -1474,10 +1474,13 @@ package body Orka.Frame_Graphs is
       if Object.Present_Mode /= Use_Default then
          declare
             Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
+
+            Default_Framebuffer : constant Rendering.Framebuffers.Framebuffer :=
+              Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Window.Width, Window.Height);
          begin
             Log_Pass
               (Index       => Object.Framebuffers.Length + 1,
-               Framebuffer => Default,
+               Framebuffer => Default_Framebuffer,
                State       => Render_Pass_Framebuffer_State,
                Pass        => Object.Present_Render_Pass,
                Input_Resources =>

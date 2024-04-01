@@ -18,7 +18,6 @@ with Ada.Strings.Bounded;
 
 with Orka.Contexts;
 with Orka.Windows;
-with Orka.Rendering.Framebuffers;
 with Orka.Rendering.States;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
@@ -28,6 +27,7 @@ private with Ada.Containers.Indefinite_Holders;
 private with GL.Buffers;
 
 private with Orka.Containers.Bounded_Vectors;
+private with Orka.Rendering.Framebuffers;
 private with Orka.Rendering.Programs;
 
 package Orka.Frame_Graphs is
@@ -216,9 +216,9 @@ package Orka.Frame_Graphs is
                             and Renderable_Graph.Maximum_Resources = Renderable_Graph.Graph.Maximum_Resources;
 
    procedure Render
-     (Object  : in out Renderable_Graph;
-      Window  : Orka.Windows.Window'Class;
-      Present : Resource;
+     (Object   : in out Renderable_Graph;
+      Window   : Orka.Windows.Window'Class;
+      Present  : Resource;
       Location : Resources.Locations.Location_Ptr);
    --  Render the resource which must be presented to the given window
 
@@ -229,7 +229,7 @@ package Orka.Frame_Graphs is
       Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture;
    --  Render the resource which must be presented and return it as a texture
 
-   procedure Log_Graph (Object : in out Renderable_Graph; Default : Rendering.Framebuffers.Framebuffer);
+   procedure Log_Graph (Object : in out Renderable_Graph; Window : Orka.Windows.Window'Class);
 
    procedure Write_Graph
      (Object   : Renderable_Graph;
