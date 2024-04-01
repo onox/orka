@@ -28,6 +28,7 @@ with GL.Compute;
 with GL.Types.Indirect;
 
 with Orka.Rendering.Drawing;
+with Orka.Rendering.States;
 
 package body Orka.Features.Terrain is
 
@@ -43,7 +44,7 @@ package body Orka.Features.Terrain is
    Binding_Buffer_Leb_Nodes        : constant := 1;
    Binding_Buffer_Leb_Node_Counter : constant := 2;
    Binding_Buffer_Transforms       : constant := 3;
-   Binding_Buffer_Spheres          : constant := 4;
+   --  Binding point 4 is used by a buffer storing spheroid parameters in child package Planets
    Binding_Buffer_Draw             : constant := 5;
    Binding_Buffer_Dispatch         : constant := 6;
    Binding_Buffer_Counted_Nodes    : constant := 7;
@@ -52,7 +53,8 @@ package body Orka.Features.Terrain is
    Binding_Buffer_Matrices : constant := 0;
 
    function Create_Terrain
-     (Count                : Positive;
+     (Kind                 : Terrain_Kind;
+      Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
@@ -73,11 +75,11 @@ package body Orka.Features.Terrain is
       Number_Of_Buffers : constant Size := Size (Count);
 
       Draw_Commands     : constant Arrays_Indirect_Command_Array   :=
-        (1 .. Number_Of_Buffers => (0, 0, 0, 0));
+        [1 .. Number_Of_Buffers => (0, 0, 0, 0)];
       Dispatch_Commands : constant Dispatch_Indirect_Command_Array :=
-        (1 .. Number_Of_Buffers => (2, 1, 1));
+        [1 .. Number_Of_Buffers => (2, 1, 1)];
 
-      Nodes_Counter : constant Unsigned_32_Array := (1 .. Number_Of_Buffers => 0);
+      Nodes_Counter : constant Unsigned_32_Array := [1 .. Number_Of_Buffers => 0];
 
       Heap_Elements : constant Natural := 2 + 2 ** (Natural (Max_Depth) + 2 - 5);
       --  Minimum and maximum depth, and the the heap elements
@@ -92,11 +94,13 @@ package body Orka.Features.Terrain is
          Max_Depth    => Max_Depth,
          Wireframe    => Wireframe,
          Split_Update => True,
-         Visible_Tiles => (others => True),
+         Visible_Tiles => [others => True],
          Program_Leb_Update    => Create_Program (Modules.Module_Array'
            (Module_LEB,
             Modules.Create_Module (Location, CS => "terrain/terrain-render-common.glsl"),
-            Modules.Create_Module (Location, CS => "terrain/terrain-render-sphere.glsl"),
+            (case Kind is
+               when Sphere => Modules.Create_Module (Location, CS => "terrain/terrain-render-sphere.glsl"),
+               when Plane  => Modules.Create_Module (Location, CS => "terrain/terrain-render-plane.glsl")),
             Modules.Create_Module (Location, CS => "terrain/terrain-update-lod.comp"),
             Modules.Create_Module (Location, CS => "terrain/terrain-update.comp"))),
          Program_Render        => Create_Program (Modules.Module_Array'(Render_Modules &
@@ -105,9 +109,15 @@ package body Orka.Features.Terrain is
               TCS => "terrain/terrain-render-common.glsl",
               TES => "terrain/terrain-render-common.glsl",
               FS  => "terrain/terrain-render-common.glsl"),
-            Modules.Create_Module (Location,
-              TCS => "terrain/terrain-render-sphere.glsl",
-              TES => "terrain/terrain-render-sphere.glsl"),
+            (case Kind is
+               when Sphere =>
+                  Modules.Create_Module (Location,
+                    TCS => "terrain/terrain-render-sphere.glsl",
+                    TES => "terrain/terrain-render-sphere.glsl"),
+               when Plane  =>
+                  Modules.Create_Module (Location,
+                    TCS => "terrain/terrain-render-plane.glsl",
+                    TES => "terrain/terrain-render-plane.glsl")),
             Modules.Create_Module (Location, FS => "terrain/terrain-render-normals.frag"),
             (if Wireframe then
                Modules.Create_Module (Location,
@@ -133,13 +143,13 @@ package body Orka.Features.Terrain is
            (Module_LEB,
             Modules.Create_Module (Location, CS => "terrain/terrain-prepare-indirect.comp"))),
          Sampler                 => Create_Sampler
-           ((Wrapping         => (Clamp_To_Edge, Clamp_To_Edge, Repeat),
+           ((Wrapping         => [Clamp_To_Edge, Clamp_To_Edge, Repeat],
              Minifying_Filter => Linear_Mipmap_Linear,
              others           => <>)),
-         Buffer_Leb              => (others => Create_Buffer
-           ((others => False), Orka.Types.UInt_Type, Heap_Elements)),
-         Buffer_Leb_Nodes        => (others => Create_Buffer
-           ((others => False), Orka.Types.UInt_Type, Maximum_Nodes)),
+         Buffer_Leb              => [others => Create_Buffer
+           ((others => False), Orka.Types.UInt_Type, Heap_Elements)],
+         Buffer_Leb_Nodes        => [others => Create_Buffer
+           ((others => False), Orka.Types.UInt_Type, Maximum_Nodes)],
          Buffer_Leb_Node_Counter => Create_Buffer ((others => False), Nodes_Counter),
          Buffer_Draw             => Create_Buffer ((others => False), Draw_Commands),
          Buffer_Dispatch         => Create_Buffer ((others => False), Dispatch_Commands),
@@ -277,32 +287,39 @@ package body Orka.Features.Terrain is
       GL.Barriers.Memory_Barrier ((By_Region => False, Shader_Storage | Command => True, others => False));
    end Prepare_Indirect;
 
-   procedure Render
+   procedure Set_Data
      (Object        : in out Terrain;
-      Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class;
-      Rotation      : Cameras.Transforms.Matrix4;
-      Center        : Cameras.Transforms.Matrix4;
-      Camera        : Cameras.Camera_Ptr;
-      Parameters    : Subdivision_Parameters;
-      Visible_Tiles : out Visible_Tile_Array;
-      Update_Render : access procedure
-        (Program : Rendering.Programs.Program);
+      Transforms    : Rendering.Buffers.Buffer;
       Height_Map    : Rendering.Textures.Texture;
       Height_Scale  : Float_32;
-      Height_Offset : Float_32;
-      Freeze, Wires : Boolean;
-      Timer_Update, Timer_Render : in out Orka.Timers.Timer)
+      Height_Offset : Float_32) is
+   begin
+      Object.Transforms := Transforms;
+      Object.Height_Map := Height_Map;
+
+      Object.Height_Scale := Height_Scale;
+
+      Object.Uniform_Update_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Uniform_Render_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+   end Set_Data;
+
+   procedure Set_Data
+     (Object        : in out Terrain;
+      Rotation      : Types.Singles.Matrix4;
+      Center        : Types.Singles.Matrix4;
+      Camera        : Cameras.Camera_Ptr;
+      Parameters    : Subdivision_Parameters;
+      Freeze, Wires : Boolean)
    is
       package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_32);
-      use all type GL.Types.Connection_Mode;
 
       Subdivision  : constant Size := Size (Parameters.Meshlet_Subdivision);
 
       Meshlet_Subdivision : constant := 0;
 
       LoD_Variance : constant Float_32 :=
-        (if Height_Scale > 0.0 then
-           (Float_32 (Parameters.Min_LoD_Standard_Dev) / 64.0 / Height_Scale) ** 2
+        (if Object.Height_Scale > 0.0 then
+           (Float_32 (Parameters.Min_LoD_Standard_Dev) / 64.0 / Object.Height_Scale) ** 2
          else 0.0);
       LoD_Factor   : constant Float_32 :=
         -2.0 * EF.Log (2.0 * EF.Tan (Camera.Lens.FOV / 2.0)
@@ -312,15 +329,11 @@ package body Orka.Features.Terrain is
 
       use Cameras.Transforms;
    begin
-      Timer_Update.Start;
-
       Object.Uniform_Update_LoD_Var.Set_Single (LoD_Variance);
       Object.Uniform_Update_LoD_Factor.Set_Single (LoD_Factor);
 
       Object.Uniform_Update_Freeze.Set_Boolean (Freeze);
-
-      Object.Uniform_Update_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
-      Object.Uniform_Render_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Freeze := Freeze;
 
       Object.Uniform_Render_Subdiv.Set_Int (Subdivision);
 
@@ -331,19 +344,23 @@ package body Orka.Features.Terrain is
          Object.Program_Render.Uniform ("u_ShowWires").Set_Boolean (Wires);
       end if;
 
+      Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
+        (Rotation, Camera.View_Matrix * (Center * Rotation), Camera.Projection_Matrix));
+   end Set_Data;
+
+   procedure Render (Object : in out Terrain) is
+      use all type GL.Types.Connection_Mode;
+   begin
       Object.Sampler.Bind (Binding_Texture_DMap);
 
       --  Textures
-      Height_Map.Bind (Binding_Texture_DMap);
+      Object.Height_Map.Bind (Binding_Texture_DMap);
 
       --  UBOs
-      Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
-        (Rotation, Camera.View_Matrix * (Center * Rotation), Camera.Projection_Matrix));
       Object.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
 
       --  SSBOs
-      Transforms.Bind (Shader_Storage, Binding_Buffer_Transforms);
-      Spheres.Bind (Shader_Storage, Binding_Buffer_Spheres);
+      Object.Transforms.Bind (Shader_Storage, Binding_Buffer_Transforms);
 
       Object.Update;
       Object.Reduce;
@@ -354,7 +371,7 @@ package body Orka.Features.Terrain is
          Object.Fence_Counted_Nodes.Prepare_Index (Status);
       end;
 
-      if not Freeze then
+      if not Object.Freeze then
          declare
             Data : Unsigned_32_Array (1 .. Integer_32 (Object.Count));
          begin
@@ -366,20 +383,13 @@ package body Orka.Features.Terrain is
             end loop;
          end;
       end if;
-      Visible_Tiles := Object.Visible_Tiles;
 
       Object.Prepare_Indirect;
 
       Object.Buffer_Counted_Nodes.Advance_Index;
       Object.Fence_Counted_Nodes.Advance_Index;
 
-      Timer_Update.Stop;
-      Timer_Render.Start;
-
       Object.Program_Render.Use_Program;
-      if Update_Render /= null then
-         Update_Render (Object.Program_Render);
-      end if;
 
       for ID in Object.Buffer_Leb_Nodes'Range loop
          if Object.Visible_Tiles (ID) then
@@ -388,38 +398,63 @@ package body Orka.Features.Terrain is
             Orka.Rendering.Drawing.Draw_Indirect (Patches, Object.Buffer_Draw, ID - 1, 1);
          end if;
       end loop;
-
-      Timer_Render.Stop;
    end Render;
 
-   function Get_Spheroid_Parameters
-     (Semi_Major_Axis : Float_32;
-      Flattening      : Float_32 := 0.0;
-      Side            : Boolean  := True) return Spheroid_Parameters
+   function Create_Graph
+     (Object       : Terrain;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description;
+      Callback     : not null Orka.Frame_Graphs.Program_Callback_Access) return Orka.Frame_Graphs.Frame_Graph
    is
-      --  Convert from geodetic coordinates to geocentric coordinates
-      --  using the semi-major axis and the flattening of the sphere.
-      --  See https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
+      use Orka.Frame_Graphs;
 
-      --  Semi-major axis and flattening (semi-minor axis B = A * (1.0 - F))
-      A : Float_32 := Semi_Major_Axis;
-      F : Float_32 := Flattening;
-      --  F = (A - B) / A
-      B : constant Float_32 := A - F * A;
+      Graph : aliased Orka.Frame_Graphs.Frame_Graph
+        (Maximum_Passes    => 1,
+         Maximum_Handles   => 2,
+         Maximum_Resources => 4);
+
+      State : constant Orka.Rendering.States.State := (others => <>);
+      Pass  : Render_Pass'Class := Graph.Add_Pass ("terrain", State, Callback);
+
+      Resource_Color_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"terrain-color",
+         Description => Color,
+         others      => <>);
+
+      Resource_Depth_V1 : constant Orka.Frame_Graphs.Resource :=
+        (Name        => +"terrain-depth",
+         Description => Depth,
+         others      => <>);
+
+      Resource_Color_V2 : constant Orka.Frame_Graphs.Resource :=
+        Pass.Add_Input_Output (Resource_Color_V1, Framebuffer_Attachment, 0);
+      Resource_Depth_V2 : constant Orka.Frame_Graphs.Resource :=
+        Pass.Add_Input_Output (Resource_Depth_V1, Framebuffer_Attachment, 1);
    begin
-      if not Side then
-         --  Recompute F with swapped A and B
-         F := (B - A) / B;
-         --  Use semi-minor axis instead
-         A := B;
-      end if;
+      Graph.Import ([Resource_Color_V1, Resource_Depth_V1]);
+      Graph.Export ([Resource_Color_V2, Resource_Depth_V2]);
 
-      declare
-         E2 : constant Float_32 := 2.0 * F - F * F;
-         --  E is eccentricity. See https://en.wikipedia.org/wiki/Flattening
+      return Graph;
+   end Create_Graph;
+
+   package body Flat is
+
+      overriding procedure Run (Object : Terrain_Program_Callback) is
       begin
-         return (A, E2) & (if Side then (0.0, 1.0) else (1.0, 1.0));
-      end;
-   end Get_Spheroid_Parameters;
+         Object.Data.Terrain.Render;
+      end Run;
+
+      function Create_Terrain_Flat (Terrain : aliased in out Orka.Features.Terrain.Terrain) return Terrain_Flat is
+      begin
+         return (Terrain => Terrain'Access, others => <>);
+      end Create_Terrain_Flat;
+
+      function Create_Graph
+        (Object       : Terrain_Flat;
+         Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph is
+      begin
+         return Object.Terrain.Create_Graph (Color, Depth, Object.Callback'Unchecked_Access);
+      end Create_Graph;
+
+   end Flat;
 
 end Orka.Features.Terrain;

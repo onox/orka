@@ -34,19 +34,17 @@
 --  [1] https://github.com/jdupuy/LongestEdgeBisectionDemos
 
 with Orka.Cameras;
+with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
-with Orka.Timers;
-
-private with GL.Low_Level.Enums;
+with Orka.Types;
 
 private with Orka.Rendering.Buffers.Mapped.Persistent;
 private with Orka.Rendering.Fences;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Rendering.Samplers;
-private with Orka.Types;
 
 package Orka.Features.Terrain is
    pragma Preelaborate;
@@ -65,16 +63,17 @@ package Orka.Features.Terrain is
       Min_LoD_Standard_Dev : LoD_Deviation;
    end record;
 
-   subtype Spheroid_Parameters is Float_32_Array (1 .. 4);
-
    type Visible_Tile_Array is array (Positive range <>) of Boolean;
 
    -----------------------------------------------------------------------------
 
-   type Terrain (Count : Positive) is tagged limited private;
+   type Terrain_Kind is (Sphere, Plane);
+
+   type Terrain (Count : Positive) is tagged private;
 
    function Create_Terrain
-     (Count                : Positive;
+     (Kind                 : Terrain_Kind;
+      Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
@@ -94,31 +93,23 @@ package Orka.Features.Terrain is
    --
    --  vec4 ShadeFragment(vec2 texCoord, vec4 worldPos);
 
-   procedure Render
+   procedure Set_Data
      (Object        : in out Terrain;
-      Transforms, Spheres : Rendering.Buffers.Bindable_Buffer'Class;
-      Rotation      : Cameras.Transforms.Matrix4;
-      Center        : Cameras.Transforms.Matrix4;
-      Camera        : Cameras.Camera_Ptr;
-      Parameters    : Subdivision_Parameters;
-      Visible_Tiles : out Visible_Tile_Array;
-      Update_Render : access procedure (Program : Rendering.Programs.Program);
+      Transforms    : Rendering.Buffers.Buffer;
       Height_Map    : Rendering.Textures.Texture;
       Height_Scale  : Float_32;
-      Height_Offset : Float_32;
-      Freeze, Wires : Boolean;
-      Timer_Update, Timer_Render : in out Orka.Timers.Timer)
-   with Pre => Transforms.Length = Object.Count
-     and Spheres.Length in Spheroid_Parameters'Length | Spheroid_Parameters'Length * Object.Count
-     and Visible_Tiles'Length = Object.Count;
+      Height_Offset : Float_32)
+   with Pre => Transforms.Length = Object.Count;
+   --  Buffer Transforms should contain matrices which transform the terrain tiles
+
+   procedure Set_Data
+     (Object        : in out Terrain;
+      Rotation      : Types.Singles.Matrix4;
+      Center        : Types.Singles.Matrix4;
+      Camera        : Cameras.Camera_Ptr;
+      Parameters    : Subdivision_Parameters;
+      Freeze, Wires : Boolean);
    --  Generate and render the terrain tiles
-   --
-   --  Buffer Transforms should contain matrices which transform the
-   --  terrain tiles.
-   --
-   --  Buffer Spheres should contain n spheroid parameters (each containing
-   --  4 singles) for n terrain tiles if the sphere is flattened or 1 spheroid
-   --  parameters if all the tiles are part of a non-flattened sphere.
    --
    --  Center should contain a translation from the camera to the center
    --  of the sphere. It should be scaled if the semi-major axis in the
@@ -131,40 +122,57 @@ package Orka.Features.Terrain is
    --  was True, then a wireframe will be displayed. If Wireframe was False,
    --  then Wires has no effect.
 
-   function Get_Spheroid_Parameters
-     (Semi_Major_Axis : Float_32;
-      Flattening      : Float_32 := 0.0;
-      Side            : Boolean  := True) return Spheroid_Parameters;
-   --  Return the spheroid parameters needed to project a flat
-   --  terrain tile on a (non-)flattened sphere.
-   --
-   --  The returned spheroid parameters should be put in a buffer that
-   --  is given to the procedure Render above.
-   --
-   --  If the terrain tiles are part of a non-flattened sphere, then
-   --  this function can be called once with Flattening = 0.0.
-   --
-   --  If the sphere is flattened, this function needs to be called twice.
-   --  The returned spheroid parameters must be repeated 4 times for the
-   --  tiles on the side and 2 times for the top and bottom tiles.
-   --
-   --  If the semi-major axis is scaled, then the translation in Center
-   --  in the procedure Render should be scaled as well.
+   function Visible_Tiles (Object : Terrain) return Visible_Tile_Array
+     with Post => Visible_Tiles'Result'Length = Object.Count;
+
+   package Flat is
+
+      type Terrain_Flat is tagged limited private;
+
+      function Create_Terrain_Flat (Terrain : aliased in out Orka.Features.Terrain.Terrain) return Terrain_Flat;
+
+      function Create_Graph
+        (Object       : Terrain_Flat;
+         Color, Depth : Orka.Rendering.Textures.Texture_Description) return Orka.Frame_Graphs.Frame_Graph;
+
+   private
+
+      type Terrain_Program_Callback (Data : not null access Terrain_Flat'Class) is
+        limited new Orka.Frame_Graphs.Program_Callback with null record;
+
+      overriding procedure Run (Object : Terrain_Program_Callback);
+
+      type Terrain_Flat is tagged limited record
+         Terrain  : not null access Orka.Features.Terrain.Terrain;
+         Callback : aliased Terrain_Program_Callback (Terrain_Flat'Access);
+      end record;
+
+   end Flat;
 
 private
 
+   procedure Render (Object : in out Terrain);
+
+   function Create_Graph
+     (Object       : Terrain;
+      Color, Depth : Orka.Rendering.Textures.Texture_Description;
+      Callback     : not null Orka.Frame_Graphs.Program_Callback_Access) return Orka.Frame_Graphs.Frame_Graph;
+
    Regions_Counted_Nodes : constant := 3;
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Orka.Rendering.Textures.LE;
 
    type UInt_Buffer_Array is array (Positive range <>) of
      Rendering.Buffers.Buffer (Types.UInt_Type);
 
-   type Terrain (Count : Positive) is tagged limited record
+   type Terrain (Count : Positive) is tagged record
       Max_Depth    : Subdivision_Depth;
 
       Split_Update : Boolean;
       Wireframe    : Boolean;
+      Freeze       : Boolean;
+
+      Height_Scale  : Float_32;
 
       Visible_Tiles : Visible_Tile_Array (1 .. Count);
 
@@ -210,6 +218,11 @@ private
 
       --  UBO
       Buffer_Matrices : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+
+      Transforms : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+      Height_Map : Rendering.Textures.Texture (LE.Texture_2D);
    end record;
+
+   function Visible_Tiles (Object : Terrain) return Visible_Tile_Array is (Object.Visible_Tiles);
 
 end Orka.Features.Terrain;
