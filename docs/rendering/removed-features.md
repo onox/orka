@@ -54,20 +54,6 @@ Some conventions have changed to Vulkan's:
   The range of the depth of the clipping volume has been changed from
   the default of [-1, 1] to Vulkan's [0, 1].
 
-- **Origin of window coordinates is upper-left**.
-    The origin of the window coordinates has been changed to upper-left,
-    which is the origin used by other rendering APIs and windowing systems.
-
-    If a shader uses `:::glsl gl_FragCoord`, then you may need to redefine it:
-
-    ```glsl
-    layout(origin_upper_left) in vec4 gl_FragCoord;
-    ```
-
-    If the output on the screen is upside down, then render to a texture
-    instead and read it in some resolve or tonemapping pass that outputs
-    to the default framebuffer.
-
 ## Other removed features
 
 Over the years, OpenGL has accumulated a lot of functionality. Some of which

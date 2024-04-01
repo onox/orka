@@ -88,7 +88,7 @@ package body Orka.Contexts.EGL is
       Orka.Debug.Set_Log_Messages (Enable => Flags.Debug);
 
       GL.Rasterization.Set_Provoking_Vertex (GL.Rasterization.First_Vertex);
-      GL.Viewports.Set_Clipping (GL.Viewports.Upper_Left, GL.Viewports.Zero_To_One);
+      GL.Viewports.Set_Clipping (GL.Viewports.Lower_Left, GL.Viewports.Zero_To_One);
 
       --  Enable reversed Z for better depth precision at great distances
       --  See https://developer.nvidia.com/content/depth-precision-visualized
