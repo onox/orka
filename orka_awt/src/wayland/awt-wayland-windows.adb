@@ -824,7 +824,7 @@ package body AWT.Wayland.Windows is
             Cursor_Surface.Damage (0, 0, State.Width, State.Height);
             Cursor_Surface.Commit;
 
-            Cursor_Hotspot := (State.Hotspot_X, State.Hotspot_Y);
+            Cursor_Hotspot := [State.Hotspot_X, State.Hotspot_Y];
          end;
 
          Cursor_Name   := Cursor;
@@ -911,14 +911,14 @@ package body AWT.Wayland.Windows is
             --  Reset some state after the state has been read by
             --  the application. New state will be accumulated in procedure Set_State
 
-            Pointer_State.Relative := (others => 0.0);
-            Pointer_State.Scroll   := (others => 0.0);
+            Pointer_State.Relative := [others => 0.0];
+            Pointer_State.Scroll   := [others => 0.0];
 
-            Pointer_State.Pressed  := (others => False);
-            Pointer_State.Released := (others => False);
+            Pointer_State.Pressed  := [others => False];
+            Pointer_State.Released := [others => False];
 
-            Keyboard_State.Pressed  := (others => False);
-            Keyboard_State.Released := (others => False);
+            Keyboard_State.Pressed  := [others => False];
+            Keyboard_State.Released := [others => False];
 
             Reset_Input := False;
          end if;
@@ -945,7 +945,7 @@ package body AWT.Wayland.Windows is
          Pointer_State.Mode   := Old_State.Mode;
          Pointer_State.Cursor := Old_State.Cursor;
          if Pointer_State.Mode /= Locked then
-            Pointer_State.Relative := (others => 0.0);
+            Pointer_State.Relative := [others => 0.0];
          end if;
       end Set_State;
 

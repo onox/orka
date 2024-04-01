@@ -58,7 +58,7 @@ package body AWT.Inputs.Gamepads is
    Last_Brightness : constant := 255.0;
 
    Gamepad_Button_To_Key : constant array (Non_Hat_Button) of ED.Key_Kind :=
-     (Action_Down    => Button_South,
+     [Action_Down    => Button_South,
       Action_Right   => Button_East,
       Action_Left    => Button_West,
       Action_Up      => Button_North,
@@ -68,26 +68,26 @@ package body AWT.Inputs.Gamepads is
       Thumb_Right    => Button_Thumb_Right,
       Center_Left    => Button_Select,
       Center_Right   => Button_Start,
-      Center_Logo    => Button_Mode);
+      Center_Logo    => Button_Mode];
    --  FIXME Support Button_DPad_*
 
    Gamepad_Axis_To_Axis : constant array (Gamepad_Axis) of ED.Absolute_Axis_Kind :=
-     (Stick_Left_X  => X,
+     [Stick_Left_X  => X,
       Stick_Left_Y  => Y,
       Stick_Right_X => Rx,
-      Stick_Right_Y => Ry);
+      Stick_Right_Y => Ry];
 
    Gamepad_Trigger_To_Axis : constant array (Gamepad_Trigger) of ED.Absolute_Axis_Kind :=
-     (Trigger_Left  => Z,
-      Trigger_Right => Rz);
+     [Trigger_Left  => Z,
+      Trigger_Right => Rz];
 
    Axis_To_Sensor_Axis : constant array (AWT.Gamepads.Sensor_Axis) of Sensor_Axis :=
-     (X  => X,
+     [X  => X,
       Y  => Y,
       Z  => Z,
       Rx => Rx,
       Ry => Ry,
-      Rz => Rz);
+      Rz => Rz];
 
    ----------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ package body AWT.Inputs.Gamepads is
    end Read_File;
 
    function Find_HID_Device (ID : String) return String is
-      Filter_Link : constant AWT.OS.Filter_Type := (Symbolic_Link => True, others => False);
+      Filter_Link : constant AWT.OS.Filter_Type := [Symbolic_Link => True, others => False];
    begin
       for File of AWT.OS.Scan_Directory (Hidraw_Folder, Filter_Link) loop
          declare
@@ -434,7 +434,7 @@ package body AWT.Inputs.Gamepads is
       Object.Path := +Path;
 
       declare
-         Filter_Dir  : constant AWT.OS.Filter_Type := (Directory => True, others => False);
+         Filter_Dir  : constant AWT.OS.Filter_Type := [Directory => True, others => False];
 
          function Is_Color (Name : SU.Unbounded_String; Color : String) return Boolean is
            (SU.Index (Name, ":" & Color) = SU.Length (Name) - Color'Length);
@@ -686,15 +686,15 @@ package body AWT.Inputs.Gamepads is
          use type Orka.Float_64;
 
          Velocity : constant Vectors.Direction :=
-            (Vectors.To_Radians (Orka.Float_64 (State.Axes (Rx))),
+            [Vectors.To_Radians (Orka.Float_64 (State.Axes (Rx))),
              Vectors.To_Radians (Orka.Float_64 (State.Axes (Ry))),
              Vectors.To_Radians (Orka.Float_64 (State.Axes (Rz))),
-             0.0);
+             0.0];
          Acceleration : constant Vectors.Vector4 :=
-            (-Orka.Float_64 (State.Axes (X)),
+            [-Orka.Float_64 (State.Axes (X)),
              -Orka.Float_64 (State.Axes (Y)),
               Orka.Float_64 (State.Axes (Z)),
-             0.0);
+             0.0];
          Calibrated : Boolean;
 
          Motion_State : AWT.IMUs.Estimated_State;
@@ -760,8 +760,8 @@ package body AWT.Inputs.Gamepads is
 
          --  Reset Pressed and Released after the state has been read by
          --  the application. New state will be accumulated in procedure Set_State
-         Object.Gamepad.Pressed  := (others => False);
-         Object.Gamepad.Released := (others => False);
+         Object.Gamepad.Pressed  := [others => False];
+         Object.Gamepad.Released := [others => False];
       end State;
 
       function State return Motion_State is
@@ -863,11 +863,11 @@ package body AWT.Inputs.Gamepads is
                   Result.Brightness := Normalized (Maximum_Brightness / Last_Brightness);
                   if Maximum_Brightness > 0.0 then
                      Result.Color :=
-                       (Red   => Normalized (R / Maximum_Brightness),
+                       [Red   => Normalized (R / Maximum_Brightness),
                         Green => Normalized (G / Maximum_Brightness),
-                        Blue  => Normalized (B / Maximum_Brightness));
+                        Blue  => Normalized (B / Maximum_Brightness)];
                   else
-                     Result.Color := (0.0, 0.0, 0.0);
+                     Result.Color := [0.0, 0.0, 0.0];
                   end if;
                end;
             end if;
@@ -940,9 +940,9 @@ package body AWT.Inputs.Gamepads is
 
          if (for all Effect of Object.Effects => Effect.Cursor /= Subject.Cursor) then
             Object.Effects.Append
-              ((Stop_At => 0.0,
-                Cursor  => Subject.Cursor,
-                Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
+              (AWT.Gamepads.Uploaded_Effect'(Stop_At => 0.0,
+                                Cursor  => Subject.Cursor,
+                                Effect  => AWT.Gamepads.Effect_Vectors.Element (Subject.Cursor)));
 
             Object.Effects.Update_Element (Object.Effects.Last, Upload_Effect'Access);
 
@@ -1109,7 +1109,7 @@ package body AWT.Inputs.Gamepads is
    end Set_Mappings;
 
    procedure Initialize is
-      Filter_File : constant AWT.OS.Filter_Type := (Device_File => True, others => False);
+      Filter_File : constant AWT.OS.Filter_Type := [Device_File => True, others => False];
 
       Index : Positive := All_Gamepads'First;
    begin
@@ -1157,7 +1157,7 @@ package body AWT.Inputs.Gamepads is
       end loop;
 
       --  Initialize Result because Gamepad_Ptr has a "not null" constraint
-      return Result : Gamepad_Array (1 .. Count) := (others => First_Gamepad) do
+      return Result : Gamepad_Array (1 .. Count) := [others => First_Gamepad] do
          declare
             Index : Positive := Result'First;
          begin

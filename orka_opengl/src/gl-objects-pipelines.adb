@@ -81,7 +81,7 @@ package body GL.Objects.Pipelines is
    overriding
    procedure Delete_Id (Object : in out Pipeline) is
    begin
-      API.Delete_Program_Pipelines.Ref (1, (1 => Object.Reference.GL_Id));
+      API.Delete_Program_Pipelines.Ref (1, [Object.Reference.GL_Id]);
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 

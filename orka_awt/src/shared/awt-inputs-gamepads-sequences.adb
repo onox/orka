@@ -43,7 +43,7 @@ package body AWT.Inputs.Gamepads.Sequences is
       On_Time : constant Boolean := Current_Time - Object.Start_Press < Object.Max_Time;
 
       Pressed_Buttons : constant Changed_Gamepad_Buttons := State.Pressed;
-      Expected_Button : Changed_Gamepad_Buttons := (others => False);
+      Expected_Button : Changed_Gamepad_Buttons := [others => False];
    begin
       Expected_Button (Object.Buttons (Object.Index)) := True;
 

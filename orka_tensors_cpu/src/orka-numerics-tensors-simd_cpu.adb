@@ -54,21 +54,21 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
       Rows        : constant Natural := Ab.Rows;
-      Pivot_Value : constant Element := Ab ((Index, Pivot_Index));
+      Pivot_Value : constant Element := Ab ([Index, Pivot_Index]);
    begin
       --  Create zeros below the pivot position
       for Row_Index in Index + 1 .. Rows loop
-         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)) / Pivot_Value, Index, Row_Index);
+         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]) / Pivot_Value, Index, Row_Index);
       end loop;
    end Forward_Substitute;
 
    procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
    begin
-      Scale_Row (Ab, Index, 1.0 / Ab ((Index, Pivot_Index)));
+      Scale_Row (Ab, Index, 1.0 / Ab ([Index, Pivot_Index]));
 
       --  Create zeros above the pivot position
       for Row_Index in 1 .. Index - 1 loop
-         Replace_Row (Ab, Ab ((Row_Index, Pivot_Index)), Index, Row_Index);
+         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]), Index, Row_Index);
       end loop;
    end Back_Substitute;
 
@@ -90,7 +90,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          --  lower triangular part
          for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
             for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
-               Object.Set ((Row_Index, Column_Index), 0.0);
+               Object.Set ([Row_Index, Column_Index], 0.0);
             end loop;
          end loop;
       end if;
@@ -122,7 +122,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      (Size * Vector_Type'Length - Count);
 
    function To_Index (Index : Tensor_Index; Columns : Positive) return Index_Type is
-     (To_Index (Index, (Index (1), Columns)))
+     (To_Index (Index, [Index (1), Columns]))
    with Pre => Index'Length = 2;
    --  Index (1) isn't used for 2-D Index except in Pre condition of To_Index in parent package
 
@@ -134,7 +134,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Last_Vector : Vector_Type := Object.Data (Object.Data'Last);
    begin
       if Padding /= 0 then
-         Last_Vector (From_Last (Padding - 1) .. Last_Vector'Last) := (others => Value);
+         Last_Vector (From_Last (Padding - 1) .. Last_Vector'Last) := [others => Value];
       end if;
 
       return Last_Vector;
@@ -176,7 +176,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    --                              Expressions                               --
    ----------------------------------------------------------------------------
 
-   function Identity_Vector_Type (Value : Element) return Vector_Type is (others => Value);
+   function Identity_Vector_Type (Value : Element) return Vector_Type is [others => Value];
    function Identity_Element     (Value : Element) return Element     is (Value);
 
    function Apply is new Generic_Apply (Vector_Type, Identity_Vector_Type);
@@ -196,7 +196,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function Get (Object : CPU_Tensor; Index : Index_Type) return CPU_Tensor is
       Count : constant Positive := Object.Columns;
-      Shape : constant Tensor_Shape := (1 => Count);
+      Shape : constant Tensor_Shape := [Count];
    begin
       if Index > Object.Rows then
          raise Constraint_Error with
@@ -322,7 +322,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Boolean) is
       Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
 
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
 
       Mask : constant Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
 
@@ -342,7 +342,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Get (Object : CPU_Tensor; Index : Tensor_Index) return Boolean is
       Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
 
-      One_Vector : constant Integer_Vector_Type := (others => 1);
+      One_Vector : constant Integer_Vector_Type := [others => 1];
 
       Mask       : constant Integer_Vector_Type :=
         Convert (Object.Data (Data_Vectors (Index_Flattened)));
@@ -367,7 +367,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             declare
                Count : constant Positive := Result_Rows;
                Size  : constant Positive := Data_Vectors (Count);
-               Shape : constant Tensor_Shape := (1 => Count);
+               Shape : constant Tensor_Shape := [Count];
             begin
                if Row_Stop > Rows then
                   raise Constraint_Error with
@@ -403,9 +403,9 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
                Shape : constant Tensor_Shape :=
                  (if Result_Rows = 1 then
-                    (1 => Result_Columns)
+                    [1 => Result_Columns]
                   else
-                    (1 => Result_Rows, 2 => Result_Columns));
+                    [1 => Result_Rows, 2 => Result_Columns]);
 
                Column_Start : constant Index_Type :=
                  (if 2 in Index'Range then Index (2).Start else 1);
@@ -454,11 +454,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Get (Object : CPU_Tensor; Index : CPU_Tensor) return CPU_Tensor is
       type Integer_Vector_Array is array (Index_Type range <>) of Integer_Vector_Type;
 
-      One_Vector : constant Integer_Vector_Type := (others => 1);
+      One_Vector : constant Integer_Vector_Type := [others => 1];
 
       Indices : Integer_Vector_Array (1 .. Index.Size);
 
-      Offset : Integer_Vector_Type := (others => 0);
+      Offset : Integer_Vector_Type := [others => 0];
    begin
       for Index_Vector in Index.Data'Range loop
          declare
@@ -479,7 +479,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
             --  The last number (sum of all the elements in the vector)
             --  is the offset for the next vector
-            Offset := (others => Sum (Sum'Last));
+            Offset := [others => Sum (Sum'Last)];
          end;
       end loop;
 
@@ -611,10 +611,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Fill (Shape : Tensor_Shape; Value : Element) return CPU_Tensor is
-      Vector : constant Vector_Type := (others => Value);
+      Vector : constant Vector_Type := [others => Value];
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
-         Result.Data := (others => Vector);
+         Result.Data := [others => Vector];
       end return;
    end Fill;
 
@@ -664,7 +664,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Count       : Positive;
       Interval    : Interval_Kind := Closed) return CPU_Tensor
    is
-      Shape : constant Tensor_Shape := (1 => Count);
+      Shape : constant Tensor_Shape := [Count];
 
       Step : constant Element :=
         (if Count > 1 then (Stop - Start) / Element (Count - (case Interval is
@@ -691,7 +691,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Interval    : Interval_Kind := Closed;
       Base        : Element := 10.0) return CPU_Tensor
    is
-      Shape : constant Tensor_Shape := (1 => Count);
+      Shape : constant Tensor_Shape := [Count];
 
       Step : constant Element :=
         (if Count > 1 then (Stop - Start) / Element (Count - (case Interval is
@@ -733,18 +733,18 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Identity (Rows, Columns : Positive; Offset : Integer := 0) return CPU_Tensor is
-      Shape : constant Tensor_Shape := (1 => Rows, 2 => Columns);
+      Shape : constant Tensor_Shape := [1 => Rows, 2 => Columns];
 
       Max_Size : constant Positive := Positive'Max (Rows, Columns);
 
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
    begin
       return Result : CPU_Tensor :=
         (Axes => Shape'Length,
          Size       => Data_Vectors (Shape),
          Kind       => Float_Type,
          Shape      => Shape,
-         Data       => (others => Zero_Vector))
+         Data       => [others => Zero_Vector])
       do
          if Offset in -(Max_Size - 1) .. Max_Size - 1 then
             declare
@@ -773,7 +773,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Rows    : constant Positive := Object.Rows;
       Columns : constant Positive := Object.Columns;
 
-      Shape : constant Tensor_Shape := (1 => Positive'Min (Rows, Columns));
+      Shape : constant Tensor_Shape := [Positive'Min (Rows, Columns)];
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
@@ -801,16 +801,16 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Diagonal (Elements : Element_Array; Offset : Integer := 0) return CPU_Tensor is
       Size : constant Positive := Elements'Length;
 
-      Shape : constant Tensor_Shape := (1 .. 2 => Size);
+      Shape : constant Tensor_Shape := [1 .. 2 => Size];
 
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
    begin
       return Result : CPU_Tensor :=
         (Axes => Shape'Length,
          Size       => Data_Vectors (Shape),
          Kind       => Float_Type,
          Shape      => Shape,
-         Data       => (others => Zero_Vector))
+         Data       => [others => Zero_Vector])
       do
          if Offset in -(Size - 1) .. Size - 1 then
             declare
@@ -921,7 +921,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Left   : Element;
       Right  : Element_Array)
    is
-      Left_Vector : constant Vector_Type := (others => Left);
+      Left_Vector : constant Vector_Type := [others => Left];
 
       subtype Vector_Elements is Element_Array (1 .. Vector_Type'Length);
 
@@ -979,8 +979,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       Shape : constant Tensor_Shape :=
          (case Right.Axes is
-            when 1 => (1 => Left_Rows),
-            when 2 => (1 => Left_Rows, 2 => Right_Columns),
+            when 1 => [1 => Left_Rows],
+            when 2 => [1 => Left_Rows, 2 => Right_Columns],
             when others => raise Not_Implemented_Yet);  --  FIXME
    begin
       --  Matrix-matrix or matrix-vector or vector-matrix multiplication
@@ -996,18 +996,18 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
             for Row_Index in 1 .. Left_Rows loop
                --  Result (Row_Index) := Left (Row_Index) * Right;
                declare
-                  Result_Index : constant Natural := To_Index ((Row_Index, 1), Right_Columns) - 1;
+                  Result_Index : constant Natural := To_Index ([Row_Index, 1], Right_Columns) - 1;
                begin
                   for Column_Index in 1 .. Count loop
                      declare
                         Right_Index : constant Natural :=
-                          To_Index ((Column_Index, 1), Right_Columns) - 1;
+                          To_Index ([Column_Index, 1], Right_Columns) - 1;
                      begin
                         --  Left_Value := Left (Row_Index, Column_Index)
                         --  Result (Row_Index) := @ + Left_Value * Right (Row_Index)
                         Multiply_Add
                           (Result_Data (Result_Index + 1 .. Result_Index + Right_Columns),
-                           Left_Data (To_Index ((Row_Index, Column_Index), Count)),
+                           Left_Data (To_Index ([Row_Index, Column_Index], Count)),
                            Right_Data (Right_Index + 1 .. Right_Index + Right_Columns));
                      end;
                   end loop;
@@ -1029,7 +1029,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       type Sum_Index_Type is mod 8;
 
-      Sums : array (Sum_Index_Type) of Vector_Type := (others => (others => 0.0));
+      Sums : array (Sum_Index_Type) of Vector_Type := [others => [others => 0.0]];
       --  TODO Do pairwise summation recursively
    begin
       for Index in Left.Data'First .. Left.Data'Last - 1 loop
@@ -1058,7 +1058,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Outer (Left, Right : CPU_Tensor) return CPU_Tensor is
-      Shape : constant Tensor_Shape := (1 => Left.Elements, 2 => Right.Elements);
+      Shape : constant Tensor_Shape := [1 => Left.Elements, 2 => Right.Elements];
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
@@ -1092,8 +1092,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Transpose (Object : CPU_Tensor) return CPU_Tensor is
       Shape : constant Tensor_Shape :=
-        (1 => Object.Columns,
-         2 => Object.Rows);
+        [1 => Object.Columns,
+         2 => Object.Rows];
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
@@ -1110,8 +1110,8 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
          begin
             for Row_Index in 1 .. Rows loop
                for Column_Index in 1 .. Columns loop
-                  Result_Data (To_Index ((Column_Index, Row_Index), Result_Columns)) :=
-                    Object_Data (To_Index ((Row_Index, Column_Index), Columns));
+                  Result_Data (To_Index ([Column_Index, Row_Index], Result_Columns)) :=
+                    Object_Data (To_Index ([Row_Index, Column_Index], Columns));
                end loop;
             end loop;
          end;
@@ -1310,7 +1310,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "**";
 
    overriding function "*" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
@@ -1320,7 +1320,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "*";
 
    overriding function "/" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-      Left_Vector : constant Vector_Type := (others => Left);
+      Left_Vector : constant Vector_Type := [others => Left];
    begin
       return Result : CPU_Tensor := Without_Data (Right) do
          for Index in Result.Data'Range loop
@@ -1330,7 +1330,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "/";
 
    overriding function "/" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
@@ -1340,7 +1340,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "/";
 
    overriding function "+" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
@@ -1350,7 +1350,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "+";
 
    overriding function "-" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-      Left_Vector : constant Vector_Type := (others => Left);
+      Left_Vector : constant Vector_Type := [others => Left];
    begin
       return Result : CPU_Tensor := Without_Data (Right) do
          for Index in Result.Data'Range loop
@@ -1417,7 +1417,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Max (Left : Element; Right : CPU_Tensor) return CPU_Tensor renames Operations.Max;
 
    overriding function Min (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
@@ -1427,7 +1427,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Min;
 
    overriding function Max (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
@@ -1654,7 +1654,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Axis    : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Zeros ([1]);  --  FIXME
    end Reduce_Associative;
 
    overriding
@@ -1685,7 +1685,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Axis    : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Zeros ([1]);  --  FIXME
    end Reduce;
 
    overriding function Sum (Object : CPU_Tensor) return Element renames Operations.Sum;
@@ -1760,7 +1760,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Axis   : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Zeros ([1]);  --  FIXME
    end Quantile;
 
    overriding
@@ -1810,7 +1810,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "and";
 
    overriding function "and" (Left : Element; Right : CPU_Tensor) return CPU_Tensor is
-      Left_Vector : constant Vector_Type := (others => Left);
+      Left_Vector : constant Vector_Type := [others => Left];
    begin
       return Result : CPU_Tensor := Without_Data (Right, Kind => Float_Type) do
          for Index in Result.Data'Range loop
@@ -1841,7 +1841,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "xor";
 
    overriding function "not"  (Object : CPU_Tensor) return CPU_Tensor is
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
 
       Mask : constant Vector_Type := Zero_Vector = Zero_Vector;
    begin
@@ -1864,7 +1864,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function "/=" (Left : CPU_Tensor; Right : Element) return CPU_Tensor renames Operations."/=";
 
    overriding function ">"  (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
          for Index in Result.Data'Range loop
@@ -1875,7 +1875,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end ">";
 
    overriding function "<"  (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
          for Index in Result.Data'Range loop
@@ -1886,7 +1886,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "<";
 
    overriding function ">=" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
          for Index in Result.Data'Range loop
@@ -1897,7 +1897,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end ">=";
 
    overriding function "<=" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
-      Right_Vector : constant Vector_Type := (others => Right);
+      Right_Vector : constant Vector_Type := [others => Right];
    begin
       return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
          for Index in Result.Data'Range loop
@@ -1932,7 +1932,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function "=" (Left, Right : CPU_Tensor) return Boolean renames Operations."=";
 
    overriding function "="  (Left, Right : CPU_Tensor) return CPU_Tensor is
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
 
       Mask : constant Vector_Type := Zero_Vector = Zero_Vector;
    begin
@@ -2018,7 +2018,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Any_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Zeros ([1]);  --  FIXME
    end Any_True;
 
    overriding
@@ -2029,7 +2029,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       function All_Zeros (Vector : Vector_Type) return Boolean is
         (All_Zeros (Convert (Vector), Convert (Vector)));
 
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
       Mask : Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
    begin
       for Index in 1 .. Padding loop
@@ -2045,7 +2045,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function All_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
-      return Zeros ((1 => 1));  --  FIXME
+      return Zeros ([1]);  --  FIXME
    end All_True;
 
    overriding
@@ -2056,7 +2056,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       function All_Ones (Vector : Vector_Type) return Boolean is
         (All_Ones (Convert (Vector), Convert (Vector = Vector)));
 
-      Zero_Vector : constant Vector_Type := (others => 0.0);
+      Zero_Vector : constant Vector_Type := [others => 0.0];
       Mask : Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
    begin
       for Index in 1 .. Vector_Type'Length - Padding loop

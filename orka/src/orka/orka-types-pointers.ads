@@ -25,7 +25,7 @@ package Orka.Types.Pointers is
 
    package Single_Matrix4_Pointers is new Interfaces.C.Pointers
      (Size, Singles.Matrix4, Singles.Matrix4_Array,
-      Singles.Matrix4'(others => (others => 0.0)));
+      Singles.Matrix4'(others => [others => 0.0]));
 
    package Double_Vector4_Pointers is new Interfaces.C.Pointers
      (Size, Doubles.Vector4, Doubles.Vector4_Array,
@@ -33,6 +33,6 @@ package Orka.Types.Pointers is
 
    package Double_Matrix4_Pointers is new Interfaces.C.Pointers
      (Size, Doubles.Matrix4, Doubles.Matrix4_Array,
-      Doubles.Matrix4'(others => (others => 0.0)));
+      Doubles.Matrix4'(others => [others => 0.0]));
 
 end Orka.Types.Pointers;

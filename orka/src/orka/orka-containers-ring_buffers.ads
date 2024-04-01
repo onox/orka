@@ -46,7 +46,7 @@ private
    type Element_Array is array (Positive range <>) of Element_Type;
 
    type Buffer (Capacity : Positive) is tagged record
-      Elements   : Element_Array (1 .. Capacity) := (others => <>);
+      Elements   : Element_Array (1 .. Capacity) := [others => <>];
       Head, Tail : Positive := 1;
       Count      : Natural  := 0;
    end record;

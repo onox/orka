@@ -74,7 +74,7 @@ package body Orka.Numerics.Tensors is
       Shape      : Tensor_Shape;
       Justify    : Alignment) return Tensor_Shape
    is
-      Result : Tensor_Shape (1 .. Axes) := (others => 1);
+      Result : Tensor_Shape (1 .. Axes) := [others => 1];
       Offset : constant Tensor_Axis'Base :=
         (case Justify is
            when Left  => 0,

@@ -350,11 +350,11 @@ private
       Clear_Mask      : GL.Buffers.Buffer_Bits := (others => False);
       Invalidate_Mask : GL.Buffers.Buffer_Bits := (others => False);
 
-      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
-      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7) := (others => GL.Buffers.None);
+      Clear_Buffers   : GL.Buffers.Color_Buffer_List (0 .. 7) := [others => GL.Buffers.None];
+      Render_Buffers  : GL.Buffers.Color_Buffer_List (0 .. 7) := [others => GL.Buffers.None];
       Buffers_Equal   : Boolean;
 
-      Invalidate_Points : Rendering.Framebuffers.Use_Point_Array := (others => False);
+      Invalidate_Points : Rendering.Framebuffers.Use_Point_Array := [others => False];
 
       Depth_Writes   : Boolean;
       Stencil_Writes : Boolean;
@@ -414,8 +414,8 @@ private
       Last_FB_Index    : Render_Pass_Index;  --  Used when Present_Mode = Blit_To_Default
       Present_Resource : Handle_Type := No_Resource;
 
-      Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := (others => 0);
-      Resource_References    : Resource_References_Array (1 .. Maximum_Resources) := (others => 0);
+      Render_Pass_References : Render_Pass_References_Array (1 .. Maximum_Passes) := [others => 0];
+      Resource_References    : Resource_References_Array (1 .. Maximum_Resources) := [others => 0];
 
       Pass_Order : Render_Pass_Array (1 .. Maximum_Passes);
       Pass_Count : Natural := 0;

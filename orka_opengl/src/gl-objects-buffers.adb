@@ -65,9 +65,8 @@ package body GL.Objects.Buffers is
 
       type Format_Array is array (1 .. 4) of Format;
 
-      Float_Formats   : constant Format_Array := (Red, RG, RGB, RGBA);
-      Integer_Formats : constant Format_Array :=
-        (Red_Integer, RG_Integer, RGB_Integer, RGBA_Integer);
+      Float_Formats   : constant Format_Array := [Red, RG, RGB, RGBA];
+      Integer_Formats : constant Format_Array := [Red_Integer, RG_Integer, RGB_Integer, RGBA_Integer];
 
       type Internal_Format_Array is array (1 .. 4) of Internal_Format_Buffer_Texture;
 
@@ -79,33 +78,33 @@ package body GL.Objects.Buffers is
          case Kind is
             when Byte_Type =>
                Result.Data_Type := Pixels.Byte;
-               Internal_Formats := (R8I, RG8I, R8I, RGBA8I);
+               Internal_Formats := [R8I, RG8I, R8I, RGBA8I];
                --  Third position invalid
             when UByte_Type =>
                Result.Data_Type := Pixels.Unsigned_Byte;
-               Internal_Formats := (R8UI, RG8UI, R8UI, RGBA8UI);
+               Internal_Formats := [R8UI, RG8UI, R8UI, RGBA8UI];
                --  Third position invalid
             when Short_Type =>
                Result.Data_Type := Pixels.Short;
-               Internal_Formats := (R16I, RG16I, R16I, RGBA16I);
+               Internal_Formats := [R16I, RG16I, R16I, RGBA16I];
                --  Third position invalid
             when UShort_Type =>
                Result.Data_Type := Pixels.Unsigned_Short;
-               Internal_Formats := (R16UI, RG16UI, R16UI, RGBA16UI);
+               Internal_Formats := [R16UI, RG16UI, R16UI, RGBA16UI];
                --  Third position invalid
             when Int_Type =>
                Result.Data_Type := Pixels.Int;
-               Internal_Formats := (R32I, RG32I, RGB32I, RGBA32I);
+               Internal_Formats := [R32I, RG32I, RGB32I, RGBA32I];
             when UInt_Type =>
                Result.Data_Type := Pixels.Unsigned_Int;
-               Internal_Formats := (R32UI, RG32UI, RGB32UI, RGBA32UI);
+               Internal_Formats := [R32UI, RG32UI, RGB32UI, RGBA32UI];
             when Half_Type =>
                Result.Data_Type := Pixels.Half_Float;
-               Internal_Formats := (R16F, RG16F, R16F, RGBA16F);
+               Internal_Formats := [R16F, RG16F, R16F, RGBA16F];
                --  Third position invalid
             when Single_Type =>
                Result.Data_Type := Pixels.Float;
-               Internal_Formats := (R32F, RG32F, RGB32F, RGBA32F);
+               Internal_Formats := [R32F, RG32F, RGB32F, RGBA32F];
             when Double_Type =>
                raise Constraint_Error;
          end case;
@@ -193,7 +192,7 @@ package body GL.Objects.Buffers is
    end Initialize_Id;
 
    overriding procedure Delete_Id (Object : in out Buffer) is
-      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      Arr : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Delete_Buffers.Ref (1, Arr);
       Object.Reference.GL_Id := 0;

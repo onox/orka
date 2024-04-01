@@ -34,9 +34,9 @@ package body EGL.Objects.Surfaces is
       No_Surface : constant ID_Type := ID_Type (System.Null_Address);
 
       Attributes : constant Int_Array :=
-        (Color_Space,
+        [Color_Space,
          (if sRGB then Color_Space_sRGB else Color_Space_Linear),
-         None);
+         None];
 
       ID : constant ID_Type :=
          API.Create_Platform_Window_Surface.Ref

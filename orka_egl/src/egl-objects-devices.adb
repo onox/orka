@@ -32,7 +32,7 @@ package body EGL.Objects.Devices is
       begin
          if Result = C.Strings.Null_Ptr then
             Errors.Raise_Exception_On_EGL_Error;
-            return (1 .. 0 => SU.To_Unbounded_String (""));
+            return [];
          else
             return EGL.Extensions (Result);
          end if;
@@ -83,7 +83,7 @@ package body EGL.Objects.Devices is
          end return;
       else
          Errors.Raise_Exception_On_EGL_Error;
-         return (1 .. 0 => <>);
+         return [];
       end if;
    end Devices;
 

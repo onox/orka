@@ -598,7 +598,7 @@ package body Orka.Rendering.Buffers is
       Length : constant Size :=
         Size (if Object.Kind = Single_Vector_Type then Object.Length * 4 else Object.Length);
 
-      Data_Array : Float_32_Array := (Data (X), Data (Y), Data (Z), Data (W));
+      Data_Array : Float_32_Array := [Data (X), Data (Y), Data (Z), Data (W)];
    begin
       Pointers.Single.Clear_Sub_Data (Object.Buffer, Single_Type, 0, Length, Data_Array);
    end Clear_Data;

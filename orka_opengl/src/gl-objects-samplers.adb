@@ -45,7 +45,7 @@ package body GL.Objects.Samplers is
    overriding
    procedure Delete_Id (Object : in out Sampler) is
    begin
-      API.Delete_Samplers.Ref (1, (1 => Object.Reference.GL_Id));
+      API.Delete_Samplers.Ref (1, [Object.Reference.GL_Id]);
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 
@@ -114,9 +114,9 @@ package body GL.Objects.Samplers is
    subtype GL_Color is Low_Level.Single_Array (1 .. 4);
 
    Vulkan_To_OpenGL : constant array (Colors.Border_Color) of GL_Color
-     := (Transparent_Black => (0.0, 0.0, 0.0, 0.0),
-         Opaque_Black      => (0.0, 0.0, 0.0, 1.0),
-         Opaque_White      => (1.0, 1.0, 1.0, 1.0));
+     := [Transparent_Black => [0.0, 0.0, 0.0, 0.0],
+         Opaque_Black      => [0.0, 0.0, 0.0, 1.0],
+         Opaque_White      => [1.0, 1.0, 1.0, 1.0]];
 
    procedure Set_Border_Color (Object : Sampler; Color : Colors.Border_Color) is
       Raw : constant Low_Level.Single_Array := Vulkan_To_OpenGL (Color);

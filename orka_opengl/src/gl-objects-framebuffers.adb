@@ -54,8 +54,8 @@ package body GL.Objects.Framebuffers is
       subtype Index_Type is Buffers.Draw_Buffer_Index;
    begin
       Object.Set_Draw_Buffers
-        ((Index_Type'First => Selector,
-          Index_Type'First + 1 .. Index_Type'Last => Buffers.None));
+        ([Index_Type'First => Selector,
+          Index_Type'First + 1 .. Index_Type'Last => Buffers.None]);
    end Set_Draw_Buffer;
 
    procedure Set_Draw_Buffers
@@ -224,7 +224,7 @@ package body GL.Objects.Framebuffers is
 
    overriding
    procedure Delete_Id (Object : in out Framebuffer) is
-      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      Arr : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Delete_Framebuffers.Ref (1, Arr);
       Object.Reference.GL_Id := 0;

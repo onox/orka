@@ -34,7 +34,7 @@ package Orka.Cameras is
 
    subtype Distance is Float_64 range 0.0 .. Float_64'Last;
 
-   Default_Scale : Vector4 := (0.002, 0.002, 1.0, 0.0);
+   Default_Scale : Vector4 := [0.002, 0.002, 1.0, 0.0];
 
    -----------------------------------------------------------------------------
 
@@ -125,11 +125,11 @@ private
    type Camera is abstract tagged record
       Lens  : Camera_Lens;
       Scale : Vector4 := Default_Scale;
-      Up    : Vector4 := (0.0, 1.0, 0.0, 0.0);
+      Up    : Vector4 := [0.0, 1.0, 0.0, 0.0];
    end record;
 
    type First_Person_Camera is abstract new Camera with record
-      Position : Vector4 := (0.0, 0.0, 0.0, 1.0);
+      Position : Vector4 := [0.0, 0.0, 0.0, 1.0];
    end record;
 
    type Third_Person_Camera is abstract new Camera and Observing_Camera with record
@@ -141,7 +141,7 @@ private
 
    subtype Matrix4 is Orka.Transforms.Doubles.Matrices.Matrix4;
 
-   Y_Axis : constant Vector4 := (0.0, 1.0, 0.0, 0.0);
+   Y_Axis : constant Vector4 := [0.0, 1.0, 0.0, 0.0];
 
    function Look_At (Target, Camera, Up_World : Vector4) return Matrix4;
 
@@ -155,7 +155,7 @@ private
 
       procedure Get (Value : in out Vector4; Mode : out Update_Mode);
    private
-      Change : Vector4 := (0.0, 0.0, 0.0, 0.0);
+      Change : Vector4 := [0.0, 0.0, 0.0, 0.0];
       Is_Set : Boolean := False;
       Update : Update_Mode := Absolute;
    end Change_Updater;

@@ -112,7 +112,7 @@ package body Orka.Resources.Textures.KTX is
 
          --  Allocate enough space to generate full mipmap pyramid below
          if Levels = 0 and not Header.Compressed then
-            Levels := Size (Rendering.Textures.Levels ((Width, Height, Depth)));
+            Levels := Size (Rendering.Textures.Levels ([Width, Height, Depth]));
          end if;
 
          declare
@@ -121,14 +121,14 @@ package body Orka.Resources.Textures.KTX is
                  (Kind    => Header.Kind,
                   Compressed => True,
                   Compressed_Format  => Header.Compressed_Format,
-                  Size    => (Width, Height, Depth),
+                  Size    => [Width, Height, Depth],
                   Levels  => Integer (Levels),
                   Samples => 1)
                else
                  (Kind    => Header.Kind,
                   Compressed => False,
                   Format  => Header.Internal_Format,
-                  Size    => (Width, Height, Depth),
+                  Size    => [Width, Height, Depth],
                   Levels  => Integer (Levels),
                   Samples => 1));
 

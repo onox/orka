@@ -89,7 +89,7 @@ package body GL.Objects.Programs is
    end Separable;
 
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array is
-      Values : Compute.Dimension_Size_Array := (others => 0);
+      Values : Compute.Dimension_Size_Array := [others => 0];
    begin
       API.Get_Program_Param_Compute.Ref
         (Object.Reference.GL_Id, Enums.Compute_Work_Group_Size, Values);
@@ -108,8 +108,7 @@ package body GL.Objects.Programs is
       Source : String)
    is
       C_Shader_Source : C.Strings.chars_ptr := C.Strings.New_String (Source);
-      C_Source : constant Low_Level.CharPtr_Array
-        := (1 => C_Shader_Source);
+      C_Source : constant Low_Level.CharPtr_Array := [C_Shader_Source];
    begin
       Object.Reference.GL_Id := API.Create_Shader_Program.Ref (Kind, 1, C_Source);
       C.Strings.Free (C_Shader_Source);
@@ -160,8 +159,7 @@ package body GL.Objects.Programs is
 
       declare
          Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
-           (Object.Reference.GL_Id, Iface, Index,
-            1, (1 => Enums.Buffer_Binding), 1);
+           (Object.Reference.GL_Id, Iface, Index, 1, [Enums.Buffer_Binding], 1);
       begin
          return Size (Values (Values'First));
       end;
@@ -177,8 +175,7 @@ package body GL.Objects.Programs is
       end if;
       declare
          Values : constant Orka.Integer_32_Array := API.Get_Program_Resource.Ref
-           (Object.Reference.GL_Id, Enums.Uniform, Index,
-            1, (1 => Enums.Resource_Type), 1);
+           (Object.Reference.GL_Id, Enums.Uniform, Index, 1, [Enums.Resource_Type], 1);
 
          function Convert is new Ada.Unchecked_Conversion
            (Source => Int, Target => Low_Level.Enums.Resource_Type);

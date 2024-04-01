@@ -31,7 +31,7 @@ package Orka.Transforms.SIMD_Quaternions is
    end record
      with Dynamic_Predicate => Vectors.Normalized (Vector4 (Axis));
 
-   Identity : constant Quaternion := (0.0, 0.0, 0.0, 1.0);
+   Identity : constant Quaternion := [0.0, 0.0, 0.0, 1.0];
 
    function "+" (Left, Right : Quaternion) return Quaternion;
 

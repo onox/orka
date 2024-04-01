@@ -149,13 +149,13 @@ package body GL.Objects.Textures is
    end Compressed_Image_Size;
 
    procedure Bind_Texture_Unit (Object : Texture_Base; Unit : Texture_Unit) is
-      IDs : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      IDs : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Bind_Textures.Ref (Unit, 1, IDs);
    end Bind_Texture_Unit;
 
    procedure Bind_Image_Texture (Object : Texture_Base; Unit : Image_Unit) is
-      IDs : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      IDs : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Bind_Image_Textures.Ref (Unit, 1, IDs);
    end Bind_Image_Texture;
@@ -170,7 +170,7 @@ package body GL.Objects.Textures is
 
    overriding
    procedure Delete_Id (Object : in out Texture_Base) is
-      Arr : constant Low_Level.UInt_Array := (1 => Object.Reference.GL_Id);
+      Arr : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Delete_Textures.Ref (1, Arr);
       Object.Reference.GL_Id := 0;

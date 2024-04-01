@@ -41,10 +41,10 @@ package Orka.Transforms.SIMD_Matrices is
    subtype Vector4 is Vector_Type;
 
    Identity_Matrix : constant Matrix_Type :=
-     ((1.0, 0.0, 0.0, 0.0),
-      (0.0, 1.0, 0.0, 0.0),
-      (0.0, 0.0, 1.0, 0.0),
-      (0.0, 0.0, 0.0, 1.0));
+     [[1.0, 0.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0, 0.0],
+      [0.0, 0.0, 1.0, 0.0],
+      [0.0, 0.0, 0.0, 1.0]];
 
    function Zero_Point return Vectors.Point is (Vectors.Zero_Point);
    --  Return a zero vector that indicates a point. The fourth (W) component
@@ -128,7 +128,7 @@ package Orka.Transforms.SIMD_Matrices is
    --  Add a translation transformation to the matrix
 
    function "*" (Factor : Element_Type; Matrix : Matrix_Type) return Matrix_Type is
-     (S ((Factor, Factor, Factor, 1.0)) * Matrix);
+     (S ([Factor, Factor, Factor, 1.0]) * Matrix);
    --  Add a scale transformation to the matrix
 
    function Transpose (Matrix : Matrix_Type) return Matrix_Type renames Transpose_Matrix;

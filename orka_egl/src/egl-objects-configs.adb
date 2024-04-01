@@ -60,7 +60,7 @@ package body EGL.Objects.Configs is
       Samples                 : Sample_Size) return Config_Array
    is
       Attributes : constant Int_Array :=
-        (Config_Caveat, None,
+        [Config_Caveat, None,
          Config_Conformant, Config_OpenGL_Bit,
          Config_Renderable_Type, Config_OpenGL_Bit,
          Config_Color_Buffer_Type, Config_RGB_Buffer,
@@ -73,7 +73,7 @@ package body EGL.Objects.Configs is
          Config_Stencil, Int (Stencil),
          Config_Samples, Int (Samples),
          Config_Min_Swap_Interval, 0,
-         None);
+         None];
 
       Max_Configs : constant := 32;
 

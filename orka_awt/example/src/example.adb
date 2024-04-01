@@ -28,7 +28,7 @@ procedure Example is
 
    subtype Normalized is AWT.Inputs.Gamepads.Normalized;
 
-   Color      : AWT.Inputs.Gamepads.RGB_Color := (others => 0.0);
+   Color      : AWT.Inputs.Gamepads.RGB_Color := [others => 0.0];
    Brightness : Normalized := 0.0;
 
    type Extra_Info_Kind is (Info_Motion, Info_Battery, Info_LED);

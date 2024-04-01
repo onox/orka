@@ -75,7 +75,7 @@ private package AWT.OS is
 
    function Scan_Directory
      (Path   : String;
-      Filter : Filter_Type := (others => True)) return Directory_Entry_Array;
+      Filter : Filter_Type := [others => True]) return Directory_Entry_Array;
    --  Return an array of directory entries found in the given path that
    --  match the given filter
    --

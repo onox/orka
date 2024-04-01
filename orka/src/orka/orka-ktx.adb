@@ -52,8 +52,8 @@ package body Orka.KTX is
      with Size => 32 * 13, Pack;
 
    Identifier : constant Resources.Byte_Array
-     := (16#AB#, 16#4B#, 16#54#, 16#58#, 16#20#, 16#31#,
-         16#31#, 16#BB#, 16#0D#, 16#0A#, 16#1A#, 16#0A#);
+     := [16#AB#, 16#4B#, 16#54#, 16#58#, 16#20#, 16#31#,
+         16#31#, 16#BB#, 16#0D#, 16#0A#, 16#1A#, 16#0A#];
 
    Endianness_Reference : constant := 16#04030201#;
 

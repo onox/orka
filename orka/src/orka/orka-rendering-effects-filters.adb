@@ -143,13 +143,13 @@ package body Orka.Rendering.Effects.Filters is
 
       State : constant Orka.Rendering.States.State := (others => <>);
 
-      Resources_Horizontal : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+      Resources_Horizontal : constant Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
         [for I in 1 .. Passes =>
           (Name        => +("sep-filter-horizontal-" & I'Image),
            Description => Color,
            others      => <>)];
 
-      Resources_Vertical : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+      Resources_Vertical : constant Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
         [for I in 1 .. Passes =>
           (Name        => +("sep-filter-vertical-" & I'Image),
            Description => Color,
@@ -228,13 +228,13 @@ package body Orka.Rendering.Effects.Filters is
 
       State : constant Orka.Rendering.States.State := (others => <>);
 
-      Resources_Horizontal : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+      Resources_Horizontal : constant Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
         [for I in 1 .. Passes =>
           (Name        => +("avg-filter-horizontal-" & I'Image),
            Description => Color,
            others      => <>)];
 
-      Resources_Vertical : Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
+      Resources_Vertical : constant Orka.Frame_Graphs.Resource_Array (1 .. Passes) :=
         [for I in 1 .. Passes =>
           (Name        => +("avg-filter-vertical-" & I'Image),
            Description => Color,

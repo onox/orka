@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Conversion;
-
 with Orka.SIMD.SSE2.Longs;
 
 package Orka.SIMD.SSSE3.Longs.Shift is

@@ -23,9 +23,9 @@ package Orka.Transforms.SIMD_Matrix_Conversions is
 
    function Convert
      (Elements : Conversions.From_Matrices.Matrix_Type) return Conversions.To_Matrices.Matrix_Type
-   is (Conversions.Convert (Elements (X)),
+   is [Conversions.Convert (Elements (X)),
        Conversions.Convert (Elements (Y)),
        Conversions.Convert (Elements (Z)),
-       Conversions.Convert (Elements (W)));
+       Conversions.Convert (Elements (W))];
 
 end Orka.Transforms.SIMD_Matrix_Conversions;

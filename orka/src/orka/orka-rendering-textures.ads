@@ -63,7 +63,7 @@ package Orka.Rendering.Textures is
 
    type Texture_Description (Compressed : Boolean := False) is record
       Kind    : LE.Texture_Kind;
-      Size    : Size_3D  := (others => 1);
+      Size    : Size_3D  := [others => 1];
       Levels  : Positive := 1;
       Samples : Natural  := 0;
       case Compressed is

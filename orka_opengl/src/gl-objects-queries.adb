@@ -30,7 +30,7 @@ package body GL.Objects.Queries is
    overriding
    procedure Delete_Id (Object : in out Query) is
    begin
-      API.Delete_Queries.Ref (1, (1 => Object.Reference.GL_Id));
+      API.Delete_Queries.Ref (1, [Object.Reference.GL_Id]);
       Object.Reference.GL_Id := 0;
    end Delete_Id;
 

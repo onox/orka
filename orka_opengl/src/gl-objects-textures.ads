@@ -22,7 +22,6 @@ with Ada.Unchecked_Deallocation;
 
 with GL.Low_Level.Enums;
 with GL.Objects.Buffers;
-with GL.Objects.Shaders;
 with GL.Pixels.Extensions;
 with GL.Types.Pointers;
 

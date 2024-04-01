@@ -74,7 +74,7 @@ package body Orka.Transforms.SIMD_Quaternions is
       Length : constant Vectors.Element_Type := Vectors.Magnitude2 (Vector4 (Elements));
    begin
       return Quaternion (Vectors.Divide_Or_Zero
-        (Vector4 (Conjugate (Elements)), (Length, Length, Length, Length)));
+        (Vector4 (Conjugate (Elements)), [Length, Length, Length, Length]));
    end Inverse;
 
    function Norm (Elements : Quaternion) return Vectors.Element_Type is
@@ -102,7 +102,7 @@ package body Orka.Transforms.SIMD_Quaternions is
          end;
       else
          --  Singularity occurs when angle is 0. Return an arbitrary axis
-         return (Axis => (1.0, 0.0, 0.0, 0.0), Angle => 0.0);
+         return (Axis => [1.0, 0.0, 0.0, 0.0], Angle => 0.0);
       end if;
    end To_Axis_Angle;
 
@@ -150,9 +150,9 @@ package body Orka.Transforms.SIMD_Quaternions is
          end;
       else
          if abs S (Z) < abs S (X) then
-            return R ((S (Y), -S (X), 0.0, 0.0), Ada.Numerics.Pi);
+            return R ([S (Y), -S (X), 0.0, 0.0], Ada.Numerics.Pi);
          else
-            return R ((0.0, -S (Z), S (Y), 0.0), Ada.Numerics.Pi);
+            return R ([0.0, -S (Z), S (Y), 0.0], Ada.Numerics.Pi);
          end if;
       end if;
    end R;

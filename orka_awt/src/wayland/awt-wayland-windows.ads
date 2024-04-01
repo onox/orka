@@ -341,7 +341,7 @@ private
       Unlocked_Pointer_Mode   : AWT.Inputs.Pointer_Mode;
       Raw_Pointer_Motion_Flag : Boolean := False;
 
-      Cursor_Hotspot : Cursor_Hotspot_Coordinate := (others => 0);
+      Cursor_Hotspot : Cursor_Hotspot_Coordinate := [others => 0];
       Cursor_Name    : AWT.Inputs.Cursors.Pointer_Cursor := AWT.Inputs.Cursors.Default;
       Cursor_Images  : Positive := 1;
 

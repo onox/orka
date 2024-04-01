@@ -27,10 +27,10 @@ package body Orka.Numerics.Kalman.UKF is
 
       Count : constant Positive := 2 * N + 1;
 
-      Weights_Mean, Weights_Cov : Vector := Fill ((1 => Count), 1.0 / (2.0 * (L + Lambda)));
+      Weights_Mean, Weights_Cov : Vector := Fill ([Count], 1.0 / (2.0 * (L + Lambda)));
    begin
-      Weights_Mean.Set ((1 => 1), Mean_First);
-      Weights_Cov.Set  ((1 => 1), Mean_First + 1.0 - A**2 + B);
+      Weights_Mean.Set ([1], Mean_First);
+      Weights_Cov.Set  ([1], Mean_First + 1.0 - A**2 + B);
 
       return
         (N              => N,
@@ -65,7 +65,7 @@ package body Orka.Numerics.Kalman.UKF is
       Mean_Left, Mean_Right     : Vector;
       Weights                   : Vector) return Matrix
    is
-      P : Matrix := Zeros ((Points_Left.Columns, Points_Right.Columns));
+      P : Matrix := Zeros ([Points_Left.Columns, Points_Right.Columns]);
    begin
       for I in 1 .. Points_Left.Rows loop
          declare

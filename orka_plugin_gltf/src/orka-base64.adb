@@ -46,7 +46,7 @@ package body Orka.Base64 is
    end record;
 
    Alphabet : constant array (Character) of Input_Value :=
-     ('A' =>  0, 'B' =>  1, 'C' =>  2, 'D' =>  3, 'E' =>  4, 'F' =>  5,
+     ['A' =>  0, 'B' =>  1, 'C' =>  2, 'D' =>  3, 'E' =>  4, 'F' =>  5,
       'G' =>  6, 'H' =>  7, 'I' =>  8, 'J' =>  9, 'K' => 10, 'L' => 11,
       'M' => 12, 'N' => 13, 'O' => 14, 'P' => 15, 'Q' => 16, 'R' => 17,
       'S' => 18, 'T' => 19, 'U' => 20, 'V' => 21, 'W' => 22, 'X' => 23,
@@ -56,7 +56,7 @@ package body Orka.Base64 is
       'q' => 42, 'r' => 43, 's' => 44, 't' => 45, 'u' => 46, 'v' => 47,
       'w' => 48, 'x' => 49, 'y' => 50, 'z' => 51, '0' => 52, '1' => 53,
       '2' => 54, '3' => 55, '4' => 56, '5' => 57, '6' => 58, '7' => 59,
-      '8' => 60, '9' => 61, '+' => 62, '/' => 63, others => 0);
+      '8' => 60, '9' => 61, '+' => 62, '/' => 63, others => 0];
 
    function Convert_Group is new Ada.Unchecked_Conversion
      (Source => Input_Group, Target => Output_Group);

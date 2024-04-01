@@ -188,8 +188,8 @@ package body Orka.Loops is
                   Status : Futures.Status;
                begin
                   Orka.Jobs.Chain
-                    ((Render_Start_Job, Fixed_Update_Job, Finished_Job,
-                      Render_Scene_Job, Render_Finish_Job));
+                    ([Render_Start_Job, Fixed_Update_Job, Finished_Job,
+                      Render_Scene_Job, Render_Finish_Job]);
 
                   Job_Manager.Queue.Enqueue (Render_Start_Job, Handle);
 

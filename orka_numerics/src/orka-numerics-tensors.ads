@@ -422,7 +422,7 @@ package Orka.Numerics.Tensors is
    function Outer (Left, Right : Tensor) return Tensor is abstract
      with Pre'Class  => Left.Axes = 1 and Right.Axes = 1,
           Post'Class => Outer'Result.Axes = 2
-                          and Outer'Result.Shape = (Left.Elements, Right.Elements);
+                          and Outer'Result.Shape = [Left.Elements, Right.Elements];
 
    function Inverse (Object : Tensor) return Tensor is abstract
      with Pre'Class  => Is_Square (Object),
@@ -463,13 +463,13 @@ package Orka.Numerics.Tensors is
    function Divide_By (B, A : Tensor) return Tensor is abstract
      with Pre'Class  => A.Axes = 2 and A.Rows >= A.Columns and
                         B.Axes = 2 and A.Columns = B.Columns,
-          Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
+          Post'Class => Divide_By'Result.Shape = [B.Rows, A.Rows];
    --  Solve xA = B for x and return x = B / A
 
    function Divide_By (B, A : Tensor; Form : Triangular_Form) return Tensor is abstract
      with Pre'Class  => Is_Square (A) and
                         B.Axes = 2 and A.Columns = B.Columns,
-          Post'Class => Divide_By'Result.Shape = (B.Rows, A.Rows);
+          Post'Class => Divide_By'Result.Shape = [B.Rows, A.Rows];
 
    --  TODO Verify behavior of Divide_By when A is underdetermined
 

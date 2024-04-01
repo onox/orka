@@ -37,18 +37,18 @@ package body AWT.IMUs is
 
    procedure Update_Bias (Object : in out IMU) is
       Measurement_X, Measurement_Y, Measurement_Z : Kalman.Vector :=
-        Empty ((1 => Object.Velocity_Measurements'Length));
+        Empty ([Object.Velocity_Measurements'Length]);
    begin
       for Index in Object.Velocity_Measurements'Range loop
-         Measurement_X.Set ((1 => Index), Object.Velocity_Measurements (Index) (X));
-         Measurement_Y.Set ((1 => Index), Object.Velocity_Measurements (Index) (Y));
-         Measurement_Z.Set ((1 => Index), Object.Velocity_Measurements (Index) (Z));
+         Measurement_X.Set ([Index], Object.Velocity_Measurements (Index) (X));
+         Measurement_Y.Set ([Index], Object.Velocity_Measurements (Index) (Y));
+         Measurement_Z.Set ([Index], Object.Velocity_Measurements (Index) (Z));
       end loop;
 
       declare
          State : Kalman.Vector := Object.Filter.State;
          Bias  : constant Kalman.Vector := To_Tensor
-           ((Measurement_X.Mean, Measurement_Y.Mean, Measurement_Z.Mean));
+           ([Measurement_X.Mean, Measurement_Y.Mean, Measurement_Z.Mean]);
       begin
          State.Set (Range_Type'(5, 7), Bias);
          Object.Filter.Set_State (State);
@@ -70,10 +70,10 @@ package body AWT.IMUs is
       --  matrix has been moved from the lower right to the upper left
       --  because the scalar component of Quaternion is at the 4th position
       Omega : constant Kalman.Matrix :=
-        To_Tensor ((0.0, -W (3),  W (2), -W (1),
+        To_Tensor ([0.0, -W (3),  W (2), -W (1),
                   W (3),    0.0, -W (1), -W (2),
                  -W (2),  W (1),    0.0, -W (3),
-                  W (1),  W (2),  W (3),   0.0), Shape => (4, 4));
+                  W (1),  W (2),  W (3),   0.0], Shape => [4, 4]);
 
       Y : constant Orka.Float_64 := 1.0 - Orka.Float_64'(Orientation * Orientation);
       J : constant Orka.Float_64 := Unit_Norm_Convergence_Rate / DT;
@@ -98,10 +98,10 @@ package body AWT.IMUs is
       Calibrated   : out Boolean)
    is
       Measured_Velocity : constant Kalman.Vector :=
-        To_Tensor ((Velocity (X), Velocity (Y), Velocity (Z)));
+        To_Tensor ([Velocity (X), Velocity (Y), Velocity (Z)]);
 
       Measured_Acceleration : constant Kalman.Vector :=
-        To_Tensor ((Acceleration (X), Acceleration (Y), Acceleration (Z)));
+        To_Tensor ([Acceleration (X), Acceleration (Y), Acceleration (Z)]);
 
       No_Acceleration : constant Boolean :=
         abs (1.0 - Measured_Acceleration.Norm) < Acceleration_Threshold;
@@ -115,16 +115,16 @@ package body AWT.IMUs is
 
       function H (Point : Kalman.Vector) return Kalman.Vector is
          Orientation : constant Quaternions.Quaternion :=
-           (Point (1), Point (2), Point (3), Point (4));
+           [Point (1), Point (2), Point (3), Point (4)];
 
          use Orka.Transforms.Doubles.Matrices;
 
-         Gravity_NED  : constant Vectors.Vector4 := (0.0, -1.0, 0.0, 0.0);
+         Gravity_NED  : constant Vectors.Vector4 := [0.0, -1.0, 0.0, 0.0];
          Gravity_Body : constant Vectors.Vector4 :=
            R (Quaternion => Vectors.Vector4 (Quaternions.Normalize (Orientation))) * Gravity_NED;
 
          Predicted_Acceleration : constant Kalman.Vector :=
-           To_Tensor ((Gravity_Body (X), Gravity_Body (Y), Gravity_Body (Z)));
+           To_Tensor ([Gravity_Body (X), Gravity_Body (Y), Gravity_Body (Z)]);
       begin
          --  Returning the measurement fools the filter into thinking the predicted
          --  state (prior) is already equal to the measurement, thus no information
@@ -149,8 +149,8 @@ package body AWT.IMUs is
 
       declare
          S           : constant Kalman.Vector          := Object.Filter.State;
-         Orientation : constant Quaternions.Quaternion := (S (1), S (2), S (3), S (4));
-         Bias        : constant Vectors.Direction      := (S (5), S (6), S (7), 0.0);
+         Orientation : constant Quaternions.Quaternion := [S (1), S (2), S (3), S (4)];
+         Bias        : constant Vectors.Direction      := [S (5), S (6), S (7), 0.0];
 
          use type Vectors.Direction;
       begin
@@ -165,11 +165,11 @@ package body AWT.IMUs is
    begin
       Object.Filter := CDKF.Create_Filter
         (X       => To_Tensor
-           ((Orientation (X), Orientation (Y), Orientation (Z), Orientation (W), 0.0, 0.0, 0.0)),
+           ([Orientation (X), Orientation (Y), Orientation (Z), Orientation (W), 0.0, 0.0, 0.0]),
          P       => P_Scale * Identity (7),
-         Q       => Diagonal ((1 .. 4 => O_Variance,
-                               5 .. 7 => B_Variance)),
-         R       => Diagonal ((1 .. 3 => Z_Variance)),
+         Q       => Diagonal ([1 .. 4 => O_Variance,
+                               5 .. 7 => B_Variance]),
+         R       => Diagonal ([1 .. 3 => Z_Variance]),
          Weights => CDKF.Weights (N => 7, H2 => 3.0));
       Object.Velocity_Index := 0;
    end Initialize;
@@ -181,7 +181,7 @@ package body AWT.IMUs is
       State : Kalman.Vector := Object.Filter.State;
 
       Tensor_Orientation : constant Kalman.Vector :=
-        To_Tensor ((Orientation (X), Orientation (Y), Orientation (Z), Orientation (W)));
+        To_Tensor ([Orientation (X), Orientation (Y), Orientation (Z), Orientation (W)]);
    begin
       State.Set (Range_Type'(1, 4), Tensor_Orientation);
       Object.Filter.Set_State (State);

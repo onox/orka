@@ -71,7 +71,7 @@ private
 
    overriding
    function Position (Object : Origin_Behavior) return Vector4 is
-     ((0.0, 0.0, 0.0, 1.0));
+     ([0.0, 0.0, 0.0, 1.0]);
 
    Null_Behavior : constant Behavior_Ptr := new Origin_Behavior;
 

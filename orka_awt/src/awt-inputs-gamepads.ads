@@ -79,12 +79,12 @@ package AWT.Inputs.Gamepads is
    type Gamepad_Triggers is array (Gamepad_Trigger) of Trigger_Position;
 
    type Gamepad_State is record
-      Buttons   : Gamepad_Buttons         := (others => Released);
-      Pressed   : Changed_Gamepad_Buttons := (others => False);
-      Released  : Changed_Gamepad_Buttons := (others => False);
+      Buttons   : Gamepad_Buttons         := [others => Released];
+      Pressed   : Changed_Gamepad_Buttons := [others => False];
+      Released  : Changed_Gamepad_Buttons := [others => False];
 
-      Axes     : Gamepad_Axes     := (others => 0.0);
-      Triggers : Gamepad_Triggers := (others => 0.0);
+      Axes     : Gamepad_Axes     := [others => 0.0];
+      Triggers : Gamepad_Triggers := [others => 0.0];
    end record;
 
    ----------------------------------------------------------------------------
@@ -134,7 +134,7 @@ package AWT.Inputs.Gamepads is
    type Motion_State (Is_Present, Has_Pose : Boolean := False)  is record
       case Is_Present is
          when True =>
-            Axes : Sensor_Axes := (others => 0.0);
+            Axes : Sensor_Axes := [others => 0.0];
             case Has_Pose is
                when True =>
                   Orientation      : Quaternions.Quaternion;

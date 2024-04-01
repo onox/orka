@@ -49,7 +49,7 @@ package body Orka.Transforms.SIMD_Vectors is
 
    function "*" (Factor : Element_Type; Elements : Vector_Type) return Vector_Type is
    begin
-      return (Factor, Factor, Factor, Factor) * Elements;
+      return [Factor, Factor, Factor, Factor] * Elements;
    end "*";
 
    function "*" (Elements : Vector_Type; Factor : Element_Type) return Vector_Type is
@@ -69,13 +69,13 @@ package body Orka.Transforms.SIMD_Vectors is
    function Normalize (Elements : Vector_Type) return Vector_Type is
       Length : constant Element_Type := Magnitude (Elements);
    begin
-      return Divide_Or_Zero (Elements, (Length, Length, Length, Length));
+      return Divide_Or_Zero (Elements, [Length, Length, Length, Length]);
    end Normalize;
 
    function Normalize_Fast (Elements : Vector_Type) return Vector_Type is
       Length_Squared : constant Element_Type := Magnitude2 (Elements);
    begin
-      return Elements * Reciprocal_Sqrt ((others => Length_Squared));
+      return Elements * Reciprocal_Sqrt ([others => Length_Squared]);
    end Normalize_Fast;
 
    function Normalized (Elements : Vector_Type) return Boolean is

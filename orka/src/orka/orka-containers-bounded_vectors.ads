@@ -137,7 +137,7 @@ private
    -----------------------------------------------------------------------------
 
    type Vector (Capacity : Length_Type) is tagged record
-      Elements : Element_Array (Index_Type'First .. Capacity) := (others => <>);
+      Elements : Element_Array (Index_Type'First .. Capacity) := [others => <>];
       Length   : Length_Type := 0;
    end record;
    pragma Preelaborable_Initialization (Vector);

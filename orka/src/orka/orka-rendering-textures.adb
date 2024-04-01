@@ -64,11 +64,11 @@ package body Orka.Rendering.Textures is
             Format  => Object.Description.Format,
             Size    =>
               (case Kind is
-                 when Texture_1D             => (Object.Description.Size (X), 1, 1),
-                 when Texture_2D             => (Object.Description.Size (X), Object.Description.Size (Y), 1),
-                 when Texture_2D_Multisample => (Object.Description.Size (X), Object.Description.Size (Y), 1),
+                 when Texture_1D             => [Object.Description.Size (X), 1, 1],
+                 when Texture_2D             => [Object.Description.Size (X), Object.Description.Size (Y), 1],
+                 when Texture_2D_Multisample => [Object.Description.Size (X), Object.Description.Size (Y), 1],
                  when Texture_3D             => Object.Description.Size,
-                 when Texture_Cube_Map       => (Object.Description.Size (X), Object.Description.Size (Y), 6),
+                 when Texture_Cube_Map       => [Object.Description.Size (X), Object.Description.Size (Y), 6],
                  when others => raise Constraint_Error),
             Levels  => Object.Description.Levels,
             Samples => Object.Description.Samples));
@@ -82,9 +82,9 @@ package body Orka.Rendering.Textures is
       Has_Depth  : constant Boolean := Object.Kind = Texture_3D;
    begin
       return
-        (X => Orka.Size'Max (1, Object.Description.Size (X) / 2 ** Natural (Level)),
+        [X => Orka.Size'Max (1, Object.Description.Size (X) / 2 ** Natural (Level)),
          Y => Orka.Size'Max (1, Object.Description.Size (Y) / (if Has_Height then 2 ** Natural (Level) else 1)),
-         Z => Orka.Size'Max (1, Object.Description.Size (Z) / (if Has_Depth then 2 ** Natural (Level) else 1)));
+         Z => Orka.Size'Max (1, Object.Description.Size (Z) / (if Has_Depth then 2 ** Natural (Level) else 1))];
    end Size;
 
    procedure Bind (Object : Texture; Index : Natural) is

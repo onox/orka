@@ -54,7 +54,7 @@ package body Orka.Frame_Graphs is
 
    function Get_Next_ID return Natural is
    begin
-      return Result : Natural := Last_ID do
+      return Result : constant Natural := Last_ID do
          Last_ID := Last_ID + 1;
       end return;
    end Get_Next_ID;
@@ -965,7 +965,7 @@ package body Orka.Frame_Graphs is
    is
       package Programs renames Orka.Rendering.Programs;
 
-      Default_Size : constant Size_3D := (Default.Width, Default.Height, 1);
+      Default_Size : constant Size_3D := [Default.Width, Default.Height, 1];
 
       Format : constant Attachment_Format :=
         Get_Attachment_Format (Resource.Data.Description.Format);
@@ -1088,7 +1088,7 @@ package body Orka.Frame_Graphs is
    procedure Compute_Ordering_Render_Passes (Object : in out Renderable_Graph) is
       Stack : Pass_Index_Vectors.Vector (Positive (Object.Graph.Passes.Length));
 
-      Depths : Render_Pass_References_Array (1 .. Object.Graph.Passes.Length) := (others => 0);
+      Depths : Render_Pass_References_Array (1 .. Object.Graph.Passes.Length) := [others => 0];
 
       --  Look up the last render pass *before* the present pass
       --  (e.g. the pass which writes to the presented resource)
@@ -1105,7 +1105,7 @@ package body Orka.Frame_Graphs is
          Stack.Remove_Last (Index);
 
          declare
-            Depth_Pass : Natural := Depths (Index);
+            Depth_Pass : constant Natural := Depths (Index);
             Pass : Render_Pass_Data renames Object.Graph.Passes (Index);
          begin
             for Index in Pass.Read_Offset .. Pass.Read_Offset + Pass.Read_Count - 1 loop
@@ -1302,7 +1302,7 @@ package body Orka.Frame_Graphs is
                   begin
                      --  Clear color to black and depth to 0.0 (because of reversed Z)
                      Framebuffer.Set_Default_Values
-                       ((Color => (0.0, 0.0, 0.0, 1.0), Depth => 0.0, others => <>));
+                       ((Color => [0.0, 0.0, 0.0, 1.0], Depth => 0.0, others => <>));
 
                      if Framebuffer = Default then
                         --  The resource is 'read' by the present pass
@@ -1484,14 +1484,13 @@ package body Orka.Frame_Graphs is
                State       => Render_Pass_Framebuffer_State,
                Pass        => Object.Present_Render_Pass,
                Input_Resources =>
-                 (1 =>
-                   (Mode     => Texture_Read,
-                    Data     => Present_Resource.Data,
-                    Binding  => 0,
-                    Layer    => 0,
-                    Written  => True,
-                    Implicit => False)),
-               Output_Resources => (1 .. 0 => <>),
+                 [(Mode     => Texture_Read,
+                   Data     => Present_Resource.Data,
+                   Binding  => 0,
+                   Layer    => 0,
+                   Written  => True,
+                   Implicit => False)],
+               Output_Resources => [],
                References  => 0,
                Is_Present  => True);
          end;
@@ -1634,14 +1633,13 @@ package body Orka.Frame_Graphs is
                State       => Render_Pass_Framebuffer_State,
                Pass        => Object.Present_Render_Pass,
                Input_Resources  =>
-                 (1 =>
-                   (Mode     => Texture_Read,
-                    Data     => Present_Resource.Data,
-                    Binding  => 0,
-                    Layer    => 0,
-                    Written  => True,
-                    Implicit => False)),
-               Output_Resources => (1 .. 0 => <>),
+                 [(Mode     => Texture_Read,
+                   Data     => Present_Resource.Data,
+                   Binding  => 0,
+                   Layer    => 0,
+                   Written  => True,
+                   Implicit => False)],
+               Output_Resources => [],
                Present_By_Blit => Object.Present_Mode = Blit_To_Default);
          end;
       end if;

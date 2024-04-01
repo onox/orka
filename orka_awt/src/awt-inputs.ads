@@ -102,9 +102,9 @@ package AWT.Inputs with SPARK_Mode => On is
    type Coordinate is array (Dimension) of Fixed;
 
    type Pointer_State is record
-      Buttons   : Pointer_Buttons := (others => Released);
-      Pressed   : Changed_Buttons := (others => False);
-      Released  : Changed_Buttons := (others => False);
+      Buttons   : Pointer_Buttons := [others => Released];
+      Pressed   : Changed_Buttons := [others => False];
+      Released  : Changed_Buttons := [others => False];
 
       Focused   : Boolean         := False;
       Scrolling : Boolean         := False;
@@ -114,9 +114,9 @@ package AWT.Inputs with SPARK_Mode => On is
       Mode      : Pointer_Mode           := Visible;
       Cursor    : Cursors.Pointer_Cursor := Cursors.Default;
 
-      Position  : Coordinate      := (others => 0.0);
-      Relative  : Coordinate      := (others => 0.0);
-      Scroll    : Coordinate      := (others => 0.0);
+      Position  : Coordinate      := [others => 0.0];
+      Relative  : Coordinate      := [others => 0.0];
+      Scroll    : Coordinate      := [others => 0.0];
    end record;
 
    ----------------------------------------------------------------------------
@@ -257,9 +257,9 @@ package AWT.Inputs with SPARK_Mode => On is
      with Component_Size => 1;
 
    type Keyboard_State is record
-      Buttons   : Keyboard_Keys := (others => Released);
-      Pressed   : Changed_Keys  := (others => False);
-      Released  : Changed_Keys  := (others => False);
+      Buttons   : Keyboard_Keys := [others => Released];
+      Pressed   : Changed_Keys  := [others => False];
+      Released  : Changed_Keys  := [others => False];
 
       Modifiers : Keyboard_Modifiers;
       Focused   : Boolean := False;

@@ -23,7 +23,7 @@ with GL.Types.Indirect;
 
 package body GL.Compute is
 
-   Indices : constant array (Index_3D) of UInt := (X => 0, Y => 1, Z => 2);
+   Indices : constant array (Index_3D) of UInt := [X => 0, Y => 1, Z => 2];
 
    procedure Dispatch_Compute (X, Y, Z : UInt := 1) is
    begin
@@ -68,7 +68,7 @@ package body GL.Compute is
    end Max_Compute_Work_Group_Invocations;
 
    function Max_Compute_Work_Group_Count return Dimension_Size_Array is
-      Values : Dimension_Size_Array := (others => 0);
+      Values : Dimension_Size_Array := [others => 0];
    begin
       for Dimension in Values'Range loop
          API.Get_Size_I.Ref (Enums.Getter.Max_Compute_Work_Group_Count,
@@ -78,7 +78,7 @@ package body GL.Compute is
    end Max_Compute_Work_Group_Count;
 
    function Max_Compute_Work_Group_Size (Kind : Work_Group_Kind) return Dimension_Size_Array is
-      Values : Dimension_Size_Array := (others => 0);
+      Values : Dimension_Size_Array := [others => 0];
    begin
       case Kind is
          when Fixed =>

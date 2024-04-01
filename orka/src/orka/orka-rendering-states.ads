@@ -38,7 +38,7 @@ package Orka.Rendering.States is
       Test_Func  : GL.Types.Compare_Function := GL.Types.Always;
       Test_Mask  : Orka.Unsigned_32          := 16#FF#;
       Write_Mask : Orka.Unsigned_32          := 16#FF#;
-      Operations : Stencil_Operations        := (others => GL.Buffers.Keep);
+      Operations : Stencil_Operations        := [others => GL.Buffers.Keep];
    end record;
 
    type Stencil_Tests is array (Face) of Stencil_Test;
@@ -75,12 +75,12 @@ package Orka.Rendering.States is
       Polygon_Offset : Polygon_Offset_Type;
       --  Enabled if any Polygon_Offset.* > 0.0
 
-      Color_Mask : Color_Masks := (others => (others => True));
+      Color_Mask : Color_Masks := [others => [others => True]];
 
       Blending        : Boolean               := False;
-      Blend_Functions : Blending_Functions    := (others => (One, Zero, One, Zero));
-      Blend_Equations : Blending_Equations    := (others => (Func_Add, Func_Add));
-      Blend_Color     : GL.Types.Colors.Color := (others => 0.0);
+      Blend_Functions : Blending_Functions    := [others => (One, Zero, One, Zero)];
+      Blend_Equations : Blending_Equations    := [others => (Func_Add, Func_Add)];
+      Blend_Color     : GL.Types.Colors.Color := [others => 0.0];
 
       Logic_Operation : GL.Blending.Logic_Op  := GL.Blending.Copy;
       --  Enabled if /= Copy, disables blending when enabled.

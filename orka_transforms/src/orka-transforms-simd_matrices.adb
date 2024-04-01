@@ -40,8 +40,8 @@ package body Orka.Transforms.SIMD_Matrices is
       SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Matrix;
    begin
-      Result (Y) := (0.0,  CA, SA, 0.0);
-      Result (Z) := (0.0, -SA, CA, 0.0);
+      Result (Y) := [0.0,  CA, SA, 0.0];
+      Result (Z) := [0.0, -SA, CA, 0.0];
       return Result;
    end Rx;
 
@@ -50,8 +50,8 @@ package body Orka.Transforms.SIMD_Matrices is
       SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Matrix;
    begin
-      Result (X) := (CA, 0.0, -SA, 0.0);
-      Result (Z) := (SA, 0.0,  CA, 0.0);
+      Result (X) := [CA, 0.0, -SA, 0.0];
+      Result (Z) := [SA, 0.0,  CA, 0.0];
       return Result;
    end Ry;
 
@@ -60,8 +60,8 @@ package body Orka.Transforms.SIMD_Matrices is
       SA : constant Element_Type := EF.Sin (Angle);
       Result : Matrix_Type := Identity_Matrix;
    begin
-      Result (X) := (CA,  SA, 0.0, 0.0);
-      Result (Y) := (-SA, CA, 0.0, 0.0);
+      Result (X) := [CA,  SA, 0.0, 0.0];
+      Result (Y) := [-SA, CA, 0.0, 0.0];
       return Result;
    end Rz;
 
@@ -93,10 +93,10 @@ package body Orka.Transforms.SIMD_Matrices is
 
       Result : Matrix_Type;
    begin
-      Result (X) := (R11, R12, R13, 0.0);
-      Result (Y) := (R21, R22, R23, 0.0);
-      Result (Z) := (R31, R32, R33, 0.0);
-      Result (W) := (0.0, 0.0, 0.0, 1.0);
+      Result (X) := [R11, R12, R13, 0.0];
+      Result (Y) := [R21, R22, R23, 0.0];
+      Result (Z) := [R31, R32, R33, 0.0];
+      Result (W) := [0.0, 0.0, 0.0, 1.0];
       return Result;
    end R;
 
@@ -175,14 +175,14 @@ package body Orka.Transforms.SIMD_Matrices is
          declare
             Roll  : constant Element_Type := EF.Arctan (-R (X) (Y), R (X) (X));
          begin
-            return (0.0, Pitch, Roll, 0.0);
+            return [0.0, Pitch, Roll, 0.0];
          end;
       else
          declare
             Yaw   : constant Element_Type := EF.Arctan (-R (X) (Z), R (Z) (Z));
             Roll  : constant Element_Type := EF.Arctan (-R (Y) (X), R (Y) (Y));
          begin
-            return (Yaw, Pitch, Roll, 0.0);
+            return [Yaw, Pitch, Roll, 0.0];
          end;
       end if;
    end Euler;

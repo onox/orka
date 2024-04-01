@@ -25,12 +25,12 @@ package body Orka.Numerics.Kalman.CDKF is
 
       Count : constant Positive := 2 * N + 1;
 
-      Weights_Mean : Vector := Fill ((1 => Count), 1.0 / (2.0 * H2));
+      Weights_Mean : Vector := Fill ([Count], 1.0 / (2.0 * H2));
 
       Weights_Cov_1 : constant Element_Type := 1.0 / (4.0 * H2);
       Weights_Cov_2 : constant Element_Type := (H2 - 1.0) / (4.0 * H2**2);
    begin
-      Weights_Mean.Set ((1 => 1), (H2 - L) / H2);
+      Weights_Mean.Set ([1], (H2 - L) / H2);
 
       return
         (N              => N,
@@ -63,7 +63,7 @@ package body Orka.Numerics.Kalman.CDKF is
 
    function Duplicate (N : Positive; Row : Vector) return Matrix is
    begin
-      return Result : Matrix := Empty ((N, Row.Elements)) do
+      return Result : Matrix := Empty ([N, Row.Elements]) do
          for I in 1 .. N loop
             Result.Set (I, Row);
          end loop;

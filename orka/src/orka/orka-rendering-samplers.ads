@@ -40,7 +40,7 @@ package Orka.Rendering.Samplers is
       LoD_Bias           : Float_64 :=     0.0;
       Max_Anisotropy     : Float_64 :=     1.0;
 
-      Wrapping : Wrapping_Mode_3D := (others => Repeat);
+      Wrapping : Wrapping_Mode_3D := [others => Repeat];
 
       Border_Color             : Colors.Border_Color := Transparent_Black;
       Compare_X_To_Texture     : Boolean             := False;

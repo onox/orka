@@ -84,7 +84,7 @@ package body GL.Pixels.Queries is
       API.Get_Internal_Format.Ref (Kind, Format, Num_Sample_Counts, 1, Count);
 
       declare
-         Result : Size_Array (1 .. Count) := (others => 0);
+         Result : Size_Array (1 .. Count) := [others => 0];
       begin
          API.Get_Internal_Format_A.Ref (Kind, Format, Samples, Result'Length, Result);
          return Result;

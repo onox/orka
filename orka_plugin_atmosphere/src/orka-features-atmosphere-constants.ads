@@ -60,7 +60,7 @@ private package Orka.Features.Atmosphere.Constants is
    --  Conversion factor between watts and lumens
 
    CIE_2_Deg_Color_Matching_Functions : constant Float_64_Array
-     := (360.0, 0.000129900000, 0.000003917000, 0.000606100000,
+     := [360.0, 0.000129900000, 0.000003917000, 0.000606100000,
          365.0, 0.000232100000, 0.000006965000, 0.001086000000,
          370.0, 0.000414900000, 0.000012390000, 0.001946000000,
          375.0, 0.000741600000, 0.000022020000, 0.003486000000,
@@ -154,15 +154,15 @@ private package Orka.Features.Atmosphere.Constants is
          815.0, 0.000003581652, 0.000001293400, 0.000000000000,
          820.0, 0.000002522525, 0.000000910930, 0.000000000000,
          825.0, 0.000001776509, 0.000000641530, 0.000000000000,
-         830.0, 0.000001251141, 0.000000451810, 0.000000000000);
+         830.0, 0.000001251141, 0.000000451810, 0.000000000000];
    --  Values from "CIE (1931) 2-deg color matching functions", see
    --  http://web.archive.org/web/20081228084047/
    --    http://www.cvrl.org/database/data/cmfs/ciexyz31.txt
 
    XYZ_To_SRGB : constant Float_64_Array
-     := (+3.2406, -1.5372, -0.4986,
+     := [+3.2406, -1.5372, -0.4986,
          -0.9689, +1.8758, +0.0415,
-         +0.0557, -0.2040, +1.0570);
+         +0.0557, -0.2040, +1.0570];
    --  Conversion matrix from XYZ to linear sRGB color spaces.
    --  Values from https://en.wikipedia.org/wiki/SRGB
 

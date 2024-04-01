@@ -79,7 +79,7 @@ package body Orka.Resources.Models.glTF is
       Nodes     : Orka.glTF.Scenes.Node_Vectors.Vector (Capacity => Maximum_Nodes);
       Scenes    : Orka.glTF.Scenes.Scene_Vectors.Vector (Capacity => 8);
       Default_Scene : Long_Integer;
-      Times     : Times_Data := (others => 0.0);
+      Times     : Times_Data := [others => 0.0];
       Start_Time : Time;
       Manager   : Managers.Manager_Ptr;
    end record;
@@ -713,7 +713,7 @@ package body Orka.Resources.Models.glTF is
            Vertices   => Object.Vertices,
            Indices    => Object.Indices);
    begin
-      Orka.Jobs.Chain ((Buffers_Job, Finish_Job));
+      Orka.Jobs.Chain ([Buffers_Job, Finish_Job]);
       Context.Enqueue (Buffers_Job);
    end Execute;
 

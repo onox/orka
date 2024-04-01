@@ -73,7 +73,7 @@ package body EGL.Objects.Contexts is
          Robust  => Flags.Robust);
 
       Attributes : constant Int_Array :=
-        (Major_Version, Int (Version.Major),
+        [Major_Version, Int (Version.Major),
          Minor_Version, Int (Version.Minor),
          Context_Flags_Bits, Convert (Flags_Mask),
          OpenGL_Profile_Mask, OpenGL_Core_Profile,
@@ -84,11 +84,11 @@ package body EGL.Objects.Contexts is
 --         OpenGL_Robust, (if Flags.Robust then 1 else 0),
 
          OpenGL_Reset_Notification_Strategy,
-           (if Flags.Robust then Lose_Context_On_Reset else No_Reset_Notification));
+           (if Flags.Robust then Lose_Context_On_Reset else No_Reset_Notification)];
          --  Requires EGL_KHR_create_context or EGL 1.5
 
-      No_Error : constant Int_Array := (OpenGL_No_Error, 1);
-      No_Flush : constant Int_Array := (Context_Release_Behavior, Context_Release_Behavior_None);
+      No_Error : constant Int_Array := [OpenGL_No_Error, 1];
+      No_Flush : constant Int_Array := [Context_Release_Behavior, Context_Release_Behavior_None];
 
       Extensions : constant String_List := Display.Extensions;
    begin
@@ -110,8 +110,8 @@ package body EGL.Objects.Contexts is
          ID : constant ID_Type :=
            API.Create_Context (Display.ID, No_Config, No_Context,
              Attributes &
-             (if Can_Have_No_Error then No_Error else (1 .. 0 => <>)) &
-             (if Can_Have_Release_Context then No_Flush else (1 .. 0 => <>)) &
+             (if Can_Have_No_Error then No_Error else []) &
+             (if Can_Have_Release_Context then No_Flush else []) &
              None);
          --  TODO Support shared context (replace No_Context with Shared_Context.ID)
       begin

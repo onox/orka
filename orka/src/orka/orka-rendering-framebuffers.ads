@@ -39,7 +39,7 @@ package Orka.Rendering.Framebuffers is
    --  TODO Use as formal parameter in procedure Invalidate
 
    type Buffer_Values is record
-      Color   : Colors.Color             := (0.0, 0.0, 0.0, 1.0);
+      Color   : Colors.Color             := [0.0, 0.0, 0.0, 1.0];
       Depth   : GL.Buffers.Depth         := 0.0;
       Stencil : GL.Buffers.Stencil_Index := 0;
    end record;
@@ -144,7 +144,7 @@ package Orka.Rendering.Framebuffers is
       Level      : Rendering.Textures.Mipmap_Level  := 0)
    with Pre  => (not Object.Default and
                   (if Rendering.Textures.Get_Format_Kind (Texture.Description.Format) = Color then
-                    Texture.Size (Level) (X .. Y) = (Object.Width, Object.Height)))
+                    Texture.Size (Level) (X .. Y) = [Object.Width, Object.Height]))
                 or else raise Constraint_Error with
                   "Cannot attach " & Texture.Image (Level) &
                   " to " & Object.Image,
@@ -177,7 +177,7 @@ package Orka.Rendering.Framebuffers is
    with Pre  => (not Object.Default and
                   Rendering.Textures.Has_Layers (Texture.Kind) and
                   (if Attachment in Color_Attachment_Point then
-                    Texture.Size (Level) (X .. Y) = (Object.Width, Object.Height)))
+                    Texture.Size (Level) (X .. Y) = [Object.Width, Object.Height]))
                 or else raise Constraint_Error with
                   "Cannot attach layer of " & Texture.Image (Level) &
                   " to " & Object.Image,

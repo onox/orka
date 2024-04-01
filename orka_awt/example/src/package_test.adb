@@ -55,7 +55,7 @@ package body Package_Test is
    begin
       Object.FB :=
         Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Object.Width, Object.Height);
-      Object.FB.Set_Default_Values ((Color => (0.0, 0.0, 0.0, Alpha), others => <>));
+      Object.FB.Set_Default_Values ((Color => [0.0, 0.0, 0.0, Alpha], others => <>));
       Object.FB.Use_Framebuffer;
       Log (Debug, "Changed size of framebuffer to " &
         Trim (Object.Width'Image) & " × " & Trim (Object.Height'Image));

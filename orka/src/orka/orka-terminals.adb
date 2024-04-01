@@ -23,14 +23,14 @@ with Orka.Strings;
 package body Orka.Terminals is
 
    Style_Codes : constant array (Style) of Natural :=
-     (Default   => 0,
+     [Default   => 0,
       Bold      => 1,
       Dark      => 2,
       Italic    => 3,
       Underline => 4,
       Blink     => 5,
       Reversed  => 7,
-      Cross_Out => 9);
+      Cross_Out => 9];
 
    type Color_Kind is (FG, BG, None);
 
@@ -42,15 +42,15 @@ package body Orka.Terminals is
    type Color_RGB is array (Color_Index) of Color_Component;
 
    Colors : constant array (Color) of Color_RGB :=
-     (Default => (0, 0, 0),
-      Grey    => (2, 2, 2),
-      Red     => (4, 0, 0),
-      Green   => (1, 3, 0),
-      Yellow  => (4, 3, 0),
-      Blue    => (0, 1, 4),
-      Magenta => (4, 0, 3),
-      Cyan    => (0, 4, 3),
-      White   => (4, 4, 4));
+     [Default => [0, 0, 0],
+      Grey    => [2, 2, 2],
+      Red     => [4, 0, 0],
+      Green   => [1, 3, 0],
+      Yellow  => [4, 3, 0],
+      Blue    => [0, 1, 4],
+      Magenta => [4, 0, 3],
+      Cyan    => [0, 4, 3],
+      White   => [4, 4, 4]];
 
    package L1 renames Ada.Characters.Latin_1;
    package SF renames Ada.Strings.Fixed;
@@ -162,9 +162,9 @@ package body Orka.Terminals is
    type String_Access is not null access String;
 
    Suffices : constant array (1 .. 3) of String_Access
-     := (new String'("s"),
+     := [new String'("s"),
          new String'("ms"),
-         new String'("us"));
+         new String'("us")];
 
    function Image (Value : Duration) return String is
       Number : Duration := Value;

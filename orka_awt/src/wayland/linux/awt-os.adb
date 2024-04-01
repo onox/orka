@@ -270,7 +270,7 @@ package body AWT.OS is
 
    function Scan_Directory
      (Path   : String;
-      Filter : Filter_Type := (others => True)) return Directory_Entry_Array
+      Filter : Filter_Type := [others => True]) return Directory_Entry_Array
    is
       procedure Free is new Ada.Unchecked_Deallocation
         (Dir_Entry, Dir_Entry_Access);

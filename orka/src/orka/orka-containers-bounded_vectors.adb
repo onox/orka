@@ -59,13 +59,13 @@ package body Orka.Containers.Bounded_Vectors is
       Index : constant Index_Type := Container.Length + Index_Type'First - 1;
    begin
       Element := Container.Elements (Index);
-      Container.Elements (Index .. Index) := (others => <>);
+      Container.Elements (Index .. Index) := [others => <>];
       Container.Length := Container.Length - 1;
    end Remove_Last;
 
    procedure Clear (Container : in out Vector) is
    begin
-      Container.Elements := (others => <>);
+      Container.Elements := [others => <>];
       Container.Length   := 0;
    end Clear;
 

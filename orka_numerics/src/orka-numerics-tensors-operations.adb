@@ -17,10 +17,10 @@
 package body Orka.Numerics.Tensors.Operations is
 
    overriding function Get (Object : Tensor_Type; Index : Index_Type) return Element is
-     (Object.Get ((1 => Index)));
+     (Object.Get ([Index]));
 
    overriding function Get (Object : Tensor_Type; Index : Index_Type) return Boolean is
-     (Object.Get ((1 => Index)));
+     (Object.Get ([Index]));
 
    overriding function Get (Object : Tensor_Type; Index : Range_Type) return Tensor_Type is
      (case Object.Axes is
@@ -65,12 +65,12 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding procedure Set (Object : in out Tensor_Type; Index : Index_Type; Value : Element) is
    begin
-      Object.Set ((1 => Index), Value);
+      Object.Set ([Index], Value);
    end Set;
 
    overriding procedure Set (Object : in out Tensor_Type; Index : Index_Type; Value : Boolean) is
    begin
-      Object.Set ((1 => Index), Value);
+      Object.Set ([Index], Value);
    end Set;
 
    ----------------------------------------------------------------------------
@@ -81,21 +81,21 @@ package body Orka.Numerics.Tensors.Operations is
    function Zeros (Shape : Tensor_Shape) return Tensor_Type is (Fill (Shape, 0.0));
 
    overriding
-   function Zeros (Elements : Positive) return Tensor_Type is (Zeros ((1 => Elements)));
+   function Zeros (Elements : Positive) return Tensor_Type is (Zeros ([Elements]));
 
    overriding
    function Ones (Shape : Tensor_Shape) return Tensor_Type is (Fill (Shape, 1.0));
 
    overriding
-   function Ones (Elements : Positive) return Tensor_Type is (Ones ((1 => Elements)));
+   function Ones (Elements : Positive) return Tensor_Type is (Ones ([Elements]));
 
    overriding
    function To_Tensor (Elements : Element_Array) return Tensor_Type is
-     (To_Tensor (Elements, (1 => Elements'Length)));
+     (To_Tensor (Elements, [Elements'Length]));
 
    overriding
    function To_Boolean_Tensor (Booleans : Boolean_Array) return Tensor_Type is
-     (To_Boolean_Tensor (Booleans, (1 => Booleans'Length)));
+     (To_Boolean_Tensor (Booleans, [Booleans'Length]));
 
    overriding
    function Geometric_Space
@@ -142,7 +142,7 @@ package body Orka.Numerics.Tensors.Operations is
 
    overriding
    function Reshape (Object : Tensor_Type; Elements : Positive) return Tensor_Type is
-     (Object.Reshape ((1 => Elements)));
+     (Object.Reshape ([Elements]));
 
    overriding
    function "&" (Left, Right : Tensor_Type) return Tensor_Type is (Concatenate (Left, Right, 1));
@@ -212,12 +212,12 @@ package body Orka.Numerics.Tensors.Operations is
       Columns_Ab : constant Natural := Ab.Columns;
 
       function Find_Largest_Pivot (Row_Index, Column_Index : Index_Type) return Index_Type is
-         Pivot_Value : Element    := abs Ab.Get ((Row_Index, Column_Index));
+         Pivot_Value : Element    := abs Ab.Get ([Row_Index, Column_Index]);
          Pivot_Index : Index_Type := Row_Index;
       begin
          for Index in Row_Index .. Rows loop
             declare
-               Value : constant Element := abs Ab.Get ((Index, Column_Index));
+               Value : constant Element := abs Ab.Get ([Index, Column_Index]);
             begin
                if Value > Pivot_Value then
                   Pivot_Value := Value;
@@ -229,7 +229,7 @@ package body Orka.Numerics.Tensors.Operations is
          return Pivot_Index;
       end Find_Largest_Pivot;
 
-      Pivots : array (0 .. Rows) of Natural := (others => 0);
+      Pivots : array (0 .. Rows) of Natural := [others => 0];
    begin
       --  Forward phase: row reduce augmented matrix to echelon form
 
@@ -244,12 +244,12 @@ package body Orka.Numerics.Tensors.Operations is
             Pivot_Index : Index_Type renames Pivots (Index);
             Row_Index   : Positive := Find_Largest_Pivot (Index, Pivot_Index);
          begin
-            while Pivot_Index < Columns and then Ab.Get ((Row_Index, Pivot_Index)) = 0.0 loop
+            while Pivot_Index < Columns and then Ab.Get ([Row_Index, Pivot_Index]) = 0.0 loop
                Pivot_Index := Pivot_Index + 1;
                Row_Index   := Find_Largest_Pivot (Index, Pivot_Index);
             end loop;
 
-            if Ab.Get ((Row_Index, Pivot_Index)) = 0.0 then
+            if Ab.Get ([Row_Index, Pivot_Index]) = 0.0 then
                Pivot_Index := 0;
                exit;
             end if;
@@ -296,7 +296,7 @@ package body Orka.Numerics.Tensors.Operations is
    begin
       case B.Axes is
          when 1 =>
-            return Matrix_Solve (A, B.Reshape ((B.Elements, 1)), Solution).Flatten;
+            return Matrix_Solve (A, B.Reshape ([B.Elements, 1]), Solution).Flatten;
          when 2 =>
             return Matrix_Solve (A, B, Solution);
          when others =>
@@ -323,7 +323,7 @@ package body Orka.Numerics.Tensors.Operations is
          --        and X (1 .. Index - 1) is set to 0.0
          --        and Alpha is X.Norm with opposite sign of X (Index)
          --        and E = [0 ... 0 1 0 ... 0]^T with 1 at Index
-         V : constant Tensor_Type := Zeros ((1 => Index - 1)) & U.Normalize;
+         V : constant Tensor_Type := Zeros ([Index - 1]) & U.Normalize;
       begin
          return I - 2.0 * Outer (V, V);
       end;
@@ -447,7 +447,7 @@ package body Orka.Numerics.Tensors.Operations is
             --  to reduced echelon form by performing forward-substitution on Ry
             --  (R is actually R^T) (reduced because R^T is lower triangular)
             for Index in 1 .. Size loop
-               Scale_Row (Ry, Index, 1.0 / Ry.Get ((Index, Index)));
+               Scale_Row (Ry, Index, 1.0 / Ry.Get ([Index, Index]));
                Forward_Substitute (Ry, Index, Index);
             end loop;
          when Unknown => raise Program_Error;
@@ -480,7 +480,7 @@ package body Orka.Numerics.Tensors.Operations is
             begin
                case Y.Axes is
                   when 1 =>
-                     return QR_Solve (QR.R, Y.Reshape ((Y.Elements, 1)), D).Flatten;
+                     return QR_Solve (QR.R, Y.Reshape ([Y.Elements, 1]), D).Flatten;
                   when 2 =>
                      return QR_Solve (QR.R, Y, D);
                   when others =>
@@ -490,7 +490,7 @@ package body Orka.Numerics.Tensors.Operations is
          when Underdetermined =>
             case B.Axes is
                when 1 =>
-                  return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ((B.Elements, 1)), D).Flatten;
+                  return QR.Q * QR_Solve (QR.R.Transpose, B.Reshape ([B.Elements, 1]), D).Flatten;
                when 2 =>
                   return QR.Q * QR_Solve (QR.R.Transpose, B, D);
                when others =>
@@ -520,7 +520,7 @@ package body Orka.Numerics.Tensors.Operations is
       RQ2_IT_D : constant Tensor_Type :=
         (case D.Axes is
             when 1 =>
-               QR_Solve (QR_Q2.R.Transpose, D.Reshape ((D.Elements, 1)), Underdetermined),
+               QR_Solve (QR_Q2.R.Transpose, D.Reshape ([D.Elements, 1]), Underdetermined),
             when 2 =>
                QR_Solve (QR_Q2.R.Transpose, D, Underdetermined),
             when others =>
@@ -528,7 +528,7 @@ package body Orka.Numerics.Tensors.Operations is
 
       B_Matrix : constant Tensor_Type :=
         (case B.Axes is
-            when 1 => B.Reshape ((B.Elements, 1)),
+            when 1 => B.Reshape ([B.Elements, 1]),
             when 2 => B,
             when others => raise Not_Implemented_Yet);  --  FIXME
 
@@ -548,9 +548,9 @@ package body Orka.Numerics.Tensors.Operations is
 
    function Cholesky_Lower (Object : Tensor_Type) return Tensor_Type is
       Rows  : constant Natural      := Object.Rows;
-      Shape : constant Tensor_Shape := (1 .. 2 => Rows);
+      Shape : constant Tensor_Shape := [1 .. 2 => Rows];
 
-      Empty : constant Tensor_Type := Zeros ((1 => 0));
+      Empty : constant Tensor_Type := Zeros ([0]);
    begin
       return Result : Tensor_Type := Zeros (Shape) do
          for J in 1 .. Rows loop
@@ -559,7 +559,7 @@ package body Orka.Numerics.Tensors.Operations is
                   (if J = 1 then Empty else Result.Get (Tensor_Range'((J, J), (1, J - 1))));
 
                Ljj_Squared : constant Element :=
-                 Object.Get ((J, J)) - Power (Row_J_Before_J, 2).Sum;
+                 Object.Get ([J, J]) - Power (Row_J_Before_J, 2).Sum;
             begin
                --  If = 0.0 then matrix is positive semi-definite and singular
                --  If < 0.0 then matrix is negative semi-definite or indefinite
@@ -572,7 +572,7 @@ package body Orka.Numerics.Tensors.Operations is
                   Ljj : constant Element := EF.Sqrt (Ljj_Squared);
                begin
                   --  Compute the jth value on the diagonal
-                  Result.Set ((J, J), Ljj);
+                  Result.Set ([J, J], Ljj);
 
                   --  Compute the values below the jth value on the diagonal
                   for I in J + 1 .. Rows loop
@@ -582,7 +582,7 @@ package body Orka.Numerics.Tensors.Operations is
                            else Result.Get (Tensor_Range'((I, I), (1, J - 1))));
 
                         Lij : constant Element :=
-                          (Object.Get ((I, J)) - Multiply (Row_I_Before_J, Row_J_Before_J).Sum)
+                          (Object.Get ([I, J]) - Multiply (Row_I_Before_J, Row_J_Before_J).Sum)
                             / Ljj;
                      begin
                         Result.Set (Tensor_Index'(I, J), Lij);
@@ -624,7 +624,7 @@ package body Orka.Numerics.Tensors.Operations is
                begin
                   for I in 1 .. Rows loop
                      declare
-                        Rii : constant Element := R.Get ((I, I));
+                        Rii : constant Element := R.Get ([I, I]);
 
                         A : constant Element := Element'(Z.Get (I)) / Rii;
                      begin
@@ -643,7 +643,7 @@ package body Orka.Numerics.Tensors.Operations is
                            Beta := EF.Sqrt (Alpha);
 
                            --  Compute the jth value on the diagonal
-                           Result.Set ((I, I), Beta / Previous_Beta * Rii);
+                           Result.Set ([I, I], Beta / Previous_Beta * Rii);
 
                            exit when I = Rows;
 
@@ -652,7 +652,7 @@ package body Orka.Numerics.Tensors.Operations is
                               C2 : constant Element := A / (Previous_Beta * Beta);
 
                               Column_Indices : constant Range_Type   := (I + 1, Rows);
-                              Row_Indices    : constant Tensor_Range := ((I, I), Column_Indices);
+                              Row_Indices    : constant Tensor_Range := [(I, I), Column_Indices];
 
                               Rik_Old : constant Tensor_Type := R.Get (Row_Indices);
                               Zk_Old  : constant Tensor_Type := Z.Get (Column_Indices);
@@ -660,7 +660,7 @@ package body Orka.Numerics.Tensors.Operations is
                               Rik_New : constant Tensor_Type := C1 * Rik_Old - C2 * Zk_New;
                            begin
                               Z.Set (Column_Indices, Zk_New);
-                              Result.Set (Row_Indices, Rik_New.Reshape ((1, Rik_New.Elements)));
+                              Result.Set (Row_Indices, Rik_New.Reshape ([1, Rik_New.Elements]));
                               --  Reshape only needed because of Pre condition on Set
                            end;
                         end;
@@ -680,7 +680,7 @@ package body Orka.Numerics.Tensors.Operations is
    begin
       case B.Axes is
          when 1 =>
-            return QR_Solve (A, B.Reshape ((B.Elements, 1)), Determinancy).Flatten;
+            return QR_Solve (A, B.Reshape ([B.Elements, 1]), Determinancy).Flatten;
          when 2 =>
             return QR_Solve (A, B, Determinancy);
          when others =>

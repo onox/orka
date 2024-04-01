@@ -32,7 +32,7 @@ package body EGL.Objects.Displays is
    begin
       if Result = C.Strings.Null_Ptr then
          Errors.Raise_Exception_On_EGL_Error;
-         return (1 .. 0 => SU.To_Unbounded_String (""));
+         return [];
       else
          return EGL.Extensions (Result);
       end if;
@@ -48,7 +48,7 @@ package body EGL.Objects.Displays is
    begin
       if Result = C.Strings.Null_Ptr then
          Errors.Raise_Exception_On_EGL_Error;
-         return (1 .. 0 => SU.To_Unbounded_String (""));
+         return [];
       else
          return EGL.Extensions (Result);
       end if;
@@ -89,7 +89,7 @@ package body EGL.Objects.Displays is
    is
       No_Display : constant ID_Type := ID_Type (System.Null_Address);
 
-      Attributes : constant Int_Array := (1 => None);
+      Attributes : constant Int_Array := [1 => None];
 
       Major, Minor : Int;
    begin

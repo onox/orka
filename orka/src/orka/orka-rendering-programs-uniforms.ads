@@ -15,7 +15,6 @@
 --  limitations under the License.
 
 with GL.Objects.Programs.Uniforms;
-with GL.Objects.Textures;
 with GL.Pixels.Extensions;
 
 with Orka.Rendering.Textures;

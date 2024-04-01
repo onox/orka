@@ -31,7 +31,7 @@ package body Orka.Cameras is
      (Object  : in out Camera;
       X, Y, Z : Float_64) is
    begin
-      Object.Scale := (X, Y, Z, 0.0);
+      Object.Scale := [X, Y, Z, 0.0];
    end Set_Input_Scale;
 
    procedure Set_Up_Direction
@@ -97,10 +97,10 @@ package body Orka.Cameras is
       Up      : constant Vector4 := Cross (Side, Forward);
    begin
       return
-        ((Side (X), Up (X), -Forward (X), 0.0),
-         (Side (Y), Up (Y), -Forward (Y), 0.0),
-         (Side (Z), Up (Z), -Forward (Z), 0.0),
-         (0.0, 0.0, 0.0, 1.0));
+        [[Side (X), Up (X), -Forward (X), 0.0],
+         [Side (Y), Up (Y), -Forward (Y), 0.0],
+         [Side (Z), Up (Z), -Forward (Z), 0.0],
+         [0.0, 0.0, 0.0, 1.0]];
    end Look_At;
 
    function Rotate_To_Up (Object : Camera'Class) return Matrix4 is
@@ -143,7 +143,7 @@ package body Orka.Cameras is
          Mode := Update;
 
          if Is_Set then
-            Change := (0.0, 0.0, 0.0, 0.0);
+            Change := [0.0, 0.0, 0.0, 0.0];
          end if;
       end Get;
    end Change_Updater;

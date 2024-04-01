@@ -51,10 +51,10 @@ package body Orka.glTF.Scenes is
      with Pre => Vector.Length = 4;
 
    function Get_Vector3 (Vector : Types.JSON_Value) return Transforms.Vector4 is
-     ((Vector.Get (1).Value, Vector.Get (2).Value, Vector.Get (3).Value, 0.0));
+     ([Vector.Get (1).Value, Vector.Get (2).Value, Vector.Get (3).Value, 0.0]);
 
    function Get_Vector4 (Vector : Types.JSON_Value) return Transforms.Vector4 is
-     ((Vector.Get (1).Value, Vector.Get (2).Value, Vector.Get (3).Value, Vector.Get (4).Value));
+     ([Vector.Get (1).Value, Vector.Get (2).Value, Vector.Get (3).Value, Vector.Get (4).Value]);
 
    function Create_Node (Object : Types.JSON_Value) return Node is
       Transform : constant Transform_Kind

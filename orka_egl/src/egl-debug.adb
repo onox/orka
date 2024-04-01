@@ -56,7 +56,7 @@ package body EGL.Debug is
       Info     : constant Attrib := 16#33BC#;
 
       Attributes : constant Attribute_Array :=
-        (Critical, 1, Error, 1, Warning, 1, Info, 1, None);
+        [Critical, 1, Error, 1, Warning, 1, Info, 1, None];
 
       use type EGL.Errors.Error_Code;
    begin

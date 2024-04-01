@@ -42,11 +42,11 @@ package Orka.Transforms.SIMD_Vectors is
      with Dynamic_Predicate => Vector4 (Point) (W) = 1.0
        or else raise Constraint_Error with "Vector is not a point (w /= 1.0)";
 
-   Zero_Vector : constant Vector4 := (0.0, 0.0, 0.0, 0.0);
+   Zero_Vector : constant Vector4 := [0.0, 0.0, 0.0, 0.0];
 
-   Zero_Direction : constant Direction := (0.0, 0.0, 0.0, 0.0);
+   Zero_Direction : constant Direction := [0.0, 0.0, 0.0, 0.0];
 
-   Zero_Point : constant Point := (0.0, 0.0, 0.0, 1.0);
+   Zero_Point : constant Point := [0.0, 0.0, 0.0, 1.0];
 
    function To_Radians (Angle : Element_Type) return Element_Type is
      (Angle / 180.0 * Ada.Numerics.Pi);

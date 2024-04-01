@@ -24,7 +24,7 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
 
    function Create_Bounding_Box
      (Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := (1.0, 1.0, 1.0, 1.0)) return Bounding_Box
+      Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box
    is
       use Rendering.Programs;
    begin

@@ -29,29 +29,29 @@ package Orka.glTF.Accessors is
    type Attribute_Kind is (Scalar, Vector2, Vector3, Vector4, Matrix2, Matrix3, Matrix4);
 
    Bytes_Element : constant array (Component_Kind) of Positive :=
-     (Byte           => 1,
+     [Byte           => 1,
       Unsigned_Byte  => 1,
       Short          => 2,
       Unsigned_Short => 2,
       Unsigned_Int   => 4,
-      Float          => 4);
+      Float          => 4];
 
    Attribute_Length : constant array (Attribute_Kind) of Positive :=
-     (Scalar  => 1,
+     [Scalar  => 1,
       Vector2 => 2,
       Vector3 => 3,
       Vector4 => 4,
       Matrix2 => 4,
       Matrix3 => 9,
-      Matrix4 => 16);
+      Matrix4 => 16];
 
    Numeric_Type : constant array (Component_Kind) of GL.Types.Numeric_Type :=
-     (Byte           => GL.Types.Byte_Type,
+     [Byte           => GL.Types.Byte_Type,
       Unsigned_Byte  => GL.Types.UByte_Type,
       Short          => GL.Types.Short_Type,
       Unsigned_Short => GL.Types.UShort_Type,
       Unsigned_Int   => GL.Types.UInt_Type,
-      Float          => GL.Types.Single_Type);
+      Float          => GL.Types.Single_Type];
 
    function Unsigned_Type (Value : Component_Kind) return GL.Types.Index_Type;
 

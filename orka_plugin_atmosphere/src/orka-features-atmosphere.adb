@@ -73,7 +73,7 @@ package body Orka.Features.Atmosphere is
 
    function Create_Sampler return Orka.Rendering.Samplers.Sampler is
      (Orka.Rendering.Samplers.Create_Sampler
-        ((Wrapping          => (others => Clamp_To_Edge),
+        ((Wrapping          => [others => Clamp_To_Edge],
           Minifying_Filter  => Linear,
           Magnifying_Filter => Linear,
           others            => <>)));
@@ -84,7 +84,7 @@ package body Orka.Features.Atmosphere is
         ((Kind    => LE.Texture_2D,
           Compressed => False,
           Format  => GL.Pixels.RGBA32F,
-          Size    => (Width, Height, 1),
+          Size    => [Width, Height, 1],
           Levels  => 1,
           Samples => 1)));
 
@@ -95,7 +95,7 @@ package body Orka.Features.Atmosphere is
         ((Kind    => LE.Texture_3D,
           Compressed => False,
           Format  => (if Half_Precision then GL.Pixels.RGBA16F else GL.Pixels.RGBA32F),
-          Size    => (Width, Height, Depth),
+          Size    => [Width, Height, Depth],
           Levels  => 1,
           Samples => 1)));
 
@@ -441,10 +441,10 @@ package body Orka.Features.Atmosphere is
       LR : Float_32_Array renames Luminance_From_Radiance;
 
       Luminance_From_Radiance_Mat3 : constant Orka.Types.Singles.Matrix4 :=
-        ((LR (0), LR (1), LR (2), 0.0),
-         (LR (3), LR (4), LR (5), 0.0),
-         (LR (6), LR (7), LR (8), 0.0),
-         (0.0, 0.0, 0.0, 0.0));
+        [[LR (0), LR (1), LR (2), 0.0],
+         [LR (3), LR (4), LR (5), 0.0],
+         [LR (6), LR (7), LR (8), 0.0],
+         [0.0, 0.0, 0.0, 0.0]];
 
       use Orka.Rendering.Programs;
 
@@ -546,10 +546,10 @@ package body Orka.Features.Atmosphere is
       FBO_Transmittance.Use_Framebuffer;
       FBO_Transmittance.Attach (Result.Transmittance_Texture, Color_Attachment_0);
       FBO_Transmittance.Set_Draw_Buffers
-        ((0 => GL.Buffers.Color_Attachment0));
+        ([0 => GL.Buffers.Color_Attachment0]);
 
       Program_Transmittance.Use_Program;
-      Draw_Quad ((1 .. 0 => <>));
+      Draw_Quad ([1 .. 0 => <>]);
 
       -------------------------------------------------------------------------
 
@@ -561,11 +561,11 @@ package body Orka.Features.Atmosphere is
       FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
       FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
       FBO_Irradiance.Set_Draw_Buffers
-        ((0 => GL.Buffers.Color_Attachment0,
-          1 => GL.Buffers.Color_Attachment1));
+        ([0 => GL.Buffers.Color_Attachment0,
+          1 => GL.Buffers.Color_Attachment1]);
 
       Program_Direct_Irradiance.Use_Program;
-      Draw_Quad ((False, Blend));
+      Draw_Quad ([False, Blend]);
 
       -------------------------------------------------------------------------
 
@@ -581,15 +581,15 @@ package body Orka.Features.Atmosphere is
       if not Object.Data.Combine_Scattering_Textures then
          FBO_Scattering.Attach (Result.Optional_Single_Mie_Scattering_Texture, Color_Attachment_3);
          FBO_Scattering.Set_Draw_Buffers
-           ((0 => GL.Buffers.Color_Attachment0,
+           ([0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1,
              2 => GL.Buffers.Color_Attachment2,
-             3 => GL.Buffers.Color_Attachment3));
+             3 => GL.Buffers.Color_Attachment3]);
       else
          FBO_Scattering.Set_Draw_Buffers
-           ((0 => GL.Buffers.Color_Attachment0,
+           ([0 => GL.Buffers.Color_Attachment0,
              1 => GL.Buffers.Color_Attachment1,
-             2 => GL.Buffers.Color_Attachment2));
+             2 => GL.Buffers.Color_Attachment2]);
       end if;
 
       Program_Single_Scattering.Use_Program;
@@ -597,7 +597,7 @@ package body Orka.Features.Atmosphere is
         (Luminance_From_Radiance_Mat3);
       for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
          Program_Single_Scattering.Uniform ("layer").Set_Int (Layer);
-         Draw_Quad ((False, False, Blend, Blend));
+         Draw_Quad ([False, False, Blend, Blend]);
       end loop;
 
       -------------------------------------------------------------------------
@@ -612,13 +612,13 @@ package body Orka.Features.Atmosphere is
          FBO_Scattering.Detach (Color_Attachment_2);
          FBO_Scattering.Detach (Color_Attachment_3);
          FBO_Scattering.Set_Draw_Buffers
-           ((0 => GL.Buffers.Color_Attachment0));
+           ([0 => GL.Buffers.Color_Attachment0]);
 
          Program_Scattering_Density.Use_Program;
          Program_Scattering_Density.Uniform ("scattering_order").Set_Int (Scattering_Order);
          for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
             Program_Scattering_Density.Uniform ("layer").Set_Int (Layer);
-            Draw_Quad ((1 .. 0 => <>));
+            Draw_Quad ([1 .. 0 => <>]);
          end loop;
 
          --  Compute the indirect irradiance, store it in Delta_Irradiance_Texture
@@ -627,14 +627,14 @@ package body Orka.Features.Atmosphere is
          FBO_Irradiance.Attach (Delta_Irradiance_Texture, Color_Attachment_0);
          FBO_Irradiance.Attach (Result.Irradiance_Texture, Color_Attachment_1);
          FBO_Irradiance.Set_Draw_Buffers
-           ((0 => GL.Buffers.Color_Attachment0,
-             1 => GL.Buffers.Color_Attachment1));
+           ([0 => GL.Buffers.Color_Attachment0,
+             1 => GL.Buffers.Color_Attachment1]);
 
          Program_Indirect_Irradiance.Use_Program;
          Program_Indirect_Irradiance.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
          Program_Indirect_Irradiance.Uniform ("scattering_order").Set_Int (Scattering_Order - 1);
-         Draw_Quad ((False, True));
+         Draw_Quad ([False, True]);
 
          --  Compute the multiple scattering, store it in
          --  Delta_Multiple_Scattering_Texture, and accumulate it in
@@ -643,15 +643,15 @@ package body Orka.Features.Atmosphere is
          FBO_Scattering.Attach (Delta_Multiple_Scattering_Texture, Color_Attachment_0);
          FBO_Scattering.Attach (Result.Scattering_Texture, Color_Attachment_1);
          FBO_Scattering.Set_Draw_Buffers
-           ((0 => GL.Buffers.Color_Attachment0,
-             1 => GL.Buffers.Color_Attachment1));
+           ([0 => GL.Buffers.Color_Attachment0,
+             1 => GL.Buffers.Color_Attachment1]);
 
          Program_Multiple_Scattering.Use_Program;
          Program_Multiple_Scattering.Uniform ("luminance_from_radiance").Set_Matrix
           (Luminance_From_Radiance_Mat3);
          for Layer in 0 .. Integer_32 (Constants.Scattering_Texture_Depth - 1) loop
             Program_Multiple_Scattering.Uniform ("layer").Set_Int (Layer);
-            Draw_Quad ((False, True));
+            Draw_Quad ([False, True]);
          end loop;
       end loop;
    end Precompute;
@@ -765,9 +765,9 @@ package body Orka.Features.Atmosphere is
 
       if Object.Data.Num_Precomputed_Wavelengths <= 3 then
          declare
-            Lambdas : constant Float_64_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
+            Lambdas : constant Float_64_Array := [K_Lambda_R, K_Lambda_G, K_Lambda_B];
             Luminance_From_Radiance : constant Float_32_Array
-              := (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+              := [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
          begin
             Object.Precompute
               (Textures,
@@ -786,9 +786,9 @@ package body Orka.Features.Atmosphere is
             for I in 0 .. Iterations - 1 loop
                declare
                   Lambdas : constant Float_64_Array :=
-                    (K_Lambda_Min + (3.0 * Float_64 (I) + 0.5) * D_Lambda,
+                    [K_Lambda_Min + (3.0 * Float_64 (I) + 0.5) * D_Lambda,
                      K_Lambda_Min + (3.0 * Float_64 (I) + 1.5) * D_Lambda,
-                     K_Lambda_Min + (3.0 * Float_64 (I) + 2.5) * D_Lambda);
+                     K_Lambda_Min + (3.0 * Float_64 (I) + 2.5) * D_Lambda];
 
                   function Coeff (Lambda : Float_64; Component : Size) return Float_32 is
                      --  Note that we don't include MAX_LUMINOUS_EFFICACY here, to avoid
@@ -807,9 +807,9 @@ package body Orka.Features.Atmosphere is
                   end Coeff;
 
                   Luminance_From_Radiance : constant Float_32_Array :=
-                    (Coeff (Lambdas (0), 0), Coeff (Lambdas (0), 1), Coeff (Lambdas (0), 2),
+                    [Coeff (Lambdas (0), 0), Coeff (Lambdas (0), 1), Coeff (Lambdas (0), 2),
                      Coeff (Lambdas (1), 0), Coeff (Lambdas (1), 1), Coeff (Lambdas (1), 2),
-                     Coeff (Lambdas (2), 0), Coeff (Lambdas (2), 1), Coeff (Lambdas (2), 2));
+                     Coeff (Lambdas (2), 0), Coeff (Lambdas (2), 1), Coeff (Lambdas (2), 2)];
                begin
                   Object.Precompute
                     (Textures,
@@ -827,7 +827,7 @@ package body Orka.Features.Atmosphere is
          --  want the transmittance at kLambdaR, kLambdaG, kLambdaB instead, so we
          --  must recompute it here for these 3 wavelengths:
          declare
-            Lambdas : constant Float_64_Array := (K_Lambda_R, K_Lambda_G, K_Lambda_B);
+            Lambdas : constant Float_64_Array := [K_Lambda_R, K_Lambda_G, K_Lambda_B];
 
             use Orka.Rendering.Programs;
 
@@ -848,10 +848,10 @@ package body Orka.Features.Atmosphere is
             FBO_Transmittance.Use_Framebuffer;
             FBO_Transmittance.Attach (Textures.Transmittance_Texture);
             FBO_Transmittance.Set_Draw_Buffers
-              ((0 => GL.Buffers.Color_Attachment0));
+              ([0 => GL.Buffers.Color_Attachment0]);
 
             Program_Transmittance.Use_Program;
-            Draw_Quad ((1 .. 0 => <>));
+            Draw_Quad ([1 .. 0 => <>]);
          end;
       end if;
 
@@ -874,7 +874,7 @@ package body Orka.Features.Atmosphere is
       --  concatenated with functions.frag, and with Atmosphere_Fragment_Shader, to
       --  create the fragment shader
       Shader_Source : constant String
-        := Object.Shader_Header ((K_Lambda_R, K_Lambda_G, K_Lambda_B)) &
+        := Object.Shader_Header ([K_Lambda_R, K_Lambda_G, K_Lambda_B]) &
            (if Precompute_Illuminance then "" else "#define RADIANCE_API_ENABLED" & LF) &
            Atmosphere_Fragment_Shader;
    begin

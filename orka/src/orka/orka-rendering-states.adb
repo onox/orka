@@ -38,7 +38,7 @@ package body Orka.Rendering.States is
             GL.Toggles.Set (Scissor_Test, Current.Scissor_Box /= Empty_Box);
          end if;
 
-         GL.Viewports.Set_Scissor_Rectangles ((0 => Current.Scissor_Box));
+         GL.Viewports.Set_Scissor_Rectangles ([0 => Current.Scissor_Box]);
       end if;
 
       if Current.Cull_Face /= Previous.Cull_Face then

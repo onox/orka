@@ -142,11 +142,11 @@ package body AWT.Registry is
 
       Seat.Pointer_State :=
         (Focused  => True,
-         Position => (X => AWT.Inputs.Fixed (Surface_X),
-                      Y => AWT.Inputs.Fixed (Surface_Y)),
+         Position => [X => AWT.Inputs.Fixed (Surface_X),
+                      Y => AWT.Inputs.Fixed (Surface_Y)],
          others   => <>);
       Seat.Scroll_Discrete := False;
-      Seat.Scrolling       := (others => False);
+      Seat.Scrolling       := [others => False];
 
       Seat.Pointer_Enter_Serial := Serial;
 
@@ -186,8 +186,8 @@ package body AWT.Registry is
       use all type AWT.Inputs.Dimension;
    begin
       Seat.Pointer_State.Position :=
-        (X => AWT.Inputs.Fixed (Surface_X),
-         Y => AWT.Inputs.Fixed (Surface_Y));
+        [X => AWT.Inputs.Fixed (Surface_X),
+         Y => AWT.Inputs.Fixed (Surface_Y)];
    end Pointer_Motion;
 
    procedure Pointer_Button
@@ -218,8 +218,8 @@ package body AWT.Registry is
       Seat.Window.Set_State (Seat.Pointer_State);
 
       Seat.Scroll_Discrete := False;
-      Seat.Pointer_State.Scroll   := (others => 0.0);
-      Seat.Pointer_State.Relative := (others => 0.0);
+      Seat.Pointer_State.Scroll   := [others => 0.0];
+      Seat.Pointer_State.Relative := [others => 0.0];
 
       if not Seat.Pointer_State.Focused then
          Seat.Window := null;
@@ -357,7 +357,7 @@ package body AWT.Registry is
       Seat.Keyboard_Enter_Serial := Serial;
 
       Seat.Keyboard_State.Focused := True;
-      Seat.Keyboard_State.Buttons := (others => Released);
+      Seat.Keyboard_State.Buttons := [others => Released];
       for Key of Keys loop
          Seat.Keyboard_State.Buttons (OS.Code_To_Button (Key)) := Pressed;
       end loop;
@@ -382,7 +382,7 @@ package body AWT.Registry is
          raise Program_Error;
       end if;
 
-      Seat.Keyboard_State.Buttons := (others => Released);
+      Seat.Keyboard_State.Buttons := [others => Released];
       Seat.Keyboard_State.Focused := False;
 
       Seat.Keyboard_Window.Set_State (Seat.Keyboard_State);
@@ -1140,7 +1140,7 @@ package body AWT.Registry is
          end if;
       end loop;
 
-      return Result : AWT.Monitors.Monitor_Array (1 .. Count) := (others => First_Monitor) do
+      return Result : AWT.Monitors.Monitor_Array (1 .. Count) := [others => First_Monitor] do
          declare
             Index : Positive := Result'First;
          begin

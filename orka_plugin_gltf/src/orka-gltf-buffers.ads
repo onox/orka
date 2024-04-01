@@ -31,7 +31,7 @@ package Orka.glTF.Buffers is
    for Buffer_Kind'Size use GL.Low_Level.Enum'Size;
 
    Target_Kinds : constant array (Integer range <>) of Buffer_Kind :=
-     (34962 => Array_Buffer, 34963 => Element_Array_Buffer);
+     [34962 => Array_Buffer, 34963 => Element_Array_Buffer];
 
    subtype Buffer is Byte_Array_Pointers.Pointer;
 

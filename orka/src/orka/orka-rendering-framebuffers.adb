@@ -45,7 +45,7 @@ package body Orka.Rendering.Framebuffers is
 
          Result.GL_Framebuffer.Set_Default_Samples (Samples);
 
-         Result.Set_Draw_Buffers ((0 => GL.Buffers.Color_Attachment0));
+         Result.Set_Draw_Buffers ([0 => GL.Buffers.Color_Attachment0]);
          Result.Set_Read_Buffer (GL.Buffers.Color_Attachment0);
       end return;
    end Create_Framebuffer;
@@ -64,7 +64,7 @@ package body Orka.Rendering.Framebuffers is
          others  => <>)
       do
          --  Assumes a double-buffered context (Front_Left for single-buffered)
-         Result.Set_Draw_Buffers ((0 => GL.Buffers.Back_Left));
+         Result.Set_Draw_Buffers ([0 => GL.Buffers.Back_Left]);
          Result.Set_Read_Buffer (GL.Buffers.Back_Left);
       end return;
    end Create_Default_Framebuffer;
@@ -91,11 +91,11 @@ package body Orka.Rendering.Framebuffers is
 
       --  Adjust viewport
       GL.Viewports.Set_Viewports
-        ((0 => (X      => 0.0,
+        ([0 => (X      => 0.0,
                 Y      => 0.0,
                 Width  => Single (Object.Width),
                 Height => Single (Object.Height))
-        ));
+        ]);
 
       --  Check attachments
       if not Object.Default then
