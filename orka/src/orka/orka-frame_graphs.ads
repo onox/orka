@@ -241,6 +241,10 @@ package Orka.Frame_Graphs is
    --  To pretty print the JSON in the file, execute:
    --
    --    python3 -m json.tool < graph.json
+   --
+   --  To render the graph in the JSON file on the screen, run:
+   --
+   --    python3 path/to/orka/json-to-digraph.py graph.json | python3 -m xdot -
 
 private
 
