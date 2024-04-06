@@ -159,18 +159,6 @@ package GL.Objects.Framebuffers is
 
    ----------------------------------------------------------------------------
 
-   function Max_Framebuffer_Width return Size
-     with Post => Max_Framebuffer_Width'Result >= 16_384;
-
-   function Max_Framebuffer_Height return Size
-     with Post => Max_Framebuffer_Height'Result >= 16_384;
-
-   function Max_Framebuffer_Layers return Size
-     with Post => Max_Framebuffer_Layers'Result >= 2_048;
-
-   function Max_Framebuffer_Samples return Size
-     with Post => Max_Framebuffer_Samples'Result >= 4;
-
    procedure Blit (Read_Object, Draw_Object : Framebuffer;
                    Src_X0, Src_Y0, Src_X1, Src_Y1,
                    Dst_X0, Dst_Y0, Dst_X1, Dst_Y1 : Int;

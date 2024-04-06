@@ -18,8 +18,7 @@ package GL.Enums.Getter is
    pragma Preelaborate;
 
    type Parameter is
-     (Polygon_Mode,
-      Unpack_Alignment,
+     (Unpack_Alignment,
       Pack_Alignment,
       Major_Version,
       Minor_Version,
@@ -48,10 +47,6 @@ package GL.Enums.Getter is
       Debug_Logged_Messages,
       Max_Compute_Work_Group_Count,
       Max_Compute_Fixed_Group_Size,
-      Max_Framebuffer_Width,
-      Max_Framebuffer_Height,
-      Max_Framebuffer_Layers,
-      Max_Framebuffer_Samples,
       Max_Compute_Variable_Group_Invocations,
       Max_Compute_Variable_Group_Size);
 
@@ -61,8 +56,7 @@ package GL.Enums.Getter is
 private
 
    for Parameter use
-     (Polygon_Mode                  => 16#0B40#,
-      Unpack_Alignment              => 16#0CF5#,
+     (Unpack_Alignment              => 16#0CF5#,
       Pack_Alignment                => 16#0D05#,
       Major_Version                 => 16#821B#,
       Minor_Version                 => 16#821C#,
@@ -91,10 +85,6 @@ private
       Debug_Logged_Messages         => 16#9145#,
       Max_Compute_Work_Group_Count  => 16#91BE#,
       Max_Compute_Fixed_Group_Size  => 16#91BF#,
-      Max_Framebuffer_Width         => 16#9315#,
-      Max_Framebuffer_Height        => 16#9316#,
-      Max_Framebuffer_Layers        => 16#9317#,
-      Max_Framebuffer_Samples       => 16#9318#,
       Max_Compute_Variable_Group_Invocations => 16#9344#,
       Max_Compute_Variable_Group_Size        => 16#9345#);
    for Parameter'Size use Low_Level.Enum'Size;
