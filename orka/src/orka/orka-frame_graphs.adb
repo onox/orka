@@ -956,22 +956,16 @@ package body Orka.Frame_Graphs is
       end return;
    end Output_Resources;
 
-   procedure Determine_Present_Mode
-     (Object           : in out Renderable_Graph;
-      Location         : Resources.Locations.Location_Ptr;
-      Default          : Rendering.Framebuffers.Framebuffer;
-      Last_Render_Pass : Render_Pass_Data;
-      Resource         : Resource_Data)
+   procedure Initialize_Present_Pass
+     (Object   : in out Renderable_Graph;
+      Location : Resources.Locations.Location_Ptr;
+      Default  : Rendering.Framebuffers.Framebuffer;
+      Resource : Resource_Data)
    is
       package Programs renames Orka.Rendering.Programs;
 
-      Default_Size : constant Size_3D := [Default.Width, Default.Height, 1];
-
       Format : constant Attachment_Format :=
         Get_Attachment_Format (Resource.Data.Description.Format);
-
-      Attachments : Natural := 0;
-      Has_Non_Color_Attachment : Boolean := False;
    begin
       Object.Present_Program :=
          Programs.Create_Program (Programs.Modules.Create_Module
@@ -996,7 +990,23 @@ package body Orka.Frame_Graphs is
         (Orka.Types.Singles.Vector4'
           (Orka.Float_32 (Default.Width), Orka.Float_32 (Default.Height), 0.0, 0.0));
       Object.Present_Program.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
+   end Initialize_Present_Pass;
 
+   procedure Determine_Present_Mode
+     (Object           : in out Renderable_Graph;
+      Location         : Resources.Locations.Location_Ptr;
+      Default          : Rendering.Framebuffers.Framebuffer;
+      Last_Render_Pass : Render_Pass_Data;
+      Resource         : Resource_Data)
+   is
+      Default_Size : constant Size_3D := [Default.Width, Default.Height, 1];
+
+      Format : constant Attachment_Format :=
+        Get_Attachment_Format (Resource.Data.Description.Format);
+
+      Attachments : Natural := 0;
+      Has_Non_Color_Attachment : Boolean := False;
+   begin
       --  Mode 1: Previous render pass has one FB color attachment (this resource)
       --    Action: Previous render pass can use the default framebuffer
       --
@@ -1162,6 +1172,10 @@ package body Orka.Frame_Graphs is
    begin
       Object.Determine_Present_Mode (Location, Default, Object.Graph.Passes (Last_Pass_Index), Present_Resource);
 
+      if Object.Present_Mode = Render_To_Default then
+         Object.Initialize_Present_Pass (Location, Default, Present_Resource);
+      end if;
+
       --  Use the ordering of render passes computed in Compute_Ordering_Render_Passes
       for I in 1 .. Object.Pass_Count loop
          declare
@@ -1257,15 +1271,7 @@ package body Orka.Frame_Graphs is
                   Height := Size'Max (Height, Resource.Data.Description.Size (Y));
                end loop;
 
-               if Pass.Write_Count = 0 then
-                  pragma Assert (Pass.Side_Effect);
-
-                  --  Use width and height from default framebuffer
-                  Width  := Default.Width;
-                  Height := Default.Height;
-               else
-                  pragma Assert (Width > 0 and Height > 0);
-               end if;
+               pragma Assert (if Pass.Write_Count = 0 then Pass.Side_Effect else Width > 0 and Height > 0);
 
                declare
                   use type GL.Buffers.Color_Buffer_List;
