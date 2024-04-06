@@ -36,12 +36,11 @@ const Vertex vertices[] = {
     {vec2(-1.0,  3.0), vec2(0.0, 2.0)},
 };
 
-out VS_OUT {
-    vec2 uv;
-} vs_out;
+out gl_PerVertex {
+    vec4 gl_Position;
+};
 
 void main(void) {
     const Vertex vertex = vertices[gl_VertexID];
     gl_Position = vec4(vertex.position, 0.0, 1.0);
-    vs_out.uv = vertex.uv;
 }

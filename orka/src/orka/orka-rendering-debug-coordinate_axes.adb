@@ -23,22 +23,24 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Coordinate_Axes is
 
    function Create_Coordinate_Axes
-     (Location : Resources.Locations.Location_Ptr) return Coordinate_Axes
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return Coordinate_Axes
    is
       use Rendering.Programs;
+      use Rendering.Programs.Shaders;
    begin
       return Result : Coordinate_Axes :=
-        (Program => Create_Program (Modules.Create_Module
-           (Location,
-            VS => "debug/axes.vert",
-            GS => "debug/axes.geom",
-            FS => "debug/axes.frag")),
+        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/axes.vert"),
+                            Geometry_Shader => Create_Program (Location, Geometry_Shader, "debug/axes.geom"),
+                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/axes.frag"),
+                            others          => Empty),
+         Context => Context'Access,
          others  => <>)
       do
-         Result.Uniform_View := Result.Program.Uniform ("view");
-         Result.Uniform_Proj := Result.Program.Uniform ("proj");
-         Result.Uniform_Size := Result.Program.Uniform ("size");
-         Result.Uniform_Axis := Result.Program.Uniform ("axisLength");
+         Result.Uniform_View := Result.Program (Vertex_Shader).Value.Uniform ("view");
+         Result.Uniform_Proj := Result.Program (Vertex_Shader).Value.Uniform ("proj");
+         Result.Uniform_Size := Result.Program (Vertex_Shader).Value.Uniform ("size");
+         Result.Uniform_Axis := Result.Program (Vertex_Shader).Value.Uniform ("axisLength");
       end return;
    end Create_Coordinate_Axes;
 
@@ -60,7 +62,7 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
    overriding procedure Run (Object : Axes_Program_Callback) is
       use all type Rendering.Buffers.Indexed_Buffer_Target;
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Transforms.Bind (Shader_Storage, 0);
       Orka.Rendering.Drawing.Draw (GL.Types.Lines, 0, 6, Instances => Object.Data.Transforms.Length);
    end Run;

@@ -16,7 +16,10 @@
 
 private with Ada.Finalization;
 
+private with GL.Objects.Pipelines;
 private with GL.Objects.Vertex_Arrays;
+
+private with Orka.Types;
 
 private with EGL.Debug;
 private with EGL.Errors;
@@ -44,12 +47,21 @@ package Orka.Contexts.EGL is
 
 private
 
+   type GL_Context_Type is record
+      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+      Pipeline     : GL.Objects.Pipelines.Pipeline;
+   end record;
+
+   package Optional_GL_Contexts is new Orka.Types.Optionals (GL_Context_Type);
+
+   subtype Optional_GL_Context is Optional_GL_Contexts.Optional;
+
    type EGL_Context is abstract
      limited new Ada.Finalization.Limited_Controlled and Context with
    record
       Version : Context_Version;
       Flags   : Context_Flags;
-      Vertex_Array : GL.Objects.Vertex_Arrays.Vertex_Array_Object;
+      GL_Context     : Optional_GL_Context;
       Previous_State : Orka.Rendering.States.State;
    end record;
 
@@ -64,6 +76,9 @@ private
 
    overriding
    procedure Update_State (Object : in out EGL_Context; State : Orka.Rendering.States.State);
+
+   overriding
+   procedure Bind_Shaders (Object : EGL_Context; Stages : Orka.Rendering.Programs.Shaders.Shader_Programs);
 
    type Device_EGL_Context is limited new EGL_Context with record
       Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);

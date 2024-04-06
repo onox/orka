@@ -19,20 +19,22 @@ with GL.Low_Level;
 
 package body GL.Objects.Vertex_Arrays is
 
-   procedure Create (Object : in out Vertex_Array_Object) is
+   overriding
+   procedure Initialize_Id (Object : in out Vertex_Array_Object) is
       New_Id : UInt := 0;
    begin
       API.Create_Vertex_Arrays.Ref (1, New_Id);
       Object.Reference.GL_Id := New_Id;
 
       API.Bind_Vertex_Array.Ref (Object.Reference.GL_Id);
-   end Create;
+   end Initialize_Id;
 
-   procedure Delete (Object : in out Vertex_Array_Object) is
+   overriding
+   procedure Delete_Id (Object : in out Vertex_Array_Object) is
       Arr : constant Low_Level.UInt_Array := [Object.Reference.GL_Id];
    begin
       API.Delete_Vertex_Arrays.Ref (1, Arr);
       Object.Reference.GL_Id := 0;
-   end Delete;
+   end Delete_Id;
 
 end GL.Objects.Vertex_Arrays;

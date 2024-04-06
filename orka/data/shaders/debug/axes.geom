@@ -23,9 +23,9 @@
 layout(lines) in;
 layout(triangle_strip, max_vertices = 4 * NOSE_SIDES + 4) out;
 
-uniform mat4 proj;
-uniform uvec2 size;
-uniform vec4 axisLength;
+in mat4 vs_proj[];
+in uvec2 vs_size[];
+in vec4 vs_axisLength[];
 
 in vec4 vs_color[];
 
@@ -51,6 +51,10 @@ mat3 rotate(in const vec3 axis, in const float angle) {
 }
 
 void main() {
+    const mat4 proj = vs_proj[0];
+    const uvec2 size = vs_size[0];
+    const vec4 axisLength = vs_axisLength[0];
+
     const vec2 v0 = (proj * gl_in[0].gl_Position).xy;
     const vec2 v1 = (proj * gl_in[1].gl_Position).xy;
 

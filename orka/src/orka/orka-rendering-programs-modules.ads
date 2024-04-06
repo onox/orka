@@ -42,6 +42,26 @@ package Orka.Rendering.Programs.Modules is
 
    Shader_Compile_Error : exception;
 
+   type Shader_Module is new Module with private;
+
+   function Kind (Object : Shader_Module) return Shader_Kind;
+
+   type Shader_Module_Array is array (Positive range <>) of aliased Shader_Module;
+
+   function Create_Module
+     (Location : Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Path     : String) return Shader_Module;
+
+   overriding
+   function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
+     return Shader_Module is (raise Program_Error);
+
+   overriding
+   function Create_Module
+     (Location : Resources.Locations.Location_Ptr;
+      VS, TCS, TES, GS, FS, CS : String := "") return Shader_Module is (raise Program_Error);
+
 private
 
    use type GL.Objects.Shaders.Shader;
@@ -54,5 +74,11 @@ private
    type Module is tagged record
       Shaders : Shader_Array;
    end record;
+
+   type Shader_Module is new Module with record
+      Kind : Shader_Kind;
+   end record;
+
+   function Kind (Object : Shader_Module) return Shader_Kind is (Object.Kind);
 
 end Orka.Rendering.Programs.Modules;

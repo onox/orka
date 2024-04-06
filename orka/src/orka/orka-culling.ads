@@ -14,66 +14,56 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with GL.Low_Level.Enums;
-
+with Orka.Algorithms.Prefix_Sums;
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
-private with Orka.Algorithms.Prefix_Sums;
+private with Orka.Rendering.Textures;
 
 package Orka.Culling is
    pragma Preelaborate;
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Culler is tagged private;
-
-   type Culler_Ptr is not null access all Culler'Class;
+   type Culler (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4);
 
-   function Create_Culler
-     (Location : Resources.Locations.Location_Ptr) return Culler;
-
-   -----------------------------------------------------------------------------
-
-   type Cull_Instance is tagged private;
-
    procedure Cull
-     (Object : in out Cull_Instance;
+     (Object : in out Culler;
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Bounds, Commands : Rendering.Buffers.Buffer;
       Compacted_Transforms, Compacted_Commands : out Rendering.Buffers.Buffer;
       Instances : Natural);
 
-   function Create_Instance
-     (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
+   function Create_Culler
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
+      Transforms, Commands : Natural) return Culler
    with Pre => Transforms mod 4 = 0;
 
 private
 
-   package LE renames GL.Low_Level.Enums;
+   package LE renames Rendering.Textures.LE;
    package Programs renames Rendering.Programs;
 
-   type Culler is tagged record
-      Program_Frustum : Programs.Program;
-      Program_Compact : Programs.Program;
-      PS_Factory      : Algorithms.Prefix_Sums.Factory;
+   type Culler (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program_Frustum : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Compact : Rendering.Programs.Shaders.Shader_Programs;
 
       Uniform_VP : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_CF_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
       Uniform_CC_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
-   end record;
 
-   type Cull_Instance is tagged record
       Buffer_Visibles : Rendering.Buffers.Buffer (Types.UInt_Type);
       Buffer_Indices  : Rendering.Buffers.Buffer (Types.UInt_Type);
 
-      Culler          : Culler_Ptr;
-      Prefix_Sum      : Algorithms.Prefix_Sums.Prefix_Sum;
+      Prefix_Sum      : Algorithms.Prefix_Sums.Prefix_Sum (Context);
 
       Work_Groups : Natural;
 

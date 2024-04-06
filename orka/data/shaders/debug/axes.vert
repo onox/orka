@@ -27,6 +27,10 @@ layout(std430, binding = 0) readonly restrict buffer matrixBuffer {
     mat4 world[];
 };
 
+out mat4 vs_proj;
+out uvec2 vs_size;
+out vec4 vs_axisLength;
+
 out vec4 vs_color;
 
 const vec3 vertices[] = {
@@ -46,6 +50,10 @@ const vec3 colors[] = {
     vec3(1.0, 0.0, 0.0),
     vec3(0.0, 1.0, 0.0),
     vec3(0.0, 0.0, 1.0),
+};
+
+out gl_PerVertex {
+    vec4 gl_Position;
 };
 
 void main() {
@@ -77,4 +85,8 @@ void main() {
     gl_Position = (view * (world[transformID] * localPos));
 
     vs_color = vec4(colors[gl_VertexID / 2], 1.0);
+
+    vs_proj = proj;
+    vs_size = size;
+    vs_axisLength = axisLength;
 }

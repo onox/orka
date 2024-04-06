@@ -16,6 +16,7 @@
 
 with GL.Buffers;
 with GL.Context;
+with GL.Objects.Programs;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types;
@@ -101,7 +102,7 @@ package body Orka.Contexts.EGL is
       GL.Toggles.Enable (GL.Toggles.Cull_Face);
       GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
-      Object.Vertex_Array.Create;
+      Object.GL_Context := (Is_Present => True, Value => <>);
    end Post_Initialize;
 
    function Create_Context
@@ -161,8 +162,6 @@ package body Orka.Contexts.EGL is
       if Object.Flags.Debug then
          Log (Loggers.Debug, "Shutting down EGL");
       end if;
-
-      Object.Vertex_Array.Delete;
    end Finalize;
 
    overriding
@@ -171,6 +170,30 @@ package body Orka.Contexts.EGL is
       Orka.Rendering.States.Apply_Changes (Object.Previous_State, State);
       Object.Previous_State := State;
    end Update_State;
+
+   overriding
+   procedure Bind_Shaders (Object : EGL_Context; Stages : Orka.Rendering.Programs.Shaders.Shader_Programs) is
+      use all type Orka.Rendering.Programs.Shader_Kind;
+   begin
+      Object.GL_Context.Value.Pipeline.Use_Program_Stages ((others => True), GL.Objects.Programs.Internal.No_Program);
+
+      for Stage in Stages'Range when Stages (Stage).Is_Present loop
+         Object.GL_Context.Value.Pipeline.Use_Program_Stages
+           ((case Stage is
+               when Vertex_Shader          => (Vertex_Shader          => True, others => False),
+               when Fragment_Shader        => (Fragment_Shader        => True, others => False),
+               when Geometry_Shader        => (Geometry_Shader        => True, others => False),
+               when Tess_Control_Shader    => (Tess_Control_Shader    => True, others => False),
+               when Tess_Evaluation_Shader => (Tess_Evaluation_Shader => True, others => False),
+               when Compute_Shader         => (Compute_Shader         => True, others => False)),
+            Stages (Stage).Value.GL_Program);
+      end loop;
+
+      if Object.Flags.Debug and then not Object.Flags.No_Error and then not Object.GL_Context.Value.Pipeline.Validate then
+         Log (Loggers.Error, "Validation of shader programs failed");
+      end if;
+      Object.GL_Context.Value.Pipeline.Bind;
+   end Bind_Shaders;
 
    overriding
    procedure Make_Current (Object : Device_EGL_Context) is

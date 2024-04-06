@@ -38,8 +38,12 @@ layout(std430, binding = 2) readonly restrict buffer lineBuffer {
     Line lines[];
 };
 
-out vec4  vs_color;
-out float vs_weight;
+layout(location = 0) out vec4  vs_color;
+layout(location = 1) out float vs_weight;
+
+out gl_PerVertex {
+    vec4 gl_Position;
+};
 
 void main() {
     const int instanceID = gl_InstanceID;

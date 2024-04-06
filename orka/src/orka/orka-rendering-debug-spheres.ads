@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Types;
 
@@ -28,10 +30,11 @@ package Orka.Rendering.Debug.Spheres is
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Sphere is tagged limited private;
+   type Sphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Sphere
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
       Normals  : Boolean := False;
       Cells_Horizontal : Positive := 36;
@@ -67,8 +70,8 @@ private
    overriding procedure Run (Object : Spheres_Hidden_Program_Callback);
    overriding procedure Run (Object : Spheres_Visible_Program_Callback);
 
-   type Sphere is tagged limited record
-      Program : Rendering.Programs.Program;
+   type Sphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program : Rendering.Programs.Shaders.Shader_Programs;
 
       Cells_Horizontal, Cells_Vertical : Positive;
 

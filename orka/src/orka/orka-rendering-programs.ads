@@ -14,11 +14,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-private with GL.Objects.Programs;
+with GL.Objects.Programs;
 
 with GL.Types.Compute;
 
 with Orka.Rendering.Buffers;
+with Orka.Resources.Locations;
 
 limited with Orka.Rendering.Programs.Modules;
 limited with Orka.Rendering.Programs.Uniforms;
@@ -30,11 +31,8 @@ package Orka.Rendering.Programs is
 
    type Program is tagged private;
 
-   function Create_Program (Module    : Programs.Modules.Module;
-                            Separable : Boolean := False) return Program;
-
-   function Create_Program (Modules   : Programs.Modules.Module_Array;
-                            Separable : Boolean := False) return Program;
+   function Create_Program (Module  : Programs.Modules.Module) return Program;
+   function Create_Program (Modules : Programs.Modules.Module_Array) return Program;
 
    procedure Use_Program (Object : Program);
    --  Use the program during rendering
@@ -85,10 +83,49 @@ package Orka.Rendering.Programs is
 
    Program_Link_Error : exception;
 
+   function GL_Program (Object : Program) return GL.Objects.Programs.Program;
+
+   -----------------------------------------------------------------------------
+
+   type Shader_Kind is
+     (Vertex_Shader, Tess_Control_Shader, Tess_Evaluation_Shader, Geometry_Shader, Fragment_Shader, Compute_Shader);
+
+   type Shader_Program is new Program with private;
+
+   function Kind (Object : Shader_Program) return Shader_Kind;
+
+   overriding function Create_Program (Module  : Programs.Modules.Module) return Shader_Program;
+   overriding function Create_Program (Modules : Programs.Modules.Module_Array) return Shader_Program;
+
+   function Create_Program (Module  : Programs.Modules.Shader_Module) return Shader_Program;
+   function Create_Program (Modules : Programs.Modules.Shader_Module_Array) return Shader_Program;
+
+   type String_Access is not null access constant String;
+
+   type String_Array is array (Positive range <>) of String_Access;
+
+   function Create_Program
+     (Location : Orka.Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Paths    : String_Array) return Shader_Program;
+
+   function Create_Program
+     (Location : Orka.Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Path     : String) return Shader_Program;
+
 private
 
    type Program is tagged record
       GL_Program : GL.Objects.Programs.Program;
    end record;
+
+   function GL_Program (Object : Program) return GL.Objects.Programs.Program is (Object.GL_Program);
+
+   type Shader_Program is new Program with record
+      Kind : Shader_Kind;
+   end record;
+
+   function Kind (Object : Shader_Program) return Shader_Kind is (Object.Kind);
 
 end Orka.Rendering.Programs;

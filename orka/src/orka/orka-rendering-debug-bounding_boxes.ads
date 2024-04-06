@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Types;
 
@@ -28,10 +30,11 @@ package Orka.Rendering.Debug.Bounding_Boxes is
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Bounding_Box is tagged limited private;
+   type Bounding_Box (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Bounding_Box
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box;
 
    function Create_Graph
@@ -57,8 +60,8 @@ private
    overriding procedure Run (Object : BBox_Hidden_Program_Callback);
    overriding procedure Run (Object : BBox_Visible_Program_Callback);
 
-   type Bounding_Box is tagged limited record
-      Program : Rendering.Programs.Program;
+   type Bounding_Box (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program : Rendering.Programs.Shaders.Shader_Programs;
 
       Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);

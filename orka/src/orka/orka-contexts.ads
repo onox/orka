@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Orka.Rendering.States;
+with Orka.Rendering.Programs.Shaders;
 with Orka.Windows;
 
 package Orka.Contexts is
@@ -53,6 +54,8 @@ package Orka.Contexts is
       State  : Orka.Rendering.States.State) is abstract;
    --  Update those parts of the rendering state which have changed
    --  compared to the previous state
+
+   procedure Bind_Shaders (Object : Context; Stages : Orka.Rendering.Programs.Shaders.Shader_Programs) is abstract;
 
    type Task_Kind is (Current_Task, Any_Task);
 

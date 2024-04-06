@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Types;
 
@@ -28,10 +30,11 @@ package Orka.Rendering.Debug.Lines is
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Line is tagged limited private;
+   type Line (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Line
-     (Location : Resources.Locations.Location_Ptr) return Line;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return Line;
 
    function Create_Graph
      (Object       : Line;
@@ -65,8 +68,8 @@ private
    overriding procedure Run (Object : Line_Hidden_Program_Callback);
    overriding procedure Run (Object : Line_Visible_Program_Callback);
 
-   type Line is tagged limited record
-      Program : Rendering.Programs.Program;
+   type Line (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program : Rendering.Programs.Shaders.Shader_Programs;
 
       Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
 

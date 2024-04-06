@@ -21,16 +21,11 @@ package GL.Objects.Vertex_Arrays is
    --  A single VAO is manually created and binded after the context
    --  is made current.
 
-   procedure Create (Object : in out Vertex_Array_Object);
-   procedure Delete (Object : in out Vertex_Array_Object);
+   overriding
+   procedure Initialize_Id (Object : in out Vertex_Array_Object);
 
    overriding
-   procedure Initialize_Id (Object : in out Vertex_Array_Object) is null;
-   --  Null because VAO is created manually
-
-   overriding
-   procedure Delete_Id (Object : in out Vertex_Array_Object) is null;
-   --  Null because VAO is deleted manually
+   procedure Delete_Id (Object : in out Vertex_Array_Object);
 
    overriding
    function Identifier (Object : Vertex_Array_Object) return Types.Debug.Identifier is

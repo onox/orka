@@ -14,21 +14,24 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations;
 with Orka.Types;
 
 private with GL.Low_Level.Enums;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
 
 package Orka.Algorithms.FFT is
    pragma Preelaborate;
 
-   type FFT is tagged limited private;
+   type FFT (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_FFT
-     (Location : Resources.Locations.Location_Ptr) return FFT;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return FFT;
 
    use type Types.Element_Type;
 
@@ -45,9 +48,9 @@ private
 
    package LE renames GL.Low_Level.Enums;
 
-   type FFT is tagged limited record
-      Program_FFT : Rendering.Programs.Program;
-      Local_Size  : Positive;
+   type FFT (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program    : Rendering.Programs.Shaders.Shader_Programs;
+      Local_Size : Positive;
 
       Uniform_Size      : Rendering.Programs.Uniforms.Uniform (LE.UInt_Vec2);
       Uniform_Transpose : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);

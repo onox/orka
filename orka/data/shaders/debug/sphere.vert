@@ -62,6 +62,10 @@ vec3 get_vertex(float lonIndex, float latIndex) {
 const uint lonOffset[] = {0, 0, 1, 0, 1, 1};
 const uint latOffset[] = {0, 1, 0, 1, 0, 1};
 
+out gl_PerVertex {
+    vec4 gl_Position;
+};
+
 void main() {
     const int instanceID = gl_InstanceID;
 

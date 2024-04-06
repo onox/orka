@@ -25,30 +25,34 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Spheres is
 
    function Create_Sphere
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
       Normals  : Boolean := False;
       Cells_Horizontal : Positive := 36;
       Cells_Vertical   : Positive := 18) return Sphere
    is
       use Rendering.Programs;
+      use Rendering.Programs.Shaders;
    begin
       return Result : Sphere :=
-        (Program => Create_Program (Modules.Create_Module
-           (Location, VS => "debug/sphere.vert", FS => "debug/sphere.frag")),
+        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/sphere.vert"),
+                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/sphere.frag"),
+                            others          => Empty),
+         Context => Context'Access,
          Cells_Horizontal => Cells_Horizontal,
          Cells_Vertical   => Cells_Vertical,
          others  => <>)
       do
-         Result.Program.Uniform ("color").Set_Vector (Color);
-         Result.Program.Uniform ("useNormal").Set_Boolean (Normals);
+         Result.Program (Fragment_Shader).Value.Uniform ("color").Set_Vector (Color);
+         Result.Program (Fragment_Shader).Value.Uniform ("useNormal").Set_Boolean (Normals);
 
-         Result.Program.Uniform ("cellsHorizontal").Set_Int (GL.Types.Int (Cells_Horizontal));
-         Result.Program.Uniform ("cellsVertical").Set_Int (GL.Types.Int (Cells_Vertical));
+         Result.Program (Vertex_Shader).Value.Uniform ("cellsHorizontal").Set_Int (GL.Types.Int (Cells_Horizontal));
+         Result.Program (Vertex_Shader).Value.Uniform ("cellsVertical").Set_Int (GL.Types.Int (Cells_Vertical));
 
-         Result.Uniform_Visible  := Result.Program.Uniform ("visible");
-         Result.Uniform_View     := Result.Program.Uniform ("view");
-         Result.Uniform_Proj     := Result.Program.Uniform ("proj");
+         Result.Uniform_Visible  := Result.Program (Fragment_Shader).Value.Uniform ("visible");
+         Result.Uniform_View    := Result.Program (Vertex_Shader).Value.Uniform ("view");
+         Result.Uniform_Proj    := Result.Program (Vertex_Shader).Value.Uniform ("proj");
       end return;
    end Create_Sphere;
 
@@ -79,14 +83,14 @@ package body Orka.Rendering.Debug.Spheres is
 
    overriding procedure Run (Object : Spheres_Hidden_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (False);
       Object.Data.Render;
    end Run;
 
    overriding procedure Run (Object : Spheres_Visible_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (True);
       Object.Data.Render;
    end Run;

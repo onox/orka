@@ -23,21 +23,25 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Bounding_Boxes is
 
    function Create_Bounding_Box
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box
    is
       use Rendering.Programs;
+      use Rendering.Programs.Shaders;
    begin
       return Result : Bounding_Box :=
-        (Program => Create_Program (Modules.Create_Module
-           (Location, VS => "debug/bbox.vert", FS => "debug/line.frag")),
+        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/bbox.vert"),
+                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/line.frag"),
+                            others          => Empty),
+         Context => Context'Access,
          others  => <>)
       do
-         Result.Program.Uniform ("color").Set_Vector (Color);
+         Result.Program (Vertex_Shader).Value.Uniform ("color").Set_Vector (Color);
 
-         Result.Uniform_Visible  := Result.Program.Uniform ("visible");
-         Result.Uniform_View     := Result.Program.Uniform ("view");
-         Result.Uniform_Proj     := Result.Program.Uniform ("proj");
+         Result.Uniform_Visible  := Result.Program (Fragment_Shader).Value.Uniform ("visible");
+         Result.Uniform_View     := Result.Program (Vertex_Shader).Value.Uniform ("view");
+         Result.Uniform_Proj     := Result.Program (Vertex_Shader).Value.Uniform ("proj");
       end return;
    end Create_Bounding_Box;
 
@@ -64,14 +68,14 @@ package body Orka.Rendering.Debug.Bounding_Boxes is
 
    overriding procedure Run (Object : BBox_Hidden_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (False);
       Object.Data.Render;
    end Run;
 
    overriding procedure Run (Object : BBox_Visible_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (True);
       Object.Data.Render;
    end Run;

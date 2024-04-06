@@ -22,31 +22,30 @@ with Orka.Rendering.Programs.Modules;
 
 package body Orka.Algorithms.Prefix_Sums is
 
-   function Create_Factory
-     (Location : Resources.Locations.Location_Ptr) return Factory
-   is
-      use Rendering.Programs;
-   begin
-      return
-        (Program_Prefix_Sum => Create_Program (Modules.Create_Module
-           (Location, CS => "algorithms/prefix-sum.comp")),
-         Program_Add        => Create_Program (Modules.Create_Module
-           (Location, CS => "algorithms/prefix-sum-add.comp")));
-   end Create_Factory;
-
    function Create_Prefix_Sum
-     (Object : Factory;
-      Length : Positive) return Prefix_Sum'Class
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
+      Length   : Positive) return Prefix_Sum
    is
       use Rendering.Buffers;
+      use Rendering.Programs;
+      use Rendering.Programs.Shaders;
       use all type Types.Numeric_Type;
+
+      Program_Prefix_Sum : constant Rendering.Programs.Shaders.Shader_Programs :=
+        (Compute_Shader => Create_Program (Location, Compute_Shader, Path => "algorithms/prefix-sum.comp"),
+         others         => Empty);
+
+      Program_Add : constant Rendering.Programs.Shaders.Shader_Programs :=
+        (Compute_Shader => Create_Program (Location, Compute_Shader, Path => "algorithms/prefix-sum-add.comp"),
+         others         => Empty);
 
       Work_Group_Count : constant GL.Types.Compute.Dimension_Size_Array
         := GL.Compute.Max_Compute_Work_Group_Count;
       Max_Group_Count : constant Natural := Natural (Work_Group_Count (X));
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
-        := Object.Program_Prefix_Sum.Compute_Work_Group_Size;
+        := Program_Prefix_Sum (Compute_Shader).Value.Compute_Work_Group_Size;
 
       --  Multiply by 4 because the shader processes 4 numbers per invocation
       Local_Size : constant Natural := 4 * Natural (Work_Group_Size (X));
@@ -65,8 +64,11 @@ package body Orka.Algorithms.Prefix_Sums is
       pragma Assert (Sum_Work_Groups <= Local_Size);
       --  Support prefix sum of work group totals without recursion
    begin
-      return
-        Prefix_Sum'(Programs => Object,
+      return Result : Prefix_Sum :=
+        (Program_Prefix_Sum => Program_Prefix_Sum,
+         Program_Add        => Program_Add,
+         Context            => Context'Access,
+
          Length          => Length,
          Work_Groups     => Work_Groups,
          Sum_Work_Groups => Sum_Work_Groups,
@@ -115,7 +117,8 @@ package body Orka.Algorithms.Prefix_Sums is
       end Add;
    begin
       --  Phase 1a: Compute prefix sum
-      Object.Programs.Program_Prefix_Sum.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Prefix_Sum);
+
       Compute_Sum (Buffer, Object.Buffer_2, Object.Work_Groups);
 
       --  A prefix sum has been computed per work group. If we have multiple
@@ -136,12 +139,12 @@ package body Orka.Algorithms.Prefix_Sums is
             --  Phase 3b: There is no phase 3b because there is only one work group
 
             --  Phase 2b: Add offsets to the prefix sums of the totals
-            Object.Programs.Program_Add.Use_Program;
+            Object.Context.Bind_Shaders (Object.Program_Add);
             Add (Object.Buffer_2, Object.Buffer_3, Object.Work_Groups);
          else
             --  Buffer_3 is unused, we can directly use Buffer_2 for the
             --  offsets (since it's an exclusive sum)
-            Object.Programs.Program_Add.Use_Program;
+            Object.Context.Bind_Shaders (Object.Program_Add);
          end if;
 
          --  Phase 1b: Add offsets to the prefix sums

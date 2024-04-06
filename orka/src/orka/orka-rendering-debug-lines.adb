@@ -23,19 +23,23 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Lines is
 
    function Create_Line
-     (Location : Resources.Locations.Location_Ptr) return Line
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return Line
    is
       use Rendering.Programs;
+      use Rendering.Programs.Shaders;
    begin
       return Result : Line :=
-        (Program => Create_Program (Modules.Create_Module
-           (Location, VS => "debug/line.vert", FS => "debug/line.frag")),
+        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/line.vert"),
+                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/line.frag"),
+                            others          => Empty),
+         Context => Context'Access,
          others  => <>)
       do
-         Result.Uniform_Visible  := Result.Program.Uniform ("visible");
+         Result.Uniform_Visible := Result.Program (Fragment_Shader).Value.Uniform ("visible");
 
-         Result.Uniform_View     := Result.Program.Uniform ("view");
-         Result.Uniform_Proj     := Result.Program.Uniform ("proj");
+         Result.Uniform_View    := Result.Program (Vertex_Shader).Value.Uniform ("view");
+         Result.Uniform_Proj    := Result.Program (Vertex_Shader).Value.Uniform ("proj");
       end return;
    end Create_Line;
 
@@ -64,14 +68,14 @@ package body Orka.Rendering.Debug.Lines is
 
    overriding procedure Run (Object : Line_Hidden_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (False);
       Object.Data.Render;
    end Run;
 
    overriding procedure Run (Object : Line_Visible_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Visible.Set_Boolean (True);
       Object.Data.Render;
    end Run;

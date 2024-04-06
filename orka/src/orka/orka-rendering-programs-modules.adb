@@ -180,13 +180,13 @@ package body Orka.Rendering.Programs.Modules is
    end Print_Log;
 
    procedure Load_And_Compile
-     (Object      : in out Module;
+     (Object      : in out Shader_Holder.Holder;
       Shader_Kind : GL.Objects.Shaders.Shader_Type;
       Location    : Resources.Locations.Location_Ptr;
       Path        : String) is
    begin
       if Path /= "" then
-         pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
+         pragma Assert (Object.Is_Empty);
          declare
             Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
             Source : constant Resources.Byte_Array_Pointers.Pointer
@@ -209,7 +209,7 @@ package body Orka.Rendering.Programs.Modules is
             end if;
             Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path & " (" & Trim_Image (Orka.Strings.Lines (Text)) & " lines)");
 
-            Object.Shaders (Shader_Kind).Replace_Element (Shader);
+            Object.Replace_Element (Shader);
          end;
       end if;
    end Load_And_Compile;
@@ -267,12 +267,33 @@ package body Orka.Rendering.Programs.Modules is
       use GL.Objects.Shaders;
    begin
       return Result : Module do
-         Load_And_Compile (Result, Vertex_Shader, Location, VS);
-         Load_And_Compile (Result, Tess_Control_Shader, Location, TCS);
-         Load_And_Compile (Result, Tess_Evaluation_Shader, Location, TES);
-         Load_And_Compile (Result, Geometry_Shader, Location, GS);
-         Load_And_Compile (Result, Fragment_Shader, Location, FS);
-         Load_And_Compile (Result, Compute_Shader, Location, CS);
+         Load_And_Compile (Result.Shaders (Vertex_Shader), Vertex_Shader, Location, VS);
+         Load_And_Compile (Result.Shaders (Tess_Control_Shader), Tess_Control_Shader, Location, TCS);
+         Load_And_Compile (Result.Shaders (Tess_Evaluation_Shader), Tess_Evaluation_Shader, Location, TES);
+         Load_And_Compile (Result.Shaders (Geometry_Shader), Geometry_Shader, Location, GS);
+         Load_And_Compile (Result.Shaders (Fragment_Shader), Fragment_Shader, Location, FS);
+         Load_And_Compile (Result.Shaders (Compute_Shader), Compute_Shader, Location, CS);
+      end return;
+   end Create_Module;
+
+   function Create_Module
+     (Location : Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Path     : String) return Shader_Module
+   is
+      package Shaders renames GL.Objects.Shaders;
+
+      Shader_Kind : constant Shaders.Shader_Type :=
+        (case Kind is
+           when Vertex_Shader          => Shaders.Vertex_Shader,
+           when Tess_Control_Shader    => Shaders.Tess_Control_Shader,
+           when Tess_Evaluation_Shader => Shaders.Tess_Evaluation_Shader,
+           when Geometry_Shader        => Shaders.Geometry_Shader,
+           when Fragment_Shader        => Shaders.Fragment_Shader,
+           when Compute_Shader         => Shaders.Compute_Shader);
+   begin
+      return Result : Shader_Module := (Kind => Kind, others => <>) do
+         Load_And_Compile (Result.Shaders (Shader_Kind), Shader_Kind, Location, Path);
       end return;
    end Create_Module;
 

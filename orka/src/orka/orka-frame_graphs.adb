@@ -46,7 +46,7 @@ package body Orka.Frame_Graphs is
    overriding
    procedure Run (Object : Present_Program_Callback) is
    begin
-      Object.Data.Program.Use_Program;
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
    end Run;
 
@@ -966,16 +966,17 @@ package body Orka.Frame_Graphs is
 
       Format : constant Attachment_Format :=
         Get_Attachment_Format (Resource.Data.Description.Format);
-   begin
-      Object.Present_Program :=
-         Programs.Create_Program (Programs.Modules.Create_Module
-            (Location,
-             VS => "oversized-triangle.vert",
-             FS => (case Resource.Data.Description.Kind is
-                      when Texture_Rectangle => "frame-graph-present-rect.frag",
-                      when others => "frame-graph-present.frag")));
 
-      Object.Present_Pass.Program := Object.Present_Program'Unchecked_Access;
+      use all type Rendering.Programs.Shader_Kind;
+      use Rendering.Programs.Shaders;
+   begin
+      Object.Present_Pass.Program :=
+         (Vertex_Shader   => From (Programs.Create_Program (Location, Vertex_Shader, "oversized-triangle.vert")),
+          Fragment_Shader => From (Programs.Create_Program
+            (Location, Fragment_Shader, (case Resource.Data.Description.Kind is
+                                           when Texture_Rectangle => "frame-graph-present-rect.frag",
+                                           when others => "frame-graph-present.frag"))),
+          others          => Empty);
 
       --  Program of present pass is needed when rendering to default framebuffer (mode 3)
       Object.Present_Render_Pass :=
@@ -986,10 +987,10 @@ package body Orka.Frame_Graphs is
          Read_Count  => 1,
          others      => <>);
 
-      Object.Present_Program.Uniform ("screenResolution").Set_Vector
+      Object.Present_Pass.Program (Fragment_Shader).Value.Uniform ("screenResolution").Set_Vector
         (Orka.Types.Singles.Vector4'
           (Orka.Float_32 (Default.Width), Orka.Float_32 (Default.Height), 0.0, 0.0));
-      Object.Present_Program.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
+      Object.Present_Pass.Program (Fragment_Shader).Value.Uniform ("applyGammaCorrection").Set_Boolean (Format /= Color);
    end Initialize_Present_Pass;
 
    procedure Determine_Present_Mode

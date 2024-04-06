@@ -22,22 +22,25 @@ with Orka.Rendering.Programs.Modules;
 package body Orka.Algorithms.FFT is
 
    function Create_FFT
-     (Location : Resources.Locations.Location_Ptr) return FFT
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return FFT
    is
       use Rendering.Programs;
+      use Rendering.Programs.Shaders;
    begin
       return Result : FFT :=
-        (Program_FFT => Create_Program (Modules.Create_Module
-           (Location, CS => "algorithms/fft.comp")),
-         others      => <>)
+        (Program => (Compute_Shader => Create_Program (Location, Compute_Shader, Path => "algorithms/fft.comp"),
+                     others         => Empty),
+         Context => Context'Access,
+         others  => <>)
       do
-         Result.Uniform_Size      := Result.Program_FFT.Uniform ("size");
-         Result.Uniform_Transpose := Result.Program_FFT.Uniform ("transposeData");
-         Result.Uniform_Inverse   := Result.Program_FFT.Uniform ("inverseFFT");
+         Result.Uniform_Size      := Result.Program (Compute_Shader).Value.Uniform ("size");
+         Result.Uniform_Transpose := Result.Program (Compute_Shader).Value.Uniform ("transposeData");
+         Result.Uniform_Inverse   := Result.Program (Compute_Shader).Value.Uniform ("inverseFFT");
 
          declare
             Work_Group_Size : constant Dimension_Size_Array
-              := Result.Program_FFT.Compute_Work_Group_Size;
+              := Result.Program (Compute_Shader).Value.Compute_Work_Group_Size;
          begin
             Result.Local_Size := Positive (Work_Group_Size (X));
          end;
@@ -65,7 +68,7 @@ package body Orka.Algorithms.FFT is
       Object.Uniform_Transpose.Set_Boolean (Transpose);
       Object.Uniform_Inverse.Set_Boolean (Inverse);
 
-      Object.Program_FFT.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program);
 
       Buffer.Bind (Shader_Storage, 0);
 

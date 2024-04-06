@@ -14,23 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations;
 
-private with Orka.Rendering.Programs;
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Types;
 
 package Orka.Algorithms.Prefix_Sums is
    pragma Preelaborate;
 
-   type Factory is tagged private;
-
-   function Create_Factory
-     (Location : Resources.Locations.Location_Ptr) return Factory;
-
-   -----------------------------------------------------------------------------
-
-   type Prefix_Sum is tagged private;
+   type Prefix_Sum (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Length (Object : Prefix_Sum) return Positive;
 
@@ -40,19 +34,16 @@ package Orka.Algorithms.Prefix_Sums is
    with Pre => Buffer.Length = Object.Length;
 
    function Create_Prefix_Sum
-     (Object : Factory;
-      Length : Positive) return Prefix_Sum'Class
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
+      Length   : Positive) return Prefix_Sum
    with Pre => Length mod 4 = 0;
 
 private
 
-   type Factory is tagged record
-      Program_Prefix_Sum : Rendering.Programs.Program;
-      Program_Add        : Rendering.Programs.Program;
-   end record;
-
-   type Prefix_Sum is tagged record
-      Programs : Factory;
+   type Prefix_Sum (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program_Prefix_Sum : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Add        : Rendering.Programs.Shaders.Shader_Programs;
 
       Length, Work_Groups, Sum_Work_Groups : Positive;
       Buffer_2, Buffer_3, Buffer_4         : Rendering.Buffers.Buffer (Types.UInt_Type);

@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Rendering.Programs.Uniforms;
 private with Orka.Types;
 
@@ -28,10 +30,11 @@ package Orka.Rendering.Debug.Coordinate_Axes is
 
    package Transforms renames Orka.Transforms.Singles.Matrices;
 
-   type Coordinate_Axes is tagged limited private;
+   type Coordinate_Axes (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Coordinate_Axes
-     (Location : Resources.Locations.Location_Ptr) return Coordinate_Axes;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr) return Coordinate_Axes;
 
    function Create_Graph
      (Object       : Coordinate_Axes;
@@ -59,8 +62,8 @@ private
 
    overriding procedure Run (Object : Axes_Program_Callback);
 
-   type Coordinate_Axes is tagged limited record
-      Program : Rendering.Programs.Program;
+   type Coordinate_Axes (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program : Rendering.Programs.Shaders.Shader_Programs;
 
       Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
       Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);

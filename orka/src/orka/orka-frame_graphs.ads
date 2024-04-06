@@ -28,7 +28,7 @@ private with GL.Buffers;
 
 private with Orka.Containers.Bounded_Vectors;
 private with Orka.Rendering.Framebuffers;
-private with Orka.Rendering.Programs;
+private with Orka.Rendering.Programs.Shaders;
 
 package Orka.Frame_Graphs is
    pragma Preelaborate;
@@ -211,7 +211,8 @@ package Orka.Frame_Graphs is
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Resources : Handle_Type;
-      Graph             : not null access constant Frame_Graphs.Frame_Graph) is tagged limited private
+      Graph             : not null access constant Frame_Graphs.Frame_Graph;
+      Context           : not null access constant Orka.Contexts.Context'Class) is tagged limited private
    with Type_Invariant => Renderable_Graph.Maximum_Passes = Renderable_Graph.Graph.Maximum_Passes
                             and Renderable_Graph.Maximum_Resources = Renderable_Graph.Graph.Maximum_Resources;
 
@@ -385,8 +386,8 @@ private
    overriding procedure Run (Object : Present_Program_Callback);
 
    --  Used when Present_Mode = Render_To_Default
-   type Present_Pass_Type is tagged limited record
-      Program  : access Rendering.Programs.Program;
+   type Present_Pass_Type (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program  : Rendering.Programs.Shaders.Shader_Programs;
       Callback : aliased Present_Program_Callback (Present_Pass_Type'Access);
    end record;
 
@@ -395,7 +396,8 @@ private
    type Renderable_Graph
      (Maximum_Passes    : Render_Pass_Index;
       Maximum_Resources : Handle_Type;
-      Graph             : not null access constant Frame_Graphs.Frame_Graph) is tagged limited
+      Graph             : not null access constant Frame_Graphs.Frame_Graph;
+      Context           : not null access constant Orka.Contexts.Context'Class) is tagged limited
    record
       Framebuffers    : Framebuffer_Pass_Vectors.Vector (Maximum_Passes);
       --  Example with 2 passes + present pass:
@@ -408,8 +410,7 @@ private
       Present_Mode        : Present_Mode_Type;
       Present_Render_Pass : Render_Pass_Data;  --  Program used when Present_Mode = Render_To_Default
 
-      Present_Program : aliased Rendering.Programs.Program;
-      Present_Pass    : Present_Pass_Type;
+      Present_Pass    : Present_Pass_Type (Context);
 
       Last_FB_Index    : Render_Pass_Index;  --  Used when Present_Mode = Blit_To_Default
       Present_Resource : Handle_Type := No_Resource;

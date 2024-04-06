@@ -18,8 +18,8 @@
 
 uniform bool visible;
 
-in vec4  vs_color;
-in float vs_weight;
+layout(location = 0) in vec4  vs_color;
+layout(location = 1) in float vs_weight;
 
 layout(location = 0) out vec4 fs_color;
 

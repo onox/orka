@@ -25,17 +25,19 @@ package body Orka.Resources.Models is
 
    function Create_Group
      (Object   : aliased in out Model;
-      Culler   : Culling.Culler_Ptr;
+      Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Capacity : Positive) return Group_Access
    is
       Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
    begin
       return new Model_Group'
         (Model     => Object'Access,
+         Context   => Context'Access,
          Instances => Model_Instances.Create_Manager
            (Capacity => Capacity, Parts => Shapes_Count),
-         Cull_Instance => Culling.Create_Instance
-           (Culler, Transforms => Capacity * Shapes_Count, Commands => Shapes_Count),
+         Culler => Culling.Create_Culler
+           (Context, Location, Transforms => Capacity * Shapes_Count, Commands => Shapes_Count),
          others => <>);
    end Create_Group;
 
@@ -66,9 +68,11 @@ package body Orka.Resources.Models is
 
    -----------------------------------------------------------------------------
 
-   procedure Cull (Object : in out Model_Group) is
+   procedure Cull (Object : in out Model_Group; View_Projection : Orka.Transforms.Singles.Matrices.Matrix4) is
    begin
-      Object.Cull_Instance.Cull
+      Object.Culler.Bind (View_Projection);
+
+      Object.Culler.Cull
         (Transforms => Object.Instances.Transforms,
          Bounds     => Object.Model.Bounds,
          Commands   => Object.Model.Batch.Commands.Buffer,

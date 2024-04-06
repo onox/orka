@@ -29,33 +29,27 @@ package body Orka.Culling is
    procedure Log is new Orka.Logging.Default.Generic_Log (Renderer);
 
    function Create_Culler
-     (Location : Resources.Locations.Location_Ptr) return Culler
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
+      Transforms, Commands : Natural) return Culler
    is
       use Rendering.Programs;
-   begin
-      return Result : Culler
-        := (Program_Frustum => Create_Program (Modules.Create_Module
-              (Location, CS => "cull-frustum.comp")),
-            Program_Compact => Create_Program (Modules.Create_Module
-              (Location, CS => "compact-commands.comp")),
-            PS_Factory => Algorithms.Prefix_Sums.Create_Factory (Location),
-            others => <>)
-      do
-         Result.Uniform_CF_Instances := Result.Program_Frustum.Uniform ("instances");
-         Result.Uniform_VP           := Result.Program_Frustum.Uniform ("viewProj");
+      use Rendering.Programs.Shaders;
 
-         Result.Uniform_CC_Instances := Result.Program_Compact.Uniform ("instances");
-      end return;
-   end Create_Culler;
-
-   function Create_Instance
-     (Culler : Culler_Ptr; Transforms, Commands : Natural) return Cull_Instance
-   is
       use Rendering.Buffers;
       use all type Types.Element_Type;
+      use all type Rendering.Programs.Shader_Kind;
+
+      Program_Frustum : constant Shader_Programs :=
+        (Compute_Shader => Create_Program (Location, Compute_Shader, "cull-frustum.comp"),
+         others         => Empty);
+
+      Program_Compact : constant Shader_Programs :=
+        (Compute_Shader => Create_Program (Location, Compute_Shader, "compact-commands.comp"),
+         others         => Empty);
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
-        := Culler.Program_Frustum.Compute_Work_Group_Size;
+        := Program_Frustum (Compute_Shader).Value.Compute_Work_Group_Size;
 
       Local_Size : constant Natural := Natural (Work_Group_Size (X));
       Padding    : constant Boolean := Transforms rem Local_Size /= 0;
@@ -64,35 +58,44 @@ package body Orka.Culling is
         := Transforms / Local_Size + (if Padding then 1 else 0);
       pragma Assert (Work_Groups <= 65_535);
    begin
-      return Result : constant Cull_Instance
-        := (Culler => Culler,
-            Work_Groups => Work_Groups,
-            Prefix_Sum  => Algorithms.Prefix_Sums.Prefix_Sum
-              (Culler.PS_Factory.Create_Prefix_Sum (Transforms)),
-            Buffer_Visibles => Create_Buffer
-              (Flags  => (others => False),
-               Kind   => UInt_Type,
-               Length => Transforms),
-            Buffer_Indices => Create_Buffer
-              (Flags  => (others => False),
-               Kind   => UInt_Type,
-               Length => Transforms),
-            Compacted_Transforms => Create_Buffer
-              (Flags  => (others => False),
-               Kind   => Single_Matrix_Type,
-               Length => Transforms),
-            Compacted_Commands => Create_Buffer
-              (Flags  => (others => False),
-               Kind   => Elements_Command_Type,
-               Length => Commands))
+      return Result : Culler :=
+        (Program_Frustum => Program_Frustum,
+         Program_Compact => Program_Compact,
+         Context         => Context'Access,
+
+         Work_Groups => Work_Groups,
+         Prefix_Sum  => Algorithms.Prefix_Sums.Create_Prefix_Sum (Context, Location, Transforms),
+         Buffer_Visibles => Create_Buffer
+           (Flags  => (others => False),
+            Kind   => UInt_Type,
+            Length => Transforms),
+         Buffer_Indices => Create_Buffer
+           (Flags  => (others => False),
+            Kind   => UInt_Type,
+            Length => Transforms),
+         Compacted_Transforms => Create_Buffer
+           (Flags  => (others => False),
+            Kind   => Single_Matrix_Type,
+            Length => Transforms),
+         Compacted_Commands => Create_Buffer
+           (Flags  => (others => False),
+            Kind   => Elements_Command_Type,
+            Length => Commands),
+
+         others => <>)
       do
+         Result.Uniform_CF_Instances := Result.Program_Frustum (Compute_Shader).Value.Uniform ("instances");
+         Result.Uniform_VP           := Result.Program_Frustum (Compute_Shader).Value.Uniform ("viewProj");
+
+         Result.Uniform_CC_Instances := Result.Program_Compact (Compute_Shader).Value.Uniform ("instances");
+
          Log (Debug, "Created culler for" &
            Transforms'Image & " transforms and" &
            Commands'Image & " commands");
          Log (Debug, "  cull frustum:" &
            Work_Groups'Image & " groups x" & Local_Size'Image & " transforms");
       end return;
-   end Create_Instance;
+   end Create_Culler;
 
    procedure Bind (Object : in out Culler; View_Projection : Transforms.Matrix4) is
    begin
@@ -109,7 +112,7 @@ package body Orka.Culling is
    use all type Rendering.Buffers.Indexed_Buffer_Target;
 
    procedure Cull_Frustum
-     (Object     : in out Cull_Instance;
+     (Object     : in out Culler;
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Bounds     : Rendering.Buffers.Buffer) is
    begin
@@ -118,14 +121,14 @@ package body Orka.Culling is
 
       Object.Buffer_Visibles.Bind (Shader_Storage, 2);
 
-      Object.Culler.Program_Frustum.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Frustum);
 
       Memory_Barrier;
       GL.Compute.Dispatch_Compute (X => Unsigned_32 (Object.Work_Groups));
    end Cull_Frustum;
 
    procedure Compact
-     (Object     : in out Cull_Instance;
+     (Object     : in out Culler;
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Commands   : Rendering.Buffers.Buffer) is
    begin
@@ -141,21 +144,21 @@ package body Orka.Culling is
       Commands.Copy_Data (Object.Compacted_Commands);
       Object.Compacted_Commands.Bind (Shader_Storage, 4);
 
-      Object.Culler.Program_Compact.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Compact);
 
       Memory_Barrier;
       GL.Compute.Dispatch_Compute (X => Unsigned_32 (Object.Work_Groups));
    end Compact;
 
    procedure Cull
-     (Object : in out Cull_Instance;
+     (Object : in out Culler;
       Transforms : Rendering.Buffers.Bindable_Buffer'Class;
       Bounds, Commands : Rendering.Buffers.Buffer;
       Compacted_Transforms, Compacted_Commands : out Rendering.Buffers.Buffer;
       Instances : Natural) is
    begin
-      Object.Culler.Uniform_CF_Instances.Set_UInt (Unsigned_32 (Instances));
-      Object.Culler.Uniform_CC_Instances.Set_UInt (Unsigned_32 (Instances));
+      Object.Uniform_CF_Instances.Set_UInt (Unsigned_32 (Instances));
+      Object.Uniform_CC_Instances.Set_UInt (Unsigned_32 (Instances));
 
       --  Perform frustum culling and fill Buffer_Visibles with a 1 or 0
       --  for each part depending on whether the part intersects the frustum

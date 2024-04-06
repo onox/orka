@@ -79,6 +79,10 @@ package GL.Objects.Programs is
 
    Uniform_Inactive_Error    : exception;
 
+   package Internal is
+      function No_Program return Program;
+   end Internal;
+
 private
 
    type Program is new GL_Object with null record;

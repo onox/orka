@@ -19,11 +19,13 @@ private with Ada.Containers.Indefinite_Holders;
 private with Orka.Instances;
 private with Orka.Rendering.Buffers.MDI;
 private with Orka.Scenes.Singles.Trees;
-private with Orka.Transforms.Singles.Matrices;
 private with Orka.Types;
 
 with Orka.Behaviors;
+with Orka.Contexts;
 with Orka.Culling;
+with Orka.Resources.Locations;
+with Orka.Transforms.Singles.Matrices;
 
 package Orka.Resources.Models is
    pragma Preelaborate;
@@ -38,7 +40,7 @@ package Orka.Resources.Models is
 
    -----------------------------------------------------------------------------
 
-   type Model_Group is tagged limited private;
+   type Model_Group (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    type Group_Access is access Model_Group;
 
@@ -50,7 +52,7 @@ package Orka.Resources.Models is
      (Object   : in out Model_Group;
       Instance : in out Model_Instance_Ptr);
 
-   procedure Cull (Object : in out Model_Group);
+   procedure Cull (Object : in out Model_Group; View_Projection : Orka.Transforms.Singles.Matrices.Matrix4);
 
    procedure Render (Object : in out Model_Group);
 
@@ -64,7 +66,8 @@ package Orka.Resources.Models is
 
    function Create_Group
      (Object   : aliased in out Model;
-      Culler   : Culling.Culler_Ptr;
+      Context  : aliased Orka.Contexts.Context'Class;
+      Location : Orka.Resources.Locations.Location_Ptr;
       Capacity : Positive) return Group_Access;
 
    Model_Load_Error : exception renames Resource_Load_Error;
@@ -95,11 +98,11 @@ private
    type Partition_Index_Type is mod 4;
    package Model_Instances is new Orka.Instances (Partition_Index_Type);
 
-   type Model_Group is tagged limited record
+   type Model_Group (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
       Model     : access Orka.Resources.Models.Model;
       Instances : Model_Instances.Manager;
 
-      Cull_Instance : Culling.Cull_Instance;
+      Culler : Culling.Culler (Context);
 
       Compacted_Transforms : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
       Compacted_Commands   : Rendering.Buffers.Buffer (Types.Elements_Command_Type);

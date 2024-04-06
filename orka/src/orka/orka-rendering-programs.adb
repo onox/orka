@@ -21,8 +21,8 @@ with Orka.Rendering.Programs.Uniforms;
 
 package body Orka.Rendering.Programs is
 
-   function Create_Program (Modules   : Programs.Modules.Module_Array;
-                            Separable : Boolean := False) return Program is
+   function Create_Separable_Program (Modules   : Programs.Modules.Module_Array;
+                            Separable : Boolean) return Program is
    begin
       return Result : Program do
          Result.GL_Program.Set_Separable (Separable);
@@ -37,13 +37,34 @@ package body Orka.Rendering.Programs is
             raise Program_Link_Error with Result.GL_Program.Info_Log;
          end if;
       end return;
-   end Create_Program;
+   end Create_Separable_Program;
 
-   function Create_Program (Module    : Programs.Modules.Module;
-                            Separable : Boolean := False) return Program is
-   begin
-      return Create_Program (Modules.Module_Array'(1 => Module), Separable);
-   end Create_Program;
+   function Create_Program (Modules : Programs.Modules.Module_Array) return Program is (Create_Separable_Program (Modules, False));
+   function Create_Program (Module  : Programs.Modules.Module) return Program is (Create_Separable_Program ([Module], False));
+
+   overriding function Create_Program (Modules : Programs.Modules.Module_Array) return Shader_Program is
+     (Shader_Program'(Create_Separable_Program (Modules, True) with Kind => Vertex_Shader));
+   overriding function Create_Program (Module  : Programs.Modules.Module) return Shader_Program is
+     (Shader_Program'(Create_Separable_Program ([Module], True) with Kind => Vertex_Shader));
+
+   function Create_Program (Module : Programs.Modules.Shader_Module) return Shader_Program is
+     (Shader_Program'(Create_Separable_Program ([Programs.Modules.Module (Module)], True) with Kind => Module.Kind));
+
+   function Create_Program (Modules : Programs.Modules.Shader_Module_Array) return Shader_Program is
+     (Shader_Program'(Create_Separable_Program ([for Module of Modules => Programs.Modules.Module (Module)], True)
+                        with Kind => Modules (Modules'First).Kind));
+
+   function Create_Program
+     (Location : Orka.Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Paths    : String_Array) return Shader_Program
+   is (Create_Program (Modules.Shader_Module_Array'([for Path of Paths => Modules.Create_Module (Location, Kind, Path.all)])));
+
+   function Create_Program
+     (Location : Orka.Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Path     : String) return Shader_Program
+   is (Create_Program (Modules.Create_Module (Location, Kind, Path)));
 
    procedure Use_Program (Object : Program) is
    begin

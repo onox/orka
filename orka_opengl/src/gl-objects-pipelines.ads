@@ -21,6 +21,8 @@ private with GL.Low_Level;
 package GL.Objects.Pipelines is
    pragma Preelaborate;
 
+   use type Programs.Program;
+
    type Stage_Bits is record
       Vertex_Shader          : Boolean := False;
       Fragment_Shader        : Boolean := False;
@@ -36,7 +38,7 @@ package GL.Objects.Pipelines is
      (Object  : Pipeline;
       Stages  : Stage_Bits;
       Program : Programs.Program)
-   with Pre => Program.Separable;
+   with Pre => (if Program /= Programs.Internal.No_Program then Program.Separable);
    --  Use the specified stages from the given program in the pipeline
 
    procedure Bind (Object : Pipeline);

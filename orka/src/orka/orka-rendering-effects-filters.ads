@@ -14,12 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 
 private with Orka.Rendering.Buffers;
 private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Programs.Shaders;
 private with Orka.Types;
 
 package Orka.Rendering.Effects.Filters is
@@ -30,10 +32,11 @@ package Orka.Rendering.Effects.Filters is
    function Gaussian_Kernel (Radius : Size) return Float_32_Array
      with Pre => Radius mod 2 = 0;
 
-   type Separable_Filter is tagged limited private;
+   type Separable_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Filter
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Kernel   : Float_32_Array) return Separable_Filter
    with Pre => Kernel'Length mod 2 = 0;
    --  Create a separable filter
@@ -55,10 +58,11 @@ package Orka.Rendering.Effects.Filters is
 
    -----------------------------------------------------------------------------
 
-   type Moving_Average_Filter is tagged limited private;
+   type Moving_Average_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Filter
-     (Location : Resources.Locations.Location_Ptr;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Location : Resources.Locations.Location_Ptr;
       Radius   : Size) return Moving_Average_Filter;
    --  Create a filter that computes the moving average per row in a
    --  compute shader for a O(1) time complexity, giving a consistent
@@ -87,8 +91,8 @@ private
 
    overriding procedure Run (Object : Separable_Filter_Program_Callback);
 
-   type Separable_Filter is tagged limited record
-      Program            : Rendering.Programs.Program;
+   type Separable_Filter (Context : not null access constant Orka.Contexts.Context'Class)  is tagged limited record
+      Program            : Rendering.Programs.Shaders.Shader_Programs;
       Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
 
       Buffer_Weights     : Rendering.Buffers.Buffer (Types.Single_Type);
@@ -102,8 +106,8 @@ private
 
    overriding procedure Run (Object : Moving_Average_Filter_Program_Callback);
 
-   type Moving_Average_Filter is tagged limited record
-      Program            : Rendering.Programs.Program;
+   type Moving_Average_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program            : Rendering.Programs.Shaders.Shader_Programs;
       Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
 
       Columns, Rows : Unsigned_32;

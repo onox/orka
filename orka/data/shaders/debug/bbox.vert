@@ -36,8 +36,8 @@ layout(std430, binding = 1) readonly restrict buffer bboxBuffer {
     BoundingBox bboxes[];
 };
 
-out vec4  vs_color;
-out float vs_weight;
+layout(location = 0) out vec4  vs_color;
+layout(location = 1) out float vs_weight;
 
 // For each vertex, choose bboxMax if true and bboxMin if false
 //
@@ -82,6 +82,10 @@ const int indices[] = {
     // Left
     0, 4,
     2, 6
+};
+
+out gl_PerVertex {
+    vec4 gl_Position;
 };
 
 void main() {
