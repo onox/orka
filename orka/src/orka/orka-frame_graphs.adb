@@ -1304,6 +1304,7 @@ package body Orka.Frame_Graphs is
                     (Framebuffer : in out Rendering.Framebuffers.Framebuffer)
                   is
                      use type GL.Buffers.Color_Buffer_Selector;
+                     use type GL.Buffers.Buffer_Bits;
                      use type Orka.Rendering.Framebuffers.Framebuffer;
                   begin
                      --  Clear color to black and depth to 0.0 (because of reversed Z)
@@ -1343,7 +1344,7 @@ package body Orka.Frame_Graphs is
                            end loop;
                         end if;
 
-                        if State.Buffers_Equal then
+                        if State.Buffers_Equal or else State.Clear_Mask = [others => False] then
                            Framebuffer.Set_Draw_Buffers (State.Render_Buffers);
                         end if;
 
@@ -1516,6 +1517,8 @@ package body Orka.Frame_Graphs is
          Output_Resources : Output_Resource_Array;
          Present_By_Blit  : Boolean)
       is
+         use type GL.Buffers.Buffer_Bits;
+
          Texture_Fetch, Image_Access : Boolean := False;
       begin
          Framebuffer.Use_Framebuffer;
@@ -1527,12 +1530,14 @@ package body Orka.Frame_Graphs is
             GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
          end if;
 
-         if State.Buffers_Equal then
-            Framebuffer.Clear (State.Clear_Mask);
-         else
-            Framebuffer.Set_Draw_Buffers (State.Clear_Buffers);
-            Framebuffer.Clear (State.Clear_Mask);
-            Framebuffer.Set_Draw_Buffers (State.Render_Buffers);
+         if State.Clear_Mask /= [others => False] then
+            if State.Buffers_Equal then
+               Framebuffer.Clear (State.Clear_Mask);
+            else
+               Framebuffer.Set_Draw_Buffers (State.Clear_Buffers);
+               Framebuffer.Clear (State.Clear_Mask);
+               Framebuffer.Set_Draw_Buffers (State.Render_Buffers);
+            end if;
          end if;
 
          GL.Buffers.Set_Depth_Mask (State.Depth_Writes);
