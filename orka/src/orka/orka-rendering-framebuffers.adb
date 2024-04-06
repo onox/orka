@@ -38,6 +38,7 @@ package body Orka.Rendering.Framebuffers is
          Width   => Width,
          Height  => Height,
          Samples => Samples,
+         Status  => (Is_Present => False),
          others  => <>)
       do
          Result.GL_Framebuffer.Set_Default_Width (Width);
@@ -53,13 +54,16 @@ package body Orka.Rendering.Framebuffers is
    -----------------------------------------------------------------------------
 
    function Create_Default_Framebuffer
-     (Width, Height : Natural) return Framebuffer is
+     (Width, Height : Natural) return Framebuffer
+   is
+      use all type GL.Objects.Framebuffers.Framebuffer_Status;
    begin
       return Result : Framebuffer :=
         (Default => True,
          Width   => Size (Width),
          Height  => Size (Height),
          Samples => 0,
+         Status  => (Is_Present => True, Value => Complete),
          GL_Framebuffer => GL.Objects.Framebuffers.Default_Framebuffer,
          others  => <>)
       do
@@ -84,9 +88,21 @@ package body Orka.Rendering.Framebuffers is
       return Width & Orka.Strings.Unicode (" × ") & Height & Default & " framebuffer";
    end Image;
 
-   procedure Use_Framebuffer (Object : Framebuffer) is
+   procedure Check_Status (Object : in out Framebuffer) is
       use GL.Objects.Framebuffers;
    begin
+      Object.Status := (Is_Present => True, Value => Object.GL_Framebuffer.Status (Draw_Target));
+   end Check_Status;
+
+   procedure Use_Framebuffer (Object : Framebuffer) is
+      use all type GL.Objects.Framebuffers.Framebuffer_Status;
+   begin
+      if not Object.Status.Is_Present then
+         raise Program_Error with "Run procedure Check_Status first";
+      elsif Object.Status.Value /= Complete then
+         raise Framebuffer_Incomplete_Error with Object.Status.Value'Image;
+      end if;
+
       GL.Objects.Framebuffers.Draw_Target.Bind (Object.GL_Framebuffer);
 
       --  Adjust viewport
@@ -96,17 +112,6 @@ package body Orka.Rendering.Framebuffers is
                 Width  => Single (Object.Width),
                 Height => Single (Object.Height))
         ]);
-
-      --  Check attachments
-      if not Object.Default then
-         declare
-            Status : constant Framebuffer_Status := Object.GL_Framebuffer.Status (Draw_Target);
-         begin
-            if Status /= Complete then
-               raise Framebuffer_Incomplete_Error with Status'Image;
-            end if;
-         end;
-      end if;
    end Use_Framebuffer;
 
    procedure Set_Default_Values (Object : in out Framebuffer; Values : Buffer_Values) is
@@ -319,6 +324,7 @@ package body Orka.Rendering.Framebuffers is
       begin
          Object.GL_Framebuffer.Attach_Texture (Attachment, Texture.GL_Texture, Level);
          Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
+         Object.Status := (Is_Present => False);
       end Attach;
 
       use all type GL.Pixels.Internal_Format;
@@ -344,6 +350,7 @@ package body Orka.Rendering.Framebuffers is
    begin
       Object.GL_Framebuffer.Attach_Texture_Layer (Attachment, Texture.GL_Texture, Level, Layer => Layer);
       Object.Attachments (Attachment) := Attachment_Holder.To_Holder (Texture);
+      Object.Status := (Is_Present => False);
    end Attach_Layer;
 
    procedure Detach
@@ -352,6 +359,7 @@ package body Orka.Rendering.Framebuffers is
    begin
       Object.GL_Framebuffer.Detach (Attachment);
       Object.Attachments (Attachment).Clear;
+      Object.Status := (Is_Present => False);
    end Detach;
 
    function Has_Attachment

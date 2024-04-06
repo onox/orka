@@ -22,6 +22,8 @@ with GL.Types.Colors;
 
 with Orka.Rendering.Textures;
 
+private with Orka.Types;
+
 package Orka.Rendering.Framebuffers is
    pragma Preelaborate;
 
@@ -65,6 +67,10 @@ package Orka.Rendering.Framebuffers is
 
    function Image (Object : Framebuffer) return String;
    --  Return a description of the given framebuffer
+
+   procedure Check_Status (Object : in out Framebuffer);
+   --  Check and save the completeness status of the framebuffer
+   --  after all textures have been attached to their attachment points
 
    procedure Use_Framebuffer (Object : Framebuffer);
    --  Use the framebuffer during rendering
@@ -214,8 +220,13 @@ private
    type Attachment_Array is array (Attachment_Point)
      of Attachment_Holder.Holder;
 
+   package Optionals_Status is new Orka.Types.Optionals (GL.Objects.Framebuffers.Framebuffer_Status);
+
+   subtype Optional_Status is Optionals_Status.Optional;
+
    type Framebuffer (Default : Boolean) is tagged record
       GL_Framebuffer : GL.Objects.Framebuffers.Framebuffer;
+      Status         : Optional_Status;
       Attachments    : Attachment_Array;
       Defaults       : Buffer_Values;
       Draw_Buffers   : Color_Buffer_List_Holder.Holder;

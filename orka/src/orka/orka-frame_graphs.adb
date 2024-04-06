@@ -1359,6 +1359,8 @@ package body Orka.Frame_Graphs is
                               end if;
                            end if;
                         end loop;
+
+                        Framebuffer.Check_Status;
                      end if;
                   end Set_Buffers;
                begin
@@ -1746,6 +1748,7 @@ package body Orka.Frame_Graphs is
 
       return Result : constant Texture := Create_Texture (Description) do
          Last_Framebuffer.Attach (Result);
+         Last_Framebuffer.Check_Status;
 
          --  Force re-initialization due to using non-default framebuffer
          Object.Present_Resource := No_Resource;
