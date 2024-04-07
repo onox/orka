@@ -37,6 +37,15 @@ layout(location = 1) out vec4 o_WorldPos;
 
 uniform int u_LebID;
 
+in gl_PerVertex
+{
+  vec4 gl_Position;
+} gl_in[];
+
+out gl_PerVertex {
+  vec4 gl_Position;
+};
+
 void main()
 {
     // Barycentric interpolation

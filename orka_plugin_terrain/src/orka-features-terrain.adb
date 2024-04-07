@@ -52,15 +52,37 @@ package body Orka.Features.Terrain is
    --  UBOs
    Binding_Buffer_Matrices : constant := 0;
 
+   Shader_Leb                    : aliased constant String := "terrain/leb.comp";
+   Shader_Leb_Init               : aliased constant String := "terrain/leb-init.comp";
+
+   Shader_Leb_Sum_Reduction_Prepass : aliased constant String := "terrain/leb-sum-reduction-prepass.comp";
+   Shader_Leb_Sum_Reduction         : aliased constant String := "terrain/leb-sum-reduction.comp";
+   Shader_Terrain_Prepare_Indirect  : aliased constant String := "terrain/terrain-prepare-indirect.comp";
+
+   Shader_Terrain_Render_Common  : aliased constant String := "terrain/terrain-render-common.glsl";
+   Shader_Terrain_Render_Normals : aliased constant String := "terrain/terrain-render-normals.frag";
+   Shader_Terrain_Render_Sphere  : aliased constant String := "terrain/terrain-render-sphere.glsl";
+   Shader_Terrain_Render_Plane   : aliased constant String := "terrain/terrain-render-plane.glsl";
+   Shader_Terrain_Update_Lod     : aliased constant String := "terrain/terrain-update-lod.comp";
+   Shader_Terrain_Update         : aliased constant String := "terrain/terrain-update.comp";
+
+   Shader_Render_Vertex          : aliased constant String := "terrain/terrain-render.vert";
+   Shader_Render_Tess_Control    : aliased constant String := "terrain/terrain-render.tesc";
+   Shader_Render_Tess_Evaluation : aliased constant String := "terrain/terrain-render.tese";
+   Shader_Render_Wires_Geometry  : aliased constant String := "terrain/terrain-render-wires.geom";
+   Shader_Render_Wires_Fragment  : aliased constant String := "terrain/terrain-render-wires.frag";
+   Shader_Render_Fragment        : aliased constant String := "terrain/terrain-render.frag";
+
    function Create_Terrain
-     (Kind                 : Terrain_Kind;
+     (Context              : aliased Orka.Contexts.Context'Class;
+      Kind                 : Terrain_Kind;
       Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Programs.Modules.Module_Array;
       Initialize_Render    : access procedure
-        (Program : Rendering.Programs.Program)) return Terrain
+        (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
    is
       use Rendering.Buffers;
       use Rendering.Programs;
@@ -84,64 +106,63 @@ package body Orka.Features.Terrain is
       Heap_Elements : constant Natural := 2 + 2 ** (Natural (Max_Depth) + 2 - 5);
       --  Minimum and maximum depth, and the the heap elements
 
-      Module_LEB : constant Modules.Module :=
-        Modules.Create_Module (Location, CS => "terrain/leb.comp");
-
-      use Rendering.Programs.Modules;
+      use Rendering.Programs.Shaders;
    begin
       return Result : Terrain :=
-        (Count        => Count,
+        (Context      => Context'Access,
+         Count        => Count,
          Max_Depth    => Max_Depth,
          Wireframe    => Wireframe,
          Split_Update => True,
          Visible_Tiles => [others => True],
-         Program_Leb_Update    => Create_Program (Modules.Module_Array'
-           (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain/terrain-render-common.glsl"),
-            (case Kind is
-               when Sphere => Modules.Create_Module (Location, CS => "terrain/terrain-render-sphere.glsl"),
-               when Plane  => Modules.Create_Module (Location, CS => "terrain/terrain-render-plane.glsl")),
-            Modules.Create_Module (Location, CS => "terrain/terrain-update-lod.comp"),
-            Modules.Create_Module (Location, CS => "terrain/terrain-update.comp"))),
-         Program_Render        => Create_Program (Modules.Module_Array'(Render_Modules &
-           (Modules.Create_Module (Location, VS => "terrain/leb.comp", TCS => "terrain/leb.comp"),
-            Modules.Create_Module (Location, VS => "terrain/terrain-render-common.glsl",
-              TCS => "terrain/terrain-render-common.glsl",
-              TES => "terrain/terrain-render-common.glsl",
-              FS  => "terrain/terrain-render-common.glsl"),
-            (case Kind is
-               when Sphere =>
-                  Modules.Create_Module (Location,
-                    TCS => "terrain/terrain-render-sphere.glsl",
-                    TES => "terrain/terrain-render-sphere.glsl"),
-               when Plane  =>
-                  Modules.Create_Module (Location,
-                    TCS => "terrain/terrain-render-plane.glsl",
-                    TES => "terrain/terrain-render-plane.glsl")),
-            Modules.Create_Module (Location, FS => "terrain/terrain-render-normals.frag"),
-            (if Wireframe then
-               Modules.Create_Module (Location,
-                 VS  => "terrain/terrain-render.vert",
-                 TCS => "terrain/terrain-render.tesc",
-                 TES => "terrain/terrain-render.tese",
-                 GS  => "terrain/terrain-render-wires.geom",
-                 FS  => "terrain/terrain-render-wires.frag")
-             else
-               Modules.Create_Module (Location,
-                 VS  => "terrain/terrain-render.vert",
-                 TCS => "terrain/terrain-render.tesc",
-                 TES => "terrain/terrain-render.tese",
-                 FS  => "terrain/terrain-render.frag")
-            )))),
-         Program_Leb_Prepass   => Create_Program (Modules.Module_Array'
-           (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain/leb-sum-reduction-prepass.comp"))),
-         Program_Leb_Reduction => Create_Program (Modules.Module_Array'
-           (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain/leb-sum-reduction.comp"))),
-         Program_Indirect      => Create_Program (Modules.Module_Array'
-           (Module_LEB,
-            Modules.Create_Module (Location, CS => "terrain/terrain-prepare-indirect.comp"))),
+
+         Program_Leb_Update =>
+           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, Paths =>
+              [Shader_Leb'Access,
+               Shader_Terrain_Render_Common'Access,
+               (case Kind is
+                  when Sphere => Shader_Terrain_Render_Sphere'Access,
+                  when Plane  => Shader_Terrain_Render_Plane'Access),
+               Shader_Terrain_Update_Lod'Access,
+               Shader_Terrain_Update'Access]),
+            others         => Empty),
+
+         Program_Render =>
+           (Vertex_Shader          => Create_Program_From_Shaders (Location, Vertex_Shader,
+              [Shader_Leb'Access,
+               Shader_Terrain_Render_Common'Access,
+               Shader_Render_Vertex'Access]),
+            Tess_Control_Shader    => Create_Program_From_Shaders (Location, Tess_Control_Shader,
+              [Shader_Leb'Access,
+               Shader_Terrain_Render_Common'Access,
+               (case Kind is
+                  when Sphere => Shader_Terrain_Render_Sphere'Access,
+                  when Plane => Shader_Terrain_Render_Plane'Access),
+               Shader_Render_Tess_Control'Access]),
+            Tess_Evaluation_Shader => Create_Program_From_Shaders (Location, Tess_Evaluation_Shader,
+              [Shader_Terrain_Render_Common'Access,
+               (case Kind is
+                  when Sphere => Shader_Terrain_Render_Sphere'Access,
+                  when Plane => Shader_Terrain_Render_Plane'Access),
+               Shader_Render_Tess_Evaluation'Access]),
+            Geometry_Shader        => Create_Program_From_Shaders (Location, Geometry_Shader,
+              (if Wireframe then [Shader_Render_Wires_Geometry'Access] else [])),
+            Fragment_Shader        => From (Create_Program (Location, Fragment_Shader,
+              [Shader_Terrain_Render_Common'Access,
+               Shader_Terrain_Render_Normals'Access,
+               (if Wireframe then Shader_Render_Wires_Fragment'Access else Shader_Render_Fragment'Access)], Render_Modules)),
+            others                 => Empty),
+
+         Program_Leb_Prepass =>
+           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction_Prepass'Access]),
+            others         => Empty),
+         Program_Leb_Reduction =>
+           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction'Access]),
+            others         => Empty),
+         Program_Indirect =>
+           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Terrain_Prepare_Indirect'Access]),
+            others         => Empty),
+
          Sampler                 => Create_Sampler
            ((Wrapping         => [Clamp_To_Edge, Clamp_To_Edge, Repeat],
              Minifying_Filter => Linear_Mipmap_Linear,
@@ -160,33 +181,36 @@ package body Orka.Features.Terrain is
          Fence_Counted_Nodes     => Create_Buffer_Fence (Regions => Regions_Counted_Nodes, Maximum_Wait => 0.01),
          others => <>)
       do
-         Result.Uniform_Prepass_Pass_ID   := Result.Program_Leb_Prepass.Uniform   ("u_PassID");
-         Result.Uniform_Reduction_Pass_ID := Result.Program_Leb_Reduction.Uniform ("u_PassID");
+         Result.Uniform_Prepass_Pass_ID   := Result.Program_Leb_Prepass (Compute_Shader).Value.Uniform   ("u_PassID");
+         Result.Uniform_Reduction_Pass_ID := Result.Program_Leb_Reduction (Compute_Shader).Value.Uniform ("u_PassID");
 
-         Result.Uniform_Update_Freeze := Result.Program_Leb_Update.Uniform ("u_Freeze");
-         Result.Uniform_Update_Split  := Result.Program_Leb_Update.Uniform ("u_Split");
-         Result.Uniform_Update_Leb_ID := Result.Program_Leb_Update.Uniform ("u_LebID");
+         Result.Uniform_Update_Freeze := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_Freeze");
+         Result.Uniform_Update_Split  := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_Split");
+         Result.Uniform_Update_Leb_ID := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_LebID");
 
-         Result.Uniform_Update_LoD_Var    := Result.Program_Leb_Update.Uniform ("u_MinLodVariance");
-         Result.Uniform_Update_LoD_Factor := Result.Program_Leb_Update.Uniform ("u_LodFactor");
+         Result.Uniform_Update_LoD_Var    := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_MinLodVariance");
+         Result.Uniform_Update_LoD_Factor := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_LodFactor");
 
-         Result.Uniform_Update_DMap_Factor := Result.Program_Leb_Update.Uniform ("u_DmapFactor");
-         Result.Uniform_Render_DMap_Factor := Result.Program_Render.Uniform ("u_DmapFactor");
+         Result.Uniform_Update_DMap_Factor := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_DmapFactor");
+         Result.Uniform_Render_DMap_Factor_Tesc := Result.Program_Render (Tess_Control_Shader).Value.Uniform ("u_DmapFactor");
+         Result.Uniform_Render_DMap_Factor_Tese := Result.Program_Render (Tess_Evaluation_Shader).Value.Uniform ("u_DmapFactor");
+         Result.Uniform_Render_DMap_Factor_Frag := Result.Program_Render (Fragment_Shader).Value.Uniform ("u_DmapFactor");
 
-         Result.Uniform_Indirect_Leb_ID := Result.Program_Indirect.Uniform ("u_LebID");
+         Result.Uniform_Indirect_Leb_ID := Result.Program_Indirect (Compute_Shader).Value.Uniform ("u_LebID");
 
-         Result.Uniform_Render_Leb_ID := Result.Program_Render.Uniform ("u_LebID");
-         Result.Uniform_Render_Subdiv := Result.Program_Render.Uniform ("u_MeshletSubdivision");
+         Result.Uniform_Render_Leb_ID_Tesc := Result.Program_Render (Tess_Control_Shader).Value.Uniform ("u_LebID");
+         Result.Uniform_Render_Leb_ID_Tese := Result.Program_Render (Tess_Evaluation_Shader).Value.Uniform ("u_LebID");
+         Result.Uniform_Render_Subdiv := Result.Program_Render (Tess_Control_Shader).Value.Uniform ("u_MeshletSubdivision");
 
          declare
-            Program_Init : constant Program := Create_Program (Modules.Module_Array'
-              (Module_LEB,
-               Modules.Create_Module (Location, CS => "terrain/leb-init.comp")));
+            Program_Init : constant Shader_Programs :=
+              (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Init'Access]),
+               others         => Empty);
          begin
-            Program_Init.Uniform ("u_MinDepth").Set_Int (Size (Min_Depth));
-            Program_Init.Uniform ("u_MaxDepth").Set_Int (Size (Max_Depth));
+            Program_Init (Compute_Shader).Value.Uniform ("u_MinDepth").Set_Int (Size (Min_Depth));
+            Program_Init (Compute_Shader).Value.Uniform ("u_MaxDepth").Set_Int (Size (Max_Depth));
 
-            Program_Init.Use_Program;
+            Context.Bind_Shaders (Program_Init);
 
             for ID in Result.Buffer_Leb'Range loop
                Result.Buffer_Leb (ID).Bind (Shader_Storage, Binding_Buffer_Leb);
@@ -207,7 +231,7 @@ package body Orka.Features.Terrain is
 
    procedure Update (Object : in out Terrain) is
    begin
-      Object.Program_Leb_Update.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Leb_Update);
       Object.Uniform_Update_Split.Set_Boolean (Object.Split_Update);
       Object.Split_Update := not Object.Split_Update;
 
@@ -235,7 +259,7 @@ package body Orka.Features.Terrain is
       Num_Group : constant Integer := (if Count >= 256 then Count / 256 else 1);
    begin
       --  Reduction prepass
-      Object.Program_Leb_Prepass.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Leb_Prepass);
       Object.Uniform_Prepass_Pass_ID.Set_Int (Integer_32 (Depth));
 
       for ID in Object.Buffer_Leb'Range loop
@@ -248,7 +272,7 @@ package body Orka.Features.Terrain is
 
       --  Reduction
       Depth := Depth - 5;
-      Object.Program_Leb_Reduction.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Leb_Reduction);
 
       while Depth > 0 loop
          Depth := Depth - 1;
@@ -271,7 +295,7 @@ package body Orka.Features.Terrain is
 
    procedure Prepare_Indirect (Object : in out Terrain) is
    begin
-      Object.Program_Indirect.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Indirect);
 
       Object.Buffer_Leb_Node_Counter.Bind (Shader_Storage, Binding_Buffer_Leb_Node_Counter);
       Object.Buffer_Draw.Bind (Shader_Storage, Binding_Buffer_Draw);
@@ -300,7 +324,9 @@ package body Orka.Features.Terrain is
       Object.Height_Scale := Height_Scale;
 
       Object.Uniform_Update_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
-      Object.Uniform_Render_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Uniform_Render_DMap_Factor_Tesc.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Uniform_Render_DMap_Factor_Tese.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Uniform_Render_DMap_Factor_Frag.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
    end Set_Data;
 
    procedure Set_Data
@@ -328,6 +354,7 @@ package body Orka.Features.Terrain is
       --  For perspective projection
 
       use Cameras.Transforms;
+      use all type Rendering.Programs.Shader_Kind;
    begin
       Object.Uniform_Update_LoD_Var.Set_Single (LoD_Variance);
       Object.Uniform_Update_LoD_Factor.Set_Single (LoD_Factor);
@@ -338,10 +365,10 @@ package body Orka.Features.Terrain is
       Object.Uniform_Render_Subdiv.Set_Int (Subdivision);
 
       if Object.Wireframe then
-         Object.Program_Render.Uniform ("u_ScreenResolution").Set_Vector
+         Object.Program_Render (Geometry_Shader).Value.Uniform ("u_ScreenResolution").Set_Vector
            (Types.Singles.Vector4'
              (Float_32 (Camera.Lens.Width), Float_32 (Camera.Lens.Height), 0.0, 0.0));
-         Object.Program_Render.Uniform ("u_ShowWires").Set_Boolean (Wires);
+         Object.Program_Render (Fragment_Shader).Value.Uniform ("u_ShowWires").Set_Boolean (Wires);
       end if;
 
       Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
@@ -389,12 +416,13 @@ package body Orka.Features.Terrain is
       Object.Buffer_Counted_Nodes.Advance_Index;
       Object.Fence_Counted_Nodes.Advance_Index;
 
-      Object.Program_Render.Use_Program;
+      Object.Context.Bind_Shaders (Object.Program_Render);
 
       for ID in Object.Buffer_Leb_Nodes'Range loop
          if Object.Visible_Tiles (ID) then
             Object.Buffer_Leb_Nodes (ID).Bind (Shader_Storage, Binding_Buffer_Leb_Nodes);
-            Object.Uniform_Render_Leb_ID.Set_Int (Size (ID - 1));
+            Object.Uniform_Render_Leb_ID_Tesc.Set_Int (Size (ID - 1));
+            Object.Uniform_Render_Leb_ID_Tese.Set_Int (Size (ID - 1));
             Orka.Rendering.Drawing.Draw_Indirect (Patches, Object.Buffer_Draw, ID - 1, 1);
          end if;
       end loop;

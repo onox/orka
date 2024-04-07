@@ -34,9 +34,11 @@
 --  [1] https://github.com/jdupuy/LongestEdgeBisectionDemos
 
 with Orka.Cameras;
+with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Shaders;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Types;
@@ -69,17 +71,18 @@ package Orka.Features.Terrain is
 
    type Terrain_Kind is (Sphere, Plane);
 
-   type Terrain (Count : Positive) is tagged private;
+   type Terrain (Context : not null access constant Orka.Contexts.Context'Class; Count : Positive) is tagged private;
 
    function Create_Terrain
-     (Kind                 : Terrain_Kind;
+     (Context              : aliased Orka.Contexts.Context'Class;
+      Kind                 : Terrain_Kind;
       Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Programs.Modules.Module_Array;
       Initialize_Render    : access procedure
-        (Program : Rendering.Programs.Program)) return Terrain
+        (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
    with Pre => Min_Depth <= Max_Depth and Max_Depth >= 5;
    --  Create and return a Terrain object that can generate
    --  one or more terrain tiles
@@ -165,7 +168,7 @@ private
    type UInt_Buffer_Array is array (Positive range <>) of
      Rendering.Buffers.Buffer (Types.UInt_Type);
 
-   type Terrain (Count : Positive) is tagged record
+   type Terrain (Context : not null access constant Orka.Contexts.Context'Class; Count : Positive) is tagged record
       Max_Depth    : Subdivision_Depth;
 
       Split_Update : Boolean;
@@ -177,13 +180,13 @@ private
       Visible_Tiles : Visible_Tile_Array (1 .. Count);
 
       --  Update and reduction of LEB
-      Program_Leb_Update    : Rendering.Programs.Program;
-      Program_Leb_Prepass   : Rendering.Programs.Program;
-      Program_Leb_Reduction : Rendering.Programs.Program;
+      Program_Leb_Update    : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Leb_Prepass   : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Leb_Reduction : Rendering.Programs.Shaders.Shader_Programs;
 
       --  Prepare indirect commands and render geometry
-      Program_Indirect      : Rendering.Programs.Program;
-      Program_Render        : Rendering.Programs.Program;
+      Program_Indirect      : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Render        : Rendering.Programs.Shaders.Shader_Programs;
 
       Uniform_Update_Split  : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_Update_Freeze : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
@@ -191,11 +194,14 @@ private
       Uniform_Update_LoD_Var     : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
       Uniform_Update_LoD_Factor  : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
       Uniform_Update_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
-      Uniform_Render_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+      Uniform_Render_DMap_Factor_Tesc : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+      Uniform_Render_DMap_Factor_Tese : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+      Uniform_Render_DMap_Factor_Frag : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
 
       Uniform_Update_Leb_ID     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Indirect_Leb_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
-      Uniform_Render_Leb_ID     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Render_Leb_ID_Tesc : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Render_Leb_ID_Tese : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
 
       Uniform_Prepass_Pass_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Reduction_Pass_ID : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);

@@ -28,7 +28,7 @@ int leb_MaxDepth(const int lebID);
 
 layout(vertices = 3) out;
 
-flat in uint vs_NodeDepth[];
+layout(location = 0) flat in uint vs_NodeDepth[];
 
 layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ModelMatrix;
@@ -42,6 +42,11 @@ uniform int u_MeshletSubdivision;
 const float E = 2.718281828459045;
 
 const float MAX_DISTANCE = 512.0;
+
+in gl_PerVertex
+{
+  vec4 gl_Position;
+} gl_in[];
 
 void main()
 {

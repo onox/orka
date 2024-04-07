@@ -76,11 +76,12 @@ package body Orka.Features.Terrain.Planets is
    end Get_Spheroid_Parameters;
 
    function Create_Terrain_Planet
-     (Min_Depth, Max_Depth : Subdivision_Depth;
+     (Context              : aliased Orka.Contexts.Context'Class;
+      Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
       Initialize_Render    : access procedure
-        (Program : Rendering.Programs.Program);
+        (Programs : Rendering.Programs.Shaders.Shader_Programs);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
       Atmosphere    : Orka.Features.Atmosphere.Cache.Cached_Atmosphere;
@@ -144,22 +145,23 @@ package body Orka.Features.Terrain.Planets is
         (Atmosphere.Shader_Module,
          Modules.Create_Module_From_Sources (FS => Terrain_FS_Shader));
 
-      procedure Initialize_Program_Render (Program : Orka.Rendering.Programs.Program) is
+      procedure Initialize_Program_Render (Programs : Orka.Rendering.Programs.Shaders.Shader_Programs) is
       begin
-         Program.Uniform_Sampler ("u_DmapSampler").Verify_Compatibility (Height_Map);
+         Programs (Fragment_Shader).Value.Uniform_Sampler ("u_DmapSampler").Verify_Compatibility (Height_Map);
 
          if Initialize_Render /= null then
-            Initialize_Render.all (Program);
+            Initialize_Render.all (Programs);
          end if;
       end Initialize_Program_Render;
    begin
       return Result : Terrain_Planet :=
         (Terrain            => Orka.Features.Terrain.Create_Terrain
-           (Sphere, 6, Min_Depth, Max_Depth, Wireframe, Location, Modules_Terrain_Render,
+           (Context, Sphere, 6, Min_Depth, Max_Depth, Wireframe, Location, Modules_Terrain_Render,
             Initialize_Program_Render'Access),
          Spheres            => Create_Buffer ((others => False), Terrain_Spheres),
          Planet_Radius      => Planet_Radius,
          Planet_Unit_Length => Orka.Float_32 (Data.Length_Unit_In_Meters),
+         Context            => Context'Access,
          others             => <>)
       do
          Result.Terrain.Set_Data
@@ -185,6 +187,8 @@ package body Orka.Features.Terrain.Planets is
 
       CP : constant Orka.Types.Singles.Vector4 :=
         VC.Convert (Camera.View_Position * (1.0 / Orka.Float_64 (Object.Planet_Unit_Length)));
+
+      use all type Rendering.Programs.Shader_Kind;
    begin
       Object.Terrain.Set_Data
         (Rotation   => Rotation,
@@ -194,9 +198,9 @@ package body Orka.Features.Terrain.Planets is
          Freeze     => Freeze,
          Wires      => Wires);
 
-      Object.Terrain.Program_Render.Uniform ("camera_pos").Set_Vector (CP);
-      Object.Terrain.Program_Render.Uniform ("earth_radius").Set_Single (Object.Planet_Radius);
-      Object.Terrain.Program_Render.Uniform ("sun_direction").Set_Vector (Star);
+      Object.Terrain.Program_Render (Fragment_Shader).Value.Uniform ("camera_pos").Set_Vector (CP);
+      Object.Terrain.Program_Render (Fragment_Shader).Value.Uniform ("earth_radius").Set_Single (Object.Planet_Radius);
+      Object.Terrain.Program_Render (Fragment_Shader).Value.Uniform ("sun_direction").Set_Vector (Star);
    end Set_Data;
 
    overriding procedure Run (Object : Terrain_Program_Callback) is

@@ -36,7 +36,12 @@ layout(std430, binding = 1) readonly restrict buffer NodeBuffer {
     uint u_LebNodeBuffer[];
 };
 
-flat out uint vs_NodeDepth;
+layout(location = 0) flat out uint vs_NodeDepth;
+
+out gl_PerVertex
+{
+  vec4 gl_Position;
+};
 
 void main()
 {

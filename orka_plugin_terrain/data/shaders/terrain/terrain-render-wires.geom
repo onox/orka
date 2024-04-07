@@ -26,15 +26,24 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 layout(location = 0) in vec2 i_TexCoord[];
-layout(location = 0) out vec2 o_TexCoord;
-
 layout(location = 1) in vec4 i_WorldPos[];
-layout(location = 1) out vec4 o_WorldPos;
 
+layout(location = 0) out vec2 o_TexCoord;
+layout(location = 1) out vec4 o_WorldPos;
 layout(location = 2) noperspective out vec3 o_Distance;
 
 uniform vec4 u_ScreenResolution;
 // Only using first vec2 (xy, containing width and height)
+
+in gl_PerVertex
+{
+  vec4 gl_Position;
+} gl_in[];
+
+out gl_PerVertex
+{
+  vec4 gl_Position;
+};
 
 void main()
 {

@@ -21,13 +21,14 @@ with Orka.Features.Atmosphere.Rendering;
 
 package Orka.Features.Terrain.Planets is
 
-   type Terrain_Planet is tagged limited private;
+   type Terrain_Planet (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Terrain_Planet
-     (Min_Depth, Max_Depth : Subdivision_Depth;
+     (Context              : aliased Orka.Contexts.Context'Class;
+      Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Initialize_Render    : access procedure (Program : Rendering.Programs.Program);
+      Initialize_Render    : access procedure (Programs : Rendering.Programs.Shaders.Shader_Programs);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
       Atmosphere    : Features.Atmosphere.Cache.Cached_Atmosphere;
@@ -66,8 +67,8 @@ private
 
    overriding procedure Run (Object : Terrain_Program_Callback);
 
-   type Terrain_Planet is tagged limited record
-      Terrain : aliased Orka.Features.Terrain.Terrain (Count => 6);
+   type Terrain_Planet (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Terrain : aliased Orka.Features.Terrain.Terrain (Context => Context, Count => 6);
 
       Callback : aliased Terrain_Program_Callback (Terrain_Planet'Access);
 

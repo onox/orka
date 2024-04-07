@@ -63,6 +63,22 @@ package body Orka.Rendering.Programs is
    function Create_Program
      (Location : Orka.Resources.Locations.Location_Ptr;
       Kind     : Shader_Kind;
+      Paths    : String_Array;
+      Render_Modules  : Programs.Modules.Module_Array) return Shader_Program
+   is
+      use type Programs.Modules.Module_Array;
+
+      Modules_From_Paths : constant Programs.Modules.Module_Array :=
+        [for Path of Paths => Programs.Modules.Module (Programs.Modules.Create_Module (Location, Kind, Path.all))];
+
+      All_Modules : constant Programs.Modules.Module_Array := Modules_From_Paths & Render_Modules;
+   begin
+      return Shader_Program'(Create_Separable_Program (All_Modules, True) with Kind => Kind);
+   end Create_Program;
+
+   function Create_Program
+     (Location : Orka.Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
       Path     : String) return Shader_Program
    is (Create_Program (Modules.Create_Module (Location, Kind, Path)));
 
