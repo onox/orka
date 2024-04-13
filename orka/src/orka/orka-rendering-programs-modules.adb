@@ -215,12 +215,12 @@ package body Orka.Rendering.Programs.Modules is
    end Load_And_Compile;
 
    procedure Set_And_Compile
-     (Object      : in out Module;
+     (Object      : in out Shader_Holder.Holder;
       Shader_Kind : GL.Objects.Shaders.Shader_Type;
       Source      : String) is
    begin
       if Source /= "" then
-         pragma Assert (Object.Shaders (Shader_Kind).Is_Empty);
+         pragma Assert (Object.Is_Empty);
          declare
             Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
          begin
@@ -240,7 +240,7 @@ package body Orka.Rendering.Programs.Modules is
             Log (Info, "Compiled " & Image (Shader_Kind) & " text (" &
               Trim_Image (Source'Length) & " characters)");
 
-            Object.Shaders (Shader_Kind).Replace_Element (Shader);
+            Object.Replace_Element (Shader);
          end;
       end if;
    end Set_And_Compile;
@@ -251,12 +251,12 @@ package body Orka.Rendering.Programs.Modules is
       use GL.Objects.Shaders;
    begin
       return Result : Module do
-         Set_And_Compile (Result, Vertex_Shader, VS);
-         Set_And_Compile (Result, Tess_Control_Shader, TCS);
-         Set_And_Compile (Result, Tess_Evaluation_Shader, TES);
-         Set_And_Compile (Result, Geometry_Shader, GS);
-         Set_And_Compile (Result, Fragment_Shader, FS);
-         Set_And_Compile (Result, Compute_Shader, CS);
+         Set_And_Compile (Result.Shaders (Vertex_Shader), Vertex_Shader, VS);
+         Set_And_Compile (Result.Shaders (Tess_Control_Shader), Tess_Control_Shader, TCS);
+         Set_And_Compile (Result.Shaders (Tess_Evaluation_Shader), Tess_Evaluation_Shader, TES);
+         Set_And_Compile (Result.Shaders (Geometry_Shader), Geometry_Shader, GS);
+         Set_And_Compile (Result.Shaders (Fragment_Shader), Fragment_Shader, FS);
+         Set_And_Compile (Result.Shaders (Compute_Shader), Compute_Shader, CS);
       end return;
    end Create_Module_From_Sources;
 
@@ -296,6 +296,26 @@ package body Orka.Rendering.Programs.Modules is
          Load_And_Compile (Result.Shaders (Shader_Kind), Shader_Kind, Location, Path);
       end return;
    end Create_Module;
+
+   function Create_Module_From_Source
+     (Kind : Shader_Kind;
+      Text : String) return Shader_Module
+   is
+      package Shaders renames GL.Objects.Shaders;
+
+      Shader_Kind : constant Shaders.Shader_Type :=
+        (case Kind is
+           when Vertex_Shader          => Shaders.Vertex_Shader,
+           when Tess_Control_Shader    => Shaders.Tess_Control_Shader,
+           when Tess_Evaluation_Shader => Shaders.Tess_Evaluation_Shader,
+           when Geometry_Shader        => Shaders.Geometry_Shader,
+           when Fragment_Shader        => Shaders.Fragment_Shader,
+           when Compute_Shader         => Shaders.Compute_Shader);
+   begin
+      return Result : Shader_Module := (Kind => Kind, others => <>) do
+         Set_And_Compile (Result.Shaders (Shader_Kind), Shader_Kind, Text);
+      end return;
+   end Create_Module_From_Source;
 
    procedure Attach_Shaders (Modules : Module_Array; Program : in out Programs.Program) is
       use GL.Objects.Shaders;

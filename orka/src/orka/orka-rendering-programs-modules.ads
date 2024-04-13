@@ -53,6 +53,10 @@ package Orka.Rendering.Programs.Modules is
       Kind     : Shader_Kind;
       Path     : String) return Shader_Module;
 
+   function Create_Module_From_Source
+     (Kind : Shader_Kind;
+      Text : String) return Shader_Module;
+
    overriding
    function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
      return Shader_Module is (raise Program_Error);

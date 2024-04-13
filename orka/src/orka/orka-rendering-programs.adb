@@ -82,6 +82,11 @@ package body Orka.Rendering.Programs is
       Path     : String) return Shader_Program
    is (Create_Program (Modules.Create_Module (Location, Kind, Path)));
 
+   function Create_Program_From_Source
+     (Kind : Shader_Kind;
+      Text : String) return Shader_Program
+   is (Create_Program (Modules.Create_Module_From_Source (Kind, Text)));
+
    procedure Use_Program (Object : Program) is
    begin
       Object.GL_Program.Use_Program;
