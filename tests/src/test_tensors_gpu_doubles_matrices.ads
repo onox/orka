@@ -17,14 +17,13 @@
 with Orka.Numerics.Doubles.Tensors.GPU;
 
 with Generic_Test_Tensors_Matrices;
-with Test_Fixtures_GPU_Tensors;
+with Test_Fixtures_GPU_Tensors_Doubles;
 
 use all type Orka.Numerics.Doubles.Tensors.GPU.GPU_QR_Factorization;
 
 package Test_Tensors_GPU_Doubles_Matrices is new Generic_Test_Tensors_Matrices
   ("GPU - Doubles",
-   Test_Fixtures_GPU_Tensors.Test_Fixture,
+   Test_Fixtures_GPU_Tensors_Doubles.Test_Case_With_Context,
    Orka.Numerics.Doubles.Tensors,
    Orka.Numerics.Doubles.Tensors.GPU.GPU_Tensor,
-   Orka.Numerics.Doubles.Tensors.GPU.GPU_QR_Factorization,
-   Orka.Numerics.Doubles.Tensors.GPU.Initialize_Shaders);
+   Orka.Numerics.Doubles.Tensors.GPU.GPU_QR_Factorization);

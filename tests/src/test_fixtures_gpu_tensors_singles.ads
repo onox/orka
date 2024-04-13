@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -16,14 +16,7 @@
 
 with Orka.Numerics.Singles.Tensors.GPU;
 
-with Generic_Test_Tensors_Matrices;
-with Test_Fixtures_GPU_Tensors_Singles;
+with Test_Fixtures_GPU_Tensors;
 
-use all type Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization;
-
-package Test_Tensors_GPU_Singles_Matrices is new Generic_Test_Tensors_Matrices
-  ("GPU - Singles",
-   Test_Fixtures_GPU_Tensors_Singles.Test_Case_With_Context,
-   Orka.Numerics.Singles.Tensors,
-   Orka.Numerics.Singles.Tensors.GPU.GPU_Tensor,
-   Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization);
+package Test_Fixtures_GPU_Tensors_Singles is new Test_Fixtures_GPU_Tensors
+  (Orka.Numerics.Singles.Tensors.GPU.Initialize_Shaders);

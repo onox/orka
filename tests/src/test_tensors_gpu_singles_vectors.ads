@@ -17,13 +17,12 @@
 with Orka.Numerics.Singles.Tensors.GPU;
 
 with Generic_Test_Tensors_Vectors;
-with Test_Fixtures_GPU_Tensors;
+with Test_Fixtures_GPU_Tensors_Singles;
 
 package Test_Tensors_GPU_Singles_Vectors is new Generic_Test_Tensors_Vectors
   ("GPU - Singles",
    True,
-   Test_Fixtures_GPU_Tensors.Test_Fixture,
+   Test_Fixtures_GPU_Tensors_Singles.Test_Case_With_Context,
    Orka.Numerics.Singles.Tensors,
    Orka.Numerics.Singles.Tensors.GPU.GPU_Tensor,
-   Orka.Numerics.Singles.Tensors.GPU.Reset_Random,
-   Orka.Numerics.Singles.Tensors.GPU.Initialize_Shaders);
+   Orka.Numerics.Singles.Tensors.GPU.Reset_Random);

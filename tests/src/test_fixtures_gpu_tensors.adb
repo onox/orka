@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Numerics.Singles.Tensors.GPU;
+with Orka.Resources.Locations.Directories;
 
-with Generic_Test_Tensors_Matrices;
-with Test_Fixtures_GPU_Tensors_Singles;
+package body Test_Fixtures_GPU_Tensors is
 
-use all type Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization;
+   overriding
+   procedure Set_Up_Case (Object : in out Test_Case_With_Context) is
+      use Orka.Resources.Locations.Directories;
+   begin
+      Initialize_Shaders
+        (Object.Context'Unchecked_Access,
+         Prefix_Sum  => Create_Location ("../orka/data/shaders"),
+         Tensors_GPU => Create_Location ("../orka_tensors_gpu/data/shaders"));
+   end Set_Up_Case;
 
-package Test_Tensors_GPU_Singles_Matrices is new Generic_Test_Tensors_Matrices
-  ("GPU - Singles",
-   Test_Fixtures_GPU_Tensors_Singles.Test_Case_With_Context,
-   Orka.Numerics.Singles.Tensors,
-   Orka.Numerics.Singles.Tensors.GPU.GPU_Tensor,
-   Orka.Numerics.Singles.Tensors.GPU.GPU_QR_Factorization);
+end Test_Fixtures_GPU_Tensors;

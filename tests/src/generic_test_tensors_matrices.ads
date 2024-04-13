@@ -14,16 +14,15 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with AUnit.Test_Fixtures;
+with AUnit.Test_Cases;
 with AUnit.Test_Suites;
 
 with Orka.Numerics.Tensors;
-with Orka.Resources.Locations;
 
 generic
    Suite_Name : String;
 
-   type Test is new AUnit.Test_Fixtures.Test_Fixture with private;
+   type Abstract_Test_Case is abstract new AUnit.Test_Cases.Test_Case with private;
 
    with package Tensors is new Orka.Numerics.Tensors (<>);
 
@@ -31,14 +30,21 @@ generic
 
    type QR_Factorization_Type (<>) is new Tensors.QR_Factorization with private;
 
-   with procedure Initialize_Shaders
-     (Prefix_Sum, Tensors_GPU : Orka.Resources.Locations.Location_Ptr) is null;
-
    with function Q (Object : QR_Factorization_Type'Class) return Tensor_Type is <>;
    with function R (Object : QR_Factorization_Type'Class) return Tensor_Type is <>;
 
 package Generic_Test_Tensors_Matrices is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+private
+
+   type Test_Case is new Abstract_Test_Case with null record;
+
+   overriding
+   procedure Register_Tests (Object : in out Test_Case);
+
+   overriding
+   function Name (Object : Test_Case) return AUnit.Test_String;
 
 end Generic_Test_Tensors_Matrices;

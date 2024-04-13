@@ -14,27 +14,34 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with AUnit.Test_Fixtures;
+with AUnit.Test_Cases;
 with AUnit.Test_Suites;
 
 with Orka.Numerics.Tensors;
-with Orka.Resources.Locations;
 
 generic
    Suite_Name : String;
    Large_Data : Boolean;
 
-   type Test is new AUnit.Test_Fixtures.Test_Fixture with private;
+   type Abstract_Test_Case is abstract new AUnit.Test_Cases.Test_Case with private;
 
    with package Tensors is new Orka.Numerics.Tensors (<>);
 
    type Tensor_Type (<>) is new Tensors.Tensor with private;
 
    with procedure Reset_Random (Seed : Duration);
-   with procedure Initialize_Shaders
-     (Prefix_Sum, Tensors_GPU : Orka.Resources.Locations.Location_Ptr) is null;
 package Generic_Test_Tensors_Vectors is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
+
+private
+
+   type Test_Case is new Abstract_Test_Case with null record;
+
+   overriding
+   procedure Register_Tests (Object : in out Test_Case);
+
+   overriding
+   function Name (Object : Test_Case) return AUnit.Test_String;
 
 end Generic_Test_Tensors_Vectors;

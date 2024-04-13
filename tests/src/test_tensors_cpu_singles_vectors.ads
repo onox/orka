@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with AUnit.Test_Fixtures;
+with AUnit.Test_Cases;
 
 with Orka.Numerics.Singles.Tensors.CPU;
 
@@ -23,7 +23,7 @@ with Generic_Test_Tensors_Vectors;
 package Test_Tensors_CPU_Singles_Vectors is new Generic_Test_Tensors_Vectors
   ("CPU - Singles",
    False,
-   AUnit.Test_Fixtures.Test_Fixture,
+   AUnit.Test_Cases.Test_Case,
    Orka.Numerics.Singles.Tensors,
    Orka.Numerics.Singles.Tensors.CPU.CPU_Tensor,
    Orka.Numerics.Singles.Tensors.CPU.Reset_Random);

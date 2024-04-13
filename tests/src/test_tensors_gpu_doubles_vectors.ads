@@ -17,13 +17,12 @@
 with Orka.Numerics.Doubles.Tensors.GPU;
 
 with Generic_Test_Tensors_Vectors;
-with Test_Fixtures_GPU_Tensors;
+with Test_Fixtures_GPU_Tensors_Doubles;
 
 package Test_Tensors_GPU_Doubles_Vectors is new Generic_Test_Tensors_Vectors
   ("GPU - Doubles",
    True,
-   Test_Fixtures_GPU_Tensors.Test_Fixture,
+   Test_Fixtures_GPU_Tensors_Doubles.Test_Case_With_Context,
    Orka.Numerics.Doubles.Tensors,
    Orka.Numerics.Doubles.Tensors.GPU.GPU_Tensor,
-   Orka.Numerics.Doubles.Tensors.GPU.Reset_Random,
-   Orka.Numerics.Doubles.Tensors.GPU.Initialize_Shaders);
+   Orka.Numerics.Doubles.Tensors.GPU.Reset_Random);

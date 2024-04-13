@@ -17,19 +17,21 @@
 with Ada.Numerics.Generic_Elementary_Functions;
 
 with AUnit.Assertions;
-with AUnit.Test_Caller;
 
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 with Orka.OS;
-with Orka.Resources.Locations.Directories;
 
 package body Generic_Test_Tensors_Vectors is
+
+   overriding
+   function Name (Object : Test_Case) return AUnit.Test_String is (AUnit.Format ("(Tensors - " & Suite_Name & " - Vectors)"));
 
    use Tensors;
    use type Tensors.Element;
 
    subtype CPU_Tensor is Tensor_Type;
+   subtype Test is AUnit.Test_Cases.Test_Case'Class;
 
    use AUnit.Assertions;
 
@@ -1445,252 +1447,162 @@ package body Generic_Test_Tensors_Vectors is
 
    ----------------------------------------------------------------------------
 
-   package Caller is new AUnit.Test_Caller (Test);
-
-   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
-
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
-      Name : constant String := "(Tensors - " & Suite_Name & " - Vectors) ";
+   overriding
+   procedure Register_Tests (Object : in out Test_Case) is
+      procedure Register_Routine (Name : String; Pointer : AUnit.Test_Cases.Test_Routine) is
+      begin
+         AUnit.Test_Cases.Registration.Register_Routine (Object, Pointer, Name);
+      end Register_Routine;
    begin
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Zeros", Test_Zeros'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Ones", Test_Ones'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function To_Tensor", Test_To_Tensor'Access));
+      Register_Routine ("Test function Zeros", Test_Zeros'Unrestricted_Access);
+      Register_Routine ("Test function Ones", Test_Ones'Unrestricted_Access);
+      Register_Routine ("Test function To_Tensor", Test_To_Tensor'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Linear_Space", Test_Linear_Space'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Log_Space", Test_Log_Space'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Geometric_Space", Test_Geometric_Space'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Array_Range", Test_Array_Range'Access));
+      Register_Routine ("Test function Linear_Space", Test_Linear_Space'Unrestricted_Access);
+      Register_Routine ("Test function Log_Space", Test_Log_Space'Unrestricted_Access);
+      Register_Routine ("Test function Geometric_Space", Test_Geometric_Space'Unrestricted_Access);
+      Register_Routine ("Test function Array_Range", Test_Array_Range'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test indexing using index", Test_Constant_Indexing_Index'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test indexing using index (boolean)",
-         Test_Constant_Indexing_Index_Boolean'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test indexing using range", Test_Constant_Indexing_Range'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test indexing using tensor", Test_Constant_Indexing_Tensor'Access));
+      Register_Routine ("Test indexing using index", Test_Constant_Indexing_Index'Unrestricted_Access);
+      Register_Routine ("Test indexing using index (boolean)",
+         Test_Constant_Indexing_Index_Boolean'Unrestricted_Access);
+      Register_Routine ("Test indexing using range", Test_Constant_Indexing_Range'Unrestricted_Access);
+      Register_Routine ("Test indexing using tensor", Test_Constant_Indexing_Tensor'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test set value using index", Test_Set_Value_Index'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test set value using index (boolean)", Test_Set_Value_Index_Boolean'Access));
+      Register_Routine ("Test set value using index", Test_Set_Value_Index'Unrestricted_Access);
+      Register_Routine ("Test set value using index (boolean)", Test_Set_Value_Index_Boolean'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '&' operator", Test_Operator_Concatenate'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '*' operator (inner product)", Test_Operator_Multiply_Inner'Access));
+      Register_Routine ("Test '&' operator", Test_Operator_Concatenate'Unrestricted_Access);
+      Register_Routine ("Test '*' operator (inner product)", Test_Operator_Multiply_Inner'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Norm", Test_Norm'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Normalize", Test_Normalize'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Standardize", Test_Standardize'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Correlation_Coefficient", Test_Correlation_Coefficient'Access));
+      Register_Routine ("Test function Norm", Test_Norm'Unrestricted_Access);
+      Register_Routine ("Test function Normalize", Test_Normalize'Unrestricted_Access);
+      Register_Routine ("Test function Standardize", Test_Standardize'Unrestricted_Access);
+      Register_Routine ("Test function Correlation_Coefficient", Test_Correlation_Coefficient'Unrestricted_Access);
 
       --  Element-wise operations
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '+' operator (tensors)", Test_Operator_Add_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '+' operator (element, tensor)", Test_Operator_Add_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '-' operator (tensors)", Test_Operator_Subtract_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '-' operator (element, tensor)",
-         Test_Operator_Subtract_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '**' operator (tensors)", Test_Operator_Power_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '**' operator (element, tensor)",
-         Test_Operator_Power_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '*' operator", Test_Operator_Multiply_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Multiply", Test_Function_Multiply_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Power", Test_Function_Power_Tensor_Element'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '/' operator (tensors)", Test_Operator_Divide_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '/' operator (element, tensor)",
-         Test_Operator_Divide_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Divide_Or_Zero", Test_Divide_Or_Zero'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'mod' operator (tensors)", Test_Operator_Mod_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'mod' operator (element, tensor)", Test_Operator_Mod_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'rem' operator (tensors)", Test_Operator_Rem_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'rem' operator (element, tensor)", Test_Operator_Rem_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'abs' operator", Test_Operator_Abs'Access));
+      Register_Routine ("Test '+' operator (tensors)", Test_Operator_Add_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '+' operator (element, tensor)", Test_Operator_Add_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '-' operator (tensors)", Test_Operator_Subtract_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '-' operator (element, tensor)",
+         Test_Operator_Subtract_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '**' operator (tensors)", Test_Operator_Power_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '**' operator (element, tensor)",
+         Test_Operator_Power_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '*' operator", Test_Operator_Multiply_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test function Multiply", Test_Function_Multiply_Tensors'Unrestricted_Access);
+      Register_Routine ("Test function Power", Test_Function_Power_Tensor_Element'Unrestricted_Access);
+      Register_Routine ("Test '/' operator (tensors)", Test_Operator_Divide_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '/' operator (element, tensor)",
+         Test_Operator_Divide_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test function Divide_Or_Zero", Test_Divide_Or_Zero'Unrestricted_Access);
+      Register_Routine ("Test 'mod' operator (tensors)", Test_Operator_Mod_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'mod' operator (element, tensor)", Test_Operator_Mod_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test 'rem' operator (tensors)", Test_Operator_Rem_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'rem' operator (element, tensor)", Test_Operator_Rem_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test 'abs' operator", Test_Operator_Abs'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Sqrt", Test_Function_Sqrt'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Ceil", Test_Function_Ceil'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Floor", Test_Function_Floor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Round", Test_Function_Round'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Truncate", Test_Function_Truncate'Access));
+      Register_Routine ("Test function Sqrt", Test_Function_Sqrt'Unrestricted_Access);
+      Register_Routine ("Test function Ceil", Test_Function_Ceil'Unrestricted_Access);
+      Register_Routine ("Test function Floor", Test_Function_Floor'Unrestricted_Access);
+      Register_Routine ("Test function Round", Test_Function_Round'Unrestricted_Access);
+      Register_Routine ("Test function Truncate", Test_Function_Truncate'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Min", Test_Function_Min_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Max", Test_Function_Max_Tensors'Access));
+      Register_Routine ("Test function Min", Test_Function_Min_Tensors'Unrestricted_Access);
+      Register_Routine ("Test function Max", Test_Function_Max_Tensors'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Min (element, tensor)", Test_Function_Min_Tensor_Element'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Max (element, tensor)", Test_Function_Max_Tensor_Element'Access));
+      Register_Routine ("Test function Min (element, tensor)", Test_Function_Min_Tensor_Element'Unrestricted_Access);
+      Register_Routine ("Test function Max (element, tensor)", Test_Function_Max_Tensor_Element'Unrestricted_Access);
 
       --  TODO Exp, Log, Log10, Log2
       --  TODO Trigonometry: Sin, Cos, Tan, Arcsin, Arccos, Arctan
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Degrees", Test_Function_Degrees'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Radians", Test_Function_Radians'Access));
+      Register_Routine ("Test function Degrees", Test_Function_Degrees'Unrestricted_Access);
+      Register_Routine ("Test function Radians", Test_Function_Radians'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Min", Test_Function_Min'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Max", Test_Function_Max'Access));
+      Register_Routine ("Test function Min", Test_Function_Min'Unrestricted_Access);
+      Register_Routine ("Test function Max", Test_Function_Max'Unrestricted_Access);
 
       --  Statistics
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Quantile", Test_Function_Quantile'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Median", Test_Function_Median'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Mean", Test_Function_Mean'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Variance", Test_Function_Variance'Access));
+      Register_Routine ("Test function Quantile", Test_Function_Quantile'Unrestricted_Access);
+      Register_Routine ("Test function Median", Test_Function_Median'Unrestricted_Access);
+      Register_Routine ("Test function Mean", Test_Function_Mean'Unrestricted_Access);
+      Register_Routine ("Test function Variance", Test_Function_Variance'Unrestricted_Access);
 
       --  Logical
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function And_Not (tensors)", Test_Operator_And_Not_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'and' operator (tensors)", Test_Operator_And_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'or' operator (tensors)", Test_Operator_Or_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'xor' operator (tensors)", Test_Operator_Xor_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test 'not' operator (tensor)", Test_Operator_Not_Tensors'Access));
+      Register_Routine ("Test function And_Not (tensors)", Test_Operator_And_Not_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'and' operator (tensors)", Test_Operator_And_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'or' operator (tensors)", Test_Operator_Or_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'xor' operator (tensors)", Test_Operator_Xor_Tensors'Unrestricted_Access);
+      Register_Routine ("Test 'not' operator (tensor)", Test_Operator_Not_Tensors'Unrestricted_Access);
 
       --  Comparisons
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '=' operator (tensors)", Test_Operator_Equals_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '=' operator (boolean tensors)",
-         Test_Operator_Equals_Boolean_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '=' operator (element, tensor)",
-         Test_Operator_Equals_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '/=' operator (tensors)", Test_Operator_Not_Equals_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '/=' operator (boolean tensors)",
-         Test_Operator_Not_Equals_Boolean_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '/=' operator (element, tensor)",
-         Test_Operator_Not_Equals_Element_Tensor'Access));
+      Register_Routine ("Test '=' operator (tensors)", Test_Operator_Equals_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '=' operator (boolean tensors)",
+         Test_Operator_Equals_Boolean_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '=' operator (element, tensor)",
+         Test_Operator_Equals_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '/=' operator (tensors)", Test_Operator_Not_Equals_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '/=' operator (boolean tensors)",
+         Test_Operator_Not_Equals_Boolean_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '/=' operator (element, tensor)",
+         Test_Operator_Not_Equals_Element_Tensor'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '<' operator (tensors)", Test_Operator_Less_Than_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '<' operator (element, tensor)",
-         Test_Operator_Less_Than_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '<=' operator (tensors)", Test_Operator_Less_Equals_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '<=' operator (element, tensor)",
-         Test_Operator_Less_Equals_Element_Tensor'Access));
+      Register_Routine ("Test '<' operator (tensors)", Test_Operator_Less_Than_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '<' operator (element, tensor)",
+         Test_Operator_Less_Than_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '<=' operator (tensors)", Test_Operator_Less_Equals_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '<=' operator (element, tensor)",
+         Test_Operator_Less_Equals_Element_Tensor'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '>' operator (tensors)", Test_Operator_Greater_Than_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '>' operator (element, tensor)",
-         Test_Operator_Greater_Than_Element_Tensor'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '>=' operator (tensors)", Test_Operator_Greater_Equals_Tensors'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test '>=' operator (element, tensor)",
-         Test_Operator_Greater_Equals_Element_Tensor'Access));
+      Register_Routine ("Test '>' operator (tensors)", Test_Operator_Greater_Than_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '>' operator (element, tensor)",
+         Test_Operator_Greater_Than_Element_Tensor'Unrestricted_Access);
+      Register_Routine ("Test '>=' operator (tensors)", Test_Operator_Greater_Equals_Tensors'Unrestricted_Access);
+      Register_Routine ("Test '>=' operator (element, tensor)",
+         Test_Operator_Greater_Equals_Element_Tensor'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function Any_True", Test_Any_True'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test function All_True", Test_All_True'Access));
+      Register_Routine ("Test function Any_True", Test_Any_True'Unrestricted_Access);
+      Register_Routine ("Test function All_True", Test_All_True'Unrestricted_Access);
 
       --  Expressions
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test reduction binary operator", Test_Reduction_Binary_Operator'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test associative reduction binary operator",
-         Test_Reduction_Associative_Binary_Operator'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test reduction unary operator", Test_Reduction_Unary_Operator'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test reduction number", Test_Reduction_Number'Access));
+      Register_Routine ("Test reduction binary operator", Test_Reduction_Binary_Operator'Unrestricted_Access);
+      Register_Routine ("Test associative reduction binary operator",
+         Test_Reduction_Associative_Binary_Operator'Unrestricted_Access);
+      Register_Routine ("Test reduction unary operator", Test_Reduction_Unary_Operator'Unrestricted_Access);
+      Register_Routine ("Test reduction number", Test_Reduction_Number'Unrestricted_Access);
 
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test reduction in function Sum", Test_Reduction_Sum'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test reduction in function Product", Test_Reduction_Product'Access));
+      Register_Routine ("Test reduction in function Sum", Test_Reduction_Sum'Unrestricted_Access);
+      Register_Routine ("Test reduction in function Product", Test_Reduction_Product'Unrestricted_Access);
 
       --  Random
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random uniform distribution", Test_Random_Uniform'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random normal distribution", Test_Random_Normal'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random binomial distribution", Test_Random_Binomial'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random geometric distribution", Test_Random_Geometric'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random exponential distribution", Test_Random_Exponential'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Pareto distribution", Test_Random_Pareto'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Laplace distribution", Test_Random_Laplace'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Rayleigh distribution", Test_Random_Rayleigh'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Weibull distribution", Test_Random_Weibull'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Poisson distribution", Test_Random_Poisson'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random gamma distribution", Test_Random_Gamma'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random beta distribution", Test_Random_Beta'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random chi-squared distribution", Test_Random_Chi_Squared'Access));
-      Test_Suite.Add_Test (Caller.Create
-        (Name & "Test random Student's t-distribution", Test_Random_Student_T'Access));
+      Register_Routine ("Test random uniform distribution", Test_Random_Uniform'Unrestricted_Access);
+      Register_Routine ("Test random normal distribution", Test_Random_Normal'Unrestricted_Access);
+      Register_Routine ("Test random binomial distribution", Test_Random_Binomial'Unrestricted_Access);
+      Register_Routine ("Test random geometric distribution", Test_Random_Geometric'Unrestricted_Access);
+      Register_Routine ("Test random exponential distribution", Test_Random_Exponential'Unrestricted_Access);
+      Register_Routine ("Test random Pareto distribution", Test_Random_Pareto'Unrestricted_Access);
+      Register_Routine ("Test random Laplace distribution", Test_Random_Laplace'Unrestricted_Access);
+      Register_Routine ("Test random Rayleigh distribution", Test_Random_Rayleigh'Unrestricted_Access);
+      Register_Routine ("Test random Weibull distribution", Test_Random_Weibull'Unrestricted_Access);
+      Register_Routine ("Test random Poisson distribution", Test_Random_Poisson'Unrestricted_Access);
+      Register_Routine ("Test random gamma distribution", Test_Random_Gamma'Unrestricted_Access);
+      Register_Routine ("Test random beta distribution", Test_Random_Beta'Unrestricted_Access);
+      Register_Routine ("Test random chi-squared distribution", Test_Random_Chi_Squared'Unrestricted_Access);
+      Register_Routine ("Test random Student's t-distribution", Test_Random_Student_T'Unrestricted_Access);
+   end Register_Tests;
 
+   Test_Suite : aliased AUnit.Test_Suites.Test_Suite;
+
+   Test_1 : aliased Test_Case;
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+   begin
+      Test_Suite.Add_Test (Test_1'Access);
       return Test_Suite'Access;
    end Suite;
 
-   use Orka.Resources.Locations.Directories;
 begin
    Reset_Random (Orka.OS.Monotonic_Clock);
-   Initialize_Shaders
-     (Prefix_Sum  => Create_Location ("../orka/data/shaders"),
-      Tensors_GPU => Create_Location ("../orka_tensors_gpu/data/shaders"));
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
 end Generic_Test_Tensors_Vectors;
