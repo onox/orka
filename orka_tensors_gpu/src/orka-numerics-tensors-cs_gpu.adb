@@ -25,7 +25,7 @@ with GL.Objects.Buffers;
 with Orka.Algorithms.Prefix_Sums;
 with Orka.Containers.Bounded_Vectors;
 with Orka.Numerics.Tensors.Operations;
-with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Shaders;
 with Orka.Rendering.Programs.Uniforms;
 with Orka.Strings;
 with Orka.Types;
@@ -648,17 +648,17 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
    ----------------------------------------------------------------------------
 
-   type Program_Array is array (Data_Type) of Rendering.Programs.Program;
+   type Program_Array is array (Data_Type) of Rendering.Programs.Shader_Program;
 
    type Reduction_Program is record
       Size    : Positive;
       Hash    : Ada.Containers.Hash_Type;
-      Program : Rendering.Programs.Program;
+      Program : Rendering.Programs.Shader_Program;
    end record;
 
    type Element_Wise_Program is record
       Hash    : Ada.Containers.Hash_Type;
-      Program : Rendering.Programs.Program;
+      Program : Rendering.Programs.Shader_Program;
    end record;
 
    package Reduction_Program_Vectors is new Orka.Containers.Bounded_Vectors
@@ -668,8 +668,6 @@ package body Orka.Numerics.Tensors.CS_GPU is
      (Natural, Element_Wise_Program);
 
    type Kernel_Programs is tagged record
-      PS_Factory : Algorithms.Prefix_Sums.Factory;
-
       Source_Element_Wise : SU.Unbounded_String;
       Source_Reduce_Assoc : SU.Unbounded_String;
       Source_Reduce       : SU.Unbounded_String;
@@ -683,19 +681,22 @@ package body Orka.Numerics.Tensors.CS_GPU is
       Program_Matrix_Matrix  : Program_Array;
       Program_Random         : Program_Array;
       Program_Compact_Tensor : Program_Array;
-      Program_Is_True        : Rendering.Programs.Program;
+      Program_Is_True        : Rendering.Programs.Shader_Program;
    end record;
 
    type Kernel_Programs_Access is access Kernel_Programs;
 
    Kernels : Kernel_Programs_Access;
    Location_Prefix_Sum, Location_Tensors_GPU  : Resources.Locations.Location_Access;
+   Context : Orka.Contexts.Context_Access;
 
    procedure Initialize_Shaders
-     (Prefix_Sum, Tensors_GPU : Resources.Locations.Location_Ptr) is
+     (Context                 : Orka.Contexts.Context_Access;
+      Prefix_Sum, Tensors_GPU : Resources.Locations.Location_Ptr) is
    begin
       Location_Prefix_Sum  := Prefix_Sum;
       Location_Tensors_GPU := Tensors_GPU;
+      CS_GPU.Context       := Context;
    end Initialize_Shaders;
 
    function Create_Kernels return not null Kernel_Programs_Access is
@@ -708,14 +709,14 @@ package body Orka.Numerics.Tensors.CS_GPU is
          return Resources.Convert (Source.Get);
       end Get_Shader;
 
-      function Get_Kernel (Kind : Data_Type; Text : SU.Unbounded_String) return Program is
+      function Get_Kernel (Kind : Data_Type; Text : SU.Unbounded_String) return Shader_Program is
          Source : SU.Unbounded_String := Text;
       begin
          Strings.Replace (Source, "%DATA_TYPE%", Data_Type_Image (Kind));
          Strings.Replace (Source, "%DATA_TYPE_REPR%", Data_Type_Repr (Kind)'Image);
          Strings.Replace (Source, "%VALUE_ZERO%", Value_Zero (Kind));
 
-         return Create_Program (Modules.Create_Module_From_Sources (CS => +Source));
+         return Create_Program_From_Source (Compute_Shader, +Source);
       end Get_Kernel;
 
       function Get_Kernel (Text : SU.Unbounded_String) return Program_Array is
@@ -738,9 +739,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    begin
       return
         new Kernel_Programs'
-          (PS_Factory          => Algorithms.Prefix_Sums.Create_Factory (Location_Prefix_Sum),
-
-           Source_Element_Wise => +Get_Shader ("tensors/element-wise.comp"),
+          (Source_Element_Wise => +Get_Shader ("tensors/element-wise.comp"),
            Source_Reduce_Assoc => +Get_Shader ("tensors/reduce-associative.comp"),
            Source_Reduce       => +Get_Shader ("tensors/reduce.comp"),
 
@@ -751,8 +750,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
            Program_Random         => Get_Kernel (Shader_Text_Random),
            Program_Compact_Tensor => Get_Kernel (Shader_Text_Compact_Tensor),
 
-           Program_Is_True => Create_Program (Modules.Create_Module_From_Sources
-             (CS => Get_Shader ("tensors/is-true.comp"))),
+           Program_Is_True => Create_Program_From_Source (Compute_Shader, Get_Shader ("tensors/is-true.comp")),
 
            Reduction_Programs    => <>,
            Element_Wise_Programs => <>);
@@ -798,7 +796,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          function Get_Kernel_Element_Wise
            (Programs  : in out Element_Wise_Program_Vectors.Vector;
             Constants : aliased Buffer;
-            Needs_Shape : in out Boolean) return Program
+            Needs_Shape : in out Boolean) return Shader_Program
          is
             Variable : Positive := 1;
 
@@ -873,15 +871,13 @@ package body Orka.Numerics.Tensors.CS_GPU is
                   return Programs (Index_Program).Program;
                end if;
 
-               return Result : constant Program :=
-                 Create_Program (Modules.Create_Module_From_Sources (CS => +Source))
-               do
+               return Result : constant Shader_Program := Create_Program_From_Source (Compute_Shader, +Source) do
                   Programs.Append ((Hash, Result));
                end return;
             end;
          end Get_Kernel_Element_Wise;
 
-         procedure Set_Shape (Kernel : Program; Shape : Tensor_Shape) is
+         procedure Set_Shape (Kernel : Shader_Program; Shape : Tensor_Shape) is
             Shape_Vector : Unsigned_32_Array (1 .. 4) := [others => 0];
          begin
             for Index in Shape'Range loop
@@ -894,7 +890,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                null;
          end Set_Shape;
 
-         procedure Set_Count (Kernel : Program; Count : Natural) is
+         procedure Set_Count (Kernel : Shader_Program; Count : Natural) is
          begin
             Kernel.Uniform ("count").Set_UInt (Unsigned_32 (Count));
          exception
@@ -903,7 +899,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          end Set_Count;
 
          procedure Initialize_Element_Wise
-           (Kernel    : Program;
+           (Kernel    : Shader_Program;
             Constants : aliased in out Buffer;
             Needs_Shape : Boolean)
          is
@@ -921,7 +917,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Buffers.Append (Constants'Unchecked_Access);
          end Initialize_Element_Wise;
 
-         procedure Initialize_Main_Diagonal (Kernel : Program) is
+         procedure Initialize_Main_Diagonal (Kernel : Shader_Program) is
             Source : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Value.Reference));
          begin
@@ -935,7 +931,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             pragma Assert (Object.Axes = 1);
          end Initialize_Main_Diagonal;
 
-         procedure Initialize_Diagonal (Kernel : Program) is
+         procedure Initialize_Diagonal (Kernel : Shader_Program) is
             Source : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Value.Reference));
          begin
@@ -949,7 +945,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             pragma Assert (Object.Axes = 2);
          end Initialize_Diagonal;
 
-         procedure Initialize_Transpose (Kernel : Program) is
+         procedure Initialize_Transpose (Kernel : Shader_Program) is
             Source : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Value.Reference));
          begin
@@ -963,7 +959,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             pragma Assert (Object.Axes = 2);
          end Initialize_Transpose;
 
-         procedure Initialize_Matrix_Matrix (Kernel : Program) is
+         procedure Initialize_Matrix_Matrix (Kernel : Shader_Program) is
             Source_Left : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Left.Reference));
             Source_Right : GPU_Tensor :=
@@ -988,7 +984,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             pragma Assert (Object.Axes <= 2);
          end Initialize_Matrix_Matrix;
 
-         procedure Initialize_Random (Kernel : Program) is
+         procedure Initialize_Random (Kernel : Shader_Program) is
          begin
             Buffers.Append (Object.Reference.Data);
 
@@ -997,7 +993,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Kernel.Uniform ("seed").Set_Vector (Random_State);
          end Initialize_Random;
 
-         procedure Initialize_Is_True (Kernel : Program; Is_All : Boolean) is
+         procedure Initialize_Is_True (Kernel : Shader_Program; Is_All : Boolean) is
             Source : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Value.Reference));
          begin
@@ -1025,7 +1021,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
          Needs_Shape : Boolean := False;
 
-         Kernel : constant Program :=
+         Kernel : constant Shader_Program :=
            (if Object.Operation.Kind = Matrix_Operation then
               (case Object.Operation.Matrix_Operation.Kind is
                  when Main_Diagonal       => Kernels.Program_Main_Diagonal (Object.Kind),
@@ -1049,6 +1045,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
                Object.Operation.Matrix_Operation.Value.Constant_Reference.Elements
             else
                Object.Elements);
+
+         use Rendering.Programs.Shaders;
       begin
          if Object.Operation.Kind = Matrix_Operation then
             case Object.Operation.Matrix_Operation.Kind is
@@ -1064,7 +1062,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Initialize_Element_Wise (Kernel, Buffer_Constants, Needs_Shape);
          end if;
 
-         Kernel.Use_Program;
+         Context.Bind_Shaders ((Compute_Shader => From (Kernel), others => Empty));
 
          Buffers.Query (Bind_Buffers'Access);
 
@@ -1490,7 +1488,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          Padding_Count : constant Integer_32 := Integer_32 (Indices_Count - Index.Elements);
 
          Prefix_Sum : Algorithms.Prefix_Sums.Prefix_Sum'Class :=
-           Kernels.PS_Factory.Create_Prefix_Sum (Length => Indices_Count);
+           Algorithms.Prefix_Sums.Create_Prefix_Sum (Context.all, Location_Prefix_Sum, Indices_Count);
 
          Buffer_Prefix_Sum : constant Buffer := Create_Buffer
            (Flags  => (Dynamic_Storage => True, others => False),
@@ -1519,6 +1517,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             --  See compute shader file prefix-sum.comp for an example.
             Count : constant Natural := Sum + (if Last_True then 1 else 0);
 
+            use Orka.Rendering.Programs.Shaders;
             use all type GL.Compute.Work_Group_Kind;
 
             Size_X : constant Positive :=
@@ -1535,7 +1534,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                Object.Reference.Data.Bind (Shader_Storage, 2);
                Result.Reference.Data.Bind (Shader_Storage, 3);
 
-               Kernels.Program_Compact_Tensor (Object.Kind).Use_Program;
+               Context.Bind_Shaders ((Compute_Shader => From (Kernels.Program_Compact_Tensor (Object.Kind)), others => Empty));
 
                GL.Compute.Dispatch_Compute_Group_Size
                  (Group_Size => [Integer_32 (Size_X), 1, 1],
@@ -2326,7 +2325,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
 
       function Get_Kernel
         (Buffer_Constants : aliased in out Buffer;
-         Work_Group_Size  : Positive) return Program
+         Work_Group_Size  : Positive) return Shader_Program
       is
          GPU_Subject : constant Expression_Type := Expression_Type (Subject);
 
@@ -2335,7 +2334,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
              (Buffer_Constants, GPU_Subject, Left_Literal, Right_Literal);
 
          function Get_Program
-           (Programs : in out Reduction_Program_Vectors.Vector) return Rendering.Programs.Program
+           (Programs : in out Reduction_Program_Vectors.Vector) return Rendering.Programs.Shader_Program
          is
             Hash : constant Ada.Containers.Hash_Type :=
               Ada.Strings.Hash (Expressions.Image (Full_Expression));
@@ -2374,9 +2373,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
                Strings.Replace (Source, "%OPERATIONS%", Text);
                Strings.Replace (Source, "%LOCAL_GROUP_SIZE%", Work_Group_Size'Image);
 
-               return Result : constant Program :=
-                 Create_Program (Modules.Create_Module_From_Sources (CS => +Source))
-               do
+               return Result : constant Shader_Program := Create_Program_From_Source (Compute_Shader, +Source) do
                   Programs.Append ((Work_Group_Size, Hash, Result));
                end return;
             end;
@@ -2405,8 +2402,10 @@ package body Orka.Numerics.Tensors.CS_GPU is
             Kind   => From_Kind (Object.Kind),
             Length => Max_Reduction_Constants);
 
-         Kernel : constant Program := Get_Kernel (Buffer_Constants, Size_X);
+         Kernel : constant Shader_Program := Get_Kernel (Buffer_Constants, Size_X);
          Uniform_Identity : constant Uniforms.Uniform := Kernel.Uniform ("identity_value");
+
+         use Orka.Rendering.Programs.Shaders;
       begin
          case Element'Size is
             when 32     => Uniform_Identity.Set_Single (Float_32 (Initial));
@@ -2414,7 +2413,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
             when others => raise Constraint_Error with "Element_Type'Size must be 32 or 64";
          end case;
 
-         Kernel.Use_Program;
+         Context.Bind_Shaders ((Compute_Shader => From (Kernel), others => Empty));
 
          declare
             function Reduce (Buffer_Input : Buffer) return Buffer is
