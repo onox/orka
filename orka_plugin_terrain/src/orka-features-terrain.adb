@@ -51,6 +51,7 @@ package body Orka.Features.Terrain is
 
    --  UBOs
    Binding_Buffer_Matrices : constant := 0;
+   Binding_Buffer_Metadata : constant := 1;
 
    Shader_Leb                    : aliased constant String := "terrain/leb.comp";
    Shader_Leb_Init               : aliased constant String := "terrain/leb-init.comp";
@@ -167,15 +168,13 @@ package body Orka.Features.Terrain is
            ((Wrapping         => [Clamp_To_Edge, Clamp_To_Edge, Repeat],
              Minifying_Filter => Linear_Mipmap_Linear,
              others           => <>)),
-         Buffer_Leb              => [others => Create_Buffer
-           ((others => False), Orka.Types.UInt_Type, Heap_Elements)],
-         Buffer_Leb_Nodes        => [others => Create_Buffer
-           ((others => False), Orka.Types.UInt_Type, Maximum_Nodes)],
+         Buffer_Leb              => [others => Create_Buffer ((others => False), Orka.Types.UInt_Type, Heap_Elements)],
+         Buffer_Leb_Nodes        => [others => Create_Buffer ((others => False), Orka.Types.UInt_Type, Maximum_Nodes)],
          Buffer_Leb_Node_Counter => Create_Buffer ((others => False), Nodes_Counter),
          Buffer_Draw             => Create_Buffer ((others => False), Draw_Commands),
          Buffer_Dispatch         => Create_Buffer ((others => False), Dispatch_Commands),
-         Buffer_Matrices         => Create_Buffer
-           ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 3),
+         Buffer_Matrices         => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 3),
+         Buffer_Metadata         => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Type, 4),
          Buffer_Counted_Nodes    => Mapped.Persistent.Create_Buffer
            (Orka.Types.UInt_Type, Integer (Number_Of_Buffers), Mapped.Read, Regions => Regions_Counted_Nodes),
          Fence_Counted_Nodes     => Create_Buffer_Fence (Regions => Regions_Counted_Nodes, Maximum_Wait => 0.01),
@@ -187,14 +186,6 @@ package body Orka.Features.Terrain is
          Result.Uniform_Update_Freeze := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_Freeze");
          Result.Uniform_Update_Split  := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_Split");
          Result.Uniform_Update_Leb_ID := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_LebID");
-
-         Result.Uniform_Update_LoD_Var    := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_MinLodVariance");
-         Result.Uniform_Update_LoD_Factor := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_LodFactor");
-
-         Result.Uniform_Update_DMap_Factor := Result.Program_Leb_Update (Compute_Shader).Value.Uniform ("u_DmapFactor");
-         Result.Uniform_Render_DMap_Factor_Tesc := Result.Program_Render (Tess_Control_Shader).Value.Uniform ("u_DmapFactor");
-         Result.Uniform_Render_DMap_Factor_Tese := Result.Program_Render (Tess_Evaluation_Shader).Value.Uniform ("u_DmapFactor");
-         Result.Uniform_Render_DMap_Factor_Frag := Result.Program_Render (Fragment_Shader).Value.Uniform ("u_DmapFactor");
 
          Result.Uniform_Indirect_Leb_ID := Result.Program_Indirect (Compute_Shader).Value.Uniform ("u_LebID");
 
@@ -322,11 +313,7 @@ package body Orka.Features.Terrain is
       Object.Height_Map := Height_Map;
 
       Object.Height_Scale := Height_Scale;
-
-      Object.Uniform_Update_DMap_Factor.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
-      Object.Uniform_Render_DMap_Factor_Tesc.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
-      Object.Uniform_Render_DMap_Factor_Tese.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
-      Object.Uniform_Render_DMap_Factor_Frag.Set_Vector (Float_32_Array'(Height_Scale, Height_Offset));
+      Object.Height_Offset := Height_Offset;
    end Set_Data;
 
    procedure Set_Data
@@ -356,9 +343,6 @@ package body Orka.Features.Terrain is
       use Cameras.Transforms;
       use all type Rendering.Programs.Shader_Kind;
    begin
-      Object.Uniform_Update_LoD_Var.Set_Single (LoD_Variance);
-      Object.Uniform_Update_LoD_Factor.Set_Single (LoD_Factor);
-
       Object.Uniform_Update_Freeze.Set_Boolean (Freeze);
       Object.Freeze := Freeze;
 
@@ -373,6 +357,8 @@ package body Orka.Features.Terrain is
 
       Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'
         (Rotation, Camera.View_Matrix * (Center * Rotation), Camera.Projection_Matrix));
+
+      Object.Buffer_Metadata.Set_Data (Float_32_Array'(Object.Height_Scale, Object.Height_Offset, LoD_Variance, LoD_Factor));
    end Set_Data;
 
    procedure Render (Object : in out Terrain) is
@@ -385,6 +371,7 @@ package body Orka.Features.Terrain is
 
       --  UBOs
       Object.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
+      Object.Buffer_Metadata.Bind (Uniform, Binding_Buffer_Metadata);
 
       --  SSBOs
       Object.Transforms.Bind (Shader_Storage, Binding_Buffer_Transforms);

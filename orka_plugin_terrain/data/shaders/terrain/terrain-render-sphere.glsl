@@ -43,7 +43,12 @@ layout(std430, binding = 4) readonly restrict buffer SphereBuffer {
 };
 
 layout(binding = 4) uniform sampler2D u_DmapSampler;
-uniform vec2 u_DmapFactor;
+
+layout(std140, binding = 1) uniform MetadataBuffer {
+    vec2 u_DmapFactor;
+    float u_MinLodVariance;
+    float u_LodFactor;
+};
 
 // Return the scale factor to convert geodetic coordinates to geocentric (ECEF)
 //

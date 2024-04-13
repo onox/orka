@@ -176,6 +176,7 @@ private
       Freeze       : Boolean;
 
       Height_Scale  : Float_32;
+      Height_Offset : Float_32;
 
       Visible_Tiles : Visible_Tile_Array (1 .. Count);
 
@@ -190,13 +191,6 @@ private
 
       Uniform_Update_Split  : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
       Uniform_Update_Freeze : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
-
-      Uniform_Update_LoD_Var     : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
-      Uniform_Update_LoD_Factor  : Rendering.Programs.Uniforms.Uniform (LE.Single_Type);
-      Uniform_Update_DMap_Factor : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
-      Uniform_Render_DMap_Factor_Tesc : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
-      Uniform_Render_DMap_Factor_Tese : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
-      Uniform_Render_DMap_Factor_Frag : Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
 
       Uniform_Update_Leb_ID     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
       Uniform_Indirect_Leb_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
@@ -224,6 +218,7 @@ private
 
       --  UBO
       Buffer_Matrices : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+      Buffer_Metadata : Rendering.Buffers.Buffer (Types.Single_Type);
 
       Transforms : Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
       Height_Map : Rendering.Textures.Texture (LE.Texture_2D);

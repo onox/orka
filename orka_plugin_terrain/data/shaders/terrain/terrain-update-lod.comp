@@ -44,10 +44,13 @@ layout(std140, binding = 0) uniform MatrixBuffer {
     mat4 u_ProjMatrix;
 };
 
-uniform float u_LodFactor;
-
 layout(binding = 4) uniform sampler2D u_DmapSampler;
-uniform float u_MinLodVariance;
+
+layout(std140, binding = 1) uniform MetadataBuffer {
+    vec2 u_DmapFactor;
+    float u_MinLodVariance;
+    float u_LodFactor;
+};
 
 // Number of depth levels below maximum depth for which face culling is
 // enabled if depth is below that threshold. Face culling is disabled for

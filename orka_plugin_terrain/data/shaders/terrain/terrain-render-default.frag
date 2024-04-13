@@ -27,7 +27,11 @@
 vec2 get_slope(vec2 texCoord);
 vec2 to_origin_upper_left(in const vec2 value);
 
-uniform vec2 u_DmapFactor;
+layout(std140, binding = 1) uniform MetadataBuffer {
+    vec2 u_DmapFactor;
+    float u_MinLodVariance;
+    float u_LodFactor;
+};
 
 vec4 ShadeFragment(vec2 texCoord, vec4 worldPos)
 {
