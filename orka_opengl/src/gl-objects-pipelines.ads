@@ -37,8 +37,7 @@ package GL.Objects.Pipelines is
    procedure Use_Program_Stages
      (Object  : Pipeline;
       Stages  : Stage_Bits;
-      Program : Programs.Program)
-   with Pre => (if Program /= Programs.Internal.No_Program then Program.Separable);
+      Program : Programs.Program);
    --  Use the specified stages from the given program in the pipeline
 
    procedure Bind (Object : Pipeline);

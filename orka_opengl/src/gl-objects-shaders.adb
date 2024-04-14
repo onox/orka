@@ -30,25 +30,6 @@ package body GL.Objects.Shaders is
       C.Strings.Free (C_Shader_Source);
    end Set_Source;
 
-   function Source (Subject : Shader) return String is
-      Source_Length : Size := 0;
-   begin
-      API.Get_Shader_Param.Ref
-        (Subject.Reference.GL_Id, Enums.Shader_Source_Length, Source_Length);
-
-      if Source_Length = 0 then
-         return "";
-      end if;
-
-      declare
-         Shader_Source : String (1 .. Integer (Source_Length));
-      begin
-         API.Get_Shader_Source.Ref
-           (Subject.Reference.GL_Id, Source_Length, Source_Length, Shader_Source);
-         return Shader_Source (1 .. Integer (Source_Length));
-      end;
-   end Source;
-
    procedure Compile (Subject : Shader) is
    begin
       API.Compile_Shader.Ref (Subject.Reference.GL_Id);

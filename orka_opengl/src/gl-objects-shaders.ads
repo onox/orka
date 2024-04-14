@@ -26,7 +26,6 @@ package GL.Objects.Shaders is
    type Shader (Kind : Shader_Type) is new GL_Object with private;
 
    procedure Set_Source (Subject : Shader; Source : String);
-   function Source (Subject : Shader) return String;
 
    procedure Compile (Subject : Shader);
 

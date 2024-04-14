@@ -69,24 +69,11 @@ package body GL.Objects.Programs is
       end;
    end Info_Log;
 
-   procedure Use_Program (Subject : Program) is
-   begin
-      API.Use_Program.Ref (Subject.Reference.GL_Id);
-   end Use_Program;
-
    procedure Set_Separable (Subject : Program; Separable : Boolean) is
    begin
       API.Program_Parameter_Bool.Ref (Subject.Reference.GL_Id, Enums.Program_Separable,
                                   Low_Level.Bool (Separable));
    end Set_Separable;
-
-   function Separable (Subject : Program) return Boolean is
-      Separable_Value : Int := 0;
-   begin
-      API.Get_Program_Param.Ref
-        (Subject.Reference.GL_Id, Enums.Program_Separable, Separable_Value);
-      return Separable_Value /= 0;
-   end Separable;
 
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array is
       Values : Compute.Dimension_Size_Array := [others => 0];
@@ -100,18 +87,6 @@ package body GL.Objects.Programs is
    procedure Initialize_Id (Object : in out Program) is
    begin
       Object.Reference.GL_Id := API.Create_Program.Ref.all;
-   end Initialize_Id;
-
-   procedure Initialize_Id
-     (Object : in out Program;
-      Kind   : Shaders.Shader_Type;
-      Source : String)
-   is
-      C_Shader_Source : C.Strings.chars_ptr := C.Strings.New_String (Source);
-      C_Source : constant Low_Level.CharPtr_Array := [C_Shader_Source];
-   begin
-      Object.Reference.GL_Id := API.Create_Shader_Program.Ref (Kind, 1, C_Source);
-      C.Strings.Free (C_Shader_Source);
    end Initialize_Id;
 
    overriding

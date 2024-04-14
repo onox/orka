@@ -598,9 +598,6 @@ private package GL.API is
      ("glShaderSource", UInt, Size, Low_Level.CharPtr_Array,
       Low_Level.Int_Array);
 
-   package Get_Shader_Source is new Loader.String_Getter_With_4_Params
-     ("glGetShaderSource", Size, UInt);
-
    package Compile_Shader is new Loader.Procedure_With_1_Param
      ("glCompileShader", UInt);
 
@@ -633,12 +630,6 @@ private package GL.API is
 
    package Get_Program_Info_Log is new Loader.String_Getter_With_4_Params
      ("glGetProgramInfoLog", Size, UInt);
-
-   package Use_Program is new Loader.Procedure_With_1_Param
-     ("glUseProgram", UInt);
-
-   package Validate_Program is new Loader.Procedure_With_1_Param
-     ("glValidateProgram", UInt);
 
    package Get_Uniform_Location is new Loader.Function_With_2_Params
      ("glGetUniformLocation", UInt, C.char_array, Int);
@@ -692,10 +683,6 @@ private package GL.API is
 
    package Validate_Program_Pipeline is new Loader.Procedure_With_1_Param
      ("glValidateProgramPipeline", UInt);
-
-   package Create_Shader_Program is new Loader.Function_With_3_Params
-     ("glCreateShaderProgramv", Objects.Shaders.Shader_Type, Size,
-      Low_Level.CharPtr_Array, UInt);
 
    -----------------------------------------------------------------------------
    --                                 Queries                                 --

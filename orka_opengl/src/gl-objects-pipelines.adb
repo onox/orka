@@ -38,7 +38,6 @@ package body GL.Objects.Pipelines is
 
    procedure Bind (Object : Pipeline) is
    begin
-      API.Use_Program.Ref (0);
       API.Bind_Program_Pipeline.Ref (Object.Reference.GL_Id);
    end Bind;
 

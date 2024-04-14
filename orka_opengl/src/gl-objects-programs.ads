@@ -36,11 +36,7 @@ package GL.Objects.Programs is
 
    function Info_Log (Subject : Program) return String;
 
-   procedure Use_Program (Subject : Program);
-   --  Use the shaders of the given program during rendering
-
    procedure Set_Separable (Subject : Program; Separable : Boolean);
-   function Separable (Subject : Program) return Boolean;
 
    function Compute_Work_Group_Size (Object : Program) return Compute.Dimension_Size_Array;
    --  Size (per dimension) of a local work group in the linked compute stage
@@ -67,8 +63,6 @@ package GL.Objects.Programs is
 
    overriding
    procedure Initialize_Id (Object : in out Program);
-
-   procedure Initialize_Id (Object : in out Program; Kind : Shaders.Shader_Type; Source : String);
 
    overriding
    procedure Delete_Id (Object : in out Program);
