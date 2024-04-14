@@ -205,16 +205,16 @@ Given a matrix `A`:
 
 ```ada
 A : constant CPU_Tensor :=
-  To_Tensor ((1.0,  5.0,
+  To_Tensor ([1.0,  5.0,
               1.0, -2.0,
               1.0, -4.0,
-              1.0,  1.0)).Reshape ((4, 2));
+              1.0,  1.0]).Reshape ([4, 2]);
 ```
 
 and a vector `B`:
 
 ```ada
-B : constant CPU_Tensor := To_Tensor ((2.0, 3.0, -3.0, 7.0));
+B : constant CPU_Tensor := To_Tensor ([2.0, 3.0, -3.0, 7.0]);
 ```
 
 Function `Least_Squares` can be used to compute the least-squares

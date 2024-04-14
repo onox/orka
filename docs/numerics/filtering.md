@@ -40,17 +40,17 @@ DT  : constant Duration := 1.0;
 DTE : constant Element  := Element (DT);
 
 TF : constant Kalman.Matrix := To_Tensor
-  ((1.0, DTE, 0.0, 0.0,
+  ([1.0, DTE, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0,
     0.0, 0.0, 1.0, DTE,
-    0.0, 0.0, 0.0, 1.0),
+    0.0, 0.0, 0.0, 1.0],
    Shape => (4, 4));
 
 function F (Point : Kalman.Vector; DT : Orka.Float_64) return Kalman.Vector is
   (TF * Point);
 
 function H (Point : Kalman.Vector) return Kalman.Vector is
-  (To_Tensor ((Element'(Point (1)), Element'(Point (3)))));
+  (To_Tensor ([Element'(Point (1)), Element'(Point (3))]));
 ```
 
 ### Noise matrices
@@ -67,10 +67,10 @@ to the predicted state, partly throwing away the measurements.
 Std_Dev : constant := 0.3;
 
 Q : constant Kalman.Matrix := To_Tensor
-  ((0.005, 0.01, 0.0,   0.0,
+  ([0.005, 0.01, 0.0,   0.0,
     0.01,  0.02, 0.0,   0.0,
     0.0,   0.0,  0.005, 0.01,
-    0.0,   0.0,  0.01,  0.02),
+    0.0,   0.0,  0.01,  0.02],
    Shape => (4, 4));
 
 R : constant Kalman.Matrix := Diagonal ((Std_Dev**2, Std_Dev**2));

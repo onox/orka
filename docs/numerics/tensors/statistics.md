@@ -56,7 +56,7 @@ Reset_Random (Orka.OS.Monotonic_Clock);
       ```ada
       Trials : constant := 20_000;
 
-      Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 10, P => 0.1);
+      Tensor : constant CPU_Tensor := Random.Binomial ([Trials], N => 10, P => 0.1);
       Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
       ```
 
@@ -148,7 +148,7 @@ using the Student's t-distribution:
 ```ada
 Trials : constant := 100_000;
 
-Tensor  : constant CPU_Tensor := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
+Tensor  : constant CPU_Tensor := Random.Student_T ([Trials], V => Data.Elements - 1);
 P_Value : constant Element    := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
 ```
 

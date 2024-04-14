@@ -279,8 +279,10 @@ The program is then created as follows:
 Location_Shaders : constant Locations.Location_Ptr
   := Locations.Directories.Create_Location (".");
 
-Program_1 : Program := Create_Program (Modules.Create_Module
-  (Location_Shaders, VS => "triangle.vert", FS => "triangle.frag"));
+Program_1 : Shader_Programs :=
+  (Vertex_Shader   => Create_Program (Location_Shaders, Vertex_Shader, "triangle.vert"),
+   Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "triangle.frag"),
+   others          => Empty);
 ```
 
 `Location_Shader` is an object that loads `triangle.vert` and
@@ -288,7 +290,7 @@ Program_1 : Program := Create_Program (Modules.Create_Module
 OpenGL that we want to use this program:
 
 ```ada
-Program_1.Use_Program;
+Context.Bind_Shaders (Program_1);
 ```
 
 #### Framebuffer
@@ -333,7 +335,7 @@ and then draw the triangle. Press ++esc++ to close the application.
     with Orka.Rendering.Buffers;
     with Orka.Rendering.Drawing;
     with Orka.Rendering.Framebuffers;
-    with Orka.Rendering.Programs.Modules;
+    with Orka.Rendering.Programs.Shaders;
     with Orka.Resources.Locations.Directories;
     with Orka.Windows;
 
@@ -348,14 +350,17 @@ and then draw the triangle. Press ++esc++ to close the application.
        use Orka.Resources;
        use Orka.Rendering.Buffers;
        use Orka.Rendering.Framebuffers;
-       use Orka.Rendering.Programs;
+       use all type Orka.Rendering.Programs.Shader_Kind;
+       use Orka.Rendering.Programs.Shaders;
        use Orka;
 
        Location_Shaders : constant Locations.Location_Ptr
          := Locations.Directories.Create_Location (".");
 
-       Program_1 : Program := Create_Program (Modules.Create_Module
-         (Location_Shaders, VS => "triangle.vert", FS => "triangle.frag"));
+       Program_1 : Shader_Programs :=
+         (Vertex_Shader   => Create_Program (Location_Shaders, Vertex_Shader, "triangle.vert"),
+          Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "triangle.frag"),
+          others          => Empty);
 
        FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
@@ -369,7 +374,7 @@ and then draw the triangle. Press ++esc++ to close the application.
        FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
        FB_D.Use_Framebuffer;
 
-       Program_1.Use_Program;
+       Context.Bind_Shaders (Program_1);
 
        Buffer_1.Bind (Shader_Storage, 0);
 

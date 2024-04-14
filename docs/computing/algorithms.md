@@ -11,22 +11,16 @@ Orka provides a few algorithms which can be used for general purposes.
 The package `:::ada Orka.Algorithms.Prefix_Sums` provides means to compute
 the exclusive parallel prefix sum of a sequence of unsigned integers.
 
-First create a factory with the function `Create_Factory`:
+A `Prefix_Sum` object can be created with the function
+`Create_Prefix_Sum`:
 
 ```ada
-PS_Factory : Factory := Create_Factory (Location);
+PS : Prefix_Sum := Create_Prefix_Sum (Context, Location, Length => Count);
 ```
 
 The function must be given a location containing the directory
 `algorithms/` at its root. This directory should contain the files
 `prefix-sum.comp` and `prefix-sum-add.comp`.
-
-Given a factory, a `Prefix_Sum` object can be created with the function
-`Create_Prefix_Sum`:
-
-```ada
-PS : Prefix_Sum := PS_Factory.Create_Prefix_Sum (Length => Count);
-```
 
 `Count` contains a `Positive` number representing the number of elements
 for which to compute a prefix sum. The value must be a multiple of 4.
@@ -79,7 +73,7 @@ floating-point numbers.
 First create the `FFT` object using the function `Create_FFT`:
 
 ```ada
-FFT_1 : FFT := Create_FFT (Location);
+FFT_1 : FFT := Create_FFT (Context, Location);
 ```
 
 The function must be given a location containing the directory

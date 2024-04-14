@@ -30,7 +30,7 @@ See [EGL](/contexts/#egl) for more information.
 
 ## Buffers
 
-Compute shaders often read or write from buffers.
+Compute shaders often read from or write to buffers.
 To make a buffer available, bind it as an SSBO to the index of a binding point.
 See [SSBO](/rendering/buffers/#ssbo) on how to bind a buffer.
 
@@ -171,7 +171,8 @@ available per thread.
 ## Launching compute shaders
 
 To launch a compute shader, first bind the necessary buffers and images, then
-enable a program containing a compute shader with the procedure `Use_Program`
+bind the program containing a compute shader with the procedure `Bind_Shaders`
+of a `Context` object
 (See [Using a program](/rendering/programs/#using-a-program)), and then dispatch it.
 
 To dispatch a fixed size compute shader, execute the procedure `Dispatch_Compute`

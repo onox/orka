@@ -47,16 +47,23 @@ The value `Precomputed` causes 5 times more wavelengths to be precomputed than
 the other two. It gives the highest accuracy of the luminance, but takes much
 more time to compute than `Approximate`.
 
-After the location objects have been created, create the `Cached_Atmosphere`
+Next, precompute the textures:
+
+```ada
+Atmosphere_Textures : constant Precomputed_Textures :=
+  Cache.Get_Textures (Context, Earth_Data, Location_Atmosphere, Location_Atmosphere_Cache);
+```
+
+After the location objects have been created, create the `Atmosphere`
 object by calling the function `Create_Atmosphere`:
 
 ```ada
-Atmosphere_Manager : Cache.Cached_Atmosphere :=
-  Cache.Create_Atmosphere
-    (Earth_Data, Location_Atmosphere, Location_Atmosphere_Cache);
+Atmosphere_Manager : Rendering.Atmosphere :=
+  Rendering.Create_Atmosphere
+    (Context, Earth_Data, Location_Atmosphere, Atmosphere_Textures);
 ```
 
-A fourth parameter, `Parameters`, is optional and only needed if the planet is
+A fifth parameter, `Parameters`, is optional and only needed if the planet is
 slightly flattened and the `Flattening` component of the parameters is greater than zero.
 The precomputed atmosphere assumes the planet has no flattening (for space/time
 complexity reasons), but in reality the semi-minor axis of the Earth (center to
@@ -101,7 +108,7 @@ See [Frame graph](/rendering/frame-graph/) for more information on how to
 build and render a frame graph.
 
 !!! tip "Render the atmosphere after the terrain"
-    If your application render an atmosphere as well as a terrain, render the
+    If your application renders an atmosphere as well as a terrain, render the
     atmosphere after the terrain. This reduces the number of invocations of the
     fragment shader.
 

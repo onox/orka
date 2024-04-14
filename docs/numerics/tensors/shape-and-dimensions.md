@@ -34,8 +34,8 @@ shape and the elements of the original tensor. The function can be given
 either a shape or the number of elements:
 
 ```ada
-Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
-Tensor_2 : constant CPU_Tensor := Tensor_1.Reshape ((2, 3));
+Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+Tensor_2 : constant CPU_Tensor := Tensor_1.Reshape ([2, 3]);
 ```
 
 The given shape or size must match the number of elements of the tensor.
@@ -58,8 +58,8 @@ axes must be equal.
 The result of concatenating two vectors with the `&` operator is another vector:
 
 ```ada
-Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0));
-Tensor_2 : constant CPU_Tensor := To_Tensor ((3.0, 4.0, 5.0));
+Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0]);
+Tensor_2 : constant CPU_Tensor := To_Tensor ([3.0, 4.0, 5.0]);
 
 Tensor_3 : constant CPU_Tensor := Tensor_1 & Tensor_2;
 ```
@@ -75,8 +75,8 @@ other than the first axis by specifying the parameter `Dimension`.
 For example, given the following two tensors:
 
 ```ada
-Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
-Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 5.0, 6.0, 7.0, 8.0, 9.0), (3, 2));
+Tensor_1 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0]);
+Tensor_2 : constant CPU_Tensor := To_Tensor ([4.0, 5.0, 6.0, 7.0, 8.0, 9.0], [3, 2]);
 ```
 
 The tensors can be concatenated horizontally with:

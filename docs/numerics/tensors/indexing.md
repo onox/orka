@@ -33,7 +33,7 @@ If the tensor is 2-D and the index is a `Tensor_Index` then it returns the
 `Element` or `Boolean` at the given index:
 
 ```ada
-Some_Element : constant Element := Tensor ((I, J));
+Some_Element : constant Element := Tensor ([I, J]);
 ```
 
 ## Multiple rows and columns
@@ -90,7 +90,7 @@ For example, to assign the value `:::ada 4.0` to the second position
 of a vector, the procedure `Set` can be used as follows:
 
 ```ada
-Tensor.Set ((1 => 2), 4.0);
+Tensor.Set ([2], 4.0);
 ```
 
 Similarly, the values `True` and `False` can be assigned to boolean
@@ -117,9 +117,9 @@ as the index, then the tensor given as the value must be a 1-D tensor with
 
 ```ada
 declare
-   Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0), Shape => (3, 2));
+   Tensor : CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], Shape => [3, 2]);
 begin
-   Tensor.Set (2, To_Tensor ((7.0, 8.0)));
+   Tensor.Set (2, To_Tensor ([7.0, 8.0]));
 end;
 ```
 

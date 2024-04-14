@@ -43,7 +43,8 @@ Atmosphere_Manager : Orka.Features.Atmosphere.Cache.Cached_Atmosphere :=
     (Earth, Location_Atmosphere_Shaders, Location_Precomputed, Earth_Parameters);
 
 Terrain_Manager : Planets.Terrain_Planet := Planets.Create_Terrain_Planet
-  (Min_Depth         => 6,
+  (Context           => Context,
+   Min_Depth         => 6,
    Max_Depth         => 20,
    Wireframe         => True,
    Location          => Location_Terrain_Shaders,
@@ -113,8 +114,10 @@ Each frame, before presenting one of the resources of the frame graph, update th
 state of the terrain by calling the procedure `Set_Data`:
 
 ```ada
+use Orka.Transforms.Singles.Matrices;
+
 Terrain_Manager.Set_Data
-  (Rotation      => Orka.Transforms.Singles.Matrices.Rz (-Orka.Float_32 (Earth_Parameters.Axial_Tilt)),
+  (Rotation      => Rz (-Orka.Float_32 (Earth_Parameters.Axial_Tilt)),
    Center        => Translate_From_Camera_To_Planet,
    Camera        => Camera,
    Star          => Direction_From_Planet_To_Star,

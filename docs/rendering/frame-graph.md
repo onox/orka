@@ -254,7 +254,8 @@ To render a frame graph, a `Renderable_Graph` object must be created:
 Graph : Orka.Frame_Graphs.Renderable_Graph
   (Maximum_Passes    => Graph_Builder.Maximum_Passes,
    Maximum_Resources => Graph_Builder.Maximum_Resources,
-   Graph             => Graph_Builder'Access);
+   Graph             => Graph_Builder'Access,
+   Context           => Context'Access);
 ```
 
 The discriminants `Maximum_Passes` and `Maximum_Resources` must have the

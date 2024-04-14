@@ -21,21 +21,21 @@ with certain values or properties:
 A 1-D tensor can be created from an array of elements using the function `To_Tensor`:
 
 ```ada
-Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0));
+Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0]);
 ```
 
 A boolean tensor can be created from an array of booleans using the
 function `To_Boolean_Tensor`:
 
 ```ada
-Values : constant Boolean_Array := (False, True, False, True);
+Values : constant Boolean_Array := [False, True, False, True];
 Tensor : constant CPU_Tensor := To_Boolean_Tensor (Values);
 ```
 
 If a 2-D tensor is desired, provide the desired shape as the second parameter:
 
 ```ada
-Matrix : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0), (2, 2));
+Matrix : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0], [2, 2]);
 ```
 
 !!! info
@@ -60,7 +60,7 @@ Tensor : constant CPU_Tensor := Ones (1_000);
 While a zero matrix with the shape 4 × 8 is created with:
 
 ```ada
-Tensor : constant CPU_Tensor := Zeros ((4, 8));
+Tensor : constant CPU_Tensor := Zeros ([4, 8]);
 ```
 
 To create a tensor of a particular shape filled with a specific value, use
@@ -80,7 +80,7 @@ with the procedure `Set` by some algorithm.
 The function `Empty` can create such an uninitialized array:
 
 ```ada
-Sigmas : Matrix := Empty ((2 * N + 1, N));
+Sigmas : Matrix := Empty ([2 * N + 1, N]);
 ```
 
 ## Range or space
@@ -206,13 +206,13 @@ will always be a square matrix with the number of rows and columns equal to
 the number of elements in the given array.
 
 ```ada
-Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
+Tensor_1 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0]);
 ```
 
 Alternatively, the elements from a 1-D tensor instead of an array can be used:
 
 ```ada
-Main_Diagonal : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+Main_Diagonal : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
 Tensor_2      : constant CPU_Tensor := Diagonal (Main_Diagonal);
 ```
 
