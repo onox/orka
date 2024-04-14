@@ -17,13 +17,13 @@
 uniform vec4 camera_offset = vec4(0.0);
 uniform bool ground_hack = false;
 
-uniform vec4 camera_pos;
-uniform vec4 planet_pos;
-
-uniform vec4 sun_direction;
-
-uniform vec4 star_direction;
-uniform float star_size; // cosine of angular radius
+layout(std140, binding = 1) uniform MetadataBuffer {
+    vec4 camera_pos;
+    vec4 planet_pos;
+    vec4 sun_direction;
+    vec4 star_direction;
+    vec4 star_data; // x = cosine of angular radius
+};
 
 in vec3 view_ray;
 
@@ -39,6 +39,7 @@ vec3 GetSkyRadiance(vec3 camera, vec3 view_ray, float shadow_length,
 vec3 GetSolarRadiance();
 
 void main() {
+    const float star_size = star_data.x;
     const vec3 view_direction = normalize(view_ray);
 
     // Hack 1: adjust position of camera to account for difference between

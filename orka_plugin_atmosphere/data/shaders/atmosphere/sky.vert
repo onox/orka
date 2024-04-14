@@ -16,8 +16,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-uniform mat4 view;
-uniform mat4 proj;
+layout(std140, binding = 0) uniform MatrixBuffer {
+    mat4 view;
+    mat4 proj;
+};
 
 out vec3 view_ray;
 

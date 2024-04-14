@@ -16,10 +16,14 @@
 
 with Orka.Behaviors;
 with Orka.Cameras;
+with Orka.Contexts;
 with Orka.Frame_Graphs;
+with Orka.Rendering.Buffers;
 with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Programs.Shaders;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
+with Orka.Types;
 
 private with Orka.Rendering.Programs.Uniforms;
 
@@ -36,14 +40,16 @@ package Orka.Features.Atmosphere.Rendering is
    end record;
    --  Semi-major axis and the axial tilt are only used if flattening > 0.0
 
-   type Atmosphere is tagged limited private;
+   type Atmosphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Atmosphere
-     (Data       : aliased Model_Data;
+     (Context    : aliased Orka.Contexts.Context'Class;
+      Data       : aliased Model_Data;
       Location   : Resources.Locations.Location_Ptr;
+      Textures   : Precomputed_Textures;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere;
 
-   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Module;
+   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Shader_Module;
    --  Return the shader module for use by other features like terrain
    --  rendering
 
@@ -61,8 +67,6 @@ package Orka.Features.Atmosphere.Rendering is
    --  This procedure assumes that the precomputed textures have been
    --  binded with procedure Orka.Features.Atmosphere.Bind_Textures.
 
-   procedure Render (Object : Atmosphere);
-
 private
 
    package LE renames Orka.Rendering.Textures.LE;
@@ -72,29 +76,22 @@ private
 
    overriding procedure Run (Object : Atmosphere_Program_Callback);
 
-   package Programs renames Orka.Rendering.Programs;
+   type Atmosphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
+      Program : Orka.Rendering.Programs.Shaders.Shader_Programs;
+      Module  : Orka.Rendering.Programs.Modules.Shader_Module;
 
-   type Atmosphere is tagged limited record
-      Program : Programs.Program;
-      Module  : Programs.Modules.Module;
+      Textures : Precomputed_Textures;
 
       Parameters : Model_Parameters;
 
       Bottom_Radius  : Float_64;
       Distance_Scale : Float_64;
 
-      Uniform_Ground_Hack   : Programs.Uniforms.Uniform (LE.Bool_Type);
-      Uniform_Camera_Offset : Programs.Uniforms.Uniform (LE.Single_Vec4);
+      Buffer_Matrices : Orka.Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
+      Buffer_Metadata : Orka.Rendering.Buffers.Buffer (Types.Single_Vector_Type);
 
-      Uniform_Camera_Pos    : Programs.Uniforms.Uniform (LE.Single_Vec4);
-      Uniform_Planet_Pos    : Programs.Uniforms.Uniform (LE.Single_Vec4);
-
-      Uniform_Star_Dir  : Programs.Uniforms.Uniform (LE.Single_Vec4);
-      Uniform_Star_Size : Programs.Uniforms.Uniform (LE.Single_Type);
-      Uniform_Sun_Dir   : Programs.Uniforms.Uniform (LE.Single_Vec4);
-
-      Uniform_View : Programs.Uniforms.Uniform (LE.Single_Matrix4);
-      Uniform_Proj : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_Ground_Hack   : Orka.Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Camera_Offset : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec4);
 
       Callback : aliased Atmosphere_Program_Callback (Atmosphere'Access);
    end record;

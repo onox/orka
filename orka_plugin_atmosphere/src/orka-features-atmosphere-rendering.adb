@@ -31,20 +31,27 @@ package body Orka.Features.Atmosphere.Rendering is
    package L1 renames Ada.Characters.Latin_1;
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Float_64);
 
+   Binding_Buffer_Matrices : constant := 0;
+   Binding_Buffer_Metadata : constant := 1;
+
    Altitude_Hack_Threshold : constant := 8000.0;
 
    function Create_Atmosphere
-     (Data       : aliased Model_Data;
+     (Context    : aliased Orka.Contexts.Context'Class;
+      Data       : aliased Model_Data;
       Location   : Resources.Locations.Location_Ptr;
+      Textures   : Precomputed_Textures;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere
    is
-      Atmosphere_Model : constant Model := Create_Model (Data, Location);
+      Atmosphere_Model : constant Model := Create_Model (Context, Data, Location);
 
       Sky_GLSL : constant String := Resources.Convert
         (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));
 
-      use Rendering.Programs;
-      use Rendering.Programs.Modules;
+      use Orka.Rendering.Buffers;
+      use Orka.Rendering.Programs;
+      use Orka.Rendering.Programs.Shaders;
+      use Orka.Rendering.Programs.Modules;
 
       Sky_Shader : constant String :=
         "#version 420 core" & L1.LF &
@@ -52,37 +59,30 @@ package body Orka.Features.Atmosphere.Rendering is
         "const float kLengthUnitInMeters = " & Data.Length_Unit_In_Meters'Image & ";" & L1.LF &
         Sky_GLSL & L1.LF;
 
-      Shader_Module : constant Rendering.Programs.Modules.Module := Atmosphere_Model.Get_Shader;
+      Shader_Module : constant Orka.Rendering.Programs.Modules.Shader_Module := Atmosphere_Model.Get_Shader;
    begin
       return Result : Atmosphere :=
-        (Program        => Create_Program (Modules.Module_Array'
-                             (Modules.Create_Module (Location, VS => "atmosphere/sky.vert"),
-                              Modules.Create_Module_From_Sources (FS => Sky_Shader),
-                              Shader_Module)),
-         Module         => Shader_Module,
-         Parameters     => Parameters,
-         Bottom_Radius  => Data.Bottom_Radius,
-         Distance_Scale => 1.0 / Data.Length_Unit_In_Meters,
-         others         => <>)
+        (Program         =>
+           (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "atmosphere/sky.vert"),
+            Fragment_Shader => From (Create_Program (Modules.Shader_Module_Array'
+              [Modules.Create_Module_From_Source (Fragment_Shader, Sky_Shader), Shader_Module])),
+            others          => Empty),
+         Buffer_Matrices => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 2),
+         Buffer_Metadata => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Vector_Type, 5),
+         Context         => Context'Access,
+         Module          => Shader_Module,
+         Textures        => Textures,
+         Parameters      => Parameters,
+         Bottom_Radius   => Data.Bottom_Radius,
+         Distance_Scale  => 1.0 / Data.Length_Unit_In_Meters,
+         others          => <>)
       do
-         Result.Uniform_Ground_Hack   := Result.Program.Uniform ("ground_hack");
-         Result.Uniform_Camera_Offset := Result.Program.Uniform ("camera_offset");
-
-         Result.Uniform_Camera_Pos := Result.Program.Uniform ("camera_pos");
-         Result.Uniform_Planet_Pos := Result.Program.Uniform ("planet_pos");
-
-         Result.Uniform_View := Result.Program.Uniform ("view");
-         Result.Uniform_Proj := Result.Program.Uniform ("proj");
-
-         Result.Uniform_Sun_Dir  := Result.Program.Uniform ("sun_direction");
-
-         Result.Uniform_Star_Dir  := Result.Program.Uniform ("star_direction");
-         Result.Uniform_Star_Size := Result.Program.Uniform ("star_size");
+         Result.Uniform_Ground_Hack   := Result.Program (Fragment_Shader).Value.Uniform ("ground_hack");
+         Result.Uniform_Camera_Offset := Result.Program (Fragment_Shader).Value.Uniform ("camera_offset");
       end return;
    end Create_Atmosphere;
 
-   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Module is
-     (Object.Module);
+   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Shader_Module is (Object.Module);
 
    function Flattened_Vector
      (Parameters : Model_Parameters;
@@ -146,6 +146,11 @@ package body Orka.Features.Atmosphere.Rendering is
          Object.Uniform_Ground_Hack.Set_Boolean (Altitude < Altitude_Hack_Threshold);
          Object.Uniform_Camera_Offset.Set_Vector (Convert (Offset * Object.Distance_Scale));
       end Apply_Hacks;
+
+      --  Use distance to star and its radius instead of the
+      --  Sun_Angular_Radius of Model_Data
+      Angular_Radius : constant Float_64 :=
+        EF.Arctan (Object.Parameters.Star_Radius, Norm (Camera_To_Star));
    begin
       if Object.Parameters.Flattening > 0.0 then
          Apply_Hacks;
@@ -154,34 +159,28 @@ package body Orka.Features.Atmosphere.Rendering is
          Object.Uniform_Camera_Offset.Set_Vector (Orka.Transforms.Singles.Vectors.Zero_Vector);
       end if;
 
-      Object.Uniform_Camera_Pos.Set_Vector (Orka.Transforms.Singles.Vectors.Zero_Vector);
-      Object.Uniform_Planet_Pos.Set_Vector (Convert (-Planet_To_Camera * Object.Distance_Scale));
+      Object.Buffer_Metadata.Set_Data (Orka.Types.Singles.Vector4_Array'[
+         Orka.Transforms.Singles.Vectors.Zero_Vector,
+         Convert (-Planet_To_Camera * Object.Distance_Scale),
+         Convert (Normalize (Planet_To_Star)),
+         Convert (Normalize (Camera_To_Star)),
+         [Float_32 (EF.Cos (Angular_Radius)), 0.0, 0.0, 0.0]
+      ]);
 
-      Object.Uniform_Sun_Dir.Set_Vector (Convert (Normalize (Planet_To_Star)));
-      Object.Uniform_Star_Dir.Set_Vector (Convert (Normalize (Camera_To_Star)));
-
-      --  Use distance to star and its radius instead of the
-      --  Sun_Angular_Radius of Model_Data
-      declare
-         Angular_Radius : constant Float_64 :=
-           EF.Arctan (Object.Parameters.Star_Radius, Norm (Camera_To_Star));
-      begin
-         Object.Uniform_Star_Size.Set_Single (Float_32 (EF.Cos (Angular_Radius)));
-      end;
-
-      Object.Uniform_View.Set_Matrix (Camera.View_Matrix);
-      Object.Uniform_Proj.Set_Matrix (Camera.Projection_Matrix);
+      Object.Buffer_Matrices.Set_Data (Orka.Types.Singles.Matrix4_Array'[Camera.View_Matrix, Camera.Projection_Matrix]);
    end Set_Data;
 
-   procedure Render (Object : Atmosphere) is
-   begin
-      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
-   end Render;
-
    overriding procedure Run (Object : Atmosphere_Program_Callback) is
+      use all type Orka.Rendering.Buffers.Indexed_Buffer_Target;
    begin
-      Object.Data.Program.Use_Program;
-      Object.Data.Render;
+      Bind_Textures (Object.Data.Textures);
+
+      Object.Data.Buffer_Matrices.Bind (Uniform, Binding_Buffer_Matrices);
+      Object.Data.Buffer_Metadata.Bind (Uniform, Binding_Buffer_Metadata);
+
+      Object.Data.Context.Bind_Shaders (Object.Data.Program);
+
+      Orka.Rendering.Drawing.Draw (GL.Types.Triangles, 0, 3);
    end Run;
 
    function Create_Graph

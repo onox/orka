@@ -53,6 +53,11 @@ package Orka.Rendering.Programs.Modules is
       Kind     : Shader_Kind;
       Path     : String) return Shader_Module;
 
+   function Create_Modules
+     (Location : Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Paths    : String_Array) return Shader_Module_Array;
+
    function Create_Module_From_Source
      (Kind : Shader_Kind;
       Text : String) return Shader_Module;

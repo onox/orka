@@ -17,27 +17,12 @@
 with Orka.Features.Atmosphere.Rendering;
 
 package Orka.Features.Atmosphere.Cache is
+   pragma Preelaborate;
 
-   type Cached_Atmosphere is limited new Rendering.Atmosphere with private;
-
-   function Create_Atmosphere
-     (Data             : aliased Model_Data;
+   function Get_Textures
+     (Context          : aliased Orka.Contexts.Context'Class;
+      Data             : aliased Model_Data;
       Location_Shaders : Resources.Locations.Location_Ptr;
-      Location_Cache   : Resources.Locations.Writable_Location_Ptr;
-      Parameters       : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere;
-
-   overriding
-   function Create_Atmosphere
-     (Data       : aliased Model_Data;
-      Location   : Resources.Locations.Location_Ptr;
-      Parameters : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere;
-
-private
-
-   type Cached_Atmosphere is limited new Rendering.Atmosphere with record
-      Textures : Precomputed_Textures;
-   end record;
-
-   overriding procedure Render (Object : Cached_Atmosphere);
+      Location_Cache   : Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures;
 
 end Orka.Features.Atmosphere.Cache;

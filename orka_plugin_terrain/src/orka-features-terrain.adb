@@ -81,7 +81,7 @@ package body Orka.Features.Terrain is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Render_Modules       : Rendering.Programs.Modules.Module_Array;
+      Render_Modules       : Rendering.Programs.Modules.Shader_Module_Array;
       Initialize_Render    : access procedure
         (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
    is
@@ -108,6 +108,14 @@ package body Orka.Features.Terrain is
       --  Minimum and maximum depth, and the the heap elements
 
       use Rendering.Programs.Shaders;
+      use type Rendering.Programs.Modules.Shader_Module_Array;
+
+      Modules_Render_Fragment_Shader : constant Modules.Shader_Module_Array :=
+        Modules.Create_Modules (Location, Fragment_Shader,
+          [Shader_Terrain_Render_Common'Access,
+           Shader_Terrain_Render_Normals'Access,
+           (if Wireframe then Shader_Render_Wires_Fragment'Access else Shader_Render_Fragment'Access)])
+        & Render_Modules;
    begin
       return Result : Terrain :=
         (Context      => Context'Access,
@@ -148,10 +156,7 @@ package body Orka.Features.Terrain is
                Shader_Render_Tess_Evaluation'Access]),
             Geometry_Shader        => Create_Program_From_Shaders (Location, Geometry_Shader,
               (if Wireframe then [Shader_Render_Wires_Geometry'Access] else [])),
-            Fragment_Shader        => From (Create_Program (Location, Fragment_Shader,
-              [Shader_Terrain_Render_Common'Access,
-               Shader_Terrain_Render_Normals'Access,
-               (if Wireframe then Shader_Render_Wires_Fragment'Access else Shader_Render_Fragment'Access)], Render_Modules)),
+            Fragment_Shader        => From (Create_Program (Modules_Render_Fragment_Shader)),
             others                 => Empty),
 
          Program_Leb_Prepass =>

@@ -297,6 +297,12 @@ package body Orka.Rendering.Programs.Modules is
       end return;
    end Create_Module;
 
+   function Create_Modules
+     (Location : Resources.Locations.Location_Ptr;
+      Kind     : Shader_Kind;
+      Paths    : String_Array) return Shader_Module_Array
+   is [for Path of Paths => Programs.Modules.Create_Module (Location, Kind, Path.all)];
+
    function Create_Module_From_Source
      (Kind : Shader_Kind;
       Text : String) return Shader_Module

@@ -84,7 +84,7 @@ package body Orka.Features.Terrain.Planets is
         (Programs : Rendering.Programs.Shaders.Shader_Programs);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
-      Atmosphere    : Orka.Features.Atmosphere.Cache.Cached_Atmosphere;
+      Atmosphere    : Features.Atmosphere.Rendering.Atmosphere;
       Location_Data : Orka.Resources.Locations.Location_Ptr;
       Height_Scale  : Orka.Float_32;
       Height_Offset : Orka.Float_32) return Terrain_Planet
@@ -141,9 +141,9 @@ package body Orka.Features.Terrain.Planets is
           Data.Length_Unit_In_Meters'Image & ";" & LF &
         Terrain_GLSL & LF;
 
-      Modules_Terrain_Render : constant Modules.Module_Array := Modules.Module_Array'
-        (Atmosphere.Shader_Module,
-         Modules.Create_Module_From_Sources (FS => Terrain_FS_Shader));
+      Modules_Terrain_Render : constant Modules.Shader_Module_Array :=
+        [Atmosphere.Shader_Module,
+         Modules.Create_Module_From_Source (Fragment_Shader, Terrain_FS_Shader)];
 
       procedure Initialize_Program_Render (Programs : Orka.Rendering.Programs.Shaders.Shader_Programs) is
       begin

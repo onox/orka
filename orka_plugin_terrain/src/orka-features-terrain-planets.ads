@@ -14,9 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Features.Atmosphere;
-
-with Orka.Features.Atmosphere.Cache;
 with Orka.Features.Atmosphere.Rendering;
 
 package Orka.Features.Terrain.Planets is
@@ -31,7 +28,7 @@ package Orka.Features.Terrain.Planets is
       Initialize_Render    : access procedure (Programs : Rendering.Programs.Shaders.Shader_Programs);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
-      Atmosphere    : Features.Atmosphere.Cache.Cached_Atmosphere;
+      Atmosphere    : Features.Atmosphere.Rendering.Atmosphere;
       Location_Data : Resources.Locations.Location_Ptr;
       Height_Scale  : Orka.Float_32;
       Height_Offset : Orka.Float_32) return Terrain_Planet

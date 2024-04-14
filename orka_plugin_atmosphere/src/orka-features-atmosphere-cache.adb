@@ -24,11 +24,11 @@ package body Orka.Features.Atmosphere.Cache is
 
    procedure Log is new Orka.Logging.Default.Generic_Log (Other);
 
-   function Create_Atmosphere
-     (Data             : aliased Model_Data;
+   function Get_Textures
+     (Context          : aliased Orka.Contexts.Context'Class;
+      Data             : aliased Model_Data;
       Location_Shaders : Resources.Locations.Location_Ptr;
-      Location_Cache   : Resources.Locations.Writable_Location_Ptr;
-      Parameters       : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere is
+      Location_Cache   : Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures is
    begin
       if not Location_Cache.Exists ("irradiance.ktx") or
          not Location_Cache.Exists ("scattering.ktx") or
@@ -36,7 +36,7 @@ package body Orka.Features.Atmosphere.Cache is
       then
          Log (Info, "Precomputing atmosphere... (this may take a while)");
          declare
-            Atmosphere_Model : constant Model := Create_Model (Data, Location_Shaders);
+            Atmosphere_Model : constant Model := Create_Model (Context, Data, Location_Shaders);
             Textures : constant Precomputed_Textures := Atmosphere_Model.Compute_Textures;
          begin
             Log (Info, "Precomputed textures for atmosphere");
@@ -45,27 +45,7 @@ package body Orka.Features.Atmosphere.Cache is
          end;
       end if;
 
-      return
-        (Rendering.Create_Atmosphere (Data, Location_Shaders, Parameters) with
-         Textures =>
-           KTX.Load_Textures (Data, Orka.Resources.Locations.Location_Ptr (Location_Cache)));
-   end Create_Atmosphere;
-
-   overriding
-   function Create_Atmosphere
-     (Data       : aliased Model_Data;
-      Location   : Resources.Locations.Location_Ptr;
-      Parameters : Rendering.Model_Parameters := (others => <>)) return Cached_Atmosphere is
-   begin
-      --  This function just exists to satisfy the compiler
-      raise Program_Error with "Use the other constructor";
-      return (Rendering.Atmosphere'(Rendering.Create_Atmosphere (Data, Location, Parameters)) with Textures => <>);
-   end Create_Atmosphere;
-
-   overriding procedure Render (Object : Cached_Atmosphere) is
-   begin
-      Bind_Textures (Object.Textures);
-      Rendering.Atmosphere (Object).Render;
-   end Render;
+      return KTX.Load_Textures (Data, Orka.Resources.Locations.Location_Ptr (Location_Cache));
+   end Get_Textures;
 
 end Orka.Features.Atmosphere.Cache;

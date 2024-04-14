@@ -123,6 +123,7 @@
 
 with Ada.Containers.Vectors;
 
+with Orka.Contexts;
 with Orka.Resources.Locations;
 with Orka.Rendering.Programs.Modules;
 
@@ -282,16 +283,19 @@ package Orka.Features.Atmosphere is
 
    procedure Bind_Textures (Object : Precomputed_Textures);
 
-   type Model (Data : not null access constant Model_Data) is tagged limited private;
+   type Model
+     (Context : not null access constant Orka.Contexts.Context'Class;
+      Data    : not null access constant Model_Data) is tagged limited private;
 
    function Create_Model
-     (Data     : aliased Model_Data;
+     (Context  : aliased Orka.Contexts.Context'Class;
+      Data     : aliased Model_Data;
       Location : Resources.Locations.Location_Ptr) return Model;
 
    function Compute_Textures (Object : Model; Scattering_Orders : Natural := 4)
      return Precomputed_Textures;
 
-   function Get_Shader (Object : Model) return Rendering.Programs.Modules.Module;
+   function Get_Shader (Object : Model) return Rendering.Programs.Modules.Shader_Module;
 
    procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Float_64);
    --  Utility method to convert a function of the wavelength to linear sRGB
@@ -319,7 +323,10 @@ private
       --  Unused if Combine_Scattering is True
    end record;
 
-   type Model (Data : not null access constant Model_Data) is tagged limited record
+   type Model
+     (Context : not null access constant Orka.Contexts.Context'Class;
+      Data    : not null access constant Model_Data)
+   is tagged limited record
       Data_Definitions : Resources.Byte_Array_Pointers.Pointer;
       Data_Functions   : Resources.Byte_Array_Pointers.Pointer;
 

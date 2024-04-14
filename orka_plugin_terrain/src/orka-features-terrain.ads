@@ -80,7 +80,7 @@ package Orka.Features.Terrain is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Render_Modules       : Rendering.Programs.Modules.Module_Array;
+      Render_Modules       : Rendering.Programs.Modules.Shader_Module_Array;
       Initialize_Render    : access procedure
         (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
    with Pre => Min_Depth <= Max_Depth and Max_Depth >= 5;

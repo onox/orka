@@ -114,12 +114,6 @@ package Orka.Rendering.Programs is
       Kind     : Shader_Kind;
       Path     : String) return Shader_Program;
 
-   function Create_Program
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array;
-      Render_Modules  : Programs.Modules.Module_Array) return Shader_Program;
-
    function Create_Program_From_Source
      (Kind : Shader_Kind;
       Text : String) return Shader_Program;

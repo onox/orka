@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 package Orka.Features.Atmosphere.KTX is
+   pragma Preelaborate;
 
    function Load_Textures
      (Data     : Model_Data;
