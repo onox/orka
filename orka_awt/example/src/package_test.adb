@@ -2,7 +2,6 @@ with GL.Types;
 
 with Orka.Logging.Default;
 with Orka.Resources.Locations.Directories;
-with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.Drawing;
 
 with AWT.Windows;
@@ -64,17 +63,20 @@ package body Package_Test is
    procedure Post_Initialize (Object : in out Test_Window) is
       Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
         Orka.Resources.Locations.Directories.Create_Location ("data");
+
+      use Orka.Rendering.Programs;
+      use Orka.Rendering.Programs.Shaders;
    begin
       Object.Initialize_Framebuffer;
 
-      Object.Program  := Orka.Rendering.Programs.Create_Program
-        (Orka.Rendering.Programs.Modules.Create_Module
-           (Location_Shaders,
-            VS => "cursor.vert",
-            FS => "cursor.frag"));
-      Object.Program.Use_Program;
+      Object.Program :=
+         [Vertex_Shader   => Create_Program (Location_Shaders, Fragment_Shader, "cursor.vert"),
+          Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "cursor.frag"),
+          others          => Empty];
 
-      Object.Cursor := Object.Program.Uniform ("cursor");
+      Object.Context.Bind_Shaders (Object.Program);
+
+      Object.Cursor := Object.Program (Vertex_Shader).Value.Uniform ("cursor");
    end Post_Initialize;
 
    procedure Render (Object : in out Test_Window) is
