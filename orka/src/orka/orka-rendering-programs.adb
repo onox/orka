@@ -21,11 +21,11 @@ with Orka.Rendering.Programs.Uniforms;
 
 package body Orka.Rendering.Programs is
 
-   function Create_Separable_Program (Modules   : Programs.Modules.Module_Array;
-                            Separable : Boolean) return Program is
+   function Create_Separable_Program (Modules : Programs.Modules.Shader_Module_Array; Kind : Shader_Kind) return Shader_Program is
+      pragma Assert (for all Module of Modules => Module.Kind = Kind);
    begin
-      return Result : Program do
-         Result.GL_Program.Set_Separable (Separable);
+      return Result : Shader_Program := (Kind => Kind, others => <>) do
+         Result.GL_Program.Set_Separable (True);
 
          --  Attach all shaders to the program before linking
          Programs.Modules.Attach_Shaders (Modules, Result);
@@ -39,20 +39,11 @@ package body Orka.Rendering.Programs is
       end return;
    end Create_Separable_Program;
 
-   function Create_Program (Modules : Programs.Modules.Module_Array) return Program is (Create_Separable_Program (Modules, False));
-   function Create_Program (Module  : Programs.Modules.Module) return Program is (Create_Separable_Program ([Module], False));
-
-   overriding function Create_Program (Modules : Programs.Modules.Module_Array) return Shader_Program is
-     (Shader_Program'(Create_Separable_Program (Modules, True) with Kind => Vertex_Shader));
-   overriding function Create_Program (Module  : Programs.Modules.Module) return Shader_Program is
-     (Shader_Program'(Create_Separable_Program ([Module], True) with Kind => Vertex_Shader));
-
    function Create_Program (Module : Programs.Modules.Shader_Module) return Shader_Program is
-     (Shader_Program'(Create_Separable_Program ([Programs.Modules.Module (Module)], True) with Kind => Module.Kind));
+     (Create_Separable_Program ([Module], Module.Kind));
 
    function Create_Program (Modules : Programs.Modules.Shader_Module_Array) return Shader_Program is
-     (Shader_Program'(Create_Separable_Program ([for Module of Modules => Programs.Modules.Module (Module)], True)
-                        with Kind => Modules (Modules'First).Kind));
+     (Create_Separable_Program (Modules, Modules (Modules'First).Kind));
 
    function Create_Program
      (Location : Orka.Resources.Locations.Location_Ptr;
@@ -71,35 +62,27 @@ package body Orka.Rendering.Programs is
       Text : String) return Shader_Program
    is (Create_Program (Modules.Create_Module_From_Source (Kind, Text)));
 
-   procedure Use_Program (Object : Program) is
-   begin
-      Object.GL_Program.Use_Program;
-   end Use_Program;
-
    function Compute_Work_Group_Size
-     (Object : Program) return Dimension_Size_Array
+     (Object : Shader_Program) return Dimension_Size_Array
    is (Object.GL_Program.Compute_Work_Group_Size);
 
-   function Uniform_Sampler (Object : Program; Name : String)
-     return Uniforms.Uniform_Sampler is
+   function Uniform_Sampler (Object : Shader_Program; Name : String) return Uniforms.Uniform_Sampler is
    begin
       return Uniforms.Create_Uniform_Sampler (Object, Name);
    end Uniform_Sampler;
 
-   function Uniform_Image (Object : Program; Name : String)
-     return Uniforms.Uniform_Image is
+   function Uniform_Image (Object : Shader_Program; Name : String) return Uniforms.Uniform_Image is
    begin
       return Uniforms.Create_Uniform_Image (Object, Name);
    end Uniform_Image;
 
-   function Uniform (Object : Program; Name : String)
-     return Uniforms.Uniform is
+   function Uniform (Object : Shader_Program; Name : String) return Uniforms.Uniform is
    begin
       return Uniforms.Create_Uniform_Variable (Object, Name);
    end Uniform;
 
    function Binding
-     (Object : Program;
+     (Object : Shader_Program;
       Target : Buffers.Indexed_Buffer_Target;
       Name   : String) return Natural
    is

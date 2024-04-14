@@ -29,73 +29,12 @@ package Orka.Rendering.Programs is
 
    subtype Dimension_Size_Array is GL.Types.Compute.Dimension_Size_Array;
 
-   type Program is tagged private;
-
-   function Create_Program (Module  : Programs.Modules.Module) return Program;
-   function Create_Program (Modules : Programs.Modules.Module_Array) return Program;
-
-   procedure Use_Program (Object : Program);
-   --  Use the program during rendering
-
-   function Compute_Work_Group_Size
-     (Object : Program) return Dimension_Size_Array;
-
-   function Uniform_Sampler (Object : Program; Name : String) return Uniforms.Uniform_Sampler;
-   --  Return the uniform sampler that has the given name
-   --
-   --  This function is only needed in order to call procedure Verify_Compatibility
-   --  to verify that the kind and format of the sampler and texture are
-   --  compatible.
-   --
-   --  To bind a texture to a sampler, call Orka.Rendering.Textures.Bind.
-   --
-   --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
-   --  exception is raised if the name is not defined in any of the attached shaders.
-
-   function Uniform_Image (Object : Program; Name : String) return Uniforms.Uniform_Image;
-   --  Return the uniform image that has the given name
-   --
-   --  This function is only needed in order to call procedure Verify_Compatibility
-   --  to verify that the kind and format of the image sampler and texture are
-   --  compatible.
-   --
-   --  To bind a texture to a image sampler, call Orka.Rendering.Textures.Bind.
-   --
-   --  Name must be a GLSL uniform image. A Uniforms.Uniform_Inactive_Error
-   --  exception is raised if the name is not defined in any of the attached shaders.
-
-   function Uniform (Object : Program; Name : String) return Uniforms.Uniform;
-   --  Return the uniform that has the given name
-   --
-   --  Name must be a GLSL uniform. A Uniforms.Uniform_Inactive_Error exception
-   --  is raised if the name is not defined in any of the attached shaders.
-
-   function Binding
-     (Object : Program;
-      Target : Buffers.Indexed_Buffer_Target;
-      Name   : String) return Natural;
-   --  Return the index of the binding point of a shader storage block (SSBO),
-   --  uniform block (UBO), or an atomic counter buffer
-   --
-   --  Name must be a GLSL shader storage block or uniform block.
-   --  A Uniforms.Uniform_Inactive_Error exception is raised if
-   --  the name is not defined in any of the attached shaders.
-
-   Program_Link_Error : exception;
-
-   function GL_Program (Object : Program) return GL.Objects.Programs.Program;
-
-   -----------------------------------------------------------------------------
-
    type Shader_Kind is
      (Vertex_Shader, Tess_Control_Shader, Tess_Evaluation_Shader, Geometry_Shader, Fragment_Shader, Compute_Shader);
 
-   type Shader_Program is new Program with private;
+   type Shader_Program is tagged private;
 
    function Kind (Object : Shader_Program) return Shader_Kind;
-
-   overriding function Create_Program (Module  : Programs.Modules.Module) return Shader_Program;
-   overriding function Create_Program (Modules : Programs.Modules.Module_Array) return Shader_Program;
 
    function Create_Program (Module  : Programs.Modules.Shader_Module) return Shader_Program;
    function Create_Program (Modules : Programs.Modules.Shader_Module_Array) return Shader_Program;
@@ -118,17 +57,68 @@ package Orka.Rendering.Programs is
      (Kind : Shader_Kind;
       Text : String) return Shader_Program;
 
+   -----------------------------------------------------------------------------
+
+   function Compute_Work_Group_Size
+     (Object : Shader_Program) return Dimension_Size_Array;
+
+   function Uniform_Sampler (Object : Shader_Program; Name : String) return Uniforms.Uniform_Sampler;
+   --  Return the uniform sampler that has the given name
+   --
+   --  This function is only needed in order to call procedure Verify_Compatibility
+   --  to verify that the kind and format of the sampler and texture are
+   --  compatible.
+   --
+   --  To bind a texture to a sampler, call Orka.Rendering.Textures.Bind.
+   --
+   --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
+   --  exception is raised if the name is not defined in any of the attached shaders.
+
+   function Uniform_Image (Object : Shader_Program; Name : String) return Uniforms.Uniform_Image;
+   --  Return the uniform image that has the given name
+   --
+   --  This function is only needed in order to call procedure Verify_Compatibility
+   --  to verify that the kind and format of the image sampler and texture are
+   --  compatible.
+   --
+   --  To bind a texture to a image sampler, call Orka.Rendering.Textures.Bind.
+   --
+   --  Name must be a GLSL uniform image. A Uniforms.Uniform_Inactive_Error
+   --  exception is raised if the name is not defined in any of the attached shaders.
+
+   function Uniform (Object : Shader_Program; Name : String) return Uniforms.Uniform;
+   --  Return the uniform that has the given name
+   --
+   --  Name must be a GLSL uniform. A Uniforms.Uniform_Inactive_Error exception
+   --  is raised if the name is not defined in any of the attached shaders.
+
+   function Binding
+     (Object : Shader_Program;
+      Target : Buffers.Indexed_Buffer_Target;
+      Name   : String) return Natural;
+   --  Return the index of the binding point of a shader storage block (SSBO),
+   --  uniform block (UBO), or an atomic counter buffer
+   --
+   --  Name must be a GLSL shader storage block or uniform block.
+   --  A Uniforms.Uniform_Inactive_Error exception is raised if
+   --  the name is not defined in any of the attached shaders.
+
+   Program_Link_Error : exception;
+
+   -----------------------------------------------------------------------------
+   --                                 Internal                                --
+   -----------------------------------------------------------------------------
+
+   function GL_Program (Object : Shader_Program) return GL.Objects.Programs.Program;
+
 private
 
-   type Program is tagged record
+   type Shader_Program is tagged record
       GL_Program : GL.Objects.Programs.Program;
-   end record;
-
-   function GL_Program (Object : Program) return GL.Objects.Programs.Program is (Object.GL_Program);
-
-   type Shader_Program is new Program with record
       Kind : Shader_Kind;
    end record;
+
+   function GL_Program (Object : Shader_Program) return GL.Objects.Programs.Program is (Object.GL_Program);
 
    function Kind (Object : Shader_Program) return Shader_Kind is (Object.Kind);
 

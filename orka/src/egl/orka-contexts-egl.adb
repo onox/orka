@@ -103,6 +103,7 @@ package body Orka.Contexts.EGL is
       GL.Toggles.Enable (GL.Toggles.Texture_Cube_Map_Seamless);
 
       Object.GL_Context := (Is_Present => True, Value => <>);
+      Object.GL_Context.Value.Pipeline.Bind;
    end Post_Initialize;
 
    function Create_Context
@@ -192,7 +193,6 @@ package body Orka.Contexts.EGL is
       if Object.Flags.Debug and then not Object.Flags.No_Error and then not Object.GL_Context.Value.Pipeline.Validate then
          Log (Loggers.Error, "Validation of shader programs failed");
       end if;
-      Object.GL_Context.Value.Pipeline.Bind;
    end Bind_Shaders;
 
    overriding

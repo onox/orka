@@ -297,7 +297,7 @@ package body Orka.Rendering.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform_Sampler
    is
       Sampler_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
@@ -312,7 +312,7 @@ package body Orka.Rendering.Programs.Uniforms is
    end Create_Uniform_Sampler;
 
    function Create_Uniform_Image
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform_Image
    is
       Image_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
@@ -327,7 +327,7 @@ package body Orka.Rendering.Programs.Uniforms is
    end Create_Uniform_Image;
 
    function Create_Uniform_Variable
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform is
    begin
       return Uniform'

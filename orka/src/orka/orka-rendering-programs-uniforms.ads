@@ -163,15 +163,15 @@ package Orka.Rendering.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform_Sampler;
 
    function Create_Uniform_Image
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform_Image;
 
    function Create_Uniform_Variable
-     (Object : Program;
+     (Object : Shader_Program;
       Name   : String) return Uniform;
 
    Uniform_Inactive_Error : exception renames GL.Objects.Programs.Uniform_Inactive_Error;

@@ -37,6 +37,11 @@ package Orka.Rendering.Programs.Shaders is
       Path     : String) return Optional_Shader_Program
    is (From (Create_Program (Location, Kind, Path)));
 
+   function Create_Program_From_Source
+     (Kind : Shader_Kind;
+      Text : String) return Optional_Shader_Program
+   is (From (Create_Program_From_Source (Kind, Text)));
+
    function Create_Program_From_Shaders
      (Location : Orka.Resources.Locations.Location_Ptr;
       Kind     : Shader_Kind;

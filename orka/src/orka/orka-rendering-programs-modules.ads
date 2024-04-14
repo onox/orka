@@ -23,30 +23,13 @@ with Orka.Resources.Locations;
 package Orka.Rendering.Programs.Modules is
    pragma Preelaborate;
 
-   type Module is tagged private;
+   type Shader_Module is tagged private;
 
-   type Module_Array is array (Positive range <>) of aliased Module;
-
-   function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
-     return Module;
-   --  Create a module containing shaders that have a non-empty source text
-
-   function Create_Module
-     (Location : Resources.Locations.Location_Ptr;
-      VS, TCS, TES, GS, FS, CS : String := "") return Module;
-   --  Create a module containing shaders that have a non-empty file path
-
-   procedure Attach_Shaders (Modules : Module_Array; Program : in out Programs.Program);
-
-   procedure Detach_Shaders (Modules : Module_Array; Program : Programs.Program);
+   type Shader_Module_Array is array (Positive range <>) of aliased Shader_Module;
 
    Shader_Compile_Error : exception;
 
-   type Shader_Module is new Module with private;
-
    function Kind (Object : Shader_Module) return Shader_Kind;
-
-   type Shader_Module_Array is array (Positive range <>) of aliased Shader_Module;
 
    function Create_Module
      (Location : Resources.Locations.Location_Ptr;
@@ -62,32 +45,23 @@ package Orka.Rendering.Programs.Modules is
      (Kind : Shader_Kind;
       Text : String) return Shader_Module;
 
-   overriding
-   function Create_Module_From_Sources (VS, TCS, TES, GS, FS, CS : String := "")
-     return Shader_Module is (raise Program_Error);
+   -----------------------------------------------------------------------------
+   --                                 Internal                                --
+   -----------------------------------------------------------------------------
 
-   overriding
-   function Create_Module
-     (Location : Resources.Locations.Location_Ptr;
-      VS, TCS, TES, GS, FS, CS : String := "") return Shader_Module is (raise Program_Error);
+   procedure Attach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program);
+
+   procedure Detach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program);
 
 private
 
    use type GL.Objects.Shaders.Shader;
 
-   package Shader_Holder is new Ada.Containers.Indefinite_Holders
+   package Shader_Holders is new Ada.Containers.Indefinite_Holders
      (Element_Type => GL.Objects.Shaders.Shader);
 
-   type Shader_Array is array (GL.Objects.Shaders.Shader_Type) of Shader_Holder.Holder;
-
-   type Module is tagged record
-      Shaders : Shader_Array;
+   type Shader_Module is tagged record
+      Shader : Shader_Holders.Holder;
    end record;
-
-   type Shader_Module is new Module with record
-      Kind : Shader_Kind;
-   end record;
-
-   function Kind (Object : Shader_Module) return Shader_Kind is (Object.Kind);
 
 end Orka.Rendering.Programs.Modules;
