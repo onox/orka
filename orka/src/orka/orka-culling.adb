@@ -19,7 +19,6 @@ with GL.Compute;
 with GL.Types.Compute;
 
 with Orka.Logging.Default;
-with Orka.Rendering.Programs.Modules;
 
 package body Orka.Culling is
 
@@ -33,20 +32,20 @@ package body Orka.Culling is
       Location : Resources.Locations.Location_Ptr;
       Transforms, Commands : Natural) return Culler
    is
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
 
       use Rendering.Buffers;
       use all type Types.Element_Type;
-      use all type Rendering.Programs.Shader_Kind;
+      use all type Rendering.Shaders.Shader_Kind;
 
-      Program_Frustum : constant Shader_Programs :=
-        (Compute_Shader => Create_Program (Location, Compute_Shader, "cull-frustum.comp"),
-         others         => Empty);
+      Program_Frustum : constant Shader_Objects :=
+        [Compute_Shader => Create_Shader (Location, Compute_Shader, "cull-frustum.comp"),
+         others         => Empty];
 
-      Program_Compact : constant Shader_Programs :=
-        (Compute_Shader => Create_Program (Location, Compute_Shader, "compact-commands.comp"),
-         others         => Empty);
+      Program_Compact : constant Shader_Objects :=
+        [Compute_Shader => Create_Shader (Location, Compute_Shader, "compact-commands.comp"),
+         others         => Empty];
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
         := Program_Frustum (Compute_Shader).Value.Compute_Work_Group_Size;

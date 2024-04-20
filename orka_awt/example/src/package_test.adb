@@ -64,14 +64,14 @@ package body Package_Test is
       Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
         Orka.Resources.Locations.Directories.Create_Location ("data");
 
-      use Orka.Rendering.Programs;
-      use Orka.Rendering.Programs.Shaders;
+      use Orka.Rendering.Shaders;
+      use Orka.Rendering.Shaders.Objects;
    begin
       Object.Initialize_Framebuffer;
 
       Object.Program :=
-         [Vertex_Shader   => Create_Program (Location_Shaders, Fragment_Shader, "cursor.vert"),
-          Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "cursor.frag"),
+         [Vertex_Shader   => Create_Shader (Location_Shaders, Fragment_Shader, "cursor.vert"),
+          Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "cursor.frag"),
           others          => Empty];
 
       Object.Context.Bind_Shaders (Object.Program);

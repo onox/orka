@@ -21,10 +21,10 @@ with GL.Types.Compute;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations;
 
-limited with Orka.Rendering.Programs.Modules;
-limited with Orka.Rendering.Programs.Uniforms;
+limited with Orka.Rendering.Shaders.Modules;
+limited with Orka.Rendering.Shaders.Uniforms;
 
-package Orka.Rendering.Programs is
+package Orka.Rendering.Shaders is
    pragma Preelaborate;
 
    subtype Dimension_Size_Array is GL.Types.Compute.Dimension_Size_Array;
@@ -32,37 +32,45 @@ package Orka.Rendering.Programs is
    type Shader_Kind is
      (Vertex_Shader, Tess_Control_Shader, Tess_Evaluation_Shader, Geometry_Shader, Fragment_Shader, Compute_Shader);
 
-   type Shader_Program is tagged private;
+   type Shader is tagged private;
 
-   function Kind (Object : Shader_Program) return Shader_Kind;
-
-   function Create_Program (Module  : Programs.Modules.Shader_Module) return Shader_Program;
-   function Create_Program (Modules : Programs.Modules.Shader_Module_Array) return Shader_Program;
+   function Kind (Object : Shader) return Shader_Kind;
 
    type String_Access is not null access constant String;
 
    type String_Array is array (Positive range <>) of String_Access;
 
-   function Create_Program
+   function Create_Shader
      (Location : Orka.Resources.Locations.Location_Ptr;
       Kind     : Shader_Kind;
-      Paths    : String_Array) return Shader_Program;
+      Paths    : String_Array) return Shader;
+   --  Create and return a shader from one or more files
 
-   function Create_Program
+   function Create_Shader
      (Location : Orka.Resources.Locations.Location_Ptr;
       Kind     : Shader_Kind;
-      Path     : String) return Shader_Program;
+      Path     : String) return Shader;
+   --  Create and return a shader from a single file
 
-   function Create_Program_From_Source
+   function Create_Shader_From_Source
      (Kind : Shader_Kind;
-      Text : String) return Shader_Program;
+      Text : String) return Shader;
+   --  Create and return a shader using the given text as its source
+
+   function Create_Shader (Modules : Shaders.Modules.Shader_Module_Array) return Shader;
+   --  Create and return a shader from one or more modules
+   --
+   --  Each module can be created from a file or text using the constructors
+   --  in the child package Modules.
+
+   Shader_Compile_Error : exception;
 
    -----------------------------------------------------------------------------
 
    function Compute_Work_Group_Size
-     (Object : Shader_Program) return Dimension_Size_Array;
+     (Object : Shader) return Dimension_Size_Array;
 
-   function Uniform_Sampler (Object : Shader_Program; Name : String) return Uniforms.Uniform_Sampler;
+   function Uniform_Sampler (Object : Shader; Name : String) return Uniforms.Uniform_Sampler;
    --  Return the uniform sampler that has the given name
    --
    --  This function is only needed in order to call procedure Verify_Compatibility
@@ -74,7 +82,7 @@ package Orka.Rendering.Programs is
    --  Name must be a GLSL uniform sampler. A Uniforms.Uniform_Inactive_Error
    --  exception is raised if the name is not defined in any of the attached shaders.
 
-   function Uniform_Image (Object : Shader_Program; Name : String) return Uniforms.Uniform_Image;
+   function Uniform_Image (Object : Shader; Name : String) return Uniforms.Uniform_Image;
    --  Return the uniform image that has the given name
    --
    --  This function is only needed in order to call procedure Verify_Compatibility
@@ -86,14 +94,14 @@ package Orka.Rendering.Programs is
    --  Name must be a GLSL uniform image. A Uniforms.Uniform_Inactive_Error
    --  exception is raised if the name is not defined in any of the attached shaders.
 
-   function Uniform (Object : Shader_Program; Name : String) return Uniforms.Uniform;
+   function Uniform (Object : Shader; Name : String) return Uniforms.Uniform;
    --  Return the uniform that has the given name
    --
    --  Name must be a GLSL uniform. A Uniforms.Uniform_Inactive_Error exception
    --  is raised if the name is not defined in any of the attached shaders.
 
    function Binding
-     (Object : Shader_Program;
+     (Object : Shader;
       Target : Buffers.Indexed_Buffer_Target;
       Name   : String) return Natural;
    --  Return the index of the binding point of a shader storage block (SSBO),
@@ -109,17 +117,17 @@ package Orka.Rendering.Programs is
    --                                 Internal                                --
    -----------------------------------------------------------------------------
 
-   function GL_Program (Object : Shader_Program) return GL.Objects.Programs.Program;
+   function GL_Program (Object : Shader) return GL.Objects.Programs.Program;
 
 private
 
-   type Shader_Program is tagged record
+   type Shader is tagged record
       GL_Program : GL.Objects.Programs.Program;
       Kind : Shader_Kind;
    end record;
 
-   function GL_Program (Object : Shader_Program) return GL.Objects.Programs.Program is (Object.GL_Program);
+   function GL_Program (Object : Shader) return GL.Objects.Programs.Program is (Object.GL_Program);
 
-   function Kind (Object : Shader_Program) return Shader_Kind is (Object.Kind);
+   function Kind (Object : Shader) return Shader_Kind is (Object.Kind);
 
-end Orka.Rendering.Programs;
+end Orka.Rendering.Shaders;

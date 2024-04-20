@@ -2,8 +2,8 @@ with GL.Low_Level.Enums;
 
 with Orka.Contexts.AWT;
 with Orka.Rendering.Framebuffers;
-with Orka.Rendering.Programs.Shaders;
-with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.Shaders.Objects;
+with Orka.Rendering.Shaders.Uniforms;
 
 with AWT.Inputs;
 with AWT.Drag_And_Drop;
@@ -14,8 +14,8 @@ package Package_Test is
 
    type Test_Window is limited new Orka.Contexts.AWT.AWT_Window with record
       FB      : Orka.Rendering.Framebuffers.Framebuffer (Default => True);
-      Program : Orka.Rendering.Programs.Shaders.Shader_Programs;
-      Cursor  : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec2);
+      Program : Orka.Rendering.Shaders.Objects.Shader_Objects;
+      Cursor  : Orka.Rendering.Shaders.Uniforms.Uniform (LE.Single_Vec2);
 
       Drag_And_Drop_Signal : AWT.Drag_And_Drop.Signal;
    end record;

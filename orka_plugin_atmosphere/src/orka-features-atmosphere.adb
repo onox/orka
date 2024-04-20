@@ -51,8 +51,8 @@ with GL.Types;
 with Orka.Features.Atmosphere.Constants;
 with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
-with Orka.Rendering.Programs.Shaders;
-with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.Shaders.Objects;
+with Orka.Rendering.Shaders.Uniforms;
 with Orka.Types;
 
 package body Orka.Features.Atmosphere is
@@ -448,16 +448,16 @@ package body Orka.Features.Atmosphere is
          [LR (6), LR (7), LR (8), 0.0],
          [0.0, 0.0, 0.0, 0.0]];
 
-      use Orka.Rendering.Programs;
-      use Orka.Rendering.Programs.Shaders;
+      use Orka.Rendering.Shaders;
+      use Orka.Rendering.Shaders.Objects;
 
       --  The precomputations require specific GLSL programs for each
       --  precomputation step
-      Program_VS : constant Optional_Shader_Program :=
-        Create_Program (Object.Location, Vertex_Shader, "atmosphere/oversized-triangle.vert");
+      Program_VS : constant Optional_Shader :=
+        Create_Shader (Object.Location, Vertex_Shader, "atmosphere/oversized-triangle.vert");
 
-      Program_GS : constant Optional_Shader_Program :=
-        Create_Program (Object.Location, Geometry_Shader, "atmosphere/layer.geom");
+      Program_GS : constant Optional_Shader :=
+        Create_Shader (Object.Location, Geometry_Shader, "atmosphere/layer.geom");
 
       Header : constant String := Object.Shader_Header (Lambdas);
 
@@ -485,38 +485,38 @@ package body Orka.Features.Atmosphere is
         := Convert (Resources.Byte_Array'(Object.Location.Read_Data
              ("atmosphere/compute-scattering-density.frag").Get));
 
-      Program_Transmittance : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Transmittance),
-          others          => Empty);
+      Program_Transmittance : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Transmittance),
+          others          => Empty];
 
-      Program_Direct_Irradiance : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Direct_Irradiance),
-          others          => Empty);
+      Program_Direct_Irradiance : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Direct_Irradiance),
+          others          => Empty];
 
-      Program_Indirect_Irradiance : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Indirect_Irradiance),
-          others          => Empty);
+      Program_Indirect_Irradiance : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Indirect_Irradiance),
+          others          => Empty];
 
-      Program_Single_Scattering : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
+      Program_Single_Scattering : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
           Geometry_Shader => Program_GS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Single_Scattering),
-          others          => Empty);
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Single_Scattering),
+          others          => Empty];
 
-      Program_Multiple_Scattering : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
+      Program_Multiple_Scattering : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
           Geometry_Shader => Program_GS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Multiple_Scattering),
-          others          => Empty);
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Multiple_Scattering),
+          others          => Empty];
 
-      Program_Scattering_Density : constant Shader_Programs :=
-         (Vertex_Shader   => Program_VS,
+      Program_Scattering_Density : constant Shader_Objects :=
+         [Vertex_Shader   => Program_VS,
           Geometry_Shader => Program_GS,
-          Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Scattering_Density),
-          others          => Empty);
+          Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Scattering_Density),
+          others          => Empty];
 
       -------------------------------------------------------------------------
 
@@ -841,8 +841,8 @@ package body Orka.Features.Atmosphere is
          declare
             Lambdas : constant Float_64_Array := [K_Lambda_R, K_Lambda_G, K_Lambda_B];
 
-            use Orka.Rendering.Programs;
-            use Orka.Rendering.Programs.Shaders;
+            use Orka.Rendering.Shaders;
+            use Orka.Rendering.Shaders.Objects;
 
             Header : constant String := Object.Shader_Header (Lambdas);
 
@@ -850,10 +850,10 @@ package body Orka.Features.Atmosphere is
               := Convert (Resources.Byte_Array'(Object.Location.Read_Data
                 ("atmosphere/compute-transmittance.frag").Get));
 
-            Program_Transmittance : constant Shader_Programs :=
-              (Vertex_Shader   => Create_Program (Object.Location, Vertex_Shader, "oversized-triangle.vert"),
-               Fragment_Shader => Create_Program_From_Source (Fragment_Shader, Header & FS_Transmittance),
-               others          => Empty);
+            Program_Transmittance : constant Shader_Objects :=
+              [Vertex_Shader   => Create_Shader (Object.Location, Vertex_Shader, "oversized-triangle.vert"),
+               Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Transmittance),
+               others          => Empty];
 
             FBO_Transmittance : Framebuffers.Framebuffer := Framebuffers.Create_Framebuffer
               (Width  => Constants.Transmittance_Texture_Width,
@@ -872,7 +872,7 @@ package body Orka.Features.Atmosphere is
       return Textures;
    end Compute_Textures;
 
-   function Get_Shader (Object : Model) return Rendering.Programs.Modules.Shader_Module is
+   function Get_Shader (Object : Model) return Rendering.Shaders.Modules.Shader_Module is
       Precompute_Illuminance : constant Boolean := Object.Data.Num_Precomputed_Wavelengths > 3;
 
       Atmosphere_Fragment_Shader : constant String := Convert
@@ -892,9 +892,9 @@ package body Orka.Features.Atmosphere is
            (if Precompute_Illuminance then "" else "#define RADIANCE_API_ENABLED" & LF) &
            Atmosphere_Fragment_Shader;
 
-      use all type Rendering.Programs.Shader_Kind;
+      use all type Rendering.Shaders.Shader_Kind;
    begin
-      return Rendering.Programs.Modules.Create_Module_From_Source (Fragment_Shader, Shader_Source);
+      return Rendering.Shaders.Modules.Create_Module_From_Source (Fragment_Shader, Shader_Source);
    end Get_Shader;
 
    procedure Bind_Textures (Object : Precomputed_Textures) is

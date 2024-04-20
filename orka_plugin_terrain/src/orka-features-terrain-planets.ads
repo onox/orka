@@ -25,7 +25,7 @@ package Orka.Features.Terrain.Planets is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Initialize_Render    : access procedure (Programs : Rendering.Programs.Shaders.Shader_Programs);
+      Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
       Atmosphere    : Features.Atmosphere.Rendering.Atmosphere;

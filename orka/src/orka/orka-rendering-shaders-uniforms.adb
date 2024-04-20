@@ -21,7 +21,7 @@ with GL.Types;
 
 with Orka.Logging.Default;
 
-package body Orka.Rendering.Programs.Uniforms is
+package body Orka.Rendering.Shaders.Uniforms is
 
    use all type Orka.Logging.Default_Module;
    use all type Orka.Logging.Severity;
@@ -297,7 +297,7 @@ package body Orka.Rendering.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform_Sampler
    is
       Sampler_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
@@ -312,7 +312,7 @@ package body Orka.Rendering.Programs.Uniforms is
    end Create_Uniform_Sampler;
 
    function Create_Uniform_Image
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform_Image
    is
       Image_Kind : constant LE.Resource_Type := Object.GL_Program.Uniform_Type (Name);
@@ -327,7 +327,7 @@ package body Orka.Rendering.Programs.Uniforms is
    end Create_Uniform_Image;
 
    function Create_Uniform_Variable
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform is
    begin
       return Uniform'
@@ -339,4 +339,4 @@ package body Orka.Rendering.Programs.Uniforms is
          raise;
    end Create_Uniform_Variable;
 
-end Orka.Rendering.Programs.Uniforms;
+end Orka.Rendering.Shaders.Uniforms;

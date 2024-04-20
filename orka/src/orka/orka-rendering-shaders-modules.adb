@@ -21,7 +21,7 @@ with Orka.Logging.Default;
 with Orka.Strings;
 with Orka.Terminals;
 
-package body Orka.Rendering.Programs.Modules is
+package body Orka.Rendering.Shaders.Modules is
 
    package Shaders renames GL.Objects.Shaders;
 
@@ -281,7 +281,7 @@ package body Orka.Rendering.Programs.Modules is
      (Location : Resources.Locations.Location_Ptr;
       Kind     : Shader_Kind;
       Paths    : String_Array) return Shader_Module_Array
-   is [for Path of Paths => Programs.Modules.Create_Module (Location, Kind, Path.all)];
+   is [for Path of Paths => Create_Module (Location, Kind, Path.all)];
 
    function Create_Module_From_Source
      (Kind : Shader_Kind;
@@ -292,22 +292,22 @@ package body Orka.Rendering.Programs.Modules is
       end return;
    end Create_Module_From_Source;
 
-   procedure Attach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program) is
+   procedure Attach_Shaders (Modules : Shader_Module_Array; Shader : Orka.Rendering.Shaders.Shader) is
    begin
       for Module of Modules loop
          if not Module.Shader.Is_Empty then
-            Program.GL_Program.Attach (Module.Shader.Element);
+            Shader.GL_Program.Attach (Module.Shader.Element);
          end if;
       end loop;
    end Attach_Shaders;
 
-   procedure Detach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program) is
+   procedure Detach_Shaders (Modules : Shader_Module_Array; Shader : Orka.Rendering.Shaders.Shader) is
    begin
       for Module of Modules loop
          if not Module.Shader.Is_Empty then
-            Program.GL_Program.Detach (Module.Shader.Element);
+            Shader.GL_Program.Detach (Module.Shader.Element);
          end if;
       end loop;
    end Detach_Shaders;
 
-end Orka.Rendering.Programs.Modules;
+end Orka.Rendering.Shaders.Modules;

@@ -21,8 +21,8 @@ with Orka.Types;
 
 private with GL.Low_Level.Enums;
 
-private with Orka.Rendering.Programs.Shaders;
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Objects;
+private with Orka.Rendering.Shaders.Uniforms;
 
 package Orka.Algorithms.FFT is
    pragma Preelaborate;
@@ -49,12 +49,12 @@ private
    package LE renames GL.Low_Level.Enums;
 
    type FFT (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program    : Rendering.Programs.Shaders.Shader_Programs;
+      Program    : Rendering.Shaders.Objects.Shader_Objects;
       Local_Size : Positive;
 
-      Uniform_Size      : Rendering.Programs.Uniforms.Uniform (LE.UInt_Vec2);
-      Uniform_Transpose : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
-      Uniform_Inverse   : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Size      : Rendering.Shaders.Uniforms.Uniform (LE.UInt_Vec2);
+      Uniform_Transpose : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Inverse   : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
    end record;
 
 end Orka.Algorithms.FFT;

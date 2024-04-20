@@ -26,8 +26,7 @@ with GL.Types;
 
 with Orka.Logging.Default;
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Programs.Uniforms;
+with Orka.Rendering.Shaders.Uniforms;
 with Orka.Strings;
 with Orka.Types;
 
@@ -962,21 +961,19 @@ package body Orka.Frame_Graphs is
       Default  : Rendering.Framebuffers.Framebuffer;
       Resource : Resource_Data)
    is
-      package Programs renames Orka.Rendering.Programs;
-
       Format : constant Attachment_Format :=
         Get_Attachment_Format (Resource.Data.Description.Format);
 
-      use all type Rendering.Programs.Shader_Kind;
-      use Rendering.Programs.Shaders;
+      use all type Rendering.Shaders.Shader_Kind;
+      use Rendering.Shaders.Objects;
    begin
       Object.Present_Pass.Program :=
-         (Vertex_Shader   => From (Programs.Create_Program (Location, Vertex_Shader, "oversized-triangle.vert")),
-          Fragment_Shader => From (Programs.Create_Program
-            (Location, Fragment_Shader, (case Resource.Data.Description.Kind is
-                                           when Texture_Rectangle => "frame-graph-present-rect.frag",
-                                           when others => "frame-graph-present.frag"))),
-          others          => Empty);
+         [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "oversized-triangle.vert"),
+          Fragment_Shader => Create_Shader (Location, Fragment_Shader,
+            (case Resource.Data.Description.Kind is
+               when Texture_Rectangle => "frame-graph-present-rect.frag",
+               when others => "frame-graph-present.frag")),
+          others          => Empty];
 
       --  Program of present pass is needed when rendering to default framebuffer (mode 3)
       Object.Present_Render_Pass :=

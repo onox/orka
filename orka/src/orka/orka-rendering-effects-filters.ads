@@ -20,8 +20,8 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 
 private with Orka.Rendering.Buffers;
-private with Orka.Rendering.Programs.Uniforms;
-private with Orka.Rendering.Programs.Shaders;
+private with Orka.Rendering.Shaders.Uniforms;
+private with Orka.Rendering.Shaders.Objects;
 private with Orka.Types;
 
 package Orka.Rendering.Effects.Filters is
@@ -92,8 +92,8 @@ private
    overriding procedure Run (Object : Separable_Filter_Program_Callback);
 
    type Separable_Filter (Context : not null access constant Orka.Contexts.Context'Class)  is tagged limited record
-      Program            : Rendering.Programs.Shaders.Shader_Programs;
-      Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+      Program            : Rendering.Shaders.Objects.Shader_Objects;
+      Uniform_Horizontal : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
 
       Buffer_Weights     : Rendering.Buffers.Buffer (Types.Single_Type);
 
@@ -107,8 +107,8 @@ private
    overriding procedure Run (Object : Moving_Average_Filter_Program_Callback);
 
    type Moving_Average_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program            : Rendering.Programs.Shaders.Shader_Programs;
-      Uniform_Horizontal : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+      Program            : Rendering.Shaders.Objects.Shader_Objects;
+      Uniform_Horizontal : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
 
       Columns, Rows : Unsigned_32;
 

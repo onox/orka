@@ -17,7 +17,6 @@
 with GL.Types;
 
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.States;
 
 package body Orka.Rendering.Debug.Coordinate_Axes is
@@ -26,14 +25,14 @@ package body Orka.Rendering.Debug.Coordinate_Axes is
      (Context  : aliased Orka.Contexts.Context'Class;
       Location : Resources.Locations.Location_Ptr) return Coordinate_Axes
    is
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
    begin
       return Result : Coordinate_Axes :=
-        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/axes.vert"),
-                            Geometry_Shader => Create_Program (Location, Geometry_Shader, "debug/axes.geom"),
-                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/axes.frag"),
-                            others          => Empty),
+        (Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/axes.vert"),
+                     Geometry_Shader => Create_Shader (Location, Geometry_Shader, "debug/axes.geom"),
+                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/axes.frag"),
+                     others          => Empty],
          Context => Context'Access,
          others  => <>)
       do

@@ -19,13 +19,13 @@ with Orka.Cameras;
 with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
-with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Programs.Shaders;
+with Orka.Rendering.Shaders.Modules;
+with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Types;
 
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Uniforms;
 
 package Orka.Features.Atmosphere.Rendering is
    pragma Preelaborate;
@@ -49,7 +49,7 @@ package Orka.Features.Atmosphere.Rendering is
       Textures   : Precomputed_Textures;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere;
 
-   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Shader_Module;
+   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Shaders.Modules.Shader_Module;
    --  Return the shader module for use by other features like terrain
    --  rendering
 
@@ -77,8 +77,8 @@ private
    overriding procedure Run (Object : Atmosphere_Program_Callback);
 
    type Atmosphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program : Orka.Rendering.Programs.Shaders.Shader_Programs;
-      Module  : Orka.Rendering.Programs.Modules.Shader_Module;
+      Program : Orka.Rendering.Shaders.Objects.Shader_Objects;
+      Module  : Orka.Rendering.Shaders.Modules.Shader_Module;
 
       Textures : Precomputed_Textures;
 
@@ -90,8 +90,8 @@ private
       Buffer_Matrices : Orka.Rendering.Buffers.Buffer (Types.Single_Matrix_Type);
       Buffer_Metadata : Orka.Rendering.Buffers.Buffer (Types.Single_Vector_Type);
 
-      Uniform_Ground_Hack   : Orka.Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
-      Uniform_Camera_Offset : Orka.Rendering.Programs.Uniforms.Uniform (LE.Single_Vec4);
+      Uniform_Ground_Hack   : Orka.Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Camera_Offset : Orka.Rendering.Shaders.Uniforms.Uniform (LE.Single_Vec4);
 
       Callback : aliased Atmosphere_Program_Callback (Atmosphere'Access);
    end record;

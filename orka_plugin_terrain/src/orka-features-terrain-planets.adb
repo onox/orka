@@ -80,8 +80,7 @@ package body Orka.Features.Terrain.Planets is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Initialize_Render    : access procedure
-        (Programs : Rendering.Programs.Shaders.Shader_Programs);
+      Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
       Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
       Atmosphere    : Features.Atmosphere.Rendering.Atmosphere;
@@ -128,7 +127,7 @@ package body Orka.Features.Terrain.Planets is
              ("terrain/terrain-render-atmosphere.frag").Get));
 
       use Ada.Characters.Latin_1;
-      use Orka.Rendering.Programs;
+      use Orka.Rendering.Shaders;
       use Orka.Features.Atmosphere;
 
       Terrain_FS_Shader : constant String :=
@@ -145,7 +144,7 @@ package body Orka.Features.Terrain.Planets is
         [Atmosphere.Shader_Module,
          Modules.Create_Module_From_Source (Fragment_Shader, Terrain_FS_Shader)];
 
-      procedure Initialize_Program_Render (Programs : Orka.Rendering.Programs.Shaders.Shader_Programs) is
+      procedure Initialize_Program_Render (Programs : Orka.Rendering.Shaders.Objects.Shader_Objects) is
       begin
          Programs (Fragment_Shader).Value.Uniform_Sampler ("u_DmapSampler").Verify_Compatibility (Height_Map);
 
@@ -188,7 +187,7 @@ package body Orka.Features.Terrain.Planets is
       CP : constant Orka.Types.Singles.Vector4 :=
         VC.Convert (Camera.View_Position * (1.0 / Orka.Float_64 (Object.Planet_Unit_Length)));
 
-      use all type Rendering.Programs.Shader_Kind;
+      use all type Rendering.Shaders.Shader_Kind;
    begin
       Object.Terrain.Set_Data
         (Rotation   => Rotation,

@@ -20,14 +20,12 @@ private with GL.Objects.Shaders;
 
 with Orka.Resources.Locations;
 
-package Orka.Rendering.Programs.Modules is
+package Orka.Rendering.Shaders.Modules is
    pragma Preelaborate;
 
    type Shader_Module is tagged private;
 
-   type Shader_Module_Array is array (Positive range <>) of aliased Shader_Module;
-
-   Shader_Compile_Error : exception;
+   type Shader_Module_Array is array (Positive range <>) of Shader_Module;
 
    function Kind (Object : Shader_Module) return Shader_Kind;
 
@@ -49,9 +47,9 @@ package Orka.Rendering.Programs.Modules is
    --                                 Internal                                --
    -----------------------------------------------------------------------------
 
-   procedure Attach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program);
+   procedure Attach_Shaders (Modules : Shader_Module_Array; Shader : Orka.Rendering.Shaders.Shader);
 
-   procedure Detach_Shaders (Modules : Shader_Module_Array; Program : Programs.Shader_Program);
+   procedure Detach_Shaders (Modules : Shader_Module_Array; Shader : Orka.Rendering.Shaders.Shader);
 
 private
 
@@ -64,4 +62,4 @@ private
       Shader : Shader_Holders.Holder;
    end record;
 
-end Orka.Rendering.Programs.Modules;
+end Orka.Rendering.Shaders.Modules;

@@ -17,7 +17,6 @@
 with GL.Types;
 
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.States;
 
 package body Orka.Rendering.Debug.Lines is
@@ -26,13 +25,13 @@ package body Orka.Rendering.Debug.Lines is
      (Context  : aliased Orka.Contexts.Context'Class;
       Location : Resources.Locations.Location_Ptr) return Line
    is
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
    begin
       return Result : Line :=
-        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/line.vert"),
-                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/line.frag"),
-                            others          => Empty),
+        (Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/line.vert"),
+                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/line.frag"),
+                     others          => Empty],
          Context => Context'Access,
          others  => <>)
       do

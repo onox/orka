@@ -49,9 +49,9 @@ package body Orka.Features.Atmosphere.Rendering is
         (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));
 
       use Orka.Rendering.Buffers;
-      use Orka.Rendering.Programs;
-      use Orka.Rendering.Programs.Shaders;
-      use Orka.Rendering.Programs.Modules;
+      use all type Orka.Rendering.Shaders.Shader_Kind;
+      use Orka.Rendering.Shaders.Objects;
+      use Orka.Rendering.Shaders.Modules;
 
       Sky_Shader : constant String :=
         "#version 420 core" & L1.LF &
@@ -59,14 +59,14 @@ package body Orka.Features.Atmosphere.Rendering is
         "const float kLengthUnitInMeters = " & Data.Length_Unit_In_Meters'Image & ";" & L1.LF &
         Sky_GLSL & L1.LF;
 
-      Shader_Module : constant Orka.Rendering.Programs.Modules.Shader_Module := Atmosphere_Model.Get_Shader;
+      Shader_Module : constant Orka.Rendering.Shaders.Modules.Shader_Module := Atmosphere_Model.Get_Shader;
    begin
       return Result : Atmosphere :=
         (Program         =>
-           (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "atmosphere/sky.vert"),
-            Fragment_Shader => From (Create_Program (Modules.Shader_Module_Array'
-              [Modules.Create_Module_From_Source (Fragment_Shader, Sky_Shader), Shader_Module])),
-            others          => Empty),
+           [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "atmosphere/sky.vert"),
+            Fragment_Shader => Create_Shader (Shader_Module_Array'
+              [Create_Module_From_Source (Fragment_Shader, Sky_Shader), Shader_Module]),
+            others          => Empty],
          Buffer_Matrices => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Matrix_Type, 2),
          Buffer_Metadata => Create_Buffer ((Dynamic_Storage => True, others => False), Orka.Types.Single_Vector_Type, 5),
          Context         => Context'Access,
@@ -82,7 +82,7 @@ package body Orka.Features.Atmosphere.Rendering is
       end return;
    end Create_Atmosphere;
 
-   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Programs.Modules.Shader_Module is (Object.Module);
+   function Shader_Module (Object : Atmosphere) return Orka.Rendering.Shaders.Modules.Shader_Module is (Object.Module);
 
    function Flattened_Vector
      (Parameters : Model_Parameters;

@@ -20,7 +20,7 @@ with GL.Pixels.Extensions;
 with Orka.Rendering.Textures;
 with Orka.Types;
 
-package Orka.Rendering.Programs.Uniforms is
+package Orka.Rendering.Shaders.Uniforms is
    pragma Preelaborate;
 
    package LE renames Orka.Rendering.Textures.LE;
@@ -163,15 +163,15 @@ package Orka.Rendering.Programs.Uniforms is
    -----------------------------------------------------------------------------
 
    function Create_Uniform_Sampler
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform_Sampler;
 
    function Create_Uniform_Image
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform_Image;
 
    function Create_Uniform_Variable
-     (Object : Shader_Program;
+     (Object : Shader;
       Name   : String) return Uniform;
 
    Uniform_Inactive_Error : exception renames GL.Objects.Programs.Uniform_Inactive_Error;
@@ -192,4 +192,4 @@ private
       GL_Uniform : GL.Objects.Programs.Uniforms.Uniform;
    end record;
 
-end Orka.Rendering.Programs.Uniforms;
+end Orka.Rendering.Shaders.Uniforms;

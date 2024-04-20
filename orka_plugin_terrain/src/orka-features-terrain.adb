@@ -81,12 +81,10 @@ package body Orka.Features.Terrain is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Render_Modules       : Rendering.Programs.Modules.Shader_Module_Array;
-      Initialize_Render    : access procedure
-        (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
+      Render_Modules       : Rendering.Shaders.Modules.Shader_Module_Array;
+      Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects)) return Terrain
    is
       use Rendering.Buffers;
-      use Rendering.Programs;
       use Rendering.Samplers;
       use Rendering.Fences;
 
@@ -107,11 +105,12 @@ package body Orka.Features.Terrain is
       Heap_Elements : constant Natural := 2 + 2 ** (Natural (Max_Depth) + 2 - 5);
       --  Minimum and maximum depth, and the the heap elements
 
-      use Rendering.Programs.Shaders;
-      use type Rendering.Programs.Modules.Shader_Module_Array;
+      use Rendering.Shaders.Objects;
+      use Rendering.Shaders.Modules;
+      use all type Rendering.Shaders.Shader_Kind;
 
-      Modules_Render_Fragment_Shader : constant Modules.Shader_Module_Array :=
-        Modules.Create_Modules (Location, Fragment_Shader,
+      Modules_Render_Fragment_Shader : constant Shader_Module_Array :=
+        Create_Modules (Location, Fragment_Shader,
           [Shader_Terrain_Render_Common'Access,
            Shader_Terrain_Render_Normals'Access,
            (if Wireframe then Shader_Render_Wires_Fragment'Access else Shader_Render_Fragment'Access)])
@@ -126,7 +125,7 @@ package body Orka.Features.Terrain is
          Visible_Tiles => [others => True],
 
          Program_Leb_Update =>
-           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, Paths =>
+           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, Paths =>
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                (case Kind is
@@ -134,40 +133,40 @@ package body Orka.Features.Terrain is
                   when Plane  => Shader_Terrain_Render_Plane'Access),
                Shader_Terrain_Update_Lod'Access,
                Shader_Terrain_Update'Access]),
-            others         => Empty),
+            others         => Empty],
 
          Program_Render =>
-           (Vertex_Shader          => Create_Program_From_Shaders (Location, Vertex_Shader,
+           [Vertex_Shader          => Create_Shader_From_Files (Location, Vertex_Shader,
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                Shader_Render_Vertex'Access]),
-            Tess_Control_Shader    => Create_Program_From_Shaders (Location, Tess_Control_Shader,
+            Tess_Control_Shader    => Create_Shader_From_Files (Location, Tess_Control_Shader,
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                (case Kind is
                   when Sphere => Shader_Terrain_Render_Sphere'Access,
                   when Plane => Shader_Terrain_Render_Plane'Access),
                Shader_Render_Tess_Control'Access]),
-            Tess_Evaluation_Shader => Create_Program_From_Shaders (Location, Tess_Evaluation_Shader,
+            Tess_Evaluation_Shader => Create_Shader_From_Files (Location, Tess_Evaluation_Shader,
               [Shader_Terrain_Render_Common'Access,
                (case Kind is
                   when Sphere => Shader_Terrain_Render_Sphere'Access,
                   when Plane => Shader_Terrain_Render_Plane'Access),
                Shader_Render_Tess_Evaluation'Access]),
-            Geometry_Shader        => Create_Program_From_Shaders (Location, Geometry_Shader,
+            Geometry_Shader        => Create_Shader_From_Files (Location, Geometry_Shader,
               (if Wireframe then [Shader_Render_Wires_Geometry'Access] else [])),
-            Fragment_Shader        => From (Create_Program (Modules_Render_Fragment_Shader)),
-            others                 => Empty),
+            Fragment_Shader        => Create_Shader (Modules_Render_Fragment_Shader),
+            others                 => Empty],
 
          Program_Leb_Prepass =>
-           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction_Prepass'Access]),
-            others         => Empty),
+           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction_Prepass'Access]),
+            others         => Empty],
          Program_Leb_Reduction =>
-           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction'Access]),
-            others         => Empty),
+           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction'Access]),
+            others         => Empty],
          Program_Indirect =>
-           (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Terrain_Prepare_Indirect'Access]),
-            others         => Empty),
+           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Terrain_Prepare_Indirect'Access]),
+            others         => Empty],
 
          Sampler                 => Create_Sampler
            ((Wrapping         => [Clamp_To_Edge, Clamp_To_Edge, Repeat],
@@ -199,9 +198,9 @@ package body Orka.Features.Terrain is
          Result.Uniform_Render_Subdiv := Result.Program_Render (Tess_Control_Shader).Value.Uniform ("u_MeshletSubdivision");
 
          declare
-            Program_Init : constant Shader_Programs :=
-              (Compute_Shader => Create_Program_From_Shaders (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Init'Access]),
-               others         => Empty);
+            Program_Init : constant Shader_Objects :=
+              [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Init'Access]),
+               others         => Empty];
          begin
             Program_Init (Compute_Shader).Value.Uniform ("u_MinDepth").Set_Int (Size (Min_Depth));
             Program_Init (Compute_Shader).Value.Uniform ("u_MaxDepth").Set_Int (Size (Max_Depth));
@@ -346,7 +345,7 @@ package body Orka.Features.Terrain is
       --  For perspective projection
 
       use Cameras.Transforms;
-      use all type Rendering.Programs.Shader_Kind;
+      use all type Rendering.Shaders.Shader_Kind;
    begin
       Object.Uniform_Update_Freeze.Set_Boolean (Freeze);
       Object.Freeze := Freeze;

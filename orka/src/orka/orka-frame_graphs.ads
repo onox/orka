@@ -28,7 +28,7 @@ private with GL.Buffers;
 
 private with Orka.Containers.Bounded_Vectors;
 private with Orka.Rendering.Framebuffers;
-private with Orka.Rendering.Programs.Shaders;
+private with Orka.Rendering.Shaders.Objects;
 
 package Orka.Frame_Graphs is
    pragma Preelaborate;
@@ -387,7 +387,7 @@ private
 
    --  Used when Present_Mode = Render_To_Default
    type Present_Pass_Type (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program  : Rendering.Programs.Shaders.Shader_Programs;
+      Program  : Rendering.Shaders.Objects.Shader_Objects;
       Callback : aliased Present_Program_Callback (Present_Pass_Type'Access);
    end record;
 

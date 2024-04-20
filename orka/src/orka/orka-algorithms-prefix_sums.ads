@@ -18,7 +18,7 @@ with Orka.Contexts;
 with Orka.Rendering.Buffers;
 with Orka.Resources.Locations;
 
-private with Orka.Rendering.Programs.Shaders;
+private with Orka.Rendering.Shaders.Objects;
 private with Orka.Types;
 
 package Orka.Algorithms.Prefix_Sums is
@@ -42,8 +42,8 @@ package Orka.Algorithms.Prefix_Sums is
 private
 
    type Prefix_Sum (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program_Prefix_Sum : Rendering.Programs.Shaders.Shader_Programs;
-      Program_Add        : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Prefix_Sum : Rendering.Shaders.Objects.Shader_Objects;
+      Program_Add        : Rendering.Shaders.Objects.Shader_Objects;
 
       Length, Work_Groups, Sum_Work_Groups : Positive;
       Buffer_2, Buffer_3, Buffer_4         : Rendering.Buffers.Buffer (Types.UInt_Type);

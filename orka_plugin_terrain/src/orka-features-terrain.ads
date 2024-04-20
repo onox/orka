@@ -37,15 +37,15 @@ with Orka.Cameras;
 with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
-with Orka.Rendering.Programs.Modules;
-with Orka.Rendering.Programs.Shaders;
+with Orka.Rendering.Shaders.Modules;
+with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Types;
 
 private with Orka.Rendering.Buffers.Mapped.Persistent;
 private with Orka.Rendering.Fences;
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Uniforms;
 private with Orka.Rendering.Samplers;
 
 package Orka.Features.Terrain is
@@ -80,9 +80,8 @@ package Orka.Features.Terrain is
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
       Location             : Resources.Locations.Location_Ptr;
-      Render_Modules       : Rendering.Programs.Modules.Shader_Module_Array;
-      Initialize_Render    : access procedure
-        (Programs : Rendering.Programs.Shaders.Shader_Programs)) return Terrain
+      Render_Modules       : Rendering.Shaders.Modules.Shader_Module_Array;
+      Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects)) return Terrain
    with Pre => Min_Depth <= Max_Depth and Max_Depth >= 5;
    --  Create and return a Terrain object that can generate
    --  one or more terrain tiles
@@ -181,26 +180,26 @@ private
       Visible_Tiles : Visible_Tile_Array (1 .. Count);
 
       --  Update and reduction of LEB
-      Program_Leb_Update    : Rendering.Programs.Shaders.Shader_Programs;
-      Program_Leb_Prepass   : Rendering.Programs.Shaders.Shader_Programs;
-      Program_Leb_Reduction : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Leb_Update    : Rendering.Shaders.Objects.Shader_Objects;
+      Program_Leb_Prepass   : Rendering.Shaders.Objects.Shader_Objects;
+      Program_Leb_Reduction : Rendering.Shaders.Objects.Shader_Objects;
 
       --  Prepare indirect commands and render geometry
-      Program_Indirect      : Rendering.Programs.Shaders.Shader_Programs;
-      Program_Render        : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Indirect      : Rendering.Shaders.Objects.Shader_Objects;
+      Program_Render        : Rendering.Shaders.Objects.Shader_Objects;
 
-      Uniform_Update_Split  : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
-      Uniform_Update_Freeze : Rendering.Programs.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Update_Split  : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Update_Freeze : Rendering.Shaders.Uniforms.Uniform (LE.Bool_Type);
 
-      Uniform_Update_Leb_ID     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
-      Uniform_Indirect_Leb_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
-      Uniform_Render_Leb_ID_Tesc : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
-      Uniform_Render_Leb_ID_Tese : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Update_Leb_ID     : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Indirect_Leb_ID   : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Render_Leb_ID_Tesc : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Render_Leb_ID_Tese : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
 
-      Uniform_Prepass_Pass_ID   : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
-      Uniform_Reduction_Pass_ID : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Prepass_Pass_ID   : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Reduction_Pass_ID : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
 
-      Uniform_Render_Subdiv     : Rendering.Programs.Uniforms.Uniform (LE.Int_Type);
+      Uniform_Render_Subdiv     : Rendering.Shaders.Uniforms.Uniform (LE.Int_Type);
 
       --  Sampler for height map
       Sampler : Rendering.Samplers.Sampler;

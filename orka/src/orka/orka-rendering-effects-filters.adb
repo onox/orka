@@ -20,7 +20,6 @@ with GL.Compute;
 with GL.Types;
 
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.States;
 
 package body Orka.Rendering.Effects.Filters is
@@ -103,16 +102,16 @@ package body Orka.Rendering.Effects.Filters is
       Kernel   : Float_32_Array) return Separable_Filter
    is
       use Rendering.Buffers;
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
    begin
       return Result : Separable_Filter :=
         (Buffer_Weights => Create_Buffer ((others => False), Kernel),
-         Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "oversized-triangle.vert"),
-                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "effects/blur.frag"),
-                            others          => Empty),
+         Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "oversized-triangle.vert"),
+                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "effects/blur.frag"),
+                     others          => Empty],
          Context => Context'Access,
-         others => <>)
+         others  => <>)
       do
          Result.Uniform_Horizontal := Result.Program (Fragment_Shader).Value.Uniform ("horizontal");
       end return;
@@ -191,12 +190,12 @@ package body Orka.Rendering.Effects.Filters is
       Location : Resources.Locations.Location_Ptr;
       Radius   : Size) return Moving_Average_Filter
    is
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
    begin
       return Result : Moving_Average_Filter :=
-        (Program => (Compute_Shader => Create_Program (Location, Compute_Shader, "effects/moving-average-blur.comp"),
-                     others         => Empty),
+        (Program => [Compute_Shader => Create_Shader (Location, Compute_Shader, "effects/moving-average-blur.comp"),
+                     others         => Empty],
          Context => Context'Access,
          others  => <>)
       do
@@ -206,7 +205,6 @@ package body Orka.Rendering.Effects.Filters is
    end Create_Filter;
 
    overriding procedure Run (Object : Moving_Average_Filter_Program_Callback) is
-      use all type Orka.Rendering.Programs.Shader_Kind;
    begin
       Object.Data.Context.Bind_Shaders (Object.Data.Program);
       Object.Data.Uniform_Horizontal.Set_Boolean (Object.Horizontal);
@@ -218,7 +216,7 @@ package body Orka.Rendering.Effects.Filters is
       Color  : Orka.Rendering.Textures.Texture_Description;
       Passes : Positive := 2) return Orka.Frame_Graphs.Frame_Graph
    is
-      use all type Orka.Rendering.Programs.Shader_Kind;
+      use all type Orka.Rendering.Shaders.Shader_Kind;
 
       Size : constant Size_3D := Color.Size;
 

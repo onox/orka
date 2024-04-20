@@ -125,7 +125,7 @@ with Ada.Containers.Vectors;
 
 with Orka.Contexts;
 with Orka.Resources.Locations;
-with Orka.Rendering.Programs.Modules;
+with Orka.Rendering.Shaders.Modules;
 
 private with Orka.Rendering.Samplers;
 private with Orka.Rendering.Textures;
@@ -295,7 +295,7 @@ package Orka.Features.Atmosphere is
    function Compute_Textures (Object : Model; Scattering_Orders : Natural := 4)
      return Precomputed_Textures;
 
-   function Get_Shader (Object : Model) return Rendering.Programs.Modules.Shader_Module;
+   function Get_Shader (Object : Model) return Rendering.Shaders.Modules.Shader_Module;
 
    procedure Convert_Spectrum_To_Linear_SRGB (Data : Model_Data; R, G, B : out Float_64);
    --  Utility method to convert a function of the wavelength to linear sRGB

@@ -21,8 +21,8 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
-private with Orka.Rendering.Programs.Shaders;
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Objects;
+private with Orka.Rendering.Shaders.Uniforms;
 private with Orka.Types;
 
 package Orka.Rendering.Debug.Coordinate_Axes is
@@ -63,12 +63,12 @@ private
    overriding procedure Run (Object : Axes_Program_Callback);
 
    type Coordinate_Axes (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program : Rendering.Programs.Shaders.Shader_Programs;
+      Program : Rendering.Shaders.Objects.Shader_Objects;
 
-      Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
-      Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
-      Uniform_Size    : Programs.Uniforms.Uniform (LE.UInt_Vec2);
-      Uniform_Axis    : Programs.Uniforms.Uniform (LE.Single_Vec4);
+      Uniform_View : Shaders.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_Proj : Shaders.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_Size : Shaders.Uniforms.Uniform (LE.UInt_Vec2);
+      Uniform_Axis : Shaders.Uniforms.Uniform (LE.Single_Vec4);
 
       Callback : aliased Axes_Program_Callback (Coordinate_Axes'Access);
 

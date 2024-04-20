@@ -21,8 +21,8 @@ with Orka.Rendering.Textures;
 with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
-private with Orka.Rendering.Programs.Shaders;
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Objects;
+private with Orka.Rendering.Shaders.Uniforms;
 private with Orka.Types;
 
 package Orka.Rendering.Debug.Lines is
@@ -69,12 +69,12 @@ private
    overriding procedure Run (Object : Line_Visible_Program_Callback);
 
    type Line (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program : Rendering.Programs.Shaders.Shader_Programs;
+      Program : Rendering.Shaders.Objects.Shader_Objects;
 
-      Uniform_Visible : Programs.Uniforms.Uniform (LE.Bool_Type);
+      Uniform_Visible : Shaders.Uniforms.Uniform (LE.Bool_Type);
 
-      Uniform_View    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
-      Uniform_Proj    : Programs.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_View    : Shaders.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_Proj    : Shaders.Uniforms.Uniform (LE.Single_Matrix4);
 
       Callback_Hidden  : aliased Line_Hidden_Program_Callback (Line'Access);
       Callback_Visible : aliased Line_Visible_Program_Callback (Line'Access);

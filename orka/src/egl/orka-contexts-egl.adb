@@ -173,12 +173,12 @@ package body Orka.Contexts.EGL is
    end Update_State;
 
    overriding
-   procedure Bind_Shaders (Object : EGL_Context; Stages : Orka.Rendering.Programs.Shaders.Shader_Programs) is
-      use all type Orka.Rendering.Programs.Shader_Kind;
+   procedure Bind_Shaders (Object : EGL_Context; Shaders : Orka.Rendering.Shaders.Objects.Shader_Objects) is
+      use all type Orka.Rendering.Shaders.Shader_Kind;
    begin
       Object.GL_Context.Value.Pipeline.Use_Program_Stages ((others => True), GL.Objects.Programs.Internal.No_Program);
 
-      for Stage in Stages'Range when Stages (Stage).Is_Present loop
+      for Stage in Shaders'Range when Shaders (Stage).Is_Present loop
          Object.GL_Context.Value.Pipeline.Use_Program_Stages
            ((case Stage is
                when Vertex_Shader          => (Vertex_Shader          => True, others => False),
@@ -187,11 +187,11 @@ package body Orka.Contexts.EGL is
                when Tess_Control_Shader    => (Tess_Control_Shader    => True, others => False),
                when Tess_Evaluation_Shader => (Tess_Evaluation_Shader => True, others => False),
                when Compute_Shader         => (Compute_Shader         => True, others => False)),
-            Stages (Stage).Value.GL_Program);
+            Shaders (Stage).Value.GL_Program);
       end loop;
 
       if Object.Flags.Debug and then not Object.Flags.No_Error and then not Object.GL_Context.Value.Pipeline.Validate then
-         Log (Loggers.Error, "Validation of shader programs failed");
+         Log (Loggers.Error, "Validation of shaders failed");
       end if;
    end Bind_Shaders;
 

@@ -21,8 +21,8 @@ with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
-private with Orka.Rendering.Programs.Shaders;
-private with Orka.Rendering.Programs.Uniforms;
+private with Orka.Rendering.Shaders.Objects;
+private with Orka.Rendering.Shaders.Uniforms;
 private with Orka.Rendering.Textures;
 
 package Orka.Culling is
@@ -50,15 +50,14 @@ package Orka.Culling is
 private
 
    package LE renames Rendering.Textures.LE;
-   package Programs renames Rendering.Programs;
 
    type Culler (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited record
-      Program_Frustum : Rendering.Programs.Shaders.Shader_Programs;
-      Program_Compact : Rendering.Programs.Shaders.Shader_Programs;
+      Program_Frustum : Rendering.Shaders.Objects.Shader_Objects;
+      Program_Compact : Rendering.Shaders.Objects.Shader_Objects;
 
-      Uniform_VP : Programs.Uniforms.Uniform (LE.Single_Matrix4);
-      Uniform_CF_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
-      Uniform_CC_Instances : Programs.Uniforms.Uniform (LE.UInt_Type);
+      Uniform_VP           : Rendering.Shaders.Uniforms.Uniform (LE.Single_Matrix4);
+      Uniform_CF_Instances : Rendering.Shaders.Uniforms.Uniform (LE.UInt_Type);
+      Uniform_CC_Instances : Rendering.Shaders.Uniforms.Uniform (LE.UInt_Type);
 
       Buffer_Visibles : Rendering.Buffers.Buffer (Types.UInt_Type);
       Buffer_Indices  : Rendering.Buffers.Buffer (Types.UInt_Type);

@@ -19,7 +19,6 @@ with GL.Rasterization;
 with GL.Types;
 
 with Orka.Rendering.Drawing;
-with Orka.Rendering.Programs.Modules;
 with Orka.Rendering.States;
 
 package body Orka.Rendering.Debug.Spheres is
@@ -32,13 +31,13 @@ package body Orka.Rendering.Debug.Spheres is
       Cells_Horizontal : Positive := 36;
       Cells_Vertical   : Positive := 18) return Sphere
    is
-      use Rendering.Programs;
-      use Rendering.Programs.Shaders;
+      use Rendering.Shaders;
+      use Rendering.Shaders.Objects;
    begin
       return Result : Sphere :=
-        (Program        => (Vertex_Shader   => Create_Program (Location, Vertex_Shader, "debug/sphere.vert"),
-                            Fragment_Shader => Create_Program (Location, Fragment_Shader, "debug/sphere.frag"),
-                            others          => Empty),
+        (Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/sphere.vert"),
+                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/sphere.frag"),
+                     others          => Empty],
          Context => Context'Access,
          Cells_Horizontal => Cells_Horizontal,
          Cells_Vertical   => Cells_Vertical,

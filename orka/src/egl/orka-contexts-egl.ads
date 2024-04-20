@@ -78,7 +78,7 @@ private
    procedure Update_State (Object : in out EGL_Context; State : Orka.Rendering.States.State);
 
    overriding
-   procedure Bind_Shaders (Object : EGL_Context; Stages : Orka.Rendering.Programs.Shaders.Shader_Programs);
+   procedure Bind_Shaders (Object : EGL_Context; Shaders : Orka.Rendering.Shaders.Objects.Shader_Objects);
 
    type Device_EGL_Context is limited new EGL_Context with record
       Context : Standard.EGL.Objects.Contexts.Context (Standard.EGL.Objects.Displays.Device);
