@@ -139,14 +139,13 @@ Textures are objects that contain images. Textures are mostly 2D, but can be
 1D or 3D as well. A texture can also contain an array of images or multiple
 levels where each level has half the resolution of the previous level.
 
-#### Programs
+#### Shaders
 
-Programs are objects that contains one or more shaders that are run
-on the GPU.
+Shaders are objects which contain code that runs on the GPU.
 
 #### Framebuffers
 
-A framebuffer is an object that holds the output of a program that ran
+A framebuffer is an object that holds the output of a shader that ran
 on the GPU. Usually it consists of a color buffer and a depth buffer.
 An application always has at least one framebuffer: the default framebuffer,
 which is the window of the application. For off-screen rendering, needed
@@ -229,10 +228,10 @@ Bind the buffer as an SSBO so that it can be accessed in the vertex shader:
 Buffer_1.Bind (Shader_Storage, 0);
 ```
 
-#### Program
+#### Shaders
 
-The third step is to create a program with a vertex shader and a fragment
-shader. Save the following vertex shader in `triangle.vert`:
+The third step is to create a vertex shader and a fragment shader.
+Save the following vertex shader in `triangle.vert`:
 
 ```glsl linenums="1" title="triangle.vert"
 #version 420 core
@@ -273,24 +272,24 @@ void main(void) {
 }
 ```
 
-The program is then created as follows:
+The shaders are then created as follows:
 
 ```ada
 Location_Shaders : constant Locations.Location_Ptr
   := Locations.Directories.Create_Location (".");
 
-Program_1 : Shader_Programs :=
-  (Vertex_Shader   => Create_Program (Location_Shaders, Vertex_Shader, "triangle.vert"),
-   Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "triangle.frag"),
+Pipeline_1 : Shader_Objects :=
+  (Vertex_Shader   => Create_Shader (Location_Shaders, Vertex_Shader, "triangle.vert"),
+   Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "triangle.frag"),
    others          => Empty);
 ```
 
 `Location_Shader` is an object that loads `triangle.vert` and
 `triangle.frag` from the current directory. Let's tell
-OpenGL that we want to use this program:
+OpenGL that we want to bind the shaders in `Pipeline_1`:
 
 ```ada
-Context.Bind_Shaders (Program_1);
+Context.Bind_Shaders (Pipeline_1);
 ```
 
 #### Framebuffer
@@ -335,7 +334,7 @@ and then draw the triangle. Press ++esc++ to close the application.
     with Orka.Rendering.Buffers;
     with Orka.Rendering.Drawing;
     with Orka.Rendering.Framebuffers;
-    with Orka.Rendering.Programs.Shaders;
+    with Orka.Rendering.Shaders.Objects;
     with Orka.Resources.Locations.Directories;
     with Orka.Windows;
 
@@ -350,16 +349,16 @@ and then draw the triangle. Press ++esc++ to close the application.
        use Orka.Resources;
        use Orka.Rendering.Buffers;
        use Orka.Rendering.Framebuffers;
-       use all type Orka.Rendering.Programs.Shader_Kind;
-       use Orka.Rendering.Programs.Shaders;
+       use all type Orka.Rendering.Shaders.Shader_Kind;
+       use Orka.Rendering.Shaders.Objects;
        use Orka;
 
        Location_Shaders : constant Locations.Location_Ptr
          := Locations.Directories.Create_Location (".");
 
-       Program_1 : Shader_Programs :=
-         (Vertex_Shader   => Create_Program (Location_Shaders, Vertex_Shader, "triangle.vert"),
-          Fragment_Shader => Create_Program (Location_Shaders, Fragment_Shader, "triangle.frag"),
+       Pipeline_1 : Shader_Objects :=
+         (Vertex_Shader   => Create_Shader (Location_Shaders, Vertex_Shader, "triangle.vert"),
+          Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "triangle.frag"),
           others          => Empty);
 
        FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
@@ -374,7 +373,7 @@ and then draw the triangle. Press ++esc++ to close the application.
        FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
        FB_D.Use_Framebuffer;
 
-       Context.Bind_Shaders (Program_1);
+       Context.Bind_Shaders (Pipeline_1);
 
        Buffer_1.Bind (Shader_Storage, 0);
 

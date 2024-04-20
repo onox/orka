@@ -92,9 +92,19 @@ nav:
   - Getting started:
       - Installation: installation.md
   - Documentation:
-      - Parallel programming: parallel-programming.md
-      - Containers: containers.md
-      - Logging: logging.md
+      - Rendering:
+          - Introduction: rendering/index.md
+          - Contexts: rendering/contexts.md
+          - Buffers: rendering/buffers.md
+          - Vertex formats: rendering/vertex-formats.md
+          - Shaders: rendering/shaders.md
+          - Textures: rendering/textures.md
+          - Framebuffers: rendering/framebuffers.md
+          - Frame graph: rendering/frame-graph.md
+          - Drawing: rendering/drawing.md
+          - Effects: rendering/effects.md
+          - Timers: rendering/timers.md
+          - Removed features: rendering/removed-features.md
       - Windows and input:
           - Introduction: windows-input/index.md
           - Windows: windows-input/windows.md
@@ -103,19 +113,6 @@ nav:
           - Clipboard: windows-input/clipboard.md
           - Pointer and keyboard: windows-input/pointer-keyboard.md
           - Gamepads: windows-input/gamepads.md
-      - Rendering:
-          - Introduction: rendering/index.md
-          - Contexts: rendering/contexts.md
-          - Buffers: rendering/buffers.md
-          - Vertex formats: rendering/vertex-formats.md
-          - Programs: rendering/programs.md
-          - Textures: rendering/textures.md
-          - Framebuffers: rendering/framebuffers.md
-          - Frame graph: rendering/frame-graph.md
-          - Drawing: rendering/drawing.md
-          - Effects: rendering/effects.md
-          - Timers: rendering/timers.md
-          - Removed features: rendering/removed-features.md
       - Computing:
           - Introduction: computing/index.md
           - Algorithms: computing/algorithms.md
@@ -138,6 +135,10 @@ nav:
               - Indexing: numerics/tensors/indexing.md
               - Statistics: numerics/tensors/statistics.md
           - Filtering: numerics/filtering.md
+      - Other:
+          - Parallel programming: parallel-programming.md
+          - Containers: containers.md
+          - Logging: logging.md
       - Plug-ins:
           - Archives: plugins/archives.md
           - Atmosphere: plugins/atmosphere.md
