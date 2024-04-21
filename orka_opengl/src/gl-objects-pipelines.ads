@@ -21,8 +21,6 @@ private with GL.Low_Level;
 package GL.Objects.Pipelines is
    pragma Preelaborate;
 
-   use type Programs.Program;
-
    type Stage_Bits is record
       Vertex_Shader          : Boolean := False;
       Fragment_Shader        : Boolean := False;

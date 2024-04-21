@@ -17,7 +17,6 @@
 with Ada.Unchecked_Conversion;
 
 with GL.API;
-with GL.Enums.Getter;
 with GL.Pixels.Queries;
 
 package body GL.Objects.Framebuffers is
