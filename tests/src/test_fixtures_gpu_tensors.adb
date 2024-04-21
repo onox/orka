@@ -20,12 +20,11 @@ package body Test_Fixtures_GPU_Tensors is
 
    overriding
    procedure Set_Up_Case (Object : in out Test_Case_With_Context) is
-      use Orka.Resources.Locations.Directories;
+      use Orka.Resources.Locations;
    begin
-      Initialize_Shaders
-        (Object.Context'Unchecked_Access,
-         Prefix_Sum  => Create_Location ("../orka/data/shaders"),
-         Tensors_GPU => Create_Location ("../orka_tensors_gpu/data/shaders"));
+      Register ("orka", Directories.Create_Location ("../orka/data/shaders"));
+      Register ("orka-tensors-gpu", Directories.Create_Location ("../orka_tensors_gpu/data/shaders"));
+      Initialize_Shaders (Object.Context'Unchecked_Access);
    end Set_Up_Case;
 
 end Test_Fixtures_GPU_Tensors;

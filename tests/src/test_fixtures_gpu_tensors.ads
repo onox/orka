@@ -17,12 +17,9 @@
 with AUnit.Test_Cases;
 
 with Orka.Contexts.EGL;
-with Orka.Resources.Locations;
 
 generic
-   with procedure Initialize_Shaders
-     (Context                 : Orka.Contexts.Context_Access;
-      Prefix_Sum, Tensors_GPU : Orka.Resources.Locations.Location_Ptr) is null;
+   with procedure Initialize_Shaders (Context : Orka.Contexts.Context_Access) is null;
 package Test_Fixtures_GPU_Tensors is
 
    type Test_Case_With_Context is abstract new AUnit.Test_Cases.Test_Case with record
