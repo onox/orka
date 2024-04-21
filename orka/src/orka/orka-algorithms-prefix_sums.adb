@@ -21,9 +21,8 @@ with GL.Types.Compute;
 package body Orka.Algorithms.Prefix_Sums is
 
    function Create_Prefix_Sum
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Length   : Positive) return Prefix_Sum
+     (Context : aliased Orka.Contexts.Context'Class;
+      Length  : Positive) return Prefix_Sum
    is
       use Rendering.Buffers;
       use Rendering.Shaders;
@@ -31,11 +30,11 @@ package body Orka.Algorithms.Prefix_Sums is
       use all type Types.Numeric_Type;
 
       Program_Prefix_Sum : constant Rendering.Shaders.Objects.Shader_Objects :=
-        [Compute_Shader => Create_Shader (Location, Compute_Shader, Path => "algorithms/prefix-sum.comp"),
+        [Compute_Shader => Create_Shader (Compute_Shader, Path => "orka:algorithms/prefix-sum.comp"),
          others         => Empty];
 
       Program_Add : constant Rendering.Shaders.Objects.Shader_Objects :=
-        [Compute_Shader => Create_Shader (Location, Compute_Shader, Path => "algorithms/prefix-sum-add.comp"),
+        [Compute_Shader => Create_Shader (Compute_Shader, Path => "orka:algorithms/prefix-sum-add.comp"),
          others         => Empty];
 
       Work_Group_Count : constant GL.Types.Compute.Dimension_Size_Array

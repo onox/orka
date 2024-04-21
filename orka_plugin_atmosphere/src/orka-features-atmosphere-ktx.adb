@@ -20,7 +20,7 @@ package body Orka.Features.Atmosphere.KTX is
 
    function Load_Textures
      (Data     : Model_Data;
-      Location : Resources.Locations.Location_Ptr) return Precomputed_Textures is
+      Location : Orka.Resources.Locations.Location_Ptr) return Precomputed_Textures is
    begin
       return Result : Precomputed_Textures :=
         (Sampler            => Create_Sampler,
@@ -45,7 +45,7 @@ package body Orka.Features.Atmosphere.KTX is
 
    procedure Save_Textures
      (Object   : Precomputed_Textures;
-      Location : Resources.Locations.Writable_Location_Ptr) is
+      Location : Orka.Resources.Locations.Writable_Location_Ptr) is
    begin
       Orka.Resources.Textures.KTX.Write_Texture
         (Object.Transmittance_Texture, Location, "transmittance.ktx");

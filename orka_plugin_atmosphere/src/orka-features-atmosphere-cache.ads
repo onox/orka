@@ -14,13 +14,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.Resources.Locations;
+
 package Orka.Features.Atmosphere.Cache is
    pragma Preelaborate;
 
    function Get_Textures
-     (Context          : aliased Orka.Contexts.Context'Class;
-      Data             : aliased Model_Data;
-      Location_Shaders : Resources.Locations.Location_Ptr;
-      Location_Cache   : Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures;
+     (Context        : aliased Orka.Contexts.Context'Class;
+      Data           : aliased Model_Data;
+      Location_Cache : Orka.Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures;
 
 end Orka.Features.Atmosphere.Cache;

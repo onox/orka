@@ -22,16 +22,15 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Bounding_Boxes is
 
    function Create_Bounding_Box
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box
+     (Context : aliased Orka.Contexts.Context'Class;
+      Color   : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box
    is
       use Rendering.Shaders;
       use Rendering.Shaders.Objects;
    begin
       return Result : Bounding_Box :=
-        (Program        => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/bbox.vert"),
-                            Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/line.frag"),
+        (Program        => [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka:debug/bbox.vert"),
+                            Fragment_Shader => Create_Shader (Fragment_Shader, "orka:debug/line.frag"),
                             others          => Empty],
          Context => Context'Access,
          others  => <>)

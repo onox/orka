@@ -40,7 +40,6 @@
 with Ada.Characters.Latin_1;
 with Ada.Numerics.Generic_Elementary_Functions;
 with Ada.Strings.Unbounded;
-with Ada.Unchecked_Conversion;
 
 with GL.Blending;
 with GL.Buffers;
@@ -53,6 +52,8 @@ with Orka.Rendering.Drawing;
 with Orka.Rendering.Framebuffers;
 with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Shaders.Uniforms;
+with Orka.Registry;
+with Orka.Resources.Locations;
 with Orka.Types;
 
 package body Orka.Features.Atmosphere is
@@ -356,9 +357,8 @@ package body Orka.Features.Atmosphere is
    -----------------------------------------------------------------------------
 
    function Create_Model
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Data     : aliased Model_Data;
-      Location : Resources.Locations.Location_Ptr) return Model
+     (Context : aliased Orka.Contexts.Context'Class;
+      Data    : aliased Model_Data) return Model
    is
       --  Compute the values for the SKY_RADIANCE_TO_LUMINANCE constant. In theory
       --  this should be 1 in precomputed illuminance mode (because the precomputed
@@ -371,6 +371,8 @@ package body Orka.Features.Atmosphere is
 
       Power_Sky : constant Float_64 := -3.0;
       Power_Sun : constant Float_64 :=  0.0;
+
+      Location : constant Orka.Resources.Locations.Location_Ptr := Orka.Registry.Location ("orka-atmosphere");
    begin
       return Result : Model (Context'Access, Data'Access) do
          if Precompute_Illuminance then
@@ -388,10 +390,8 @@ package body Orka.Features.Atmosphere is
            (Data.Wavelengths, Data.Solar_Irradiance, Power_Sun,
             Result.Sun_K_R, Result.Sun_K_G, Result.Sun_K_B);
 
-         Result.Data_Definitions := Location.Read_Data ("atmosphere/definitions.frag");
-         Result.Data_Functions   := Location.Read_Data ("atmosphere/functions.frag");
-
-         Result.Location := Location;
+         Result.Data_Definitions := Location.Read_Data ("definitions.frag");
+         Result.Data_Functions   := Location.Read_Data ("functions.frag");
       end return;
    end Create_Model;
 
@@ -454,36 +454,38 @@ package body Orka.Features.Atmosphere is
       --  The precomputations require specific GLSL programs for each
       --  precomputation step
       Program_VS : constant Optional_Shader :=
-        Create_Shader (Object.Location, Vertex_Shader, "atmosphere/oversized-triangle.vert");
+        Create_Shader (Vertex_Shader, "orka-atmosphere:oversized-triangle.vert");
 
       Program_GS : constant Optional_Shader :=
-        Create_Shader (Object.Location, Geometry_Shader, "atmosphere/layer.geom");
+        Create_Shader (Geometry_Shader, "orka-atmosphere:layer.geom");
+
+      Location : constant Orka.Resources.Locations.Location_Ptr := Orka.Registry.Location ("orka-atmosphere");
 
       Header : constant String := Object.Shader_Header (Lambdas);
 
       FS_Transmittance : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-transmittance.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-transmittance.frag").Get));
 
       FS_Direct_Irradiance : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-direct-irradiance.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-direct-irradiance.frag").Get));
 
       FS_Indirect_Irradiance : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-indirect-irradiance.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-indirect-irradiance.frag").Get));
 
       FS_Single_Scattering : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-single-scattering.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-single-scattering.frag").Get));
 
       FS_Multiple_Scattering : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-multiple-scattering.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-multiple-scattering.frag").Get));
 
       FS_Scattering_Density : constant String
-        := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-             ("atmosphere/compute-scattering-density.frag").Get));
+        := Convert (Resources.Byte_Array'(Location.Read_Data
+             ("compute-scattering-density.frag").Get));
 
       Program_Transmittance : constant Shader_Objects :=
          [Vertex_Shader   => Program_VS,
@@ -844,14 +846,16 @@ package body Orka.Features.Atmosphere is
             use Orka.Rendering.Shaders;
             use Orka.Rendering.Shaders.Objects;
 
+            Location : constant Orka.Resources.Locations.Location_Ptr := Orka.Registry.Location ("orka-atmosphere");
+
             Header : constant String := Object.Shader_Header (Lambdas);
 
             FS_Transmittance : constant String
-              := Convert (Resources.Byte_Array'(Object.Location.Read_Data
-                ("atmosphere/compute-transmittance.frag").Get));
+              := Convert (Resources.Byte_Array'(Location.Read_Data
+                ("compute-transmittance.frag").Get));
 
             Program_Transmittance : constant Shader_Objects :=
-              [Vertex_Shader   => Create_Shader (Object.Location, Vertex_Shader, "oversized-triangle.vert"),
+              [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka-atmosphere:oversized-triangle.vert"),
                Fragment_Shader => Create_Shader_From_Source (Fragment_Shader, Header & FS_Transmittance),
                others          => Empty];
 
@@ -875,8 +879,10 @@ package body Orka.Features.Atmosphere is
    function Get_Shader (Object : Model) return Rendering.Shaders.Modules.Shader_Module is
       Precompute_Illuminance : constant Boolean := Object.Data.Num_Precomputed_Wavelengths > 3;
 
+      Location : constant Orka.Resources.Locations.Location_Ptr := Orka.Registry.Location ("orka-atmosphere");
+
       Atmosphere_Fragment_Shader : constant String := Convert
-        (Resources.Byte_Array'(Object.Location.Read_Data ("atmosphere/atmosphere.frag").Get));
+        (Resources.Byte_Array'(Location.Read_Data ("atmosphere.frag").Get));
 
       use Ada.Characters.Latin_1;
 

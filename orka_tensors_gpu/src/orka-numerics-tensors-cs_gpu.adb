@@ -25,8 +25,10 @@ with GL.Objects.Buffers;
 with Orka.Algorithms.Prefix_Sums;
 with Orka.Containers.Bounded_Vectors;
 with Orka.Numerics.Tensors.Operations;
+with Orka.Registry;
 with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Shaders.Uniforms;
+with Orka.Resources;
 with Orka.Strings;
 with Orka.Types;
 
@@ -687,24 +689,19 @@ package body Orka.Numerics.Tensors.CS_GPU is
    type Kernel_Programs_Access is access Kernel_Programs;
 
    Kernels : Kernel_Programs_Access;
-   Location_Prefix_Sum, Location_Tensors_GPU  : Resources.Locations.Location_Access;
    Context : Orka.Contexts.Context_Access;
 
-   procedure Initialize_Shaders
-     (Context                 : Orka.Contexts.Context_Access;
-      Prefix_Sum, Tensors_GPU : Resources.Locations.Location_Ptr) is
+   procedure Initialize_Shaders (Context : Orka.Contexts.Context_Access) is
    begin
-      Location_Prefix_Sum  := Prefix_Sum;
-      Location_Tensors_GPU := Tensors_GPU;
-      CS_GPU.Context       := Context;
+      CS_GPU.Context := Context;
    end Initialize_Shaders;
 
    function Create_Kernels return not null Kernel_Programs_Access is
       use Rendering.Shaders;
 
       function Get_Shader (Path : String) return String is
-         Source : constant Resources.Byte_Array_Pointers.Pointer :=
-           Location_Tensors_GPU.Read_Data (Path);
+         Source : constant Orka.Resources.Byte_Array_Pointers.Pointer :=
+           Orka.Registry.Location ("orka-tensors-gpu").Read_Data (Path);
       begin
          return Resources.Convert (Source.Get);
       end Get_Shader;
@@ -1488,7 +1485,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
          Padding_Count : constant Integer_32 := Integer_32 (Indices_Count - Index.Elements);
 
          Prefix_Sum : Algorithms.Prefix_Sums.Prefix_Sum'Class :=
-           Algorithms.Prefix_Sums.Create_Prefix_Sum (Context.all, Location_Prefix_Sum, Indices_Count);
+           Algorithms.Prefix_Sums.Create_Prefix_Sum (Context.all, Indices_Count);
 
          Buffer_Prefix_Sum : constant Buffer := Create_Buffer
            (Flags  => (Dynamic_Storage => True, others => False),

@@ -19,7 +19,6 @@ with GL.Objects.Programs;
 with GL.Types.Compute;
 
 with Orka.Rendering.Buffers;
-with Orka.Resources.Locations;
 
 limited with Orka.Rendering.Shaders.Modules;
 limited with Orka.Rendering.Shaders.Uniforms;
@@ -41,15 +40,13 @@ package Orka.Rendering.Shaders is
    type String_Array is array (Positive range <>) of String_Access;
 
    function Create_Shader
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array) return Shader;
+     (Kind  : Shader_Kind;
+      Paths : String_Array) return Shader;
    --  Create and return a shader from one or more files
 
    function Create_Shader
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Path     : String) return Shader;
+     (Kind : Shader_Kind;
+      Path : String) return Shader;
    --  Create and return a shader from a single file
 
    function Create_Shader_From_Source

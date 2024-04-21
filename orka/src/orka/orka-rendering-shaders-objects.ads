@@ -29,10 +29,9 @@ package Orka.Rendering.Shaders.Objects is
    function Empty return Optional_Shader is (Is_Present => False);
 
    function Create_Shader
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Path     : String) return Optional_Shader
-   is (From (Create_Shader (Location, Kind, Path)));
+     (Kind : Shader_Kind;
+      Path : String) return Optional_Shader
+   is (From (Create_Shader (Kind, Path)));
 
    function Create_Shader_From_Source
      (Kind : Shader_Kind;
@@ -40,10 +39,9 @@ package Orka.Rendering.Shaders.Objects is
    is (From (Create_Shader_From_Source (Kind, Text)));
 
    function Create_Shader_From_Files
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array) return Optional_Shader
-   is (if Paths'Length > 0 then From (Create_Shader (Location, Kind, Paths)) else Empty);
+     (Kind  : Shader_Kind;
+      Paths : String_Array) return Optional_Shader
+   is (if Paths'Length > 0 then From (Create_Shader (Kind, Paths)) else Empty);
 
    function Create_Shader (Modules : Orka.Rendering.Shaders.Modules.Shader_Module_Array) return Optional_Shader is
      (From (Create_Shader (Modules)));

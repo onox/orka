@@ -18,7 +18,6 @@ with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
 private with Orka.Rendering.Shaders.Objects;
@@ -33,10 +32,9 @@ package Orka.Rendering.Debug.Spheres is
    type Sphere (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Sphere
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
-      Normals  : Boolean := False;
+     (Context : aliased Orka.Contexts.Context'Class;
+      Color   : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
+      Normals : Boolean := False;
       Cells_Horizontal : Positive := 36;
       Cells_Vertical   : Positive := 18) return Sphere;
 

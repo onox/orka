@@ -61,17 +61,14 @@ package body Package_Test is
    end Initialize_Framebuffer;
 
    procedure Post_Initialize (Object : in out Test_Window) is
-      Location_Shaders : constant Orka.Resources.Locations.Location_Ptr :=
-        Orka.Resources.Locations.Directories.Create_Location ("data");
-
       use Orka.Rendering.Shaders;
       use Orka.Rendering.Shaders.Objects;
    begin
       Object.Initialize_Framebuffer;
 
       Object.Program :=
-         [Vertex_Shader   => Create_Shader (Location_Shaders, Fragment_Shader, "cursor.vert"),
-          Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "cursor.frag"),
+         [Vertex_Shader   => Create_Shader (Fragment_Shader, "awt-example:cursor.vert"),
+          Fragment_Shader => Create_Shader (Fragment_Shader, "awt-example:cursor.frag"),
           others          => Empty];
 
       Object.Context.Bind_Shaders (Object.Program);
@@ -127,5 +124,6 @@ package body Package_Test is
               Transparent => Transparent))
            with others => <>);
    end Create_Window;
-
+begin
+   Orka.Resources.Locations.Register ("awt-example", Orka.Resources.Locations.Directories.Create_Location ("data"));
 end Package_Test;

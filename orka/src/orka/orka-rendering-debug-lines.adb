@@ -21,16 +21,13 @@ with Orka.Rendering.States;
 
 package body Orka.Rendering.Debug.Lines is
 
-   function Create_Line
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr) return Line
-   is
+   function Create_Line (Context : aliased Orka.Contexts.Context'Class) return Line is
       use Rendering.Shaders;
       use Rendering.Shaders.Objects;
    begin
       return Result : Line :=
-        (Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/line.vert"),
-                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/line.frag"),
+        (Program => [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka:debug/line.vert"),
+                     Fragment_Shader => Create_Shader (Fragment_Shader, "orka:debug/line.frag"),
                      others          => Empty],
          Context => Context'Access,
          others  => <>)

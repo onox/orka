@@ -97,9 +97,8 @@ package body Orka.Rendering.Effects.Filters is
    end Gaussian_Kernel;
 
    function Create_Filter
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Kernel   : Float_32_Array) return Separable_Filter
+     (Context : aliased Orka.Contexts.Context'Class;
+      Kernel  : Float_32_Array) return Separable_Filter
    is
       use Rendering.Buffers;
       use Rendering.Shaders;
@@ -107,8 +106,8 @@ package body Orka.Rendering.Effects.Filters is
    begin
       return Result : Separable_Filter :=
         (Buffer_Weights => Create_Buffer ((others => False), Kernel),
-         Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "oversized-triangle.vert"),
-                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "effects/blur.frag"),
+         Program => [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka:oversized-triangle.vert"),
+                     Fragment_Shader => Create_Shader (Fragment_Shader, "orka:effects/blur.frag"),
                      others          => Empty],
          Context => Context'Access,
          others  => <>)
@@ -186,15 +185,14 @@ package body Orka.Rendering.Effects.Filters is
    -----------------------------------------------------------------------------
 
    function Create_Filter
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Radius   : Size) return Moving_Average_Filter
+     (Context : aliased Orka.Contexts.Context'Class;
+      Radius  : Size) return Moving_Average_Filter
    is
       use Rendering.Shaders;
       use Rendering.Shaders.Objects;
    begin
       return Result : Moving_Average_Filter :=
-        (Program => [Compute_Shader => Create_Shader (Location, Compute_Shader, "effects/moving-average-blur.comp"),
+        (Program => [Compute_Shader => Create_Shader (Compute_Shader, "orka:effects/moving-average-blur.comp"),
                      others         => Empty],
          Context => Context'Access,
          others  => <>)

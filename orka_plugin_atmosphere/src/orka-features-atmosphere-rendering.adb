@@ -21,6 +21,8 @@ with GL.Types;
 
 with Orka.Rendering.Drawing;
 with Orka.Rendering.States;
+with Orka.Registry;
+with Orka.Resources.Locations;
 with Orka.Transforms.Doubles.Matrices;
 with Orka.Transforms.Doubles.Vectors;
 with Orka.Transforms.Doubles.Vector_Conversions;
@@ -39,14 +41,15 @@ package body Orka.Features.Atmosphere.Rendering is
    function Create_Atmosphere
      (Context    : aliased Orka.Contexts.Context'Class;
       Data       : aliased Model_Data;
-      Location   : Resources.Locations.Location_Ptr;
       Textures   : Precomputed_Textures;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere
    is
-      Atmosphere_Model : constant Model := Create_Model (Context, Data, Location);
+      Location : constant Orka.Resources.Locations.Location_Ptr := Orka.Registry.Location ("orka-atmosphere");
+
+      Atmosphere_Model : constant Model := Create_Model (Context, Data);
 
       Sky_GLSL : constant String := Resources.Convert
-        (Orka.Resources.Byte_Array'(Location.Read_Data ("atmosphere/sky.frag").Get));
+        (Orka.Resources.Byte_Array'(Location.Read_Data ("sky.frag").Get));
 
       use Orka.Rendering.Buffers;
       use all type Orka.Rendering.Shaders.Shader_Kind;
@@ -63,7 +66,7 @@ package body Orka.Features.Atmosphere.Rendering is
    begin
       return Result : Atmosphere :=
         (Program         =>
-           [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "atmosphere/sky.vert"),
+           [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka-atmosphere:sky.vert"),
             Fragment_Shader => Create_Shader (Shader_Module_Array'
               [Create_Module_From_Source (Fragment_Shader, Sky_Shader), Shader_Module]),
             others          => Empty],

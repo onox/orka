@@ -19,15 +19,14 @@ private with Ada.Finalization;
 private with Orka.Rendering.Buffers;
 
 with Orka.Contexts;
-with Orka.Resources.Locations;
 
 generic
 package Orka.Numerics.Tensors.CS_GPU is
    pragma Preelaborate;
 
-   procedure Initialize_Shaders
-     (Context                 : Orka.Contexts.Context_Access;
-      Prefix_Sum, Tensors_GPU : Resources.Locations.Location_Ptr);
+   procedure Initialize_Shaders (Context : Orka.Contexts.Context_Access);
+
+   --  Note: Before creating GPU_Tensor objects, make sure to register a location for the namespaces orka and orka-tensors-gpu
 
    type GPU_Tensor (<>) is new Tensor with private;
 

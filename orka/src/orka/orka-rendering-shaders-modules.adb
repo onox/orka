@@ -18,6 +18,8 @@ with Ada.Characters.Latin_1;
 with Ada.Strings.Fixed;
 
 with Orka.Logging.Default;
+with Orka.Registry;
+with Orka.Resources;
 with Orka.Strings;
 with Orka.Terminals;
 
@@ -204,36 +206,35 @@ package body Orka.Rendering.Shaders.Modules is
    procedure Load_And_Compile
      (Object      : in out Shader_Holders.Holder;
       Shader_Kind : GL.Objects.Shaders.Shader_Type;
-      Location    : Resources.Locations.Location_Ptr;
-      Path        : String) is
+      Path        : String)
+   is
+      Path_Parts : constant String_List := Orka.Strings.Split (Path, Separator => ":", Maximum => 2);
+
+      Namespace : constant String := +Path_Parts (1);
+      File      : constant String := +Path_Parts (2);
+
+      Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
+      Source : constant Orka.Resources.Byte_Array_Pointers.Pointer :=
+        Orka.Registry.Location (Namespace).Read_Data (File);
+
+      Text : String renames Orka.Resources.Convert (Source.Get);
    begin
-      if Path /= "" then
-         pragma Assert (Object.Is_Empty);
+      Shader.Set_Source (Text);
+
+      Shader.Compile;
+      if not Shader.Compile_Status then
          declare
-            Shader : GL.Objects.Shaders.Shader (Kind => Shader_Kind);
-            Source : constant Resources.Byte_Array_Pointers.Pointer
-              := Location.Read_Data (Path);
-
-            Text : String renames Resources.Convert (Source.Get);
+            Shader_Log : constant String := Shader.Info_Log;
          begin
-            Shader.Set_Source (Text);
+            Log (Error, "Compiling shader " & Path & " failed:");
+            Print_Log (Text, Shader_Log);
 
-            Shader.Compile;
-            if not Shader.Compile_Status then
-               declare
-                  Shader_Log : constant String := Shader.Info_Log;
-               begin
-                  Log (Error, "Compiling shader " & Path & " failed:");
-                  Print_Log (Text, Shader_Log);
-
-                  raise Shader_Compile_Error with Path & ":" & Shader_Log;
-               end;
-            end if;
-            Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path & " (" & Trim_Image (Orka.Strings.Lines (Text)) & " lines)");
-
-            Object.Replace_Element (Shader);
+            raise Shader_Compile_Error with Path & ":" & Shader_Log;
          end;
       end if;
+      Log (Info, "Compiled " & Image (Shader_Kind) & " " & Path & " (" & Trim_Image (Orka.Strings.Lines (Text)) & " lines)");
+
+      Object.Replace_Element (Shader);
    end Load_And_Compile;
 
    procedure Set_And_Compile
@@ -268,20 +269,22 @@ package body Orka.Rendering.Shaders.Modules is
    end Set_And_Compile;
 
    function Create_Module
-     (Location : Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Path     : String) return Shader_Module is
+     (Kind : Shader_Kind;
+      Path : String) return Shader_Module is
    begin
+      if Path = "" then
+         raise Constraint_Error;
+      end if;
+
       return Result : Shader_Module do
-         Load_And_Compile (Result.Shader, Get_Type (Kind), Location, Path);
+         Load_And_Compile (Result.Shader, Get_Type (Kind), Path);
       end return;
    end Create_Module;
 
    function Create_Modules
-     (Location : Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array) return Shader_Module_Array
-   is [for Path of Paths => Create_Module (Location, Kind, Path.all)];
+     (Kind  : Shader_Kind;
+      Paths : String_Array) return Shader_Module_Array
+   is [for Path of Paths => Create_Module (Kind, Path.all)];
 
    function Create_Module_From_Source
      (Kind : Shader_Kind;

@@ -18,7 +18,6 @@ with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
 private with Orka.Rendering.Shaders.Objects;
@@ -33,9 +32,8 @@ package Orka.Rendering.Debug.Bounding_Boxes is
    type Bounding_Box (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Bounding_Box
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box;
+     (Context : aliased Orka.Contexts.Context'Class;
+      Color   : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0]) return Bounding_Box;
 
    function Create_Graph
      (Object       : Bounding_Box;

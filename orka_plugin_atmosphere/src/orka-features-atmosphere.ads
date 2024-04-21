@@ -124,11 +124,11 @@
 with Ada.Containers.Vectors;
 
 with Orka.Contexts;
-with Orka.Resources.Locations;
 with Orka.Rendering.Shaders.Modules;
 
 private with Orka.Rendering.Samplers;
 private with Orka.Rendering.Textures;
+private with Orka.Resources;
 
 package Orka.Features.Atmosphere is
    pragma Preelaborate;
@@ -288,9 +288,8 @@ package Orka.Features.Atmosphere is
       Data    : not null access constant Model_Data) is tagged limited private;
 
    function Create_Model
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Data     : aliased Model_Data;
-      Location : Resources.Locations.Location_Ptr) return Model;
+     (Context : aliased Orka.Contexts.Context'Class;
+      Data    : aliased Model_Data) return Model;
 
    function Compute_Textures (Object : Model; Scattering_Orders : Natural := 4)
      return Precomputed_Textures;
@@ -327,10 +326,8 @@ private
      (Context : not null access constant Orka.Contexts.Context'Class;
       Data    : not null access constant Model_Data)
    is tagged limited record
-      Data_Definitions : Resources.Byte_Array_Pointers.Pointer;
-      Data_Functions   : Resources.Byte_Array_Pointers.Pointer;
-
-      Location : Resources.Locations.Location_Access;
+      Data_Definitions : Orka.Resources.Byte_Array_Pointers.Pointer;
+      Data_Functions   : Orka.Resources.Byte_Array_Pointers.Pointer;
 
       Sky_K_R, Sky_K_G, Sky_K_B : Float_64;
       Sun_K_R, Sun_K_G, Sun_K_B : Float_64;

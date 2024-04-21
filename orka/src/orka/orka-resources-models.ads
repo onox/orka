@@ -24,7 +24,6 @@ private with Orka.Types;
 with Orka.Behaviors;
 with Orka.Contexts;
 with Orka.Culling;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
 package Orka.Resources.Models is
@@ -67,7 +66,6 @@ package Orka.Resources.Models is
    function Create_Group
      (Object   : aliased in out Model;
       Context  : aliased Orka.Contexts.Context'Class;
-      Location : Orka.Resources.Locations.Location_Ptr;
       Capacity : Positive) return Group_Access;
 
    Model_Load_Error : exception renames Resource_Load_Error;

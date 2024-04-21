@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2019 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,17 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Orka.Resources.Locations;
+with Orka.Registry;
 
-package Orka.Features.Atmosphere.KTX is
-   pragma Preelaborate;
+package body Orka.Resources.Locations is
 
-   function Load_Textures
-     (Data     : Model_Data;
-      Location : Orka.Resources.Locations.Location_Ptr) return Precomputed_Textures;
+   procedure Register (Namespace : String; Location : Location_Ptr) renames Orka.Registry.Add;
 
-   procedure Save_Textures
-     (Object   : Precomputed_Textures;
-      Location : Orka.Resources.Locations.Writable_Location_Ptr);
-
-end Orka.Features.Atmosphere.KTX;
+end Orka.Resources.Locations;

@@ -18,8 +18,6 @@ private with Ada.Containers.Indefinite_Holders;
 
 private with GL.Objects.Shaders;
 
-with Orka.Resources.Locations;
-
 package Orka.Rendering.Shaders.Modules is
    pragma Preelaborate;
 
@@ -30,14 +28,12 @@ package Orka.Rendering.Shaders.Modules is
    function Kind (Object : Shader_Module) return Shader_Kind;
 
    function Create_Module
-     (Location : Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Path     : String) return Shader_Module;
+     (Kind : Shader_Kind;
+      Path : String) return Shader_Module;
 
    function Create_Modules
-     (Location : Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array) return Shader_Module_Array;
+     (Kind  : Shader_Kind;
+      Paths : String_Array) return Shader_Module_Array;
 
    function Create_Module_From_Source
      (Kind : Shader_Kind;

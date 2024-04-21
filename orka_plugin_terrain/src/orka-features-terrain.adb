@@ -53,26 +53,26 @@ package body Orka.Features.Terrain is
    Binding_Buffer_Matrices : constant := 0;
    Binding_Buffer_Metadata : constant := 1;
 
-   Shader_Leb                    : aliased constant String := "terrain/leb.comp";
-   Shader_Leb_Init               : aliased constant String := "terrain/leb-init.comp";
+   Shader_Leb                    : aliased constant String := "orka-terrain:leb.comp";
+   Shader_Leb_Init               : aliased constant String := "orka-terrain:leb-init.comp";
 
-   Shader_Leb_Sum_Reduction_Prepass : aliased constant String := "terrain/leb-sum-reduction-prepass.comp";
-   Shader_Leb_Sum_Reduction         : aliased constant String := "terrain/leb-sum-reduction.comp";
-   Shader_Terrain_Prepare_Indirect  : aliased constant String := "terrain/terrain-prepare-indirect.comp";
+   Shader_Leb_Sum_Reduction_Prepass : aliased constant String := "orka-terrain:leb-sum-reduction-prepass.comp";
+   Shader_Leb_Sum_Reduction         : aliased constant String := "orka-terrain:leb-sum-reduction.comp";
+   Shader_Terrain_Prepare_Indirect  : aliased constant String := "orka-terrain:terrain-prepare-indirect.comp";
 
-   Shader_Terrain_Render_Common  : aliased constant String := "terrain/terrain-render-common.glsl";
-   Shader_Terrain_Render_Normals : aliased constant String := "terrain/terrain-render-normals.frag";
-   Shader_Terrain_Render_Sphere  : aliased constant String := "terrain/terrain-render-sphere.glsl";
-   Shader_Terrain_Render_Plane   : aliased constant String := "terrain/terrain-render-plane.glsl";
-   Shader_Terrain_Update_Lod     : aliased constant String := "terrain/terrain-update-lod.comp";
-   Shader_Terrain_Update         : aliased constant String := "terrain/terrain-update.comp";
+   Shader_Terrain_Render_Common  : aliased constant String := "orka-terrain:terrain-render-common.glsl";
+   Shader_Terrain_Render_Normals : aliased constant String := "orka-terrain:terrain-render-normals.frag";
+   Shader_Terrain_Render_Sphere  : aliased constant String := "orka-terrain:terrain-render-sphere.glsl";
+   Shader_Terrain_Render_Plane   : aliased constant String := "orka-terrain:terrain-render-plane.glsl";
+   Shader_Terrain_Update_Lod     : aliased constant String := "orka-terrain:terrain-update-lod.comp";
+   Shader_Terrain_Update         : aliased constant String := "orka-terrain:terrain-update.comp";
 
-   Shader_Render_Vertex          : aliased constant String := "terrain/terrain-render.vert";
-   Shader_Render_Tess_Control    : aliased constant String := "terrain/terrain-render.tesc";
-   Shader_Render_Tess_Evaluation : aliased constant String := "terrain/terrain-render.tese";
-   Shader_Render_Wires_Geometry  : aliased constant String := "terrain/terrain-render-wires.geom";
-   Shader_Render_Wires_Fragment  : aliased constant String := "terrain/terrain-render-wires.frag";
-   Shader_Render_Fragment        : aliased constant String := "terrain/terrain-render.frag";
+   Shader_Render_Vertex          : aliased constant String := "orka-terrain:terrain-render.vert";
+   Shader_Render_Tess_Control    : aliased constant String := "orka-terrain:terrain-render.tesc";
+   Shader_Render_Tess_Evaluation : aliased constant String := "orka-terrain:terrain-render.tese";
+   Shader_Render_Wires_Geometry  : aliased constant String := "orka-terrain:terrain-render-wires.geom";
+   Shader_Render_Wires_Fragment  : aliased constant String := "orka-terrain:terrain-render-wires.frag";
+   Shader_Render_Fragment        : aliased constant String := "orka-terrain:terrain-render.frag";
 
    function Create_Terrain
      (Context              : aliased Orka.Contexts.Context'Class;
@@ -80,7 +80,6 @@ package body Orka.Features.Terrain is
       Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
-      Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Shaders.Modules.Shader_Module_Array;
       Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects)) return Terrain
    is
@@ -110,7 +109,7 @@ package body Orka.Features.Terrain is
       use all type Rendering.Shaders.Shader_Kind;
 
       Modules_Render_Fragment_Shader : constant Shader_Module_Array :=
-        Create_Modules (Location, Fragment_Shader,
+        Create_Modules (Fragment_Shader,
           [Shader_Terrain_Render_Common'Access,
            Shader_Terrain_Render_Normals'Access,
            (if Wireframe then Shader_Render_Wires_Fragment'Access else Shader_Render_Fragment'Access)])
@@ -125,7 +124,7 @@ package body Orka.Features.Terrain is
          Visible_Tiles => [others => True],
 
          Program_Leb_Update =>
-           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, Paths =>
+           [Compute_Shader => Create_Shader_From_Files (Compute_Shader, Paths =>
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                (case Kind is
@@ -136,36 +135,36 @@ package body Orka.Features.Terrain is
             others         => Empty],
 
          Program_Render =>
-           [Vertex_Shader          => Create_Shader_From_Files (Location, Vertex_Shader,
+           [Vertex_Shader          => Create_Shader_From_Files (Vertex_Shader,
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                Shader_Render_Vertex'Access]),
-            Tess_Control_Shader    => Create_Shader_From_Files (Location, Tess_Control_Shader,
+            Tess_Control_Shader    => Create_Shader_From_Files (Tess_Control_Shader,
               [Shader_Leb'Access,
                Shader_Terrain_Render_Common'Access,
                (case Kind is
                   when Sphere => Shader_Terrain_Render_Sphere'Access,
                   when Plane => Shader_Terrain_Render_Plane'Access),
                Shader_Render_Tess_Control'Access]),
-            Tess_Evaluation_Shader => Create_Shader_From_Files (Location, Tess_Evaluation_Shader,
+            Tess_Evaluation_Shader => Create_Shader_From_Files (Tess_Evaluation_Shader,
               [Shader_Terrain_Render_Common'Access,
                (case Kind is
                   when Sphere => Shader_Terrain_Render_Sphere'Access,
                   when Plane => Shader_Terrain_Render_Plane'Access),
                Shader_Render_Tess_Evaluation'Access]),
-            Geometry_Shader        => Create_Shader_From_Files (Location, Geometry_Shader,
+            Geometry_Shader        => Create_Shader_From_Files (Geometry_Shader,
               (if Wireframe then [Shader_Render_Wires_Geometry'Access] else [])),
             Fragment_Shader        => Create_Shader (Modules_Render_Fragment_Shader),
             others                 => Empty],
 
          Program_Leb_Prepass =>
-           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction_Prepass'Access]),
+           [Compute_Shader => Create_Shader_From_Files (Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction_Prepass'Access]),
             others         => Empty],
          Program_Leb_Reduction =>
-           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction'Access]),
+           [Compute_Shader => Create_Shader_From_Files (Compute_Shader, [Shader_Leb'Access, Shader_Leb_Sum_Reduction'Access]),
             others         => Empty],
          Program_Indirect =>
-           [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Terrain_Prepare_Indirect'Access]),
+           [Compute_Shader => Create_Shader_From_Files (Compute_Shader, [Shader_Leb'Access, Shader_Terrain_Prepare_Indirect'Access]),
             others         => Empty],
 
          Sampler                 => Create_Sampler
@@ -199,7 +198,7 @@ package body Orka.Features.Terrain is
 
          declare
             Program_Init : constant Shader_Objects :=
-              [Compute_Shader => Create_Shader_From_Files (Location, Compute_Shader, [Shader_Leb'Access, Shader_Leb_Init'Access]),
+              [Compute_Shader => Create_Shader_From_Files (Compute_Shader, [Shader_Leb'Access, Shader_Leb_Init'Access]),
                others         => Empty];
          begin
             Program_Init (Compute_Shader).Value.Uniform ("u_MinDepth").Set_Int (Size (Min_Depth));

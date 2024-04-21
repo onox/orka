@@ -43,16 +43,14 @@ package body Orka.Rendering.Shaders is
      (Create_Shader (Modules, Modules (Modules'First).Kind));
 
    function Create_Shader
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Paths    : String_Array) return Shader
-   is (Create_Shader (Modules.Shader_Module_Array'([for Path of Paths => Modules.Create_Module (Location, Kind, Path.all)])));
+     (Kind  : Shader_Kind;
+      Paths : String_Array) return Shader
+   is (Create_Shader (Modules.Shader_Module_Array'([for Path of Paths => Modules.Create_Module (Kind, Path.all)])));
 
    function Create_Shader
-     (Location : Orka.Resources.Locations.Location_Ptr;
-      Kind     : Shader_Kind;
-      Path     : String) return Shader
-   is (Create_Shader ([Modules.Create_Module (Location, Kind, Path)], Kind));
+     (Kind : Shader_Kind;
+      Path : String) return Shader
+   is (Create_Shader ([Modules.Create_Module (Kind, Path)], Kind));
 
    function Create_Shader_From_Source
      (Kind : Shader_Kind;

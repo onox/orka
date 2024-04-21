@@ -29,7 +29,6 @@ package body Orka.Culling is
 
    function Create_Culler
      (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
       Transforms, Commands : Natural) return Culler
    is
       use Rendering.Shaders;
@@ -40,11 +39,11 @@ package body Orka.Culling is
       use all type Rendering.Shaders.Shader_Kind;
 
       Program_Frustum : constant Shader_Objects :=
-        [Compute_Shader => Create_Shader (Location, Compute_Shader, "cull-frustum.comp"),
+        [Compute_Shader => Create_Shader (Compute_Shader, "orka:cull-frustum.comp"),
          others         => Empty];
 
       Program_Compact : constant Shader_Objects :=
-        [Compute_Shader => Create_Shader (Location, Compute_Shader, "compact-commands.comp"),
+        [Compute_Shader => Create_Shader (Compute_Shader, "orka:compact-commands.comp"),
          others         => Empty];
 
       Work_Group_Size : constant GL.Types.Compute.Dimension_Size_Array
@@ -63,7 +62,7 @@ package body Orka.Culling is
          Context         => Context'Access,
 
          Work_Groups => Work_Groups,
-         Prefix_Sum  => Algorithms.Prefix_Sums.Create_Prefix_Sum (Context, Location, Transforms),
+         Prefix_Sum  => Algorithms.Prefix_Sums.Create_Prefix_Sum (Context, Transforms),
          Buffer_Visibles => Create_Buffer
            (Flags  => (others => False),
             Kind   => UInt_Type,

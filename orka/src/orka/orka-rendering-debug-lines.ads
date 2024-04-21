@@ -18,7 +18,6 @@ with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
 private with Orka.Rendering.Shaders.Objects;
@@ -32,9 +31,7 @@ package Orka.Rendering.Debug.Lines is
 
    type Line (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
-   function Create_Line
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr) return Line;
+   function Create_Line (Context : aliased Orka.Contexts.Context'Class) return Line;
 
    function Create_Graph
      (Object       : Line;

@@ -217,17 +217,15 @@ package Orka.Frame_Graphs is
                             and Renderable_Graph.Maximum_Resources = Renderable_Graph.Graph.Maximum_Resources;
 
    procedure Render
-     (Object   : in out Renderable_Graph;
-      Window   : Orka.Windows.Window'Class;
-      Present  : Resource;
-      Location : Resources.Locations.Location_Ptr);
+     (Object  : in out Renderable_Graph;
+      Window  : Orka.Windows.Window'Class;
+      Present : Resource);
    --  Render the resource which must be presented to the given window
 
    function Render
-     (Object   : in out Renderable_Graph;
-      Context  : in out Orka.Contexts.Context'Class;
-      Present  : Resource;
-      Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture;
+     (Object  : in out Renderable_Graph;
+      Context : in out Orka.Contexts.Context'Class;
+      Present : Resource) return Orka.Rendering.Textures.Texture;
    --  Render the resource which must be presented and return it as a texture
 
    procedure Log_Graph (Object : in out Renderable_Graph; Window : Orka.Windows.Window'Class);

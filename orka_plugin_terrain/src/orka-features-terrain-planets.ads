@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Orka.Features.Atmosphere.Rendering;
+with Orka.Resources.Locations;
 
 package Orka.Features.Terrain.Planets is
 
@@ -24,14 +25,13 @@ package Orka.Features.Terrain.Planets is
      (Context              : aliased Orka.Contexts.Context'Class;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
-      Location             : Resources.Locations.Location_Ptr;
       Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects);
       Data          : aliased Orka.Features.Atmosphere.Model_Data;
-      Parameters    : Features.Atmosphere.Rendering.Model_Parameters;
-      Atmosphere    : Features.Atmosphere.Rendering.Atmosphere;
-      Location_Data : Resources.Locations.Location_Ptr;
-      Height_Scale  : Orka.Float_32;
-      Height_Offset : Orka.Float_32) return Terrain_Planet
+      Parameters    : Orka.Features.Atmosphere.Rendering.Model_Parameters;
+      Atmosphere    : Orka.Features.Atmosphere.Rendering.Atmosphere;
+      Location_Data : Orka.Resources.Locations.Location_Ptr;
+      Height_Scale  : Float_32;
+      Height_Offset : Float_32) return Terrain_Planet
    with Pre => Min_Depth <= Max_Depth and Max_Depth >= 5;
    --  Return a Terrain_Planet object which can render the six terrain tiles of a planet
    --

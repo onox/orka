@@ -17,7 +17,6 @@
 with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 
 private with Orka.Rendering.Buffers;
 private with Orka.Rendering.Shaders.Uniforms;
@@ -35,9 +34,8 @@ package Orka.Rendering.Effects.Filters is
    type Separable_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Filter
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Kernel   : Float_32_Array) return Separable_Filter
+     (Context : aliased Orka.Contexts.Context'Class;
+      Kernel  : Float_32_Array) return Separable_Filter
    with Pre => Kernel'Length mod 2 = 0;
    --  Create a separable filter
    --
@@ -61,9 +59,8 @@ package Orka.Rendering.Effects.Filters is
    type Moving_Average_Filter (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
    function Create_Filter
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Radius   : Size) return Moving_Average_Filter;
+     (Context : aliased Orka.Contexts.Context'Class;
+      Radius  : Size) return Moving_Average_Filter;
    --  Create a filter that computes the moving average per row in a
    --  compute shader for a O(1) time complexity, giving a consistent
    --  performance independent of the radius

@@ -17,7 +17,6 @@
 with Orka.Algorithms.Prefix_Sums;
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 with Orka.Types;
 
@@ -43,7 +42,6 @@ package Orka.Culling is
 
    function Create_Culler
      (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
       Transforms, Commands : Natural) return Culler
    with Pre => Transforms mod 4 = 0;
 

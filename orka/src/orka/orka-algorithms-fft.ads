@@ -16,7 +16,6 @@
 
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
-with Orka.Resources.Locations;
 with Orka.Types;
 
 private with GL.Low_Level.Enums;
@@ -29,9 +28,7 @@ package Orka.Algorithms.FFT is
 
    type FFT (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
-   function Create_FFT
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr) return FFT;
+   function Create_FFT (Context : aliased Orka.Contexts.Context'Class) return FFT;
 
    use type Types.Element_Type;
 

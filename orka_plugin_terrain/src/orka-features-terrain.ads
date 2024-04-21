@@ -40,7 +40,6 @@ with Orka.Rendering.Buffers;
 with Orka.Rendering.Shaders.Modules;
 with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Types;
 
 private with Orka.Rendering.Buffers.Mapped.Persistent;
@@ -79,7 +78,6 @@ package Orka.Features.Terrain is
       Count                : Positive;
       Min_Depth, Max_Depth : Subdivision_Depth;
       Wireframe            : Boolean;
-      Location             : Resources.Locations.Location_Ptr;
       Render_Modules       : Rendering.Shaders.Modules.Shader_Module_Array;
       Initialize_Render    : access procedure (Shaders : Rendering.Shaders.Objects.Shader_Objects)) return Terrain
    with Pre => Min_Depth <= Max_Depth and Max_Depth >= 5;

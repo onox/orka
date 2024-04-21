@@ -59,9 +59,10 @@ package Orka.Resources.Locations is
 
    type Writable_Location_Ptr is not null access Writable_Location'Class;
 
+   procedure Register (Namespace : String; Location : Location_Ptr);
+
    Name_Error : exception renames Ada.IO_Exceptions.Name_Error;
 
-   Path_Separator : constant Character
-     with Import, Convention => C, External_Name => "__gnat_dir_separator";
+   Path_Separator : constant Character := '/';
 
 end Orka.Resources.Locations;

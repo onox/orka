@@ -22,7 +22,6 @@ with Orka.Rendering.Buffers;
 with Orka.Rendering.Shaders.Modules;
 with Orka.Rendering.Shaders.Objects;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Types;
 
 private with Orka.Rendering.Shaders.Uniforms;
@@ -45,7 +44,6 @@ package Orka.Features.Atmosphere.Rendering is
    function Create_Atmosphere
      (Context    : aliased Orka.Contexts.Context'Class;
       Data       : aliased Model_Data;
-      Location   : Resources.Locations.Location_Ptr;
       Textures   : Precomputed_Textures;
       Parameters : Model_Parameters := (others => <>)) return Atmosphere;
 

@@ -26,7 +26,6 @@ package body Orka.Resources.Models is
    function Create_Group
      (Object   : aliased in out Model;
       Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
       Capacity : Positive) return Group_Access
    is
       Shapes_Count : constant Natural := Object.Scene.Shapes.Element'Length;
@@ -37,7 +36,7 @@ package body Orka.Resources.Models is
          Instances => Model_Instances.Create_Manager
            (Capacity => Capacity, Parts => Shapes_Count),
          Culler => Culling.Create_Culler
-           (Context, Location, Transforms => Capacity * Shapes_Count, Commands => Shapes_Count),
+           (Context, Transforms => Capacity * Shapes_Count, Commands => Shapes_Count),
          others => <>);
    end Create_Group;
 

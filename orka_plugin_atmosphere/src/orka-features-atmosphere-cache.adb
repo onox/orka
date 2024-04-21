@@ -25,10 +25,9 @@ package body Orka.Features.Atmosphere.Cache is
    procedure Log is new Orka.Logging.Default.Generic_Log (Other);
 
    function Get_Textures
-     (Context          : aliased Orka.Contexts.Context'Class;
-      Data             : aliased Model_Data;
-      Location_Shaders : Resources.Locations.Location_Ptr;
-      Location_Cache   : Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures is
+     (Context        : aliased Orka.Contexts.Context'Class;
+      Data           : aliased Model_Data;
+      Location_Cache : Orka.Resources.Locations.Writable_Location_Ptr) return Precomputed_Textures is
    begin
       if not Location_Cache.Exists ("irradiance.ktx") or
          not Location_Cache.Exists ("scattering.ktx") or
@@ -36,7 +35,7 @@ package body Orka.Features.Atmosphere.Cache is
       then
          Log (Info, "Precomputing atmosphere... (this may take a while)");
          declare
-            Atmosphere_Model : constant Model := Create_Model (Context, Data, Location_Shaders);
+            Atmosphere_Model : constant Model := Create_Model (Context, Data);
             Textures : constant Precomputed_Textures := Atmosphere_Model.Compute_Textures;
          begin
             Log (Info, "Precomputed textures for atmosphere");

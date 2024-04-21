@@ -18,7 +18,6 @@ with Orka.Contexts;
 with Orka.Frame_Graphs;
 with Orka.Rendering.Buffers;
 with Orka.Rendering.Textures;
-with Orka.Resources.Locations;
 with Orka.Transforms.Singles.Matrices;
 
 private with Orka.Rendering.Shaders.Objects;
@@ -32,9 +31,7 @@ package Orka.Rendering.Debug.Coordinate_Axes is
 
    type Coordinate_Axes (Context : not null access constant Orka.Contexts.Context'Class) is tagged limited private;
 
-   function Create_Coordinate_Axes
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr) return Coordinate_Axes;
+   function Create_Coordinate_Axes (Context : aliased Orka.Contexts.Context'Class) return Coordinate_Axes;
 
    function Create_Graph
      (Object       : Coordinate_Axes;

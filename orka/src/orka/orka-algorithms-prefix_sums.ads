@@ -16,7 +16,6 @@
 
 with Orka.Contexts;
 with Orka.Rendering.Buffers;
-with Orka.Resources.Locations;
 
 private with Orka.Rendering.Shaders.Objects;
 private with Orka.Types;
@@ -34,9 +33,8 @@ package Orka.Algorithms.Prefix_Sums is
    with Pre => Buffer.Length = Object.Length;
 
    function Create_Prefix_Sum
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Length   : Positive) return Prefix_Sum
+     (Context : aliased Orka.Contexts.Context'Class;
+      Length  : Positive) return Prefix_Sum
    with Pre => Length mod 4 = 0;
 
 private

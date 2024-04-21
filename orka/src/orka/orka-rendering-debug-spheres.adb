@@ -24,10 +24,9 @@ with Orka.Rendering.States;
 package body Orka.Rendering.Debug.Spheres is
 
    function Create_Sphere
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr;
-      Color    : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
-      Normals  : Boolean := False;
+     (Context : aliased Orka.Contexts.Context'Class;
+      Color   : Transforms.Vector4 := [1.0, 1.0, 1.0, 1.0];
+      Normals : Boolean := False;
       Cells_Horizontal : Positive := 36;
       Cells_Vertical   : Positive := 18) return Sphere
    is
@@ -35,8 +34,8 @@ package body Orka.Rendering.Debug.Spheres is
       use Rendering.Shaders.Objects;
    begin
       return Result : Sphere :=
-        (Program => [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "debug/sphere.vert"),
-                     Fragment_Shader => Create_Shader (Location, Fragment_Shader, "debug/sphere.frag"),
+        (Program => [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka:debug/sphere.vert"),
+                     Fragment_Shader => Create_Shader (Fragment_Shader, "orka:debug/sphere.frag"),
                      others          => Empty],
          Context => Context'Access,
          Cells_Horizontal => Cells_Horizontal,

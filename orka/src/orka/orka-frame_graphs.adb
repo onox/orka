@@ -957,7 +957,6 @@ package body Orka.Frame_Graphs is
 
    procedure Initialize_Present_Pass
      (Object   : in out Renderable_Graph;
-      Location : Resources.Locations.Location_Ptr;
       Default  : Rendering.Framebuffers.Framebuffer;
       Resource : Resource_Data)
    is
@@ -968,11 +967,11 @@ package body Orka.Frame_Graphs is
       use Rendering.Shaders.Objects;
    begin
       Object.Present_Pass.Program :=
-         [Vertex_Shader   => Create_Shader (Location, Vertex_Shader, "oversized-triangle.vert"),
-          Fragment_Shader => Create_Shader (Location, Fragment_Shader,
+         [Vertex_Shader   => Create_Shader (Vertex_Shader, "orka:oversized-triangle.vert"),
+          Fragment_Shader => Create_Shader (Fragment_Shader,
             (case Resource.Data.Description.Kind is
-               when Texture_Rectangle => "frame-graph-present-rect.frag",
-               when others => "frame-graph-present.frag")),
+               when Texture_Rectangle => "orka:frame-graph-present-rect.frag",
+               when others => "orka:frame-graph-present.frag")),
           others          => Empty];
 
       --  Program of present pass is needed when rendering to default framebuffer (mode 3)
@@ -992,7 +991,6 @@ package body Orka.Frame_Graphs is
 
    procedure Determine_Present_Mode
      (Object           : in out Renderable_Graph;
-      Location         : Resources.Locations.Location_Ptr;
       Default          : Rendering.Framebuffers.Framebuffer;
       Last_Render_Pass : Render_Pass_Data;
       Resource         : Resource_Data)
@@ -1149,9 +1147,8 @@ package body Orka.Frame_Graphs is
    end Compute_Ordering_Render_Passes;
 
    procedure Initialize
-     (Object   : in out Renderable_Graph;
-      Location : Resources.Locations.Location_Ptr;
-      Default  : Rendering.Framebuffers.Framebuffer)
+     (Object  : in out Renderable_Graph;
+      Default : Rendering.Framebuffers.Framebuffer)
    is
       subtype Selector_Type is GL.Buffers.Explicit_Color_Buffer_Selector;
       subtype Buffer_Type   is GL.Buffers.Draw_Buffer_Index;
@@ -1168,10 +1165,10 @@ package body Orka.Frame_Graphs is
       Present_Resource : Resource_Data renames Object.Graph.Resources (Object.Present_Resource);
       Last_Pass_Index : constant Render_Pass_Index := Present_Resource.Render_Pass;
    begin
-      Object.Determine_Present_Mode (Location, Default, Object.Graph.Passes (Last_Pass_Index), Present_Resource);
+      Object.Determine_Present_Mode (Default, Object.Graph.Passes (Last_Pass_Index), Present_Resource);
 
       if Object.Present_Mode = Render_To_Default then
-         Object.Initialize_Present_Pass (Location, Default, Present_Resource);
+         Object.Initialize_Present_Pass (Default, Present_Resource);
       end if;
 
       --  Use the ordering of render passes computed in Compute_Ordering_Render_Passes
@@ -1660,8 +1657,7 @@ package body Orka.Frame_Graphs is
      (Object           : in out Renderable_Graph;
       Context          : in out Orka.Contexts.Context'Class;
       Last_Framebuffer : Rendering.Framebuffers.Framebuffer;
-      Present          : Resource;
-      Location         : Resources.Locations.Location_Ptr)
+      Present          : Resource)
    is
       Index : Handle_Type;
       Found : Boolean;
@@ -1682,7 +1678,7 @@ package body Orka.Frame_Graphs is
 
          Object.Framebuffers.Clear;
          Object.Compute_Ordering_Render_Passes;
-         Object.Initialize (Location, Last_Framebuffer);
+         Object.Initialize (Last_Framebuffer);
       end if;
 
       Object.Render (Context, Last_Framebuffer);
@@ -1691,20 +1687,18 @@ package body Orka.Frame_Graphs is
    procedure Render
      (Object  : in out Renderable_Graph;
       Window  : Orka.Windows.Window'Class;
-      Present : Resource;
-      Location : Resources.Locations.Location_Ptr)
+      Present : Resource)
    is
       Default_Framebuffer : constant Rendering.Framebuffers.Framebuffer :=
         Orka.Rendering.Framebuffers.Create_Default_Framebuffer (Window.Width, Window.Height);
    begin
-      Object.Render (Window.Context.all, Default_Framebuffer, Present, Location);
+      Object.Render (Window.Context.all, Default_Framebuffer, Present);
    end Render;
 
    function Render
-     (Object   : in out Renderable_Graph;
-      Context  : in out Orka.Contexts.Context'Class;
-      Present  : Resource;
-      Location : Resources.Locations.Location_Ptr) return Orka.Rendering.Textures.Texture
+     (Object  : in out Renderable_Graph;
+      Context : in out Orka.Contexts.Context'Class;
+      Present : Resource) return Orka.Rendering.Textures.Texture
    is
       Description : Rendering.Textures.Texture_Description := Present.Description;
 
@@ -1751,7 +1745,7 @@ package body Orka.Frame_Graphs is
          --  Force re-initialization due to using non-default framebuffer
          Object.Present_Resource := No_Resource;
 
-         Object.Render (Context, Last_Framebuffer, Present, Location);
+         Object.Render (Context, Last_Framebuffer, Present);
          GL.Barriers.Memory_Barrier ((Texture_Update => True, others => False));
 
          --  Force re-initialization next render due to using default framebuffer

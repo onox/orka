@@ -19,15 +19,12 @@ with GL.Compute;
 
 package body Orka.Algorithms.FFT is
 
-   function Create_FFT
-     (Context  : aliased Orka.Contexts.Context'Class;
-      Location : Resources.Locations.Location_Ptr) return FFT
-   is
+   function Create_FFT (Context : aliased Orka.Contexts.Context'Class) return FFT is
       use Rendering.Shaders;
       use Rendering.Shaders.Objects;
    begin
       return Result : FFT :=
-        (Program => [Compute_Shader => Create_Shader (Location, Compute_Shader, Path => "algorithms/fft.comp"),
+        (Program => [Compute_Shader => Create_Shader (Compute_Shader, Path => "orka:algorithms/fft.comp"),
                      others         => Empty],
          Context => Context'Access,
          others  => <>)
