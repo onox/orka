@@ -15,11 +15,9 @@
 --  limitations under the License.
 
 with AUnit.Assertions;
-with AUnit.Test_Caller;
 
 with Orka.Loggers.Terminal;
 with Orka.Logging;
-with Orka.Resources.Locations.Directories;
 
 package body Generic_Test_Tensors_Matrices is
 
@@ -74,8 +72,8 @@ package body Generic_Test_Tensors_Matrices is
       Assert (Tensor_1.Axes = 2, "Unexpected axes:" & Tensor_1.Axes'Image);
       Assert (Tensor_2.Axes = 1, "Unexpected axes:" & Tensor_2.Axes'Image);
 
-      Assert (Tensor_1.Shape = (3, 3), "Unexpected shape:" & Image (Tensor_1.Shape));
-      Assert (Tensor_2.Shape = (1 => 9), "Unexpected shape:" & Image (Tensor_2.Shape));
+      Assert (Tensor_1.Shape = [3, 3], "Unexpected shape:" & Image (Tensor_1.Shape));
+      Assert (Tensor_2.Shape = [9], "Unexpected shape:" & Image (Tensor_2.Shape));
 
       Assert (Tensor_1.Elements = 9, "Unexpected number of elements:" & Tensor_1.Elements'Image);
       Assert (Tensor_2.Elements = 9, "Unexpected number of elements:" & Tensor_2.Elements'Image);
@@ -94,9 +92,9 @@ package body Generic_Test_Tensors_Matrices is
       --  1 0 0
       --  0 1 0
 
-      Values_1 : constant Element_Array := (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-      Values_2 : constant Element_Array := (0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-      Values_3 : constant Element_Array := (0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+      Values_1 : constant Element_Array := [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
+      Values_2 : constant Element_Array := [0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0];
+      Values_3 : constant Element_Array := [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
    begin
       Assert_Equal (Values_1, Tensor_1.Flatten);
       Assert_Equal (Values_2, Tensor_2.Flatten);
@@ -119,8 +117,8 @@ package body Generic_Test_Tensors_Matrices is
       --  0 1 0
       --  0 0 1
 
-      Values_3 : constant Element_Array := (1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-      Values_4 : constant Element_Array := (0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+      Values_3 : constant Element_Array := [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];
+      Values_4 : constant Element_Array := [0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
    begin
       Assert (Tensor_1 = Tensor_2, "Identity matrices not equal");
 
@@ -129,10 +127,10 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Identity_Not_Square;
 
    procedure Test_Reshape (Object : in out Test) is
-      Values : constant Element_Array := (1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+      Values : constant Element_Array := [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
 
-      Shape_1D : constant Tensor_Shape := (1 => Values'Length);
-      Shape_2D : constant Tensor_Shape := (2, 3);
+      Shape_1D : constant Tensor_Shape := [Values'Length];
+      Shape_2D : constant Tensor_Shape := [2, 3];
 
       Tensor_1 : constant CPU_Tensor := To_Tensor (Values);
       Tensor_2 : constant CPU_Tensor := Tensor_1.Reshape (Shape_2D);
@@ -147,24 +145,24 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Reshape;
 
    procedure Test_Concatenate (Object : in out Test) is
-      Left_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
+      Left_1 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0]);
       --  1 0 0
       --  0 2 0
       --  0 0 3
 
-      Right_1 : constant CPU_Tensor := To_Tensor ((4.0, 5.0, 6.0, 7.0, 8.0, 9.0)).Reshape ((2, 3));
+      Right_1 : constant CPU_Tensor := To_Tensor ([4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).Reshape ([2, 3]);
       --  4 5 6
       --  7 8 9
 
-      Right_2 : constant CPU_Tensor := To_Tensor ((4.0, 5.0, 6.0, 7.0, 8.0, 9.0)).Reshape ((3, 2));
+      Right_2 : constant CPU_Tensor := To_Tensor ([4.0, 5.0, 6.0, 7.0, 8.0, 9.0]).Reshape ([3, 2]);
       --  4 5
       --  6 7
       --  8 9
 
       Expected_1 : constant Element_Array :=
-        (1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        [1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
       Expected_2 : constant Element_Array :=
-        (1.0, 0.0, 0.0, 4.0, 5.0, 0.0, 2.0, 0.0, 6.0, 7.0, 0.0, 0.0, 3.0, 8.0, 9.0);
+        [1.0, 0.0, 0.0, 4.0, 5.0, 0.0, 2.0, 0.0, 6.0, 7.0, 0.0, 0.0, 3.0, 8.0, 9.0];
 
       Actual_1 : constant CPU_Tensor := Left_1.Concatenate (Right_1, Axis => 1);
       --  1 0 0
@@ -191,9 +189,9 @@ package body Generic_Test_Tensors_Matrices is
       --  0 0 1
       --  0 0 0
 
-      Expected_1 : constant Element_Array := (1.0, 1.0, 1.0);
-      Expected_2 : constant Element_Array := (0.0, 0.0, 0.0);
-      Expected_3 : constant Element_Array := (1.0, 1.0, 0.0);
+      Expected_1 : constant Element_Array := [1.0, 1.0, 1.0];
+      Expected_2 : constant Element_Array := [0.0, 0.0, 0.0];
+      Expected_3 : constant Element_Array := [1.0, 1.0, 0.0];
 
       Actual_1 : constant CPU_Tensor := Tensor_1.Main_Diagonal;
       Actual_2 : constant CPU_Tensor := Tensor_2.Main_Diagonal;
@@ -205,9 +203,9 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Main_Diagonal;
 
    procedure Test_Diagonal (Object : in out Test) is
-      Expected_1 : constant Element_Array := (1.0, 2.0, 3.0);
-      Expected_2 : constant Element_Array := (0.0, 0.0, 0.0);
-      Expected_3 : constant Element_Array := (1.0, 2.0, 0.0);
+      Expected_1 : constant Element_Array := [1.0, 2.0, 3.0];
+      Expected_2 : constant Element_Array := [0.0, 0.0, 0.0];
+      Expected_3 : constant Element_Array := [1.0, 2.0, 0.0];
 
       Tensor_1 : constant CPU_Tensor := Diagonal (Expected_1);
       --  1 0 0
@@ -229,9 +227,9 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Diagonal;
 
    procedure Test_Trace (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
-      Tensor_2 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_3 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
+      Tensor_1 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0]);
+      Tensor_2 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_3 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
 
       Expected_1 : constant Element := 6.0;
       Expected_2 : constant Element := 15.0;
@@ -240,8 +238,8 @@ package body Generic_Test_Tensors_Matrices is
 
       Actual_1 : constant Element := Tensor_1.Trace;
       Actual_2 : constant Element := Tensor_2.Trace;
-      Actual_3 : constant Element := Tensor_3.Reshape ((2, 3)).Trace;
-      Actual_4 : constant Element := Tensor_3.Reshape ((3, 2)).Trace;
+      Actual_3 : constant Element := Tensor_3.Reshape ([2, 3]).Trace;
+      Actual_4 : constant Element := Tensor_3.Reshape ([3, 2]).Trace;
    begin
       Assert (Expected_1 = Actual_1, "Unexpected trace: " & Actual_1'Image);
       Assert (Expected_2 = Actual_2, "Unexpected trace: " & Actual_2'Image);
@@ -250,32 +248,32 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Trace;
 
    procedure Test_Set_Value_Index_Row (Object : in out Test) is
-      Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0), Shape => (3, 2));
+      Tensor : CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], Shape => [3, 2]);
       --  1 2
       --  3 4
       --  5 6
 
-      Expected : constant Element_Array := (1.0, 2.0, 7.0, 8.0, 5.0, 6.0);
+      Expected : constant Element_Array := [1.0, 2.0, 7.0, 8.0, 5.0, 6.0];
    begin
-      Tensor.Set (2, To_Tensor ((7.0, 8.0)));
+      Tensor.Set (2, To_Tensor ([7.0, 8.0]));
 
       Assert_Equal (Expected, Tensor.Flatten);
    end Test_Set_Value_Index_Row;
 
    procedure Test_Set_Value_Index_Range (Object : in out Test) is
-      Tensor_1 : CPU_Tensor := Linear_Space (1.0, 16.0, Count => 16).Reshape ((4, 4));
+      Tensor_1 : CPU_Tensor := Linear_Space (1.0, 16.0, Count => 16).Reshape ([4, 4]);
       --   1  2  3  4
       --   5  6  7  8
       --   9 10 11 12
       --  13 14 15 16
 
-      Tensor_2 : constant CPU_Tensor := Linear_Space (2.0, 9.0, Count => 8).Reshape ((2, 4));
+      Tensor_2 : constant CPU_Tensor := Linear_Space (2.0, 9.0, Count => 8).Reshape ([2, 4]);
 
       Expected : constant Element_Array :=
-        (1.0, 2.0, 3.0, 4.0,
+        [1.0, 2.0, 3.0, 4.0,
          2.0, 3.0, 4.0, 5.0,
          6.0, 7.0, 8.0, 9.0,
-         13.0, 14.0, 15.0, 16.0);
+         13.0, 14.0, 15.0, 16.0];
    begin
       Tensor_1.Set (Range_Type'(2, 3), Tensor_2);
 
@@ -283,48 +281,48 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Set_Value_Index_Range;
 
    procedure Test_Constant_Indexing_Index_Row (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0));
+      Tensor_1 : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0]);
       --  1 0 0
       --  0 2 0
       --  0 0 3
 
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
-      Tensor_3 : constant CPU_Tensor := Tensor_2.Reshape ((3, 2));
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+      Tensor_3 : constant CPU_Tensor := Tensor_2.Reshape ([3, 2]);
       --  1 2
       --  3 4
       --  5 6
    begin
-      Assert_Equal ((1.0, 0.0, 0.0), Tensor_1.Get (1));
-      Assert_Equal ((0.0, 2.0, 0.0), Tensor_1.Get (2));
-      Assert_Equal ((0.0, 0.0, 3.0), Tensor_1.Get (3));
+      Assert_Equal ([1.0, 0.0, 0.0], Tensor_1.Get (1));
+      Assert_Equal ([0.0, 2.0, 0.0], Tensor_1.Get (2));
+      Assert_Equal ([0.0, 0.0, 3.0], Tensor_1.Get (3));
 
-      Assert_Equal ((5.0, 6.0), Tensor_3.Get (3));
+      Assert_Equal ([5.0, 6.0], Tensor_3.Get (3));
    end Test_Constant_Indexing_Index_Row;
 
    procedure Test_Constant_Indexing_Index_Value (Object : in out Test) is
-      Main_Diagonal : constant Element_Array := (1.0, 2.0, 3.0);
+      Main_Diagonal : constant Element_Array := [1.0, 2.0, 3.0];
       Tensor : constant CPU_Tensor := Diagonal (Main_Diagonal);
    begin
       for Index in Main_Diagonal'Range loop
-         Assert (Main_Diagonal (Index) = Tensor.Get ((Index, Index)),
-           "Unexpected element: " & Element'Image (Tensor.Get ((Index, Index))));
+         Assert (Main_Diagonal (Index) = Tensor.Get ([Index, Index]),
+           "Unexpected element: " & Element'Image (Tensor.Get ([Index, Index])));
       end loop;
    end Test_Constant_Indexing_Index_Value;
 
    procedure Test_Constant_Indexing_Index_Boolean (Object : in out Test) is
-      Values : constant Boolean_Array := (True, False, True);
+      Values : constant Boolean_Array := [True, False, True];
 
-      Main_Diagonal : constant Element_Array := (1.0, 2.0, 3.0);
+      Main_Diagonal : constant Element_Array := [1.0, 2.0, 3.0];
       Tensor : constant CPU_Tensor := Diagonal (Main_Diagonal) /= 2.0;
    begin
       for Index in Values'Range loop
-         Assert (Values (Index) = Tensor.Get ((Index, Index)),
-           "Unexpected element: " & Boolean'Image (Tensor.Get ((Index, Index))));
+         Assert (Values (Index) = Tensor.Get ([Index, Index]),
+           "Unexpected element: " & Boolean'Image (Tensor.Get ([Index, Index])));
       end loop;
    end Test_Constant_Indexing_Index_Boolean;
 
    procedure Test_Constant_Indexing_Range (Object : in out Test) is
-      Tensor : constant CPU_Tensor := Diagonal ((1.0, 2.0, 3.0, 4.0));
+      Tensor : constant CPU_Tensor := Diagonal ([1.0, 2.0, 3.0, 4.0]);
       --  1 0 0 0
       --  0 2 0 0
       --  0 0 3 0
@@ -338,23 +336,23 @@ package body Generic_Test_Tensors_Matrices is
       --  0 3 0
       --  0 0 4
 
-      Actual_1   : constant CPU_Tensor := To_Tensor ((0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0))
-        .Reshape ((2, 4));
-      Actual_2   : constant CPU_Tensor := To_Tensor ((0.0, 3.0, 0.0, 0.0, 0.0, 4.0))
-        .Reshape ((2, 3));
+      Actual_1   : constant CPU_Tensor := To_Tensor ([0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0])
+        .Reshape ([2, 4]);
+      Actual_2   : constant CPU_Tensor := To_Tensor ([0.0, 3.0, 0.0, 0.0, 0.0, 4.0])
+        .Reshape ([2, 3]);
    begin
       Assert (Expected_1 = Actual_1, "Unexpected tensor of shape " & Image (Actual_1.Shape));
       Assert (Expected_2 = Actual_2, "Unexpected tensor of shape " & Image (Actual_2.Shape));
    end Test_Constant_Indexing_Range;
 
    procedure Test_Constant_Indexing_Tensor (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0)).Reshape ((2, 3));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).Reshape ([2, 3]);
       --  1 2 3
       --  4 5 6
 
-      Expected_1 : constant Element_Array := (5.0, 6.0);
-      Expected_2 : constant Element_Array := (1.0, 2.0, 3.0, 4.0);
-      Expected_3 : constant Element_Array := (2.0, 4.0, 6.0);
+      Expected_1 : constant Element_Array := [5.0, 6.0];
+      Expected_2 : constant Element_Array := [1.0, 2.0, 3.0, 4.0];
+      Expected_3 : constant Element_Array := [2.0, 4.0, 6.0];
 
       Actual_1 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 > 4.0);
       --  5 6
@@ -367,10 +365,10 @@ package body Generic_Test_Tensors_Matrices is
 
       Actual_4 : constant CPU_Tensor := Tensor_1.Get (Tensor_1 = 0.0);
 
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0));
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
 
-      Expected_5 : constant Element_Array := (6.0, 7.0);
-      Expected_6 : constant Element_Array := (7.0, 8.0);
+      Expected_5 : constant Element_Array := [6.0, 7.0];
+      Expected_6 : constant Element_Array := [7.0, 8.0];
 
       --  Additional tests for GPU implementation
       Actual_5 : constant CPU_Tensor := Tensor_2.Get (Tensor_2 >= 6.0 and Tensor_2 <= 7.0);
@@ -389,30 +387,30 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Constant_Indexing_Tensor;
 
    procedure Test_Operator_Multiply_Inner (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := Array_Range (9.0).Reshape ((3, 3));
-      Tensor_2 : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+      Tensor_1 : constant CPU_Tensor := Array_Range (9.0).Reshape ([3, 3]);
+      Tensor_2 : constant CPU_Tensor := Array_Range (16.0).Reshape ([4, 4]);
 
       Tensor_3 : constant CPU_Tensor := Array_Range (4.0);
 
       Expected_1 : constant Element_Array :=
-        (15.0, 18.0, 21.0,
+        [15.0, 18.0, 21.0,
          42.0, 54.0, 66.0,
-         69.0, 90.0, 111.0);
+         69.0, 90.0, 111.0];
 
       Expected_2 : constant Element_Array :=
-        (56.0,   62.0,  68.0,  74.0,
+        [56.0,   62.0,  68.0,  74.0,
          152.0, 174.0, 196.0, 218.0,
          248.0, 286.0, 324.0, 362.0,
-         344.0, 398.0, 452.0, 506.0);
+         344.0, 398.0, 452.0, 506.0];
 
-      Expected_3 : constant Element_Array := (14.0, 38.0, 62.0, 86.0);
+      Expected_3 : constant Element_Array := [14.0, 38.0, 62.0, 86.0];
 
       Actual_1 : constant CPU_Tensor := Tensor_1 * Tensor_1;
       Actual_2 : constant CPU_Tensor := Tensor_2 * Tensor_2;
 
       --  1D vector and 2D vector
       Actual_3 : constant CPU_Tensor := Tensor_2 * Tensor_3;
-      Actual_4 : constant CPU_Tensor := Tensor_2 * Tensor_3.Reshape ((4, 1));
+      Actual_4 : constant CPU_Tensor := Tensor_2 * Tensor_3.Reshape ([4, 1]);
    begin
       Assert_Equal (Expected_1, Actual_1.Flatten);
       Assert_Equal (Expected_2, Actual_2.Flatten);
@@ -421,11 +419,11 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Operator_Multiply_Inner;
 
    procedure Test_Operator_Power (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := Array_Range (16.0).Reshape ((4, 4));
+      Tensor_1 : constant CPU_Tensor := Array_Range (16.0).Reshape ([4, 4]);
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((1.0,  2.0, -3.0,
+        To_Tensor ([1.0,  2.0, -3.0,
                     4.0, -5.0,  6.0,
-                   -7.0,  8.0,  9.0)).Reshape ((3, 3));
+                   -7.0,  8.0,  9.0]).Reshape ([3, 3]);
 
       Expected_1 : constant CPU_Tensor := Identity (4);
       Expected_2 : constant CPU_Tensor := Tensor_1;
@@ -436,9 +434,9 @@ package body Generic_Test_Tensors_Matrices is
       Expected_6 : constant CPU_Tensor := Expected_5 ** 2;
 
       Expected_7 : constant Element_Array :=
-        (2.0**1,    2.0**2,    2.0**(-3),
+        [2.0**1,    2.0**2,    2.0**(-3),
          2.0**4,    2.0**(-5), 2.0**6,
-         2.0**(-7), 2.0**8,    2.0**9);
+         2.0**(-7), 2.0**8,    2.0**9];
 
       Actual_1 : constant CPU_Tensor := Tensor_1 ** 0;
       Actual_2 : constant CPU_Tensor := Tensor_1 ** 1;
@@ -462,20 +460,20 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Operator_Power;
 
    procedure Test_Outer (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1 => 1.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0]);
 
-      Expected_1 : constant Element_Array := (1.0, 2.0, 3.0, 2.0, 4.0, 6.0, 3.0, 6.0, 9.0);
-      Expected_2 : constant Element_Array := (1.0, 2.0, 3.0);
-      Expected_3 : constant Element_Array := (1.0, 2.0, 3.0);
+      Expected_1 : constant Element_Array := [1.0, 2.0, 3.0, 2.0, 4.0, 6.0, 3.0, 6.0, 9.0];
+      Expected_2 : constant Element_Array := [1.0, 2.0, 3.0];
+      Expected_3 : constant Element_Array := [1.0, 2.0, 3.0];
 
       Actual_1   : constant CPU_Tensor := Outer (Tensor_1, Tensor_1);
       Actual_2   : constant CPU_Tensor := Outer (Tensor_1, Tensor_2);
       Actual_3   : constant CPU_Tensor := Outer (Tensor_2, Tensor_1);
    begin
-      Assert (Actual_1.Shape = (3, 3), "Unexpected shape: " & Image (Actual_1.Shape));
-      Assert (Actual_2.Shape = (3, 1), "Unexpected shape: " & Image (Actual_2.Shape));
-      Assert (Actual_3.Shape = (1, 3), "Unexpected shape: " & Image (Actual_3.Shape));
+      Assert (Actual_1.Shape = [3, 3], "Unexpected shape: " & Image (Actual_1.Shape));
+      Assert (Actual_2.Shape = [3, 1], "Unexpected shape: " & Image (Actual_2.Shape));
+      Assert (Actual_3.Shape = [1, 3], "Unexpected shape: " & Image (Actual_3.Shape));
 
       Assert_Equal (Expected_1, Actual_1.Flatten);
       Assert_Equal (Expected_2, Actual_2.Flatten);
@@ -483,13 +481,13 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Outer;
 
    procedure Test_Inverse_Invertible (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0,  2.0, 3.0, 4.0)).Reshape ((2, 2));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0,  2.0, 3.0, 4.0]).Reshape ([2, 2]);
       pragma Assert (1.0 * 4.0 - 2.0 * 3.0 /= 0.0);
 
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((1.0,  2.0, -3.0,
+        To_Tensor ([1.0,  2.0, -3.0,
                     4.0, -5.0,  6.0,
-                   -7.0,  8.0,  9.0)).Reshape ((3, 3));
+                   -7.0,  8.0,  9.0]).Reshape ([3, 3]);
 
       Expected_1 : constant CPU_Tensor := Identity (2);
       Expected_2 : constant CPU_Tensor := Tensor_2;
@@ -505,9 +503,9 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Inverse_Singular (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
-        To_Tensor ((1.0, -2.0, -1.0,
+        To_Tensor ([1.0, -2.0, -1.0,
                    -1.0,  5.0,  6.0,
-                    5.0, -4.0,  5.0)).Reshape ((3, 3));
+                    5.0, -4.0,  5.0]).Reshape ([3, 3]);
    begin
       begin
          declare
@@ -522,18 +520,18 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Inverse_Singular;
 
    procedure Test_Transpose (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := Linear_Space (1.0, 15.0, Count => 15).Reshape ((5, 3));
-      Tensor_2 : constant CPU_Tensor := Linear_Space (1.0, 6.0, Count => 6).Reshape ((2, 3));
+      Tensor_1 : constant CPU_Tensor := Linear_Space (1.0, 15.0, Count => 15).Reshape ([5, 3]);
+      Tensor_2 : constant CPU_Tensor := Linear_Space (1.0, 6.0, Count => 6).Reshape ([2, 3]);
 
       Expected_1 : constant CPU_Tensor := To_Tensor
-        ((1.0, 4.0, 7.0, 10.0, 13.0,
+        ([1.0, 4.0, 7.0, 10.0, 13.0,
           2.0, 5.0, 8.0, 11.0, 14.0,
-          3.0, 6.0, 9.0, 12.0, 15.0), Shape => (3, 5));
+          3.0, 6.0, 9.0, 12.0, 15.0], Shape => [3, 5]);
 
       Expected_2 : constant CPU_Tensor := To_Tensor
-        ((1.0, 4.0,
+        ([1.0, 4.0,
           2.0, 5.0,
-          3.0, 6.0), Shape => (3, 2));
+          3.0, 6.0], Shape => [3, 2]);
 
       Actual_1 : constant CPU_Tensor := Tensor_1.Transpose;
       Actual_2 : constant CPU_Tensor := Tensor_2.Transpose;
@@ -546,15 +544,15 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Solve (Object : in out Test) is
       Tensor_A : constant CPU_Tensor :=
-        To_Tensor ((1.0, -2.0,  1.0,
+        To_Tensor ([1.0, -2.0,  1.0,
                     0.0,  2.0, -8.0,
-                   -4.0,  5.0,  9.0)).Reshape ((3, 3));
+                   -4.0,  5.0,  9.0]).Reshape ([3, 3]);
 
-      Tensor_B : constant CPU_Tensor := To_Tensor ((0.0, 8.0, -9.0));
+      Tensor_B : constant CPU_Tensor := To_Tensor ([0.0, 8.0, -9.0]);
 
       Solution : Solution_Kind;
 
-      Expected : constant Element_Array := (29.0, 16.0, 3.0);
+      Expected : constant Element_Array := [29.0, 16.0, 3.0];
       Actual   : constant CPU_Tensor    := Solve (Tensor_A, Tensor_B, Solution);
    begin
       Assert_Equal (Expected, Actual);
@@ -563,13 +561,13 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Solve_Triangular (Object : in out Test) is
       Tensor_A : constant CPU_Tensor :=
-        To_Tensor ((2.0, -3.0,  4.0,
+        To_Tensor ([2.0, -3.0,  4.0,
                     0.0,  6.0, -8.0,
-                    0.0,  0.0,  9.0)).Reshape ((3, 3));
+                    0.0,  0.0,  9.0]).Reshape ([3, 3]);
 
-      Tensor_B : constant CPU_Tensor := To_Tensor ((0.0, 8.0, -9.0));
+      Tensor_B : constant CPU_Tensor := To_Tensor ([0.0, 8.0, -9.0]);
 
-      Expected : constant Element_Array := (2.0, 0.0, -1.0);
+      Expected : constant Element_Array := [2.0, 0.0, -1.0];
       Actual   : constant CPU_Tensor    := Solve (Tensor_A, Tensor_B, Upper);
    begin
       Assert_Equal (Expected, Actual, Absolute_Tolerance => 1.0e8 * Abs_Tolerance);
@@ -577,17 +575,17 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Divide_By (Object : in out Test) is
       Tensor_A : constant CPU_Tensor := To_Tensor
-        ((3.0, 4.0, 5.0,
+        ([3.0, 4.0, 5.0,
           1.0, 3.0, 1.0,
-          3.0, 5.0, 9.0),
-         Shape => (3, 3));
+          3.0, 5.0, 9.0],
+         Shape => [3, 3]);
 
       --  Upper
       Tensor_B : constant CPU_Tensor := To_Tensor
-        ((4.0, 9.0, 2.0,
+        ([4.0, 9.0, 2.0,
           0.0, 3.0, 6.0,
-          0.0, 0.0, 2.0),
-         Shape => (3, 3));
+          0.0, 0.0, 2.0],
+         Shape => [3, 3]);
 
       --  Lower
       Tensor_C : constant CPU_Tensor := Tensor_B.Transpose;
@@ -608,12 +606,12 @@ package body Generic_Test_Tensors_Matrices is
    end Test_Divide_By;
 
    procedure Test_Upper_Triangular (Object : in out Test) is
-      Tensor : constant CPU_Tensor := Linear_Space (1.0, 9.0, Count => 9).Reshape ((3, 3));
+      Tensor : constant CPU_Tensor := Linear_Space (1.0, 9.0, Count => 9).Reshape ([3, 3]);
       --   1  2  3
       --   4  5  6
       --   7  8  9
 
-      Expected : constant Element_Array := (1.0, 2.0, 3.0, 0.0, 5.0, 6.0, 0.0, 0.0, 9.0);
+      Expected : constant Element_Array := [1.0, 2.0, 3.0, 0.0, 5.0, 6.0, 0.0, 0.0, 9.0];
 
       Actual : constant CPU_Tensor := Tensor.Upper_Triangular;
    begin
@@ -622,22 +620,22 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_QR (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
+        To_Tensor ([12.0, -51.0,   4.0, 52.0, -20.1,
                      6.0, 167.0, -68.0, -1.0,  11.0,
                     -4.0,  24.0, -41.0,  0.0,   5.1,
-                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
+                     2.0,   3.0,   4.0,  5.0,   6.0]).Reshape ([4, 5]);
 
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0, 52.0,
+        To_Tensor ([12.0, -51.0,   4.0, 52.0,
                      6.0, 167.0, -68.0, -1.0,
                     -4.0,  24.0, -41.0,  0.0,
-                     2.0,   3.0,   4.0,  5.0)).Reshape ((4, 4));
+                     2.0,   3.0,   4.0,  5.0]).Reshape ([4, 4]);
 
       Tensor_3 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0,
+        To_Tensor ([12.0, -51.0,   4.0,
                      6.0, 167.0, -68.0,
                     -4.0,  24.0, -41.0,
-                     2.0,   3.0,   4.0)).Reshape ((4, 3));
+                     2.0,   3.0,   4.0]).Reshape ([4, 3]);
 
       QR_1 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_1, Complete));
       QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2, Complete));
@@ -647,11 +645,11 @@ package body Generic_Test_Tensors_Matrices is
       Actual_2 : constant CPU_Tensor := QR_2.Q * QR_2.R;
       Actual_3 : constant CPU_Tensor := QR_3.Q * QR_3.R;
    begin
-      Assert (QR_1.Q.Shape = (Tensor_1.Rows, Tensor_1.Rows),
+      Assert (QR_1.Q.Shape = [Tensor_1.Rows, Tensor_1.Rows],
         "Unexpected shape " & Image (QR_1.Q.Shape) & " of Q");
-      Assert (QR_2.Q.Shape = (Tensor_2.Rows, Tensor_2.Rows),
+      Assert (QR_2.Q.Shape = [Tensor_2.Rows, Tensor_2.Rows],
         "Unexpected shape " & Image (QR_2.Q.Shape) & " of Q");
-      Assert (QR_3.Q.Shape = (Tensor_3.Rows, Tensor_3.Rows),
+      Assert (QR_3.Q.Shape = [Tensor_3.Rows, Tensor_3.Rows],
         "Unexpected shape " & Image (QR_3.Q.Shape) & " of Q");
 
       Assert (QR_1.R.Shape = Tensor_1.Shape, "Unexpected shape " & Image (QR_1.R.Shape) & " of R");
@@ -709,11 +707,11 @@ package body Generic_Test_Tensors_Matrices is
 
       N : constant Natural := 100;
 
-      U : constant CPU_Tensor := Random.Uniform ((1 .. 2 => N));
+      U : constant CPU_Tensor := Random.Uniform ([1 .. 2 => N]);
       A : constant CPU_Tensor := CPU_Tensor'(U * U.Transpose) + Element (N) * Identity (N);
 
       R : constant CPU_Tensor := Cholesky (A, Upper);
-      V : constant CPU_Tensor := Random.Uniform ((1 => N));
+      V : constant CPU_Tensor := Random.Uniform ([N]);
 
       D1 : constant CPU_Tensor := Cholesky (A - Outer (V, V), Upper);
       D2 : constant CPU_Tensor := Cholesky_Update (R, V, Downdate);
@@ -726,27 +724,27 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Shapes_Least_Squares (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0, 52.0, -20.1,
+        To_Tensor ([12.0, -51.0,   4.0, 52.0, -20.1,
                      6.0, 167.0, -68.0, -1.0,  11.0,
                     -4.0,  24.0, -41.0,  0.0,   5.1,
-                     2.0,   3.0,   4.0,  5.0,   6.0)).Reshape ((4, 5));
+                     2.0,   3.0,   4.0,  5.0,   6.0]).Reshape ([4, 5]);
 
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0, 52.0,
+        To_Tensor ([12.0, -51.0,   4.0, 52.0,
                      6.0, 167.0, -68.0, -1.0,
                     -4.0,  24.0, -41.0,  0.0,
-                     2.0,   3.0,   4.0,  5.0)).Reshape ((4, 4));
+                     2.0,   3.0,   4.0,  5.0]).Reshape ([4, 4]);
 
       Tensor_3 : constant CPU_Tensor :=
-        To_Tensor ((12.0, -51.0,   4.0,
+        To_Tensor ([12.0, -51.0,   4.0,
                      6.0, 167.0, -68.0,
                     -4.0,  24.0, -41.0,
-                     2.0,   3.0,   4.0)).Reshape ((4, 3));
+                     2.0,   3.0,   4.0]).Reshape ([4, 3]);
 
-      B1 : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34), Shape => (4, 1));
-      B2 : constant CPU_Tensor := To_Tensor ((459.014, 25.146, 195.0, 0.12), Shape => (4, 1));
+      B1 : constant CPU_Tensor := To_Tensor ([123.456, 78.901, 65.34, -5.34], Shape => [4, 1]);
+      B2 : constant CPU_Tensor := To_Tensor ([459.014, 25.146, 195.0, 0.12], Shape => [4, 1]);
 
-      B_1D : constant CPU_Tensor := To_Tensor ((123.456, 78.901, 65.34, -5.34));
+      B_1D : constant CPU_Tensor := To_Tensor ([123.456, 78.901, 65.34, -5.34]);
       B_2D : constant CPU_Tensor := Concatenate (B1, B2, Axis => 2);
 
       --  Test matrices with 1-D and 2-D B's
@@ -778,17 +776,17 @@ package body Generic_Test_Tensors_Matrices is
 
    procedure Test_Values_Least_Squares (Object : in out Test) is
       Tensor : constant CPU_Tensor :=
-        To_Tensor ((1.0,  5.0,
+        To_Tensor ([1.0,  5.0,
                     1.0, -2.0,
                     1.0, -4.0,
-                    1.0,  1.0)).Reshape ((4, 2));
+                    1.0,  1.0]).Reshape ([4, 2]);
 
       QR_Tensor : constant CPU_QR_Factorization :=
         CPU_QR_Factorization (QR_For_Least_Squares (Tensor));
 
-      B : constant CPU_Tensor := To_Tensor ((2.0, 3.0, -3.0, 7.0));
+      B : constant CPU_Tensor := To_Tensor ([2.0, 3.0, -3.0, 7.0]);
 
-      Expected : constant CPU_Tensor := To_Tensor ((9.0 / 4.0, 23.0 / 46.0));
+      Expected : constant CPU_Tensor := To_Tensor ([9.0 / 4.0, 23.0 / 46.0]);
       Actual   : constant CPU_Tensor := Least_Squares (QR_Tensor, B);
    begin
       Assert (All_Close (Expected, Actual), "Unexpected least-squares solution");
@@ -822,9 +820,9 @@ package body Generic_Test_Tensors_Matrices is
       --
       --  [1] "Introduction to Applied Linear Algebra", Boyd S., Vandenberge L., 2018
       C : constant CPU_Tensor :=
-        To_Tensor ((1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                    9.5, 8.5, 7.5, 6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5)).Reshape ((2, 10));
-      D : constant CPU_Tensor := To_Tensor ((0.0, 1.0), Shape => (2, 1));
+        To_Tensor ([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                    9.5, 8.5, 7.5, 6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5]).Reshape ([2, 10]);
+      D : constant CPU_Tensor := To_Tensor ([0.0, 1.0], Shape => [2, 1]);
 
       Expected : constant Element := 0.0121212121212121;
       Actual   : constant Element := Constrained_Least_Squares (I, Zero, C, D).Norm**2;

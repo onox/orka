@@ -54,10 +54,10 @@ package body Test_SIMD_AVX_Compare is
    end Suite;
 
    procedure Test_Equal (Object : in out Test) is
-      Left  : constant m256d := (-0.2, 1.0, 1.5, 0.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [-0.2, 1.0, 1.5, 0.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant Is_True_Array := (False, False, True, False);
+      Expected : constant Is_True_Array := [False, False, True, False];
       Result   : constant m256d := Left = Right;
    begin
       for I in Index_4D loop
@@ -66,10 +66,10 @@ package body Test_SIMD_AVX_Compare is
    end Test_Equal;
 
    procedure Test_Not_Equal (Object : in out Test) is
-      Left  : constant m256d := (-0.2, 1.0, 1.5, 0.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [-0.2, 1.0, 1.5, 0.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant Is_True_Array := (True, True, False, True);
+      Expected : constant Is_True_Array := [True, True, False, True];
       Result   : constant m256d := Left /= Right;
    begin
       for I in Index_4D loop
@@ -78,10 +78,10 @@ package body Test_SIMD_AVX_Compare is
    end Test_Not_Equal;
 
    procedure Test_Greater_Than (Object : in out Test) is
-      Left  : constant m256d := (-0.2, 1.0, 1.5, 0.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [-0.2, 1.0, 1.5, 0.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant Is_True_Array := (False, True, False, False);
+      Expected : constant Is_True_Array := [False, True, False, False];
       Result   : constant m256d := Left > Right;
    begin
       for I in Index_4D loop
@@ -90,10 +90,10 @@ package body Test_SIMD_AVX_Compare is
    end Test_Greater_Than;
 
    procedure Test_Less_Than (Object : in out Test) is
-      Left  : constant m256d := (-0.2, 1.0, 1.5, 0.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [-0.2, 1.0, 1.5, 0.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant Is_True_Array := (True, False, False, True);
+      Expected : constant Is_True_Array := [True, False, False, True];
       Result   : constant m256d := Left < Right;
    begin
       for I in Index_4D loop
@@ -105,17 +105,17 @@ package body Test_SIMD_AVX_Compare is
       use Orka.SIMD.AVX.Doubles.Arithmetic;
 
       --  Nan, 0.0, 1.0, Nan
-      A  : constant m256d := (0.0, 0.0, 1.0, 0.0);
-      B  : constant m256d := (0.0, 1.0, 1.0, 0.0);
+      A  : constant m256d := [0.0, 0.0, 1.0, 0.0];
+      B  : constant m256d := [0.0, 1.0, 1.0, 0.0];
 
       --  0.0, 1.0, Nan, Nan
-      C  : constant m256d := (0.0, 1.0, 0.0, 0.0);
-      D  : constant m256d := (1.0, 1.0, 0.0, 0.0);
+      C  : constant m256d := [0.0, 1.0, 0.0, 0.0];
+      D  : constant m256d := [1.0, 1.0, 0.0, 0.0];
 
       Left  : constant m256d := A / B;
       Right : constant m256d := C / D;
 
-      Expected : constant Is_True_Array := (True, False, True, True);
+      Expected : constant Is_True_Array := [True, False, True, True];
       Result   : constant m256d := Nan (Left, Right);
    begin
       for I in Index_4D loop
@@ -127,17 +127,17 @@ package body Test_SIMD_AVX_Compare is
       use Orka.SIMD.AVX.Doubles.Arithmetic;
 
       --  Nan, 0.0, 1.0, Nan
-      A  : constant m256d := (0.0, 0.0, 1.0, 0.0);
-      B  : constant m256d := (0.0, 1.0, 1.0, 0.0);
+      A  : constant m256d := [0.0, 0.0, 1.0, 0.0];
+      B  : constant m256d := [0.0, 1.0, 1.0, 0.0];
 
       --  0.0, 1.0, Nan, Nan
-      C  : constant m256d := (0.0, 1.0, 0.0, 0.0);
-      D  : constant m256d := (1.0, 1.0, 0.0, 0.0);
+      C  : constant m256d := [0.0, 1.0, 0.0, 0.0];
+      D  : constant m256d := [1.0, 1.0, 0.0, 0.0];
 
       Left  : constant m256d := A / B;
       Right : constant m256d := C / D;
 
-      Expected : constant Is_True_Array := (False, True, False, False);
+      Expected : constant Is_True_Array := [False, True, False, False];
       Result   : constant m256d := Not_Nan (Left, Right);
    begin
       for I in Index_4D loop

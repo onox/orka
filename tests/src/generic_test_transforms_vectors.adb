@@ -38,10 +38,10 @@ package body Generic_Test_Transforms_Vectors is
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Add (Object : in out Test) is
-      Left  : constant Vector4 := (2.0, 3.0, 4.0, 0.0);
-      Right : constant Vector4 := (-2.0, 3.0, 0.0, -1.0);
+      Left  : constant Vector4 := [2.0, 3.0, 4.0, 0.0];
+      Right : constant Vector4 := [-2.0, 3.0, 0.0, -1.0];
 
-      Expected : constant Vector4 := (0.0, 6.0, 4.0, -1.0);
+      Expected : constant Vector4 := [0.0, 6.0, 4.0, -1.0];
       Result   : constant Vector4 := Left + Right;
    begin
       for I in Index_4D loop
@@ -50,10 +50,10 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Add;
 
    procedure Test_Subtract (Object : in out Test) is
-      Left  : constant Vector4 := (2.0, 3.0, 4.0, 0.0);
-      Right : constant Vector4 := (-2.0, 3.0, 0.0, -1.0);
+      Left  : constant Vector4 := [2.0, 3.0, 4.0, 0.0];
+      Right : constant Vector4 := [-2.0, 3.0, 0.0, -1.0];
 
-      Expected : constant Vector4 := (4.0, 0.0, 4.0, 1.0);
+      Expected : constant Vector4 := [4.0, 0.0, 4.0, 1.0];
       Result   : constant Vector4 := Left - Right;
    begin
       for I in Index_4D loop
@@ -62,9 +62,9 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Subtract;
 
    procedure Test_Scale (Object : in out Test) is
-      Elements : constant Vector4 := (2.0, 3.0, 1.0, 0.0);
+      Elements : constant Vector4 := [2.0, 3.0, 1.0, 0.0];
 
-      Expected : constant Vector4 := (4.0, 6.0, 2.0, 0.0);
+      Expected : constant Vector4 := [4.0, 6.0, 2.0, 0.0];
       Result   : constant Vector4 := 2.0 * Elements;
    begin
       for I in Index_4D loop
@@ -73,9 +73,9 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Scale;
 
    procedure Test_Absolute (Object : in out Test) is
-      Elements : constant Vector4 := (-2.0, 0.0, 1.0, -1.0);
+      Elements : constant Vector4 := [-2.0, 0.0, 1.0, -1.0];
 
-      Expected : constant Vector4 := (2.0, 0.0, 1.0, 1.0);
+      Expected : constant Vector4 := [2.0, 0.0, 1.0, 1.0];
       Result   : constant Vector4 := abs Elements;
    begin
       for I in Index_4D loop
@@ -84,7 +84,7 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Absolute;
 
    procedure Test_Magnitude (Object : in out Test) is
-      Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
+      Elements : constant Vector4 := [1.0, -2.0, 3.0, -4.0];
 
       Expected : constant Element_Type := EF.Sqrt (1.0**2 + (-2.0)**2 + 3.0**2 + (-4.0)**2);
       Result   : constant Element_Type := Magnitude (Elements);
@@ -93,7 +93,7 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Magnitude;
 
    procedure Test_Normalize (Object : in out Test) is
-      Elements : constant Vector4 := (1.0, -2.0, 3.0, -4.0);
+      Elements : constant Vector4 := [1.0, -2.0, 3.0, -4.0];
 
       Expected : constant Element_Type := 1.0;
       Result   : constant Element_Type := Magnitude (Normalize (Elements));
@@ -102,8 +102,8 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Normalize;
 
    procedure Test_Distance (Object : in out Test) is
-      Left  : constant Point := (2.0, 5.0, 0.0, 1.0);
-      Right : constant Point := (2.0, 2.0, 0.0, 1.0);
+      Left  : constant Point := [2.0, 5.0, 0.0, 1.0];
+      Right : constant Point := [2.0, 2.0, 0.0, 1.0];
 
       Expected : constant Element_Type := 3.0;
       Result   : constant Element_Type := Distance (Left, Right);
@@ -112,10 +112,10 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Distance;
 
    procedure Test_Projection (Object : in out Test) is
-      Elements  : constant Vector4 := (3.0, 4.0, 0.0, 0.0);
-      Direction : constant Vector4 := (0.0, 1.0, 0.0, 0.0);
+      Elements  : constant Vector4 := [3.0, 4.0, 0.0, 0.0];
+      Direction : constant Vector4 := [0.0, 1.0, 0.0, 0.0];
 
-      Expected : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
+      Expected : constant Vector4 := [0.0, 4.0, 0.0, 0.0];
       Result   : constant Vector4 := Projection (Elements, Direction);
    begin
       for I in Index_4D loop
@@ -124,10 +124,10 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Projection;
 
    procedure Test_Perpendicular (Object : in out Test) is
-      Elements  : constant Vector4 := (3.0, 4.0, 0.0, 0.0);
-      Direction : constant Vector4 := (0.0, 1.0, 0.0, 0.0);
+      Elements  : constant Vector4 := [3.0, 4.0, 0.0, 0.0];
+      Direction : constant Vector4 := [0.0, 1.0, 0.0, 0.0];
 
-      Expected : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
+      Expected : constant Vector4 := [3.0, 0.0, 0.0, 0.0];
       Result   : constant Vector4 := Perpendicular (Elements, Direction);
    begin
       for I in Index_4D loop
@@ -136,8 +136,8 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Perpendicular;
 
    procedure Test_Angle (Object : in out Test) is
-      Left  : constant Vector4 := (3.0, 0.0, 0.0, 0.0);
-      Right : constant Vector4 := (0.0, 4.0, 0.0, 0.0);
+      Left  : constant Vector4 := [3.0, 0.0, 0.0, 0.0];
+      Right : constant Vector4 := [0.0, 4.0, 0.0, 0.0];
 
       Expected : constant Element_Type := To_Radians (90.0);
       Result   : constant Element_Type := Angle (Left, Right);
@@ -146,8 +146,8 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Angle;
 
    procedure Test_Dot_Product (Object : in out Test) is
-      Left  : constant Vector4 := (1.0, 2.0, 3.0, 4.0);
-      Right : constant Vector4 := (2.0, 3.0, 4.0, 5.0);
+      Left  : constant Vector4 := [1.0, 2.0, 3.0, 4.0];
+      Right : constant Vector4 := [2.0, 3.0, 4.0, 5.0];
 
       Expected : constant Element_Type := 40.0;
       Result   : constant Element_Type := Dot (Left, Right);
@@ -156,10 +156,10 @@ package body Generic_Test_Transforms_Vectors is
    end Test_Dot_Product;
 
    procedure Test_Cross_Product (Object : in out Test) is
-      Left  : constant Vector4 := (2.0, 4.0, 8.0, 0.0);
-      Right : constant Vector4 := (5.0, 6.0, 7.0, 0.0);
+      Left  : constant Vector4 := [2.0, 4.0, 8.0, 0.0];
+      Right : constant Vector4 := [5.0, 6.0, 7.0, 0.0];
 
-      Expected : constant Vector4 := (-20.0, 26.0, -8.0, 0.0);
+      Expected : constant Vector4 := [-20.0, 26.0, -8.0, 0.0];
       Result   : constant Vector4 := Cross (Left, Right);
    begin
       for I in X .. Z loop

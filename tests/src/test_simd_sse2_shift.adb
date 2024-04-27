@@ -31,10 +31,10 @@ package body Test_SIMD_SSE2_Shift is
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Shift_Left_Zeros (Object : in out Test) is
-      Values : constant m128i := (0, 1, 2**16, 2**30);
+      Values : constant m128i := [0, 1, 2**16, 2**30];
 
       --  x86 is little endian, so 'left' element is on the right side
-      Expected : constant m128i := (0, 0, 1, 2**16);
+      Expected : constant m128i := [0, 0, 1, 2**16];
       Result   : constant m128i := Shift_Elements_Left_Zeros (Values);
    begin
       for I in Index_4D loop
@@ -43,10 +43,10 @@ package body Test_SIMD_SSE2_Shift is
    end Test_Shift_Left_Zeros;
 
    procedure Test_Shift_Right_Zeros (Object : in out Test) is
-      Values : constant m128i := (0, 1, 2**16, 2**30);
+      Values : constant m128i := [0, 1, 2**16, 2**30];
 
       --  x86 is little endian, so 'left' element is on the right side
-      Expected : constant m128i := (1, 2**16, 2**30, 0);
+      Expected : constant m128i := [1, 2**16, 2**30, 0];
       Result   : constant m128i := Shift_Elements_Right_Zeros (Values);
    begin
       for I in Index_4D loop

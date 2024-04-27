@@ -48,14 +48,14 @@ package body Test_SIMD_SSE2_Logical is
      (Convert (Convert (Left) xor Convert (Right)));
 
    procedure Test_And_Not (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30);
-      Right : constant m128i := (0, 0, 2**16, 2**30 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30];
+      Right : constant m128i := [0, 0, 2**16, 2**30 - 1];
 
       Expected : constant m128i :=
-        (Get_And_Not (Left (X), Right (X)),
+        [Get_And_Not (Left (X), Right (X)),
          Get_And_Not (Left (Y), Right (Y)),
          Get_And_Not (Left (Z), Right (Z)),
-         Get_And_Not (Left (W), Right (W)));
+         Get_And_Not (Left (W), Right (W))];
       Result   : constant m128i := And_Not (Left, Right);
    begin
       for I in Index_4D loop
@@ -64,14 +64,14 @@ package body Test_SIMD_SSE2_Logical is
    end Test_And_Not;
 
    procedure Test_And (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30);
-      Right : constant m128i := (0, 0, 2**16, 2**30 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30];
+      Right : constant m128i := [0, 0, 2**16, 2**30 - 1];
 
       Expected : constant m128i :=
-        (Get_And (Left (X), Right (X)),
+        [Get_And (Left (X), Right (X)),
          Get_And (Left (Y), Right (Y)),
          Get_And (Left (Z), Right (Z)),
-         Get_And (Left (W), Right (W)));
+         Get_And (Left (W), Right (W))];
       Result   : constant m128i := Left and Right;
    begin
       for I in Index_4D loop
@@ -80,14 +80,14 @@ package body Test_SIMD_SSE2_Logical is
    end Test_And;
 
    procedure Test_Or (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30);
-      Right : constant m128i := (0, 0, 2**16, 2**30 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30];
+      Right : constant m128i := [0, 0, 2**16, 2**30 - 1];
 
       Expected : constant m128i :=
-        (Get_Or (Left (X), Right (X)),
+        [Get_Or (Left (X), Right (X)),
          Get_Or (Left (Y), Right (Y)),
          Get_Or (Left (Z), Right (Z)),
-         Get_Or (Left (W), Right (W)));
+         Get_Or (Left (W), Right (W))];
       Result   : constant m128i := Left or Right;
    begin
       for I in Index_4D loop
@@ -96,14 +96,14 @@ package body Test_SIMD_SSE2_Logical is
    end Test_Or;
 
    procedure Test_Xor (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30);
-      Right : constant m128i := (0, 0, 2**16, 2**30 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30];
+      Right : constant m128i := [0, 0, 2**16, 2**30 - 1];
 
       Expected : constant m128i :=
-        (Get_Xor (Left (X), Right (X)),
+        [Get_Xor (Left (X), Right (X)),
          Get_Xor (Left (Y), Right (Y)),
          Get_Xor (Left (Z), Right (Z)),
-         Get_Xor (Left (W), Right (W)));
+         Get_Xor (Left (W), Right (W))];
       Result   : constant m128i := Left xor Right;
    begin
       for I in Index_4D loop

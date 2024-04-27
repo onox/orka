@@ -31,10 +31,10 @@ package body Test_SIMD_SSE2_Arithmetic is
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Add (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30);
-      Right : constant m128i := (0, 0, 2**16, 2**30 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30];
+      Right : constant m128i := [0, 0, 2**16, 2**30 - 1];
 
-      Expected : constant m128i := (0, 1, 2**17, 2**31 - 1);
+      Expected : constant m128i := [0, 1, 2**17, 2**31 - 1];
       Result   : constant m128i := Left + Right;
    begin
       for I in Index_4D loop
@@ -43,10 +43,10 @@ package body Test_SIMD_SSE2_Arithmetic is
    end Test_Add;
 
    procedure Test_Subtract (Object : in out Test) is
-      Left  : constant m128i := (0, 1, 2**16, 2**30 - 1);
-      Right : constant m128i := (0, 0, 2**16, 2**31 - 1);
+      Left  : constant m128i := [0, 1, 2**16, 2**30 - 1];
+      Right : constant m128i := [0, 0, 2**16, 2**31 - 1];
 
-      Expected : constant m128i := (0, 1, 0, -2**30);
+      Expected : constant m128i := [0, 1, 0, -2**30];
       Result   : constant m128i := Left - Right;
    begin
       for I in Index_4D loop
@@ -55,9 +55,9 @@ package body Test_SIMD_SSE2_Arithmetic is
    end Test_Subtract;
 
    procedure Test_Minus (Object : in out Test) is
-      Elements : constant m128i := (0, 1, 2**31 - 1, -2**31);
+      Elements : constant m128i := [0, 1, 2**31 - 1, -2**31];
 
-      Expected : constant m128i := (0, -1, -(2**31 - 1), -2**31);
+      Expected : constant m128i := [0, -1, -(2**31 - 1), -2**31];
       Result   : constant m128i := -Elements;
    begin
       for I in Index_4D loop

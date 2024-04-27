@@ -51,7 +51,7 @@ package body Test_SIMD_AVX_Swizzle is
    end Suite;
 
    procedure Test_Shuffle (Object : in out Test) is
-      Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant m256d := [1.0, 2.0, 3.0, 4.0];
 
       Mask_0_0_0_0 : constant := 0 + 0 * 2 + 0 * 4 + 0 * 8;
       Mask_1_1_1_1 : constant := 1 + 1 * 2 + 1 * 4 + 1 * 8;
@@ -59,10 +59,10 @@ package body Test_SIMD_AVX_Swizzle is
       Mask_1_1_0_1 : constant := 1 + 1 * 2 + 0 * 4 + 1 * 8;
 
       Expected : constant array (Positive range <>) of m256d
-        := ((1.0, 1.0, 3.0, 3.0),
-            (2.0, 2.0, 4.0, 4.0),
-            (2.0, 1.0, 4.0, 4.0),
-            (2.0, 2.0, 3.0, 4.0));
+        := [[1.0, 1.0, 3.0, 3.0],
+            [2.0, 2.0, 4.0, 4.0],
+            [2.0, 1.0, 4.0, 4.0],
+            [2.0, 2.0, 3.0, 4.0]];
 
       Results : array (Positive range Expected'Range) of m256d;
    begin
@@ -79,17 +79,17 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Shuffle;
 
    procedure Test_Shuffle_Across_Lanes (Object : in out Test) is
-      Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant m256d := [1.0, 2.0, 3.0, 4.0];
 
       Mask_0_0_0_0 : constant := 0 + 0 * 2 + 0 * 4 + 0 * 8;
       Mask_1_1_0_0 : constant := 1 + 1 * 2 + 0 * 4 + 0 * 8;
       Mask_0_0_1_1 : constant := 0 + 0 * 2 + 1 * 4 + 1 * 8;
 
       Expected : constant array (Positive range <>) of m256d
-        := ((1.0, 1.0, 1.0, 1.0),
-            (2.0, 2.0, 2.0, 2.0),
-            (3.0, 3.0, 3.0, 3.0),
-            (4.0, 4.0, 4.0, 4.0));
+        := [[1.0, 1.0, 1.0, 1.0],
+            [2.0, 2.0, 2.0, 2.0],
+            [3.0, 3.0, 3.0, 3.0],
+            [4.0, 4.0, 4.0, 4.0]];
 
       Results : array (Positive range Expected'Range) of m256d;
    begin
@@ -111,7 +111,7 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Shuffle_Across_Lanes;
 
    procedure Test_Permute_Lanes (Object : in out Test) is
-      Elements : constant m256d := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant m256d := [1.0, 2.0, 3.0, 4.0];
 
       Mask_1_0_0_0 : constant := 1 + 0 * 16 + 0 * 8 + 0 * 128;
       Mask_0_1_0_0 : constant := 0 + 1 * 16 + 0 * 8 + 0 * 128;
@@ -119,10 +119,10 @@ package body Test_SIMD_AVX_Swizzle is
       Mask_2_3_1_0 : constant := 2 + 3 * 16 + 1 * 8 + 0 * 128;
 
       Expected : constant array (Positive range <>) of m256d
-        := ((3.0, 4.0, 1.0, 2.0),
-            (1.0, 2.0, 3.0, 4.0),
-            (1.0, 2.0, 0.0, 0.0),
-            (0.0, 0.0, 3.0, 4.0));
+        := [[3.0, 4.0, 1.0, 2.0],
+            [1.0, 2.0, 3.0, 4.0],
+            [1.0, 2.0, 0.0, 0.0],
+            [0.0, 0.0, 3.0, 4.0]];
 
       Results : array (Positive range Expected'Range) of m256d;
    begin
@@ -143,10 +143,10 @@ package body Test_SIMD_AVX_Swizzle is
    end Test_Permute_Lanes;
 
    procedure Test_Blend (Object : in out Test) is
-      Left  : constant m256d := (1.0, 2.0, 3.0, 4.0);
-      Right : constant m256d := (5.0, 6.0, 7.0, 8.0);
+      Left  : constant m256d := [1.0, 2.0, 3.0, 4.0];
+      Right : constant m256d := [5.0, 6.0, 7.0, 8.0];
 
-      Expected : constant m256d := (1.0, 6.0, 7.0, 4.0);
+      Expected : constant m256d := [1.0, 6.0, 7.0, 4.0];
       Result   : constant m256d := Blend (Left, Right, Mask => 2#0110#);
    begin
       for I in Index_4D loop
@@ -156,16 +156,16 @@ package body Test_SIMD_AVX_Swizzle is
 
    procedure Test_Transpose_Function (Object : in out Test) is
       Elements : constant m256d_Array
-        := ((1.0,   2.0,  3.0,  4.0),
-            (5.0,   6.0,  7.0,  8.0),
-            (9.0,  10.0, 11.0, 12.0),
-            (13.0, 14.0, 15.0, 16.0));
+        := [[1.0,   2.0,  3.0,  4.0],
+            [5.0,   6.0,  7.0,  8.0],
+            [9.0,  10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0]];
 
       Expected : constant m256d_Array
-        := ((1.0, 5.0,  9.0, 13.0),
-            (2.0, 6.0, 10.0, 14.0),
-            (3.0, 7.0, 11.0, 15.0),
-            (4.0, 8.0, 12.0, 16.0));
+        := [[1.0, 5.0,  9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0]];
 
       Result : constant m256d_Array := Transpose (Elements);
    begin
@@ -179,16 +179,16 @@ package body Test_SIMD_AVX_Swizzle is
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
       Elements : m256d_Array
-        := ((1.0,   2.0,  3.0,  4.0),
-            (5.0,   6.0,  7.0,  8.0),
-            (9.0,  10.0, 11.0, 12.0),
-            (13.0, 14.0, 15.0, 16.0));
+        := [[1.0,   2.0,  3.0,  4.0],
+            [5.0,   6.0,  7.0,  8.0],
+            [9.0,  10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0]];
 
       Expected : constant m256d_Array
-        := ((1.0, 5.0,  9.0, 13.0),
-            (2.0, 6.0, 10.0, 14.0),
-            (3.0, 7.0, 11.0, 15.0),
-            (4.0, 8.0, 12.0, 16.0));
+        := [[1.0, 5.0,  9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0]];
    begin
       Transpose (Elements);
 

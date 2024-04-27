@@ -103,7 +103,7 @@ package body Generic_Test_Tensors_Vectors is
    begin
       for I of Sizes loop
          declare
-            Shape  : constant Tensor_Shape := (1 => I);
+            Shape  : constant Tensor_Shape := [I];
 
             Tensor_1 : constant CPU_Tensor := Zeros (I);
             Tensor_2 : constant CPU_Tensor := Zeros (Shape);

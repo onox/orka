@@ -45,7 +45,7 @@ package body Test_SIMD_SSE_Swizzle is
    end Suite;
 
    procedure Test_Shuffle (Object : in out Test) is
-      Elements : constant m128 := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant m128 := [1.0, 2.0, 3.0, 4.0];
 
       Mask_0_0_0_0 : constant := 0 + 0 * 4 + 0 * 16 + 0 * 64;
       Mask_2_2_2_2 : constant := 2 + 2 * 4 + 2 * 16 + 2 * 64;
@@ -53,10 +53,10 @@ package body Test_SIMD_SSE_Swizzle is
       Mask_2_3_0_1 : constant := 2 + 3 * 4 + 0 * 16 + 1 * 64;
 
       Expected : constant array (Positive range <>) of m128
-        := ((1.0, 1.0, 1.0, 1.0),
-            (3.0, 3.0, 3.0, 3.0),
-            (2.0, 1.0, 4.0, 3.0),
-            (3.0, 4.0, 1.0, 2.0));
+        := [[1.0, 1.0, 1.0, 1.0],
+            [3.0, 3.0, 3.0, 3.0],
+            [2.0, 1.0, 4.0, 3.0],
+            [3.0, 4.0, 1.0, 2.0]];
 
       Results : array (Positive range Expected'Range) of m128;
    begin
@@ -78,16 +78,16 @@ package body Test_SIMD_SSE_Swizzle is
 
    procedure Test_Transpose_Function (Object : in out Test) is
       Elements : constant m128_Array
-        := ((1.0,   2.0,  3.0,  4.0),
-            (5.0,   6.0,  7.0,  8.0),
-            (9.0,  10.0, 11.0, 12.0),
-            (13.0, 14.0, 15.0, 16.0));
+        := [[1.0,   2.0,  3.0,  4.0],
+            [5.0,   6.0,  7.0,  8.0],
+            [9.0,  10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0]];
 
       Expected : constant m128_Array
-        := ((1.0, 5.0,  9.0, 13.0),
-            (2.0, 6.0, 10.0, 14.0),
-            (3.0, 7.0, 11.0, 15.0),
-            (4.0, 8.0, 12.0, 16.0));
+        := [[1.0, 5.0,  9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0]];
 
       Result : constant m128_Array := Transpose (Elements);
    begin
@@ -101,16 +101,16 @@ package body Test_SIMD_SSE_Swizzle is
 
    procedure Test_Transpose_Procedure (Object : in out Test) is
       Elements : m128_Array
-        := ((1.0,   2.0,  3.0,  4.0),
-            (5.0,   6.0,  7.0,  8.0),
-            (9.0,  10.0, 11.0, 12.0),
-            (13.0, 14.0, 15.0, 16.0));
+        := [[1.0,   2.0,  3.0,  4.0],
+            [5.0,   6.0,  7.0,  8.0],
+            [9.0,  10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0]];
 
       Expected : constant m128_Array
-        := ((1.0, 5.0,  9.0, 13.0),
-            (2.0, 6.0, 10.0, 14.0),
-            (3.0, 7.0, 11.0, 15.0),
-            (4.0, 8.0, 12.0, 16.0));
+        := [[1.0, 5.0,  9.0, 13.0],
+            [2.0, 6.0, 10.0, 14.0],
+            [3.0, 7.0, 11.0, 15.0],
+            [4.0, 8.0, 12.0, 16.0]];
    begin
       Transpose (Elements);
 

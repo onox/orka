@@ -43,10 +43,10 @@ package body Test_SIMD_SSE_Math is
    end Suite;
 
    procedure Test_Max (Object : in out Test) is
-      Left  : constant m128 := (0.0, 1.0, -2.0, 1.0);
-      Right : constant m128 := (0.0, 0.0, 1.0, 2.0);
+      Left  : constant m128 := [0.0, 1.0, -2.0, 1.0];
+      Right : constant m128 := [0.0, 0.0, 1.0, 2.0];
 
-      Expected : constant m128 := (0.0, 1.0, 1.0, 2.0);
+      Expected : constant m128 := [0.0, 1.0, 1.0, 2.0];
       Result   : constant m128 := Max (Left, Right);
    begin
       for I in Index_4D loop
@@ -55,10 +55,10 @@ package body Test_SIMD_SSE_Math is
    end Test_Max;
 
    procedure Test_Min (Object : in out Test) is
-      Left  : constant m128 := (0.0, 1.0, -2.0, 1.0);
-      Right : constant m128 := (0.0, 0.0, 1.0, 2.0);
+      Left  : constant m128 := [0.0, 1.0, -2.0, 1.0];
+      Right : constant m128 := [0.0, 0.0, 1.0, 2.0];
 
-      Expected : constant m128 := (0.0, 0.0, -2.0, 1.0);
+      Expected : constant m128 := [0.0, 0.0, -2.0, 1.0];
       Result   : constant m128 := Min (Left, Right);
    begin
       for I in Index_4D loop

@@ -48,10 +48,10 @@ package body Test_SIMD_SSE_Logical is
 
       C : constant Float_32 := 2#0.1000_0000_0000_0001_1000_0000_0000_0001#;
 
-      Left  : constant m128 := (A, 0.0, 1.0, 2.0);
-      Right : constant m128 := (B, 1.0, 0.0, 2.0);
+      Left  : constant m128 := [A, 0.0, 1.0, 2.0];
+      Right : constant m128 := [B, 1.0, 0.0, 2.0];
 
-      Expected : constant m128 := (C, 0.0, 0.0, 2.0);
+      Expected : constant m128 := [C, 0.0, 0.0, 2.0];
       Result   : constant m128 := Left and Right;
    begin
       for I in Index_4D loop
@@ -65,10 +65,10 @@ package body Test_SIMD_SSE_Logical is
 
       C : constant Float_32 := 2#0.1000_1101_1011_1001_1001_1101_1011_1001#;
 
-      Left  : constant m128 := (A, 0.0, 1.0, 2.0);
-      Right : constant m128 := (B, 1.0, 0.0, 2.0);
+      Left  : constant m128 := [A, 0.0, 1.0, 2.0];
+      Right : constant m128 := [B, 1.0, 0.0, 2.0];
 
-      Expected : constant m128 := (C, 1.0, 1.0, 2.0);
+      Expected : constant m128 := [C, 1.0, 1.0, 2.0];
       Result   : constant m128 := Left or Right;
    begin
       for I in Index_4D loop

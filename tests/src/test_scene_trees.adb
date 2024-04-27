@@ -208,7 +208,7 @@ package body Test_Scene_Trees is
       C : constant Cursor := T.To_Cursor ("root");
 
       package Transforms renames Orka.Transforms.Singles.Matrices;
-      Offset : constant Transforms.Vector4 := (1.0, 2.0, 3.0, 1.0);
+      Offset : constant Transforms.Vector4 := [1.0, 2.0, 3.0, 1.0];
    begin
       T.Set_Local_Transform (C, Transforms.T (Offset));
    end Test_Set_Local_Transform;
@@ -241,7 +241,7 @@ package body Test_Scene_Trees is
          use type Orka.Transforms.Singles.Matrices.Vector4;
 
          package Transforms renames Orka.Transforms.Singles.Matrices;
-         Offset : constant Transforms.Vector4 := (1.0, 2.0, 3.0, 1.0);
+         Offset : constant Transforms.Vector4 := [1.0, 2.0, 3.0, 1.0];
       begin
          Assert
            (T.World_Transform (C2) = Transforms.Identity_Matrix, "Unexpected World_Transform");

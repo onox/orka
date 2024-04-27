@@ -51,10 +51,10 @@ package body Test_SIMD_AVX_Math is
    end Suite;
 
    procedure Test_Max (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, -2.0, 1.0);
-      Right : constant m256d := (0.0, 0.0, 1.0, 2.0);
+      Left  : constant m256d := [0.0, 1.0, -2.0, 1.0];
+      Right : constant m256d := [0.0, 0.0, 1.0, 2.0];
 
-      Expected : constant m256d := (0.0, 1.0, 1.0, 2.0);
+      Expected : constant m256d := [0.0, 1.0, 1.0, 2.0];
       Result   : constant m256d := Max (Left, Right);
    begin
       for I in Index_4D loop
@@ -63,10 +63,10 @@ package body Test_SIMD_AVX_Math is
    end Test_Max;
 
    procedure Test_Min (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, -2.0, 1.0);
-      Right : constant m256d := (0.0, 0.0, 1.0, 2.0);
+      Left  : constant m256d := [0.0, 1.0, -2.0, 1.0];
+      Right : constant m256d := [0.0, 0.0, 1.0, 2.0];
 
-      Expected : constant m256d := (0.0, 0.0, -2.0, 1.0);
+      Expected : constant m256d := [0.0, 0.0, -2.0, 1.0];
       Result   : constant m256d := Min (Left, Right);
    begin
       for I in Index_4D loop
@@ -75,8 +75,8 @@ package body Test_SIMD_AVX_Math is
    end Test_Min;
 
    procedure Test_Nearest_Integer (Object : in out Test) is
-      Elements : constant m256d := (-1.5, 0.6, -0.4, 1.9);
-      Expected : constant m256d := (-2.0, 1.0,  0.0, 2.0);
+      Elements : constant m256d := [-1.5, 0.6, -0.4, 1.9];
+      Expected : constant m256d := [-2.0, 1.0,  0.0, 2.0];
 
       Result : constant m256d := Round_Nearest_Integer (Elements);
    begin
@@ -86,8 +86,8 @@ package body Test_SIMD_AVX_Math is
    end Test_Nearest_Integer;
 
    procedure Test_Floor (Object : in out Test) is
-      Elements : constant m256d := (-1.5, 0.6, -0.4, 1.9);
-      Expected : constant m256d := (-2.0, 0.0, -1.0, 1.0);
+      Elements : constant m256d := [-1.5, 0.6, -0.4, 1.9];
+      Expected : constant m256d := [-2.0, 0.0, -1.0, 1.0];
 
       Result : constant m256d := Floor (Elements);
    begin
@@ -97,8 +97,8 @@ package body Test_SIMD_AVX_Math is
    end Test_Floor;
 
    procedure Test_Ceil (Object : in out Test) is
-      Elements : constant m256d := (-1.5, 0.2, -0.4, 1.9);
-      Expected : constant m256d := (-1.0, 1.0,  0.0, 2.0);
+      Elements : constant m256d := [-1.5, 0.2, -0.4, 1.9];
+      Expected : constant m256d := [-1.0, 1.0,  0.0, 2.0];
 
       Result : constant m256d := Ceil (Elements);
    begin
@@ -108,8 +108,8 @@ package body Test_SIMD_AVX_Math is
    end Test_Ceil;
 
    procedure Test_Truncate (Object : in out Test) is
-      Elements : constant m256d := (-1.5, 0.2, -0.4, 1.9);
-      Expected : constant m256d := (-1.0, 0.0,  0.0, 1.0);
+      Elements : constant m256d := [-1.5, 0.2, -0.4, 1.9];
+      Expected : constant m256d := [-1.0, 0.0,  0.0, 1.0];
 
       Result : constant m256d := Round_Truncate (Elements);
    begin

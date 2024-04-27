@@ -34,9 +34,9 @@ package body Test_SIMD_SSE2_Convert is
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Convert_To_Integer (Object : in out Test) is
-      Elements : constant m128 := (0.0, 0.5, -0.6, 1.2);
+      Elements : constant m128 := [0.0, 0.5, -0.6, 1.2];
 
-      Expected : constant m128i := (0, 0, -1, 1);
+      Expected : constant m128i := [0, 0, -1, 1];
       Result   : constant m128i := Convert.Convert (Elements);
    begin
       for I in Index_4D loop
@@ -45,9 +45,9 @@ package body Test_SIMD_SSE2_Convert is
    end Test_Convert_To_Integer;
 
    procedure Test_Convert_To_Single (Object : in out Test) is
-      Elements : constant m128i := (0, 1, -2**31, 2**31 - 1);
+      Elements : constant m128i := [0, 1, -2**31, 2**31 - 1];
 
-      Expected : constant m128 := (0.0, 1.0, -2.0**31, 2.0**31 - 1.0);
+      Expected : constant m128 := [0.0, 1.0, -2.0**31, 2.0**31 - 1.0];
       Result   : constant m128 := Convert.Convert (Elements);
    begin
       for I in Index_4D loop
@@ -59,12 +59,12 @@ package body Test_SIMD_SSE2_Convert is
       function To_Integer_32 is new Ada.Unchecked_Conversion (Unsigned_32, Integer_32);
 
       Elements : constant m128i :=
-        (To_Integer_32 (Unsigned_32'First),
+        [To_Integer_32 (Unsigned_32'First),
          To_Integer_32 (Unsigned_32'Last / 4),
          To_Integer_32 (Unsigned_32'Last / 2),
-         To_Integer_32 (Unsigned_32'Last));
+         To_Integer_32 (Unsigned_32'Last)];
 
-      Expected : constant m128 := (0.0, 0.25, 0.5, 1.0);
+      Expected : constant m128 := [0.0, 0.25, 0.5, 1.0];
       Result   : constant m128 := Convert.To_Unit_Floats (Elements);
    begin
       for I in Index_4D loop

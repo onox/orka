@@ -41,7 +41,7 @@ package body Test_Kalman_Filters is
    ----------------------------------------------------------------------------
 
    function Get_Measurements (Count : Positive; Std_Dev : Element) return CPU_Tensor is
-      Shape : constant Tensor_Shape := (1, Count);
+      Shape : constant Tensor_Shape := [1, Count];
       Stop  : constant Element := Element (Count);
    begin
       Reset_Random (Orka.OS.Monotonic_Clock);
@@ -68,28 +68,28 @@ package body Test_Kalman_Filters is
    Elements : constant CPU_Tensor := Get_Measurements (100, Std_Dev);
 
    Q : constant Kalman.Matrix := To_Tensor
-     ((0.005, 0.01, 0.0, 0.0,
+     ([0.005, 0.01, 0.0, 0.0,
        0.01, 0.02, 0.0, 0.0,
        0.0, 0.0, 0.005, 0.01,
-       0.0, 0.0, 0.01, 0.02),
-      Shape => (4, 4));
+       0.0, 0.0, 0.01, 0.02],
+      Shape => [4, 4]);
 
-   R : constant Kalman.Matrix := Diagonal ((Std_Dev**2, Std_Dev**2));
+   R : constant Kalman.Matrix := Diagonal ([Std_Dev**2, Std_Dev**2]);
 
    DT  : constant Duration := 1.0;
    DTE : constant Element  := Element (DT);
 
    F : constant Kalman.Matrix := To_Tensor
-     ((1.0, DTE, 0.0, 0.0,
+     ([1.0, DTE, 0.0, 0.0,
        0.0, 1.0, 0.0, 0.0,
        0.0, 0.0, 1.0, DTE,
-       0.0, 0.0, 0.0, 1.0),
-      Shape => (4, 4));
+       0.0, 0.0, 0.0, 1.0],
+      Shape => [4, 4]);
 
    function F_Cv (Point : Kalman.Vector; DT : Orka.Float_64) return Kalman.Vector is (F * Point);
 
    function H_Cv (Point : Kalman.Vector) return Kalman.Vector is
-     (To_Tensor ((Element'(Point (1)), Element'(Point (3)))));
+     (To_Tensor ([Element'(Point (1)), Element'(Point (3))]));
 
    ----------------------------------------------------------------------------
 

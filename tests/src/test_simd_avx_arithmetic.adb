@@ -61,10 +61,10 @@ package body Test_SIMD_AVX_Arithmetic is
    end Suite;
 
    procedure Test_Multiply (Object : in out Test) is
-      Left  : constant m256d := (1.0, 2.0, 3.0, 4.0);
-      Right : constant m256d := (0.0, 1.0, 2.0, 3.0);
+      Left  : constant m256d := [1.0, 2.0, 3.0, 4.0];
+      Right : constant m256d := [0.0, 1.0, 2.0, 3.0];
 
-      Expected : constant m256d := (0.0, 2.0, 6.0, 12.0);
+      Expected : constant m256d := [0.0, 2.0, 6.0, 12.0];
       Result   : constant m256d := Left * Right;
    begin
       for I in Index_4D loop
@@ -73,10 +73,10 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Multiply;
 
    procedure Test_Divide (Object : in out Test) is
-      Left  : constant m256d := (0.0, 2.0, 4.0, 4.5);
-      Right : constant m256d := (1.0, 1.0, 2.0, 1.5);
+      Left  : constant m256d := [0.0, 2.0, 4.0, 4.5];
+      Right : constant m256d := [1.0, 1.0, 2.0, 1.5];
 
-      Expected : constant m256d := (0.0, 2.0, 2.0, 3.0);
+      Expected : constant m256d := [0.0, 2.0, 2.0, 3.0];
       Result   : constant m256d := Left / Right;
    begin
       for I in Index_4D loop
@@ -85,8 +85,8 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Divide;
 
    procedure Test_Divide_By_Zero (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, 2.0, 3.0);
-      Right : constant m256d := (0.0, 0.0, 0.0, 0.0);
+      Left  : constant m256d := [0.0, 1.0, 2.0, 3.0];
+      Right : constant m256d := [0.0, 0.0, 0.0, 0.0];
 
       Result : constant m256d := Left / Right;
    begin
@@ -108,10 +108,10 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Divide_By_Zero;
 
    procedure Test_Divide_Or_Zero (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, 2.0, 3.0);
-      Right : constant m256d := (0.0, 0.0, 0.0, 0.0);
+      Left  : constant m256d := [0.0, 1.0, 2.0, 3.0];
+      Right : constant m256d := [0.0, 0.0, 0.0, 0.0];
 
-      Expected : constant m256d := (0.0, 0.0, 0.0, 0.0);
+      Expected : constant m256d := [0.0, 0.0, 0.0, 0.0];
       Result   : constant m256d := Divide_Or_Zero (Left, Right);
    begin
       for I in Index_4D loop
@@ -120,10 +120,10 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Divide_Or_Zero;
 
    procedure Test_Add (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, 1.5, 2.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [0.0, 1.0, 1.5, 2.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant m256d := (0.0, 1.0, 3.0, 4.0);
+      Expected : constant m256d := [0.0, 1.0, 3.0, 4.0];
       Result   : constant m256d := Left + Right;
    begin
       for I in Index_4D loop
@@ -132,10 +132,10 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Add;
 
    procedure Test_Subtract (Object : in out Test) is
-      Left  : constant m256d := (0.0, 1.0, 1.5, 0.0);
-      Right : constant m256d := (0.0, 0.0, 1.5, 2.0);
+      Left  : constant m256d := [0.0, 1.0, 1.5, 0.0];
+      Right : constant m256d := [0.0, 0.0, 1.5, 2.0];
 
-      Expected : constant m256d := (0.0, 1.0, 0.0, -2.0);
+      Expected : constant m256d := [0.0, 1.0, 0.0, -2.0];
       Result   : constant m256d := Left - Right;
    begin
       for I in Index_4D loop
@@ -144,9 +144,9 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Subtract;
 
    procedure Test_Minus (Object : in out Test) is
-      Elements : constant m256d := (0.0, 1.0, 1.5, -2.0);
+      Elements : constant m256d := [0.0, 1.0, 1.5, -2.0];
 
-      Expected : constant m256d := (0.0, -1.0, -1.5, 2.0);
+      Expected : constant m256d := [0.0, -1.0, -1.5, 2.0];
       Result   : constant m256d := -Elements;
    begin
       for I in Index_4D loop
@@ -156,14 +156,14 @@ package body Test_SIMD_AVX_Arithmetic is
 
    procedure Test_Multiply_Vector (Object : in out Test) is
       --  Matrix is an array of columns
-      Left  : constant m256d_Array := ((1.0, 5.0, 9.0, 13.0),
-                                       (2.0, 6.0, 10.0, 14.0),
-                                       (3.0, 7.0, 11.0, 15.0),
-                                       (4.0, 8.0, 12.0, 16.0));
+      Left  : constant m256d_Array := [[1.0, 5.0, 9.0, 13.0],
+                                       [2.0, 6.0, 10.0, 14.0],
+                                       [3.0, 7.0, 11.0, 15.0],
+                                       [4.0, 8.0, 12.0, 16.0]];
 
-      Right : constant m256d := (2.0, 1.0, 1.0, 1.0);
+      Right : constant m256d := [2.0, 1.0, 1.0, 1.0];
 
-      Expected : constant m256d := (11.0, 31.0, 51.0, 71.0);
+      Expected : constant m256d := [11.0, 31.0, 51.0, 71.0];
 
       Result : constant m256d := Left * Right;
    begin
@@ -174,20 +174,20 @@ package body Test_SIMD_AVX_Arithmetic is
 
    procedure Test_Multiply_Matrices (Object : in out Test) is
       --  Each matrix is an array of columns
-      Left  : constant m256d_Array := ((1.0, 5.0, 9.0, 13.0),
-                                      (2.0, 6.0, 10.0, 14.0),
-                                      (3.0, 7.0, 11.0, 15.0),
-                                      (4.0, 8.0, 12.0, 16.0));
+      Left  : constant m256d_Array := [[1.0, 5.0, 9.0, 13.0],
+                                       [2.0, 6.0, 10.0, 14.0],
+                                       [3.0, 7.0, 11.0, 15.0],
+                                       [4.0, 8.0, 12.0, 16.0]];
 
-      Right : constant m256d_Array := ((2.0, 1.0, 1.0, 1.0),
-                                      (1.0, 2.0, 1.0, 1.0),
-                                      (1.0, 1.0, 2.0, 1.0),
-                                      (1.0, 1.0, 1.0, 2.0));
+      Right : constant m256d_Array := [[2.0, 1.0, 1.0, 1.0],
+                                       [1.0, 2.0, 1.0, 1.0],
+                                       [1.0, 1.0, 2.0, 1.0],
+                                       [1.0, 1.0, 1.0, 2.0]];
 
-      Expected : constant m256d_Array := ((11.0, 31.0, 51.0, 71.0),
-                                         (12.0, 32.0, 52.0, 72.0),
-                                         (13.0, 33.0, 53.0, 73.0),
-                                         (14.0, 34.0, 54.0, 74.0));
+      Expected : constant m256d_Array := [[11.0, 31.0, 51.0, 71.0],
+                                          [12.0, 32.0, 52.0, 72.0],
+                                          [13.0, 33.0, 53.0, 73.0],
+                                          [14.0, 34.0, 54.0, 74.0]];
 
       Result : constant m256d_Array := Left * Right;
    begin
@@ -199,9 +199,9 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Multiply_Matrices;
 
    procedure Test_Abs (Object : in out Test) is
-      Elements  : constant m256d := (1.0, -2.0, -3.0, 0.0);
+      Elements  : constant m256d := [1.0, -2.0, -3.0, 0.0];
 
-      Expected : constant m256d := (1.0, 2.0, 3.0, 0.0);
+      Expected : constant m256d := [1.0, 2.0, 3.0, 0.0];
       Result   : constant m256d := abs Elements;
    begin
       for I in Index_4D loop
@@ -210,7 +210,7 @@ package body Test_SIMD_AVX_Arithmetic is
    end Test_Abs;
 
    procedure Test_Sum (Object : in out Test) is
-      Elements  : constant m256d := (-1.0, 2.0, -3.0, 4.0);
+      Elements  : constant m256d := [-1.0, 2.0, -3.0, 4.0];
 
       Expected : constant Float_64 := 2.0;
       Result   : constant Float_64 := Sum (Elements);

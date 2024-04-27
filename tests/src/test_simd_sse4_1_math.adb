@@ -38,8 +38,8 @@ package body Test_SIMD_SSE4_1_Math is
    type Test is new AUnit.Test_Fixtures.Test_Fixture with null record;
 
    procedure Test_Nearest_Integer (Object : in out Test) is
-      Elements : constant m128 := (-1.5, 0.6, -0.4, 1.9);
-      Expected : constant m128 := (-2.0, 1.0,  0.0, 2.0);
+      Elements : constant m128 := [-1.5, 0.6, -0.4, 1.9];
+      Expected : constant m128 := [-2.0, 1.0,  0.0, 2.0];
 
       Result : constant m128 := Round_Nearest_Integer (Elements);
    begin
@@ -49,8 +49,8 @@ package body Test_SIMD_SSE4_1_Math is
    end Test_Nearest_Integer;
 
    procedure Test_Floor (Object : in out Test) is
-      Elements : constant m128 := (-1.5, 0.6, -0.4, 1.9);
-      Expected : constant m128 := (-2.0, 0.0, -1.0, 1.0);
+      Elements : constant m128 := [-1.5, 0.6, -0.4, 1.9];
+      Expected : constant m128 := [-2.0, 0.0, -1.0, 1.0];
 
       Result : constant m128 := Floor (Elements);
    begin
@@ -60,8 +60,8 @@ package body Test_SIMD_SSE4_1_Math is
    end Test_Floor;
 
    procedure Test_Ceil (Object : in out Test) is
-      Elements : constant m128 := (-1.5, 0.2, -0.4, 1.9);
-      Expected : constant m128 := (-1.0, 1.0,  0.0, 2.0);
+      Elements : constant m128 := [-1.5, 0.2, -0.4, 1.9];
+      Expected : constant m128 := [-1.0, 1.0,  0.0, 2.0];
 
       Result : constant m128 := Ceil (Elements);
    begin
@@ -71,8 +71,8 @@ package body Test_SIMD_SSE4_1_Math is
    end Test_Ceil;
 
    procedure Test_Truncate (Object : in out Test) is
-      Elements : constant m128 := (-1.5, 0.2, -0.4, 1.9);
-      Expected : constant m128 := (-1.0, 0.0,  0.0, 1.0);
+      Elements : constant m128 := [-1.5, 0.2, -0.4, 1.9];
+      Expected : constant m128 := [-1.0, 0.0,  0.0, 1.0];
 
       Result : constant m128 := Round_Truncate (Elements);
    begin
@@ -84,10 +84,10 @@ package body Test_SIMD_SSE4_1_Math is
    ----------------------------------------------------------------------------
 
    procedure Test_Min (Object : in out Test) is
-      Left  : constant m128i := (0, 1, Integer_32'Last, 0);
-      Right : constant m128i := (0, -1, Integer_32'First, Integer_32'Last);
+      Left  : constant m128i := [0, 1, Integer_32'Last, 0];
+      Right : constant m128i := [0, -1, Integer_32'First, Integer_32'Last];
 
-      Expected : constant m128i := (0, -1, Integer_32'First, 0);
+      Expected : constant m128i := [0, -1, Integer_32'First, 0];
       Result   : constant m128i := Min (Left, Right);
    begin
       for I in Index_4D loop
@@ -96,10 +96,10 @@ package body Test_SIMD_SSE4_1_Math is
    end Test_Min;
 
    procedure Test_Max (Object : in out Test) is
-      Left  : constant m128i := (0, 1, Integer_32'Last, 0);
-      Right : constant m128i := (0, -1, Integer_32'First, Integer_32'Last);
+      Left  : constant m128i := [0, 1, Integer_32'Last, 0];
+      Right : constant m128i := [0, -1, Integer_32'First, Integer_32'Last];
 
-      Expected : constant m128i := (0, 1, Integer_32'Last, Integer_32'Last);
+      Expected : constant m128i := [0, 1, Integer_32'Last, Integer_32'Last];
       Result   : constant m128i := Max (Left, Right);
    begin
       for I in Index_4D loop

@@ -38,20 +38,20 @@ package body Test_SIMD_SSE4_1_Logical is
    type Is_True_Array is array (Index_4D) of Boolean;
 
    function To_Mask (Mask : Is_True_Array) return m128i is
-     (Convert (if Mask (X) then Unsigned_32'Last else 0),
+     [Convert (if Mask (X) then Unsigned_32'Last else 0),
       Convert (if Mask (Y) then Unsigned_32'Last else 0),
       Convert (if Mask (Z) then Unsigned_32'Last else 0),
-      Convert (if Mask (W) then Unsigned_32'Last else 0));
+      Convert (if Mask (W) then Unsigned_32'Last else 0)];
 
    procedure Test_Test_All_Zero (Object : in out Test) is
       Values : constant m128i :=
-        (Convert (Unsigned_32'First),
+        [Convert (Unsigned_32'First),
          Convert (Unsigned_32'Last),
          Convert (0),
-         Convert (0));
+         Convert (0)];
 
-      Mask_1 : constant m128i := To_Mask ((True, False, True, False));
-      Mask_2 : constant m128i := To_Mask ((True, True, True, True));
+      Mask_1 : constant m128i := To_Mask ([True, False, True, False]);
+      Mask_2 : constant m128i := To_Mask ([True, True, True, True]);
 
       Result_1 : constant Boolean := Test_All_Zero (Values, Mask_1);
       Result_2 : constant Boolean := Test_All_Zero (Values, Mask_2);
@@ -62,13 +62,13 @@ package body Test_SIMD_SSE4_1_Logical is
 
    procedure Test_Test_All_Ones (Object : in out Test) is
       Values : constant m128i :=
-        (Convert (Unsigned_32'Last),
+        [Convert (Unsigned_32'Last),
          Convert (0),
          Convert (Unsigned_32'Last),
-         Convert (Unsigned_32'Last / 2));
+         Convert (Unsigned_32'Last / 2)];
 
-      Mask_1 : constant m128i := To_Mask ((True, False, True, False));
-      Mask_2 : constant m128i := To_Mask ((True, True, True, True));
+      Mask_1 : constant m128i := To_Mask ([True, False, True, False]);
+      Mask_2 : constant m128i := To_Mask ([True, True, True, True]);
 
       Result_1 : constant Boolean := Test_All_Ones (Values, Mask_1);
       Result_2 : constant Boolean := Test_All_Ones (Values, Mask_2);
@@ -79,14 +79,14 @@ package body Test_SIMD_SSE4_1_Logical is
 
    procedure Test_Test_Min_Ones_Zeros (Object : in out Test) is
       Values : constant m128i :=
-        (Convert (Unsigned_32'Last),
+        [Convert (Unsigned_32'Last),
          Convert (0),
          Convert (Unsigned_32'Last / 2),
-         Convert (Unsigned_32'Last / 2));
+         Convert (Unsigned_32'Last / 2)];
 
-      Mask_1 : constant m128i := To_Mask ((False, False, True, False));
-      Mask_2 : constant m128i := To_Mask ((True, True, False, True));
-      Mask_3 : constant m128i := To_Mask ((False, True, False, False));
+      Mask_1 : constant m128i := To_Mask ([False, False, True, False]);
+      Mask_2 : constant m128i := To_Mask ([True, True, False, True]);
+      Mask_3 : constant m128i := To_Mask ([False, True, False, False]);
 
       Result_1 : constant Boolean := Test_Mix_Ones_Zeros (Values, Mask_1);
       Result_2 : constant Boolean := Test_Mix_Ones_Zeros (Values, Mask_2);

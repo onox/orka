@@ -63,7 +63,7 @@ package body Generic_Test_Transforms_Quaternions is
       Half_Angle : constant Element_Type := 45.0;
    begin
       declare
-         Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
+         Axis  : constant Vector4 := Vectors.Normalize ([1.0, 2.0, 3.0, 0.0]);
 
          Sin_Value : constant Element_Type := EF.Sin (Half_Angle, 360.0);
          Cos_Value : constant Element_Type := EF.Cos (Half_Angle, 360.0);
@@ -80,32 +80,32 @@ package body Generic_Test_Transforms_Quaternions is
       end;
 
       declare
-         Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+         Axis  : constant Vector4 := [1.0, 0.0, 0.0, 0.0];
          Angle_Radians : constant Element_Type := To_Radians (30.0);
 
          Rotation : constant Quaternion :=
            R (Axis, Angle_Radians) * R (Axis, Angle_Radians) * R (Axis, Angle_Radians);
 
-         Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
-         Result   : constant Vector4 := Rotate ((0.0, 1.0, 0.0, 0.0), Rotation);
+         Expected : constant Vector4 := [0.0, 0.0, 1.0, 0.0];
+         Result   : constant Vector4 := Rotate ([0.0, 1.0, 0.0, 0.0], Rotation);
       begin
          Assert_Equivalent (Expected, Result);
       end;
    end Test_Multiplication;
 
    procedure Test_Conjugate (Object : in out Test) is
-      Elements : constant Quaternion := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant Quaternion := [1.0, 2.0, 3.0, 4.0];
 
-      Expected : constant Quaternion := (-1.0, -2.0, -3.0, 4.0);
+      Expected : constant Quaternion := [-1.0, -2.0, -3.0, 4.0];
       Result   : constant Quaternion := Conjugate (Elements);
    begin
       Assert_Equivalent (Expected, Result);
    end Test_Conjugate;
 
    procedure Test_Norm (Object : in out Test) is
-      Elements_1 : constant Quaternion := (1.0, 2.0, 3.0, 4.0);
-      Elements_2 : constant Quaternion := (-1.0, 2.0, -3.0, 4.0);
-      Elements_3 : constant Quaternion := (0.0, 0.0, 0.0, 0.0);
+      Elements_1 : constant Quaternion := [1.0, 2.0, 3.0, 4.0];
+      Elements_2 : constant Quaternion := [-1.0, 2.0, -3.0, 4.0];
+      Elements_3 : constant Quaternion := [0.0, 0.0, 0.0, 0.0];
 
       Result_1   : constant Element_Type := Norm (Elements_1);
       Result_2   : constant Element_Type := Norm (Elements_2);
@@ -121,7 +121,7 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Norm;
 
    procedure Test_Normalize (Object : in out Test) is
-      Elements : constant Quaternion := (1.0, 2.0, 3.0, 4.0);
+      Elements : constant Quaternion := [1.0, 2.0, 3.0, 4.0];
    begin
       Assert (not Normalized (Elements), "Elements is unexpectedly a unit quaternion");
       declare
@@ -132,11 +132,11 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Normalize;
 
    procedure Test_Normalized (Object : in out Test) is
-      Elements_1 : constant Quaternion := (0.0, 0.0, 0.0, 1.0);
-      Elements_2 : constant Quaternion := (0.5, 0.5, 0.5, -0.5);
-      Elements_3 : constant Quaternion := (0.0, -1.0, 0.0, 0.0);
+      Elements_1 : constant Quaternion := [0.0, 0.0, 0.0, 1.0];
+      Elements_2 : constant Quaternion := [0.5, 0.5, 0.5, -0.5];
+      Elements_3 : constant Quaternion := [0.0, -1.0, 0.0, 0.0];
 
-      Elements_4 : constant Quaternion := (1.0, 2.0, 3.0, 4.0);
+      Elements_4 : constant Quaternion := [1.0, 2.0, 3.0, 4.0];
    begin
       Assert (Normalized (Elements_1), "Elements_1 not normalized");
       Assert (Normalized (Elements_2), "Elements_2 not normalized");
@@ -146,7 +146,7 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Normalized;
 
    procedure Test_Rotate_Axis_Angle (Object : in out Test) is
-      Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
+      Axis  : constant Vector4 := Vectors.Normalize ([1.0, 2.0, 3.0, 0.0]);
       Angle : constant Element_Type := 90.0;
 
       Sin_Value : constant Element_Type := EF.Sin (45.0, 360.0);
@@ -163,7 +163,7 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Rotate_Axis_Angle;
 
    procedure Test_Axis_Angle (Object : in out Test) is
-      Axis  : constant Vector4 := Vectors.Normalize ((1.0, 2.0, 3.0, 0.0));
+      Axis  : constant Vector4 := Vectors.Normalize ([1.0, 2.0, 3.0, 0.0]);
       Angle : constant Element_Type := 90.0;
 
       Expected : constant Axis_Angle := (Axis  => Vectors.Direction (Axis),
@@ -183,10 +183,10 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Axis_Angle_No_Rotation;
 
    procedure Test_Rotate_Vectors (Object : in out Test) is
-      Start_Vector : constant Vector4 := (0.0, 1.0, 0.0, 0.0);
-      End_Vector   : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
+      Start_Vector : constant Vector4 := [0.0, 1.0, 0.0, 0.0];
+      End_Vector   : constant Vector4 := [0.0, 0.0, 1.0, 0.0];
 
-      Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+      Axis  : constant Vector4 := [1.0, 0.0, 0.0, 0.0];
       Angle : constant Element_Type := 90.0;
 
       Expected_1 : constant Quaternion := R (Axis, To_Radians (Angle));
@@ -200,19 +200,19 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Rotate_Vectors;
 
    procedure Test_Rotate (Object : in out Test) is
-      Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+      Axis  : constant Vector4 := [1.0, 0.0, 0.0, 0.0];
       Angle : constant Element_Type := 90.0;
 
       Rotation : constant Quaternion := R (Axis, To_Radians (Angle));
 
-      Expected : constant Vector4 := (0.0, 0.0, 1.0, 0.0);
-      Result   : constant Vector4 := Rotate ((0.0, 1.0, 0.0, 0.0), Rotation);
+      Expected : constant Vector4 := [0.0, 0.0, 1.0, 0.0];
+      Result   : constant Vector4 := Rotate ([0.0, 1.0, 0.0, 0.0], Rotation);
    begin
       Assert_Equivalent (Expected, Result);
    end Test_Rotate;
 
    procedure Test_Difference (Object : in out Test) is
-      Axis    : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+      Axis    : constant Vector4 := [1.0, 0.0, 0.0, 0.0];
       Angle_A : constant Element_Type := 30.0;
       Angle_B : constant Element_Type := 90.0;
 
@@ -229,7 +229,7 @@ package body Generic_Test_Transforms_Quaternions is
    end Test_Difference;
 
    procedure Test_Slerp (Object : in out Test) is
-      Axis  : constant Vector4 := (1.0, 0.0, 0.0, 0.0);
+      Axis  : constant Vector4 := [1.0, 0.0, 0.0, 0.0];
       Angle : constant Element_Type := 45.0;
 
       Start_Quaternion : constant Quaternion := R (Axis, To_Radians (0.0));

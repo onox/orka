@@ -36,10 +36,10 @@ package body Test_SIMD_SSE2_Compare is
      (Elements (Position) /= 0);
 
    procedure Test_Equal (Object : in out Test) is
-      Left  : constant m128i := (-0, 1, 1, 2**31 - 1);
-      Right : constant m128i := (0, 0, 2, 2**31 - 1);
+      Left  : constant m128i := [-0, 1, 1, 2**31 - 1];
+      Right : constant m128i := [0, 0, 2, 2**31 - 1];
 
-      Expected : constant Is_True_Array := (True, False, False, True);
+      Expected : constant Is_True_Array := [True, False, False, True];
       Result   : constant m128i := Left = Right;
    begin
       for I in Index_4D loop
@@ -48,10 +48,10 @@ package body Test_SIMD_SSE2_Compare is
    end Test_Equal;
 
    procedure Test_Greater_Than (Object : in out Test) is
-      Left  : constant m128i := (-0, 1, 2**31 - 1, 0);
-      Right : constant m128i := (0, 0, -2**31, 2**31 - 1);
+      Left  : constant m128i := [-0, 1, 2**31 - 1, 0];
+      Right : constant m128i := [0, 0, -2**31, 2**31 - 1];
 
-      Expected : constant Is_True_Array := (False, True, True, False);
+      Expected : constant Is_True_Array := [False, True, True, False];
       Result   : constant m128i := Left > Right;
    begin
       for I in Index_4D loop
@@ -60,10 +60,10 @@ package body Test_SIMD_SSE2_Compare is
    end Test_Greater_Than;
 
    procedure Test_Less_Than (Object : in out Test) is
-      Left  : constant m128i := (-0, 1, 2**31 - 1, 0);
-      Right : constant m128i := (0, 0, -2**31, 2**31 - 1);
+      Left  : constant m128i := [-0, 1, 2**31 - 1, 0];
+      Right : constant m128i := [0, 0, -2**31, 2**31 - 1];
 
-      Expected : constant Is_True_Array := (False, False, False, True);
+      Expected : constant Is_True_Array := [False, False, False, True];
       Result   : constant m128i := Left < Right;
    begin
       for I in Index_4D loop
