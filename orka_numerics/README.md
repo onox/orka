@@ -42,3 +42,6 @@ This crate is distributed under the terms of the [Apache License 2.0][url-apache
   [url-apache]: https://opensource.org/licenses/Apache-2.0
   [url-tensors-cpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_cpu
   [url-tensors-gpu-crate]: https://github.com/onox/orka/tree/master/orka_tensors_gpu
+  [url-docs-tensors]: https://orka-engine.netlify.app/numerics/tensors/
+  [url-docs-kalman]: https://orka-engine.netlify.app/numerics/filtering/
+  [url-docs-integrators]: https://orka-engine.netlify.app/numerics/integrators/
