@@ -270,7 +270,7 @@ A resource can be presented by rendering it to a given window using the
 procedure `Render`:
 
 ```ada
-Graph.Render (Window, Resource_3, Location_Shaders);
+Graph.Render (Window, Resource_3);
 ```
 
 The `Renderable_Graph` object will be (re-)initialized when needed.
@@ -286,7 +286,7 @@ using a surfaceless context, call the function `Render`:
 
 ```ada
 Result : constant Orka.Rendering.Textures.Texture :=
-  Graph.Render (Context, Resource_3, Location_Shaders);
+  Graph.Render (Context, Resource_3);
 ```
 
 This texture may then be written to a KTX file

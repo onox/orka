@@ -16,15 +16,12 @@ projecting cubes on spheres.
 
 ## Creating the terrain
 
-To render the terrain, first create some location objects to find the
-shaders of the crate and the height map and shader to render the terrain:
+To render the terrain, first create a location object to find the
+height map and shader to render the terrain:
 
 ```ada
 Location_Data : constant Locations.Location_Ptr :=
   Locations.Directories.Create_Location ("data");
-
-Location_Terrain_Shaders : constant Locations.Location_Ptr :=
-  Locations.Directories.Create_Location ("path/to/orka_plugin_terrain/data/shaders");
 ```
 
 The location `Location_Data` should contain the directory `terrain/`.
@@ -38,16 +35,15 @@ Next, create a `Terrain_Planet` object by calling the functions
 `Create_Terrain_Planet` in the package `:::ada Orka.Features.Terrain.Planets`:
 
 ```ada
-Atmosphere_Manager : Orka.Features.Atmosphere.Cache.Cached_Atmosphere :=
-  Orka.Features.Atmosphere.Cache.Create_Atmosphere
-    (Earth, Location_Atmosphere_Shaders, Location_Precomputed, Earth_Parameters);
+Atmosphere_Manager : Orka.Features.Atmosphere.Rendering.Atmosphere :=
+  Orka.Features.Atmosphere.Rendering.Create_Atmosphere
+    (Context, Earth, Atmosphere_Textures, Location_Precomputed, Earth_Parameters);
 
 Terrain_Manager : Planets.Terrain_Planet := Planets.Create_Terrain_Planet
   (Context           => Context,
    Min_Depth         => 6,
    Max_Depth         => 20,
    Wireframe         => True,
-   Location          => Location_Terrain_Shaders,
    Initialize_Render => null,
    Data              => Earth,
    Parameters        => Earth_Parameters,

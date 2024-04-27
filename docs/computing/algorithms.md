@@ -15,12 +15,8 @@ A `Prefix_Sum` object can be created with the function
 `Create_Prefix_Sum`:
 
 ```ada
-PS : Prefix_Sum := Create_Prefix_Sum (Context, Location, Length => Count);
+PS : Prefix_Sum := Create_Prefix_Sum (Context, Length => Count);
 ```
-
-The function must be given a location containing the directory
-`algorithms/` at its root. This directory should contain the files
-`prefix-sum.comp` and `prefix-sum-add.comp`.
 
 `Count` contains a `Positive` number representing the number of elements
 for which to compute a prefix sum. The value must be a multiple of 4.
@@ -73,11 +69,8 @@ floating-point numbers.
 First create the `FFT` object using the function `Create_FFT`:
 
 ```ada
-FFT_1 : FFT := Create_FFT (Context, Location);
+FFT_1 : FFT := Create_FFT (Context);
 ```
-
-The function must be given a location containing the directory
-`algorithms/` at its root. This directory should contain the file `fft.comp`.
 
 The Fast Fourier Transform of the data of a buffer can then be computed
 with the procedure `Compute_FFT`:

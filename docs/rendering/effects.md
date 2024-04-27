@@ -27,7 +27,7 @@ First create a kernel and then the separable filter by calling the function `Cre
 
 ```ada
 Kernel   : Float_32_Array   := Gaussian_Kernel (Radius => 24);
-Filter_1 : Separable_Filter := Create_Filter (Context, Location, Texture_1, Kernel);
+Filter_1 : Separable_Filter := Create_Filter (Context, Kernel);
 ```
 
 The `Kernel` must consist of a sequence of offsets, followed by a
@@ -67,7 +67,7 @@ The filter does not require a kernel and can be created immediately by
 calling the function `Create_Filter`:
 
 ```ada
-Filter_2 : Moving_Average_Filter := Create_Filter (Context, Location, Texture_1, Radius => 4);
+Filter_2 : Moving_Average_Filter := Create_Filter (Context, Radius => 4);
 ```
 
 Good values for `Radius` for weak, normal, or strong blurs are 1, 4, and 8.

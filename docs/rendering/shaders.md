@@ -16,14 +16,20 @@ while pipelines containing compute shaders are dispatched.
 ## Creating a shader
 
 To create a shader, call the function `Create_Shader` in the child package `:::ada Objects`,
-giving it the desired shader kind, and the path to a file in the given location:
+giving it the desired shader kind, and the path to a file prefixed with the namespace and a colon:
 
 ```ada
 Pipeline_1 : Shader_Objects :=
-  (Vertex_Shader   => Create_Shader (Location_Shaders, Vertex_Shader, "example.vert"),
-   Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "example.frag"),
+  (Vertex_Shader   => Create_Shader (Vertex_Shader, "my-namespace:example.vert"),
+   Fragment_Shader => Create_Shader (Fragment_Shader, "my-namespace:example.frag"),
    others          => Empty);
 ```
+
+Each namespace in the path must be associated with an object implementing the
+interface `Location` prior to calling `Create_Shader`.
+The location object is responsible for retrieving files.
+Implementations exist which can read files from a directory or from an archive file.
+See [Locations](/resources/locations/) on how to register a namespace.
 
 In this case `Pipeline_1` contains a vertex and a fragment shader.
 Leave unused stages of the pipeline empty by using the function `Empty`
@@ -56,16 +62,10 @@ from the child package `:::ada Modules`. For example:
 
 ```ada
 Module_1 : Shader_Module_Array := Create_Modules
-  (Shader_Location, Fragment_Shader, [File_1'Access, File_2'Access]);
+  (Fragment_Shader, [File_1'Access, File_2'Access]);
 ```
 
 where `File_1` and `File_2` are each an `aliased constant String` containing the path to a file.
-
-In this example `Shader_Location` is a pointer to an object implementing
-the interface `Location`. The location object is responsible for retrieving
-the files given in the array.
-Implementations exist which can read files from a directory or from an archive file.
-See [Locations](/resources/locations/) for more information.
 
 There are 3 ways to create module:
 

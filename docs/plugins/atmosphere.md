@@ -17,16 +17,8 @@ with Orka.Features.Atmosphere.Cache;
 
 ## Creating an atmosphere
 
-To render the atmosphere of the Earth, first create a location object
-pointing to the shaders of the crate:
-
-```ada
-Location_Atmosphere : constant Locations.Location_Ptr :=
-  Locations.Directories.Create_Location ("path/to/orka_plugin_atmosphere/data/shaders");
-```
-
-A second location, one which is writable is needed to cache the precomputed
-textures:
+To render the atmosphere of the Earth, first create a writable location object
+where the precomputed textures can be cached:
 
 ```ada
 Location_Atmosphere_Cache : constant Locations.Writable_Location_Ptr :=
@@ -51,7 +43,7 @@ Next, precompute the textures:
 
 ```ada
 Atmosphere_Textures : constant Precomputed_Textures :=
-  Cache.Get_Textures (Context, Earth_Data, Location_Atmosphere, Location_Atmosphere_Cache);
+  Cache.Get_Textures (Context, Earth_Data, Location_Atmosphere_Cache);
 ```
 
 After the location objects have been created, create the `Atmosphere`
@@ -60,10 +52,10 @@ object by calling the function `Create_Atmosphere`:
 ```ada
 Atmosphere_Manager : Rendering.Atmosphere :=
   Rendering.Create_Atmosphere
-    (Context, Earth_Data, Location_Atmosphere, Atmosphere_Textures);
+    (Context, Earth_Data, Atmosphere_Textures);
 ```
 
-A fifth parameter, `Parameters`, is optional and only needed if the planet is
+A fourth parameter, `Parameters`, is optional and only needed if the planet is
 slightly flattened and the `Flattening` component of the parameters is greater than zero.
 The precomputed atmosphere assumes the planet has no flattening (for space/time
 complexity reasons), but in reality the semi-minor axis of the Earth (center to

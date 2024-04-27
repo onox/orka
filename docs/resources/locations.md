@@ -108,3 +108,33 @@ Location_Resources : constant Locations.Location_Ptr
     ```sh
     $ alr with orka_plugins_archives
     ```
+
+## Registering a location
+
+Once a location object has been created, it should be registered so that
+various objects can find their needed shaders and/or other files without
+having to pass around the location object all the time.
+
+There are a few namespace which are used by various crates of Orka and must be registered
+if these crates are used in your application:
+
+1. `orka`. Should point to the shaders of the crate `orka`.
+
+2. `orka-atmosphere`. Should point to the shaders of the crate `orka_plugin_atmosphere`.
+
+3. `orka-terrain`. Should point to the shaders of the crate `orka_plugin_terrain`.
+
+4. `orka-tensors-gpu`. Should point to the shaders of the crate `orka_tensors_gpu`.
+
+To register a namespace, invoke the procedure `Register` in the package `:::ada Orka.Resources.Locations`:
+
+```ada
+declare
+   use Orka.Resources.Locations;
+begin
+   Register ("orka", Directories.Create_Location ("path/to/orka/data/shaders"));
+   Register ("orka-atmosphere", Directories.Create_Location ("path/to/orka_plugin_atmosphere/data/shaders/atmosphere"));
+   Register ("orka-terrain", Directories.Create_Location ("path/to/orka_plugin_terrain/data/shaders/terrain"));
+   Register ("orka-tensors-gpu", Directories.Create_Location ("path/to/orka_tensors_gpu/data/shaders"));
+end;
+```

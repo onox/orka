@@ -275,18 +275,14 @@ void main(void) {
 The shaders are then created as follows:
 
 ```ada
-Location_Shaders : constant Locations.Location_Ptr
-  := Locations.Directories.Create_Location (".");
-
 Pipeline_1 : Shader_Objects :=
-  (Vertex_Shader   => Create_Shader (Location_Shaders, Vertex_Shader, "triangle.vert"),
-   Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "triangle.frag"),
+  (Vertex_Shader   => Create_Shader (Vertex_Shader, "example:triangle.vert"),
+   Fragment_Shader => Create_Shader (Fragment_Shader, "example:triangle.frag"),
    others          => Empty);
 ```
 
-`Location_Shader` is an object that loads `triangle.vert` and
-`triangle.frag` from the current directory. Let's tell
-OpenGL that we want to bind the shaders in `Pipeline_1`:
+`example` is the name of a location object which contains `triangle.vert` and `triangle.frag`.
+Let's tell OpenGL that we want to bind the shaders in `Pipeline_1`:
 
 ```ada
 Context.Bind_Shaders (Pipeline_1);
@@ -355,36 +351,40 @@ and then draw the triangle. Press ++esc++ to close the application.
 
        Location_Shaders : constant Locations.Location_Ptr
          := Locations.Directories.Create_Location (".");
-
-       Pipeline_1 : Shader_Objects :=
-         (Vertex_Shader   => Create_Shader (Location_Shaders, Vertex_Shader, "triangle.vert"),
-          Fragment_Shader => Create_Shader (Location_Shaders, Fragment_Shader, "triangle.frag"),
-          others          => Empty);
-
-       FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
-
-       Vertices : constant Float_32_Array
-         := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
-              0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
-              0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
-
-       Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
     begin
-       FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
-       FB_D.Use_Framebuffer;
+       Locations.Register ("example", Location_Shaders);
 
-       Context.Bind_Shaders (Pipeline_1);
+       declare
+          Pipeline_1 : Shader_Objects :=
+            (Vertex_Shader   => Create_Shader (Vertex_Shader, "example:triangle.vert"),
+             Fragment_Shader => Create_Shader (Fragment_Shader, "example:triangle.frag"),
+             others          => Empty);
 
-       Buffer_1.Bind (Shader_Storage, 0);
+          FB_D : Framebuffer := Create_Default_Framebuffer (Window.Width, Window.Height);
 
-       while not Window.Should_Close loop
-          Window.Process_Input;
+          Vertices : constant Float_32_Array
+            := (-0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 0.0,
+                 0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 0.0,
+                 0.0,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 0.0);
 
-          FB_D.Clear ((Color => True, others => False));
-          Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
+          Buffer_1 : constant Buffer := Create_Buffer ((others => False), Vertices);
+       begin
+          FB_D.Set_Default_Values ((Color => (0.0, 0.0, 0.0, 1.0), others => <>));
+          FB_D.Use_Framebuffer;
 
-          Window.Swap_Buffers;
-       end loop;
+          Context.Bind_Shaders (Pipeline_1);
+
+          Buffer_1.Bind (Shader_Storage, 0);
+
+          while not Window.Should_Close loop
+             Window.Process_Input;
+
+             FB_D.Clear ((Color => True, others => False));
+             Orka.Rendering.Drawing.Draw (Triangles, 0, 3);
+
+             Window.Swap_Buffers;
+          end loop;
+       end;
     end Triangle;
     ```
 
