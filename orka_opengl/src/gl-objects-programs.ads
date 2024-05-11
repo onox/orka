@@ -71,11 +71,7 @@ package GL.Objects.Programs is
    function Identifier (Object : Program) return Types.Debug.Identifier is
      (Types.Debug.Program);
 
-   Uniform_Inactive_Error    : exception;
-
-   package Internal is
-      function No_Program return Program;
-   end Internal;
+   Uniform_Inactive_Error : exception;
 
 private
 

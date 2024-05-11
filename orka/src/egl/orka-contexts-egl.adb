@@ -16,7 +16,6 @@
 
 with GL.Buffers;
 with GL.Context;
-with GL.Objects.Programs;
 with GL.Rasterization;
 with GL.Toggles;
 with GL.Types;
@@ -176,7 +175,7 @@ package body Orka.Contexts.EGL is
    procedure Bind_Shaders (Object : EGL_Context; Shaders : Orka.Rendering.Shaders.Objects.Shader_Objects) is
       use all type Orka.Rendering.Shaders.Shader_Kind;
    begin
-      Object.GL_Context.Value.Pipeline.Use_Program_Stages ((others => True), GL.Objects.Programs.Internal.No_Program);
+      Object.GL_Context.Value.Pipeline.Remove_All_Program_Stages;
 
       for Stage in Shaders'Range when Shaders (Stage).Is_Present loop
          Object.GL_Context.Value.Pipeline.Use_Program_Stages

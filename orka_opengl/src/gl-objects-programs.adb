@@ -159,17 +159,4 @@ package body GL.Objects.Programs is
       end;
    end Uniform_Type;
 
-   package body Internal is
-
-      type No_Program_Type is new Program with null record;
-
-      overriding procedure Initialize_Id (Object : in out No_Program_Type) is null;
-      overriding procedure Delete_Id (Object : in out No_Program_Type) is null;
-
-      Null_Program : constant No_Program_Type := No_Program_Type'(GL_Object with null record);
-
-      function No_Program return Program is (Program (Null_Program));
-
-   end Internal;
-
 end GL.Objects.Programs;

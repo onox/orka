@@ -36,6 +36,12 @@ package body GL.Objects.Pipelines is
       API.Use_Program_Stages.Ref (Object.Reference.GL_Id, Raw_Bits, Program.Raw_Id);
    end Use_Program_Stages;
 
+   procedure Remove_All_Program_Stages (Object : Pipeline) is
+      All_Shader_Bits : constant := 16#FFFF_FFFF#;
+   begin
+      API.Use_Program_Stages.Ref (Object.Reference.GL_Id, All_Shader_Bits, 0);
+   end Remove_All_Program_Stages;
+
    procedure Bind (Object : Pipeline) is
    begin
       API.Bind_Program_Pipeline.Ref (Object.Reference.GL_Id);

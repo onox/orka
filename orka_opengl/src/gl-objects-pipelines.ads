@@ -38,6 +38,9 @@ package GL.Objects.Pipelines is
       Program : Programs.Program);
    --  Use the specified stages from the given program in the pipeline
 
+   procedure Remove_All_Program_Stages (Object : Pipeline);
+   --  Remove all stages in the pipeline
+
    procedure Bind (Object : Pipeline);
    --  Bind the pipeline to the current context
 
