@@ -200,7 +200,6 @@ package body Orka.Rendering.Shaders.Modules is
             or else Parts (Index).Line /= Parts (Index + 1).Line
             or else Parts (Index).Column /= Parts (Index + 1).Column);
       end loop;
-
    end Print_Log;
 
    procedure Load_And_Compile

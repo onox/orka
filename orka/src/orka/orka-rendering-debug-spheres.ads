@@ -46,7 +46,7 @@ package Orka.Rendering.Debug.Spheres is
      (Object     : in out Sphere;
       View, Proj : Transforms.Matrix4;
       Transforms, Spheres : Rendering.Buffers.Buffer)
-   with Pre => Transforms.Length > 0 and Spheres.Length in 2 | 2 * Transforms.Length;
+   with Pre => Spheres.Length in 2 | 2 * Transforms.Length;
    --  Set matrices and buffers to render a sphere for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must

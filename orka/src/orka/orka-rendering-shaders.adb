@@ -45,7 +45,7 @@ package body Orka.Rendering.Shaders is
    function Create_Shader
      (Kind  : Shader_Kind;
       Paths : String_Array) return Shader
-   is (Create_Shader (Modules.Shader_Module_Array'([for Path of Paths => Modules.Create_Module (Kind, Path.all)])));
+   is (Create_Shader (Modules.Create_Modules (Kind, Paths)));
 
    function Create_Shader
      (Kind : Shader_Kind;

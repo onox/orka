@@ -42,8 +42,7 @@ package Orka.Rendering.Debug.Coordinate_Axes is
       Width, Height : Positive;
       Axis_Size     : Transforms.Vector4 := [4.0, 100.0, 16.0, 32.0];
       View, Proj    : Transforms.Matrix4;
-      Transforms    : Rendering.Buffers.Buffer)
-   with Pre => Transforms.Length > 0;
+      Transforms    : Rendering.Buffers.Buffer);
    --  Render three coordinates axes for each transform
    --
    --  The buffer Transforms, containing the transform matrices, must
