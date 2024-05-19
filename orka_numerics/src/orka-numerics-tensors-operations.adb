@@ -230,6 +230,7 @@ package body Orka.Numerics.Tensors.Operations is
       end Find_Largest_Pivot;
 
       Pivots : array (0 .. Rows) of Natural := [others => 0];
+      Row_Last_Pivot : Natural := 0;
    begin
       --  Forward phase: row reduce augmented matrix to echelon form
 
@@ -253,6 +254,7 @@ package body Orka.Numerics.Tensors.Operations is
                Pivot_Index := 0;
                exit;
             end if;
+            Row_Last_Pivot := Index;
 
             Swap_Rows (Ab, Index, Row_Index);
 
@@ -265,17 +267,8 @@ package body Orka.Numerics.Tensors.Operations is
 
       --  Backward phase: row reduce augmented matrix to reduced echelon form
 
-      for Index in reverse 1 .. Rows loop
-         declare
-            Pivot_Index : Index_Type renames Pivots (Index);
-         begin
-            if Pivot_Index > 0 then
-               Back_Substitute (Ab, Index, Pivot_Index);
-            else
-               --  Row contains only zeros; no pivot
-               null;
-            end if;
-         end;
+      for Index in reverse 1 .. Row_Last_Pivot loop
+         Back_Substitute (Ab, Index, Pivots (Index));
       end loop;
 
       if (for some I in 1 .. Rows => Pivots (I) = 0
