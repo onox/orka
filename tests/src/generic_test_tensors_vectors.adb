@@ -35,7 +35,7 @@ package body Generic_Test_Tensors_Vectors is
 
    use AUnit.Assertions;
 
-   Sizes : constant array (Positive range <>) of Natural := (1, 2, 4, 5, 8, 10);
+   Sizes : constant array (Positive range <>) of Natural := [1, 2, 4, 5, 8, 10];
 
    Pi : constant := Ada.Numerics.Pi;
 
@@ -118,7 +118,7 @@ package body Generic_Test_Tensors_Vectors is
    begin
       for I of Sizes loop
          declare
-            Shape  : constant Tensor_Shape := (1 => I);
+            Shape  : constant Tensor_Shape := [I];
 
             Tensor_1 : constant CPU_Tensor := Ones (I);
             Tensor_2 : constant CPU_Tensor := Ones (Shape);
@@ -140,7 +140,7 @@ package body Generic_Test_Tensors_Vectors is
    begin
       for I of Sizes loop
          declare
-            Values : constant Element_Array (1 .. I) := (others => Element (I));
+            Values : constant Element_Array (1 .. I) := [others => Element (I)];
          begin
             Test_Arrays (Values);
          end;
@@ -148,12 +148,12 @@ package body Generic_Test_Tensors_Vectors is
    end Test_To_Tensor;
 
    procedure Test_Linear_Space (Object : in out Test) is
-      Expected_1 : constant Element_Array := (1.0, 2.0, 3.0, 4.0, 5.0);
-      Expected_2 : constant Element_Array := (1.0, 1.8, 2.6, 3.4, 4.2);
-      Expected_3 : constant Element_Array := (1.0, 0.75, 0.5, 0.25, 0.0);
-      Expected_4 : constant Element_Array := (1.0, 0.8, 0.6, 0.4, 0.2);
-      Expected_5 : constant Element_Array := (1.0, 1.0, 1.0);
-      Expected_6 : constant Element_Array := (0.0, 0.0, 0.0);
+      Expected_1 : constant Element_Array := [1.0, 2.0, 3.0, 4.0, 5.0];
+      Expected_2 : constant Element_Array := [1.0, 1.8, 2.6, 3.4, 4.2];
+      Expected_3 : constant Element_Array := [1.0, 0.75, 0.5, 0.25, 0.0];
+      Expected_4 : constant Element_Array := [1.0, 0.8, 0.6, 0.4, 0.2];
+      Expected_5 : constant Element_Array := [1.0, 1.0, 1.0];
+      Expected_6 : constant Element_Array := [0.0, 0.0, 0.0];
 
       --  Increasing
       Actual_1 : constant CPU_Tensor := Linear_Space (1.0, 5.0, Count => 5);
@@ -178,12 +178,12 @@ package body Generic_Test_Tensors_Vectors is
    procedure Test_Log_Space (Object : in out Test) is
       use EF;
 
-      Expected_1 : constant Element_Array := (1.0e1, 1.0e2, 1.0e3, 1.0e4);
-      Expected_2 : constant Element_Array := (1.0e4, 1.0e3, 1.0e2, 1.0e1);
-      Expected_3 : constant Element_Array := (10.0**1.0, 10.0**1.75, 10.0**2.5, 10.0**3.25);
-      Expected_4 : constant Element_Array := (1.0, 1.0, 1.0, 1.0);
-      Expected_5 : constant Element_Array := (1.0, 1.0, 1.0, 1.0);
-      Expected_6 : constant Element_Array := (2.0, 4.0, 8.0);
+      Expected_1 : constant Element_Array := [1.0e1, 1.0e2, 1.0e3, 1.0e4];
+      Expected_2 : constant Element_Array := [1.0e4, 1.0e3, 1.0e2, 1.0e1];
+      Expected_3 : constant Element_Array := [10.0**1.0, 10.0**1.75, 10.0**2.5, 10.0**3.25];
+      Expected_4 : constant Element_Array := [1.0, 1.0, 1.0, 1.0];
+      Expected_5 : constant Element_Array := [1.0, 1.0, 1.0, 1.0];
+      Expected_6 : constant Element_Array := [2.0, 4.0, 8.0];
 
       --  Increasing
       Actual_1 : constant CPU_Tensor := Log_Space (1.0, 4.0, Count => 4);
@@ -209,9 +209,9 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Log_Space;
 
    procedure Test_Geometric_Space (Object : in out Test) is
-      Expected_1 : constant Element_Array := (1.0, 10.0, 100.0, 1_000.0);
-      Expected_2 : constant Element_Array := (1.0, 10.0, 100.0);
-      Expected_3 : constant Element_Array := (64.0, 32.0, 16.0, 8.0, 4.0, 2.0);
+      Expected_1 : constant Element_Array := [1.0, 10.0, 100.0, 1_000.0];
+      Expected_2 : constant Element_Array := [1.0, 10.0, 100.0];
+      Expected_3 : constant Element_Array := [64.0, 32.0, 16.0, 8.0, 4.0, 2.0];
 
       Actual_1 : constant CPU_Tensor := Geometric_Space (1.0, 1_000.0, 4);
       Actual_2 : constant CPU_Tensor := Geometric_Space (1.0, 1_000.0, 3, Interval => Half_Open);
@@ -225,9 +225,9 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Geometric_Space;
 
    procedure Test_Array_Range (Object : in out Test) is
-      Expected_1 : constant Element_Array := (0.0, 1.0, 2.0);
-      Expected_2 : constant Element_Array := (2.0, 3.0, 4.0);
-      Expected_3 : constant Element_Array := (1.0, 1.5, 2.0);
+      Expected_1 : constant Element_Array := [0.0, 1.0, 2.0];
+      Expected_2 : constant Element_Array := [2.0, 3.0, 4.0];
+      Expected_3 : constant Element_Array := [1.0, 1.5, 2.0];
 
       Actual_1 : constant CPU_Tensor := Array_Range (3.0);
       Actual_2 : constant CPU_Tensor := Array_Range (2.0, 5.0);
@@ -239,23 +239,23 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Array_Range;
 
    procedure Test_Set_Value_Index (Object : in out Test) is
-      Tensor : CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+      Tensor : CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
 
-      Expected : constant Element_Array := (1.0, 4.0, 5.0);
+      Expected : constant Element_Array := [1.0, 4.0, 5.0];
    begin
-      Tensor.Set ((1 => 2), 4.0);
+      Tensor.Set ([2], 4.0);
       Tensor.Set (3, 5.0);
 
       Assert_Equal (Expected, Tensor);
    end Test_Set_Value_Index;
 
    procedure Test_Set_Value_Index_Boolean (Object : in out Test) is
-      Tensor : CPU_Tensor := To_Boolean_Tensor ((True, False, False, True, False));
+      Tensor : CPU_Tensor := To_Boolean_Tensor ([True, False, False, True, False]);
 
-      Expected : constant Boolean_Array := (False, True, False, False, True);
+      Expected : constant Boolean_Array := [False, True, False, False, True];
    begin
-      Tensor.Set ((1 => 2), True);
-      Tensor.Set ((1 => 4), False);
+      Tensor.Set ([2], True);
+      Tensor.Set ([4], False);
       Tensor.Set (1, False);
       Tensor.Set (5, True);
 
@@ -263,7 +263,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Set_Value_Index_Boolean;
 
    procedure Test_Constant_Indexing_Index (Object : in out Test) is
-      Values : constant Element_Array := (1.0, 2.0, 3.0, 4.0, 5.0);
+      Values : constant Element_Array := [1.0, 2.0, 3.0, 4.0, 5.0];
       Tensor : constant CPU_Tensor := To_Tensor (Values);
    begin
       for I in Values'Range loop
@@ -272,7 +272,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Constant_Indexing_Index;
 
    procedure Test_Constant_Indexing_Index_Boolean (Object : in out Test) is
-      Values : constant Boolean_Array := (False, True, False, True, True, False);
+      Values : constant Boolean_Array := [False, True, False, True, True, False];
       Tensor : constant CPU_Tensor := To_Boolean_Tensor (Values);
    begin
       for I in Values'Range loop
@@ -281,7 +281,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Constant_Indexing_Index_Boolean;
 
    procedure Test_Constant_Indexing_Range (Object : in out Test) is
-      Values : constant Element_Array := (1.0, 2.0, 3.0, 4.0, 5.0);
+      Values : constant Element_Array := [1.0, 2.0, 3.0, 4.0, 5.0];
       Tensor : constant CPU_Tensor := To_Tensor (Values);
    begin
       for I in 1 .. 3 loop
@@ -300,12 +300,12 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Constant_Indexing_Range;
 
    procedure Test_Constant_Indexing_Tensor (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 5.0, 6.0, 7.0, 8.0, 9.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
 
-      Expected_1 : constant Element_Array := (1.0, 2.0);
-      Expected_2 : constant Element_Array := (1.0, 2.0, 4.0, 5.0);
-      Expected_3 : constant Element_Array := (1.0, 3.0, 5.0, 7.0, 9.0);
+      Expected_1 : constant Element_Array := [1.0, 2.0];
+      Expected_2 : constant Element_Array := [1.0, 2.0, 4.0, 5.0];
+      Expected_3 : constant Element_Array := [1.0, 3.0, 5.0, 7.0, 9.0];
 
       Actual_1   : constant CPU_Tensor := Tensor_1.Get (Tensor_1 < 3.0);
       Actual_2   : constant CPU_Tensor := Tensor_1.Get (Tensor_1 /= 3.0);
@@ -318,11 +318,11 @@ package body Generic_Test_Tensors_Vectors is
 
    procedure Test_Operator_Concatenate (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor := Ones (4);
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
       Tensor_3 : constant CPU_Tensor := Zeros (2);
 
-      Expected_1 : constant Element_Array := (1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 3.0, 0.0, 0.0);
-      Expected_2 : constant Element_Array := (0.0, 0.0, 1.0, 2.0, 3.0);
+      Expected_1 : constant Element_Array := [1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 3.0, 0.0, 0.0];
+      Expected_2 : constant Element_Array := [0.0, 0.0, 1.0, 2.0, 3.0];
 
       Actual_1   : constant CPU_Tensor := Tensor_1 & Tensor_2 & Tensor_3;
       Actual_2   : constant CPU_Tensor := Tensor_3 & Tensor_2;
@@ -332,8 +332,8 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Concatenate;
 
    procedure Test_Operator_Multiply_Inner (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((2.0, 3.0, 4.0, 5.0, 6.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([2.0, 3.0, 4.0, 5.0, 6.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
       Expected : constant Element := 70.0;
       Actual   : constant Element := Tensor_1 * Tensor_2;
@@ -342,7 +342,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Multiply_Inner;
 
    procedure Test_Norm (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
       Expected : constant Element := EF.Sqrt (1.0**2 + 2.0**2 + 3.0**2 + 4.0**2 + 5.0**2);
       Actual   : constant Element := Tensor.Norm;
@@ -351,7 +351,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Norm;
 
    procedure Test_Normalize (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0)).Normalize;
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]).Normalize;
 
       Expected : constant Element := 1.0;
       Actual   : constant Element := Tensor.Norm;
@@ -360,7 +360,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Normalize;
 
    procedure Test_Standardize (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0)).Standardize;
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]).Standardize;
 
       Expected_Mean : constant Element := 0.0;
       Expected_Std  : constant Element := 1.0;
@@ -373,10 +373,10 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Standardize;
 
    procedure Test_Correlation_Coefficient (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((3.0, 0.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 3.0));
-      Tensor_3 : constant CPU_Tensor := To_Tensor ((-3.0, 0.0));
-      Tensor_4 : constant CPU_Tensor := To_Tensor ((2.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([3.0, 0.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.0, 3.0]);
+      Tensor_3 : constant CPU_Tensor := To_Tensor ([-3.0, 0.0]);
+      Tensor_4 : constant CPU_Tensor := To_Tensor ([2.0, 2.0]);
 
       --  Create a line with positions (x_i, y_i) where each x_i is a value
       --  from Tensor_5 (the horizontal axis), while y_i are values from
@@ -384,8 +384,8 @@ package body Generic_Test_Tensors_Vectors is
       --  direction, indicating the two tensors are uncorrelated.
       --  An increasing line would indicate positive correlation, while
       --  a decreasing line indicates negative correlation
-      Tensor_5 : constant CPU_Tensor := To_Tensor ((0.0,  1.0, 2.0,  3.0, 4.0,  5.0, 6.0));
-      Tensor_6 : constant CPU_Tensor := To_Tensor ((1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0));
+      Tensor_5 : constant CPU_Tensor := To_Tensor ([0.0,  1.0, 2.0,  3.0, 4.0,  5.0, 6.0]);
+      Tensor_6 : constant CPU_Tensor := To_Tensor ([1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0]);
 
       Expected_1 : constant Element := 0.0;
       Expected_2 : constant Element := -1.0;
@@ -404,19 +404,19 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Correlation_Coefficient;
 
    procedure Test_Operator_Add_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 5.0, 6.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([4.0, 5.0, 6.0]);
 
-      Expected : constant Element_Array := (5.0, 7.0, 9.0);
+      Expected : constant Element_Array := [5.0, 7.0, 9.0];
       Actual   : constant CPU_Tensor := Tensor_1 + Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Add_Tensors;
 
    procedure Test_Operator_Add_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
 
-      Expected : constant Element_Array := (3.0, 4.0, 5.0);
+      Expected : constant Element_Array := [3.0, 4.0, 5.0];
 
       Actual_1 : constant CPU_Tensor := 2.0 + Tensor;
       Actual_2 : constant CPU_Tensor := Tensor + 2.0;
@@ -426,52 +426,52 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Add_Element_Tensor;
 
    procedure Test_Operator_Subtract_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 5.0, 0.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 2.0, 6.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 5.0, 0.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([4.0, 2.0, 6.0]);
 
-      Expected : constant Element_Array := (-3.0, 3.0, -6.0);
+      Expected : constant Element_Array := [-3.0, 3.0, -6.0];
       Actual   : constant CPU_Tensor := Tensor_1 - Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Subtract_Tensors;
 
    procedure Test_Operator_Subtract_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
    begin
-      Assert_Equal ((1.0, 0.0, -1.0), 2.0 - Tensor);
-      Assert_Equal ((-1.0, 0.0, 1.0), Tensor - 2.0);
-      Assert_Equal ((-1.0, -2.0, -3.0), -Tensor);
+      Assert_Equal ([1.0, 0.0, -1.0], 2.0 - Tensor);
+      Assert_Equal ([-1.0, 0.0, 1.0], Tensor - 2.0);
+      Assert_Equal ([-1.0, -2.0, -3.0], -Tensor);
    end Test_Operator_Subtract_Element_Tensor;
 
    procedure Test_Operator_Power_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((0.0, 0.0, 0.5, 0.5, 0.5, 1.0, 1.0, 0.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 0.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([0.0, 0.0, 0.5, 0.5, 0.5, 1.0, 1.0, 0.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 0.0, 1.0, 2.0, 0.0, 1.0, 0.0]);
 
-      Expected : constant Element_Array := (0.0, 0.0, 1.0, 0.5, 0.25, 1.0, 1.0, 1.0);
+      Expected : constant Element_Array := [0.0, 0.0, 1.0, 0.5, 0.25, 1.0, 1.0, 1.0];
       Actual   : constant CPU_Tensor := Tensor_1 ** Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Power_Tensors;
 
    procedure Test_Operator_Power_Element_Tensor (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((0.0, 0.5, 1.0, 2.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.1, 0.5, 1.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([0.0, 0.5, 1.0, 2.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.1, 0.5, 1.0, 2.0]);
    begin
-      Assert_Equal ((1.0, 1.0, 1.0, 1.0), 1.0 ** Tensor_1);
-      Assert_Equal ((0.0, 0.0, 0.0, 0.0), 0.0 ** Tensor_2);
-      Assert_Equal ((1.0, 1.0, 1.0, 1.0), Tensor_2 ** 0.0);
-      Assert_Equal ((0.0, 0.5, 1.0, 2.0), Tensor_1 ** 1.0);
+      Assert_Equal ([1.0, 1.0, 1.0, 1.0], 1.0 ** Tensor_1);
+      Assert_Equal ([0.0, 0.0, 0.0, 0.0], 0.0 ** Tensor_2);
+      Assert_Equal ([1.0, 1.0, 1.0, 1.0], Tensor_2 ** 0.0);
+      Assert_Equal ([0.0, 0.5, 1.0, 2.0], Tensor_1 ** 1.0);
    end Test_Operator_Power_Element_Tensor;
 
    procedure Test_Function_Power_Tensor_Element (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((0.0, 0.5, 1.0, 2.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.5, 1.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([0.0, 0.5, 1.0, 2.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.5, 1.0, 2.0]);
 
-      Expected_1 : constant Element_Array := (1.0, 1.0, 1.0, 1.0);
-      Expected_2 : constant Element_Array := (0.0, 0.5, 1.0, 2.0);
-      Expected_3 : constant Element_Array := (0.0, 0.25, 1.0, 4.0);
+      Expected_1 : constant Element_Array := [1.0, 1.0, 1.0, 1.0];
+      Expected_2 : constant Element_Array := [0.0, 0.5, 1.0, 2.0];
+      Expected_3 : constant Element_Array := [0.0, 0.25, 1.0, 4.0];
 
-      Expected_4 : constant Element_Array := (2.0, 1.0, 0.5);
+      Expected_4 : constant Element_Array := [2.0, 1.0, 0.5];
 
       Actual_1 : constant CPU_Tensor := Power (Tensor_1, 0);
       Actual_2 : constant CPU_Tensor := Power (Tensor_1, 1);
@@ -485,19 +485,19 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Power_Tensor_Element;
 
    procedure Test_Function_Multiply_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, 2.0]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, 6.0);
+      Expected : constant Element_Array := [-1.0, 0.0, 6.0];
       Actual   : constant CPU_Tensor := Multiply (Tensor_1, Tensor_2);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Multiply_Tensors;
 
    procedure Test_Operator_Multiply_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0]);
 
-      Expected : constant Element_Array := (2.0, 4.0, 6.0);
+      Expected : constant Element_Array := [2.0, 4.0, 6.0];
 
       Actual_1 : constant CPU_Tensor := 2.0 * Tensor;
       Actual_2 : constant CPU_Tensor := Tensor * 2.0;
@@ -507,20 +507,20 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Multiply_Element_Tensor;
 
    procedure Test_Operator_Divide_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 0.0, 3.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((-1.0, 2.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 0.0, 3.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([-1.0, 2.0, 2.0]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, 1.5);
+      Expected : constant Element_Array := [-1.0, 0.0, 1.5];
       Actual   : constant CPU_Tensor := Tensor_1 / Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Divide_Tensors;
 
    procedure Test_Operator_Divide_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 4.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 4.0]);
 
-      Expected_1 : constant Element_Array := (2.0, 1.0, 0.5);
-      Expected_2 : constant Element_Array := (0.5, 1.0, 2.0);
+      Expected_1 : constant Element_Array := [2.0, 1.0, 0.5];
+      Expected_2 : constant Element_Array := [0.5, 1.0, 2.0];
 
       Actual_1 : constant CPU_Tensor := 2.0 / Tensor;
       Actual_2 : constant CPU_Tensor := Tensor / 2.0;
@@ -530,150 +530,150 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Divide_Element_Tensor;
 
    procedure Test_Divide_Or_Zero (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, 3.0, 2.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 2.0, 2.0, 0.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, 3.0, 2.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.0, 2.0, 2.0, 0.0]);
 
-      Expected : constant Element_Array := (0.0, 0.0, 1.5, 0.0);
+      Expected : constant Element_Array := [0.0, 0.0, 1.5, 0.0];
       Actual   : constant CPU_Tensor    := Divide_Or_Zero (Tensor_1, Tensor_2);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Divide_Or_Zero;
 
    procedure Test_Operator_Mod_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((8.0, -8.0, 8.0, -8.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((5.0, 5.0, -5.0, -5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([8.0, -8.0, 8.0, -8.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([5.0, 5.0, -5.0, -5.0]);
 
-      Expected : constant Element_Array := (3.0, 2.0, -2.0, -3.0);
+      Expected : constant Element_Array := [3.0, 2.0, -2.0, -3.0];
       Actual   : constant CPU_Tensor := Tensor_1 mod Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Mod_Tensors;
 
    procedure Test_Operator_Mod_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((8.0, -8.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([8.0, -8.0]);
 
-      Expected : constant Element_Array := (3.0, 2.0);
+      Expected : constant Element_Array := [3.0, 2.0];
       Actual   : constant CPU_Tensor := Tensor mod 5.0;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Mod_Element_Tensor;
 
    procedure Test_Operator_Rem_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((8.0, -8.0, 8.0, -8.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((5.0, 5.0, -5.0, -5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([8.0, -8.0, 8.0, -8.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([5.0, 5.0, -5.0, -5.0]);
 
-      Expected : constant Element_Array := (3.0, -3.0, 3.0, -3.0);
+      Expected : constant Element_Array := [3.0, -3.0, 3.0, -3.0];
       Actual   : constant CPU_Tensor := Tensor_1 rem Tensor_2;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Rem_Tensors;
 
    procedure Test_Operator_Rem_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((8.0, -8.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([8.0, -8.0]);
 
-      Expected : constant Element_Array := (3.0, -3.0);
+      Expected : constant Element_Array := [3.0, -3.0];
       Actual   : constant CPU_Tensor := Tensor rem 5.0;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Rem_Element_Tensor;
 
    procedure Test_Operator_Abs (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, 2.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, 2.0]);
 
-      Expected : constant Element_Array := (1.0, 0.0, 2.0);
+      Expected : constant Element_Array := [1.0, 0.0, 2.0];
       Actual   : constant CPU_Tensor := abs Tensor;
    begin
       Assert_Equal (Expected, Actual);
    end Test_Operator_Abs;
 
    procedure Test_Function_Sqrt (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((0.0, 1.0, 4.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([0.0, 1.0, 4.0]);
 
-      Expected : constant Element_Array := (0.0, 1.0, 2.0);
+      Expected : constant Element_Array := [0.0, 1.0, 2.0];
       Actual   : constant CPU_Tensor := Sqrt (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Sqrt;
 
    procedure Test_Function_Ceil (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, -0.5, 0.5, -1.5, 1.5));
+      Tensor : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, -0.5, 0.5, -1.5, 1.5]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, 0.0, 1.0, -1.0, 2.0);
+      Expected : constant Element_Array := [-1.0, 0.0, 0.0, 1.0, -1.0, 2.0];
       Actual   : constant CPU_Tensor := Ceil (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Ceil;
 
    procedure Test_Function_Floor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, -0.5, 0.5, -1.5, 1.5));
+      Tensor : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, -0.5, 0.5, -1.5, 1.5]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, -1.0, 0.0, -2.0, 1.0);
+      Expected : constant Element_Array := [-1.0, 0.0, -1.0, 0.0, -2.0, 1.0];
       Actual   : constant CPU_Tensor := Floor (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Floor;
 
    procedure Test_Function_Round (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, -0.5, 0.5, -0.6, 0.6, -1.5, 1.5));
+      Tensor : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, -0.5, 0.5, -0.6, 0.6, -1.5, 1.5]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, 0.0, 0.0, -1.0, 1.0, -2.0, 2.0);
+      Expected : constant Element_Array := [-1.0, 0.0, 0.0, 0.0, -1.0, 1.0, -2.0, 2.0];
       Actual   : constant CPU_Tensor := Round (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Round;
 
    procedure Test_Function_Truncate (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((-1.0, 0.0, -0.5, 0.5, -1.5, 1.5));
+      Tensor : constant CPU_Tensor := To_Tensor ([-1.0, 0.0, -0.5, 0.5, -1.5, 1.5]);
 
-      Expected : constant Element_Array := (-1.0, 0.0, 0.0, 0.0, -1.0, 1.0);
+      Expected : constant Element_Array := [-1.0, 0.0, 0.0, 0.0, -1.0, 1.0];
       Actual   : constant CPU_Tensor := Truncate (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Truncate;
 
    procedure Test_Function_Degrees (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((0.0, -0.5 * Pi, 0.5 * Pi, -Pi, Pi, 2.0 * Pi));
+      Tensor : constant CPU_Tensor := To_Tensor ([0.0, -0.5 * Pi, 0.5 * Pi, -Pi, Pi, 2.0 * Pi]);
 
-      Expected : constant Element_Array := (0.0, -90.0, 90.0, -180.0, 180.0, 360.0);
+      Expected : constant Element_Array := [0.0, -90.0, 90.0, -180.0, 180.0, 360.0];
       Actual   : constant CPU_Tensor := Degrees (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Degrees;
 
    procedure Test_Function_Radians (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((0.0, -90.0, 90.0, -180.0, 180.0, 360.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([0.0, -90.0, 90.0, -180.0, 180.0, 360.0]);
 
-      Expected : constant Element_Array := (0.0, -0.5 * Pi, 0.5 * Pi, -Pi, Pi, 2.0 * Pi);
+      Expected : constant Element_Array := [0.0, -0.5 * Pi, 0.5 * Pi, -Pi, Pi, 2.0 * Pi];
       Actual   : constant CPU_Tensor := Radians (Tensor);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Radians;
 
    procedure Test_Function_Min_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, -3.0, -2.0, 0.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 3.0, 3.0, -3.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, -3.0, -2.0, 0.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.0, 3.0, 3.0, -3.0, 2.0]);
 
-      Expected : constant Element_Array := (0.0, 2.0, -3.0, -3.0, 0.0);
+      Expected : constant Element_Array := [0.0, 2.0, -3.0, -3.0, 0.0];
       Actual   : constant CPU_Tensor := Min (Tensor_1, Tensor_2);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Min_Tensors;
 
    procedure Test_Function_Max_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, -3.0, -2.0, 0.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 3.0, 3.0, -3.0, 2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, -3.0, -2.0, 0.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.0, 3.0, 3.0, -3.0, 2.0]);
 
-      Expected : constant Element_Array := (1.0, 3.0, 3.0, -2.0, 2.0);
+      Expected : constant Element_Array := [1.0, 3.0, 3.0, -2.0, 2.0];
       Actual   : constant CPU_Tensor := Max (Tensor_1, Tensor_2);
    begin
       Assert_Equal (Expected, Actual);
    end Test_Function_Max_Tensors;
 
    procedure Test_Function_Min_Tensor_Element (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, -3.0, -2.0, 0.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, -3.0, -2.0, 0.0]);
 
-      Expected_1 : constant Element_Array := (0.0, 0.0, -3.0, -2.0, 0.0);
-      Expected_2 : constant Element_Array := (-1.0, -1.0, -3.0, -2.0, -1.0);
+      Expected_1 : constant Element_Array := [0.0, 0.0, -3.0, -2.0, 0.0];
+      Expected_2 : constant Element_Array := [-1.0, -1.0, -3.0, -2.0, -1.0];
 
       Actual_1 : constant CPU_Tensor := Min (0.0, Tensor);
       Actual_2 : constant CPU_Tensor := Min (Tensor, -1.0);
@@ -683,10 +683,10 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Min_Tensor_Element;
 
    procedure Test_Function_Max_Tensor_Element (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, -3.0, -2.0, 0.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, -3.0, -2.0, 0.0]);
 
-      Expected_1 : constant Element_Array := (1.0, 2.0, 0.0, 0.0, 0.0);
-      Expected_2 : constant Element_Array := (1.0, 2.0, -1.0, -1.0, 0.0);
+      Expected_1 : constant Element_Array := [1.0, 2.0, 0.0, 0.0, 0.0];
+      Expected_2 : constant Element_Array := [1.0, 2.0, -1.0, -1.0, 0.0];
 
       Actual_1 : constant CPU_Tensor := Max (0.0, Tensor);
       Actual_2 : constant CPU_Tensor := Max (Tensor, -1.0);
@@ -696,62 +696,62 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Max_Tensor_Element;
 
    procedure Test_Operator_And_Not_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, False));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, False]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, False]);
       Actual   : constant CPU_Tensor := And_Not (Tensor_1, Tensor_2);
    begin
       Assert (Expected = Actual, "Unexpected element in tensor");
    end Test_Operator_And_Not_Tensors;
 
    procedure Test_Operator_And_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, False));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, False]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, False]);
       Actual   : constant CPU_Tensor := Tensor_1 and Tensor_2;
    begin
       Assert (Expected = Actual, "Unexpected element in tensor");
    end Test_Operator_And_Tensors;
 
    procedure Test_Operator_Or_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, False));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, False]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, True]);
       Actual   : constant CPU_Tensor := Tensor_1 or Tensor_2;
    begin
       Assert (Expected = Actual, "Unexpected element in tensor");
    end Test_Operator_Or_Tensors;
 
    procedure Test_Operator_Xor_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, False));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, False]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True]);
       Actual   : constant CPU_Tensor := Tensor_1 xor Tensor_2;
    begin
       Assert (Expected = Actual, "Unexpected element in tensor");
    end Test_Operator_Xor_Tensors;
 
    procedure Test_Operator_Not_Tensors (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True));
+      Tensor : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, False]);
       Actual   : constant CPU_Tensor := not Tensor;
    begin
       Assert (Expected = Actual, "Unexpected element in tensor");
    end Test_Operator_Not_Tensors;
 
    procedure Test_Operator_Equals_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Tensor_3 : constant CPU_Tensor := To_Tensor ((0.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_4 : constant CPU_Tensor := To_Tensor ((0.0, 1.0, 3.0, 2.0, 5.0));
+      Tensor_3 : constant CPU_Tensor := To_Tensor ([0.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_4 : constant CPU_Tensor := To_Tensor ([0.0, 1.0, 3.0, 2.0, 5.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, False, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, False, True]);
    begin
       Assert (Tensor_1 = Tensor_2, "Tensors not equal");
       Assert (not Boolean'(Tensor_1 = Tensor_3), "Tensors equal");
@@ -762,137 +762,137 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Operator_Equals_Tensors;
 
    procedure Test_Operator_Equals_Boolean_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, True, False, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, True, False, True]);
    begin
       Assert (Expected = (Tensor_1 = Tensor_2), "Tensors not equal for some booleans");
    end Test_Operator_Equals_Boolean_Tensors;
 
    procedure Test_Operator_Equals_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, False, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, False, False]);
    begin
       Assert (Expected = (2.0 = Tensor), "Tensor not equal to element");
       Assert (Expected = (Tensor = 2.0), "Tensor not equal to element");
    end Test_Operator_Equals_Element_Tensor;
 
    procedure Test_Operator_Not_Equals_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((0.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.0, 1.0, 3.0, 2.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([0.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.0, 1.0, 3.0, 2.0, 5.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, True, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, True, False]);
    begin
       Assert (Expected = (Tensor_1 /= Tensor_2), "Tensors equal for some elements");
    end Test_Operator_Not_Equals_Tensors;
 
    procedure Test_Operator_Not_Equals_Boolean_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, False, True));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, False, True]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, False, True, False));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, False, False, True, False]);
    begin
       Assert (Expected = (Tensor_1 /= Tensor_2), "Tensors equal for some booleans");
    end Test_Operator_Not_Equals_Boolean_Tensors;
 
    procedure Test_Operator_Not_Equals_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, True, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, True, True]);
    begin
       Assert (Expected = (2.0 /= Tensor), "Tensor equal to element");
       Assert (Expected = (Tensor /= 2.0), "Tensor equal to element");
    end Test_Operator_Not_Equals_Element_Tensor;
 
    procedure Test_Operator_Less_Than_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 4.0, 0.0, -2.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 3.0, 3.0, 0.0, -1.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 4.0, 0.0, -2.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 3.0, 3.0, 0.0, -1.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, True, False, False, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, True, False, False, True]);
    begin
       Assert (Expected = (Tensor_1 < Tensor_2), "Tensor not less than other for some elements");
    end Test_Operator_Less_Than_Tensors;
 
    procedure Test_Operator_Less_Than_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
-      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, False, False));
+      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
+      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, False, False]);
    begin
       Assert (Expected_1 = (2.0 < Tensor), "Element not less than tensor");
       Assert (Expected_2 = (Tensor < 4.0), "Tensor not less than element");
    end Test_Operator_Less_Than_Element_Tensor;
 
    procedure Test_Operator_Less_Equals_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 4.0, 0.0, -2.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 3.0, 3.0, 0.0, -1.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 4.0, 0.0, -2.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 3.0, 3.0, 0.0, -1.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, True, False, True, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, True, False, True, True]);
    begin
       Assert (Expected = (Tensor_1 <= Tensor_2),
         "Tensor not less than or equal to other for some elements");
    end Test_Operator_Less_Equals_Tensors;
 
    procedure Test_Operator_Less_Equals_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
-      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, False, False));
+      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
+      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, False, False]);
    begin
       Assert (Expected_1 = (3.0 <= Tensor), "Element not less than tensor");
       Assert (Expected_2 = (Tensor <= 3.0), "Tensor not less than element");
    end Test_Operator_Less_Equals_Element_Tensor;
 
    procedure Test_Operator_Greater_Than_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 4.0, 0.0, -1.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 3.0, 3.0, 0.0, -2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 4.0, 0.0, -1.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 3.0, 3.0, 0.0, -2.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, False, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, False, True]);
    begin
       Assert (Expected = (Tensor_1 > Tensor_2), "Tensor not greater than other for some elements");
    end Test_Operator_Greater_Than_Tensors;
 
    procedure Test_Operator_Greater_Than_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, False, False));
-      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
+      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, False, False]);
+      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
    begin
       Assert (Expected_1 = (4.0 > Tensor), "Element not greater than tensor");
       Assert (Expected_2 = (Tensor > 2.0), "Tensor not greater than element");
    end Test_Operator_Greater_Than_Element_Tensor;
 
    procedure Test_Operator_Greater_Equals_Tensors (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 4.0, 0.0, -1.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((1.0, 3.0, 3.0, 0.0, -2.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 4.0, 0.0, -1.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([1.0, 3.0, 3.0, 0.0, -2.0]);
 
-      Expected : constant CPU_Tensor := To_Boolean_Tensor ((True, False, True, True, True));
+      Expected : constant CPU_Tensor := To_Boolean_Tensor ([True, False, True, True, True]);
    begin
       Assert (Expected = (Tensor_1 >= Tensor_2),
         "Tensor not greater than or equal to other for some elements");
    end Test_Operator_Greater_Equals_Tensors;
 
    procedure Test_Operator_Greater_Equals_Element_Tensor (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
-      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, False, False));
-      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, True, True, True));
+      Expected_1 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, False, False]);
+      Expected_2 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, True, True, True]);
    begin
       Assert (Expected_1 = (3.0 >= Tensor), "Element not greater than or equal to tensor");
       Assert (Expected_2 = (Tensor >= 3.0), "Tensor not greater than or equal to element");
    end Test_Operator_Greater_Equals_Element_Tensor;
 
    procedure Test_Any_True (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, False));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, False));
-      Tensor_3 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, False]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([True, False, False]);
+      Tensor_3 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True]);
 
-      Tensor_4 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, True, True));
-      Tensor_5 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, True, False));
-      Tensor_6 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, False, False, False));
-      Tensor_7 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, False, False, False));
+      Tensor_4 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, True, True]);
+      Tensor_5 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, True, False]);
+      Tensor_6 : constant CPU_Tensor := To_Boolean_Tensor ([True, False, False, False, False]);
+      Tensor_7 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, False, False, False]);
    begin
       Assert (not Tensor_1.Any_True, "Some element of tensor is true");
       Assert (Tensor_2.Any_True, "No element of tensor is true");
@@ -904,12 +904,12 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Any_True;
 
    procedure Test_All_True (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ((False, False, False));
-      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ((True, False, False));
-      Tensor_3 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True));
+      Tensor_1 : constant CPU_Tensor := To_Boolean_Tensor ([False, False, False]);
+      Tensor_2 : constant CPU_Tensor := To_Boolean_Tensor ([True, False, False]);
+      Tensor_3 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True]);
 
-      Tensor_4 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, True, True));
-      Tensor_5 : constant CPU_Tensor := To_Boolean_Tensor ((True, True, True, True, False));
+      Tensor_4 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, True, True]);
+      Tensor_5 : constant CPU_Tensor := To_Boolean_Tensor ([True, True, True, True, False]);
    begin
       Assert (not Tensor_1.All_True, "All elements of tensor are true");
       Assert (not Tensor_2.All_True, "All elements of tensor are true");
@@ -919,8 +919,8 @@ package body Generic_Test_Tensors_Vectors is
    end Test_All_True;
 
    procedure Test_Reduction_Binary_Operator (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((0.1, 0.2, 0.4, 0.2, 0.5));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([0.1, 0.2, 0.4, 0.2, 0.5]);
 
       Expression_Sum     : constant Expression_Type := X + Y;
       Expression_Diff    : constant Expression_Type := X - Y;
@@ -944,7 +944,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Binary_Operator;
 
    procedure Test_Reduction_Associative_Binary_Operator (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
       Expression_Sum     : constant Expression_Type := X + Y;
       Expression_Product : constant Expression_Type := X * Y;
@@ -960,8 +960,8 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Associative_Binary_Operator;
 
    procedure Test_Reduction_Unary_Operator (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((-1.0, -2.0, -3.0, -4.0, -5.0));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 9.0, 16.0, 25.0, 36.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([-1.0, -2.0, -3.0, -4.0, -5.0]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([4.0, 9.0, 16.0, 25.0, 36.0]);
 
       Expression_Minus    : constant Expression_Type := X + (-Y);
       Expression_Absolute : constant Expression_Type := X + abs Y;
@@ -981,7 +981,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Unary_Operator;
 
    procedure Test_Reduction_Number (Object : in out Test) is
-      Tensor : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
 
       Expression_1 : constant Expression_Type := X + Y + 1.0;
       Expression_2 : constant Expression_Type := X + Y - 1.0;
@@ -1029,7 +1029,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Number;
 
    procedure Test_Reduction_Sum (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
       Tensor_2 : constant CPU_Tensor := Linear_Space (1.0, 100.0, Count => 100);
 
       Expected_1 : constant Element := 15.0;
@@ -1043,7 +1043,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Sum;
 
    procedure Test_Reduction_Product (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
       Tensor_2 : constant CPU_Tensor := Linear_Space (1.0, 10.0, Count => 10);
 
       Expected_1 : constant Element := 120.0;
@@ -1057,7 +1057,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Reduction_Product;
 
    procedure Test_Function_Min (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
       Tensor_2 : constant CPU_Tensor := Linear_Space (-10.0, 10.0, Count => 10);
 
       Expected_1 : constant Element := 1.0;
@@ -1071,7 +1071,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Min;
 
    procedure Test_Function_Max (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0]);
       Tensor_2 : constant CPU_Tensor := Linear_Space (-10.0, 10.0, Count => 10);
 
       Expected_1 : constant Element := 5.0;
@@ -1086,9 +1086,9 @@ package body Generic_Test_Tensors_Vectors is
 
    procedure Test_Function_Quantile (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
-        To_Tensor ((3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0));
+        To_Tensor ([3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0]);
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0));
+        To_Tensor ([0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0]);
       --  Tensor_2 is Tensor_1 sorted
 
       Last_Index : constant Element := Element (Tensor_1.Elements - 1);
@@ -1111,15 +1111,15 @@ package body Generic_Test_Tensors_Vectors is
 
    procedure Test_Function_Median (Object : in out Test) is
       Tensor_1 : constant CPU_Tensor :=
-        To_Tensor ((3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0));
+        To_Tensor ([3.0, 6.0, 1.0, 9.0, 7.0, 0.0, 2.0, 4.0, 6.0, 1.0, 0.0, 3.0, 8.0, 7.0, 9.0]);
       Tensor_2 : constant CPU_Tensor :=
-        To_Tensor ((0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0));
+        To_Tensor ([0.0, 0.0, 1.0, 1.0, 2.0, 3.0, 3.0, 4.0, 6.0, 6.0, 7.0, 7.0, 8.0, 9.0, 9.0]);
       --  Tensor_2 is Tensor_1 sorted
 
       pragma Assert (Tensor_1.Elements = Tensor_2.Elements);
 
       Tensor_3 : constant CPU_Tensor :=
-        To_Tensor ((0.0, 1.0, 2.0, 3.0, 4.0, 5.0));
+        To_Tensor ([0.0, 1.0, 2.0, 3.0, 4.0, 5.0]);
 
       Middle_Offset_1 : constant Natural := (if Tensor_2.Elements mod 2 = 0 then 0 else 1);
 
@@ -1134,7 +1134,7 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Median;
 
    procedure Test_Function_Mean (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1.0, 2.0, 3.0, 4.0, 5.0, 6.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
       Tensor_2 : constant CPU_Tensor := Array_Range (1.0, 100.0);
 
       Expected_1 : constant Element := 3.5;
@@ -1148,8 +1148,8 @@ package body Generic_Test_Tensors_Vectors is
    end Test_Function_Mean;
 
    procedure Test_Function_Variance (Object : in out Test) is
-      Tensor_1 : constant CPU_Tensor := To_Tensor ((1 .. 4 => 1.0e7));
-      Tensor_2 : constant CPU_Tensor := To_Tensor ((4.0, 7.0, 13.0, 16.0));
+      Tensor_1 : constant CPU_Tensor := To_Tensor ([1 .. 4 => 1.0e7]);
+      Tensor_2 : constant CPU_Tensor := To_Tensor ([4.0, 7.0, 13.0, 16.0]);
 
       Tensor : constant CPU_Tensor := Tensor_1 + Tensor_2;
 
@@ -1188,7 +1188,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := 0.5;
       Expected_Variance : constant := 1.0 / 12.0;
 
-      Tensor : constant CPU_Tensor := Random.Uniform ((1 => Random_Count));
+      Tensor : constant CPU_Tensor := Random.Uniform ([Random_Count]);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Uniform: " & Tensor.Mean'Image
@@ -1203,7 +1203,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := 0.0;
       Expected_Variance : constant := 1.0;
 
-      Tensor : constant CPU_Tensor := Random.Normal ((1 => Random_Count));
+      Tensor : constant CPU_Tensor := Random.Normal ([Random_Count]);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Normal: " & Tensor.Mean'Image
@@ -1220,7 +1220,7 @@ package body Generic_Test_Tensors_Vectors is
       --  This example is from numpy.random.binomial's documentation:
       --  Repeat some experiment 9 times with a success probability of 0.1 each.
       --  What is the probability that all 9 experiments fail? Result is ~ 0.38 or 38 %
-      Tensor : constant CPU_Tensor := Random.Binomial ((1 => Trials), N => 9, P => 0.1);
+      Tensor : constant CPU_Tensor := Random.Binomial ([Trials], N => 9, P => 0.1);
       Result : constant Element    := CPU_Tensor'(1.0 and (Tensor = 0.0)).Sum / Element (Trials);
    begin
       Assert (Result in 0.37 .. 0.40, "Unexpected result binomial trials: " & Result'Image);
@@ -1232,7 +1232,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := (1.0 - P) / P;
       Expected_Variance : constant := (1.0 - P) / P**2;
 
-      Tensor : constant CPU_Tensor := Random.Geometric ((1 => Random_Count), P => P);
+      Tensor : constant CPU_Tensor := Random.Geometric ([Random_Count], P => P);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Geometric: " & Tensor.Mean'Image
@@ -1249,7 +1249,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := 1.0 / Lambda;
       Expected_Variance : constant := 1.0 / Lambda**2;
 
-      Tensor : constant CPU_Tensor := Random.Exponential ((1 => Random_Count), Lambda => Lambda);
+      Tensor : constant CPU_Tensor := Random.Exponential ([Random_Count], Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Exponential: " & Tensor.Mean'Image
@@ -1268,7 +1268,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := (A * Xm) / (A - 1.0);
       Expected_Variance : constant := (Xm**2 * A) / ((A - 1.0)**2 * (A - 2.0));
 
-      Tensor : constant CPU_Tensor := Random.Pareto ((1 => Random_Count), Xm => Xm, Alpha => A);
+      Tensor : constant CPU_Tensor := Random.Pareto ([Random_Count], Xm => Xm, Alpha => A);
    begin
       --  A > 1.0 otherwise mean is infinite
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
@@ -1288,7 +1288,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant := Mean;
       Expected_Variance : constant := 2.0 * B**2;
 
-      Tensor : constant CPU_Tensor := Random.Laplace ((1 => Random_Count), Mean => Mean, B => B);
+      Tensor : constant CPU_Tensor := Random.Laplace ([Random_Count], Mean => Mean, B => B);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Laplace: " & Tensor.Mean'Image
@@ -1307,7 +1307,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Sigma * Sqrt (Pi / 2.0);
       Expected_Variance : constant := (4.0 - Pi) / 2.0 * Sigma**2;
 
-      Tensor : constant CPU_Tensor := Random.Rayleigh ((1 => Random_Count), Sigma => Sigma);
+      Tensor : constant CPU_Tensor := Random.Rayleigh ([Random_Count], Sigma => Sigma);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Rayleigh: " & Tensor.Mean'Image
@@ -1340,7 +1340,7 @@ package body Generic_Test_Tensors_Vectors is
         Lambda**2 * (Gamma (1.0 + 2.0 / K) - Gamma (1.0 + 1.0 / K)**2);
 
       Tensor : constant CPU_Tensor :=
-        Random.Weibull ((1 => Random_Count), K => K, Lambda => Lambda);
+        Random.Weibull ([Random_Count], K => K, Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for Weibull: " & Tensor.Mean'Image
@@ -1357,7 +1357,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Lambda;
       Expected_Variance : constant Element := Lambda;
 
-      Tensor : constant CPU_Tensor := Random.Poisson ((1 => Random_Count), Lambda => Lambda);
+      Tensor : constant CPU_Tensor := Random.Poisson ([Random_Count], Lambda => Lambda);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.03,
         "Unexpected mean for Poisson: " & Tensor.Mean'Image
@@ -1375,7 +1375,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := K * Theta;
       Expected_Variance : constant Element := K * Theta ** 2;
 
-      Tensor : constant CPU_Tensor := Random.Gamma ((1 => Random_Count), K => K, Theta => Theta);
+      Tensor : constant CPU_Tensor := Random.Gamma ([Random_Count], K => K, Theta => Theta);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for gamma: " & Tensor.Mean'Image
@@ -1395,7 +1395,7 @@ package body Generic_Test_Tensors_Vectors is
         (Alpha * Beta) / ((Alpha + Beta)**2 * (Alpha + Beta + 1.0));
 
       Tensor : constant CPU_Tensor :=
-        Random.Beta ((1 => Random_Count), Alpha => Alpha, Beta => Beta);
+        Random.Beta ([Random_Count], Alpha => Alpha, Beta => Beta);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.01,
         "Unexpected mean for Beta: " & Tensor.Mean'Image
@@ -1412,7 +1412,7 @@ package body Generic_Test_Tensors_Vectors is
       Expected_Mean     : constant Element := Element (K);
       Expected_Variance : constant Element := Element (K * 2);
 
-      Tensor : constant CPU_Tensor := Random.Chi_Squared ((1 => Random_Count), K => K);
+      Tensor : constant CPU_Tensor := Random.Chi_Squared ([Random_Count], K => K);
    begin
       Assert (abs (Tensor.Mean - Expected_Mean) <= 0.1,
         "Unexpected mean for Chi_Squared: " & Tensor.Mean'Image
@@ -1429,17 +1429,13 @@ package body Generic_Test_Tensors_Vectors is
 
       --  This example is from numpy.random.standard_t's documentation
       Data : constant CPU_Tensor := To_Tensor
-        ((5260.0, 5470.0, 5640.0, 6180.0, 6390.0, 6515.0, 6805.0, 7515.0, 7515.0, 8230.0, 8770.0));
+        ([5260.0, 5470.0, 5640.0, 6180.0, 6390.0, 6515.0, 6805.0, 7515.0, 7515.0, 8230.0, 8770.0]);
 
       T : constant Element := Random.Test_Statistic_T_Test (Data, True_Mean);
 
       --  The null hypothesis must be rejected if the distribution > positive T
       --  or < negative T
-      Tensor : constant CPU_Tensor := Random.Student_T ((1 => Trials), V => Data.Elements - 1);
---      XXX : constant Boolean := Print (">>>");
---      Foo : constant CPU_Tensor := ;
---      ZZZ : constant Boolean := Print (Element'(Foo.Get (1))'Image);
---      YYY : constant Boolean := Print ("<<<");
+      Tensor : constant CPU_Tensor := Random.Student_T ([Trials], V => Data.Elements - 1);
       Result : constant Element    := Sum (1.0 and (Tensor >= abs T)) / Element (Trials);
    begin
       Assert (Result in 0.008 .. 0.010, "Unexpected result Student's t trials: " & Result'Image);
