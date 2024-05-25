@@ -97,7 +97,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end Make_Upper_Triangular;
 
    package Operations is new Orka.Numerics.Tensors.Operations
-     (CPU_Tensor, Make_Upper_Triangular, Scale_Row, Swap_Rows, Forward_Substitute, Back_Substitute,
+     (CPU_Tensor, Make_Upper_Triangular, Swap_Rows, Forward_Substitute, Back_Substitute,
       Expression_Type, CPU_QR_Factorization, Create_QR, Q, R);
 
    ----------------------------------------------------------------------------

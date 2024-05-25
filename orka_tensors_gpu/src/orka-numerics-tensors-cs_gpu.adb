@@ -224,7 +224,7 @@ package body Orka.Numerics.Tensors.CS_GPU is
    end Make_Upper_Triangular;
 
    package Operations is new Orka.Numerics.Tensors.Operations
-     (GPU_Tensor, Make_Upper_Triangular, Scale_Row, Swap_Rows, Forward_Substitute, Back_Substitute,
+     (GPU_Tensor, Make_Upper_Triangular, Swap_Rows, Forward_Substitute, Back_Substitute,
       Expression_Type, GPU_QR_Factorization, Create_QR, Q, R);
 
    ----------------------------------------------------------------------------
@@ -961,6 +961,8 @@ package body Orka.Numerics.Tensors.CS_GPU is
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Left.Reference));
             Source_Right : GPU_Tensor :=
               GPU_Tensor (Tensor'Class'(Copy.Operation.Matrix_Operation.Right.Reference));
+
+            Source_Left_Columns : constant Natural := (if Source_Left.Axes > 1 then Source_Left.Columns else Source_Left.Rows);
          begin
             Buffers.Append (Materialize_Tensor (Source_Left));
             Buffers.Append (Materialize_Tensor (Source_Right));
@@ -971,12 +973,11 @@ package body Orka.Numerics.Tensors.CS_GPU is
                when 2 => Set_Shape (Kernel, Object.Shape);
                when others => raise Not_Implemented_Yet;  --  FIXME
             end case;
-            Kernel.Uniform ("size").Set_UInt (Unsigned_32 (Source_Left.Columns));
-            pragma Assert (Source_Left.Columns = Source_Right.Rows);
+            Kernel.Uniform ("size").Set_UInt (Unsigned_32 (Source_Left_Columns));
+            pragma Assert (Source_Left_Columns = Source_Right.Rows);
             pragma Assert (Source_Right.Axes = Object.Axes);
 
-            --  TODO Shouldn't Source_Left also be able to be a row vector, e.g. Axes <= 2?
-            pragma Assert (Source_Left.Axes = 2);
+            pragma Assert (Source_Left.Axes <= 2);
             pragma Assert (Source_Right.Axes <= 2);
             pragma Assert (Object.Axes <= 2);
          end Initialize_Matrix_Matrix;

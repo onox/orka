@@ -19,7 +19,6 @@ private generic
 
    with procedure Make_Upper_Triangular (Object : in out Tensor_Type; Offset : Integer := 0);
 
-   with procedure Scale_Row (Ab : in out Tensor_Type; I : Index_Type; Scale : Element);
    with procedure Swap_Rows (Ab : in out Tensor_Type; I, J : Index_Type);
 
    with procedure Forward_Substitute (Ab : in out Tensor_Type; Index, Pivot_Index : Index_Type);

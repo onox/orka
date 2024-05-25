@@ -73,6 +73,8 @@ package Orka.Numerics.Tensors is
        or else raise Constraint_Error with
          "Range start (" & Trim (Range_Type.Start) & ") > stop (" & Trim (Range_Type.Stop) & ")";
 
+   function Range_Length (Index : Range_Type) return Positive is (Index.Stop - Index.Start + 1);
+
    type Tensor_Range is array (Tensor_Axis range <>) of Range_Type;
 
    function Shape (Index : Tensor_Range) return Tensor_Shape
@@ -114,7 +116,7 @@ package Orka.Numerics.Tensors is
    --  Return the value of a boolean matrix
 
    function Get (Object : Tensor; Index : Range_Type) return Tensor is abstract
-     with Post'Class => Object.Axes = Get'Result.Axes;
+     with Post'Class => (if Index.Start = Index.Stop then Object.Axes in Get'Result.Axes | Get'Result.Axes + 1 else Object.Axes = Get'Result.Axes);
 
    function Get (Object : Tensor; Index : Tensor_Range) return Tensor is abstract
      with Pre'Class  => Index'Length <= Object.Axes,

@@ -409,15 +409,40 @@ package body Orka.Numerics.Tensors.Operations is
    end QR_For_Least_Squares;
 
    function QR_Solve (R, Y : Tensor_Type; Determinancy : Matrix_Determinancy) return Tensor_Type
-     with Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
+     with Pre  => Is_Equal (R.Shape, Y.Shape, 2),
+          Post => Is_Equal (QR_Solve'Result.Shape, Y.Shape, 1);
+
+   --  Perform back or forward substitution on a single row of a triangular matrix A and replace one element in X
+   --
+   --  This can be used to solve A * x = B for x. Parameters Start and Stop
+   --  are the column indices after (for upper triangular) or before (for lower triangular) the pivot position.
+   procedure Substitute_Row (A, B : Tensor_Type; X : in out Tensor_Type; Row_Index, Column_Index : Index_Type; Start, Stop : Natural) is
+      Pivot : constant Element := A.Get ([Row_Index, Column_Index]);
+
+      Xi : Tensor_Type := B.Get (Row_Index).Reshape([1, B.Columns]);
+   begin
+      if Stop >= Start then
+         declare
+            Indices_After_Pivot : constant Range_Type := (Start, Stop);
+
+            Row_From_A  : constant Tensor_Type := A.Get (Tensor_Range'[(Row_Index, Row_Index), Indices_After_Pivot]);
+            Rows_From_B : constant Tensor_Type := X.Get (Indices_After_Pivot).Reshape ([Range_Length (Indices_After_Pivot), B.Columns]);
+            pragma Assert (Row_From_A.Shape = [Rows_From_B.Rows]);
+
+            Sum : constant Tensor_Type := Row_From_A * Rows_From_B;
+            pragma Assert (Sum.Shape = [1, Rows_From_B.Columns]);
+         begin
+            Xi := @ - Sum;
+         end;
+      end if;
+
+      X.Set (Row_Index, Xi.Flatten / Pivot);
+   end Substitute_Row;
 
    function QR_Solve
      (R, Y         : Tensor_Type;
       Determinancy : Matrix_Determinancy) return Tensor_Type
    is
-      Ry : Tensor_Type := Concatenate (R, Y, Axis => 2);
-
-      Columns : constant Positive := R.Columns;
       Size    : constant Positive := Natural'Min (R.Rows, R.Columns);
       --  Use the smallest Axis of R for the size of the reduced (square) version R1
       --  without needing to extract it
@@ -425,7 +450,8 @@ package body Orka.Numerics.Tensors.Operations is
       --  R = [R1] (A is overdetermined) or R = [R1 0] (A is underdetermined)
       --      [ 0]
 
-      Columns_Ry : constant Positive := Ry.Columns;
+      --  Empty is sufficient, but might fail for GPU backend which tries to materialize it in procedure Set
+      X : Tensor_Type := Zeros (Y.Shape);
    begin
       case Determinancy is
          when Overdetermined =>
@@ -433,20 +459,19 @@ package body Orka.Numerics.Tensors.Operations is
             --  reduced echelon form by performing back-substitution on Ry
             --  (since R is upper triangular no forward phase is needed)
             for Index in reverse 1 .. Size loop
-               Back_Substitute (Ry, Index, Index);
+               Substitute_Row (R, Y, X, Index, Index, Index + 1, R.Columns);
             end loop;
          when Underdetermined =>
             --  Forward phase: row reduce augmented matrix of R^T * y = b
             --  to reduced echelon form by performing forward-substitution on Ry
             --  (R is actually R^T) (reduced because R^T is lower triangular)
             for Index in 1 .. Size loop
-               Scale_Row (Ry, Index, 1.0 / Ry.Get ([Index, Index]));
-               Forward_Substitute (Ry, Index, Index);
+               Substitute_Row (R, Y, X, Index, Index, 1, Index - 1);
             end loop;
          when Unknown => raise Program_Error;
       end case;
 
-      return Ry.Get (Tensor_Range'((1, Size), (Columns + 1, Columns_Ry)));
+      return X;
    end QR_Solve;
 
    overriding
