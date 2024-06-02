@@ -1821,7 +1821,7 @@ package body Orka.Frame_Graphs is
             Append ("name", Image (+Resource.Data.Name), True);
             Append ("kind", Image (Resource.Data.Description.Kind'Image), True);
             Append ("format", Image (Resource.Data.Description.Format'Image), True);
-            Append ("id", Image (Natural (Resource.Data.ID.Value)), True);
+            Append ("id", Image (Resource.Data.ID.Value), True);
             Append ("version", Image (Natural (Resource.Data.Version)), True);
             Append ("implicit", Image (Resource.Implicit), True);
             Append ("readMode", Image (Resource.Input_Mode'Image), True);
@@ -1898,11 +1898,11 @@ package body Orka.Frame_Graphs is
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String)
    is
-      function Get_Pass_Referenceces (Index : Render_Pass_Index) return Natural is (0);
+      function Get_Pass_References (Index : Render_Pass_Index) return Natural is (0);
 
-      function Get_Resource_Referenceces (Index : Handle_Type) return Natural is (0);
+      function Get_Resource_References (Index : Handle_Type) return Natural is (0);
    begin
-      Object.Write_Graph (Get_Pass_Referenceces'Access, Get_Resource_Referenceces'Access, Location, Path);
+      Object.Write_Graph (Get_Pass_References'Access, Get_Resource_References'Access, Location, Path);
    end Write_Graph;
 
    procedure Write_Graph
@@ -1910,9 +1910,11 @@ package body Orka.Frame_Graphs is
       Location : Resources.Locations.Writable_Location_Ptr;
       Path     : String)
    is
-      function Get_Pass_References (Index : Render_Pass_Index) return Natural is (Object.Render_Pass_References (Index));
+      function Get_Pass_References (Index : Render_Pass_Index) return Natural is
+        (Object.Render_Pass_References (Index));
 
-      function Get_Resource_References (Index : Handle_Type) return Natural is (Object.Resource_References (Index));
+      function Get_Resource_References (Index : Handle_Type) return Natural is
+        (Object.Resource_References (Index));
    begin
       Object.Graph.Write_Graph (Get_Pass_References'Access, Get_Resource_References'Access, Location, Path);
    end Write_Graph;
