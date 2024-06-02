@@ -23,22 +23,13 @@ package body GL.Objects.Textures is
    Base_Level : constant := 0;
 
    function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count is
-   begin
-      case Kind is
-         when Texture_1D =>
-            return One;
-         when Texture_2D | Texture_2D_Multisample | Texture_1D_Array |
-           Texture_Rectangle | Texture_Cube_Map =>
-            return Two;
-         when Texture_3D | Texture_2D_Array | Texture_2D_Multisample_Array |
-           Texture_Cube_Map_Array =>
-            return Three;
-         when Texture_Buffer =>
-            raise Constraint_Error;
-      end case;
-   end Get_Dimensions;
+     (case Kind is
+         when Texture_1D                                                                                    => 1,
+         when Texture_2D | Texture_2D_Multisample | Texture_1D_Array | Texture_Rectangle | Texture_Cube_Map => 2,
+         when Texture_3D | Texture_2D_Array | Texture_2D_Multisample_Array | Texture_Cube_Map_Array         => 3,
+         when Texture_Buffer => raise Constraint_Error);
 
-   function Dimensions (Object : Texture) return Dimension_Count is (Object.Dimensions);
+   function Dimensions (Object : Texture) return Dimension_Count is (Get_Dimensions (Object.Kind));
 
    function Allocated (Object : Texture) return Boolean is (Object.Allocated);
 
@@ -222,26 +213,26 @@ package body GL.Objects.Textures is
    begin
       if Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array then
          case Object.Dimensions is
-            when One =>
+            when 1 =>
                raise Program_Error;
-            when Two =>
+            when 2 =>
                API.Texture_Storage_2D_Multisample_I.Ref
                  (Object.Reference.GL_Id, Samples,
                   Format, Width, Height, Low_Level.Bool (Fixed_Locations));
-            when Three =>
+            when 3 =>
                API.Texture_Storage_3D_Multisample_I.Ref
                  (Object.Reference.GL_Id, Samples,
                   Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
          end case;
       else
          case Object.Dimensions is
-            when One =>
+            when 1 =>
                API.Texture_Storage_1D.Ref
                  (Object.Reference.GL_Id, Levels, Format, Width);
-            when Two =>
+            when 2 =>
                API.Texture_Storage_2D_I.Ref
                  (Object.Reference.GL_Id, Levels, Format, Width, Height);
-            when Three =>
+            when 3 =>
                API.Texture_Storage_3D_I.Ref
                  (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
          end case;
@@ -258,25 +249,25 @@ package body GL.Objects.Textures is
    begin
       if Object.Kind in Texture_2D_Multisample | Texture_2D_Multisample_Array then
          case Object.Dimensions is
-            when One =>
+            when 1 =>
                raise Program_Error;
-            when Two =>
+            when 2 =>
                API.Texture_Storage_2D_Multisample_C.Ref
                  (Object.Reference.GL_Id, Samples,
                   Format, Width, Height, Low_Level.Bool (Fixed_Locations));
-            when Three =>
+            when 3 =>
                API.Texture_Storage_3D_Multisample_C.Ref
                  (Object.Reference.GL_Id, Samples,
                   Format, Width, Height, Depth, Low_Level.Bool (Fixed_Locations));
          end case;
       else
          case Object.Dimensions is
-            when One =>
+            when 1 =>
                raise Program_Error;
-            when Two =>
+            when 2 =>
                API.Texture_Storage_2D_C.Ref
                  (Object.Reference.GL_Id, Levels, Format, Width, Height);
-            when Three =>
+            when 3 =>
                API.Texture_Storage_3D_C.Ref
                  (Object.Reference.GL_Id, Levels, Format, Width, Height, Depth);
          end case;
@@ -296,18 +287,18 @@ package body GL.Objects.Textures is
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
       --  according to Table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
-        := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
+        := (if Object.Kind = Texture_Cube_Map then 3 else Object.Dimensions);
    begin
       case Dimensions is
-         when One =>
+         when 1 =>
             API.Texture_Sub_Image_1D.Ref
               (Object.Reference.GL_Id, Level, X, Width, Source_Format,
                Source_Type, Source);
-         when Two =>
+         when 2 =>
             API.Texture_Sub_Image_2D.Ref
               (Object.Reference.GL_Id, Level, X, Y, Width, Height,
                Source_Format, Source_Type, Source);
-         when Three =>
+         when 3 =>
             API.Texture_Sub_Image_3D.Ref
               (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
                Source_Format, Source_Type, Source);
@@ -326,16 +317,16 @@ package body GL.Objects.Textures is
       --  Texture_Cube_Map uses 2D storage, but 3D load operation
       --  according to Table 8.15 of the OpenGL specification
       Dimensions : constant Dimension_Count
-        := (if Object.Kind = Texture_Cube_Map then Three else Object.Dimensions);
+        := (if Object.Kind = Texture_Cube_Map then 3 else Object.Dimensions);
    begin
       case Dimensions is
-         when One =>
+         when 1 =>
             raise Program_Error;
-         when Two =>
+         when 2 =>
             API.Compressed_Texture_Sub_Image_2D.Ref
               (Object.Reference.GL_Id, Level, X, Y, Width, Height,
                Source_Format, Image_Size, Source);
-         when Three =>
+         when 3 =>
             API.Compressed_Texture_Sub_Image_3D.Ref
               (Object.Reference.GL_Id, Level, X, Y, Z, Width, Height, Depth,
                Source_Format, Image_Size, Source);

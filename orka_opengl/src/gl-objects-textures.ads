@@ -33,9 +33,7 @@ package GL.Objects.Textures is
 
    use all type LE.Texture_Kind;
 
-   type Dimension_Count is (One, Two, Three);
-
-   function Get_Dimensions (Kind : LE.Texture_Kind) return Dimension_Count;
+   type Dimension_Count is range 1 .. 3;
 
    function Maximum_Anisotropy return Single
      with Post => Maximum_Anisotropy'Result >= 16.0;
@@ -195,7 +193,7 @@ package GL.Objects.Textures is
       Source_Format : Pixels.Compressed_Format;
       Image_Size    : Types.Size;
       Source        : System.Address)
-   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed;
+   with Pre => Object.Dimensions /= 1 and Object.Allocated and Object.Compressed;
 
    procedure Copy_Sub_Data
      (Object  : Texture;
@@ -231,7 +229,7 @@ package GL.Objects.Textures is
       X, Y, Z              : Types.Size := 0;
       Width, Height, Depth : Types.Positive_Size;
       Format : Pixels.Compressed_Format) return not null Types.Pointers.UByte_Array_Access
-   with Pre => Object.Dimensions /= One and Object.Allocated and Object.Compressed
+   with Pre => Object.Dimensions /= 1 and Object.Allocated and Object.Compressed
      and Object.Kind not in Texture_2D_Multisample | Texture_2D_Multisample_Array;
 
    generic
@@ -290,7 +288,6 @@ private
 
    type Texture is new Texture_Base with record
       Allocated  : Boolean := False;
-      Dimensions : Dimension_Count := Get_Dimensions (Texture.Kind);
    end record;
 
    type Buffer_Texture is new Texture_Base (Kind => Texture_Buffer) with null record;
