@@ -45,6 +45,7 @@ package Orka.Rendering.Textures is
         when Texture_Cube_Map             => Texture_2D,
         when Texture_Cube_Map_Array       => Texture_Cube_Map,
         when others => raise Constraint_Error);
+   --  Return the kind of *one* layer of a texture with the given kind
 
    function Layers (Kind : LE.Texture_Kind; Size : Size_3D) return Natural is
      (case Kind is

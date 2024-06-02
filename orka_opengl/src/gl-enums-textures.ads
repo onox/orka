@@ -21,7 +21,7 @@ package GL.Enums.Textures is
 
    type Parameter is (Border_Color, Mag_Filter, Min_Filter, Wrap_S,
                       Wrap_T, Wrap_R, Min_LoD, Max_LoD,
-                      Base_Level, Max_Level, Immutable_Levels, Max_Anisotropy,
+                      Base_Level, Max_Level, Max_Anisotropy,
                       LoD_Bias, Compare_Mode, Compare_Func);
 
    type Compare_Kind is (None, Compare_R_To_Texture);
@@ -43,7 +43,6 @@ private
                       Max_LoD         => 16#813B#,
                       Base_Level      => 16#813C#,
                       Max_Level       => 16#813D#,
-                      Immutable_Levels => 16#82DF#,
                       Max_Anisotropy  => 16#84FE#,
                       LoD_Bias        => 16#8501#,
                       Compare_Mode    => 16#884C#,

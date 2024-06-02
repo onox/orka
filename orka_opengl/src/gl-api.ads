@@ -271,9 +271,6 @@ private package GL.API is
    package Texture_Parameter_Int is new Loader.Procedure_With_3_Params
      ("glTextureParameteri", UInt, Enums.Textures.Parameter, Int);
 
-   package Get_Texture_Parameter_Int is new Loader.Getter_With_3_Params
-     ("glGetTextureParameteriv", UInt, Enums.Textures.Parameter, Int);
-
    package Get_Texture_Level_Parameter is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Size);
@@ -281,10 +278,6 @@ private package GL.API is
    package Get_Texture_Level_Parameter_Format_I is new Loader.Getter_With_4_Params
      ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
       Enums.Textures.Level_Parameter, Pixels.Internal_Format);
-
-   package Get_Texture_Level_Parameter_Format_C is new Loader.Getter_With_4_Params
-     ("glGetTextureLevelParameteriv", UInt, Objects.Textures.Mipmap_Level,
-      Enums.Textures.Level_Parameter, Pixels.Compressed_Format);
 
    package Delete_Textures is new Loader.Procedure_With_2_Params
      ("glDeleteTextures", Size, Low_Level.UInt_Array);

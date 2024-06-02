@@ -69,7 +69,7 @@ package body GL.Objects.Textures is
       return Texture (Result);
    end Create_View;
 
-   function Create_View
+   function Create_Compressed_View
      (Object    : Texture;
       Kind      : LE.Texture_Kind;
       Format    : Pixels.Compressed_Format;
@@ -82,39 +82,7 @@ package body GL.Objects.Textures is
         Format, UInt (Min_Level), UInt (Levels), UInt (Min_Layer), UInt (Layers));
 
       return Texture (Result);
-   end Create_View;
-
-   function Create_View
-     (Object : Texture;
-      Kind   : LE.Texture_Kind;
-      Layer  : Size) return Texture
-   is
-      function Get_Layers (Kind : LE.Texture_Kind) return Positive_Size is
-        (case Kind is
-            when Texture_1D | Texture_2D | Texture_3D       => 1,
-            when Texture_Rectangle | Texture_2D_Multisample => 1,
-            when Texture_Cube_Map | Texture_Cube_Map_Array  => 6,
-            when Texture_Buffer                             => raise Constraint_Error,
-            when others                                     => 1);
-   begin
-      if Object.Compressed then
-         return Object.Create_View
-          (Kind      => Kind,
-           Format    => Object.Compressed_Format,
-           Min_Level => Object.Lowest_Mipmap_Level,
-           Levels    => Object.Mipmap_Levels,
-           Min_Layer => Layer,
-           Layers    => Get_Layers (Kind));
-      else
-         return Object.Create_View
-          (Kind      => Kind,
-           Format    => Object.Internal_Format,
-           Min_Level => Object.Lowest_Mipmap_Level,
-           Levels    => Object.Mipmap_Levels,
-           Min_Layer => Layer,
-           Layers    => Get_Layers (Kind));
-      end if;
-   end Create_View;
+   end Create_Compressed_View;
 
    function Internal_Format (Object : Texture) return Pixels.Internal_Format is
       Result : Pixels.Internal_Format := Pixels.Internal_Format'First;
@@ -123,14 +91,6 @@ package body GL.Objects.Textures is
         (Object.Reference.GL_Id, Base_Level, Enums.Textures.Internal_Format, Result);
       return Result;
    end Internal_Format;
-
-   function Compressed_Format (Object : Texture) return Pixels.Compressed_Format is
-      Result : Pixels.Compressed_Format := Pixels.Compressed_Format'First;
-   begin
-      API.Get_Texture_Level_Parameter_Format_C.Ref
-        (Object.Reference.GL_Id, Base_Level, Enums.Textures.Internal_Format, Result);
-      return Result;
-   end Compressed_Format;
 
    function Compressed (Object : Texture) return Boolean is
       Result : Size := 0;
@@ -195,36 +155,11 @@ package body GL.Objects.Textures is
                                  Enums.Textures.Base_Level, Level);
    end Set_Lowest_Mipmap_Level;
 
-   function Lowest_Mipmap_Level (Object : Texture) return Mipmap_Level is
-      Ret : Mipmap_Level := Mipmap_Level'First;
-   begin
-      API.Get_Texture_Parameter_Int.Ref
-        (Object.Reference.GL_Id, Enums.Textures.Base_Level, Ret);
-      return Ret;
-   end Lowest_Mipmap_Level;
-
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level) is
    begin
       API.Texture_Parameter_Int.Ref
         (Object.Reference.GL_Id, Enums.Textures.Max_Level, Level);
    end Set_Highest_Mipmap_Level;
-
-   function Highest_Mipmap_Level (Object : Texture)
-                                  return Mipmap_Level is
-      Ret : Mipmap_Level := Mipmap_Level'First;
-   begin
-      API.Get_Texture_Parameter_Int.Ref
-        (Object.Reference.GL_Id, Enums.Textures.Max_Level, Ret);
-      return Ret;
-   end Highest_Mipmap_Level;
-
-   function Mipmap_Levels (Object : Texture) return Mipmap_Level is
-      Result : Mipmap_Level := Mipmap_Level'First;
-   begin
-      API.Get_Texture_Parameter_Int.Ref
-        (Object.Reference.GL_Id, Enums.Textures.Immutable_Levels, Result);
-      return Result;
-   end Mipmap_Levels;
 
    procedure Clear_Using_Data
      (Object : Texture; Level : Mipmap_Level;
@@ -239,9 +174,7 @@ package body GL.Objects.Textures is
    procedure Clear_Using_Zeros
      (Object : Texture; Level : Mipmap_Level) is
    begin
-      API.Clear_Tex_Image.Ref
-        (Object.Reference.GL_Id, Level, Pixels.Format'First,
-         Pixels.Data_Type'First, System.Null_Address);
+      Object.Clear_Using_Data (Level, Pixels.Format'First, Pixels.Data_Type'First, System.Null_Address);
    end Clear_Using_Zeros;
 
    procedure Generate_Mipmap (Object : Texture) is

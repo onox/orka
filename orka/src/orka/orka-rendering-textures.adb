@@ -50,6 +50,13 @@ package body Orka.Rendering.Textures is
 
    function Create_View (Object : Texture; Layer : Natural) return Texture is
       Kind : constant LE.Texture_Kind := Layer_Kind (Object.Kind);
+
+      function Get_Layers (Kind : LE.Texture_Kind) return Orka.Size is
+        (case Kind is
+           when Texture_1D | Texture_2D | Texture_3D       => 1,
+           when Texture_Rectangle | Texture_2D_Multisample => 1,
+           when Texture_Cube_Map                           => 6,
+           when others                                     => raise Program_Error);
    begin
       if Object.Description.Compressed then
          raise Constraint_Error;
@@ -57,7 +64,13 @@ package body Orka.Rendering.Textures is
 
       return
         (Kind        => Kind,
-         Texture     => Object.Texture.Create_View (Kind, Integer_32 (Layer)),
+         Texture     => Object.Texture.Create_View
+                          (Kind      => Kind,
+                           Format    => Object.Description.Format,
+                           Min_Level => 0,
+                           Levels    => Orka.Size (Object.Description.Levels),
+                           Min_Layer => Orka.Size (Layer),
+                           Layers    => Get_Layers (Kind)),
          Description =>
            (Kind    => Kind,
             Compressed => False,
@@ -76,7 +89,7 @@ package body Orka.Rendering.Textures is
 
    function Size
      (Object : Texture;
-      Level  : GL.Objects.Textures.Mipmap_Level := 0) return Size_3D
+      Level  : Mipmap_Level := 0) return Size_3D
    is
       Has_Height : constant Boolean := Object.Kind not in Texture_1D | Texture_1D_Array;
       Has_Depth  : constant Boolean := Object.Kind = Texture_3D;
@@ -121,7 +134,7 @@ package body Orka.Rendering.Textures is
 
    function Image
      (Object : Texture;
-      Level  : GL.Objects.Textures.Mipmap_Level := 0) return String
+      Level  : Mipmap_Level := 0) return String
    is
       Size : constant Size_3D := Object.Size (Level);
 
@@ -134,10 +147,10 @@ package body Orka.Rendering.Textures is
       return
         Width & U (" × ") & Height & U (" × ") & Depth & " " & Object.Kind'Image &
         " with " &
-        (if Object.Texture.Compressed then
-           Object.Texture.Compressed_Format'Image
+        (if Object.Description.Compressed then
+           Object.Description.Compressed_Format'Image
          else
-           Object.Texture.Internal_Format'Image) & " format";
+           Object.Description.Format'Image) & " format";
    end Image;
 
 end Orka.Rendering.Textures;

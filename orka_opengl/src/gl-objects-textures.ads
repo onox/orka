@@ -118,13 +118,6 @@ package GL.Objects.Textures is
    procedure Set_Lowest_Mipmap_Level  (Object : Texture; Level : Mipmap_Level);
    procedure Set_Highest_Mipmap_Level (Object : Texture; Level : Mipmap_Level);
 
-   function Lowest_Mipmap_Level  (Object : Texture) return Mipmap_Level;
-   function Highest_Mipmap_Level (Object : Texture) return Mipmap_Level;
-
-   function Mipmap_Levels (Object : Texture) return Mipmap_Level
-     with Pre  => Object.Allocated,
-          Post => Mipmap_Levels'Result >= 1;
-
    --  TODO Add procedure Set_Texture_Mode (Mode : Depth (default) | Stencil)
    --  (for Depth_Stencil textures)
 
@@ -132,9 +125,6 @@ package GL.Objects.Textures is
 
    function Internal_Format (Object : Texture) return Pixels.Internal_Format
      with Pre => Object.Allocated and not Object.Compressed;
-
-   function Compressed_Format (Object : Texture) return Pixels.Compressed_Format
-     with Pre => Object.Allocated and Object.Compressed;
 
    function Compressed (Object : Texture) return Boolean;
 
@@ -281,7 +271,7 @@ package GL.Objects.Textures is
    --  The format and kind must be compatible with the original texture. See
    --  the OpenGL documentation.
 
-   function Create_View
+   function Create_Compressed_View
      (Object    : Texture;
       Kind      : LE.Texture_Kind;
       Format    : Pixels.Compressed_Format;
@@ -292,14 +282,6 @@ package GL.Objects.Textures is
    --
    --  The format and kind must be compatible with the original texture. See
    --  the OpenGL documentation.
-
-   function Create_View
-     (Object : Texture;
-      Kind   : LE.Texture_Kind;
-      Layer  : Size) return Texture
-   with Pre => Object.Allocated and Object.Layered;
-   --  Create a Texture object that shares one layer or six layer-faces
-   --  of the original texture's data
 
 private
 
