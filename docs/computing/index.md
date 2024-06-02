@@ -162,7 +162,7 @@ the thread in the subgroup whose value must be broadcasted to all other threads.
 The hardware places several limits on the number of threads and workgroups.
 A workgroup often has a maximum of no less than 1024 threads.
 The exact number can be queried with the function `Compute_Work_Group_Size` of a
-`Program` object. It returns a `Dimension_Size_Array`, which is an array containing
+`Shader` object. It returns a `Dimension_Size_Array`, which is an array containing
 three values for the axes `X`, `Y`, and `Z`.
 
 A workgroup containing a large number of threads, decreases the amount of shared data
@@ -186,7 +186,7 @@ declare
 
    use all type Orka.Index_3D;
 
-   Group_Size : Dimension_Size_Array := Program_1.Compute_Work_Group_Size;
+   Group_Size : Dimension_Size_Array := Pipeline_1 (Compute_Shader).Value.Compute_Work_Group_Size;
    Size_X     : Unsigned_32          := Unsigned_32 (Group_Size (X));
 begin
    GL.Compute.Dispatch_Compute
