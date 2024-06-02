@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with GL.Pixels.Extensions;
-
 with Orka.Strings;
 with Orka.Types;
 
@@ -109,22 +107,6 @@ package body Orka.Rendering.Textures is
    begin
       Object.Texture.Bind_Image_Texture (Unsigned_32 (Index));
    end Bind_As_Image;
-
-   function Get_Format_Kind
-     (Format : GL.Pixels.Internal_Format) return Format_Kind
-   is
-      package PE renames GL.Pixels.Extensions;
-   begin
-      if PE.Depth_Stencil_Format (Format) then
-         return Depth_Stencil;
-      elsif PE.Depth_Format (Format) then
-         return Depth;
-      elsif PE.Stencil_Format (Format) then
-         return Stencil;
-      else
-         return Color;
-      end if;
-   end Get_Format_Kind;
 
    function Levels (Size : Size_3D) return Positive is
       Max_Size : constant Orka.Size := Orka.Size'Max (Orka.Size'Max (Size (X), Size (Y)), Size (Z));

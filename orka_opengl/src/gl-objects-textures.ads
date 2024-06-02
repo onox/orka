@@ -121,9 +121,6 @@ package GL.Objects.Textures is
 
    -----------------------------------------------------------------------------
 
-   function Internal_Format (Object : Texture) return Pixels.Internal_Format
-     with Pre => Object.Allocated and not Object.Compressed;
-
    function Compressed (Object : Texture) return Boolean;
 
    -----------------------------------------------------------------------------

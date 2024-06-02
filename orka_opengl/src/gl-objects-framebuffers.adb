@@ -17,27 +17,8 @@
 with Ada.Unchecked_Conversion;
 
 with GL.API;
-with GL.Pixels.Queries;
 
 package body GL.Objects.Framebuffers is
-
-   function Valid_Attachment
-     (Attachment : Attachment_Point;
-      Texture    : Textures.Texture) return Boolean
-   is
-      Format : GL.Pixels.Internal_Format renames Texture.Internal_Format;
-   begin
-      case Attachment is
-         when Depth_Stencil_Attachment =>
-            return GL.Pixels.Extensions.Depth_Stencil_Format (Format);
-         when Depth_Attachment =>
-            return GL.Pixels.Extensions.Depth_Format (Format);
-         when Stencil_Attachment =>
-            return GL.Pixels.Extensions.Stencil_Format (Format);
-         when others =>
-            return GL.Pixels.Queries.Color_Renderable (Format, Texture.Kind);
-      end case;
-   end Valid_Attachment;
 
    function Status
      (Object : Framebuffer;

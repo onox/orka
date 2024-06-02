@@ -24,13 +24,18 @@ package Orka.Rendering.Textures is
    package LE renames GL.Low_Level.Enums;
 
    use all type LE.Texture_Kind;
+   use all type GL.Pixels.Internal_Format;
 
    subtype Mipmap_Level is GL.Objects.Textures.Mipmap_Level;
 
-   type Format_Kind is (Depth_Stencil, Depth, Stencil, Color);
+   type Format_Kind is (Color, Depth, Stencil, Depth_Stencil);
 
-   function Get_Format_Kind
-     (Format : GL.Pixels.Internal_Format) return Format_Kind;
+   function Get_Format_Kind (Format : GL.Pixels.Internal_Format) return Format_Kind is
+     (case Format is
+        when Depth24_Stencil8 | Depth32F_Stencil8                       => Depth_Stencil,
+        when Depth_Component16 | Depth_Component24 | Depth_Component32F => Depth,
+        when Stencil_Index8                                             => Stencil,
+        when others                                                     => Color);
 
    function Has_Layers (Kind : LE.Texture_Kind) return Boolean is
      (Kind in Texture_1D_Array | Texture_2D_Array | Texture_2D_Multisample_Array |

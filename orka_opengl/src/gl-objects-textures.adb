@@ -75,14 +75,6 @@ package body GL.Objects.Textures is
       return Texture (Result);
    end Create_Compressed_View;
 
-   function Internal_Format (Object : Texture) return Pixels.Internal_Format is
-      Result : Pixels.Internal_Format := Pixels.Internal_Format'First;
-   begin
-      API.Get_Texture_Level_Parameter_Format_I.Ref
-        (Object.Reference.GL_Id, Base_Level, Enums.Textures.Internal_Format, Result);
-      return Result;
-   end Internal_Format;
-
    function Compressed (Object : Texture) return Boolean is
       Result : Size := 0;
    begin

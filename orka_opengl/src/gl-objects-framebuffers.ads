@@ -54,11 +54,6 @@ package GL.Objects.Framebuffers is
 
    type Default_Attachment_List is array (Positive range <>) of Default_Attachment_Point;
 
-   function Valid_Attachment
-     (Attachment : Attachment_Point;
-      Texture    : Textures.Texture) return Boolean
-   with Pre => not Texture.Compressed and Texture.Allocated;
-
    type Framebuffer is new GL_Object with private;
 
    overriding
@@ -101,7 +96,6 @@ package GL.Objects.Framebuffers is
       Texture    : Textures.Texture;
       Level      : Textures.Mipmap_Level)
    with Pre => Object /= Default_Framebuffer and
-                 Valid_Attachment (Attachment, Texture) and
                  (if Texture.Kind in
                     Texture_2D_Multisample | Texture_2D_Multisample_Array
                   then Level = 0);
@@ -113,7 +107,6 @@ package GL.Objects.Framebuffers is
       Level      : Textures.Mipmap_Level;
       Layer      : Natural)
    with Pre => Object /= Default_Framebuffer and
-                 Valid_Attachment (Attachment, Texture) and
                  Texture.Layered;
 
    procedure Detach (Object : Framebuffer; Attachment : Attachment_Point)

@@ -307,17 +307,6 @@ package GL.Pixels.Extensions is
         when Compressed_SRGB8_ALPHA8_ASTC_12x10_KHR    => 16,
         when Compressed_SRGB8_ALPHA8_ASTC_12x12_KHR    => 16);
 
-   -----------------------------------------------------------------------------
-
-   function Depth_Stencil_Format (Format : Internal_Format) return Boolean is
-     (Format in Depth24_Stencil8 | Depth32F_Stencil8);
-
-   function Depth_Format (Format : Internal_Format) return Boolean is
-     (Format in Depth_Component16 | Depth_Component24 | Depth_Component32F);
-
-   function Stencil_Format (Format : Internal_Format) return Boolean is
-     (Format in Stencil_Index8);
-
 private
 
    function Convert is new Ada.Unchecked_Conversion
