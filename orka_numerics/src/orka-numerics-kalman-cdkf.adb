@@ -18,19 +18,19 @@ with Orka.Numerics.Kalman.SPKF;
 
 package body Orka.Numerics.Kalman.CDKF is
 
-   function Weights (N : Positive; H2 : Tensors.Element_Type) return Weights_Type is
+   function Weights (N : Positive; H2 : Tensors.Real_Element) return Weights_Type is
       L : constant Element_Type := Element_Type (N);
 
       --  See equation 3.85 in Section 3.4.1 of [1]
 
       Count : constant Positive := 2 * N + 1;
 
-      Weights_Mean : Vector := Fill ([Count], 1.0 / (2.0 * H2));
+      Weights_Mean : Vector := Fill ([Count], Tensors.Convert (1.0 / (2.0 * H2)));
 
       Weights_Cov_1 : constant Element_Type := 1.0 / (4.0 * H2);
       Weights_Cov_2 : constant Element_Type := (H2 - 1.0) / (4.0 * H2**2);
    begin
-      Weights_Mean.Set ([1], (H2 - L) / H2);
+      Weights_Mean.Set ([1], Tensors.Convert ((H2 - L) / H2));
 
       return
         (N              => N,
@@ -76,18 +76,18 @@ package body Orka.Numerics.Kalman.CDKF is
       Points, S            : Matrix;
       Weights_1, Weights_2 : Element_Type) return Matrix
    is
-      Y_1L  : constant Matrix := Points.Get (Tensors.Range_Type'(2, N + 1));
-      Y_L2L : constant Matrix := Points.Get (Tensors.Range_Type'(N + 2, 2 * N + 1));
+      Y_1L  : constant Matrix := Points.Get (Range_Type'(2, N + 1));
+      Y_L2L : constant Matrix := Points.Get (Range_Type'(N + 2, 2 * N + 1));
       Y_1   : constant Matrix := Duplicate (N, Points.Get (1));
 
       V1 : constant Vector := Y_1L - Y_L2L;
       V2 : constant Vector :=
          (case Phase is
-            when Time_Update        => Y_1L + Y_L2L - 2.0 * Y_1,
-            when Measurement_Update => Y_1L - Y_L2L - 2.0 * Y_1);
+            when Time_Update        => Y_1L + Y_L2L - Tensors.Convert (2.0) * Y_1,
+            when Measurement_Update => Y_1L - Y_L2L - Tensors.Convert (2.0) * Y_1);
 
-      M1 : constant Matrix := Tensors.Square_Root (Weights_1) * V1;
-      M2 : constant Matrix := Tensors.Square_Root (Weights_2) * V2;
+      M1 : constant Matrix := Tensors.Convert (Tensors.Square_Root (Weights_1)) * V1;
+      M2 : constant Matrix := Tensors.Convert (Tensors.Square_Root (Weights_2)) * V2;
    begin
       return Matrix'(M1 & M2 & S).QR;
    end CDKF_Covariance;
@@ -111,12 +111,12 @@ package body Orka.Numerics.Kalman.CDKF is
    function CDKF_Cross_Covariance
      (N         : Positive;
       P, Y      : Matrix;
-      Weights_1 : Element_Type) return Matrix
+      Weights_1 : Tensors.Real_Element) return Matrix
    is
-      Y_1L  : Matrix renames Y.Get (Tensors.Range_Type'(2, N + 1));
-      Y_L2L : Matrix renames Y.Get (Tensors.Range_Type'(N + 2, 2 * N + 1));
+      Y_1L  : Matrix renames Y.Get (Range_Type'(2, N + 1));
+      Y_L2L : Matrix renames Y.Get (Range_Type'(N + 2, 2 * N + 1));
 
-      Root_Weight_Times_P : constant Matrix := Tensors.Square_Root (Weights_1) * P;
+      Root_Weight_Times_P : constant Matrix := Tensors.Convert (Tensors.Square_Root (Weights_1)) * P;
    begin
       return Root_Weight_Times_P * (Y_1L - Y_L2L);
    end CDKF_Cross_Covariance;

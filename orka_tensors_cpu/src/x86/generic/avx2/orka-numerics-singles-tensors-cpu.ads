@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Orka.Numerics.Tensors.SIMD_CPU;
+with Orka.Numerics.Singles.Elementary_Functions;
 
 with Orka.SIMD.AVX.Singles.Arithmetic;
 with Orka.SIMD.AVX.Singles.Compare;
@@ -48,6 +49,19 @@ package Orka.Numerics.Singles.Tensors.CPU is new Orka.Numerics.Singles.Tensors.S
    SIMD.AVX.Singles.Math.Sqrt,
    SIMD.AVX.Singles.Math.Min,
    SIMD.AVX.Singles.Math.Max,
+   Numerics.Singles.Elementary_Functions.Exp,
+   Numerics.Singles.Elementary_Functions.Log,
+   Numerics.Singles.Elementary_Functions.Log10,
+   Numerics.Singles.Elementary_Functions.Log2,
+   Numerics.Singles.Elementary_Functions.Sin,
+   Numerics.Singles.Elementary_Functions.Cos,
+   Numerics.Singles.Elementary_Functions.Tan,
+   Numerics.Singles.Elementary_Functions.Arcsin,
+   Numerics.Singles.Elementary_Functions.Arccos,
+   Numerics.Singles.Elementary_Functions.Arctan,
+   Numerics.Singles.Elementary_Functions.Radians_To_Degrees,
+   Numerics.Singles.Elementary_Functions.Degrees_To_Radians,
+   Numerics.Singles.Elementary_Functions."**",
    SIMD.AVX.Singles.Math.Ceil,
    SIMD.AVX.Singles.Math.Floor,
    SIMD.AVX.Singles.Math.Round_Nearest_Integer,
@@ -64,5 +78,9 @@ package Orka.Numerics.Singles.Tensors.CPU is new Orka.Numerics.Singles.Tensors.S
    SIMD.AVX.Singles.Compare."<=",
    SIMD.AVX2.Integers.Random.State,
    SIMD.AVX2.Integers.Random.Next,
-   SIMD.AVX2.Integers.Random.Reset);
+   SIMD.AVX2.Integers.Random.Reset,
+   Float_32'Min,
+   Float_32'Max,
+   Numerics.Singles.Elementary_Functions.Is_Valid,
+   Numerics.Singles.Elementary_Functions.Sqrt);
 pragma Preelaborate (Orka.Numerics.Singles.Tensors.CPU);

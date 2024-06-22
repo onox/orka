@@ -18,15 +18,14 @@ generic
 package Orka.Numerics.Kalman.UKF is
    pragma Preelaborate;
 
-   use type Tensors.Tensor_Axis;
-   use type Tensors.Element_Type;
+   use type Tensors.Real_Element;
 
    --  This package implements the state estimation form with additive noise
    --  of the Unscented Kalman Filter, Algorithm 8 from [1]
    --
    --  (See package Orka.Numerics.Kalman.SPKF for reference [1])
 
-   function Weights (N : Positive; A, B, K : Tensors.Element_Type) return Weights_Type
+   function Weights (N : Positive; A, B, K : Tensors.Real_Element) return Weights_Type
      with Pre => A in 0.0 .. 1.0 and B >= 0.0 and K >= 0.0;
    --  Return a set of weights for the sigma points for the UKF
    --

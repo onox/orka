@@ -20,11 +20,9 @@ with Orka.Numerics.Tensors;
 
 generic
    with package Tensors is new Orka.Numerics.Tensors (<>);
-   type Tensor (<>) is new Tensors.Tensor with private;
+   type Tensor (<>) is new Tensors.Real_Tensor with private;
 package Orka.Numerics.Kalman is
    pragma Preelaborate;
-
-   use type Tensors.Tensor_Shape;
 
    subtype Vector is Tensor;
    subtype Matrix is Tensor;
@@ -47,7 +45,7 @@ package Orka.Numerics.Kalman is
 
 private
 
-   subtype Element_Type is Tensors.Element_Type;
+   subtype Element_Type is Tensors.Real_Element;
 
    package Tensor_Holders is new Ada.Containers.Indefinite_Holders (Tensor);
 

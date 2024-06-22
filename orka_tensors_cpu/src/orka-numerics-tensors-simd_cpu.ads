@@ -49,6 +49,21 @@ generic
    with function Min (Left, Right : Vector_Type) return Vector_Type;
    with function Max (Left, Right : Vector_Type) return Vector_Type;
 
+   --  Elementary functions
+   with function Exp (Elements : Vector_Type) return Vector_Type;
+   with function Log (Elements : Vector_Type) return Vector_Type;
+   with function Log10 (Elements : Vector_Type) return Vector_Type;
+   with function Log2 (Elements : Vector_Type) return Vector_Type;
+   with function Sin (Elements : Vector_Type) return Vector_Type;
+   with function Cos (Elements : Vector_Type) return Vector_Type;
+   with function Tan (Elements : Vector_Type) return Vector_Type;
+   with function Arcsin (Elements : Vector_Type) return Vector_Type;
+   with function Arccos (Elements : Vector_Type) return Vector_Type;
+   with function Arctan (Left, Right : Vector_Type) return Vector_Type;
+   with function Radians_To_Degrees return Element_Type;
+   with function Degrees_To_Radians return Element_Type;
+   with function Power (Left, Right : Vector_Type) return Vector_Type;
+
    --  Logical
    with function Ceil (Elements : Vector_Type) return Vector_Type;
    with function Floor (Elements : Vector_Type) return Vector_Type;
@@ -71,6 +86,18 @@ generic
 
    with procedure Next (State : in out Random_Number_State; Value : out Vector_Type);
    with procedure Reset (State : out Random_Number_State; Seed : Duration);
+
+   with function Element_Min (Left, Right : Element_Type) return Element_Type is <>;
+   with function Element_Max (Left, Right : Element_Type) return Element_Type is <>;
+   with function Is_Valid (Value : Element_Type) return Boolean is <>;
+   with function Sqrt (Value : Element_Type) return Element_Type is <>;
+   with function "-" (Value : Element_Type) return Element_Type is <>;
+   with function "+" (Left, Right : Element_Type) return Element_Type is <>;
+   with function "-" (Left, Right : Element_Type) return Element_Type is <>;
+   with function "*" (Left, Right : Element_Type) return Element_Type is <>;
+   with function "/" (Left, Right : Element_Type) return Element_Type is <>;
+   with function "abs" (Value : Element_Type) return Element_Type is <>;
+   with function "<" (Left, Right : Element_Type) return Boolean is <>;
 package Orka.Numerics.Tensors.SIMD_CPU is
    pragma Preelaborate;
 
@@ -158,48 +185,10 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function Array_Range (Stop : Element) return CPU_Tensor;
 
    overriding
-   function Array_Range (Start, Stop : Element; Step : Element := 1.0) return CPU_Tensor;
+   function Array_Range (Start, Stop : Element) return CPU_Tensor;
 
    overriding
-   function Linear_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed) return CPU_Tensor;
-
-   overriding
-   function Log_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed;
-      Base        : Element := 10.0) return CPU_Tensor;
-
-   overriding
-   function Geometric_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed;
-      Base        : Element := 10.0) return CPU_Tensor;
-
-   overriding
-   function Identity (Size : Positive; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Identity (Rows, Columns : Positive; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Diagonal (Elements : Element_Array; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Diagonal (Elements : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor;
-
-   overriding
-   function Trace (Object : CPU_Tensor; Offset : Integer := 0) return Element;
+   function Array_Range (Start, Stop, Step : Element) return CPU_Tensor;
 
    overriding
    function Reshape (Object : CPU_Tensor; Shape : Tensor_Shape) return CPU_Tensor;
@@ -217,89 +206,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function "&" (Left, Right : CPU_Tensor) return CPU_Tensor;
-
-   ----------------------------------------------------------------------------
-   --                            Matrix operations                           --
-   ----------------------------------------------------------------------------
-
-   overriding
-   function "*" (Left, Right : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function "*" (Left, Right : CPU_Tensor) return Element;
-
-   overriding
-   function "**" (Left : CPU_Tensor; Right : Integer) return CPU_Tensor;
-
-   overriding
-   function Outer (Left, Right : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Inverse (Object : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Transpose (Object : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor;
-
-   overriding
-   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor;
-
-   overriding
-   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor;
-
-   type CPU_QR_Factorization (<>) is new QR_Factorization with private;
-
-   overriding
-   function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy;
-
-   function Q (Object : CPU_QR_Factorization'Class) return CPU_Tensor;
-   function R (Object : CPU_QR_Factorization'Class) return CPU_Tensor;
-
-   overriding
-   function QR (Object : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class;
-
-   overriding
-   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class;
-
-   overriding
-   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor;
---     with Pre'Class => CPU_QR_Factorization (Object).Q.Rows = B.Rows;
-   --  Note: commented to avoid GNAT bug box
-
-   overriding
-   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor;
-
-   overriding
-   function Cholesky_Update
-     (R, V : CPU_Tensor;
-      Mode : Update_Mode) return CPU_Tensor;
-
-   ----------------------------------------------------------------------------
-   --                            Vector operations                           --
-   ----------------------------------------------------------------------------
-
-   overriding function Norm (Object : CPU_Tensor) return Element;
-
-   overriding function Normalize (Object : CPU_Tensor) return CPU_Tensor;
-
-   overriding function Standardize (Object : CPU_Tensor) return CPU_Tensor;
-
-   overriding
-   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element;
 
    ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
@@ -432,17 +338,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    overriding function Min (Object : CPU_Tensor) return Element;
    overriding function Max (Object : CPU_Tensor) return Element;
 
-   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element;
-   overriding function Median (Object : CPU_Tensor) return Element;
-
-   overriding function Mean (Object : CPU_Tensor) return Element;
-
-   overriding
-   function Variance (Object : CPU_Tensor; Offset : Natural := 0) return Element;
-
-   overriding
-   function Standard_Deviation (Object : CPU_Tensor; Offset : Natural := 0) return Element;
-
    overriding
    function Min (Left, Right : CPU_Tensor) return CPU_Tensor;
 
@@ -454,30 +349,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Max (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
-
-   overriding
-   function Quantile
-     (Object : CPU_Tensor;
-      P      : Probability;
-      Axis   : Tensor_Axis) return CPU_Tensor;
-
-   overriding
-   function Median (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
-
-   overriding
-   function Mean (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
-
-   overriding
-   function Variance
-     (Object : CPU_Tensor;
-      Axis   : Tensor_Axis;
-      Offset : Natural := 0) return CPU_Tensor;
-
-   overriding
-   function Standard_Deviation
-     (Object : CPU_Tensor;
-      Axis   : Tensor_Axis;
-      Offset : Natural := 0) return CPU_Tensor;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -535,12 +406,6 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    ----------------------------------------------------------------------------
 
    overriding
-   function All_Close
-     (Left, Right        : CPU_Tensor;
-      Relative_Tolerance : Element := 1.0e-05;
-      Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean;
-
-   overriding
    function Any_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor;
 
    overriding
@@ -553,31 +418,211 @@ package Orka.Numerics.Tensors.SIMD_CPU is
    function All_True (Object : CPU_Tensor) return Boolean;
 
    ----------------------------------------------------------------------------
+   --                        Floating-point operations                       --
+   ----------------------------------------------------------------------------
+
+   type Real_CPU_Tensor (<>) is new CPU_Tensor and Real_Tensor with private;
+
+   overriding
+   function Array_Range (Start, Stop : Element; Step : Element) return Real_CPU_Tensor;
+
+   overriding
+   function Linear_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed) return Real_CPU_Tensor;
+
+   overriding
+   function Log_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed;
+      Base        : Real_Element := 10.0) return Real_CPU_Tensor;
+
+   overriding
+   function Geometric_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed;
+      Base        : Real_Element := 10.0) return Real_CPU_Tensor;
+
+   overriding
+   function Identity (Size : Positive; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Identity (Rows, Columns : Positive; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Upper_Triangular (Object : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Main_Diagonal (Object : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Diagonal (Elements : Element_Array; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Diagonal (Elements : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Trace (Object : Real_CPU_Tensor; Offset : Integer := 0) return Element;
+
+   ----------------------------------------------------------------------------
+   --                            Matrix operations                           --
+   ----------------------------------------------------------------------------
+
+   overriding
+   function "*" (Left, Right : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function "*" (Left, Right : Real_CPU_Tensor) return Element;
+
+   overriding
+   function "**" (Left : Real_CPU_Tensor; Right : Integer) return Real_CPU_Tensor;
+
+   overriding
+   function Outer (Left, Right : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Inverse (Object : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Transpose (Object : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Solve (A, B : Real_CPU_Tensor; Solution : out Solution_Kind) return Real_CPU_Tensor;
+
+   overriding
+   function Solve (A, B : Real_CPU_Tensor; Form : Triangular_Form) return Real_CPU_Tensor;
+
+   overriding
+   function Divide_By (B, A : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Divide_By (B, A : Real_CPU_Tensor; Form : Triangular_Form) return Real_CPU_Tensor;
+
+   type CPU_QR_Factorization (<>) is new QR_Factorization with private;
+
+   overriding
+   function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy;
+
+   function Q (Object : QR_Factorization'Class) return Real_CPU_Tensor;
+   function R (Object : QR_Factorization'Class) return Real_CPU_Tensor;
+
+   overriding
+   function QR (Object : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function QR (Object : Real_CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class;
+
+   overriding
+   function QR_For_Least_Squares (Object : Real_CPU_Tensor) return QR_Factorization'Class;
+
+   overriding
+   function Least_Squares (Object : QR_Factorization'Class; B : Real_CPU_Tensor) return Real_CPU_Tensor;
+--     with Pre'Class => CPU_QR_Factorization (Object).Q.Rows = B.Rows;
+   --  Note: commented to avoid GNAT bug box
+
+   overriding
+   function Least_Squares (A, B : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Constrained_Least_Squares (A, B, C, D : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Cholesky (Object : Real_CPU_Tensor; Form : Triangular_Form := Lower) return Real_CPU_Tensor;
+
+   overriding
+   function Cholesky_Update
+     (R, V : Real_CPU_Tensor;
+      Mode : Update_Mode) return Real_CPU_Tensor;
+
+   ----------------------------------------------------------------------------
+   --                            Vector operations                           --
+   ----------------------------------------------------------------------------
+
+   overriding function Norm (Object : Real_CPU_Tensor) return Element;
+
+   overriding function Normalize (Object : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding function Standardize (Object : Real_CPU_Tensor) return Real_CPU_Tensor;
+
+   overriding
+   function Correlation_Coefficient (Left, Right : Real_CPU_Tensor) return Correlation_Element;
+
+   ----------------------------------------------------------------------------
+   --                               Statistics                               --
+   ----------------------------------------------------------------------------
+
+   overriding function Quantile (Object : Real_CPU_Tensor; P : Probability) return Element;
+   overriding function Median (Object : Real_CPU_Tensor) return Element;
+
+   overriding function Mean (Object : Real_CPU_Tensor) return Element;
+
+   overriding
+   function Variance (Object : Real_CPU_Tensor; Offset : Natural := 0) return Element;
+
+   overriding
+   function Standard_Deviation (Object : Real_CPU_Tensor; Offset : Natural := 0) return Element;
+
+   overriding
+   function Quantile
+     (Object : Real_CPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return Real_CPU_Tensor;
+
+   overriding
+   function Median (Object : Real_CPU_Tensor; Axis : Tensor_Axis) return Real_CPU_Tensor;
+
+   overriding
+   function Mean (Object : Real_CPU_Tensor; Axis : Tensor_Axis) return Real_CPU_Tensor;
+
+   overriding
+   function Variance
+     (Object : Real_CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Real_CPU_Tensor;
+
+   overriding
+   function Standard_Deviation
+     (Object : Real_CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Real_CPU_Tensor;
+
+   ----------------------------------------------------------------------------
+
+   overriding
+   function All_Close
+     (Left, Right        : Real_CPU_Tensor;
+      Relative_Tolerance : Real_Element := 1.0e-05;
+      Absolute_Tolerance : Real_Element := Real_Element'Model_Epsilon) return Boolean;
+
+   ----------------------------------------------------------------------------
 
    procedure Reset_Random (Seed : Duration);
 
-   overriding function Random_Uniform (Shape : Tensor_Shape) return CPU_Tensor;
+   overriding function Random_Uniform (Shape : Tensor_Shape) return Real_CPU_Tensor;
    --  Return a tensor with elements from a uniform distribution in [0.0, 1.0)
 
 private
 
    type Vector_Array is array (Index_Type range <>) of Vector_Type;
 
-   type CPU_Tensor (Axes : Tensor_Axis; Size : Natural; Kind : Data_Type)
-     is new Tensor with
-   record
+   type CPU_Tensor (Axes : Tensor_Axis; Size : Natural; Kind : Data_Type) is new Tensor with record
       Shape : Tensor_Shape (1 .. Axes);
       Data  : Vector_Array (1 .. Size);
    end record;
 
+   type Real_CPU_Tensor is new CPU_Tensor and Real_Tensor with null record;
+
    type CPU_QR_Factorization (Q_Size, R_Size : Natural) is new QR_Factorization with record
-      Q : CPU_Tensor (Axes => 2, Size => Q_Size, Kind => Float_Type);
-      R : CPU_Tensor (Axes => 2, Size => R_Size, Kind => Float_Type);
+      Q : Real_CPU_Tensor (Axes => 2, Size => Q_Size, Kind => Float_Type);
+      R : Real_CPU_Tensor (Axes => 2, Size => R_Size, Kind => Float_Type);
       Determinancy : Matrix_Determinancy;
    end record;
 
-   function Q (Object : CPU_QR_Factorization'Class) return CPU_Tensor is (Object.Q);
-   function R (Object : CPU_QR_Factorization'Class) return CPU_Tensor is (Object.R);
+   function Q (Object : QR_Factorization'Class) return Real_CPU_Tensor is (CPU_QR_Factorization (Object).Q);
+   function R (Object : QR_Factorization'Class) return Real_CPU_Tensor is (CPU_QR_Factorization (Object).R);
 
    overriding
    function Determinancy (Object : CPU_QR_Factorization) return Matrix_Determinancy is

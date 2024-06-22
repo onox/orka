@@ -15,15 +15,16 @@
 --  limitations under the License.
 
 with Orka.Numerics.Tensors.SIMD_CPU;
+with Orka.Numerics.Doubles.Elementary_Functions;
 
 with Orka.SIMD.AVX.Doubles.Arithmetic;
 with Orka.SIMD.AVX.Doubles.Compare;
 with Orka.SIMD.AVX.Doubles.Logical;
 with Orka.SIMD.AVX.Doubles.Math;
 with Orka.SIMD.AVX.Longs.Logical;
-with Orka.SIMD.AVX.Longs.Random.Emulation;
 with Orka.SIMD.AVX.Longs.Arithmetic.Emulation;
 with Orka.SIMD.AVX.Longs.Logical.Emulation;
+with Orka.SIMD.AVX.Longs.Random.Emulation;
 with Orka.SIMD.AVX.Longs.Shift.Emulation;
 
 package Orka.Numerics.Doubles.Tensors.CPU is new Orka.Numerics.Doubles.Tensors.SIMD_CPU
@@ -48,6 +49,19 @@ package Orka.Numerics.Doubles.Tensors.CPU is new Orka.Numerics.Doubles.Tensors.S
    SIMD.AVX.Doubles.Math.Sqrt,
    SIMD.AVX.Doubles.Math.Min,
    SIMD.AVX.Doubles.Math.Max,
+   Numerics.Doubles.Elementary_Functions.Exp,
+   Numerics.Doubles.Elementary_Functions.Log,
+   Numerics.Doubles.Elementary_Functions.Log10,
+   Numerics.Doubles.Elementary_Functions.Log2,
+   Numerics.Doubles.Elementary_Functions.Sin,
+   Numerics.Doubles.Elementary_Functions.Cos,
+   Numerics.Doubles.Elementary_Functions.Tan,
+   Numerics.Doubles.Elementary_Functions.Arcsin,
+   Numerics.Doubles.Elementary_Functions.Arccos,
+   Numerics.Doubles.Elementary_Functions.Arctan,
+   Numerics.Doubles.Elementary_Functions.Radians_To_Degrees,
+   Numerics.Doubles.Elementary_Functions.Degrees_To_Radians,
+   Numerics.Doubles.Elementary_Functions."**",
    SIMD.AVX.Doubles.Math.Ceil,
    SIMD.AVX.Doubles.Math.Floor,
    SIMD.AVX.Doubles.Math.Round_Nearest_Integer,
@@ -64,5 +78,9 @@ package Orka.Numerics.Doubles.Tensors.CPU is new Orka.Numerics.Doubles.Tensors.S
    SIMD.AVX.Doubles.Compare."<=",
    SIMD.AVX.Longs.Random.Emulation.State,
    SIMD.AVX.Longs.Random.Emulation.Next,
-   SIMD.AVX.Longs.Random.Emulation.Reset);
+   SIMD.AVX.Longs.Random.Emulation.Reset,
+   Float_64'Min,
+   Float_64'Max,
+   Numerics.Doubles.Elementary_Functions.Is_Valid,
+   Numerics.Doubles.Elementary_Functions.Sqrt);
 pragma Preelaborate (Orka.Numerics.Doubles.Tensors.CPU);

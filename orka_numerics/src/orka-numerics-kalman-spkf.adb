@@ -27,7 +27,7 @@ package body Orka.Numerics.Kalman.SPKF is
 
       Sigmas : Matrix := Empty ([2 * N + 1, N]);
 
-      LT : constant Matrix := Points_Covariance (Weights.Scaling_Factor * P).Transpose;
+      LT : constant Matrix := Points_Covariance (Tensors.Convert (Weights.Scaling_Factor) * P).Transpose;
       --  Take transpose of lower triangular Cholesky matrix so that the
       --  rows instead of columns can be used below
    begin

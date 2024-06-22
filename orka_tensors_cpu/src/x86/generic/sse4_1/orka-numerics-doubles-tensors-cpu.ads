@@ -15,6 +15,7 @@
 --  limitations under the License.
 
 with Orka.Numerics.Tensors.SIMD_CPU;
+with Orka.Numerics.Doubles.Elementary_Functions;
 
 with Orka.SIMD.SSE2.Doubles.Arithmetic;
 with Orka.SIMD.SSE2.Doubles.Compare;
@@ -49,6 +50,19 @@ package Orka.Numerics.Doubles.Tensors.CPU is new Orka.Numerics.Doubles.Tensors.S
    SIMD.SSE2.Doubles.Math.Sqrt,
    SIMD.SSE2.Doubles.Math.Min,
    SIMD.SSE2.Doubles.Math.Max,
+   Numerics.Doubles.Elementary_Functions.Exp,
+   Numerics.Doubles.Elementary_Functions.Log,
+   Numerics.Doubles.Elementary_Functions.Log10,
+   Numerics.Doubles.Elementary_Functions.Log2,
+   Numerics.Doubles.Elementary_Functions.Sin,
+   Numerics.Doubles.Elementary_Functions.Cos,
+   Numerics.Doubles.Elementary_Functions.Tan,
+   Numerics.Doubles.Elementary_Functions.Arcsin,
+   Numerics.Doubles.Elementary_Functions.Arccos,
+   Numerics.Doubles.Elementary_Functions.Arctan,
+   Numerics.Doubles.Elementary_Functions.Radians_To_Degrees,
+   Numerics.Doubles.Elementary_Functions.Degrees_To_Radians,
+   Numerics.Doubles.Elementary_Functions."**",
    SIMD.SSE4_1.Doubles.Math.Ceil,
    SIMD.SSE4_1.Doubles.Math.Floor,
    SIMD.SSE4_1.Doubles.Math.Round_Nearest_Integer,
@@ -65,5 +79,9 @@ package Orka.Numerics.Doubles.Tensors.CPU is new Orka.Numerics.Doubles.Tensors.S
    SIMD.SSE2.Doubles.Compare."<=",
    SIMD.SSE2.Longs.Random.State,
    SIMD.SSE2.Longs.Random.Next,
-   SIMD.SSE2.Longs.Random.Reset);
+   SIMD.SSE2.Longs.Random.Reset,
+   Float_64'Min,
+   Float_64'Max,
+   Numerics.Doubles.Elementary_Functions.Is_Valid,
+   Numerics.Doubles.Elementary_Functions.Sqrt);
 pragma Preelaborate (Orka.Numerics.Doubles.Tensors.CPU);

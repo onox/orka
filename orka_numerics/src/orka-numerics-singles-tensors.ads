@@ -16,5 +16,6 @@
 
 with Orka.Numerics.Tensors;
 
-package Orka.Numerics.Singles.Tensors is new Orka.Numerics.Tensors (Float_32);
+package Orka.Numerics.Singles.Tensors is new Orka.Numerics.Tensors
+  (Float_32, Float_32, Float_Type, 0.0, 1.0, Float_32'First, Float_32'Last, Float_32'Model_Epsilon);
 pragma Preelaborate (Orka.Numerics.Singles.Tensors);

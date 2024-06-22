@@ -22,91 +22,24 @@ with Orka.Numerics.Tensors.Operations;
 
 package body Orka.Numerics.Tensors.SIMD_CPU is
 
-   procedure Swap_Rows (Ab : in out CPU_Tensor; I, J : Index_Type) is
-   begin
-      if I /= J then
-         declare
-            Row_I : constant CPU_Tensor := Ab (I);
-            Old_J : constant CPU_Tensor := Ab (J);
-         begin
-            Set (Ab, J, Row_I);
-            Set (Ab, I, Old_J);
-         end;
-      end if;
-   end Swap_Rows;
-
-   procedure Scale_Row (Ab : in out CPU_Tensor; I : Index_Type; Scale : Element) is
-      Row_I : constant CPU_Tensor := Ab (I);
-   begin
-      if Scale /= 1.0 then
-         Set (Ab, I, Scale * Row_I);
-      end if;
-   end Scale_Row;
-
-   procedure Replace_Row (Ab : in out CPU_Tensor; Scale : Element; I, J : Index_Type) is
-      Row_I : constant CPU_Tensor := Ab (I);
-      Row_J : constant CPU_Tensor := Ab (J);
-   begin
-      if Scale /= 0.0 then
-         Set (Ab, J, Row_J - Scale * Row_I);
-      end if;
-   end Replace_Row;
-
-   procedure Forward_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-      Rows        : constant Natural := Ab.Rows;
-      Pivot_Value : constant Element := Ab ([Index, Pivot_Index]);
-   begin
-      --  Create zeros below the pivot position
-      for Row_Index in Index + 1 .. Rows loop
-         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]) / Pivot_Value, Index, Row_Index);
-      end loop;
-   end Forward_Substitute;
-
-   procedure Back_Substitute (Ab : in out CPU_Tensor; Index, Pivot_Index : Index_Type) is
-   begin
-      Scale_Row (Ab, Index, 1.0 / Ab ([Index, Pivot_Index]));
-
-      --  Create zeros above the pivot position
-      for Row_Index in 1 .. Index - 1 loop
-         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]), Index, Row_Index);
-      end loop;
-   end Back_Substitute;
+   procedure Swap_Rows (Ab : in out Real_CPU_Tensor; I, J : Index_Type);
+   procedure Forward_Substitute (Ab : in out Real_CPU_Tensor; Index, Pivot_Index : Index_Type);
+   procedure Back_Substitute (Ab : in out Real_CPU_Tensor; Index, Pivot_Index : Index_Type);
+   procedure Make_Upper_Triangular (Object : in out Real_CPU_Tensor; Offset : Integer := 0);
 
    function Create_QR
-     (Q, R         : CPU_Tensor;
-      Determinancy : Matrix_Determinancy) return CPU_QR_Factorization
-   is (Q_Size       => Q.Size,
-       R_Size       => R.Size,
-       Q            => Q,
-       R            => R,
-       Determinancy => Determinancy);
+     (Q, R         : Real_CPU_Tensor;
+      Determinancy : Matrix_Determinancy) return CPU_QR_Factorization;
 
-   procedure Make_Upper_Triangular (Object : in out CPU_Tensor; Offset : Integer := 0) is
-      Rows    : constant Natural := Object.Rows;
-      Columns : constant Natural := Object.Columns;
-   begin
-      if Offset >= -(Rows - 2) then
-         --  Make matrix upper triangular by zeroing out the elements in the
-         --  lower triangular part
-         for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
-            for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
-               Object.Set ([Row_Index, Column_Index], 0.0);
-            end loop;
-         end loop;
-      end if;
-   end Make_Upper_Triangular;
+   function Q (Object : CPU_QR_Factorization'Class) return Real_CPU_Tensor is (Object.Q);
+   function R (Object : CPU_QR_Factorization'Class) return Real_CPU_Tensor is (Object.R);
 
-   package Operations is new Orka.Numerics.Tensors.Operations
-     (CPU_Tensor, Make_Upper_Triangular, Swap_Rows, Forward_Substitute, Back_Substitute,
-      Expression_Type, CPU_QR_Factorization, Create_QR, Q, R);
-
-   ----------------------------------------------------------------------------
+   package Operations is new Orka.Numerics.Tensors.Operations (CPU_Tensor, Expression_Type,
+     Real_CPU_Tensor, Make_Upper_Triangular, Swap_Rows, Forward_Substitute, Back_Substitute,
+     CPU_QR_Factorization, Create_QR, Q, R);
 
    function Convert is new Ada.Unchecked_Conversion (Vector_Type, Integer_Vector_Type);
    function Convert is new Ada.Unchecked_Conversion (Integer_Vector_Type, Vector_Type);
-
-   function From_Last (Offset : Natural) return Vector_Index_Type is
-     (Vector_Index_Type'Val (Vector_Index_Type'Pos (Vector_Index_Type'Last) - Offset));
 
    function Data_Vectors (Index : Natural) return Natural is
      ((Index + (Vector_Type'Length - 1)) / Vector_Type'Length);
@@ -114,17 +47,20 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Data_Vectors (Shape : Tensor_Shape) return Natural is
      (Data_Vectors (Elements (Shape)));
 
-   function Data_Offset (Index : Positive) return Vector_Index_Type is
-     (Vector_Index_Type'Val ((Index - 1) mod Vector_Type'Length
-        + Vector_Index_Type'Pos (Vector_Index_Type'First)));
-
    function Data_Padding (Size, Count : Natural) return Natural is
      (Size * Vector_Type'Length - Count);
 
-   function To_Index (Index : Tensor_Index; Columns : Positive) return Index_Type is
-     (To_Index (Index, [Index (1), Columns]))
-   with Pre => Index'Length = 2;
-   --  Index (1) isn't used for 2-D Index except in Pre condition of To_Index in parent package
+   function Reset_Padding
+     (Object  : CPU_Tensor;
+      Padding : Natural;
+      Value   : Element_Type) return Vector_Type;
+
+   function From_Last (Offset : Natural) return Vector_Index_Type is
+     (Vector_Index_Type'Val (Vector_Index_Type'Pos (Vector_Index_Type'Last) - Offset));
+
+   function Data_Offset (Index : Positive) return Vector_Index_Type is
+     (Vector_Index_Type'Val ((Index - 1) mod Vector_Type'Length
+        + Vector_Index_Type'Pos (Vector_Index_Type'First)));
 
    function Reset_Padding
      (Object  : CPU_Tensor;
@@ -144,7 +80,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Padding : constant Natural :=
         Data_Padding (Size => Object.Size, Count => Object.Elements);
    begin
-      return Reset_Padding (Object, Padding, 0.0);
+      return Reset_Padding (Object, Padding, Zero);
    end Disable_Padding;
 
    function Without_Data
@@ -179,10 +115,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function Identity_Vector_Type (Value : Element) return Vector_Type is [others => Value];
    function Identity_Element     (Value : Element) return Element     is (Value);
 
-   function Apply is new Generic_Apply (Vector_Type, Identity_Vector_Type);
+   function Apply is new Tensors.Generic_Apply (Vector_Type, Identity_Vector_Type);
 
-   function Apply is new Generic_Apply (Element, Identity_Element,
-     Min => Element'Min, Max => Element'Max, Sqrt => EF.Sqrt);
+   function Apply is new Tensors.Generic_Apply (Element, Identity_Element,
+     Min => Element_Min, Max => Element_Max, Sqrt => Sqrt);
 
    ----------------------------------------------------------------------------
 
@@ -322,7 +258,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding procedure Set (Object : in out CPU_Tensor; Index : Tensor_Index; Value : Boolean) is
       Index_Flattened : constant Index_Type := Flattened_Index (Object, Index);
 
-      Zero_Vector : constant Vector_Type := [others => 0.0];
+      Zero_Vector : constant Vector_Type := [others => Zero];
 
       Mask : constant Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
 
@@ -538,10 +474,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                   end if;
                   case Object.Kind is
                      when Float_Type | Int_Type =>
-                        SU.Append (Result, (if Value'Valid then Value'Image else "     invalid"));
+                        SU.Append (Result, (if Is_Valid (Value) then Value'Image else "     invalid"));
                      when Bool_Type =>
                         SU.Append (Result, "       " &
-                          (if not Value'Valid or else Value /= 0.0 then " True" else "False"));
+                          (if not Is_Valid (Value) or else Value /= Zero then " True" else "False"));
                   end case;
                   if I < Count then
                      SU.Append (Result, ",");
@@ -569,10 +505,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
                         case Object.Kind is
                            when Float_Type | Int_Type =>
                               SU.Append (Result,
-                                (if Value'Valid then Value'Image else "     invalid"));
+                                (if Is_Valid (Value) then Value'Image else "     invalid"));
                            when Bool_Type =>
                               SU.Append (Result, "       " &
-                                (if not Value'Valid or else Value /= 0.0 then
+                                (if not Is_Valid (Value) or else Value /= Zero then
                                    " True"
                                  else
                                    "False"));
@@ -648,10 +584,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       Elements : Element_Array (Booleans'Range);
    begin
       for Index in Elements'Range loop
-         Elements (Index) := (if Booleans (Index) then 1.0 else 0.0);
+         Elements (Index) := (if Booleans (Index) then One else Zero);
       end loop;
 
-      return To_Tensor (Elements, Shape) > 0.0;
+      return To_Tensor (Elements, Shape) > Zero;
    end To_Boolean_Tensor;
 
    overriding
@@ -659,188 +595,45 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
      renames Operations.To_Boolean_Tensor;
 
    overriding
-   function Linear_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed) return CPU_Tensor
-   is
+   function Array_Range (Start, Stop, Step : Element) return CPU_Tensor is
+      function Get_Count return Positive is
+         Count : Natural := 0;
+         Next : Element := Start;
+      begin
+         while Next < Stop loop
+            Next := @ + Step;
+            Count := @ + 1;
+         end loop;
+
+         return Count;
+      end Get_Count;
+
+      Count : constant Positive := Get_Count;
+      --  Count => Positive'Max (1, Integer (Element'Ceiling ((Stop - Start) / Step))),
+
       Shape : constant Tensor_Shape := [Count];
-
-      Step : constant Element :=
-        (if Count > 1 then (Stop - Start) / Element (Count - (case Interval is
-                                                                when Closed    => 1,
-                                                                when Half_Open => 0))
-                      else 0.0);
-   begin
-      return Result : CPU_Tensor := Without_Data (Shape) do
-         declare
-            Result_Data : Element_Array (1 .. Elements (Shape))
-              with Import, Convention => Ada, Address => Result.Data'Address;
-         begin
-            for Index in 1 .. Count loop
-               Result_Data (Index) := Start + Step * Element (Index - 1);
-            end loop;
-         end;
-      end return;
-   end Linear_Space;
-
-   overriding
-   function Log_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed;
-      Base        : Element := 10.0) return CPU_Tensor
-   is
-      Shape : constant Tensor_Shape := [Count];
-
-      Step : constant Element :=
-        (if Count > 1 then (Stop - Start) / Element (Count - (case Interval is
-                                                                when Closed    => 1,
-                                                                when Half_Open => 0))
-                      else 0.0);
    begin
       return Result : CPU_Tensor := Without_Data (Shape) do
          declare
             Result_Data : Element_Array (1 .. Elements (Shape))
               with Import, Convention => Ada, Address => Result.Data'Address;
 
-            use EF;
+            Next_Value : Element := Start;
          begin
             for Index in 1 .. Count loop
-               Result_Data (Index) := Base ** (Start + Step * Element (Index - 1));
+               Result_Data (Index) := Next_Value;
+               Next_Value := @ + Step;
             end loop;
          end;
       end return;
-   end Log_Space;
+   end Array_Range;
 
    overriding
-   function Geometric_Space
-     (Start, Stop : Element;
-      Count       : Positive;
-      Interval    : Interval_Kind := Closed;
-      Base        : Element := 10.0) return CPU_Tensor renames Operations.Geometric_Space;
-
-   overriding
-   function Array_Range (Start, Stop : Element; Step : Element := 1.0) return CPU_Tensor
+   function Array_Range (Start, Stop : Element) return CPU_Tensor
      renames Operations.Array_Range;
 
    overriding
    function Array_Range (Stop : Element) return CPU_Tensor renames Operations.Array_Range;
-
-   overriding
-   function Identity (Size : Positive; Offset : Integer := 0) return CPU_Tensor
-     renames Operations.Identity;
-
-   overriding
-   function Identity (Rows, Columns : Positive; Offset : Integer := 0) return CPU_Tensor is
-      Shape : constant Tensor_Shape := [1 => Rows, 2 => Columns];
-
-      Max_Size : constant Positive := Positive'Max (Rows, Columns);
-
-      Zero_Vector : constant Vector_Type := [others => 0.0];
-   begin
-      return Result : CPU_Tensor :=
-        (Axes => Shape'Length,
-         Size       => Data_Vectors (Shape),
-         Kind       => Float_Type,
-         Shape      => Shape,
-         Data       => [others => Zero_Vector])
-      do
-         if Offset in -(Max_Size - 1) .. Max_Size - 1 then
-            declare
-               Result_Data : Element_Array (1 .. Elements (Shape))
-                 with Import, Convention => Ada, Address => Result.Data'Address;
-
-               Index : Integer := Offset + 1;
-            begin
-               for I in 1 .. Rows loop
-                  if Index in Result_Data'Range then
-                     Result_Data (Index) := 1.0;
-                  end if;
-                  Index := Index + Columns + 1;
-               end loop;
-            end;
-         end if;
-      end return;
-   end Identity;
-
-   overriding
-   function Upper_Triangular (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor
-     renames Operations.Upper_Triangular;
-
-   overriding
-   function Main_Diagonal (Object : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
-      Rows    : constant Positive := Object.Rows;
-      Columns : constant Positive := Object.Columns;
-
-      Shape : constant Tensor_Shape := [Positive'Min (Rows, Columns)];
-   begin
-      return Result : CPU_Tensor := Without_Data (Shape) do
-         declare
-            Result_Data : Element_Array (1 .. Elements (Shape))
-              with Import, Convention => Ada, Address => Result.Data'Address;
-
-            Object_Data : Element_Array (1 .. Object.Elements)
-              with Import, Convention => Ada, Address => Object.Data'Address;
-
-            Index : Integer := Offset + 1;
-         begin
-            for I in Result_Data'Range loop
-               if Index in Object_Data'Range then
-                  Result_Data (I) := Object_Data (Index);
-               else
-                  Result_Data (I) := 0.0;
-               end if;
-               Index := Index + Columns + 1;
-            end loop;
-         end;
-      end return;
-   end Main_Diagonal;
-
-   overriding
-   function Diagonal (Elements : Element_Array; Offset : Integer := 0) return CPU_Tensor is
-      Size : constant Positive := Elements'Length;
-
-      Shape : constant Tensor_Shape := [1 .. 2 => Size];
-
-      Zero_Vector : constant Vector_Type := [others => 0.0];
-   begin
-      return Result : CPU_Tensor :=
-        (Axes => Shape'Length,
-         Size       => Data_Vectors (Shape),
-         Kind       => Float_Type,
-         Shape      => Shape,
-         Data       => [others => Zero_Vector])
-      do
-         if Offset in -(Size - 1) .. Size - 1 then
-            declare
-               Result_Data : Element_Array (1 .. Size * Size)
-                 with Import, Convention => Ada, Address => Result.Data'Address;
-
-               Index : Integer := Offset + 1;
-            begin
-               for I in Elements'Range loop
-                  if Index in Result_Data'Range then
-                     Result_Data (Index) := Elements (I);
-                  end if;
-                  Index := Index + Size + 1;
-               end loop;
-            end;
-         end if;
-      end return;
-   end Diagonal;
-
-   overriding
-   function Diagonal (Elements : CPU_Tensor; Offset : Integer := 0) return CPU_Tensor is
-      Object_Data : Element_Array (1 .. Elements.Elements)
-        with Import, Convention => Ada, Address => Elements.Data'Address;
-   begin
-      return Diagonal (Object_Data, Offset);
-   end Diagonal;
-
-   overriding
-   function Trace (Object : CPU_Tensor; Offset : Integer := 0) return Element
-     renames Operations.Trace;
 
    overriding
    function Reshape (Object : CPU_Tensor; Shape : Tensor_Shape) return CPU_Tensor is
@@ -913,280 +706,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    function "&" (Left, Right : CPU_Tensor) return CPU_Tensor renames Operations."&";
 
    ----------------------------------------------------------------------------
-   --                            Matrix operations                           --
-   ----------------------------------------------------------------------------
-
-   procedure Multiply_Add
-     (Result : in out Element_Array;
-      Left   : Element;
-      Right  : Element_Array)
-   is
-      Left_Vector : constant Vector_Type := [others => Left];
-
-      subtype Vector_Elements is Element_Array (1 .. Vector_Type'Length);
-
-      function Convert is new Ada.Unchecked_Conversion (Vector_Elements, Vector_Type);
-      function Convert is new Ada.Unchecked_Conversion (Vector_Type, Vector_Elements);
-
-      Last_Vector_Index : constant Positive := Data_Vectors (Right'Length);
-
-      Padding : constant Natural :=
-        Data_Padding (Last_Vector_Index, Right'Length);
-   begin
-      for Index in 1 .. Last_Vector_Index - (if Padding > 0 then 1 else 0) loop
-         declare
-            Vector_Index : constant Integer := (Index - 1) * Vector_Type'Length - 1;
-
-            Result_Index : constant Natural := Vector_Index + Result'First;
-            Right_Index  : constant Natural := Vector_Index + Right'First;
-
-            Result_Vector : constant Vector_Type :=
-              Convert (Result (Result_Index + 1 .. Result_Index + Vector_Type'Length));
-            Right_Vector : constant Vector_Type :=
-              Convert (Right (Right_Index + 1 .. Right_Index + Vector_Type'Length));
-         begin
-            Result (Result_Index + 1 .. Result_Index + Vector_Type'Length) :=
-              Convert (Result_Vector + Left_Vector * Right_Vector);
-         end;
-      end loop;
-
-      if Padding > 0 then
-         declare
-            Vector_Index : constant Integer := (Last_Vector_Index - 1) * Vector_Type'Length - 1;
-
-            Result_Index : constant Natural := Vector_Index + Result'First;
-            Right_Index  : constant Natural := Vector_Index + Right'First;
-
-            Last_Count : constant Positive := Vector_Type'Length - Padding;
-         begin
-            for I in 1 .. Last_Count loop
-               Result (Result_Index + I) :=
-                 Result (Result_Index + I) + Left * Right (Right_Index + I);
-            end loop;
-         end;
-      end if;
-   end Multiply_Add;
-
-   overriding
-   function "*" (Left, Right : CPU_Tensor) return CPU_Tensor is
-      --  m x n * n x p
-      --      ^   ^
-      --      |___|
-      --     (Count)
-      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Rows else 1);
-      Count         : constant Natural := Right.Rows;
-      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Columns else 1);
-
-      Shape : constant Tensor_Shape :=
-         (case Right.Axes is
-            when 1 => [1 => Left_Rows],
-            when 2 => [1 => Left_Rows, 2 => Right_Columns],
-            when others => raise Not_Implemented_Yet);  --  FIXME
-   begin
-      --  Matrix-matrix or matrix-vector or vector-matrix multiplication
-      return Result : CPU_Tensor := Zeros (Shape) do
-         declare
-            Result_Data : Element_Array (1 .. Result.Elements)
-              with Import, Convention => Ada, Address => Result.Data'Address;
-            Left_Data : Element_Array (1 .. Left.Elements)
-              with Import, Convention => Ada, Address => Left.Data'Address;
-            Right_Data : Element_Array (1 .. Right.Elements)
-              with Import, Convention => Ada, Address => Right.Data'Address;
-         begin
-            for Row_Index in 1 .. Left_Rows loop
-               --  Result (Row_Index) := Left (Row_Index) * Right;
-               declare
-                  Result_Index : constant Natural := To_Index ([Row_Index, 1], Right_Columns) - 1;
-               begin
-                  for Column_Index in 1 .. Count loop
-                     declare
-                        Right_Index : constant Natural :=
-                          To_Index ([Column_Index, 1], Right_Columns) - 1;
-                     begin
-                        --  Left_Value := Left (Row_Index, Column_Index)
-                        --  Result (Row_Index) := @ + Left_Value * Right (Row_Index)
-                        Multiply_Add
-                          (Result_Data (Result_Index + 1 .. Result_Index + Right_Columns),
-                           Left_Data (To_Index ([Row_Index, Column_Index], Count)),
-                           Right_Data (Right_Index + 1 .. Right_Index + Right_Columns));
-                     end;
-                  end loop;
-               end;
-            end loop;
-         end;
-      end return;
-   end "*";
-
-   overriding
-   function "*" (Left, Right : CPU_Tensor) return Element is
-      Result : Element_Type := 0.0;
-
-      Padding : constant Natural :=
-        Data_Padding (Size => Left.Size, Count => Left.Elements);
-
-      Last_Left  : constant Vector_Type := Reset_Padding (Left, Padding, 0.0);
-      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, 0.0);
-
-      type Sum_Index_Type is mod 8;
-
-      Sums : array (Sum_Index_Type) of Vector_Type := [others => [others => 0.0]];
-      --  TODO Do pairwise summation recursively
-   begin
-      for Index in Left.Data'First .. Left.Data'Last - 1 loop
-         declare
-            Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Index mod Sums'Length);
-         begin
-            Sums (Sum_Index) := Sums (Sum_Index) + Left.Data (Index) * Right.Data (Index);
-         end;
-      end loop;
-
-      declare
-         Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Left.Data'Last mod Sums'Length);
-      begin
-         Sums (Sum_Index) := Sums (Sum_Index) + Last_Left * Last_Right;
-      end;
-
-      for Value of Sums loop
-         Result := Result + Sum (Value);
-      end loop;
-
-      return Element (Result);
-   end "*";
-
-   overriding function "**" (Left : CPU_Tensor; Right : Integer) return CPU_Tensor
-     renames Operations."**";
-
-   overriding
-   function Outer (Left, Right : CPU_Tensor) return CPU_Tensor is
-      Shape : constant Tensor_Shape := [1 => Left.Elements, 2 => Right.Elements];
-   begin
-      return Result : CPU_Tensor := Without_Data (Shape) do
-         declare
-            Result_Data : Element_Array (1 .. Result.Elements)
-              with Import, Convention => Ada, Address => Result.Data'Address;
-
-            Left_Data : Element_Array (1 .. Left.Elements)
-              with Import, Convention => Ada, Address => Left.Data'Address;
-
-            Columns : constant Positive := Right.Elements;
-         begin
-            for Index in 1 .. Left.Elements loop
-               declare
-                  Row : constant CPU_Tensor := Left_Data (Index) * Right;
-
-                  Row_Data : Element_Array (1 .. Columns)
-                    with Import, Convention => Ada, Address => Row.Data'Address;
-
-                  Base_Index : constant Natural := (Index - 1) * Columns;
-               begin
-                  Result_Data (Base_Index + 1 .. Base_Index + Columns) := Row_Data;
-               end;
-            end loop;
-         end;
-      end return;
-   end Outer;
-
-   overriding
-   function Inverse (Object : CPU_Tensor) return CPU_Tensor renames Operations.Inverse;
-
-   overriding
-   function Transpose (Object : CPU_Tensor) return CPU_Tensor is
-      Shape : constant Tensor_Shape :=
-        [1 => Object.Columns,
-         2 => Object.Rows];
-   begin
-      return Result : CPU_Tensor := Without_Data (Shape) do
-         declare
-            Result_Data : Element_Array (1 .. Result.Elements)
-              with Import, Convention => Ada, Address => Result.Data'Address;
-
-            Object_Data : Element_Array (1 .. Object.Elements)
-              with Import, Convention => Ada, Address => Object.Data'Address;
-
-            Rows    : constant Natural := Object.Rows;
-            Columns : constant Natural := Object.Columns;
-
-            Result_Columns : Natural renames Rows;
-         begin
-            for Row_Index in 1 .. Rows loop
-               for Column_Index in 1 .. Columns loop
-                  Result_Data (To_Index ([Column_Index, Row_Index], Result_Columns)) :=
-                    Object_Data (To_Index ([Row_Index, Column_Index], Columns));
-               end loop;
-            end loop;
-         end;
-      end return;
-   end Transpose;
-
-   ----------------------------------------------------------------------------
-
-   overriding
-   function Solve (A, B : CPU_Tensor; Solution : out Solution_Kind) return CPU_Tensor
-     renames Operations.Solve;
-
-   overriding
-   function Solve (A, B : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor
-     renames Operations.Solve;
-
-   overriding
-   function Divide_By (B, A : CPU_Tensor) return CPU_Tensor
-     renames Operations.Divide_By;
-
-   overriding
-   function Divide_By (B, A : CPU_Tensor; Form : Triangular_Form) return CPU_Tensor
-     renames Operations.Divide_By;
-
-   overriding
-   function QR (Object : CPU_Tensor) return CPU_Tensor
-     renames Operations.QR;
-
-   overriding
-   function QR (Object : CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class
-     renames Operations.QR;
-
-   overriding
-   function QR_For_Least_Squares (Object : CPU_Tensor) return QR_Factorization'Class
-     renames Operations.QR_For_Least_Squares;
-
-   overriding
-   function Least_Squares (Object : QR_Factorization'Class; B : CPU_Tensor) return CPU_Tensor
-     renames Operations.Least_Squares;
-
-   overriding
-   function Least_Squares (A, B : CPU_Tensor) return CPU_Tensor
-     renames Operations.Least_Squares;
-
-   overriding
-   function Constrained_Least_Squares (A, B, C, D : CPU_Tensor) return CPU_Tensor
-     renames Operations.Constrained_Least_Squares;
-
-   overriding
-   function Cholesky (Object : CPU_Tensor; Form : Triangular_Form := Lower) return CPU_Tensor
-     renames Operations.Cholesky;
-
-   overriding
-   function Cholesky_Update
-     (R, V : CPU_Tensor;
-      Mode : Update_Mode) return CPU_Tensor renames Operations.Cholesky_Update;
-
-   ----------------------------------------------------------------------------
-   --                            Vector operations                           --
-   ----------------------------------------------------------------------------
-
-   overriding
-   function Norm (Object : CPU_Tensor) return Element renames Operations.Norm;
-
-   overriding
-   function Normalize (Object : CPU_Tensor) return CPU_Tensor renames Operations.Normalize;
-
-   overriding
-   function Standardize (Object : CPU_Tensor) return CPU_Tensor renames Operations.Standardize;
-
-   overriding
-   function Correlation_Coefficient (Left, Right : CPU_Tensor) return Correlation_Element
-     renames Operations.Correlation_Coefficient;
-
-   ----------------------------------------------------------------------------
    --                         Element-wise operations                        --
    ----------------------------------------------------------------------------
 
@@ -1226,53 +745,35 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       end return;
    end Divide_Or_Zero;
 
-   function Power (Left, Right : Element) return Element is
-     (if Left = 0.0 and Right = 0.0 then 1.0 else EF."**" (Left, Right));
-   --  0.0 ** X = 1.0 if X = 0.0 (EF."**" raises Argument_Error instead of returning 1.0)
-   --  0.0 ** X = 0.0 if X > 0.0
-
    overriding function "**" (Left, Right : CPU_Tensor) return CPU_Tensor is
 --     (Exp (Multiply (Right, Log (Left))));
 
       Padding : constant Natural :=
         Data_Padding (Size => Left.Size, Count => Elements (Left.Shape));
 
-      Last_Left  : constant Vector_Type := Reset_Padding (Left, Padding, 0.0);
-      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, 1.0);
+      Last_Left  : constant Vector_Type := Reset_Padding (Left, Padding, Zero);
+      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, One);
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'First .. Result.Data'Last - 1 loop
-            for Offset in Vector_Type'Range loop
-               declare
-                  Left_Element  : Element renames Left.Data (Index) (Offset);
-                  Right_Element : Element renames Right.Data (Index) (Offset);
-               begin
-                  Result.Data (Index) (Offset) := Power (Left_Element, Right_Element);
-               end;
-            end loop;
+            Result.Data (Index) := Power (Left.Data (Index), Right.Data (Index));
          end loop;
 
-         for Offset in Vector_Type'Range loop
-            Result.Data (Result.Data'Last) (Offset) :=
-              Power (Last_Left (Offset), Last_Right (Offset));
-         end loop;
+         Result.Data (Result.Data'Last) := Power (Last_Left, Last_Right);
       end return;
    end "**";
 
    overriding function "**" (Left : CPU_Tensor; Right : Element) return CPU_Tensor is
 --     (Exp (Right * Log (Left)));
-      use EF;
    begin
-      if Right = 0.0 then
+      if Right = Zero then
          return Ones (Left.Shape);
-      elsif Right = 1.0 then
+      elsif Right = One then
          return Left;
       else
          return Result : CPU_Tensor := Without_Data (Left) do
             for Index in Result.Data'Range loop
-               for Offset in Vector_Type'Range loop
-                  Result.Data (Index) (Offset) := Left.Data (Index) (Offset) ** Right;
-               end loop;
+               Result.Data (Index) := Power (Left.Data (Index), [others => Right]);
             end loop;
          end return;
       end if;
@@ -1286,25 +787,17 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
       --  EF."**" raises Constraint_Error if Left = 0.0 and element
       --  in the padding happens to be < 0.0
-      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, 1.0);
+      Last_Right : constant Vector_Type := Reset_Padding (Right, Padding, One);
    begin
-      if Left = 1.0 then
+      if Left = One then
          return Ones (Right.Shape);
       else
          return Result : CPU_Tensor := Without_Data (Right) do
             for Index in Result.Data'First .. Result.Data'Last - 1 loop
-               for Offset in Vector_Type'Range loop
-                  declare
-                     Right_Element : Element renames Right.Data (Index) (Offset);
-                  begin
-                     Result.Data (Index) (Offset) := Power (Left, Right_Element);
-                  end;
-               end loop;
+               Result.Data (Index) := Power ([others => Left], Right.Data (Index));
             end loop;
 
-            for Offset in Vector_Type'Range loop
-               Result.Data (Result.Data'Last) (Offset) := Power (Left, Last_Right (Offset));
-            end loop;
+            Result.Data (Result.Data'Last) := Power ([others => Left], Last_Right);
          end return;
       end if;
    end "**";
@@ -1485,9 +978,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Exp (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Exp (Object.Data (Index));
          end loop;
       end return;
    end Exp;
@@ -1496,16 +987,28 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Log (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Log (Object.Data (Index));
          end loop;
       end return;
    end Log;
 
-   overriding function Log10 (Object : CPU_Tensor) return CPU_Tensor renames Operations.Log10;
+   overriding function Log10 (Object : CPU_Tensor) return CPU_Tensor is
+   begin
+      return Result : CPU_Tensor := Without_Data (Object) do
+         for Index in Result.Data'Range loop
+            Result.Data (Index) := Log10 (Object.Data (Index));
+         end loop;
+      end return;
+   end Log10;
 
-   overriding function Log2 (Object : CPU_Tensor) return CPU_Tensor renames Operations.Log2;
+   overriding function Log2 (Object : CPU_Tensor) return CPU_Tensor is
+   begin
+      return Result : CPU_Tensor := Without_Data (Object) do
+         for Index in Result.Data'Range loop
+            Result.Data (Index) := Log2 (Object.Data (Index));
+         end loop;
+      end return;
+   end Log2;
 
    ----------------------------------------------------------------------------
    --                              Trigonometry                              --
@@ -1515,9 +1018,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Sin (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Sin (Object.Data (Index));
          end loop;
       end return;
    end Sin;
@@ -1526,9 +1027,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Cos (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Cos (Object.Data (Index));
          end loop;
       end return;
    end Cos;
@@ -1537,9 +1036,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Tan (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Tan (Object.Data (Index));
          end loop;
       end return;
    end Tan;
@@ -1548,9 +1045,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Arcsin (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Arcsin (Object.Data (Index));
          end loop;
       end return;
    end Arcsin;
@@ -1559,9 +1054,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Object) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) := EF.Arccos (Object.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Arccos (Object.Data (Index));
          end loop;
       end return;
    end Arccos;
@@ -1570,17 +1063,14 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       return Result : CPU_Tensor := Without_Data (Left) do
          for Index in Result.Data'Range loop
-            for Offset in Vector_Type'Range loop
-               Result.Data (Index) (Offset) :=
-                 EF.Arctan (Left.Data (Index) (Offset), Right.Data (Index) (Offset));
-            end loop;
+            Result.Data (Index) := Arctan (Left.Data (Index), Right.Data (Index));
          end loop;
       end return;
    end Arctan;
 
-   overriding function Degrees (Object : CPU_Tensor) return CPU_Tensor renames Operations.Degrees;
+   overriding function Degrees (Object : CPU_Tensor) return CPU_Tensor is (Object * Radians_To_Degrees);
 
-   overriding function Radians (Object : CPU_Tensor) return CPU_Tensor renames Operations.Radians;
+   overriding function Radians (Object : CPU_Tensor) return CPU_Tensor is (Object * Degrees_To_Radians);
 
    ----------------------------------------------------------------------------
    --                               Reductions                               --
@@ -1708,23 +1198,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding function Max (Object : CPU_Tensor) return Element renames Operations.Max;
 
-   overriding function Quantile (Object : CPU_Tensor; P : Probability) return Element
-     renames Operations.Quantile;
-
-   overriding function Median (Object : CPU_Tensor) return Element
-     renames Operations.Median;
-
-   overriding function Mean (Object : CPU_Tensor) return Element
-     renames Operations.Mean;
-
-   overriding
-   function Variance (Object : CPU_Tensor; Offset : Natural := 0) return Element
-     renames Operations.Variance;
-
-   overriding
-   function Standard_Deviation (Object : CPU_Tensor; Offset : Natural := 0) return Element
-     renames Operations.Standard_Deviation;
-
    overriding
    function Min (Left, Right : CPU_Tensor) return CPU_Tensor is
    begin
@@ -1752,38 +1225,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding
    function Max (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
      renames Operations.Max;
-
-   overriding
-   function Quantile
-     (Object : CPU_Tensor;
-      P      : Probability;
-      Axis   : Tensor_Axis) return CPU_Tensor is
-   begin
-      raise Program_Error;
-      return Zeros ([1]);  --  FIXME
-   end Quantile;
-
-   overriding
-   function Mean (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
-     renames Operations.Mean;
-
-   overriding
-   function Variance
-     (Object : CPU_Tensor;
-      Axis   : Tensor_Axis;
-      Offset : Natural := 0) return CPU_Tensor
-   renames Operations.Variance;
-
-   overriding
-   function Median (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor
-     renames Operations.Median;
-
-   overriding
-   function Standard_Deviation
-     (Object : CPU_Tensor;
-      Axis   : Tensor_Axis;
-      Offset : Natural := 0) return CPU_Tensor
-   renames Operations.Standard_Deviation;
 
    ----------------------------------------------------------------------------
    --                                Logical                                 --
@@ -1841,7 +1282,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    end "xor";
 
    overriding function "not"  (Object : CPU_Tensor) return CPU_Tensor is
-      Zero_Vector : constant Vector_Type := [others => 0.0];
+      Zero_Vector : constant Vector_Type := [others => Zero];
 
       Mask : constant Vector_Type := Zero_Vector = Zero_Vector;
    begin
@@ -1932,13 +1373,13 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    overriding function "=" (Left, Right : CPU_Tensor) return Boolean renames Operations."=";
 
    overriding function "="  (Left, Right : CPU_Tensor) return CPU_Tensor is
-      Zero_Vector : constant Vector_Type := [others => 0.0];
+      Zero_Vector : constant Vector_Type := [others => Zero];
 
       Mask : constant Vector_Type := Zero_Vector = Zero_Vector;
    begin
       case Left.Kind is
          when Float_Type =>
-            return (abs (Left - Right) <= Element_Type'Model_Epsilon);
+            return (abs (Left - Right) <= Element_Model_Epsilon);
          when Int_Type | Bool_Type =>
             return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
                for Index in Result.Data'Range loop
@@ -1954,7 +1395,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    begin
       case Left.Kind is
          when Float_Type =>
-            return (abs (Left - Right) > Element_Type'Model_Epsilon);
+            return (abs (Left - Right) > Element_Model_Epsilon);
          when Int_Type | Bool_Type =>
             return Result : CPU_Tensor := Without_Data (Left, Kind => Bool_Type) do
                for Index in Result.Data'Range loop
@@ -2008,13 +1449,6 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
    ----------------------------------------------------------------------------
 
    overriding
-   function All_Close
-     (Left, Right        : CPU_Tensor;
-      Relative_Tolerance : Element := 1.0e-05;
-      Absolute_Tolerance : Element := Element_Type'Model_Epsilon) return Boolean
-   renames Operations.All_Close;
-
-   overriding
    function Any_True (Object : CPU_Tensor; Axis : Tensor_Axis) return CPU_Tensor is
    begin
       raise Program_Error;
@@ -2029,7 +1463,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       function All_Zeros (Vector : Vector_Type) return Boolean is
         (All_Zeros (Convert (Vector), Convert (Vector)));
 
-      Zero_Vector : constant Vector_Type := [others => 0.0];
+      Zero_Vector : constant Vector_Type := [others => Zero];
       Mask : Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
    begin
       for Index in 1 .. Padding loop
@@ -2056,7 +1490,7 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
       function All_Ones (Vector : Vector_Type) return Boolean is
         (All_Ones (Convert (Vector), Convert (Vector = Vector)));
 
-      Zero_Vector : constant Vector_Type := [others => 0.0];
+      Zero_Vector : constant Vector_Type := [others => Zero];
       Mask : Integer_Vector_Type := Convert (Zero_Vector = Zero_Vector);
    begin
       for Index in 1 .. Vector_Type'Length - Padding loop
@@ -2068,15 +1502,631 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
              and All_Ones (Object.Data (Object.Data'Last) or Convert (Mask));
    end All_True;
 
+   ----------------------------------------------------------------------------
+   --                        Floating-point operations                       --
+   ----------------------------------------------------------------------------
+
+   procedure Swap_Rows (Ab : in out Real_CPU_Tensor; I, J : Index_Type) is
+      Tensor_Ab : CPU_Tensor renames CPU_Tensor (Ab);
+   begin
+      if I /= J then
+         declare
+            Row_I : constant CPU_Tensor := Tensor_Ab (I);
+            Old_J : constant CPU_Tensor := Tensor_Ab (J);
+         begin
+            Set (Tensor_Ab, J, Row_I);
+            Set (Tensor_Ab, I, Old_J);
+         end;
+      end if;
+   end Swap_Rows;
+
+   procedure Scale_Row (Ab : in out Real_CPU_Tensor; I : Index_Type; Scale : Element) is
+      Tensor_Ab : CPU_Tensor renames CPU_Tensor (Ab);
+
+      Row_I : constant CPU_Tensor := Tensor_Ab (I);
+   begin
+      if Scale /= One then
+         Set (Tensor_Ab, I, Scale * Row_I);
+      end if;
+   end Scale_Row;
+
+   procedure Replace_Row (Ab : in out Real_CPU_Tensor; Scale : Element; I, J : Index_Type) is
+      Tensor_Ab : CPU_Tensor renames CPU_Tensor (Ab);
+
+      Row_I : constant CPU_Tensor := Tensor_Ab (I);
+      Row_J : constant CPU_Tensor := Tensor_Ab (J);
+   begin
+      if Scale /= Zero then
+         Set (Tensor_Ab, J, Row_J - Scale * Row_I);
+      end if;
+   end Replace_Row;
+
+   procedure Forward_Substitute (Ab : in out Real_CPU_Tensor; Index, Pivot_Index : Index_Type) is
+      Rows        : constant Natural := Ab.Rows;
+      Pivot_Value : constant Element := Ab ([Index, Pivot_Index]);
+   begin
+      --  Create zeros below the pivot position
+      for Row_Index in Index + 1 .. Rows loop
+         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]) / Pivot_Value, Index, Row_Index);
+      end loop;
+   end Forward_Substitute;
+
+   procedure Back_Substitute (Ab : in out Real_CPU_Tensor; Index, Pivot_Index : Index_Type) is
+   begin
+      Scale_Row (Ab, Index, One / Ab ([Index, Pivot_Index]));
+
+      --  Create zeros above the pivot position
+      for Row_Index in 1 .. Index - 1 loop
+         Replace_Row (Ab, Ab ([Row_Index, Pivot_Index]), Index, Row_Index);
+      end loop;
+   end Back_Substitute;
+
+   function Create_QR
+     (Q, R         : Real_CPU_Tensor;
+      Determinancy : Matrix_Determinancy) return CPU_QR_Factorization
+   is (Q_Size       => Q.Size,
+       R_Size       => R.Size,
+       Q            => Q,
+       R            => R,
+       Determinancy => Determinancy);
+
+   procedure Make_Upper_Triangular (Object : in out Real_CPU_Tensor; Offset : Integer := 0) is
+      Rows    : constant Natural := Object.Rows;
+      Columns : constant Natural := Object.Columns;
+   begin
+      if Offset >= -(Rows - 2) then
+         --  Make matrix upper triangular by zeroing out the elements in the
+         --  lower triangular part
+         for Row_Index in Index_Type'First + 1 - Integer'Min (1, Offset) .. Rows loop
+            for Column_Index in 1 .. Natural'Min (Row_Index - 1 + Offset, Columns) loop
+               Object.Set ([Row_Index, Column_Index], Zero);
+            end loop;
+         end loop;
+      end if;
+   end Make_Upper_Triangular;
+
+   function To_Index (Index : Tensor_Index; Columns : Positive) return Index_Type is
+     (To_Index (Index, [Index (1), Columns]))
+   with Pre => Index'Length = 2;
+   --  Index (1) isn't used for 2-D Index except in Pre condition of To_Index in parent package
+
+   function Without_Data
+     (Shape : Tensor_Shape;
+      Kind  : Data_Type := Float_Type) return Real_CPU_Tensor
+   is
+     ((Axes  => Shape'Length,
+       Size  => Data_Vectors (Shape),
+       Kind  => Kind,
+       Shape => Shape,
+       Data  => <>));
+
+   ----------------------------------------------------------------------------
+
+   overriding
+   function Array_Range (Start, Stop : Element; Step : Element) return Real_CPU_Tensor renames Operations.Array_Range;
+
+   overriding
+   function Linear_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed) return Real_CPU_Tensor
+   is
+      Shape : constant Tensor_Shape := [Count];
+
+      Step : constant Real_Element :=
+        (if Count > 1 then (Stop - Start) / Real_Element (Count - (case Interval is
+                                                                when Closed    => 1,
+                                                                when Half_Open => 0))
+                      else 0.0);
+   begin
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Elements (Shape))
+              with Import, Convention => Ada, Address => Result.Data'Address;
+         begin
+            for Index in 1 .. Count loop
+               Result_Data (Index) := Convert (Start + Step * Real_Element (Index - 1));
+            end loop;
+         end;
+      end return;
+   end Linear_Space;
+
+   overriding
+   function Log_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed;
+      Base        : Real_Element := 10.0) return Real_CPU_Tensor
+   is
+      Shape : constant Tensor_Shape := [Count];
+
+      Step : constant Real_Element :=
+        (if Count > 1 then (Stop - Start) / Real_Element (Count - (case Interval is
+                                                                when Closed    => 1,
+                                                                when Half_Open => 0))
+                      else 0.0);
+   begin
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Elements (Shape))
+              with Import, Convention => Ada, Address => Result.Data'Address;
+         begin
+            for Index in 1 .. Count loop
+               Result_Data (Index) := Convert (Power (Base, Start + Step * Real_Element (Index - 1)));
+            end loop;
+         end;
+      end return;
+   end Log_Space;
+
+   overriding
+   function Geometric_Space
+     (Start, Stop : Real_Element;
+      Count       : Positive;
+      Interval    : Interval_Kind := Closed;
+      Base        : Real_Element := 10.0) return Real_CPU_Tensor renames Operations.Geometric_Space;
+
+   overriding
+   function Identity (Size : Positive; Offset : Integer := 0) return Real_CPU_Tensor renames Operations.Identity;
+
+   overriding
+   function Identity (Rows, Columns : Positive; Offset : Integer := 0) return Real_CPU_Tensor is
+      Shape : constant Tensor_Shape := [1 => Rows, 2 => Columns];
+
+      Max_Size : constant Positive := Positive'Max (Rows, Columns);
+
+      Zero_Vector : constant Vector_Type := [others => Zero];
+   begin
+      return Result : Real_CPU_Tensor :=
+        (Axes => Shape'Length,
+         Size       => Data_Vectors (Shape),
+         Kind       => Float_Type,
+         Shape      => Shape,
+         Data       => [others => Zero_Vector])
+      do
+         if Offset in -(Max_Size - 1) .. Max_Size - 1 then
+            declare
+               Result_Data : Element_Array (1 .. Elements (Shape))
+                 with Import, Convention => Ada, Address => Result.Data'Address;
+
+               Index : Integer := Offset + 1;
+            begin
+               for I in 1 .. Rows loop
+                  if Index in Result_Data'Range then
+                     Result_Data (Index) := One;
+                  end if;
+                  Index := Index + Columns + 1;
+               end loop;
+            end;
+         end if;
+      end return;
+   end Identity;
+
+   overriding
+   function Upper_Triangular (Object : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor
+     renames Operations.Upper_Triangular;
+
+   overriding
+   function Main_Diagonal (Object : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor is
+      Rows    : constant Positive := Object.Rows;
+      Columns : constant Positive := Object.Columns;
+
+      Shape : constant Tensor_Shape := [Positive'Min (Rows, Columns)];
+   begin
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Elements (Shape))
+              with Import, Convention => Ada, Address => Result.Data'Address;
+
+            Object_Data : Element_Array (1 .. Object.Elements)
+              with Import, Convention => Ada, Address => Object.Data'Address;
+
+            Index : Integer := Offset + 1;
+         begin
+            for I in Result_Data'Range loop
+               if Index in Object_Data'Range then
+                  Result_Data (I) := Object_Data (Index);
+               else
+                  Result_Data (I) := Zero;
+               end if;
+               Index := Index + Columns + 1;
+            end loop;
+         end;
+      end return;
+   end Main_Diagonal;
+
+   overriding
+   function Diagonal (Elements : Element_Array; Offset : Integer := 0) return Real_CPU_Tensor is
+      Size : constant Positive := Elements'Length;
+
+      Shape : constant Tensor_Shape := [1 .. 2 => Size];
+
+      Zero_Vector : constant Vector_Type := [others => Zero];
+   begin
+      return Result : Real_CPU_Tensor :=
+        (Axes => Shape'Length,
+         Size       => Data_Vectors (Shape),
+         Kind       => Float_Type,
+         Shape      => Shape,
+         Data       => [others => Zero_Vector])
+      do
+         if Offset in -(Size - 1) .. Size - 1 then
+            declare
+               Result_Data : Element_Array (1 .. Size * Size)
+                 with Import, Convention => Ada, Address => Result.Data'Address;
+
+               Index : Integer := Offset + 1;
+            begin
+               for I in Elements'Range loop
+                  if Index in Result_Data'Range then
+                     Result_Data (Index) := Elements (I);
+                  end if;
+                  Index := Index + Size + 1;
+               end loop;
+            end;
+         end if;
+      end return;
+   end Diagonal;
+
+   overriding
+   function Diagonal (Elements : Real_CPU_Tensor; Offset : Integer := 0) return Real_CPU_Tensor is
+      Object_Data : Element_Array (1 .. Elements.Elements)
+        with Import, Convention => Ada, Address => Elements.Data'Address;
+   begin
+      return Diagonal (Object_Data, Offset);
+   end Diagonal;
+
+   overriding
+   function Trace (Object : Real_CPU_Tensor; Offset : Integer := 0) return Element renames Operations.Trace;
+
+   ----------------------------------------------------------------------------
+   --                            Matrix operations                           --
+   ----------------------------------------------------------------------------
+
+   procedure Multiply_Add
+     (Result : in out Element_Array;
+      Left   : Element;
+      Right  : Element_Array)
+   is
+      Left_Vector : constant Vector_Type := [others => Left];
+
+      subtype Vector_Elements is Element_Array (1 .. Vector_Type'Length);
+
+      function Convert is new Ada.Unchecked_Conversion (Vector_Elements, Vector_Type);
+      function Convert is new Ada.Unchecked_Conversion (Vector_Type, Vector_Elements);
+
+      Last_Vector_Index : constant Positive := Data_Vectors (Right'Length);
+
+      Padding : constant Natural :=
+        Data_Padding (Last_Vector_Index, Right'Length);
+   begin
+      for Index in 1 .. Last_Vector_Index - (if Padding > 0 then 1 else 0) loop
+         declare
+            Vector_Index : constant Integer := (Index - 1) * Vector_Type'Length - 1;
+
+            Result_Index : constant Natural := Vector_Index + Result'First;
+            Right_Index  : constant Natural := Vector_Index + Right'First;
+
+            Result_Vector : constant Vector_Type :=
+              Convert (Result (Result_Index + 1 .. Result_Index + Vector_Type'Length));
+            Right_Vector : constant Vector_Type :=
+              Convert (Right (Right_Index + 1 .. Right_Index + Vector_Type'Length));
+         begin
+            Result (Result_Index + 1 .. Result_Index + Vector_Type'Length) :=
+              Convert (Result_Vector + Left_Vector * Right_Vector);
+         end;
+      end loop;
+
+      if Padding > 0 then
+         declare
+            Vector_Index : constant Integer := (Last_Vector_Index - 1) * Vector_Type'Length - 1;
+
+            Result_Index : constant Natural := Vector_Index + Result'First;
+            Right_Index  : constant Natural := Vector_Index + Right'First;
+
+            Last_Count : constant Positive := Vector_Type'Length - Padding;
+         begin
+            for I in 1 .. Last_Count loop
+               Result (Result_Index + I) :=
+                 Result (Result_Index + I) + Left * Right (Right_Index + I);
+            end loop;
+         end;
+      end if;
+   end Multiply_Add;
+
+   overriding
+   function "*" (Left, Right : Real_CPU_Tensor) return Real_CPU_Tensor is
+      --  m x n * n x p
+      --      ^   ^
+      --      |___|
+      --     (Count)
+      Left_Rows     : constant Natural := (if Left.Axes = 2 then Left.Rows else 1);
+      Count         : constant Natural := Right.Rows;
+      Right_Columns : constant Natural := (if Right.Axes = 2 then Right.Columns else 1);
+
+      Shape : constant Tensor_Shape :=
+         (case Right.Axes is
+            when 1 => [1 => Left_Rows],
+            when 2 => [1 => Left_Rows, 2 => Right_Columns],
+            when others => raise Not_Implemented_Yet);  --  FIXME
+   begin
+      --  Matrix-matrix or matrix-vector or vector-matrix multiplication
+      return Result : Real_CPU_Tensor := Zeros (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Result.Elements)
+              with Import, Convention => Ada, Address => Result.Data'Address;
+            Left_Data : Element_Array (1 .. Left.Elements)
+              with Import, Convention => Ada, Address => Left.Data'Address;
+            Right_Data : Element_Array (1 .. Right.Elements)
+              with Import, Convention => Ada, Address => Right.Data'Address;
+         begin
+            for Row_Index in 1 .. Left_Rows loop
+               --  Result (Row_Index) := Left (Row_Index) * Right;
+               declare
+                  Result_Index : constant Natural := To_Index ([Row_Index, 1], Right_Columns) - 1;
+               begin
+                  for Column_Index in 1 .. Count loop
+                     declare
+                        Right_Index : constant Natural :=
+                          To_Index ([Column_Index, 1], Right_Columns) - 1;
+                     begin
+                        --  Left_Value := Left (Row_Index, Column_Index)
+                        --  Result (Row_Index) := @ + Left_Value * Right (Row_Index)
+                        Multiply_Add
+                          (Result_Data (Result_Index + 1 .. Result_Index + Right_Columns),
+                           Left_Data (To_Index ([Row_Index, Column_Index], Count)),
+                           Right_Data (Right_Index + 1 .. Right_Index + Right_Columns));
+                     end;
+                  end loop;
+               end;
+            end loop;
+         end;
+      end return;
+   end "*";
+
+   overriding
+   function "*" (Left, Right : Real_CPU_Tensor) return Element is
+      Result : Element_Type := Zero;
+
+      Padding : constant Natural :=
+        Data_Padding (Size => Left.Size, Count => Left.Elements);
+
+      Last_Left  : constant Vector_Type := Reset_Padding (CPU_Tensor (Left), Padding, Zero);
+      Last_Right : constant Vector_Type := Reset_Padding (CPU_Tensor (Right), Padding, Zero);
+
+      type Sum_Index_Type is mod 8;
+
+      Sums : array (Sum_Index_Type) of Vector_Type := [others => [others => Zero]];
+      --  TODO Do pairwise summation recursively
+   begin
+      for Index in Left.Data'First .. Left.Data'Last - 1 loop
+         declare
+            Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Index mod Sums'Length);
+         begin
+            Sums (Sum_Index) := Sums (Sum_Index) + Left.Data (Index) * Right.Data (Index);
+         end;
+      end loop;
+
+      declare
+         Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Left.Data'Last mod Sums'Length);
+      begin
+         Sums (Sum_Index) := Sums (Sum_Index) + Last_Left * Last_Right;
+      end;
+
+      for Value of Sums loop
+         Result := Result + Sum (Value);
+      end loop;
+
+      return Element (Result);
+--      return Left.Multiply (Right).Sum;  --  FIXME Faster/slower?
+   end "*";
+
+   overriding function "**" (Left : Real_CPU_Tensor; Right : Integer) return Real_CPU_Tensor renames Operations."**";
+
+   overriding
+   function Outer (Left, Right : Real_CPU_Tensor) return Real_CPU_Tensor is
+      Shape : constant Tensor_Shape := [1 => Left.Elements, 2 => Right.Elements];
+   begin
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Result.Elements)
+              with Import, Convention => Ada, Address => Result.Data'Address;
+
+            Left_Data : Element_Array (1 .. Left.Elements)
+              with Import, Convention => Ada, Address => Left.Data'Address;
+
+            Columns : constant Positive := Right.Elements;
+         begin
+            for Index in 1 .. Left.Elements loop
+               declare
+                  Row : constant CPU_Tensor := Left_Data (Index) * CPU_Tensor (Right);
+
+                  Row_Data : Element_Array (1 .. Columns)
+                    with Import, Convention => Ada, Address => Row.Data'Address;
+
+                  Base_Index : constant Natural := (Index - 1) * Columns;
+               begin
+                  Result_Data (Base_Index + 1 .. Base_Index + Columns) := Row_Data;
+               end;
+            end loop;
+         end;
+      end return;
+   end Outer;
+
+   overriding
+   function Inverse (Object : Real_CPU_Tensor) return Real_CPU_Tensor renames Operations.Inverse;
+
+   overriding
+   function Transpose (Object : Real_CPU_Tensor) return Real_CPU_Tensor is
+      Shape : constant Tensor_Shape :=
+        [1 => Object.Columns,
+         2 => Object.Rows];
+   begin
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
+         declare
+            Result_Data : Element_Array (1 .. Result.Elements)
+              with Import, Convention => Ada, Address => Result.Data'Address;
+
+            Object_Data : Element_Array (1 .. Object.Elements)
+              with Import, Convention => Ada, Address => Object.Data'Address;
+
+            Rows    : constant Natural := Object.Rows;
+            Columns : constant Natural := Object.Columns;
+
+            Result_Columns : Natural renames Rows;
+         begin
+            for Row_Index in 1 .. Rows loop
+               for Column_Index in 1 .. Columns loop
+                  Result_Data (To_Index ([Column_Index, Row_Index], Result_Columns)) :=
+                    Object_Data (To_Index ([Row_Index, Column_Index], Columns));
+               end loop;
+            end loop;
+         end;
+      end return;
+   end Transpose;
+
+   ----------------------------------------------------------------------------
+
+   overriding
+   function Solve (A, B : Real_CPU_Tensor; Solution : out Solution_Kind) return Real_CPU_Tensor
+     renames Operations.Solve;
+
+   overriding
+   function Solve (A, B : Real_CPU_Tensor; Form : Triangular_Form) return Real_CPU_Tensor
+     renames Operations.Solve;
+
+   overriding
+   function Divide_By (B, A : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Divide_By;
+
+   overriding
+   function Divide_By (B, A : Real_CPU_Tensor; Form : Triangular_Form) return Real_CPU_Tensor
+     renames Operations.Divide_By;
+
+   overriding
+   function QR (Object : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.QR;
+
+   overriding
+   function QR (Object : Real_CPU_Tensor; Mode : QR_Mode := Reduced) return QR_Factorization'Class
+     renames Operations.QR;
+
+   overriding
+   function QR_For_Least_Squares (Object : Real_CPU_Tensor) return QR_Factorization'Class
+     renames Operations.QR_For_Least_Squares;
+
+   overriding
+   function Least_Squares (Object : QR_Factorization'Class; B : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Least_Squares;
+
+   overriding
+   function Least_Squares (A, B : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Least_Squares;
+
+   overriding
+   function Constrained_Least_Squares (A, B, C, D : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Constrained_Least_Squares;
+
+   overriding
+   function Cholesky (Object : Real_CPU_Tensor; Form : Triangular_Form := Lower) return Real_CPU_Tensor
+     renames Operations.Cholesky;
+
+   overriding
+   function Cholesky_Update
+     (R, V : Real_CPU_Tensor;
+      Mode : Update_Mode) return Real_CPU_Tensor
+     renames Operations.Cholesky_Update;
+
+   ----------------------------------------------------------------------------
+   --                            Vector operations                           --
+   ----------------------------------------------------------------------------
+
+   overriding
+   function Norm (Object : Real_CPU_Tensor) return Element
+     renames Operations.Norm;
+
+   overriding
+   function Normalize (Object : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Normalize;
+
+   overriding
+   function Standardize (Object : Real_CPU_Tensor) return Real_CPU_Tensor
+     renames Operations.Standardize;
+
+   overriding
+   function Correlation_Coefficient (Left, Right : Real_CPU_Tensor) return Correlation_Element
+     renames Operations.Correlation_Coefficient;
+
+   ----------------------------------------------------------------------------
+   --                               Statistics                               --
+   ----------------------------------------------------------------------------
+
+   overriding function Quantile (Object : Real_CPU_Tensor; P : Probability) return Element
+     renames Operations.Quantile;
+
+   overriding function Median (Object : Real_CPU_Tensor) return Element
+     renames Operations.Median;
+
+   overriding function Mean (Object : Real_CPU_Tensor) return Element
+     renames Operations.Mean;
+
+   overriding
+   function Variance (Object : Real_CPU_Tensor; Offset : Natural := 0) return Element
+     renames Operations.Variance;
+
+   overriding
+   function Standard_Deviation (Object : Real_CPU_Tensor; Offset : Natural := 0) return Element
+     renames Operations.Standard_Deviation;
+
+   overriding
+   function Quantile
+     (Object : Real_CPU_Tensor;
+      P      : Probability;
+      Axis   : Tensor_Axis) return Real_CPU_Tensor is
+   begin
+      raise Program_Error;
+      return Zeros ([1]);  --  FIXME
+   end Quantile;
+
+   overriding
+   function Mean (Object : Real_CPU_Tensor; Axis : Tensor_Axis) return Real_CPU_Tensor
+     renames Operations.Mean;
+
+   overriding
+   function Variance
+     (Object : Real_CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Real_CPU_Tensor
+   renames Operations.Variance;
+
+   overriding
+   function Median (Object : Real_CPU_Tensor; Axis : Tensor_Axis) return Real_CPU_Tensor
+     renames Operations.Median;
+
+   overriding
+   function Standard_Deviation
+     (Object : Real_CPU_Tensor;
+      Axis   : Tensor_Axis;
+      Offset : Natural := 0) return Real_CPU_Tensor
+   renames Operations.Standard_Deviation;
+
+   ----------------------------------------------------------------------------
+
+   overriding
+   function All_Close
+     (Left, Right        : Real_CPU_Tensor;
+      Relative_Tolerance : Real_Element := 1.0e-05;
+      Absolute_Tolerance : Real_Element := Real_Element'Model_Epsilon) return Boolean
+   renames Operations.All_Close;
+
    procedure Reset_Random (Seed : Duration) is
    begin
       Reset (Random_State, Seed);
    end Reset_Random;
 
-   overriding function Random_Uniform (Shape : Tensor_Shape) return CPU_Tensor is
+   overriding function Random_Uniform (Shape : Tensor_Shape) return Real_CPU_Tensor is
       Value : Vector_Type;
    begin
-      return Result : CPU_Tensor := Without_Data (Shape) do
+      return Result : Real_CPU_Tensor := Without_Data (Shape) do
          for I in Result.Data'Range loop
             Next (Random_State, Value);
             Result.Data (I) := Value;

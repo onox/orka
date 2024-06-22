@@ -16,103 +16,6 @@
 
 package body Orka.Numerics.Tensors is
 
-   function Elements (Shape : Tensor_Shape) return Natural is
-      Result : Natural := 1;
-   begin
-      for Elements of Shape loop
-         Result := Result * Elements;
-      end loop;
-
-      return Result;
-   end Elements;
-
-   function Add (Left, Right : Tensor_Shape; Axis : Tensor_Axis) return Tensor_Shape is
-      Result : Tensor_Shape := Left;
-   begin
-      Result (Axis) := Result (Axis) + Right (Axis);
-
-      return Result;
-   end Add;
-
-   function To_Index (Index : Tensor_Index; Shape : Tensor_Shape) return Index_Type is
-      Result : Index_Type := Index (Index'Last);
-      Size   : Natural    := Shape (Index'Last);
-   begin
-      for Axis in reverse 1 .. Index'Last - 1 loop
-         Result := (Index (Axis) - 1) * Size + Result;
-         Size   := Size * Shape (Axis);
-      end loop;
-
-      return Result;
-   end To_Index;
-
-   function Shape (Index : Tensor_Range) return Tensor_Shape is
-   begin
-      return Result : Tensor_Shape (Index'Range) do
-         for Axis in Result'Range loop
-            Result (Axis) := Index (Axis).Stop - Index (Axis).Start + 1;
-         end loop;
-      end return;
-   end Shape;
-
-   function Full_Range (Shape : Tensor_Shape; Index : Tensor_Range) return Tensor_Range is
-      Result : Tensor_Range (Shape'Range);
-   begin
-      for Axis in Result'Range loop
-         if Axis in Index'Range then
-            Result (Axis) := Index (Axis);
-         else
-            Result (Axis) := (Start => 1, Stop => Shape (Axis));
-         end if;
-      end loop;
-
-      return Result;
-   end Full_Range;
-
-   function Full_Shape
-     (Axes : Tensor_Axis;
-      Shape      : Tensor_Shape;
-      Justify    : Alignment) return Tensor_Shape
-   is
-      Result : Tensor_Shape (1 .. Axes) := [others => 1];
-      Offset : constant Tensor_Axis'Base :=
-        (case Justify is
-           when Left  => 0,
-           when Right => Result'Last - Shape'Last);
-   begin
-      for Axis in Shape'Range loop
-         Result (Offset + Axis) := Shape (Axis);
-      end loop;
-
-      return Result;
-   end Full_Shape;
-
-   function Trim (Value : Natural) return String is
-      Result : constant String := Value'Image;
-   begin
-      return Result (Result'First + 1 .. Result'Last);
-   end Trim;
-
-   function Image (Shape : Tensor_Shape) return String is
-     (case Shape'Length is
-        when 1 =>
-           "(" & Trim (Shape (1)) & ")",
-        when 2 =>
-           "(" & Trim (Shape (1)) & ", " & Trim (Shape (2)) & ")",
-        when others =>
-           raise Program_Error);
-
-   function Image (Index : Tensor_Index) return String is
-     (case Index'Length is
-        when 1 =>
-           "(" & Trim (Index (1)) & ")",
-        when 2 =>
-           "(" & Trim (Index (1)) & ", " & Trim (Index (2)) & ")",
-        when others =>
-           raise Program_Error);
-
-   ----------------------------------------------------------------------------
-
    package body Generic_Random is
 
       --  Box-Muller method for the standard normal distribution
@@ -122,8 +25,8 @@ package body Orka.Numerics.Tensors is
       --  samples limited to (-6, 6). 0.00034 % of the actual standard normal
       --  distribution falls outside this range.
       function Normal (Shape : Tensor_Shape) return Random_Tensor is
-        (Multiply (Sqrt (-2.0 * Log (Uniform (Shape) + Element'Model_Small)),
-           Cos ((2.0 * Ada.Numerics.Pi) * Uniform (Shape))));
+        (Multiply (Sqrt (Convert (-2.0) * Log (Uniform (Shape) + Element_Model_Small)),
+           Cos (Convert (2.0 * Ada.Numerics.Pi) * Uniform (Shape))));
 
       function Binomial
         (Shape : Tensor_Shape;
@@ -133,22 +36,22 @@ package body Orka.Numerics.Tensors is
          Result : Random_Tensor := Zeros (Shape);
       begin
          for Index in 1 .. N loop
-            Result := Result + (1.0 and (Uniform (Shape) <= Element (P)));
+            Result := Result + (One and (Uniform (Shape) <= Convert (Real_Element (P))));
          end loop;
 
          return Result;
       end Binomial;
 
       function Geometric (Shape : Tensor_Shape; P : Probability) return Random_Tensor is
-        (Floor (Exponential (Shape, -EF.Log (Element (1.0 - P) + Element'Model_Small))));
+        (Floor (Exponential (Shape, -EF.Log (Real_Element (1.0 - P) + Real_Element'Model_Small))));
 
-      function Poisson (Shape : Tensor_Shape; Lambda : Element) return Random_Tensor is
+      function Poisson (Shape : Tensor_Shape; Lambda : Real_Element) return Random_Tensor is
          U : constant Random_Tensor := Uniform (Shape);
 
          use EF;
 
          I    : Random_Tensor := Zeros (Shape);
-         Expr : Random_Tensor := Fill (Shape, Ada.Numerics.e ** (-Lambda));
+         Expr : Random_Tensor := Fill (Shape, Convert (Ada.Numerics.e ** (-Lambda)));
          Sum  : Random_Tensor := Expr;
       begin
          loop
@@ -159,8 +62,8 @@ package body Orka.Numerics.Tensors is
 
                --  Using inverse transform sampling (with y is lambda):
                --  P = min{p = 0, 1, 2, ... | U <= exp(-y) * Sum (y^i / i! for i in 0 .. p)}
-               I    := I + (1.0 and Loop_Condition);
-               Expr := Expr * Lambda / I;
+               I    := I + (One and Loop_Condition);
+               Expr := Expr * Convert (Lambda) / I;
                Sum  := Sum + (Expr and Loop_Condition);
             end;
          end loop;
@@ -168,15 +71,18 @@ package body Orka.Numerics.Tensors is
          return I;
       end Poisson;
 
-      function Gamma (Shape : Tensor_Shape; K, Theta : Element) return Random_Tensor is
-         D : constant Element := K - 1.0 / 3.0;
-         C : constant Element := 1.0 / EF.Sqrt (9.0 * D);
+      function Gamma (Shape : Tensor_Shape; K, Theta : Real_Element) return Random_Tensor is
+         Float_D : constant Real_Element := K - 1.0 / 3.0;
+         Float_C : constant Real_Element := 1.0 / EF.Sqrt (9.0 * Float_D);
+
+         D : constant Element_Type := Convert (Float_D);
+         C : constant Element_Type := Convert (Float_C);
 
          Result   : Random_Tensor := Zeros (Shape);
          Fraction : Random_Tensor := Zeros (Shape);
       begin
-         for I in 1 .. Integer (Element'Floor (K)) loop
-            Result := Result + Log (Uniform (Shape) + Element'Model_Small);
+         for I in 1 .. Integer (Real_Element'Floor (K)) loop
+            Result := Result + Log (Uniform (Shape) + Element_Model_Small);
             Result.Materialize;
          end loop;
 
@@ -192,16 +98,16 @@ package body Orka.Numerics.Tensors is
             loop
                declare
                   X : constant Random_Tensor := Normal (Shape);
-                  U : constant Random_Tensor := Log (Uniform (Shape) + Element'Model_Small);
+                  U : constant Random_Tensor := Log (Uniform (Shape) + Element_Model_Small);
 
-                  V  : constant Random_Tensor := Power (1.0 + C * X, 3);
+                  V  : constant Random_Tensor := Power (One + C * X, 3);
                   DV : constant Random_Tensor := D * V;
 
                   --  (Check that -1.0 / C < X, otherwise Log (V) will fail because V <= 0.0)
                   If_Condition : constant Random_Tensor :=
-                    V > 0.0 and -1.0 / C < X and
-                      U < 0.5 * Power (X, 2) + D - DV
-                            + D * Log (Max (0.0, V) + Element'Model_Small);
+                    V > Zero and Convert (-1.0 / Float_C) < X and
+                      U < Convert (0.5) * Power (X, 2) + D - DV
+                            + D * Log (Max (Zero, V) + Element_Model_Small);
                begin
                   --  Update Fraction with value DV but not if the element was already true before
                   Fraction := Fraction + DV and And_Not (Loop_Condition, If_Condition);
@@ -212,11 +118,11 @@ package body Orka.Numerics.Tensors is
             end loop;
          end;
 
-         return Theta * (Fraction - Result);
+         return Convert (Theta) * (Fraction - Result);
       end Gamma;
 
       --  Beta (Alpha, Beta) = X / (X + Y) where X ~ Gamma(Alpha, Theta) and Y ~ Gamma(Beta, Theta)
-      function Beta (Shape : Tensor_Shape; Alpha, Beta : Element) return Random_Tensor is
+      function Beta (Shape : Tensor_Shape; Alpha, Beta : Real_Element) return Random_Tensor is
          X : constant Random_Tensor := Gamma (Shape, Alpha, 1.0);
          Y : constant Random_Tensor := Gamma (Shape, Beta, 1.0);
       begin
@@ -224,17 +130,17 @@ package body Orka.Numerics.Tensors is
       end Beta;
 
       function Test_Statistic_T_Test (Data : Random_Tensor; True_Mean : Element) return Element is
-         Sample_Mean : constant Element := Data.Mean;
-         Sample_Std  : constant Element := Data.Standard_Deviation (Offset => 1);
+         Sample_Mean : constant Real_Element := Convert (Data.Mean);
+         Sample_Std  : constant Real_Element := Convert (Data.Standard_Deviation (Offset => 1));
       begin
-         return (Sample_Mean - True_Mean) / (Sample_Std / EF.Sqrt (Element (Data.Elements)));
+         return Convert ((Sample_Mean - Convert (True_Mean)) / (Sample_Std / EF.Sqrt (Real_Element (Data.Elements))));
       end Test_Statistic_T_Test;
 
       function Threshold_T_Test
         (Data  : Random_Tensor;
          Level : Probability) return Element
       is
-         Sample_Std : constant Element := Data.Standard_Deviation (Offset => 1);
+         Sample_Std : constant Real_Element := Convert (Data.Standard_Deviation (Offset => 1));
 
          use EF;
 
@@ -243,20 +149,20 @@ package body Orka.Numerics.Tensors is
 
          --  "A handy approximation for the error function and its inverse", Winitzki S., 2008,
          --  equation 7.
-         function Inverse_Erf (X : Probability) return Element is
+         function Inverse_Erf (X : Probability) return Real_Element is
             A        : constant := 0.147;
             Two_Pi_A : constant := 2.0 / (Ada.Numerics.Pi * A);
 
-            Ln_X2          : constant Element := Log (1.0 - Element (X)**2);
-            Two_Pi_A_Ln_X2 : constant Element := Two_Pi_A + Ln_X2 / 2.0;
+            Ln_X2          : constant Real_Element := Log (1.0 - Real_Element (X)**2);
+            Two_Pi_A_Ln_X2 : constant Real_Element := Two_Pi_A + Ln_X2 / 2.0;
          begin
             return Sqrt (Sqrt (Two_Pi_A_Ln_X2**2 - Ln_X2 / A) - Two_Pi_A_Ln_X2);
          end Inverse_Erf;
 
          --  Quantile function of standard normal distribution
-         T_Value : constant Element := Sqrt (2.0) * Inverse_Erf (2.0 * (1.0 - Level) - 1.0);
+         T_Value : constant Real_Element := Sqrt (2.0) * Inverse_Erf (2.0 * (1.0 - Level) - 1.0);
       begin
-         return T_Value * (Sample_Std / EF.Sqrt (Element (Data.Elements)));
+         return Convert (T_Value * (Sample_Std / EF.Sqrt (Real_Element (Data.Elements))));
       end Threshold_T_Test;
 
    end Generic_Random;

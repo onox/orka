@@ -18,7 +18,7 @@ with Orka.Numerics.Kalman.SPKF;
 
 package body Orka.Numerics.Kalman.UKF is
 
-   function Weights (N : Positive; A, B, K : Tensors.Element_Type) return Weights_Type is
+   function Weights (N : Positive; A, B, K : Tensors.Real_Element) return Weights_Type is
       L : constant Element_Type := Element_Type (N);
 
       --  See equation 3.11 in Section 3.2.2 of [1]
@@ -27,10 +27,10 @@ package body Orka.Numerics.Kalman.UKF is
 
       Count : constant Positive := 2 * N + 1;
 
-      Weights_Mean, Weights_Cov : Vector := Fill ([Count], 1.0 / (2.0 * (L + Lambda)));
+      Weights_Mean, Weights_Cov : Vector := Fill ([Count], Tensors.Convert (1.0 / (2.0 * (L + Lambda))));
    begin
-      Weights_Mean.Set ([1], Mean_First);
-      Weights_Cov.Set  ([1], Mean_First + 1.0 - A**2 + B);
+      Weights_Mean.Set ([1], Tensors.Convert (Mean_First));
+      Weights_Cov.Set  ([1], Tensors.Convert (Mean_First + 1.0 - A**2 + B));
 
       return
         (N              => N,
@@ -72,7 +72,7 @@ package body Orka.Numerics.Kalman.UKF is
             Left  : Vector renames Points_Left.Get (I);
             Right : Vector renames Points_Right.Get (I);
 
-            Weight : Element_Type renames Weights.Get (I);
+            Weight : Tensors.Element_Type renames Weights.Get (I);
          begin
             P := P + Weight * Outer (Left - Mean_Left, Right - Mean_Right);
          end;
