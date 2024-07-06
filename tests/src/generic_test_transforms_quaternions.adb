@@ -70,10 +70,10 @@ package body Generic_Test_Transforms_Quaternions is
 
          Result   : constant Quaternion :=
            R (Axis, To_Radians (Half_Angle)) * R (Axis, To_Radians (Half_Angle));
-         Expected : constant Quaternion := (Axis (X) * Sin_Value,
+         Expected : constant Quaternion := [Axis (X) * Sin_Value,
                                             Axis (Y) * Sin_Value,
                                             Axis (Z) * Sin_Value,
-                                            Cos_Value);
+                                            Cos_Value];
       begin
          Assert_Equivalent (Expected, Result);
          Assert (Normalized (Result), "Result not normalized");
@@ -153,10 +153,10 @@ package body Generic_Test_Transforms_Quaternions is
       Cos_Value : constant Element_Type := EF.Cos (45.0, 360.0);
 
       Result   : constant Quaternion := R (Axis, To_Radians (Angle));
-      Expected : constant Quaternion := (Axis (X) * Sin_Value,
+      Expected : constant Quaternion := [Axis (X) * Sin_Value,
                                          Axis (Y) * Sin_Value,
                                          Axis (Z) * Sin_Value,
-                                         Cos_Value);
+                                         Cos_Value];
    begin
       Assert_Equivalent (Expected, Result);
       Assert (Normalized (Result), "Result not normalized");

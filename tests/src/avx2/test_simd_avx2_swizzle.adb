@@ -57,10 +57,10 @@ package body Test_SIMD_AVX2_Swizzle is
 
       Results : array (Positive range Expected'Range) of m256d;
    begin
-      Results (1) := Permute (Elements, Mask_0_0_0_0);
-      Results (2) := Permute (Elements, Mask_2_2_2_2);
-      Results (3) := Permute (Elements, Mask_1_0_3_2);
-      Results (4) := Permute (Elements, Mask_2_3_0_1);
+      Results (1) := Permute (Elements, Integer_32 (Mask_0_0_0_0));
+      Results (2) := Permute (Elements, Integer_32 (Mask_2_2_2_2));
+      Results (3) := Permute (Elements, Integer_32 (Mask_1_0_3_2));
+      Results (4) := Permute (Elements, Integer_32 (Mask_2_3_0_1));
 
       for I in Expected'Range loop
          for J in Index_4D loop

@@ -19,16 +19,16 @@ with AUnit.Assertions;
 with Orka.Loggers.Terminal;
 with Orka.Logging;
 
-package body Generic_Test_Tensors_Matrices is
+package body Generic_Test_Real_Tensors_Matrices is
 
    overriding
-   function Name (Object : Test_Case) return AUnit.Test_String is (AUnit.Format ("(Tensors - " & Suite_Name & " - Matrices)"));
+   function Name (Object : Test_Case) return AUnit.Test_String is (AUnit.Format ("(Real_Tensors - " & Suite_Name & " - Matrices)"));
 
    use Tensors;
-   use type Tensors.Element;
+   use Orka.Numerics;
 
    subtype CPU_Tensor is Tensor_Type;
-   subtype CPU_QR_Factorization is QR_Factorization_Type;
+   subtype CPU_QR_Factorization is Tensors.QR_Factorization'Class;
    subtype Test is AUnit.Test_Cases.Test_Case'Class;
 
    use AUnit.Assertions;
@@ -641,20 +641,28 @@ package body Generic_Test_Tensors_Matrices is
       QR_2 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_2, Complete));
       QR_3 : constant CPU_QR_Factorization := CPU_QR_Factorization (QR (Tensor_3, Complete));
 
-      Actual_1 : constant CPU_Tensor := QR_1.Q * QR_1.R;
-      Actual_2 : constant CPU_Tensor := QR_2.Q * QR_2.R;
-      Actual_3 : constant CPU_Tensor := QR_3.Q * QR_3.R;
-   begin
-      Assert (QR_1.Q.Shape = [Tensor_1.Rows, Tensor_1.Rows],
-        "Unexpected shape " & Image (QR_1.Q.Shape) & " of Q");
-      Assert (QR_2.Q.Shape = [Tensor_2.Rows, Tensor_2.Rows],
-        "Unexpected shape " & Image (QR_2.Q.Shape) & " of Q");
-      Assert (QR_3.Q.Shape = [Tensor_3.Rows, Tensor_3.Rows],
-        "Unexpected shape " & Image (QR_3.Q.Shape) & " of Q");
+      QR_1_Q : constant CPU_Tensor := Q (QR_1);
+      QR_2_Q : constant CPU_Tensor := Q (QR_2);
+      QR_3_Q : constant CPU_Tensor := Q (QR_3);
 
-      Assert (QR_1.R.Shape = Tensor_1.Shape, "Unexpected shape " & Image (QR_1.R.Shape) & " of R");
-      Assert (QR_2.R.Shape = Tensor_2.Shape, "Unexpected shape " & Image (QR_2.R.Shape) & " of R");
-      Assert (QR_3.R.Shape = Tensor_3.Shape, "Unexpected shape " & Image (QR_3.R.Shape) & " of R");
+      QR_1_R : constant CPU_Tensor := R (QR_1);
+      QR_2_R : constant CPU_Tensor := R (QR_2);
+      QR_3_R : constant CPU_Tensor := R (QR_3);
+
+      Actual_1 : constant CPU_Tensor := QR_1_Q * QR_1_R;
+      Actual_2 : constant CPU_Tensor := QR_2_Q * QR_2_R;
+      Actual_3 : constant CPU_Tensor := QR_3_Q * QR_3_R;
+   begin
+      Assert (QR_1_Q.Shape = [Tensor_1.Rows, Tensor_1.Rows],
+        "Unexpected shape " & Image (QR_1_Q.Shape) & " of Q");
+      Assert (QR_2_Q.Shape = [Tensor_2.Rows, Tensor_2.Rows],
+        "Unexpected shape " & Image (QR_2_Q.Shape) & " of Q");
+      Assert (QR_3_Q.Shape = [Tensor_3.Rows, Tensor_3.Rows],
+        "Unexpected shape " & Image (QR_3_Q.Shape) & " of Q");
+
+      Assert (QR_1_R.Shape = Tensor_1.Shape, "Unexpected shape " & Image (QR_1_R.Shape) & " of R");
+      Assert (QR_2_R.Shape = Tensor_2.Shape, "Unexpected shape " & Image (QR_2_R.Shape) & " of R");
+      Assert (QR_3_R.Shape = Tensor_3.Shape, "Unexpected shape " & Image (QR_3_R.Shape) & " of R");
 
       Assert (All_Close (Tensor_1, Actual_1, Absolute_Tolerance => 1.0e8 * Abs_Tolerance),
         "A /= Q * R 1");
@@ -794,7 +802,9 @@ package body Generic_Test_Tensors_Matrices is
       --  Test orthogonal projection of B is A * x and Q * Q^T * b
       --  where Q is the reduced orthogonal matrix
       declare
-         QQT : constant CPU_Tensor := QR_Tensor.Q * QR_Tensor.Q.Transpose;
+         QR_Tensor_Q : constant CPU_Tensor := Q (QR_Tensor);
+
+         QQT : constant CPU_Tensor := QR_Tensor_Q * QR_Tensor_Q.Transpose;
 
          Ax   : constant CPU_Tensor := Tensor * Actual;
          QQTb : constant CPU_Tensor := QQT * B;
@@ -920,4 +930,4 @@ package body Generic_Test_Tensors_Matrices is
    end Suite;
 begin
    Orka.Logging.Set_Logger (Orka.Loggers.Terminal.Create_Logger (Level => Orka.Loggers.Info));
-end Generic_Test_Tensors_Matrices;
+end Generic_Test_Real_Tensors_Matrices;

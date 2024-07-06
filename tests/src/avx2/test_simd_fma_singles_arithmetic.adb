@@ -45,14 +45,14 @@ package body Test_SIMD_FMA_Singles_Arithmetic is
 
    procedure Test_Multiply_Vector (Object : in out Test) is
       --  Matrix is an array of columns
-      Left  : constant m128_Array := ((1.0, 5.0, 9.0, 13.0),
-                                       (2.0, 6.0, 10.0, 14.0),
-                                       (3.0, 7.0, 11.0, 15.0),
-                                       (4.0, 8.0, 12.0, 16.0));
+      Left  : constant m128_Array := [[1.0, 5.0, 9.0, 13.0],
+                                      [2.0, 6.0, 10.0, 14.0],
+                                      [3.0, 7.0, 11.0, 15.0],
+                                      [4.0, 8.0, 12.0, 16.0]];
 
-      Right : constant m128 := (2.0, 1.0, 1.0, 1.0);
+      Right : constant m128 := [2.0, 1.0, 1.0, 1.0];
 
-      Expected : constant m128 := (11.0, 31.0, 51.0, 71.0);
+      Expected : constant m128 := [11.0, 31.0, 51.0, 71.0];
 
       Result : constant m128 := Left * Right;
    begin
@@ -63,20 +63,20 @@ package body Test_SIMD_FMA_Singles_Arithmetic is
 
    procedure Test_Multiply_Matrices (Object : in out Test) is
       --  Each matrix is an array of columns
-      Left  : constant m128_Array := ((1.0, 5.0, 9.0, 13.0),
-                                      (2.0, 6.0, 10.0, 14.0),
-                                      (3.0, 7.0, 11.0, 15.0),
-                                      (4.0, 8.0, 12.0, 16.0));
+      Left  : constant m128_Array := [[1.0, 5.0, 9.0, 13.0],
+                                      [2.0, 6.0, 10.0, 14.0],
+                                      [3.0, 7.0, 11.0, 15.0],
+                                      [4.0, 8.0, 12.0, 16.0]];
 
-      Right : constant m128_Array := ((2.0, 1.0, 1.0, 1.0),
-                                      (1.0, 2.0, 1.0, 1.0),
-                                      (1.0, 1.0, 2.0, 1.0),
-                                      (1.0, 1.0, 1.0, 2.0));
+      Right : constant m128_Array := [[2.0, 1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 1.0, 1.0],
+                                      [1.0, 1.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0, 2.0]];
 
-      Expected : constant m128_Array := ((11.0, 31.0, 51.0, 71.0),
-                                         (12.0, 32.0, 52.0, 72.0),
-                                         (13.0, 33.0, 53.0, 73.0),
-                                         (14.0, 34.0, 54.0, 74.0));
+      Expected : constant m128_Array := [[11.0, 31.0, 51.0, 71.0],
+                                         [12.0, 32.0, 52.0, 72.0],
+                                         [13.0, 33.0, 53.0, 73.0],
+                                         [14.0, 34.0, 54.0, 74.0]];
 
       Result : constant m128_Array := Left * Right;
    begin

@@ -21,14 +21,18 @@ with Orka.Numerics.Tensors;
 
 generic
    Suite_Name : String;
+   Large_Data : Boolean;
 
    type Abstract_Test_Case is abstract new AUnit.Test_Cases.Test_Case with private;
 
    type Element_Type is digits <>;
    with package Tensors is new Orka.Numerics.Tensors (Element_Type, Element_Type, Float_Type, <>, <>, <>, <>, <>);
+--   with package Tensors is new Orka.Numerics.Tensors (<>);
 
-   type Tensor_Type (<>) is new Tensors.Tensor with private;
-package Generic_Test_Tensors_Vectors is
+   type Tensor_Type (<>) is new Tensors.Real_Tensor with private;
+
+   with procedure Reset_Random (Seed : Duration);
+package Generic_Test_Real_Tensors_Vectors is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
 
@@ -42,4 +46,4 @@ private
    overriding
    function Name (Object : Test_Case) return AUnit.Test_String;
 
-end Generic_Test_Tensors_Vectors;
+end Generic_Test_Real_Tensors_Vectors;

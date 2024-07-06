@@ -28,10 +28,10 @@ package body Test_Kalman_Filters is
 
    use Orka.Numerics.Doubles.Tensors;
    use Orka.Numerics.Doubles.Tensors.CPU;
-   use type Orka.Numerics.Doubles.Tensors.Element;
+   use type Orka.Numerics.Doubles.Tensors.Real_Element;
 
-   package Random is new Generic_Random (CPU_Tensor);
-   package Kalman is new Orka.Numerics.Kalman (Orka.Numerics.Doubles.Tensors, CPU_Tensor);
+   package Random is new Generic_Random (Real_CPU_Tensor);
+   package Kalman is new Orka.Numerics.Kalman (Orka.Numerics.Doubles.Tensors, Real_CPU_Tensor);
 
    package Kalman_CDKF is new Kalman.CDKF;
    package Kalman_UKF  is new Kalman.UKF;
@@ -40,17 +40,17 @@ package body Test_Kalman_Filters is
 
    ----------------------------------------------------------------------------
 
-   function Get_Measurements (Count : Positive; Std_Dev : Element) return CPU_Tensor is
-      Shape : constant Tensor_Shape := [1, Count];
+   function Get_Measurements (Count : Positive; Std_Dev : Element) return Real_CPU_Tensor is
+      Shape : constant Orka.Numerics.Tensor_Shape := [1, Count];
       Stop  : constant Element := Element (Count);
    begin
       Reset_Random (Orka.OS.Monotonic_Clock);
 
       declare
-         Indices : constant CPU_Tensor := Linear_Space (1.0, Stop, Count => Count).Reshape (Shape);
-         X, Y    : constant CPU_Tensor := Indices + Random.Normal (Shape) * Std_Dev;
+         Indices : constant Real_CPU_Tensor := Linear_Space (1.0, Stop, Count => Count).Reshape (Shape);
+         X, Y    : constant Real_CPU_Tensor := Indices + Random.Normal (Shape) * Std_Dev;
       begin
-         return CPU_Tensor'(X & Y).Transpose;
+         return Real_CPU_Tensor'(X & Y).Transpose;
       end;
    end Get_Measurements;
 
@@ -64,8 +64,8 @@ package body Test_Kalman_Filters is
    Max_Std_Dev : constant := 0.4;
    Max_Mean    : constant := 0.1;
 
-   Actual   : constant CPU_Tensor := Get_Measurements (100, 0.0);
-   Elements : constant CPU_Tensor := Get_Measurements (100, Std_Dev);
+   Actual   : constant Real_CPU_Tensor := Get_Measurements (100, 0.0);
+   Elements : constant Real_CPU_Tensor := Get_Measurements (100, Std_Dev);
 
    Q : constant Kalman.Matrix := To_Tensor
      ([0.005, 0.01, 0.0, 0.0,
@@ -101,7 +101,7 @@ package body Test_Kalman_Filters is
          R       => R,
          Weights => Kalman_UKF.Weights (N => 4, A => 0.1, B => 2.0, K => 1.0));
 
-      Filtered_Elements : CPU_Tensor := Empty (Elements.Shape);
+      Filtered_Elements : Real_CPU_Tensor := Empty (Elements.Shape);
    begin
       for I in 1 .. Elements.Rows loop
          Kalman_UKF.Predict_Update (Filter, F_Cv'Access, H_Cv'Access, DT, Elements (I));
@@ -127,7 +127,7 @@ package body Test_Kalman_Filters is
          R       => R,
          Weights => Kalman_CDKF.Weights (N => 4, H2 => 3.0));
 
-      Filtered_Elements : CPU_Tensor := Empty (Elements.Shape);
+      Filtered_Elements : Real_CPU_Tensor := Empty (Elements.Shape);
    begin
       for I in 1 .. Elements.Rows loop
          Kalman_CDKF.Predict_Update (Filter, F_Cv'Access, H_Cv'Access, DT, Elements (I));

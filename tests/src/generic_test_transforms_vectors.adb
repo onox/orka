@@ -24,9 +24,6 @@ package body Generic_Test_Transforms_Vectors is
 
    use Orka;
    use Vectors;
-   use type Vectors.Element_Type;
-
-   use type Vector4;
 
    package EF is new Ada.Numerics.Generic_Elementary_Functions (Element_Type);
 

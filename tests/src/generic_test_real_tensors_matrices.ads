@@ -24,16 +24,15 @@ generic
 
    type Abstract_Test_Case is abstract new AUnit.Test_Cases.Test_Case with private;
 
-   with package Tensors is new Orka.Numerics.Tensors (<>);
+   type Element_Type is digits <>;
+   with package Tensors is new Orka.Numerics.Tensors (Element_Type, Element_Type, Float_Type, <>, <>, <>, <>, <>);
 
-   type Tensor_Type (<>) is new Tensors.Tensor with private;
+   type Tensor_Type (<>) is new Tensors.Real_Tensor with private;
 
-   type QR_Factorization_Type (<>) is new Tensors.QR_Factorization with private;
+   with function Q (Object : Tensors.QR_Factorization'Class) return Tensor_Type;
+   with function R (Object : Tensors.QR_Factorization'Class) return Tensor_Type;
 
-   with function Q (Object : QR_Factorization_Type'Class) return Tensor_Type is <>;
-   with function R (Object : QR_Factorization_Type'Class) return Tensor_Type is <>;
-
-package Generic_Test_Tensors_Matrices is
+package Generic_Test_Real_Tensors_Matrices is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
 
@@ -47,4 +46,4 @@ private
    overriding
    function Name (Object : Test_Case) return AUnit.Test_String;
 
-end Generic_Test_Tensors_Matrices;
+end Generic_Test_Real_Tensors_Matrices;

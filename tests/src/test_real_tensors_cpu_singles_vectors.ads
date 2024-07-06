@@ -16,15 +16,15 @@
 
 with AUnit.Test_Cases;
 
-with Orka.Numerics.Doubles.Tensors.CPU;
+with Orka.Numerics.Singles.Tensors.CPU;
 
-with Generic_Test_Tensors_Matrices;
+with Generic_Test_Real_Tensors_Vectors;
 
-use all type Orka.Numerics.Doubles.Tensors.CPU.CPU_QR_Factorization;
-
-package Test_Tensors_CPU_Doubles_Matrices is new Generic_Test_Tensors_Matrices
-  ("CPU - Doubles",
+package Test_Real_Tensors_CPU_Singles_Vectors is new Generic_Test_Real_Tensors_Vectors
+  ("CPU - Singles",
+   False,
    AUnit.Test_Cases.Test_Case,
-   Orka.Numerics.Doubles.Tensors,
-   Orka.Numerics.Doubles.Tensors.CPU.CPU_Tensor,
-   Orka.Numerics.Doubles.Tensors.CPU.CPU_QR_Factorization);
+   Orka.Float_32,
+   Orka.Numerics.Singles.Tensors,
+   Orka.Numerics.Singles.Tensors.CPU.Real_CPU_Tensor,
+   Orka.Numerics.Singles.Tensors.CPU.Reset_Random);
