@@ -14,15 +14,32 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
+with Orka.SIMD.SSE2.Integers.Logical;
+
 package Orka.SIMD.SSE2.Integers.Compare is
    pragma Pure;
+
+   use SIMD.SSE2.Integers.Logical;
 
    function "=" (Left, Right : m128i) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pcmpeqd128";
 
+   function "not" (Elements : m128i) return m128i is (Elements xor (Elements = Elements))
+     with Inline_Always;
+
+   function "/=" (Left, Right : m128i) return m128i is (not (Left = Right))
+     with Inline_Always;
+
    function ">" (Left, Right : m128i) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pcmpgtd128";
 
-   function "<" (Left, Right : m128i) return m128i is (Right > Left);
+   function "<" (Left, Right : m128i) return m128i is (Right > Left)
+     with Inline_Always;
+
+   function ">=" (Left, Right : m128i) return m128i is (not (Right > Left))
+     with Inline_Always;
+
+   function "<=" (Left, Right : m128i) return m128i is (not (Left > Right))
+     with Inline_Always;
 
 end Orka.SIMD.SSE2.Integers.Compare;
