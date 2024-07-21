@@ -637,11 +637,11 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function Reshape (Object : CPU_Tensor; Shape : Tensor_Shape) return CPU_Tensor is
-     (Axes => Shape'Length,
-      Size       => Object.Size,
-      Kind       => Object.Kind,
-      Shape      => Shape,
-      Data       => Object.Data);
+     (Axes  => Shape'Length,
+      Size  => Object.Size,
+      Kind  => Object.Kind,
+      Shape => Shape,
+      Data  => Object.Data);
 
    overriding
    function Reshape (Object : CPU_Tensor; Elements : Positive) return CPU_Tensor
@@ -1885,39 +1885,10 @@ package body Orka.Numerics.Tensors.SIMD_CPU is
 
    overriding
    function "*" (Left, Right : Real_CPU_Tensor) return Element is
-      Result : Element_Type := Zero;
-
-      Padding : constant Natural :=
-        Data_Padding (Size => Left.Size, Count => Left.Elements);
-
-      Last_Left  : constant Vector_Type := Reset_Padding (CPU_Tensor (Left), Padding, Zero);
-      Last_Right : constant Vector_Type := Reset_Padding (CPU_Tensor (Right), Padding, Zero);
-
-      type Sum_Index_Type is mod 8;
-
-      Sums : array (Sum_Index_Type) of Vector_Type := [others => [others => Zero]];
-      --  TODO Do pairwise summation recursively
+--      Result : constant Real_CPU_Tensor := Left.Reshape ([1, Left.Elements]) * Right;
    begin
-      for Index in Left.Data'First .. Left.Data'Last - 1 loop
-         declare
-            Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Index mod Sums'Length);
-         begin
-            Sums (Sum_Index) := Sums (Sum_Index) + Left.Data (Index) * Right.Data (Index);
-         end;
-      end loop;
-
-      declare
-         Sum_Index : constant Sum_Index_Type := Sum_Index_Type (Left.Data'Last mod Sums'Length);
-      begin
-         Sums (Sum_Index) := Sums (Sum_Index) + Last_Left * Last_Right;
-      end;
-
-      for Value of Sums loop
-         Result := Result + Sum (Value);
-      end loop;
-
-      return Element (Result);
---      return Left.Multiply (Right).Sum;  --  FIXME Faster/slower?
+--      return Result (1);
+      return Left.Multiply (Right).Sum;
    end "*";
 
    overriding function "**" (Left : Real_CPU_Tensor; Right : Integer) return Real_CPU_Tensor renames Operations."**";
