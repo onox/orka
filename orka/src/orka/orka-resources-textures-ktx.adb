@@ -269,7 +269,7 @@ package body Orka.Resources.Textures.KTX is
      (Object  : KTX_Load_Job;
       Context : Jobs.Execution_Context'Class)
    is
-      Bytes : Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
+      Bytes : constant Byte_Array_Pointers.Constant_Reference := Object.Data.Bytes.Get;
       Path  : String renames SU.To_String (Object.Data.Path);
 
       Resource : constant Texture_Ptr := new Texture'(others => <>);

@@ -1339,7 +1339,7 @@ package body Orka.Frame_Graphs is
                            end loop;
                         end if;
 
-                        if State.Buffers_Equal or else State.Clear_Mask = [others => False] then
+                        if State.Buffers_Equal or else State.Clear_Mask = (others => False) then
                            Framebuffer.Set_Draw_Buffers (State.Render_Buffers);
                         end if;
 
@@ -1527,7 +1527,7 @@ package body Orka.Frame_Graphs is
             GL.Buffers.Set_Stencil_Mask (2#1111_1111#);
          end if;
 
-         if State.Clear_Mask /= [others => False] then
+         if State.Clear_Mask /= (others => False) then
             if State.Buffers_Equal then
                Framebuffer.Clear (State.Clear_Mask);
             else

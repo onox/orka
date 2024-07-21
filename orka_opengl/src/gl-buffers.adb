@@ -14,8 +14,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-with Ada.Unchecked_Conversion;
-
 with GL.API;
 
 package body GL.Buffers is

@@ -36,7 +36,6 @@ package body Orka.Culling is
 
       use Rendering.Buffers;
       use all type Types.Element_Type;
-      use all type Rendering.Shaders.Shader_Kind;
 
       Program_Frustum : constant Shader_Objects :=
         [Compute_Shader => Create_Shader (Compute_Shader, "orka:cull-frustum.comp"),

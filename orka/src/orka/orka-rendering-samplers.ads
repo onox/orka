@@ -22,7 +22,6 @@ package Orka.Rendering.Samplers is
 
    use GL.Objects.Samplers;
    use GL.Types;
-   use all type GL.Types.Compare_Function;
    use all type GL.Types.Colors.Border_Color;
 
    subtype Wrapping_Mode       is GL.Objects.Samplers.Wrapping_Mode;
