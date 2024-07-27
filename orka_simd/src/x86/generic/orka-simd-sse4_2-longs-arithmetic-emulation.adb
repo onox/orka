@@ -14,20 +14,17 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.SSE2.Longs.Arithmetic is
-   pragma Pure;
+with Orka.SIMD.SSE2.Longs.Arithmetic;
+with Orka.SIMD.SSE4_2.Longs.Compare;
+with Orka.SIMD.SSE4_1.Longs.Swizzle;
 
-   function "+" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_paddq128";
+package body Orka.SIMD.SSE4_2.Longs.Arithmetic.Emulation is
 
-   function "-" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubq128";
+   use SIMD.SSE2.Longs.Arithmetic;
+   use SIMD.SSE4_2.Longs.Compare;
+   use SIMD.SSE4_1.Longs.Swizzle;
 
-   function "-" (Elements : m128l) return m128l is
-     ((others => 0) - Elements)
-   with Inline_Always;
+   function "abs" (Elements : m128l) return m128l is
+     (Blend (-Elements, Elements, Elements >= (others => 0)));
 
-   function Sum (Elements : m128l) return Integer_64
-     with Inline_Always;
-
-end Orka.SIMD.SSE2.Longs.Arithmetic;
+end Orka.SIMD.SSE4_2.Longs.Arithmetic.Emulation;

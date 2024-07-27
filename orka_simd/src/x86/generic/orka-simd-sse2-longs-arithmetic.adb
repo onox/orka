@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,20 +14,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.SSE2.Longs.Arithmetic is
-   pragma Pure;
+package body Orka.SIMD.SSE2.Longs.Arithmetic is
 
-   function "+" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_paddq128";
-
-   function "-" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubq128";
-
-   function "-" (Elements : m128l) return m128l is
-     ((others => 0) - Elements)
-   with Inline_Always;
-
-   function Sum (Elements : m128l) return Integer_64
-     with Inline_Always;
+   function Sum (Elements : m128l) return Integer_64 is
+     (Elements (X) + Elements (Y));
 
 end Orka.SIMD.SSE2.Longs.Arithmetic;

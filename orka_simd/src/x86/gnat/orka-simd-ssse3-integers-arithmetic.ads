@@ -42,5 +42,7 @@ package Orka.SIMD.SSSE3.Integers.Arithmetic is
 
    function Negate_Sign (Elements, Signs : m128i) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psignd128";
+   --  Negate sign of each element if corresponding element in Signs is negative,
+   --  do nothing if Signs is positive, and zero it if value iin Signs is zero
 
 end Orka.SIMD.SSSE3.Integers.Arithmetic;

@@ -25,6 +25,21 @@ package body Orka.SIMD.AVX2.Integers.Swizzle is
    use SIMD.AVX.Longs;
    use SIMD.SSE2.Longs;
 
+   type Index_32D is range 1 .. 32;
+
+   type m256b is array (Index_32D) of Integer_8
+     with Alignment => 32;
+   pragma Machine_Attribute (m256b, "vector_type");
+
+   function Blend (Left, Right, Mask : m256b) return m256b
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendvb256";
+
+   function Convert is new Ada.Unchecked_Conversion (m256i, m256b);
+   function Convert is new Ada.Unchecked_Conversion (m256b, m256i);
+
+   function Blend (Left, Right, Mask : m256i) return m256i is
+     (Convert (Blend (Convert (Left), Convert (Right), Convert (Mask))));
+
    function Convert is new Ada.Unchecked_Conversion (m256i, m256l);
    function Convert is new Ada.Unchecked_Conversion (m256l, m256i);
 
@@ -39,5 +54,14 @@ package body Orka.SIMD.AVX2.Integers.Swizzle is
 
    function Permute_Lanes (Left, Right : m256i; Mask : Integer_32) return m256i is
      (Convert (AVX2.Longs.Swizzle.Permute_Lanes (Convert (Left), Convert (Right), Mask)));
+
+   Mask_2_2_4_4 : constant := 1 + 1 * 4 + 3 * 16 + 3 * 64;
+   Mask_1_1_3_3 : constant := 0 + 0 * 4 + 2 * 16 + 2 * 64;
+
+   function Duplicate_H (Elements : m256i) return m256i is
+     (Permute_Lanes (Elements, Mask_2_2_4_4));
+
+   function Duplicate_L (Elements : m256i) return m256i is
+     (Permute_Lanes (Elements, Mask_1_1_3_3));
 
 end Orka.SIMD.AVX2.Integers.Swizzle;

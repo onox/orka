@@ -33,7 +33,8 @@ package Orka.SIMD.AVX.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subps256";
 
    function "-" (Elements : m256) return m256 is
-     ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) - Elements);
+     ((others => 0.0) - Elements)
+   with Inline;
 
    function "abs" (Elements : m256) return m256
      with Inline_Always;

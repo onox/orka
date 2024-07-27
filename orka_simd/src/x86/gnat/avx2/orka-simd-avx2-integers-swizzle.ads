@@ -21,9 +21,16 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
 
    use SIMD.SSE2.Integers;
 
+   function Blend (Left, Right : m128i; Mask : Integer_32) return m128i
+     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendd128";
+
    function Blend (Left, Right : m256i; Mask : Integer_32) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendd256";
    --  Select elements from two sources (Left and Right) using a constant mask
+
+   function Blend (Left, Right, Mask : m256i) return m256i
+     with Inline_Always;
+   --  Select 8-bit elements from two sources (Left and Right) using a variable mask
 
    function Extract (Elements : m256i; Mask : Integer_32) return m128i
      with Inline_Always;
@@ -51,6 +58,14 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
    --  Bits 7-8 for element 4
    --
    --  The same 8 bits of Mask are used to repeat the process for the second lane.
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  as follows:
+   --
+   --  Mask_a_b_c_d : constant := a + b * 4 + c * 16 + d * 64;
+   --
+   --  where a, b, c, and d are numbers between 0 and 3, selecting
+   --  elements 1 to 4 of each lane.
 
    function Permute_Lanes (Left, Right : m256i; Mask : Integer_32) return m256i
      with Inline_Always;
@@ -90,5 +105,17 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
    --
    --  Left (1), Right (1), Left (2), Right (2)
    --  Left (5), Right (5), Left (6), Right (6)
+
+   function Duplicate_H (Elements : m256i) return m256i
+     with Inline_Always;
+   --  Duplicate even elements as follows:
+   --  Element (2), Element (2), Element (4), Element (4),
+   --  Element (6), Element (6), Element (8), Element (8)
+
+   function Duplicate_L (Elements : m256i) return m256i
+     with Inline_Always;
+   --  Duplicate odd elements as follows:
+   --  Element (1), Element (1), Element (3), Element (3),
+   --  Element (5), Element (5), Element (7), Element (7)
 
 end Orka.SIMD.AVX2.Integers.Swizzle;

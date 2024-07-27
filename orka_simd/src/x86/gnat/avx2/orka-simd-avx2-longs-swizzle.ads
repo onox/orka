@@ -17,6 +17,16 @@
 package Orka.SIMD.AVX2.Longs.Swizzle is
    pragma Pure;
 
+   function Blend (Left, Right, Mask : m256l) return m256l
+     with Inline_Always;
+   --  Select 8-bit elements from two sources (Left and Right) using a variable mask
+
+   function Cast (Elements : m256l) return m128l
+     with Inline_Always;
+
+   function Cast (Elements : m128l) return m256l
+     with Inline_Always;
+
    function Extract (Elements : m256l; Mask : Integer_32) return m128l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_extract128i256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
@@ -26,7 +36,10 @@ package Orka.SIMD.AVX2.Longs.Swizzle is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_insert128i256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
-   function Permute_Lanes (Elements : m256l; Mask : Integer_32) return m256l
+   function Pack (High, Low : m128l) return m256l is (Insert (Cast (Low), High, 1))
+     with Inline_Always;
+
+   function Permute (Elements : m256l; Mask : Integer_32) return m256l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_permdi256";
    --  Shuffle elements across lanes using the first 2 bits of each corresponding element in Index
 

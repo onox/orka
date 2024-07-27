@@ -24,7 +24,10 @@ package Orka.SIMD.SSE2.Integers.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubd128";
 
    function "-" (Elements : m128i) return m128i is
-     ((0, 0, 0, 0) - Elements)
-   with Inline;
+     ((others => 0) - Elements)
+   with Inline_Always;
+
+   function Sum (Elements : m128i) return Integer_32
+     with Inline_Always;
 
 end Orka.SIMD.SSE2.Integers.Arithmetic;

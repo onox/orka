@@ -52,11 +52,11 @@ package Orka.SIMD.SSE.Singles.Swizzle is
 
    function Duplicate_LH (Elements : m128) return m128 is
      (Move_LH (Elements, Elements))
-   with Inline;
+   with Inline_Always;
 
    function Duplicate_HL (Elements : m128) return m128 is
      (Move_HL (Elements, Elements))
-   with Inline;
+   with Inline_Always;
 
    procedure Transpose (Matrix : in out m128_Array)
      with Inline_Always;

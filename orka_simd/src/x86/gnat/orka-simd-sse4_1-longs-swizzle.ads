@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.SSE2.Longs.Arithmetic is
+with Orka.SIMD.SSE2.Longs;
+
+package Orka.SIMD.SSE4_1.Longs.Swizzle is
    pragma Pure;
 
-   function "+" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_paddq128";
+   use Orka.SIMD.SSE2.Longs;
 
-   function "-" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubq128";
-
-   function "-" (Elements : m128l) return m128l is
-     ((others => 0) - Elements)
-   with Inline_Always;
-
-   function Sum (Elements : m128l) return Integer_64
+   function Blend (Left, Right : m128l; Mask : Integer_32) return m128l
      with Inline_Always;
+   --  Select 16-bit elements from two sources (Left and Right) using a constant 8-bit mask
 
-end Orka.SIMD.SSE2.Longs.Arithmetic;
+   function Blend (Left, Right, Mask : m128l) return m128l
+     with Inline_Always;
+   --  Select 8-bit elements from two sources (Left and Right) using a variable mask
+
+end Orka.SIMD.SSE4_1.Longs.Swizzle;

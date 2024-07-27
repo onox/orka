@@ -30,6 +30,9 @@ package Orka.SIMD.AVX2.Integers.Arithmetic is
      ((others => 0) - Elements)
    with Inline;
 
+   function Sum (Elements : m256i) return Integer_32
+     with Inline_Always;
+
    function "*" (Left, Right : m256i) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pmulld256";
 

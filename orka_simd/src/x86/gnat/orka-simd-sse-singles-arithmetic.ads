@@ -43,8 +43,8 @@ package Orka.SIMD.SSE.Singles.Arithmetic is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_subps";
 
    function "-" (Elements : m128) return m128 is
-     ((0.0, 0.0, 0.0, 0.0) - Elements)
-   with Inline;
+     ((others => 0.0) - Elements)
+   with Inline_Always;
 
    function "abs" (Elements : m128) return m128
      with Inline_Always;

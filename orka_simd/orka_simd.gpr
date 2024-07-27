@@ -25,7 +25,7 @@ project Orka_Simd is
                Sources := Sources &
                  ("src/x86/gnat/avx2",
                   "src/x86/gnat/fma");
-               Switches := Switches & ("-mavx2", "-mf16c");
+               Switches := Switches & ("-mavx2", "-mf16c", "-mfma", "-mfma4");
             when "AVX" =>
                Switches := Switches & ("-mavx", "-mf16c");
          end case;

@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,20 +14,15 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.SSE2.Longs.Arithmetic is
-   pragma Pure;
+package body Orka.SIMD.SSE2.Integers.Swizzle is
 
-   function "+" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_paddq128";
+   Mask_2_2_4_4 : constant := 1 + 1 * 4 + 3 * 16 + 3 * 64;
+   Mask_1_1_3_3 : constant := 0 + 0 * 4 + 2 * 16 + 2 * 64;
 
-   function "-" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubq128";
+   function Duplicate_H (Elements : m128i) return m128i is
+     (Permute (Elements, Mask_2_2_4_4));
 
-   function "-" (Elements : m128l) return m128l is
-     ((others => 0) - Elements)
-   with Inline_Always;
+   function Duplicate_L (Elements : m128i) return m128i is
+     (Permute (Elements, Mask_1_1_3_3));
 
-   function Sum (Elements : m128l) return Integer_64
-     with Inline_Always;
-
-end Orka.SIMD.SSE2.Longs.Arithmetic;
+end Orka.SIMD.SSE2.Integers.Swizzle;

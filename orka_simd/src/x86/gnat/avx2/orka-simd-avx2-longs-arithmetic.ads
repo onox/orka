@@ -25,6 +25,12 @@ package Orka.SIMD.AVX2.Longs.Arithmetic is
 
    function "-" (Elements : m256l) return m256l is
      ((others => 0) - Elements)
-   with Inline;
+   with Inline_Always;
+
+   function "*" (Left, Right : m256l) return m256l
+     with Inline_Always;
+
+   function Sum (Elements : m256l) return Integer_64
+     with Inline_Always;
 
 end Orka.SIMD.AVX2.Longs.Arithmetic;

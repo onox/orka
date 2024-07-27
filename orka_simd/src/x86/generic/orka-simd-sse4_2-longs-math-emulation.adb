@@ -1,6 +1,6 @@
 --  SPDX-License-Identifier: Apache-2.0
 --
---  Copyright (c) 2022 onox <denkpadje@gmail.com>
+--  Copyright (c) 2024 onox <denkpadje@gmail.com>
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
@@ -14,20 +14,18 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 
-package Orka.SIMD.SSE2.Longs.Arithmetic is
-   pragma Pure;
+with Orka.SIMD.SSE4_2.Longs.Compare;
+with Orka.SIMD.SSE4_1.Longs.Swizzle;
 
-   function "+" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_paddq128";
+package body Orka.SIMD.SSE4_2.Longs.Math.Emulation is
 
-   function "-" (Left, Right : m128l) return m128l
-     with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_psubq128";
+   use SIMD.SSE4_2.Longs.Compare;
+   use SIMD.SSE4_1.Longs.Swizzle;
 
-   function "-" (Elements : m128l) return m128l is
-     ((others => 0) - Elements)
-   with Inline_Always;
+   function Min (Left, Right : m128l) return m128l is
+     (Blend (Left, Right, Right < Left));
 
-   function Sum (Elements : m128l) return Integer_64
-     with Inline_Always;
+   function Max (Left, Right : m128l) return m128l is
+     (Blend (Left, Right, Right > Left));
 
-end Orka.SIMD.SSE2.Longs.Arithmetic;
+end Orka.SIMD.SSE4_2.Longs.Math.Emulation;
