@@ -21,4 +21,28 @@ package Orka.SIMD.AVX.Longs is
      with Alignment => 32;
    pragma Machine_Attribute (m256l, "vector_type");
 
+   function Identity (Elements : m256l) return m256l is (Elements)
+     with Inline_Always;
+
+   --  The functions Unsupported_Operation below are meant to be used as actual for generic formal
+   --  parameters when instantiating generic packages using SIMD intrinsics
+
+   function Unsupported_Operation return Integer_64 is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Elements : m256l) return m256l is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Elements : m256l) return Integer_64 is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Left, Right : m256l) return m256l is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Value : Integer_64) return Integer_64 is (raise Program_Error)
+     with Inline_Always;
+
+   function Is_Valid (Value : Integer_64) return Boolean is (Value'Valid)
+     with Inline_Always;
+
 end Orka.SIMD.AVX.Longs;

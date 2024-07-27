@@ -30,9 +30,6 @@ package Orka.Numerics.Tensors is
 
    subtype Element is Element_Type;
 
-   Element_Zero : Element_Type := Zero;
-   Element_One  : Element_Type := One;
-
    type Element_Array is array (Positive range <>) of Element_Type;
    type Boolean_Array is array (Positive range <>) of Boolean;
 

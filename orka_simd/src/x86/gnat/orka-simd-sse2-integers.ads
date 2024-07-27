@@ -21,4 +21,28 @@ package Orka.SIMD.SSE2.Integers is
      with Alignment => 16;
    pragma Machine_Attribute (m128i, "vector_type");
 
+   function Identity (Elements : m128i) return m128i is (Elements)
+     with Inline_Always;
+
+   --  The functions Unsupported_Operation below are meant to be used as actual for generic formal
+   --  parameters when instantiating generic packages using SIMD intrinsics
+
+   function Unsupported_Operation return Integer_32 is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Elements : m128i) return m128i is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Elements : m128i) return Integer_32 is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Left, Right : m128i) return m128i is (raise Program_Error)
+     with Inline_Always;
+
+   function Unsupported_Operation (Value : Integer_32) return Integer_32 is (raise Program_Error)
+     with Inline_Always;
+
+   function Is_Valid (Value : Integer_32) return Boolean is (Value'Valid)
+     with Inline_Always;
+
 end Orka.SIMD.SSE2.Integers;

@@ -15,10 +15,10 @@ validation.compile_checks = "warnings"
 "*".ada_version = "Ada2022"
 
 [gpr-externals]
-ORKA_TENSORS_CPU_SIMD_TYPE = ["SSE4.1", "AVX", "AVX2"]
+ORKA_TENSORS_CPU_SIMD_TYPE = ["SSE4", "AVX", "AVX2"]
 
 [gpr-set-externals]
-ORKA_TENSORS_CPU_SIMD_TYPE = "SSE4.1"
+ORKA_TENSORS_CPU_SIMD_TYPE = "SSE4"
 
 [[depends-on]]
 orka_numerics = "~1.0.0"

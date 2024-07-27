@@ -10,7 +10,7 @@ project Orka_Tensors_Cpu is
    Sources := ("src", "src/x86/generic");
    Switches := ();
 
-   type SIMD_Type is ("SSE4.1", "AVX", "AVX2");
+   type SIMD_Type is ("SSE4", "AVX", "AVX2");
    SIMD_Extensions : SIMD_Type := external ("ORKA_TENSORS_CPU_SIMD_TYPE");
 
    --  Note: AVX(2) implementations require GNAT 11 or later to avoid a Storage_Error
@@ -21,9 +21,9 @@ project Orka_Tensors_Cpu is
       when "AVX" =>
          Sources := Sources & ("src/x86/generic/avx");
          Switches := Switches & ("-mavx");
-      when "SSE4.1" =>
+      when "SSE4" =>
          Sources := Sources & ("src/x86/generic/sse4_1");
-         Switches := Switches & ("-msse4.1");
+         Switches := Switches & ("-msse4.1", "-msse4.2");
    end case;
 
    for Source_Dirs use Sources;
