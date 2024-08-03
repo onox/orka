@@ -16,4 +16,7 @@
 
 package Orka.SIMD.SSSE3 is
    pragma Pure;
+
+   type Align_Bits is new Integer_32 range 0 .. 256;
+
 end Orka.SIMD.SSSE3;

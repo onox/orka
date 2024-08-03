@@ -21,7 +21,7 @@ package Orka.SIMD.SSSE3.Longs.Shift is
 
    use SIMD.SSE2.Longs;
 
-   function Align_Right_Bytes (Left, Right : m128l; Mask : Integer_32) return m128l
+   function Align_Right_Bytes (Left, Right : m128l; Shift_Right : Align_Bits) return m128l
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_palignr128";
 
 end Orka.SIMD.SSSE3.Longs.Shift;

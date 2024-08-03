@@ -21,9 +21,13 @@ package Orka.SIMD.SSE4_1.Singles.Swizzle is
 
    use Orka.SIMD.SSE.Singles;
 
-   function Blend (Left, Right : m128; Mask : Integer_32) return m128
+   function Blend (Left, Right : m128; Mask : Blend_4_Mask) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendps";
    --  Select elements from two sources (Left and Right) using a constant mask
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  using the function Mask where each of the parameters A, B, C, and D is
+   --  either a 0 to select an element from Left or a 1 to select an element from Right.
 
    function Blend (Left, Right, Mask : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvps";

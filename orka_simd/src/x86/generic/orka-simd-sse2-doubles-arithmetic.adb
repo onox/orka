@@ -47,7 +47,7 @@ package body Orka.SIMD.SSE2.Doubles.Arithmetic is
 
       --  Based on SIMD.SSE.Singles.Arithmetic.Sum
 
-      Mask_1_0 : constant := 1 + 0 * 2;
+      Mask_1_0 : constant Swizzle_2_Mask := Mask (1, 0);
 
       Shuffled : constant m128d := Shuffle (Elements, Elements, Mask_1_0);
       Sum      : constant m128d := Elements + Shuffled;

@@ -21,18 +21,16 @@ package Orka.SIMD.AVX.Singles.Swizzle is
 
    use SIMD.SSE.Singles;
 
-   function Shuffle (Left, Right : m256; Mask : Integer_32) return m256
+   function Shuffle (Left, Right : m256; Mask : Swizzle_4_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufps256";
-   --  Shuffle the 32-bit floats in Left and Right using the given Mask.
-   --  The first, second, fifth, and sixth float are retrieved from Left.
-   --  The third, fourth, seventh, and eight float are retrieved from Right.
+   --  Shuffle the 32-bit floats in Left and Right using the given Mask
+   --
+   --  The first 4 elements are retrieved from the first lane of Left and Right,
+   --  and the last 4 elements from the second lane of Left and Right.
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 4 or c * 16 or d * 64;
-   --
-   --  a and b select the floats to use from Left, c and d from Right.
+   --  using the function Mask where parameters A and B select the floats to use
+   --  from Left and C and D from Right, repeated for each 128-bit lane.
 
    function Unpack_High (Left, Right : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_unpckhps256";
@@ -60,9 +58,13 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    --  Elements (1), Elements (1), Elements (3), Elements (3)
    --  Elements (5), Elements (5), Elements (7), Elements (7)
 
-   function Blend (Left, Right : m256; Mask : Integer_32) return m256
+   function Blend (Left, Right : m256; Mask : Blend_8_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendps256";
    --  Select elements from two sources (Left and Right) using a constant mask
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  using the function Mask where each of the parameters A, B, C, D, E, F, G, and H is
+   --  either a 0 to select an element from Left or a 1 to select an element from Right.
 
    function Blend (Left, Right, Mask : m256) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvps256";
@@ -74,47 +76,36 @@ package Orka.SIMD.AVX.Singles.Swizzle is
    function Cast (Elements : m128) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_ps256_ps";
 
-   function Extract (Elements : m256; Mask : Integer_32) return m128
+   function Extract (Elements : m256; Mask : Lane_Mask) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_ps256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256; Right : m128; Mask : Integer_32) return m256
+   function Insert (Left : m256; Right : m128; Mask : Lane_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_ps256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
-   function Pack (High, Low : m128) return m256 is (Insert (Cast (Low), High, 1))
+   function Pack (High, Low : m128) return m256 is (Insert (Cast (Low), High, Mask (Upper)))
      with Inline_Always;
 
-   function Permute (Elements : m128; Mask : Integer_32) return m128
+   function Permute (Elements : m128; Mask : Swizzle_4_Mask) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilps";
-   --  Shuffle elements using just Elements. Similar to Shuffle (Elements, Elements, Mask)
+   --  Shuffle elements using just Elements
+   --
+   --  Similar to Shuffle (Elements, Elements, Mask)
 
-   function Permute (Elements : m256; Mask : Integer_32) return m256
+   function Permute (Elements : m256; Mask : Swizzle_4_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilps256";
-   --  Shuffle elements using just Elements. Similar to Shuffle (Elements, Elements, Mask)
+   --  Shuffle elements using just Elements within each 128-bit lane
+   --
+   --  Similar to Shuffle (Elements, Elements, Mask)
 
-   function Permute_Lanes (Left, Right : m256; Mask : Integer_32) return m256
+   function Permute_Lanes (Left, Right : m256; Mask : Swizzle_Lanes_4_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vperm2f128_ps256";
-   --  Shuffle 128-bit lanes.
-   --
-   --  Bits 1-2 of Mask are used to control which of the four 128-bit lanes
-   --  to use for the lower half (128-bit) of the result. Bits 5-6 to select
-   --  a lane for the upper half of the result:
-   --
-   --  0 =>  Left (1 .. 4)
-   --  1 =>  Left (5 .. 8)
-   --  2 => Right (1 .. 4)
-   --  3 => Right (5 .. 8)
-   --
-   --  Bits 4 and 8 are used to zero the corresponding half (lower or upper).
+   --  Shuffle and/or zero 128-bit lanes using a constant mask
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_zu_zl_u_l : constant Unsigned_32 := zu * 128 or zl * 8 or u * 16 or l;
-   --
-   --  u and l are numbers between 0 and 3 (see above). zu and zl are either 0 or 1
-   --  to zero a lane.
+   --  using the function Mask to select one of the four lanes for the lower and
+   --  upper lanes of the result and/or to zero the lanes.
 
 end Orka.SIMD.AVX.Singles.Swizzle;

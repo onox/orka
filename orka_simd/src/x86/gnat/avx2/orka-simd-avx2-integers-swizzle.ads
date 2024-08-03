@@ -21,10 +21,10 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
 
    use SIMD.SSE2.Integers;
 
-   function Blend (Left, Right : m128i; Mask : Integer_32) return m128i
+   function Blend (Left, Right : m128i; Mask : Blend_4_Mask) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendd128";
 
-   function Blend (Left, Right : m256i; Mask : Integer_32) return m256i
+   function Blend (Left, Right : m256i; Mask : Blend_8_Mask) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendd256";
    --  Select elements from two sources (Left and Right) using a constant mask
 
@@ -32,12 +32,12 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
      with Inline_Always;
    --  Select 8-bit elements from two sources (Left and Right) using a variable mask
 
-   function Extract (Elements : m256i; Mask : Integer_32) return m128i
+   function Extract (Elements : m256i; Mask : Lane_Mask) return m128i
      with Inline_Always;
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256i; Right : m128i; Mask : Integer_32) return m256i
+   function Insert (Left : m256i; Right : m128i; Mask : Lane_Mask) return m256i
      with Inline_Always;
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
@@ -45,50 +45,24 @@ package Orka.SIMD.AVX2.Integers.Swizzle is
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_permvarsi256";
    --  Shuffle elements across lanes using the first 3 bits of each corresponding element in Index
 
-   function Permute_Lanes (Elements : m256i; Mask : Integer_32) return m256i
+   function Permute_Lanes (Elements : m256i; Mask : Swizzle_4_Mask) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pshufd256";
-   --  Shuffle elements within the two 128-bit lanes
+   --  Shuffle the 32-bit floats within the two 128-bit lanes using the constant mask
    --
-   --  For each element in each lane, 2 bits in the Mask are used to control
-   --  which element of the lane to use for the result.
-   --
-   --  Bits 1-2 for element 1
-   --  Bits 3-4 for element 2
-   --  Bits 5-6 for element 3
-   --  Bits 7-8 for element 4
-   --
-   --  The same 8 bits of Mask are used to repeat the process for the second lane.
+   --  Each lane of the result uses elements retrieved from the corresponding
+   --  lane of Elements, both selecting elements using the same mask.
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant := a + b * 4 + c * 16 + d * 64;
-   --
-   --  where a, b, c, and d are numbers between 0 and 3, selecting
-   --  elements 1 to 4 of each lane.
+   --  using the function Mask where parameters A, B, C, and D select the
+   --  elements to use from a lane of Elements, repeated for each 128-bit lane.
 
-   function Permute_Lanes (Left, Right : m256i; Mask : Integer_32) return m256i
+   function Permute_Lanes (Left, Right : m256i; Mask : Swizzle_Lanes_4_Mask) return m256i
      with Inline_Always;
-   --  Shuffle 128-bit lanes
-   --
-   --  Bits 1-2 of Mask are used to control which of the four 128-bit lanes
-   --  to use for the lower half (128-bit) of the result. Bits 5-6 to select
-   --  a lane for the upper half of the result:
-   --
-   --  0 =>  Left (1 .. 4)
-   --  1 =>  Left (5 .. 8)
-   --  2 => Right (1 .. 4)
-   --  3 => Right (5 .. 8)
-   --
-   --  Bits 4 and 8 are used to zero the corresponding half (lower or upper).
+   --  Shuffle and/or zero 128-bit lanes using a constant mask
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_zu_zl_u_l : constant Unsigned_32 := zu * 128 or zl * 8 or u * 16 or l;
-   --
-   --  u and l are numbers between 0 and 3 (see above). zu and zl are either 0 or 1
-   --  to zero a lane.
+   --  using the function Mask to select one of the four lanes for the lower and
+   --  upper lanes of the result and/or to zero the lanes.
 
    function Unpack_High (Left, Right : m256i) return m256i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_punpckhdq256";

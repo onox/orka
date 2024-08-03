@@ -17,10 +17,12 @@
 package Orka.SIMD.AVX.Singles.Compare is
    pragma Pure;
 
-   function Compare (Left, Right : m256; Mask : Integer_32) return m256
+   type Compare_Mask is new Integer_32 range 0 .. 31;
+
+   function Compare (Left, Right : m256; Mask : Compare_Mask) return m256
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cmpps256";
 
-   --  Predicates used are ordered and signaling
+   --  Predicates used are ordered (except negated predicates which are unordered) and signaling
 
    function "=" (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#10#));
@@ -38,7 +40,8 @@ package Orka.SIMD.AVX.Singles.Compare is
      (Compare (Left, Right, 16#01#));
 
    function "/=" (Left, Right : m256) return m256 is
-     (Compare (Left, Right, 16#1C#));
+     (Compare (Left, Right, 16#14#));
+   --  Unordered
 
    function Not_Nan (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#17#));
@@ -47,8 +50,6 @@ package Orka.SIMD.AVX.Singles.Compare is
    function Nan (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#13#));
    --  True if either or both elements in Left and Right are Nan, false otherwise
-
-   --  Negated predicates used are unordered and signaling
 
    function Not_Greater_Or_Equal (Left, Right : m256) return m256 is
      (Compare (Left, Right, 16#09#));

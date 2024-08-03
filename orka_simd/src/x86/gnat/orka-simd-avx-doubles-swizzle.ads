@@ -74,16 +74,13 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Transpose (Matrix : m256d_Array) return m256d_Array
      with Inline_Always;
 
-   function Blend (Left, Right : m256d; Mask : Integer_32) return m256d
+   function Blend (Left, Right : m256d; Mask : Blend_4_Mask) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendpd256";
    --  Select elements from two sources (Left and Right) using a constant mask.
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 2 or c * 4 or d * 8;
-   --
-   --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
+   --  using the function Mask where each of the parameters A, B, C, and D is
+   --  either a 0 to select an element from Left or a 1 to select an element from Right.
 
    function Blend (Left, Right, Mask : m256d) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_blendvpd256";
@@ -101,19 +98,19 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    function Convert (Elements : m128) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtps2pd256";
 
-   function Extract (Elements : m256d; Mask : Integer_32) return m128d
+   function Extract (Elements : m256d; Mask : Lane_Mask) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vextractf128_pd256";
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
 
-   function Insert (Left : m256d; Right : m128d; Mask : Integer_32) return m256d
+   function Insert (Left : m256d; Right : m128d; Mask : Lane_Mask) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vinsertf128_pd256";
    --  Insert Right into the lower half (Mask = 0) or upper half (Mask = 1)
 
    function Pack (High, Low : m128d) return m256d is (Insert (Cast (Low), High, 1))
      with Inline_Always;
 
-   function Permute (Elements : m128d; Mask : Integer_32) return m128d
+   function Permute (Elements : m128d; Mask : Swizzle_2_Mask) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd";
    --  Shuffle the 64-bit doubles in Elements. Similar to Shuffle (Elements, Elements, Mask):
    --
@@ -121,11 +118,8 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --  Result (2) := if Mask (b) = 0 then Elements (1) else Elements (2)
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b : constant Unsigned_32 := a or b * 2;
-   --
-   --  or by simply writing 2#ba#. a and b must be either 0 or 1.
+   --  using the function Mask where A selects the element for the first position
+   --  in the result and B the element at the second position.
 
    function Permute_Within_Lanes (Elements : m256d; Mask : Integer_32) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vpermilpd256";
@@ -144,27 +138,12 @@ package Orka.SIMD.AVX.Doubles.Swizzle is
    --
    --  or by simply writing 2#dcba#. a, b, c, and d must be either 0 or 1.
 
-   function Permute_Lanes (Left, Right : m256d; Mask : Integer_32) return m256d
+   function Permute_Lanes (Left, Right : m256d; Mask : Swizzle_Lanes_4_Mask) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_vperm2f128_pd256";
-   --  Shuffle 128-bit lanes.
-   --
-   --  Bits 1-2 of Mask are used to control which of the four 128-bit lanes
-   --  to use for the lower half (128-bit) of the result. Bits 5-6 to select
-   --  a lane for the upper half of the result:
-   --
-   --  0 =>  Left (1 .. 2)
-   --  1 =>  Left (3 .. 4)
-   --  2 => Right (1 .. 2)
-   --  3 => Right (3 .. 4)
-   --
-   --  Bits 4 and 8 are used to zero the corresponding half (lower or upper).
+   --  Shuffle and/or zero 128-bit lanes using a constant mask
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_l_u_zl_zu : constant Unsigned_32 := l or u * 16 or zl * 8 or zu * 128;
-   --
-   --  u and l are numbers between 0 and 3 (see above). zu and zl are either 0 or 1
-   --  to zero a lane.
+   --  using the function Mask to select one of the four lanes for the lower and
+   --  upper lanes of the result and/or to zero the lanes.
 
 end Orka.SIMD.AVX.Doubles.Swizzle;

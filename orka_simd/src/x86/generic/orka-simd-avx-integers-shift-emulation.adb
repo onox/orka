@@ -25,9 +25,11 @@ package body Orka.SIMD.AVX.Integers.Shift.Emulation is
    use SIMD.SSE2.Integers.Shift;
    use SIMD.SSSE3.Integers.Shift;
 
+   use type SIMD.SSSE3.Align_Bits;
+
    function Shift_Elements_Left_Zeros (Elements : m256i) return m256i is
-      Low  : constant m128i := Extract (Elements, 0);
-      High : constant m128i := Extract (Elements, 1);
+      Low  : constant m128i := Extract (Elements, Mask (Lower));
+      High : constant m128i := Extract (Elements, Mask (Upper));
    begin
       return Pack
         (High => Align_Right_Bytes (High, Low, (m128i'Length - 1) * m128i'Component_Size),
@@ -35,8 +37,8 @@ package body Orka.SIMD.AVX.Integers.Shift.Emulation is
    end Shift_Elements_Left_Zeros;
 
    function Shift_Elements_Right_Zeros (Elements : m256i) return m256i is
-      Low  : constant m128i := Extract (Elements, 0);
-      High : constant m128i := Extract (Elements, 1);
+      Low  : constant m128i := Extract (Elements, Mask (Lower));
+      High : constant m128i := Extract (Elements, Mask (Upper));
    begin
       return Pack
         (High => Shift_Elements_Right_Zeros (High),

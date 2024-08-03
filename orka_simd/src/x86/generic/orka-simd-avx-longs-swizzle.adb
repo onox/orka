@@ -37,7 +37,7 @@ package body Orka.SIMD.AVX.Longs.Swizzle is
    function Cast (Elements : m128l) return m256l is
      (Convert (Cast (Convert (Elements))));
 
-   function Extract (Elements : m256l; Mask : Integer_32) return m128l is
+   function Extract (Elements : m256l; Mask : Lane_Mask) return m128l is
      (Convert (Extract (Convert (Elements), Mask)));
 
 end Orka.SIMD.AVX.Longs.Swizzle;

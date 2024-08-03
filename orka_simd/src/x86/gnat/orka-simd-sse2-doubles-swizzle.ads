@@ -17,18 +17,15 @@
 package Orka.SIMD.SSE2.Doubles.Swizzle is
    pragma Pure;
 
-   function Shuffle (Left, Right : m128d; Mask : Integer_32) return m128d
+   function Shuffle (Left, Right : m128d; Mask : Swizzle_2_Mask) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufpd";
    --  Shuffle the 64-bit doubles in Left and Right using the given Mask. The first
    --  double (lower half) is retrieved from Left, the second double (upper half)
    --  from Right.
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b : constant Unsigned_32 := a or b * 2;
-   --
-   --  a selects the double to use from Left, b from Right.
+   --  using the function Mask where A selects the element to use from Left,
+   --  and B the element from Right.
 
    function Unpack_High (Left, Right : m128d) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_unpckhpd";

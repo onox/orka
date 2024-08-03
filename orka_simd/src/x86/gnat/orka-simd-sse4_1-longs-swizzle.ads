@@ -21,9 +21,13 @@ package Orka.SIMD.SSE4_1.Longs.Swizzle is
 
    use Orka.SIMD.SSE2.Longs;
 
-   function Blend (Left, Right : m128l; Mask : Integer_32) return m128l
+   function Blend (Left, Right : m128l; Mask : Blend_8_Mask) return m128l
      with Inline_Always;
-   --  Select 16-bit elements from two sources (Left and Right) using a constant 8-bit mask
+   --  Select elements from two sources (Left and Right) using a constant mask
+   --
+   --  The compiler needs access to the Mask at compile-time, thus construct it
+   --  using the function Mask with two parameters A and B, where each parameter
+   --  is 0 to choose an element from Left and 1 to choose from Right.
 
    function Blend (Left, Right, Mask : m128l) return m128l
      with Inline_Always;

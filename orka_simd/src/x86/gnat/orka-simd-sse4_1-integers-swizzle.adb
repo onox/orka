@@ -36,7 +36,7 @@ package body Orka.SIMD.SSE4_1.Integers.Swizzle is
    function Convert is new Ada.Unchecked_Conversion (m128qi, m128i);
    function Convert is new Ada.Unchecked_Conversion (m128i, m128qi);
 
-   function Blend (Left, Right : m128hi; Mask : Integer_32) return m128hi
+   function Blend (Left, Right : m128hi; Mask : Blend_8_Mask) return m128hi
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pblendw128";
 
    function Blend (Left, Right, Mask : m128qi) return m128qi
@@ -44,7 +44,7 @@ package body Orka.SIMD.SSE4_1.Integers.Swizzle is
 
    ----------------------------------------------------------------------------
 
-   function Blend (Left, Right : m128i; Mask : Integer_32) return m128i is
+   function Blend (Left, Right : m128i; Mask : Blend_8_Mask) return m128i is
      (Convert (Blend (Convert (Left), Convert (Right), Mask)));
 
    function Blend (Left, Right, Mask : m128i) return m128i is

@@ -27,7 +27,7 @@ package body Orka.SIMD.SSE4_1.Longs.Swizzle is
    function Convert is new Ada.Unchecked_Conversion (m128l, m128i);
    function Convert is new Ada.Unchecked_Conversion (m128i, m128l);
 
-   function Blend (Left, Right : m128l; Mask : Integer_32) return m128l is
+   function Blend (Left, Right : m128l; Mask : Blend_8_Mask) return m128l is
      (Convert (Blend (Convert (Left), Convert (Right), Mask)));
 
    function Blend (Left, Right, Mask : m128l) return m128l is

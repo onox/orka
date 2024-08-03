@@ -17,24 +17,13 @@
 package Orka.SIMD.SSE2.Integers.Swizzle is
    pragma Pure;
 
-   function Permute (Elements : m128i; Mask : Integer_32) return m128i
+   function Permute (Elements : m128i; Mask : Swizzle_4_Mask) return m128i
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_pshufd";
    --  Shuffle the 32-bit integers using a constant mask
    --
-   --  For each element, 2 bits in the Mask are used to control which
-   --  element to use for the result.
-   --
-   --  Bits 1-2 for element 1
-   --  Bits 3-4 for element 2
-   --  Bits 5-6 for element 3
-   --  Bits 7-8 for element 4
-   --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant := a + b * 4 + c * 16 + d * 64;
-   --
-   --  where a, b, c, and d are numbers between 0 and 3, selecting elements 1 to 4.
+   --  using the function Mask where parameters A, B, C, and D each select one
+   --  of the four elements from Elements.
 
    function Duplicate_H (Elements : m128i) return m128i
      with Inline_Always;

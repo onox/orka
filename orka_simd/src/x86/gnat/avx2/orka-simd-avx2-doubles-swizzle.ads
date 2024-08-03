@@ -21,15 +21,12 @@ package Orka.SIMD.AVX2.Doubles.Swizzle is
 
    use SIMD.AVX.Doubles;
 
-   function Permute (Elements : m256d; Mask : Integer_32) return m256d
+   function Permute (Elements : m256d; Mask : Swizzle_4_Mask) return m256d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_permdf256";
-   --  Shuffle the 64-bit doubles in Elements using the given Mask
+   --  Shuffle the 64-bit doubles in Elements using a constant mask
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 4 or c * 16 or d * 64;
-   --
-   --  a and b select the floats to use from Left, c and d from Right.
+   --  using the function Mask where parameters A, B, C, and D each select one
+   --  of the four elements from Elements.
 
 end Orka.SIMD.AVX2.Doubles.Swizzle;

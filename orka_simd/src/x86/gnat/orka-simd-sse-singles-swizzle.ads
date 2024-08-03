@@ -17,18 +17,15 @@
 package Orka.SIMD.SSE.Singles.Swizzle is
    pragma Pure;
 
-   function Shuffle (Left, Right : m128; Mask : Integer_32) return m128
+   function Shuffle (Left, Right : m128; Mask : Swizzle_4_Mask) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_shufps";
    --  Shuffle the 32-bit floats in Left and Right using the given Mask. The first
    --  and second floats (lower half) are retrieved from Left, the third and fourth
    --  floats (upper half) from Right.
    --
    --  The compiler needs access to the Mask at compile-time, thus construct it
-   --  as follows:
-   --
-   --  Mask_a_b_c_d : constant Unsigned_32 := a or b * 4 or c * 16 or d * 64;
-   --
-   --  a and b select the floats to use from Left, c and d from Right.
+   --  using the function Mask where parameters A and B select the floats to use
+   --  from Left and C and D from Right.
 
    function Unpack_High (Left, Right : m128) return m128
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_unpckhps";

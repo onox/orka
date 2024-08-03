@@ -27,7 +27,7 @@ package Orka.SIMD.AVX.Longs.Swizzle is
    function Cast (Elements : m128l) return m256l
      with Inline_Always;
 
-   function Extract (Elements : m256l; Mask : Integer_32) return m128l
+   function Extract (Elements : m256l; Mask : Lane_Mask) return m128l
      with Inline_Always;
    --  Extract 128-bit from either the lower half (Mask = 0) or upper
    --  half (Mask = 1)
