@@ -25,6 +25,6 @@ package body Orka.SIMD.SSE4_2.Longs.Arithmetic.Emulation is
    use SIMD.SSE4_1.Longs.Swizzle;
 
    function "abs" (Elements : m128l) return m128l is
-     (Blend (-Elements, Elements, Elements >= (others => 0)));
+     (Blend (-Elements, Elements, Elements >= [others => 0]));
 
 end Orka.SIMD.SSE4_2.Longs.Arithmetic.Emulation;

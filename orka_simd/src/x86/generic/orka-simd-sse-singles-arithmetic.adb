@@ -59,7 +59,7 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
       use SIMD.SSE.Singles.Logical;
 
       --  Create a mask with all 1's for each element that is non-zero
-      Zero : constant m128 := (0.0, 0.0, 0.0, 0.0);
+      Zero : constant m128 := [others => 0.0];
       Mask : constant m128 := Zero /= Right;
 
       Normalized : constant m128 := Left / Right;
@@ -73,7 +73,7 @@ package body Orka.SIMD.SSE.Singles.Arithmetic is
    function "abs" (Elements : m128) return m128 is
       use SIMD.SSE.Singles.Logical;
    begin
-      return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
+      return And_Not ([others => -0.0], Elements);
    end "abs";
 
    function Sum (Elements : m128) return Float_32 is

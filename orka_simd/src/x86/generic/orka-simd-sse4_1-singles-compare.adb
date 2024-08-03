@@ -34,7 +34,7 @@ package body Orka.SIMD.SSE4_1.Singles.Compare is
       function Convert is new Ada.Unchecked_Conversion (m128, m128i);
 
       Result : constant m128 :=
-        abs (Left - Right) <= (Epsilon, Epsilon, Epsilon, Epsilon);
+        abs (Left - Right) <= [others => Epsilon];
    begin
       return Test_All_Ones (Convert (Result), Convert (Result = Result));
    end Is_Equal;

@@ -22,9 +22,9 @@ package Orka.SIMD.AVX.Longs.Convert is
    use SIMD.AVX.Doubles;
 
    function Convert (Elements : m256l) return m256d is
-     ((Float_64 (Elements (X)),
+     ([Float_64 (Elements (X)),
        Float_64 (Elements (Y)),
        Float_64 (Elements (Z)),
-       Float_64 (Elements (W))));
+       Float_64 (Elements (W))]);
 
 end Orka.SIMD.AVX.Longs.Convert;

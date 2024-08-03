@@ -39,7 +39,7 @@ package body Orka.SIMD.AVX.Doubles.Compare is
       function Convert is new Ada.Unchecked_Conversion (m256d, m256l);
 
       Result : constant m256d :=
-        abs (Left - Right) <= (Epsilon, Epsilon, Epsilon, Epsilon);
+        abs (Left - Right) <= [others => Epsilon];
    begin
       return Test_All_Ones (Convert (Result), Convert (Result = Result));
    end Is_Equal;

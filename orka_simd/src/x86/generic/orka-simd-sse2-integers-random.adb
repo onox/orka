@@ -93,10 +93,10 @@ package body Orka.SIMD.SSE2.Integers.Random is
    begin
       for I in S'Range loop
          S (I) :=
-           (Convert (Rotate_Left (Value, 1)),
+           [Convert (Rotate_Left (Value, 1)),
             Convert (Rotate_Left (Value, 2)),
             Convert (Rotate_Left (Value, 3)),
-            Convert (Rotate_Left (Value, 4)));
+            Convert (Rotate_Left (Value, 4))];
       end loop;
    end Reset;
 

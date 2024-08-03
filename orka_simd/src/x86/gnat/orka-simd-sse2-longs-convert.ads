@@ -31,7 +31,7 @@ package Orka.SIMD.SSE2.Longs.Convert is
    function Convert (Elements : m128i) return m128d
      with Import, Convention => Intrinsic, External_Name => "__builtin_ia32_cvtdq2pd";
 
-   Smallest_Elements_F32 : constant m128d := (others => 2.0**(-Float_32'Machine_Mantissa));
+   Smallest_Elements_F32 : constant m128d := [others => 2.0**(-Float_32'Machine_Mantissa)];
 
    function To_Unit_Floats (Elements : m128i) return m128d is
      (Convert (Shift_Bits_Right_Zeros (Elements, Float_32'Size - Float_32'Machine_Mantissa))

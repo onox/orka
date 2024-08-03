@@ -66,7 +66,7 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
       use SIMD.AVX.Doubles.Logical;
 
       --  Create a mask with all 1's for each element that is non-zero
-      Zero : constant m256d := (0.0, 0.0, 0.0, 0.0);
+      Zero : constant m256d := [others => 0.0];
       Mask : constant m256d := Zero /= Right;
 
       Normalized : constant m256d := Left / Right;
@@ -80,7 +80,7 @@ package body Orka.SIMD.AVX.Doubles.Arithmetic is
    function "abs" (Elements : m256d) return m256d is
       use SIMD.AVX.Doubles.Logical;
    begin
-      return And_Not ((-0.0, -0.0, -0.0, -0.0), Elements);
+      return And_Not ([others => -0.0], Elements);
    end "abs";
 
    function Sum (Elements : m256d) return Float_64 is

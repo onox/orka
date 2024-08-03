@@ -22,7 +22,7 @@ package Orka.SIMD.AVX.Longs.Arithmetic.Emulation is
    function "-" (Left, Right : m256l) return m256l;
 
    function "-" (Elements : m256l) return m256l is
-     ((others => 0) - Elements)
+     ([others => 0] - Elements)
    with Inline;
 
 end Orka.SIMD.AVX.Longs.Arithmetic.Emulation;
